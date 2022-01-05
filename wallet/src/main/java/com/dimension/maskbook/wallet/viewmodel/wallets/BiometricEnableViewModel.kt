@@ -28,9 +28,6 @@ class BiometricEnableViewModel(
             title = title,
             subtitle = subTitle,
             negativeButtonText = negativeButton,
-            onCanceled = {
-                Log.d("biometric", "onCanceled")
-            }
         )
     }
 

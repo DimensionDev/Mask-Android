@@ -3,7 +3,7 @@ package com.dimension.maskbook.wallet.repository
 import com.dimension.maskbook.wallet.db.AppDatabase
 import com.dimension.maskbook.wallet.db.model.DbToken
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import java.math.BigDecimal
 
 
@@ -57,6 +57,8 @@ class TokenRepository(
     private val database: AppDatabase,
 ) : ITokenRepository {
     override fun getTokenByAddress(id: String): Flow<TokenData> {
-        return database.tokenDao().getByIdFlow(id).map { TokenData.fromDb(it) }
+        return database.tokenDao().getByIdFlow(id).mapNotNull {
+            it?.let { token ->  TokenData.fromDb(token) }
+        }
     }
 }
