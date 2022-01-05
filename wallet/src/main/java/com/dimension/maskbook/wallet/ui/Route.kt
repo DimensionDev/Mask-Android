@@ -901,8 +901,9 @@ private fun NavGraphBuilder.wallets(
                 wallet = wallet,
                 onDone = {
                     navController.navigate(Uri.parse("maskwallet://Home"), navOptions = navOptions {
-                        popUpTo("Main") {
-                            inclusive = true
+                        launchSingleTop = true
+                        popUpTo("Home") {
+                            inclusive = false
                         }
                     })
                 },
@@ -922,8 +923,9 @@ private fun NavGraphBuilder.wallets(
                 wallet = wallet,
                 onDone = {
                     navController.navigate(Uri.parse("maskwallet://Home"), navOptions = navOptions {
-                        popUpTo("Main") {
-                            inclusive = true
+                        launchSingleTop = true
+                        popUpTo("Home") {
+                            inclusive = false
                         }
                     })
                 },
