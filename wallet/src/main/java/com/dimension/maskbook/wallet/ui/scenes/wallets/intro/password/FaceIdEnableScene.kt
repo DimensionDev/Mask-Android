@@ -24,7 +24,7 @@ import com.dimension.maskbook.wallet.ui.widget.MaskSingleLineTopAppBar
 import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
 import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.wallet.ui.widget.SecondaryButton
-import com.dimension.maskbook.wallet.viewmodel.wallets.FaceIdEnableViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.BiometricEnableViewModel
 import org.koin.androidx.compose.get
 
 @Composable
@@ -43,7 +43,7 @@ fun FaceIdEnableScene(
             }
         ) {
             val context = LocalContext.current
-            val viewModel: FaceIdEnableViewModel = get()
+            val viewModel: BiometricEnableViewModel = get()
             if (!viewModel.isSupported(context)) onEnable(false)
             Column(
                 modifier = Modifier

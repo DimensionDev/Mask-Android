@@ -516,10 +516,6 @@ fun Route(
     }
 }
 
-private fun enableFaceIdOrTouchId(navController: NavController, type: CreateType) {
-    navController.navigate("WalletIntroHostFaceId/$type")
-}
-
 @ExperimentalAnimationApi
 @ExperimentalMaterialNavigationApi
 private fun NavGraphBuilder.wallets(
@@ -731,14 +727,18 @@ private fun NavGraphBuilder.wallets(
         val type = it.arguments?.getString("type")?.let { type ->
             CreateType.valueOf(type)
         } ?: CreateType.CREATE
-        val password by get<ISettingsRepository>().paymentPassword.observeAsState(initial = null)
+        val repo = get<ISettingsRepository>()
+        val password by repo.paymentPassword.observeAsState(initial = null)
+        val enableBiometric by repo.biometricEnabled.observeAsState(initial = false)
         LegalScene(
             onBack = { navController.popBackStack() },
             onAccept = {
                 if (password.isNullOrEmpty()) {
                     navController.navigate("WalletIntroHostPassword/$type")
+                } else if (!enableBiometric){
+                    navController.navigate("WalletIntroHostFaceId/$type")
                 } else {
-                    enableFaceIdOrTouchId(navController, type)
+                    navController.navigate("CreateOrImportWallet/${type}")
                 }
             },
             onBrowseAgreement = { TODO("Logic:browse service agreement") }
@@ -754,9 +754,14 @@ private fun NavGraphBuilder.wallets(
         val type = it.arguments?.getString("type")?.let { type ->
             CreateType.valueOf(type)
         } ?: CreateType.CREATE
+        val enableBiometric by get<ISettingsRepository>().biometricEnabled.observeAsState(initial = false)
         SetUpPaymentPassword(
             onNext = {
-                enableFaceIdOrTouchId(navController, type)
+                if (!enableBiometric){
+                    navController.navigate("WalletIntroHostFaceId/$type")
+                } else {
+                    navController.navigate("CreateOrImportWallet/${type}")
+                }
             }
         )
     }
@@ -772,8 +777,12 @@ private fun NavGraphBuilder.wallets(
         } ?: CreateType.CREATE
         FaceIdEnableScene(
             onBack = { navController.popBackStack() },
-            onEnable = {
-                navController.navigate("WalletIntroHostFaceIdEnableSuccess/$type")
+            onEnable = { enabled ->
+                if (enabled) {
+                    navController.navigate("WalletIntroHostFaceIdEnableSuccess/$type")
+                } else  {
+                    navController.navigate("CreateOrImportWallet/${type}")
+                }
             }
         )
     }

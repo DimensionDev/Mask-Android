@@ -51,7 +51,7 @@ import com.dimension.maskbook.wallet.viewmodel.settings.LanguageSettingsViewMode
 import com.dimension.maskbook.wallet.viewmodel.settings.PaymentPasswordSettingsViewModel
 import com.dimension.maskbook.wallet.viewmodel.settings.PhoneBackupViewModel
 import com.dimension.maskbook.wallet.viewmodel.settings.PhoneSetupViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.FaceIdEnableViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.BiometricEnableViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.SetUpPaymentPasswordViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.TokenDetailViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.TouchIdEnableViewModel
@@ -196,7 +196,7 @@ val walletModules = module {
     viewModel { BackupCloudExecuteViewModel(get(), get(), get()) }
     viewModel { CreateWalletRecoveryKeyViewModel(get()) }
     viewModel { SetUpPaymentPasswordViewModel(get()) }
-    viewModel { FaceIdEnableViewModel(get()) }
+    viewModel { BiometricEnableViewModel(get(), get()) }
     viewModel { TouchIdEnableViewModel() }
     viewModel { (wallet: String) -> ImportWalletKeystoreViewModel(wallet, get()) }
     viewModel { (wallet: String) -> ImportWalletPrivateKeyViewModel(wallet, get()) }
