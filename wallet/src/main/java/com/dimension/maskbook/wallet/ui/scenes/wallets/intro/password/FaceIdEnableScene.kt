@@ -13,6 +13,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
@@ -41,15 +42,17 @@ fun FaceIdEnableScene(
                 )
             }
         ) {
+            val context = LocalContext.current
             val viewModel: FaceIdEnableViewModel = get()
+            if (!viewModel.isSupported(context)) onEnable(false)
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(ScaffoldPadding),
             ) {
-                Text(text = "Unlock with face ID?", style = MaterialTheme.typography.h4)
+                Text(text = FaceIdEnableSceneObjects.Title, style = MaterialTheme.typography.h4)
                 Spacer(modifier = Modifier.height(12.dp))
-                Text(text = "Unlock Mask Network faster by setting up facial recognition.")
+                Text(text = FaceIdEnableSceneObjects.Subtitle)
                 Column(
                     modifier = Modifier
                         .weight(1f)
@@ -65,12 +68,16 @@ fun FaceIdEnableScene(
                 PrimaryButton(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
-                        viewModel.enable {
-                            onEnable.invoke(true)
-                        }
+                        viewModel.enable(
+                            context = context,
+                            onEnable = { onEnable.invoke(true) },
+                            title = FaceIdEnableSceneObjects.Title,
+                            subTitle = FaceIdEnableSceneObjects.Subtitle,
+                            negativeButton = FaceIdEnableSceneObjects.CancelButton
+                        )
                     },
                 ) {
-                    Text(text = "Enable")
+                    Text(text = FaceIdEnableSceneObjects.EnableButton)
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 SecondaryButton(
@@ -78,9 +85,16 @@ fun FaceIdEnableScene(
                     onClick = {
                         onEnable.invoke(false)
                     }) {
-                    Text(text = "No thanks")
+                    Text(text = FaceIdEnableSceneObjects.CancelButton)
                 }
             }
         }
     }
+}
+
+private object FaceIdEnableSceneObjects {
+    const val Title = "Unlock with face ID?"
+    const val Subtitle = "Unlock Mask Network faster by setting up facial recognition."
+    const val EnableButton = "Enable"
+    const val CancelButton = "No thanks"
 }

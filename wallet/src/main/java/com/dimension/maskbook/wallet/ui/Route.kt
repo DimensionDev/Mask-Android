@@ -517,8 +517,7 @@ fun Route(
 }
 
 private fun enableFaceIdOrTouchId(navController: NavController, type: CreateType) {
-    val faceId = true // TODO Logic:enable face id or touch id
-    navController.navigate(if (faceId) "WalletIntroHostFaceId/$type" else "WalletIntroHostTouchId/$type")
+    navController.navigate("WalletIntroHostFaceId/$type")
 }
 
 @ExperimentalAnimationApi
