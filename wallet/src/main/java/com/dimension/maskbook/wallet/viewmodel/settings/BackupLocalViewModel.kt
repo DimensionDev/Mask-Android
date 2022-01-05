@@ -1,0 +1,69 @@
+package com.dimension.maskbook.wallet.viewmodel.settings
+
+import android.net.Uri
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.dimension.maskbook.wallet.ext.asStateIn
+import com.dimension.maskbook.wallet.repository.BackupRepository
+import com.dimension.maskbook.wallet.repository.ISettingsRepository
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
+
+class BackupLocalViewModel(
+    private val repository: ISettingsRepository,
+    private val backupRepository: BackupRepository,
+) : ViewModel() {
+
+    enum class State {
+        Normal,
+        Loading,
+        Failed,
+        Success,
+    }
+
+    private val _state = MutableStateFlow(State.Normal)
+    val state = _state.asStateIn(viewModelScope, State.Normal)
+    private val _password = MutableStateFlow("")
+    val password = _password.asStateIn(viewModelScope, "")
+    fun setPassword(value: String) {
+        _password.value = value
+    }
+    val backupPasswordValid = combine(
+        repository.backupPassword,
+        _password
+    ) { actual, input -> actual == input }
+
+    private val _withWallet = MutableStateFlow(false)
+    val withWallet = _withWallet.asStateIn(viewModelScope, false)
+    fun setWithWallet(value: Boolean) {
+        _withWallet.value = value
+    }
+    private val _paymentPassword = MutableStateFlow("")
+    val paymentPassword = _paymentPassword.asStateIn(viewModelScope, "")
+    val paymentPasswordValid = combine(
+        repository.paymentPassword,
+        _paymentPassword
+    ) { actual, input -> actual == input }
+    fun setPaymentPassword(value: String) {
+        _paymentPassword.value = value
+    }
+
+    fun save(it: Uri, withWallet: Boolean) = viewModelScope.launch {
+        _state.value = State.Loading
+        try {
+            val json = repository.createBackupJson(noWallets = !withWallet)
+            backupRepository.saveLocality(it, json)
+            _state.value = State.Success
+        } catch (e: Throwable) {
+            _state.value = State.Failed
+        }
+    }
+
+    val meta = flow {
+        emit(repository.provideBackupMeta())
+    }.asStateIn(viewModelScope, null)
+
+}

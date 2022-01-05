@@ -1,0 +1,83 @@
+diff --git a/mobile/android/geckoview/src/main/java/org/mozilla/geckoview/GeckoSession.java b/mobile/android/geckoview/src/main/java/org/mozilla/geckoview/GeckoSession.java
+--- a/mobile/android/geckoview/src/main/java/org/mozilla/geckoview/GeckoSession.java
++++ b/mobile/android/geckoview/src/main/java/org/mozilla/geckoview/GeckoSession.java
+@@ -73,6 +73,10 @@ import android.view.inputmethod.Extracte
+ import android.view.View;
+ import android.view.ViewStructure;
+ 
++import android.provider.OpenableColumns;
++import java.io.*;
++import java.nio.channels.FileChannel;
++
+ public class GeckoSession {
+     private static final String LOGTAG = "GeckoSession";
+     private static final boolean DEBUG = false;
+@@ -4688,37 +4692,40 @@ public class GeckoSession {
+                 return super.confirm();
+             }
+ 
+-            private static String getFile(final @NonNull Context context, final @NonNull Uri uri) {
+-                if (uri == null) {
+-                    return null;
+-                }
+-                if ("file".equals(uri.getScheme())) {
+-                    return uri.getPath();
+-                }
+-                final ContentResolver cr = context.getContentResolver();
+-                final Cursor cur = cr.query(uri, new String[] { "_data" }, /* selection */ null,
+-                                            /* args */ null, /* sort */ null);
+-                if (cur == null) {
+-                    return null;
+-                }
++            private static String getFileName(final Context context, final Uri uri) {
++                String result = null;
++                if (uri.getScheme().equals("content")) {
++                Cursor cursor = context.getContentResolver().query(uri, null, null, null, null);
+                 try {
+-                    final int idx = cur.getColumnIndex("_data");
+-                    if (idx < 0 || !cur.moveToFirst()) {
+-                        return null;
++                    if (cursor != null && cursor.moveToFirst()) {
++                        result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
++                    }
++                } finally {
++                        cursor.close();
++                    }
++                }
++                if (result == null) {
++                    result = uri.getPath();
++                    int cut = result.lastIndexOf('/');
++                    if (cut != -1) {
++                        result = result.substring(cut + 1);
+                     }
+-                    do {
+-                        try {
+-                            final String path = cur.getString(idx);
+-                            if (path != null && !path.isEmpty()) {
+-                                return path;
+-                            }
+-                        } catch (final Exception e) {
+-                        }
+-                    } while (cur.moveToNext());
+-                } finally {
+-                    cur.close();
+                 }
+-                return null;
++                return result;
++            }
++
++            private static String getFile(final @NonNull Context context, final @NonNull Uri uri) {
++                File temp = new File(context.getCacheDir(), getFileName(context, uri));
++                try {
++                    FileInputStream in = (FileInputStream) context.getContentResolver().openInputStream(uri);
++                    FileOutputStream out = new FileOutputStream(temp);
++                    FileChannel inChannel = in.getChannel();
++                    FileChannel outChannel = out.getChannel();
++                    inChannel.transferTo(0, inChannel.size(), outChannel);
++                    in.close();
++                    out.close();
++                } catch (Exception e) {}
++                return Uri.fromFile(temp).getPath();
+             }
+         }
+ 

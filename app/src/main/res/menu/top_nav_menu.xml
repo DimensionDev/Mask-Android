@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/scanner"
+        android:title="scan"
+        android:visible="false"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/dashboard"
+        android:icon="@drawable/ic_group_132"
+        android:title="Dashboard"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/debug_menu"
+        android:title="DEBUG" />
+
+    <item
+        android:id="@+id/facebook"
+        android:contentDescription="@string/site_title_site_desc"
+        android:icon="@drawable/site_facebook"
+        android:title="@string/site_title_facebook"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/twitter"
+        android:contentDescription="@string/site_title_site_desc"
+        android:icon="@drawable/site_twitter"
+        android:title="@string/site_title_twitter"
+        app:showAsAction="ifRoom" />
+
+</menu>

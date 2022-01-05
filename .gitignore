@@ -1,0 +1,13 @@
+*.iml
+.gradle
+/local.properties
+/.idea
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+mozilla-central
+\.settings/
+
+app/src/main/assets/web_extensions/Maskbook/
+Maskbook.zip

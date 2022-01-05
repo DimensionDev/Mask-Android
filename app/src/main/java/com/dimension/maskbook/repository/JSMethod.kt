@@ -1,0 +1,409 @@
+package com.dimension.maskbook.repository
+
+import com.dimension.maskbook.util.MessageChannel
+import com.dimension.maskbook.wallet.ext.decodeJson
+import com.dimension.maskbook.wallet.repository.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonPrimitive
+
+typealias PersonaIdentifier_string = String
+
+@Serializable
+data class SwitchBlockChainData(
+    val coinId: Int? = null,
+    val networkId: Long? = null,
+)
+
+@Serializable
+data class Web3Request(
+    val id: String,
+    val payload: JsonRpcPayload?,
+)
+
+@Serializable
+data class JsonRpcPayload(
+    val jsonrpc: String,
+    val method: String,
+    val params: JsonArray,
+    @SerialName("id")
+    val _id: JsonPrimitive,
+) {
+    @kotlinx.serialization.Transient
+    val id: Any = when {
+//        _id == null -> null
+        _id.isString -> _id.toString()
+        else -> _id.content.toInt()
+    }
+}
+
+object JSMethod {
+    object Misc {
+        fun openCreateWalletView(): Flow<String?> {
+            return MessageChannel.subscribeMessage("misc_openCreateWalletView").map { it?.params }
+        }
+
+        fun openDashboardView(): Flow<String?> {
+            return MessageChannel.subscribeMessage("misc_openDashboardView").map { it?.params }
+        }
+    }
+
+    object Wallet {
+        suspend fun updateEthereumChainId(chainId: Long) {
+            MessageChannel.executeMessage(
+                "wallet_updateEthereumChainId",
+                mapOf("chainId" to chainId)
+            )
+        }
+
+        suspend fun updateEthereumAccount(address: String) {
+            MessageChannel.executeMessage(
+                "wallet_updateEthereumAccount",
+                mapOf("account" to address)
+            )
+        }
+
+        fun web3Event(): Flow<Web3Request?> {
+            return MessageChannel.subscribeMessage("sendJsonString").map {
+                it?.id?.toString()
+                    ?.let { it1 -> Web3Request(it1, it.params?.decodeJson<List<String>>()?.firstOrNull()?.decodeJson<JsonRpcPayload>()) }
+            }
+        }
+
+        fun switchBlockChain(): Flow<SwitchBlockChainData?> {
+            return MessageChannel.subscribeMessage("wallet_switchBlockChain")
+                .map { it?.params?.decodeJson<SwitchBlockChainData>() }
+        }
+    }
+
+    object App {
+        suspend fun isPluginEnabled(pluginID: String): Boolean {
+            return MessageChannel.execute<Boolean>(
+                "app_isPluginEnabled",
+                mapOf("pluginID" to pluginID)
+            ) ?: false
+        }
+
+        suspend fun setPluginStatus(
+            pluginID: String,
+            enabled: Boolean,
+        ) {
+            MessageChannel.executeMessage(
+                "app_setPluginStatus",
+                mapOf(
+                    "pluginID" to pluginID,
+                    "enabled" to enabled,
+                )
+            )
+        }
+    }
+
+    object Persona {
+        suspend fun getCurrentDetectedProfile(): String? {
+            return MessageChannel.executeMessage("SNSAdaptor_getCurrentDetectedProfile")
+        }
+
+        suspend fun createPersonaByMnemonic(
+            mnemonic: String,
+            nickname: String,
+            password: String,
+        ): com.dimension.maskbook.wallet.repository.Persona? {
+            return MessageChannel.executeMessage(
+                "persona_createPersonaByMnemonic",
+                mapOf(
+                    "mnemonic" to mnemonic,
+                    "nickname" to nickname,
+                    "password" to password,
+                )
+            )?.decodeJson<com.dimension.maskbook.wallet.repository.Persona>()
+        }
+
+        suspend fun queryPersonas(
+            identifier: String?,
+            hasPrivateKey: Boolean
+        ): List<com.dimension.maskbook.wallet.repository.Persona> {
+            return MessageChannel.executeMessage(
+                "persona_queryPersonas",
+                listOfNotNull(
+                    identifier?.let {
+                        "identifier" to identifier
+                    },
+                    "hasPrivateKey" to hasPrivateKey,
+                ).toMap()
+            )?.decodeJson<List<com.dimension.maskbook.wallet.repository.Persona>>() ?: emptyList()
+        }
+
+        suspend fun queryMyPersonas(
+            network: Network?,
+        ): List<com.dimension.maskbook.wallet.repository.Persona> {
+            return MessageChannel.executeMessage(
+                "persona_queryMyPersonas",
+                listOfNotNull(
+                    network?.let {
+                        "network" to network.value
+                    },
+                ).toMap()
+            )?.decodeJson<List<com.dimension.maskbook.wallet.repository.Persona>>() ?: emptyList()
+        }
+
+        suspend fun updatePersonaInfo(
+            identifier: String,
+            nickname: String
+        ) {
+            MessageChannel.executeMessage(
+                "persona_updatePersonaInfo",
+                mapOf(
+                    "identifier" to identifier,
+                    "data" to mapOf(
+                        "nickname" to nickname
+                    )
+                )
+            )
+        }
+
+        suspend fun removePersona(
+            identifier: String
+        ) {
+            MessageChannel.executeMessage(
+                "persona_removePersona",
+                mapOf(
+                    "identifier" to identifier,
+                )
+            )
+        }
+
+        suspend fun restoreFromJson(
+            json: String
+        ) {
+            MessageChannel.executeMessage(
+                "persona_restoreFromJson",
+                mapOf("backup" to json)
+            )
+        }
+
+        suspend fun restoreFromBase64(
+            backup: String
+        ) {
+            MessageChannel.executeMessage(
+                "persona_restoreFromBase64",
+                mapOf("backup" to backup)
+            )
+        }
+
+        suspend fun connectProfile(
+            network: Network,
+            personaIdentifier: String,
+            userName: String,
+        ) {
+            MessageChannel.executeMessage(
+                "persona_connectProfile",
+                mapOf(
+                    "profileIdentifier" to "person:${network.value}/${userName}",
+                    "personaIdentifier" to personaIdentifier,
+                )
+            )
+        }
+
+        suspend fun disconnectProfile(
+            identifier: String
+        ) {
+            MessageChannel.executeMessage(
+                "persona_disconnectProfile",
+                mapOf(
+                    "identifier" to identifier
+                )
+            )
+        }
+
+        suspend fun backupMnemonic(
+            identifier: String
+        ): String? {
+            return MessageChannel.executeMessage(
+                "persona_backupMnemonic",
+                mapOf(
+                    "identifier" to identifier
+                )
+            )
+        }
+
+        suspend fun backupBase64(
+            identifier: String
+        ): String? {
+            return MessageChannel.executeMessage(
+                "persona_backupBase64",
+                mapOf(
+                    "identifier" to identifier
+                )
+            )
+        }
+
+        suspend fun backupJson(
+            identifier: String
+        ): String? {
+            return MessageChannel.executeMessage(
+                "persona_backupJson",
+                mapOf(
+                    "identifier" to identifier,
+                )
+            )
+        }
+
+        suspend fun backupPrivateKey(
+            identifier: String
+        ): String? {
+            return MessageChannel.executeMessage(
+                "persona_backupPrivateKey",
+                mapOf(
+                    "identifier" to identifier,
+                )
+            )
+        }
+
+        suspend fun queryProfiles(
+            network: Network
+        ): List<Profile> {
+            return MessageChannel.executeMessage(
+                "profile_queryProfiles",
+                mapOf(
+                    "network" to network.value
+                )
+            )?.decodeJson<List<Profile>>() ?: emptyList()
+        }
+
+        suspend fun queryMyProfile(
+            network: Network
+        ): List<Profile> {
+            return MessageChannel.executeMessage(
+                "profile_queryMyProfiles",
+                mapOf(
+                    "network" to network.value
+                )
+            )?.decodeJson<List<Profile>>() ?: emptyList()
+        }
+
+        suspend fun updateProfileInfo(
+            identifier: String,
+            nickname: String?,
+            avatarURL: String?
+        ) {
+            MessageChannel.executeMessage(
+                "profile_updateProfileInfo",
+                mapOf(
+                    "identifier" to identifier,
+                    "data" to listOfNotNull(
+                        nickname?.let {
+                            "nickname" to nickname
+                        },
+                        avatarURL?.let {
+                            "avatarURL" to avatarURL
+                        },
+                    ).toMap()
+                )
+            )
+        }
+
+        suspend fun removeProfile(
+            identifier: String
+        ) {
+            MessageChannel.executeMessage(
+                "profile_removeProfile",
+                mapOf(
+                    "identifier" to identifier,
+                )
+            )
+        }
+    }
+
+    object Setting {
+        suspend fun getNetworkTraderProvider(networkType: NetworkType): TradeProvider {
+            return MessageChannel.execute<Int>(
+                "setting_getNetworkTraderProvider",
+                mapOf("network" to networkType.name)
+            ).let { result ->
+                TradeProvider.values().first { it.value == result }
+            }
+        }
+
+        suspend fun setNetworkTraderProvider(
+            networkType: NetworkType,
+            tradeProvider: TradeProvider
+        ) {
+            MessageChannel.executeMessage(
+                "setting_setNetworkTraderProvider",
+                mapOf(
+                    "network" to networkType.name,
+                    "provider" to tradeProvider.ordinal
+                ),
+            )
+        }
+
+        suspend fun getTrendingDataSource(): DataProvider {
+            return MessageChannel.execute<Int>("settings_getTrendingDataSource").let { result ->
+                DataProvider.values().first { it.value == result }
+            }
+        }
+
+        suspend fun setTrendingDataSource(provider: DataProvider) {
+            MessageChannel.executeMessage(
+                "settings_setTrendingDataSource",
+                mapOf("provider" to provider.ordinal)
+            )
+        }
+
+        suspend fun getTheme(): Appearance {
+            return MessageChannel.executeMessage("settings_getTheme")?.let {
+                Appearance.valueOf(it)
+            } ?: Appearance.default
+        }
+
+        suspend fun setTheme(appearance: Appearance) {
+            MessageChannel.executeMessage("settings_setTheme", mapOf("theme" to appearance.name))
+        }
+
+        suspend fun getLanguage(): Language {
+            return MessageChannel.executeMessage("settings_getLanguage")?.let {
+                Language.valueOf(it)
+            } ?: Language.auto
+        }
+
+        suspend fun setLanguage(language: Language) {
+            MessageChannel.executeMessage(
+                "settings_setLanguage",
+                mapOf("language" to language.name)
+            )
+        }
+
+        suspend fun createBackupJson(
+            noPosts: Boolean = false,
+            noWallets: Boolean = false,
+            noPersonas: Boolean = false,
+            noProfiles: Boolean = false,
+            hasPrivateKeyOnly: Boolean = false,
+        ): String {
+            return MessageChannel.executeMessage(
+                "settings_createBackupJsonString",
+                mapOf(
+                    "noPosts" to noPosts,
+                    "noWallets" to noWallets,
+                    "noPersonas" to noPersonas,
+                    "noProfiles" to noProfiles,
+                    "hasPrivateKeyOnly" to hasPrivateKeyOnly,
+                )
+            ) ?: ""
+        }
+
+        suspend fun getBackupPreviewInfo(json: String): BackupPreview? {
+            return MessageChannel.executeMessage(
+                "settings_getBackupPreviewInfo",
+                mapOf("backupInfo" to json)
+            )?.decodeJson<BackupPreview>()
+        }
+
+        suspend fun restoreBackup(json: String) {
+            MessageChannel.executeMessage("settings_restoreBackup", mapOf("backupInfo" to json))
+        }
+    }
+}

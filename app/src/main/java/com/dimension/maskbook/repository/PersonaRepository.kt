@@ -1,0 +1,298 @@
+package com.dimension.maskbook.repository
+
+import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
+import androidx.lifecycle.MutableLiveData
+import com.dimension.maskbook.wallet.platform.IPlatformSwitcher
+import com.dimension.maskbook.wallet.repository.*
+import com.dimension.maskwalletcore.WalletKey
+import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.*
+import kotlin.time.ExperimentalTime
+
+private val CurrentPersonaKey = stringPreferencesKey("current_persona")
+val Context.personaDataStore: DataStore<Preferences> by preferencesDataStore(name = "persona")
+private const val TAG = "PersonaRepository"
+
+class PersonaRepository(
+    private val dataStore: DataStore<Preferences>,
+    private val context: Context,
+    private val platformSwitcher: IPlatformSwitcher,
+) : IPersonaRepository,
+    IContactsRepository {
+    private var connectingJob: Job? = null
+    private val scope = CoroutineScope(Dispatchers.IO)
+    private val _currentPersona = dataStore.data.map {
+        it[CurrentPersonaKey] ?: ""
+    }
+    private val _twitter = MutableStateFlow(emptyList<Profile>())
+    override val twitter: Flow<List<SocialData>>
+        get() = _twitter.combine(_persona) { a: List<Profile>, b: List<Persona> ->
+            a.map { profile ->
+                SocialData(
+                    id = profile.identifier,
+                    name = profile.nickname ?: "",
+                    personaId = b.firstOrNull { it.linkedProfiles.containsKey(profile.identifier) }?.identifier
+                )
+            }
+        }
+    private val _facebook = MutableStateFlow(emptyList<Profile>())
+    override val facebook: Flow<List<SocialData>>
+        get() = _facebook.combine(_persona) { a: List<Profile>, b: List<Persona> ->
+            a.map { profile ->
+                SocialData(
+                    id = profile.identifier,
+                    name = profile.nickname ?: "",
+                    personaId = b.firstOrNull { it.linkedProfiles.containsKey(profile.identifier) }?.identifier
+                )
+            }
+        }
+    private val _persona = MutableStateFlow(emptyList<Persona>())
+    override val persona: Flow<List<PersonaData>>
+        get() = _persona.combine(dataStore.data) { items, data ->
+            items.map {
+                val emailKey = stringPreferencesKey("${it.identifier}_email")
+                val phoneKey = stringPreferencesKey("${it.identifier}_phone")
+                PersonaData(
+                    id = it.identifier,
+                    name = it.nickname ?: "",
+                    email = data[emailKey],
+                    phone = data[phoneKey]
+                )
+            }
+        }
+    override val currentPersona: Flow<PersonaData?>
+        get() = _currentPersona.combine(persona) { a: String, b: List<PersonaData> ->
+            b.firstOrNull { it.id == a }
+        }
+    private val _redirect = MutableLiveData<RedirectTarget?>(null)
+    override val redirect: MutableLiveData<RedirectTarget?>
+        get() = _redirect
+
+    private val _connectingChannel = Channel<String>()
+
+    @OptIn(DelicateCoroutinesApi::class, ExperimentalTime::class)
+    override fun beginConnectingProcess(
+        personaId: String,
+        platformType: PlatformType
+    ) {
+        connectingJob?.cancel()
+        platformSwitcher.switchTo(platformType)
+        platformSwitcher.showTooltips(true)
+        connectingJob = GlobalScope.launch {
+            val name = _connectingChannel.receive()
+            if (name.isNotEmpty()) {
+                platformSwitcher.showTooltips(false)
+                when (platformType) {
+                    PlatformType.Twitter -> JSMethod.Persona.connectProfile(Network.Twitter, personaId, name)
+                    PlatformType.Facebook -> JSMethod.Persona.connectProfile(Network.Facebook, personaId, name)
+                }
+                refreshSocial()
+                refreshPersona()
+                platformSwitcher.launchDeeplink("maskwallet://Home")
+//            platformSwitcher.launchDeeplink("maskwallet://ConnectSocial/${personaId.encodeUrl()}/${platformType}")
+//            while (true) {
+//                delay(Duration.Companion.seconds(5))
+//                val profile = JSMethod.Persona.getCurrentDetectedProfile()
+//                if (profile != null) {
+//                    platformSwitcher.showTooltips(false)
+//                    refreshPersona()
+//                    setCurrentPersona(profile)
+//                    context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("maskwallet://ConnectSocial/${personaId.encodeUrl()}/${platformType}")))
+//                    break
+//                }
+//            }
+            }
+        }
+    }
+
+    override fun finishConnectingProcess(userName: String, platformType: PlatformType) {
+        scope.launch {
+            _connectingChannel.send(userName)
+        }
+    }
+
+    override fun cancelConnectingProcess() {
+        scope.launch {
+            _connectingChannel.send("")
+        }
+    }
+
+    override val contacts =
+        combine(_twitter, _facebook, _currentPersona) { twitter, facebook, persona ->
+            (twitter + facebook).filter { !it.linkedPersona }.map {
+                ContactData(
+                    id = it.identifier,
+                    name = it.nickname ?: "",
+                    personaId = persona
+                )
+            }
+        }
+
+
+    override fun init() {
+        scope.launch {
+            awaitAll(
+                async { _twitter.value = JSMethod.Persona.queryMyProfile(Network.Twitter) },
+                async { _facebook.value = JSMethod.Persona.queryMyProfile(Network.Facebook) },
+                async {
+                    refreshPersona()
+                    _currentPersona.firstOrNull()?.let { current ->
+                        if (!_persona.value.any { it.identifier == current }) {
+                            setCurrentPersona("")
+                        }
+                    }
+                    if (_currentPersona.firstOrNull().isNullOrEmpty()) {
+                        _redirect.postValue(RedirectTarget.Setup)
+                    } else {
+                        _redirect.postValue(RedirectTarget.Gecko)
+                    }
+                }
+            )
+        }
+    }
+
+    override fun saveEmailForCurrentPersona(value: String) {
+        scope.launch {
+            currentPersona.firstOrNull()?.let {
+                val emailKey = stringPreferencesKey("${it.id}_email")
+                dataStore.edit {
+                    it[emailKey] = value
+                }
+            }
+        }
+    }
+
+    override fun savePhoneForCurrentPersona(value: String) {
+        scope.launch {
+            currentPersona.firstOrNull()?.let {
+                val phoneKey = stringPreferencesKey("${it.id}_phone")
+                dataStore.edit {
+                    it[phoneKey] = value
+                }
+            }
+        }
+    }
+
+    private suspend fun refreshSocial() {
+        _twitter.value = JSMethod.Persona.queryMyProfile(Network.Twitter)
+        _facebook.value = JSMethod.Persona.queryMyProfile(Network.Facebook)
+    }
+
+    private suspend fun refreshPersona() {
+        _persona.value = JSMethod.Persona.queryMyPersonas(null)
+    }
+
+    override fun setCurrentPersona(id: String) {
+        scope.launch {
+            dataStore.edit {
+                it[CurrentPersonaKey] = id
+            }
+        }
+    }
+
+    override fun generateNewMnemonic(): List<String> {
+        return createNewMnemonic().split(" ")
+    }
+
+    override fun addPersona(value: String) {
+        scope.launch {
+            JSMethod.Persona.createPersonaByMnemonic(createNewMnemonic(), value, "")
+            refreshPersona()
+        }
+    }
+
+    private fun createNewMnemonic(password: String = ""): String {
+        return WalletKey.create(password).mnemonic
+    }
+
+    override fun logout() {
+        scope.launch {
+            currentPersona.firstOrNull()?.let {
+                removePersona(it.id)
+            }
+        }
+    }
+
+    override fun removePersona(id: String) {
+        scope.launch {
+            JSMethod.Persona.removePersona(id)
+            val emailKey = stringPreferencesKey("${id}_email")
+            val phoneKey = stringPreferencesKey("${id}_phone")
+            dataStore.edit {
+                it[emailKey] = ""
+                it[phoneKey] = ""
+            }
+            refreshPersona()
+        }
+    }
+
+    override fun updatePersona(id: String, value: String) {
+        scope.launch {
+            JSMethod.Persona.updatePersonaInfo(id, value)
+            refreshPersona()
+        }
+    }
+
+    override fun connectTwitter(personaId: String, userName: String) {
+        scope.launch {
+            JSMethod.Persona.connectProfile(Network.Twitter, personaId, userName)
+            refreshPersona()
+        }
+    }
+
+    override fun connectFacebook(personaId: String, userName: String) {
+        scope.launch {
+            JSMethod.Persona.connectProfile(Network.Facebook, personaId, userName)
+            refreshPersona()
+        }
+    }
+
+    override fun disconnectTwitter(personaId: String, socialId: String) {
+        scope.launch {
+            JSMethod.Persona.disconnectProfile(socialId)
+            refreshSocial()
+            refreshPersona()
+        }
+    }
+
+    override fun disconnectFacebook(personaId: String, socialId: String) {
+        scope.launch {
+            JSMethod.Persona.disconnectProfile(socialId)
+            refreshSocial()
+            refreshPersona()
+        }
+    }
+
+    override fun createPersonaFromMnemonic(value: List<String>, name: String) {
+        scope.launch {
+            val persona = JSMethod.Persona.createPersonaByMnemonic(value.joinToString(" "), name, "")
+            refreshPersona()
+            persona?.identifier?.let { setCurrentPersona(it) }
+        }
+    }
+
+    override fun createPersonaFromPrivateKey(value: String) {
+        scope.launch {
+
+        }
+    }
+
+    override fun updateCurrentPersona(value: String) {
+        scope.launch {
+            _currentPersona.firstOrNull()?.let {
+                JSMethod.Persona.updatePersonaInfo(it, value)
+                refreshPersona()
+            }
+        }
+    }
+
+    override suspend fun backupPrivateKey(id: String): String {
+        return JSMethod.Persona.backupPrivateKey(id) ?: ""
+    }
+}

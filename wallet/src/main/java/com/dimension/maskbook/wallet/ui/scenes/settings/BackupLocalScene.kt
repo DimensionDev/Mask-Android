@@ -1,0 +1,236 @@
+package com.dimension.maskbook.wallet.ui.scenes.settings
+
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.dp
+import com.dimension.maskbook.wallet.ext.observeAsState
+import com.dimension.maskbook.wallet.ui.MaskTheme
+import com.dimension.maskbook.wallet.ui.widget.*
+import com.dimension.maskbook.wallet.viewmodel.settings.BackupLocalViewModel
+import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.google.accompanist.navigation.animation.composable
+import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.distinctUntilChanged
+import org.koin.androidx.compose.getViewModel
+
+@OptIn(ExperimentalAnimationApi::class)
+@Composable
+fun BackupLocalHost(
+    onBack: () -> Unit,
+    onSuccess: () -> Unit,
+    onFailure: () -> Unit,
+) {
+    val viewModel: BackupLocalViewModel = getViewModel()
+    val navController = rememberAnimatedNavController()
+    val state by viewModel.state.observeAsState(initial = BackupLocalViewModel.State.Normal)
+    LaunchedEffect(Unit) {
+        snapshotFlow { state }
+            .distinctUntilChanged()
+            .collect {
+                when (it) {
+                    BackupLocalViewModel.State.Normal -> Unit
+                    BackupLocalViewModel.State.Loading -> navController.navigate("Loading")
+                    BackupLocalViewModel.State.Failed -> onFailure.invoke()
+                    BackupLocalViewModel.State.Success -> onSuccess.invoke()
+                }
+            }
+    }
+    AnimatedNavHost(
+        navController = navController,
+        startDestination = "Main",
+        enterTransition = { _, _ ->
+            slideInHorizontally(initialOffsetX = { 1000 }, animationSpec = tween())
+        },
+        exitTransition = { _, _ ->
+            slideOutHorizontally(targetOffsetX = { -1000 }, animationSpec = tween())
+        },
+        popEnterTransition = { _, _ ->
+            slideInHorizontally(initialOffsetX = { -1000 }, animationSpec = tween())
+        },
+        popExitTransition = { _, _ ->
+            slideOutHorizontally(targetOffsetX = { 1000 }, animationSpec = tween())
+        },
+    ) {
+        composable("Main") {
+            BackupLocalScene(onBack = onBack, viewModel = viewModel)
+        }
+        composable("Loading") {
+            MaskTheme {
+                MaskScaffold(
+                    topBar = {
+                        MaskTopAppBar(
+                            navigationIcon = {
+                                MaskBackButton {
+                                    onBack.invoke()
+                                }
+                            }
+                        )
+                    }
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center,
+                    ) {
+                        CircularProgressIndicator()
+                        Text(text = "Loading...")
+                    }
+                }
+            }
+        }
+    }
+
+}
+
+@Composable
+fun BackupLocalScene(
+    onBack: () -> Unit,
+    viewModel: BackupLocalViewModel,
+) {
+    val meta by viewModel.meta.observeAsState(initial = null)
+    val password by viewModel.password.observeAsState(initial = "")
+    val backupPasswordValid by viewModel.backupPasswordValid.observeAsState(initial = false)
+    val withWallet by viewModel.withWallet.observeAsState(initial = false)
+    val paymentPassword by viewModel.paymentPassword.observeAsState(initial = "")
+    val paymentPasswordValid by viewModel.paymentPasswordValid.observeAsState(initial = false)
+    MaskScaffold(
+        topBar = {
+            MaskTopAppBar(
+                title = {
+                    Text(text = "Back up locally")
+                },
+                navigationIcon = {
+                    MaskBackButton(
+                        onBack = onBack
+                    )
+                }
+            )
+        }
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(ScaffoldPadding),
+        ) {
+            meta?.let { meta ->
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    elevation = 0.dp,
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        MetaItem(title = "Account", value = meta.account)
+                        Spacer(modifier = Modifier.height(16.dp))
+                        MetaItem(title = "Personas", value = meta.personas.toString())
+                        Spacer(modifier = Modifier.height(16.dp))
+                        MetaItem(
+                            title = "Associated account",
+                            value = meta.associatedAccount.toString()
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        MetaItem(title = "Encrypted post", value = meta.encryptedPost.toString())
+                        Spacer(modifier = Modifier.height(16.dp))
+                        MetaItem(title = "Contacts", value = meta.contacts.toString())
+                        Spacer(modifier = Modifier.height(16.dp))
+                        MetaItem(title = "File", value = meta.file.toString())
+                    }
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                Row(
+                    modifier = Modifier.clickable {
+                        viewModel.setWithWallet(!withWallet)
+                    },
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Checkbox(checked = withWallet, onCheckedChange = {
+                        viewModel.setWithWallet(it)
+                    })
+                    Spacer(modifier = Modifier.width(10.dp))
+                    MetaItem(
+                        title = "Local Wallet",
+                        value = meta.wallet.toString()
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(text = "Backup Password")
+            Spacer(modifier = Modifier.height(8.dp))
+            OutlinedTextField(
+                value = password,
+                onValueChange = {
+                    viewModel.setPassword(it)
+                },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                modifier = Modifier.fillMaxWidth(),
+            )
+            if (withWallet) {
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(text = "Payment Password")
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = paymentPassword,
+                    onValueChange = {
+                        viewModel.setPaymentPassword(it)
+                    },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.weight(1f))
+            val filePickerLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.CreateDocument(),
+                onResult = {
+                    if (it != null) {
+                        viewModel.save(it, withWallet)
+                    }
+                },
+            )
+            PrimaryButton(
+                onClick = {
+                    filePickerLauncher.launch("${System.currentTimeMillis()}.json")
+                },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = backupPasswordValid && (withWallet && paymentPasswordValid)
+            ) {
+                Text(text = "Back Up")
+            }
+        }
+    }
+}
+
+@Composable
+fun MetaItem(
+    title: String,
+    value: String
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(text = title)
+        Spacer(modifier = Modifier.weight(1f))
+        CompositionLocalProvider(
+            LocalTextStyle provides MaterialTheme.typography.button
+        ) {
+            Text(text = value)
+        }
+    }
+}
