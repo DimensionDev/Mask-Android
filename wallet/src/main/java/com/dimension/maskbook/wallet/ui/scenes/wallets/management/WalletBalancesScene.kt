@@ -272,7 +272,7 @@ private fun WalletCard(
 ) {
     val clipboardManager = LocalClipboardManager.current
     val pagerState = rememberPagerState(initialPage = maxOf(wallets.indexOf(currentWallet), 0))
-    LaunchedEffect(wallets) {
+    LaunchedEffect(wallets, currentWallet) {
         pagerState.scrollToPage(maxOf(wallets.indexOf(currentWallet), 0))
     }
     LaunchedEffect(pagerState.currentPage) {
