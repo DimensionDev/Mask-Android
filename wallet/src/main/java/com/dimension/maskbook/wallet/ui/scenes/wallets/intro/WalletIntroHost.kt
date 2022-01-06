@@ -60,7 +60,10 @@ fun WalletIntroHost() {
                     onSceneTypeChanged = {
                         viewModel.setSceneType(it)
                     },
-                    chainType = dWebData.chainType
+                    chainType = dWebData.chainType,
+                    onCollectibleDetailClicked = {
+                        rootNavController.navigate("CollectibleDetail/${it.id}")
+                    },
                 )
             }
         }

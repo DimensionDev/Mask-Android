@@ -28,7 +28,8 @@ data class WalletData(
     val imported: Boolean,
     val fromWalletConnect: Boolean,
     val tokens: List<WalletTokenData>,
-    val balance: Map<DbWalletBalanceType, BigDecimal>
+    val balance: Map<DbWalletBalanceType, BigDecimal>,
+    val collectibles: List<WalletCollectibleData>,
 ) {
     companion object {
         fun fromDb(data: DbWalletTokenTokenWithWallet) = with(data) {
@@ -41,7 +42,8 @@ data class WalletData(
                 tokens = items.map {
                     WalletTokenData.fromDb(it)
                 },
-                balance = balance.map { it.type to it.value }.toMap()
+                balance = balance.map { it.type to it.value }.toMap(),
+                collectibles = emptyList()// TODO: collectibles
             )
         }
     }
@@ -62,6 +64,21 @@ data class WalletTokenData(
         }
     }
 }
+
+data class WalletCollectibleData(
+    val id: String,
+    val chainType: ChainType,
+    val icon: String?,
+    val name: String,
+    val items: List<WalletCollectibleItemData>,
+)
+
+data class WalletCollectibleItemData(
+    val id: String,
+    val link: String,
+    val imageUrl: String?,
+    val videoUrl: String?,
+)
 
 enum class TransactionType {
     Swap,
