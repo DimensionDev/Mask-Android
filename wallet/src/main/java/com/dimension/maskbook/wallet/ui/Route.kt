@@ -12,20 +12,43 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.navigation.*
+import androidx.navigation.NavController
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.dialog
+import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
+import androidx.navigation.navOptions
+import androidx.navigation.plusAssign
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ext.decodeUrl
 import com.dimension.maskbook.wallet.ext.encodeUrl
 import com.dimension.maskbook.wallet.ext.observeAsState
-import com.dimension.maskbook.wallet.repository.*
+import com.dimension.maskbook.wallet.repository.ChainType
+import com.dimension.maskbook.wallet.repository.IPersonaRepository
+import com.dimension.maskbook.wallet.repository.ISettingsRepository
+import com.dimension.maskbook.wallet.repository.ITokenRepository
+import com.dimension.maskbook.wallet.repository.IWalletRepository
+import com.dimension.maskbook.wallet.repository.PlatformType
 import com.dimension.maskbook.wallet.route.backup
 import com.dimension.maskbook.wallet.ui.scenes.MainHost
 import com.dimension.maskbook.wallet.ui.scenes.app.settings.MarketTrendSettingsModal
-import com.dimension.maskbook.wallet.ui.scenes.persona.*
+import com.dimension.maskbook.wallet.ui.scenes.persona.CreatePersona
+import com.dimension.maskbook.wallet.ui.scenes.persona.DeleteDialog
+import com.dimension.maskbook.wallet.ui.scenes.persona.ExportPrivateKeyScene
+import com.dimension.maskbook.wallet.ui.scenes.persona.LogoutDialog
+import com.dimension.maskbook.wallet.ui.scenes.persona.PersonaMenu
+import com.dimension.maskbook.wallet.ui.scenes.persona.RenamePersona
+import com.dimension.maskbook.wallet.ui.scenes.persona.SwitchPersonaModal
 import com.dimension.maskbook.wallet.ui.scenes.persona.social.ConnectSocialModal
 import com.dimension.maskbook.wallet.ui.scenes.persona.social.DisconnectSocialDialog
 import com.dimension.maskbook.wallet.ui.scenes.register.RegisterScene
@@ -36,7 +59,11 @@ import com.dimension.maskbook.wallet.ui.scenes.register.recovery.RecoveryComplec
 import com.dimension.maskbook.wallet.ui.scenes.register.recovery.RecoveryHomeScene
 import com.dimension.maskbook.wallet.ui.scenes.register.recovery.local.RecoveryLocalHost
 import com.dimension.maskbook.wallet.ui.scenes.register.recovery.remote.remoteBackupRecovery
-import com.dimension.maskbook.wallet.ui.scenes.settings.*
+import com.dimension.maskbook.wallet.ui.scenes.settings.AppearanceSettings
+import com.dimension.maskbook.wallet.ui.scenes.settings.BackupPasswordSettings
+import com.dimension.maskbook.wallet.ui.scenes.settings.DataSourceSettings
+import com.dimension.maskbook.wallet.ui.scenes.settings.LanguageSettings
+import com.dimension.maskbook.wallet.ui.scenes.settings.PaymentPasswordSettings
 import com.dimension.maskbook.wallet.ui.scenes.wallets.WalletQrcodeScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.common.MultiChainWalletDialog
 import com.dimension.maskbook.wallet.ui.scenes.wallets.create.CreateOrImportWalletScene
@@ -47,10 +74,23 @@ import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.LegalScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.password.FaceIdEnableScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.password.SetUpPaymentPassword
 import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.password.TouchIdEnableScene
-import com.dimension.maskbook.wallet.ui.scenes.wallets.management.*
+import com.dimension.maskbook.wallet.ui.scenes.wallets.management.BackupWalletScene
+import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletConnectModal
+import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletDeleteDialog
+import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletManagementModal
+import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletRenameModal
+import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletSwitchAddModal
+import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletSwitchModal
+import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletSwitchScene
+import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletTransactionHistoryScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.send.SendTokenHost
 import com.dimension.maskbook.wallet.ui.scenes.wallets.token.TokenDetailScene
-import com.dimension.maskbook.wallet.ui.widget.*
+import com.dimension.maskbook.wallet.ui.widget.EmailCodeInputModal
+import com.dimension.maskbook.wallet.ui.widget.EmailInputModal
+import com.dimension.maskbook.wallet.ui.widget.MaskDialog
+import com.dimension.maskbook.wallet.ui.widget.PhoneCodeInputModal
+import com.dimension.maskbook.wallet.ui.widget.PhoneInputModal
+import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
 import com.dimension.maskbook.wallet.viewmodel.persona.RenamePersonaViewModel
 import com.dimension.maskbook.wallet.viewmodel.persona.SwitchPersonaViewModel
 import com.dimension.maskbook.wallet.viewmodel.persona.social.DisconnectSocialViewModel
@@ -61,7 +101,11 @@ import com.dimension.maskbook.wallet.viewmodel.settings.EmailSetupViewModel
 import com.dimension.maskbook.wallet.viewmodel.settings.PhoneSetupViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.TokenDetailViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.WalletManagementModalViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.management.*
+import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletBackupViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletDeleteViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletRenameViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletSwitchViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletTransactionHistoryViewModel
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.navigation
@@ -901,8 +945,9 @@ private fun NavGraphBuilder.wallets(
                 wallet = wallet,
                 onDone = {
                     navController.navigate(Uri.parse("maskwallet://Home"), navOptions = navOptions {
-                        popUpTo("Main") {
-                            inclusive = true
+                        launchSingleTop = true
+                        popUpTo("Home") {
+                            inclusive = false
                         }
                     })
                 },
@@ -922,8 +967,9 @@ private fun NavGraphBuilder.wallets(
                 wallet = wallet,
                 onDone = {
                     navController.navigate(Uri.parse("maskwallet://Home"), navOptions = navOptions {
-                        popUpTo("Main") {
-                            inclusive = true
+                        launchSingleTop = true
+                        popUpTo("Home") {
+                            inclusive = false
                         }
                     })
                 },
