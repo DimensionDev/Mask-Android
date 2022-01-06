@@ -23,17 +23,7 @@ class ImportWalletMnemonicViewModel(
     }
 
     private fun generateHintWords(inputWords: String): List<String> {
-        /*TODO Logic:use input words to generate hint words*/
-        return if (inputWords.isEmpty()) emptyList() else listOf(
-            "abc",
-            "cbadfadf",
-            "a",
-            "x",
-            "da",
-            "daf3",
-            "qfd",
-            "daf"
-        )// only for test
+        return if (inputWords.isEmpty()) emptyList() else inputWords.split(" ")
     }
 
     fun setWords(words: String) {
