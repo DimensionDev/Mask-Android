@@ -50,10 +50,10 @@ data class AssetElement (
 
     val permalink: String? = null,
     val collection: Collection? = null,
-    val decimals: Float? = null,
+    val decimals: Long? = null,
 
-//    @SerialName("token_metadata")
-//    val tokenMetadata: JsonObject? = null,
+    @SerialName("token_metadata")
+    val tokenMetadata: String? = null,
 
     val owner: Creator? = null,
 
@@ -63,8 +63,8 @@ data class AssetElement (
     val creator: Creator? = null,
     val traits: List<Trait>? = null,
 
-//    @SerialName("last_sale")
-//    val lastSale: JsonObject? = null,
+    @SerialName("last_sale")
+    val lastSale: LastSale? = null,
 
 //    @SerialName("top_bid")
 //    val topBid: JsonObject? = null,
@@ -83,13 +83,94 @@ data class AssetElement (
 )
 
 @Serializable
+data class LastSale (
+    val asset: LastSaleAsset? = null,
+
+//    @SerialName("asset_bundle")
+//    val assetBundle: JsonObject? = null,
+
+    @SerialName("event_type")
+    val eventType: String? = null,
+
+    @SerialName("event_timestamp")
+    val eventTimestamp: String? = null,
+
+//    @SerialName("auction_type")
+//    val auctionType: JsonObject? = null,
+
+    @SerialName("total_price")
+    val totalPrice: String? = null,
+
+    @SerialName("payment_token")
+    val paymentToken: PaymentToken? = null,
+
+    val transaction: TransactionClass? = null,
+
+    @SerialName("created_date")
+    val createdDate: String? = null,
+
+    val quantity: String? = null
+)
+
+@Serializable
+data class LastSaleAsset (
+    @SerialName("token_id")
+    val tokenID: String? = null,
+
+    val decimals: Long? = null
+)
+
+@Serializable
+data class PaymentToken (
+    val id: Long? = null,
+    val symbol: String? = null,
+    val address: String? = null,
+
+    @SerialName("image_url")
+    val imageURL: String? = null,
+
+    val name: String? = null,
+    val decimals: Long? = null,
+
+    @SerialName("eth_price")
+    val ethPrice: String? = null,
+
+    @SerialName("usd_price")
+    val usdPrice: String? = null
+)
+
+@Serializable
+data class TransactionClass (
+    @SerialName("block_hash")
+    val blockHash: String? = null,
+
+    @SerialName("block_number")
+    val blockNumber: String? = null,
+
+    @SerialName("from_account")
+    val fromAccount: Creator? = null,
+
+    val id: Long? = null,
+    val timestamp: String? = null,
+
+    @SerialName("to_account")
+    val toAccount: Creator? = null,
+
+    @SerialName("transaction_hash")
+    val transactionHash: String? = null,
+
+    @SerialName("transaction_index")
+    val transactionIndex: String? = null
+)
+
+@Serializable
 data class OpenSeaFungibleToken(
     val image_url: String?,
     val eth_price: String?,
     val usd_price: String?,
     val name: String?,
     val symbol: String?,
-    val decimals: Float?,
+    val decimals: Long?,
     val address: String?,
 )
 
@@ -105,8 +186,8 @@ data class AssetContract (
 
     val name: String? = null,
 
-//    @SerialName("nft_version")
-//    val nftVersion: JsonObject? = null,
+    @SerialName("nft_version")
+    val nftVersion: String? = null,
 
     @SerialName("opensea_version")
     val openseaVersion: String? = null,
@@ -118,8 +199,8 @@ data class AssetContract (
 
     val symbol: String? = null,
 
-//    @SerialName("total_supply")
-//    val totalSupply: JsonObject? = null,
+    @SerialName("total_supply")
+    val totalSupply: String? = null,
 
     val description: String? = null,
 
@@ -424,8 +505,8 @@ data class Trait (
 
     val value: String? = null,
 
-//    @SerialName("display_type")
-//    val displayType: JsonObject? = null,
+    @SerialName("display_type")
+    val displayType: String? = null,
 
 //    @SerialName("max_value")
 //    val maxValue: JsonObject? = null,
