@@ -19,6 +19,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -71,7 +72,7 @@ import com.dimension.maskbook.wallet.ui.scenes.wallets.create.CreateType
 import com.dimension.maskbook.wallet.ui.scenes.wallets.create.create.CreateWalletHost
 import com.dimension.maskbook.wallet.ui.scenes.wallets.create.import.ImportWalletHost
 import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.LegalScene
-import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.password.FaceIdEnableScene
+import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.password.BiometricsEnableScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.password.SetUpPaymentPassword
 import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.password.TouchIdEnableScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.BackupWalletScene
@@ -99,6 +100,7 @@ import com.dimension.maskbook.wallet.viewmodel.recovery.PrivateKeyViewModel
 import com.dimension.maskbook.wallet.viewmodel.register.RemoteBackupRecoveryViewModelBase
 import com.dimension.maskbook.wallet.viewmodel.settings.EmailSetupViewModel
 import com.dimension.maskbook.wallet.viewmodel.settings.PhoneSetupViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.BiometricViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.TokenDetailViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.WalletManagementModalViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletBackupViewModel
@@ -560,11 +562,6 @@ fun Route(
     }
 }
 
-private fun enableFaceIdOrTouchId(navController: NavController, type: CreateType) {
-    val faceId = true // TODO Logic:enable face id or touch id
-    navController.navigate(if (faceId) "WalletIntroHostFaceId/$type" else "WalletIntroHostTouchId/$type")
-}
-
 @ExperimentalAnimationApi
 @ExperimentalMaterialNavigationApi
 private fun NavGraphBuilder.wallets(
@@ -704,7 +701,10 @@ private fun NavGraphBuilder.wallets(
             val viewModel = getViewModel<WalletDeleteViewModel> {
                 parametersOf(id)
             }
+            val biometricViewModel = getViewModel<BiometricViewModel>()
             val wallet by viewModel.wallet.observeAsState(initial = null)
+            val biometricEnabled by biometricViewModel.biometricEnabled.observeAsState(initial = false)
+            val context = LocalContext.current
             wallet?.let { walletData ->
                 val password by viewModel.password.observeAsState(initial = "")
                 val canConfirm by viewModel.canConfirm.observeAsState(initial = false)
@@ -714,10 +714,21 @@ private fun NavGraphBuilder.wallets(
                     onPasswordChanged = { viewModel.setPassword(it) },
                     onBack = { navController.popBackStack() },
                     onDelete = {
-                        viewModel.confirm()
-                        navController.popBackStack()
+                        if (biometricEnabled) {
+                            biometricViewModel.authenticate(
+                                context = context,
+                                onSuccess = {
+                                    viewModel.confirm()
+                                    navController.popBackStack()
+                                }
+                            )
+                        } else {
+                            viewModel.confirm()
+                            navController.popBackStack()
+                        }
                     },
-                    passwordValid = canConfirm
+                    passwordValid = canConfirm,
+                    biometricEnabled = biometricEnabled
                 )
             }
         }
@@ -776,14 +787,18 @@ private fun NavGraphBuilder.wallets(
         val type = it.arguments?.getString("type")?.let { type ->
             CreateType.valueOf(type)
         } ?: CreateType.CREATE
-        val password by get<ISettingsRepository>().paymentPassword.observeAsState(initial = null)
+        val repo = get<ISettingsRepository>()
+        val password by repo.paymentPassword.observeAsState(initial = null)
+        val enableBiometric by repo.biometricEnabled.observeAsState(initial = false)
         LegalScene(
             onBack = { navController.popBackStack() },
             onAccept = {
                 if (password.isNullOrEmpty()) {
                     navController.navigate("WalletIntroHostPassword/$type")
+                } else if (!enableBiometric){
+                    navController.navigate("WalletIntroHostFaceId/$type")
                 } else {
-                    enableFaceIdOrTouchId(navController, type)
+                    navController.navigate("CreateOrImportWallet/${type}")
                 }
             },
             onBrowseAgreement = { TODO("Logic:browse service agreement") }
@@ -799,9 +814,14 @@ private fun NavGraphBuilder.wallets(
         val type = it.arguments?.getString("type")?.let { type ->
             CreateType.valueOf(type)
         } ?: CreateType.CREATE
+        val enableBiometric by get<ISettingsRepository>().biometricEnabled.observeAsState(initial = false)
         SetUpPaymentPassword(
             onNext = {
-                enableFaceIdOrTouchId(navController, type)
+                if (!enableBiometric){
+                    navController.navigate("WalletIntroHostFaceId/$type")
+                } else {
+                    navController.navigate("CreateOrImportWallet/${type}")
+                }
             }
         )
     }
@@ -815,10 +835,14 @@ private fun NavGraphBuilder.wallets(
         val type = it.arguments?.getString("type")?.let { type ->
             CreateType.valueOf(type)
         } ?: CreateType.CREATE
-        FaceIdEnableScene(
+        BiometricsEnableScene(
             onBack = { navController.popBackStack() },
-            onEnable = {
-                navController.navigate("WalletIntroHostFaceIdEnableSuccess/$type")
+            onEnable = { enabled ->
+                if (enabled) {
+                    navController.navigate("WalletIntroHostFaceIdEnableSuccess/$type")
+                } else  {
+                    navController.navigate("CreateOrImportWallet/${type}")
+                }
             }
         )
     }

@@ -3,8 +3,8 @@ package com.dimension.maskbook.wallet
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.Composable
 import androidx.room.Room
 import com.dimension.maskbook.wallet.db.AppDatabase
@@ -13,6 +13,7 @@ import com.dimension.maskbook.wallet.services.DownloadResponse
 import com.dimension.maskbook.wallet.services.WalletServices
 import com.dimension.maskbook.wallet.ui.MaskTheme
 import com.dimension.maskbook.wallet.ui.Route
+import com.dimension.maskbook.wallet.utils.BiometricAuthenticator
 import com.dimension.maskbook.wallet.viewmodel.WelcomeViewModel
 import com.dimension.maskbook.wallet.viewmodel.app.AppViewModel
 import com.dimension.maskbook.wallet.viewmodel.app.MarketTrendSettingsViewModel
@@ -22,24 +23,60 @@ import com.dimension.maskbook.wallet.viewmodel.persona.RenamePersonaViewModel
 import com.dimension.maskbook.wallet.viewmodel.persona.SwitchPersonaViewModel
 import com.dimension.maskbook.wallet.viewmodel.persona.contacts.ContactsViewModel
 import com.dimension.maskbook.wallet.viewmodel.persona.post.PostViewModel
-import com.dimension.maskbook.wallet.viewmodel.persona.social.*
+import com.dimension.maskbook.wallet.viewmodel.persona.social.DisconnectSocialViewModel
+import com.dimension.maskbook.wallet.viewmodel.persona.social.FaceBookConnectSocialViewModel
+import com.dimension.maskbook.wallet.viewmodel.persona.social.FacebookSocialViewModel
+import com.dimension.maskbook.wallet.viewmodel.persona.social.PersonaSocialViewModel
+import com.dimension.maskbook.wallet.viewmodel.persona.social.SocialViewModel
+import com.dimension.maskbook.wallet.viewmodel.persona.social.TwitterConnectSocialViewModel
+import com.dimension.maskbook.wallet.viewmodel.persona.social.TwitterSocialViewModel
 import com.dimension.maskbook.wallet.viewmodel.recovery.IdentityViewModel
 import com.dimension.maskbook.wallet.viewmodel.recovery.PrivateKeyViewModel
 import com.dimension.maskbook.wallet.viewmodel.recovery.RecoveryLocalViewModel
-import com.dimension.maskbook.wallet.viewmodel.register.*
-import com.dimension.maskbook.wallet.viewmodel.settings.*
-import com.dimension.maskbook.wallet.viewmodel.wallets.*
+import com.dimension.maskbook.wallet.viewmodel.register.CreateIdentityViewModel
+import com.dimension.maskbook.wallet.viewmodel.register.EmailRemoteBackupRecoveryViewModel
+import com.dimension.maskbook.wallet.viewmodel.register.PhoneRemoteBackupRecoveryViewModel
+import com.dimension.maskbook.wallet.viewmodel.register.RemoteBackupRecoveryViewModelBase
+import com.dimension.maskbook.wallet.viewmodel.register.UserNameModalViewModel
+import com.dimension.maskbook.wallet.viewmodel.settings.AppearanceSettingsViewModel
+import com.dimension.maskbook.wallet.viewmodel.settings.BackupCloudExecuteViewModel
+import com.dimension.maskbook.wallet.viewmodel.settings.BackupCloudViewModel
+import com.dimension.maskbook.wallet.viewmodel.settings.BackupLocalViewModel
+import com.dimension.maskbook.wallet.viewmodel.settings.BackupMergeConfirmViewModel
+import com.dimension.maskbook.wallet.viewmodel.settings.BackupPasswordSettingsViewModel
+import com.dimension.maskbook.wallet.viewmodel.settings.DataSourceSettingsViewModel
+import com.dimension.maskbook.wallet.viewmodel.settings.EmailBackupViewModel
+import com.dimension.maskbook.wallet.viewmodel.settings.EmailSetupViewModel
+import com.dimension.maskbook.wallet.viewmodel.settings.LanguageSettingsViewModel
+import com.dimension.maskbook.wallet.viewmodel.settings.PaymentPasswordSettingsViewModel
+import com.dimension.maskbook.wallet.viewmodel.settings.PhoneBackupViewModel
+import com.dimension.maskbook.wallet.viewmodel.settings.PhoneSetupViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.BiometricViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.BiometricEnableViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.SetUpPaymentPasswordViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.TokenDetailViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.TouchIdEnableViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.WalletBalancesViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.WalletManagementModalViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.create.CreateWalletRecoveryKeyViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.import.ImportWalletDerivationPathViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.import.ImportWalletKeystoreViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.import.ImportWalletMnemonicViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.import.ImportWalletPrivateKeyViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.management.*
-import com.dimension.maskbook.wallet.viewmodel.wallets.send.*
+import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletBackupViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletDeleteViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletRenameViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletSwitchViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletTransactionHistoryViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.send.AddContactViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.send.GasFeeViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.send.SearchAddressViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendConfirmViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendTokenViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
-class ComposeActivity : ComponentActivity() {
+class ComposeActivity : AppCompatActivity() {
     companion object {
         object Destination {
             val register = "Register"
@@ -83,6 +120,9 @@ val walletModules = module {
         Room.databaseBuilder(get(), AppDatabase::class.java, "maskbook")
             .fallbackToDestructiveMigration()
             .build()
+    }
+    single {
+        BiometricAuthenticator()
     }
 
     viewModel { (uri: Uri) -> RecoveryLocalViewModel(get(), uri, get<Context>().contentResolver) }
@@ -157,7 +197,7 @@ val walletModules = module {
     viewModel { BackupCloudExecuteViewModel(get(), get(), get()) }
     viewModel { CreateWalletRecoveryKeyViewModel(get()) }
     viewModel { SetUpPaymentPasswordViewModel(get()) }
-    viewModel { FaceIdEnableViewModel() }
+    viewModel { BiometricEnableViewModel(get(), get()) }
     viewModel { TouchIdEnableViewModel() }
     viewModel { (wallet: String) -> ImportWalletKeystoreViewModel(wallet, get()) }
     viewModel { (wallet: String) -> ImportWalletPrivateKeyViewModel(wallet, get()) }
@@ -185,13 +225,14 @@ val walletModules = module {
             toAddress = toAddress,
             get(),
             get(),
-            get()
+            get(),
         )
     }
     viewModel { AddContactViewModel(get()) }
     viewModel { (tokenData: TokenData, toAddress: String) ->
         SendConfirmViewModel(tokenData, toAddress, get(), get())
     }
+    viewModel { BiometricViewModel(get(), get()) }
 }
 
 val servicesModule = module {

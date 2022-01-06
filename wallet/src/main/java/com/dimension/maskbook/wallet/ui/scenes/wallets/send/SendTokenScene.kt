@@ -22,7 +22,7 @@ import com.dimension.maskbook.wallet.ext.humanizeDollar
 import com.dimension.maskbook.wallet.ext.humanizeToken
 import com.dimension.maskbook.wallet.repository.SearchAddressData
 import com.dimension.maskbook.wallet.repository.TokenData
-import com.dimension.maskbook.wallet.repository.UnlockWays
+import com.dimension.maskbook.wallet.repository.UnlockType
 import com.dimension.maskbook.wallet.repository.WalletTokenData
 import com.dimension.maskbook.wallet.ui.MaskTheme
 import com.dimension.maskbook.wallet.ui.widget.*
@@ -39,11 +39,11 @@ fun SendTokenScene(
     amount: String,
     maxAmount: BigDecimal,
     onAmountChanged: (String) -> Unit,
-    unlockWays: UnlockWays,
+    unlockType: UnlockType,
     gasFee: String,
     arrivesIn: String,
     onEditGasFee: () -> Unit,
-    onSend: (UnlockWays) -> Unit,
+    onSend: (UnlockType) -> Unit,
     sendError: String?,
     paymentPassword: String,
     onPaymentPasswordChanged: (String) -> Unit,
@@ -95,7 +95,7 @@ fun SendTokenScene(
                 )
                 Spacer(modifier = Modifier.height(16.dp))
 
-                if (unlockWays == UnlockWays.PASSWORD) {
+                if (unlockType == UnlockType.PASSWORD) {
                     PaymentPasswordContent(
                         pwd = paymentPassword,
                         onValueChanged = { onPaymentPasswordChanged.invoke(it) },
@@ -115,11 +115,8 @@ fun SendTokenScene(
                 )
 
                 SendButton(
-                    faceId = unlockWays == UnlockWays.FACE_ID,
-                    touchId = unlockWays == UnlockWays.TOUCH_ID,
-                    onFaceIdSend = { onSend.invoke(UnlockWays.FACE_ID) },
-                    onTouchIdSend = { onSend.invoke(UnlockWays.TOUCH_ID) },
-                    onSend = { onSend.invoke(UnlockWays.PASSWORD) },
+                    unlockType = unlockType,
+                    onSend = onSend,
                     canConfirm = canConfirm,
                 )
             }
@@ -267,47 +264,29 @@ private fun GasFeeContent(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ColumnScope.SendButton(
-    faceId: Boolean,
-    touchId: Boolean,
-    onFaceIdSend: () -> Unit,
-    onTouchIdSend: () -> Unit,
-    onSend: () -> Unit,
+    unlockType: UnlockType,
+    onSend: (UnlockType) -> Unit,
     canConfirm: Boolean,
 ) {
     Spacer(modifier = Modifier.weight(1f))
-    when {
-        faceId -> {
-            PrimaryButton(modifier = Modifier
-                .combinedClickable(
-                    onLongClick = onFaceIdSend,
-                    onClick = {}
-                )
-                .fillMaxWidth(), onClick = {}) {
+    when(unlockType) {
+        UnlockType.BIOMETRIC -> {
+            // TODO Biometrics Replace UI
+            PrimaryButton(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = { onSend.invoke(unlockType) }
+            ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_faceid_small),
                     contentDescription = null
                 )
-                Text(text = "Hold to Send", modifier = Modifier.padding(start = 8.dp))
+                Text(text = "Send", modifier = Modifier.padding(start = 8.dp))
             }
         }
-        touchId -> {
-            PrimaryButton(modifier = Modifier
-                .combinedClickable(
-                    onLongClick = onTouchIdSend,
-                    onClick = {}
-                )
-                .fillMaxWidth(), onClick = {}) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_touchid_small),
-                    contentDescription = null
-                )
-                Text(text = "Hold to Send", modifier = Modifier.padding(start = 8.dp))
-            }
-        }
-        else -> {
+        UnlockType.PASSWORD -> {
             PrimaryButton(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = onSend,
+                onClick = { onSend.invoke(unlockType) },
                 enabled = canConfirm,
             ) {
                 Icon(

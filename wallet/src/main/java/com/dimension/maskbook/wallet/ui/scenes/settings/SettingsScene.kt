@@ -1,5 +1,6 @@
 package com.dimension.maskbook.wallet.ui.scenes.settings
 
+import android.content.Context
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -14,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
@@ -22,7 +24,9 @@ import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.repository.*
 import com.dimension.maskbook.wallet.ui.LocalRootNavController
 import com.dimension.maskbook.wallet.ui.widget.*
+import com.dimension.maskbook.wallet.viewmodel.wallets.BiometricEnableViewModel
 import org.koin.androidx.compose.get
+import org.koin.androidx.compose.getViewModel
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -38,6 +42,8 @@ fun SettingsScene(
     val biometricEnabled by repository.biometricEnabled.observeAsState(initial = false)
     val personaRepository = get<IPersonaRepository>()
     val persona by personaRepository.currentPersona.observeAsState(initial = null)
+    val biometricEnableViewModel = getViewModel<BiometricEnableViewModel>()
+    val context = LocalContext.current
     MaskScaffold(
         topBar = {
             MaskTopAppBar(
@@ -96,16 +102,30 @@ fun SettingsScene(
                     icon = R.drawable.ic_change_payment_password,
                 )
             }
-            SettingsItem(
-                title = "Unlock wallet with Face ID",
-                icon = R.drawable.face_id,
-                trailing = {
-                    Switch(checked = biometricEnabled, onCheckedChange = {})
-                },
-                onClicked = {
-                    repository.setBiometricEnabled(!biometricEnabled)
-                },
-            )
+            if (biometricEnableViewModel.isSupported(context)) {
+                SettingsItem(
+                    title = "Unlock wallet with Face ID",
+                    icon = R.drawable.face_id,
+                    trailing = {
+                        Switch(checked = biometricEnabled, onCheckedChange = {
+                            enableBiometric(
+                                !biometricEnabled,
+                                context,
+                                biometricEnableViewModel,
+                                repository
+                            )
+                        })
+                    },
+                    onClicked = {
+                        enableBiometric(
+                            !biometricEnabled,
+                            context,
+                            biometricEnableViewModel,
+                            repository
+                        )
+                    },
+                )
+            }
             MaskListItem {
                 Text(text = "Backup & Recovery")
             }
@@ -166,6 +186,23 @@ fun SettingsScene(
                 )
             }
         }
+    }
+}
+
+private fun enableBiometric(
+    enable: Boolean,
+    context: Context,
+    viewModel: BiometricEnableViewModel,
+    repository: ISettingsRepository
+) {
+    if (enable) {
+        viewModel.enable(
+            context = context,
+            title = "Unlock wallet with Face ID",
+            negativeButton = "Cancel",
+        )
+    } else {
+        repository.setBiometricEnabled(enable)
     }
 }
 
