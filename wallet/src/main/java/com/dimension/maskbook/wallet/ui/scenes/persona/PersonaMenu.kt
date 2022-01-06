@@ -102,7 +102,12 @@ fun PersonaMenu(
                         modifier = Modifier.fillMaxWidth(),
                         elevation = 0.dp,
                         onClick = {
-                            navController.navigate("ExportPrivateKeyScene")
+                            //first check if it has backup password
+                            if (backupPassword.isEmpty()) {
+                                navController.navigate("SetupPasswordDialog")
+                            } else {
+                                navController.navigate("ExportPrivateKeyScene")
+                            }
                         }
                     ) {
                         Row(

@@ -65,6 +65,7 @@ import com.dimension.maskbook.wallet.ui.scenes.settings.BackupPasswordSettings
 import com.dimension.maskbook.wallet.ui.scenes.settings.DataSourceSettings
 import com.dimension.maskbook.wallet.ui.scenes.settings.LanguageSettings
 import com.dimension.maskbook.wallet.ui.scenes.settings.PaymentPasswordSettings
+import com.dimension.maskbook.wallet.ui.scenes.wallets.UnlockWalletDialog
 import com.dimension.maskbook.wallet.ui.scenes.wallets.WalletQrcodeScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.common.MultiChainWalletDialog
 import com.dimension.maskbook.wallet.ui.scenes.wallets.create.CreateOrImportWalletScene
@@ -102,6 +103,7 @@ import com.dimension.maskbook.wallet.viewmodel.settings.EmailSetupViewModel
 import com.dimension.maskbook.wallet.viewmodel.settings.PhoneSetupViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.BiometricViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.TokenDetailViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.UnlockWalletViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.WalletManagementModalViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletBackupViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletDeleteViewModel
@@ -679,7 +681,7 @@ private fun NavGraphBuilder.wallets(
             WalletManagementModal(
                 walletData = wallet,
                 onRename = { navController.navigate("WalletManagementRename/${wallet.id}") },
-                onBackup = { navController.navigate("WalletManagementBackup") },
+                onBackup = { navController.navigate("UnlockWalletDialog/WalletManagementBackup") },
                 onTransactionHistory = { navController.navigate("WalletManagementTransactionHistory") },
                 onDelete = {
                     navController.popBackStack()
@@ -795,7 +797,7 @@ private fun NavGraphBuilder.wallets(
             onAccept = {
                 if (password.isNullOrEmpty()) {
                     navController.navigate("WalletIntroHostPassword/$type")
-                } else if (!enableBiometric){
+                } else if (!enableBiometric) {
                     navController.navigate("WalletIntroHostFaceId/$type")
                 } else {
                     navController.navigate("CreateOrImportWallet/${type}")
@@ -817,7 +819,7 @@ private fun NavGraphBuilder.wallets(
         val enableBiometric by get<ISettingsRepository>().biometricEnabled.observeAsState(initial = false)
         SetUpPaymentPassword(
             onNext = {
-                if (!enableBiometric){
+                if (!enableBiometric) {
                     navController.navigate("WalletIntroHostFaceId/$type")
                 } else {
                     navController.navigate("CreateOrImportWallet/${type}")
@@ -840,7 +842,7 @@ private fun NavGraphBuilder.wallets(
             onEnable = { enabled ->
                 if (enabled) {
                     navController.navigate("WalletIntroHostFaceIdEnableSuccess/$type")
-                } else  {
+                } else {
                     navController.navigate("CreateOrImportWallet/${type}")
                 }
             }
@@ -1020,6 +1022,50 @@ private fun NavGraphBuilder.wallets(
                 )
             }
         }
+    }
+
+    dialog(
+        "UnlockWalletDialog/{route}",
+        arguments = listOf(
+            navArgument("route") { type = NavType.StringType }
+        )
+    ) {
+        val viewModel = getViewModel<UnlockWalletViewModel>()
+        val biometricEnable by viewModel.biometricEnabled.observeAsState(initial = false)
+        val password by viewModel.password.observeAsState(initial = "")
+        val passwordValid by viewModel.passwordValid.observeAsState(initial = false)
+        val context = LocalContext.current
+        UnlockWalletDialog(
+            onBack = { navController.popBackStack() },
+            biometricEnabled = biometricEnable,
+            password = password,
+            onPasswordChanged = { viewModel.setPassword(it) },
+            passwordValid = passwordValid,
+            onConfirm = {
+                if (biometricEnable) {
+                    viewModel.authenticate(
+                        context = context,
+                        onSuccess = {
+                            route?.let {
+                                navController.navigate(it, navOptions {
+                                    popUpTo("UnlockWalletDialog") {
+                                        inclusive = true
+                                    }
+                                })
+                            } ?: navController.popBackStack()
+                        }
+                    )
+                } else {
+                    route?.let {
+                        navController.navigate(it, navOptions {
+                            popUpTo("UnlockWalletDialog") {
+                                inclusive = true
+                            }
+                        })
+                    } ?: navController.popBackStack()
+                }
+            }
+        )
     }
 }
 

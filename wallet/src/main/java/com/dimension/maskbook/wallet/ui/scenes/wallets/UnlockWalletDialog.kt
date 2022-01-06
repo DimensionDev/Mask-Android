@@ -1,5 +1,6 @@
 package com.dimension.maskbook.wallet.ui.scenes.wallets
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
@@ -14,8 +15,9 @@ import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ui.widget.*
 
 @Composable
-fun UnlockWalletWithPasswordDialog(
+fun UnlockWalletDialog(
     onBack: () -> Unit,
+    biometricEnabled: Boolean,
     password: String,
     onPasswordChanged: (String) -> Unit,
     passwordValid: Boolean,
@@ -27,13 +29,15 @@ fun UnlockWalletWithPasswordDialog(
             Text(text = "Unlock Wallet")
         },
         text = {
-            Column {
-                Text(text = "Payment password")
-                Spacer(modifier = Modifier.height(8.dp))
-                MaskPasswordInputField(value = password, onValueChange = onPasswordChanged)
-                if (!passwordValid) {
+            AnimatedVisibility(visible = !biometricEnabled) {
+                Column {
+                    Text(text = "Payment password")
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text(text = "Incorrect Password.", color = Color.Red)
+                    MaskPasswordInputField(value = password, onValueChange = onPasswordChanged)
+                    if (!passwordValid) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(text = "Incorrect Password.", color = Color.Red)
+                    }
                 }
             }
         },
