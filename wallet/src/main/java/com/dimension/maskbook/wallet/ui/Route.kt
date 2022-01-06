@@ -1,6 +1,7 @@
 package com.dimension.maskbook.wallet.ui
 
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -14,6 +15,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.*
 import androidx.navigation.compose.dialog
@@ -59,6 +61,7 @@ import com.dimension.maskbook.wallet.viewmodel.recovery.PrivateKeyViewModel
 import com.dimension.maskbook.wallet.viewmodel.register.RemoteBackupRecoveryViewModelBase
 import com.dimension.maskbook.wallet.viewmodel.settings.EmailSetupViewModel
 import com.dimension.maskbook.wallet.viewmodel.settings.PhoneSetupViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.BiometricViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.TokenDetailViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.WalletManagementModalViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.management.*
@@ -655,7 +658,10 @@ private fun NavGraphBuilder.wallets(
             val viewModel = getViewModel<WalletDeleteViewModel> {
                 parametersOf(id)
             }
+            val biometricViewModel = getViewModel<BiometricViewModel>()
             val wallet by viewModel.wallet.observeAsState(initial = null)
+            val biometricEnabled by biometricViewModel.biometricEnabled.observeAsState(initial = false)
+            val context = LocalContext.current
             wallet?.let { walletData ->
                 val password by viewModel.password.observeAsState(initial = "")
                 val canConfirm by viewModel.canConfirm.observeAsState(initial = false)
@@ -665,10 +671,21 @@ private fun NavGraphBuilder.wallets(
                     onPasswordChanged = { viewModel.setPassword(it) },
                     onBack = { navController.popBackStack() },
                     onDelete = {
-                        viewModel.confirm()
-                        navController.popBackStack()
+                        if (biometricEnabled) {
+                            biometricViewModel.authenticate(
+                                context = context,
+                                onSuccess = {
+                                    viewModel.confirm()
+                                    navController.popBackStack()
+                                }
+                            )
+                        } else {
+                            viewModel.confirm()
+                            navController.popBackStack()
+                        }
                     },
-                    passwordValid = canConfirm
+                    passwordValid = canConfirm,
+                    biometricEnabled = biometricEnabled
                 )
             }
         }

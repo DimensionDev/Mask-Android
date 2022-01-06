@@ -14,7 +14,7 @@ class BiometricAuthenticator {
 
     fun biometricAuthenticate(
         context: Context,
-        title: String = "",
+        title: String,
         subtitle: String = "",
         negativeButtonText: String = "Cancel",
         onResult: (Boolean) -> Unit,

@@ -12,7 +12,7 @@ class BiometricEnableViewModel(
 ) : ViewModel() {
     fun enable(
         context: Context,
-        title: String = "",
+        title: String = "Enable Biometric",
         subTitle: String = "",
         negativeButton: String = "",
         onEnable: () -> Unit = {},

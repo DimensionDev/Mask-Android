@@ -17,7 +17,7 @@ import com.dimension.maskbook.wallet.repository.GasPriceEditMode
 import com.dimension.maskbook.wallet.repository.TokenData
 import com.dimension.maskbook.wallet.repository.UnlockType
 import com.dimension.maskbook.wallet.ui.LocalRootNavController
-import com.dimension.maskbook.wallet.viewmodel.wallets.BiometricAuthenticateViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.BiometricViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.*
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.ModalBottomSheetLayout
@@ -101,7 +101,7 @@ fun SendTokenHost(
                     val amount by viewModel.amount.observeAsState(initial = "0")
                     val password by viewModel.password.observeAsState(initial = "")
                     val canConfirm by viewModel.canConfirm.observeAsState(initial = false)
-                    val biometricViewModel = getViewModel<BiometricAuthenticateViewModel>()
+                    val biometricViewModel = getViewModel<BiometricViewModel>()
                     val biometricEnabled by biometricViewModel.biometricEnabled.observeAsState(
                         initial = false
                     )
@@ -125,7 +125,7 @@ fun SendTokenHost(
                                 onEditGasFee = { navController.navigate("EditGasFee") },
                                 onSend = { type ->
                                     if (type == UnlockType.BIOMETRIC) {
-                                        biometricViewModel.biometricAuthenticate(
+                                        biometricViewModel.authenticate(
                                             context,
                                             onSuccess = {
                                                 navController.navigate("SendConfirm/${address}/${amount}")
