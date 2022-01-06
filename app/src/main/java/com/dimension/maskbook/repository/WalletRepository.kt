@@ -15,7 +15,6 @@ import com.dimension.maskbook.wallet.ext.ether
 import com.dimension.maskbook.wallet.ext.gwei
 import com.dimension.maskbook.wallet.repository.*
 import com.dimension.maskbook.wallet.services.WalletServices
-import com.dimension.maskbook.wallet.services.okHttpClient
 import com.dimension.maskwalletcore.WalletKey
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
@@ -25,7 +24,6 @@ import org.web3j.abi.datatypes.Function
 import org.web3j.abi.datatypes.generated.Uint256
 import org.web3j.crypto.Credentials
 import org.web3j.protocol.Web3j
-import org.web3j.protocol.http.HttpService
 import org.web3j.tx.RawTransactionManager
 import java.math.BigDecimal
 import java.util.*
@@ -212,7 +210,7 @@ class WalletRepository(
     override suspend fun createWallet(
         mnemonic: List<String>,
         name: String,
-        platformType: CoinPlatformType
+        platformType: CoinPlatformType,
     ) {
         val wallet = WalletKey.fromMnemonic(mnemonic = mnemonic.joinToString(" "), "")
         val account = wallet.addNewAccountAtPath(
@@ -250,7 +248,7 @@ class WalletRepository(
         mnemonicCode: List<String>,
         name: String,
         path: List<String>,
-        platformType: CoinPlatformType
+        platformType: CoinPlatformType,
     ) {
         scope.launch {
             val wallet = WalletKey.fromMnemonic(mnemonic = mnemonicCode.joinToString(" "), "")
@@ -289,7 +287,7 @@ class WalletRepository(
         name: String,
         keyStore: String,
         password: String,
-        platformType: CoinPlatformType
+        platformType: CoinPlatformType,
     ) {
         scope.launch {
             val wallet = WalletKey.fromJson(
@@ -334,7 +332,7 @@ class WalletRepository(
     override suspend fun importWallet(
         name: String,
         privateKey: String,
-        platformType: CoinPlatformType
+        platformType: CoinPlatformType,
     ) {
         scope.launch {
             val wallet = WalletKey.fromPrivateKey(
@@ -378,7 +376,7 @@ class WalletRepository(
 
     override suspend fun getKeyStore(
         walletData: WalletData,
-        platformType: CoinPlatformType
+        platformType: CoinPlatformType,
     ): String {
         return database.walletDao().getById(walletData.id)?.let {
             WalletKey.load(it.storedKey.data).firstOrNull()
@@ -387,7 +385,7 @@ class WalletRepository(
 
     override suspend fun getPrivateKey(
         walletData: WalletData,
-        platformType: CoinPlatformType
+        platformType: CoinPlatformType,
     ): String {
         return database.walletDao().getById(walletData.id)?.let {
             WalletKey.load(it.storedKey.data).firstOrNull()
@@ -444,7 +442,7 @@ class WalletRepository(
         maxPriorityFee: Double,
         data: String,
         onDone: (String?) -> Unit,
-        onError: (Throwable) -> Unit
+        onError: (Throwable) -> Unit,
     ) {
         runCatching { ChainType.valueOf(tokenData.chainId) }.getOrNull()
             ?.let { chainType ->
@@ -474,7 +472,7 @@ class WalletRepository(
         maxPriorityFee: Double,
         data: String,
         onDone: (String?) -> Unit,
-        onError: (Throwable) -> Unit
+        onError: (Throwable) -> Unit,
     ) {
         scope.launch {
             try {
@@ -490,10 +488,8 @@ class WalletRepository(
                     } else {
                         null
                     }
-                    val web3 = Web3j.build(HttpService(chainType.endpoint, okHttpClient))
-                    val manager =
-                        RawTransactionManager(web3, credentials, chainType.chainId)
-
+                    val web3 = Web3j.build(chainType.httpService)
+                    val manager = RawTransactionManager(web3, credentials, chainType.chainId)
                     val result = if (chainType.supportEip25519) {
                         manager.sendEIP1559Transaction(
                             chainType.chainId,
@@ -524,6 +520,7 @@ class WalletRepository(
                         )
                         throw Exception(result.error?.message ?: "")
                     }
+                    web3.shutdown()
                     result.transactionHash
                 }
                 onDone.invoke(hash)

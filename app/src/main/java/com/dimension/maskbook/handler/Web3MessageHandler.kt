@@ -10,7 +10,7 @@ import com.dimension.maskbook.wallet.ext.decodeJson
 import com.dimension.maskbook.wallet.repository.IWalletRepository
 import com.dimension.maskbook.wallet.repository.SendTokenConfirmData
 import com.dimension.maskbook.wallet.repository.SendTransactionData
-import com.dimension.maskbook.wallet.services.okHttpClient
+import com.dimension.maskbook.wallet.repository.httpService
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -26,7 +26,6 @@ import org.web3j.crypto.Sign
 import org.web3j.crypto.Sign.SignatureData
 import org.web3j.protocol.core.Request
 import org.web3j.protocol.core.Response
-import org.web3j.protocol.http.HttpService
 import org.web3j.utils.Numeric
 import java.nio.charset.Charset
 
@@ -140,7 +139,7 @@ class Web3MessageHandler(
                         val method = request.payload.method
                         val chainType =
                             walletRepository.dWebData.firstOrNull()?.chainType ?: return@launch
-                        val service = HttpService(chainType.endpoint, okHttpClient)
+                        val service = chainType.httpService
                         try {
                             val response = service.send(
                                 Request(
