@@ -1,12 +1,10 @@
 package com.dimension.maskbook.wallet.viewmodel.settings
 
-import android.net.Uri
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.wallet.ext.Validator
 import com.dimension.maskbook.wallet.ext.asStateIn
 import com.dimension.maskbook.wallet.repository.BackupRepository
-import com.dimension.maskbook.wallet.repository.IPersonaRepository
-import com.dimension.maskbook.wallet.services.DownloadResponse
+import com.dimension.maskbook.wallet.services.model.DownloadResponse
 import com.dimension.maskbook.wallet.viewmodel.register.RemoteBackupRecoveryViewModelBase
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow

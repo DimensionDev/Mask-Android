@@ -9,8 +9,8 @@ import androidx.compose.runtime.Composable
 import androidx.room.Room
 import com.dimension.maskbook.wallet.db.AppDatabase
 import com.dimension.maskbook.wallet.repository.TokenData
-import com.dimension.maskbook.wallet.services.DownloadResponse
 import com.dimension.maskbook.wallet.services.WalletServices
+import com.dimension.maskbook.wallet.services.model.DownloadResponse
 import com.dimension.maskbook.wallet.ui.MaskTheme
 import com.dimension.maskbook.wallet.ui.Route
 import com.dimension.maskbook.wallet.viewmodel.WelcomeViewModel
