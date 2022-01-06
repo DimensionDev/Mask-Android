@@ -28,7 +28,7 @@ import com.dimension.maskbook.wallet.viewmodel.wallets.BiometricEnableViewModel
 import org.koin.androidx.compose.get
 
 @Composable
-fun FaceIdEnableScene(
+fun BiometricsEnableScene(
     onBack: () -> Unit,
     onEnable: (enable: Boolean) -> Unit,
 ) {
@@ -42,6 +42,7 @@ fun FaceIdEnableScene(
                 )
             }
         ) {
+            // TODO Biometrics Replace UI
             val context = LocalContext.current
             val viewModel: BiometricEnableViewModel = get()
             if (!viewModel.isSupported(context)) onEnable(false)

@@ -1,7 +1,6 @@
 package com.dimension.maskbook.wallet.ui
 
 import android.net.Uri
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -46,7 +45,7 @@ import com.dimension.maskbook.wallet.ui.scenes.wallets.create.CreateType
 import com.dimension.maskbook.wallet.ui.scenes.wallets.create.create.CreateWalletHost
 import com.dimension.maskbook.wallet.ui.scenes.wallets.create.import.ImportWalletHost
 import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.LegalScene
-import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.password.FaceIdEnableScene
+import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.password.BiometricsEnableScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.password.SetUpPaymentPassword
 import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.password.TouchIdEnableScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.*
@@ -792,7 +791,7 @@ private fun NavGraphBuilder.wallets(
         val type = it.arguments?.getString("type")?.let { type ->
             CreateType.valueOf(type)
         } ?: CreateType.CREATE
-        FaceIdEnableScene(
+        BiometricsEnableScene(
             onBack = { navController.popBackStack() },
             onEnable = { enabled ->
                 if (enabled) {

@@ -17,24 +17,25 @@ class BiometricAuthenticator {
         title: String,
         subtitle: String = "",
         negativeButtonText: String = "Cancel",
-        onResult: (Boolean) -> Unit,
+        onSuccess: () -> Unit,
+        onFailed: (errString:String) -> Unit =  {},
         onCanceled: () -> Unit = {}
     ) {
         context.findActivity()?.let {
             val biometricPrompt = BiometricPrompt(it, object :
                 BiometricPrompt.AuthenticationCallback() {
                 override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                    onResult.invoke(true)
+                    onSuccess.invoke()
                 }
 
                 override fun onAuthenticationFailed() {
-                    onResult.invoke(false)
+                    onFailed.invoke("Can't recognize")
                 }
 
                 override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
                     when (errorCode) {
                         BiometricPrompt.ERROR_CANCELED, BiometricPrompt.ERROR_USER_CANCELED, BiometricPrompt.ERROR_NEGATIVE_BUTTON -> onCanceled.invoke()
-                        else -> onResult(false)
+                        else -> onFailed.invoke(errString.toString())
                     }
                 }
             })
@@ -44,8 +45,12 @@ class BiometricAuthenticator {
                 .setNegativeButtonText(negativeButtonText)
                 .setAllowedAuthenticators(BIOMETRIC_STRONG)
                 .build()
-            biometricPrompt.authenticate(promptInfo)
-        } ?: onResult.invoke(false)
+            try {
+                biometricPrompt.authenticate(promptInfo)
+            } catch (e: Exception) {
+                onFailed(e.toString())
+            }
+        } ?: onFailed.invoke("Can't find any Activity to support BiometricPrompt")
     }
 }
 

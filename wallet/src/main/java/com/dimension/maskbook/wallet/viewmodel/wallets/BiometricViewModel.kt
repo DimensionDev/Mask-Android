@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 class BiometricViewModel(
     private val biometricAuthenticator: BiometricAuthenticator,
     private val settingsRepository: ISettingsRepository
-): ViewModel() {
+) : ViewModel() {
     private var _enterPassword = MutableStateFlow(false)
     val biometricEnabled by lazy {
         combine(settingsRepository.biometricEnabled, _enterPassword) { enabled, enterPassword ->
@@ -25,14 +25,19 @@ class BiometricViewModel(
         context: Context,
         title: String = "Unlock with biometrics",
         subtitle: String = "",
-        onSuccess:(password: String) -> Unit
+        onSuccess: (password: String) -> Unit
     ) {
         biometricAuthenticator.biometricAuthenticate(
             context = context,
             negativeButtonText = "Enter Password",
-            onResult = { if (it) viewModelScope.launch {
-                onSuccess.invoke(settingsRepository.paymentPassword.first())
-            }},
+            onSuccess = {
+                viewModelScope.launch {
+                    onSuccess.invoke(settingsRepository.paymentPassword.first())
+                }
+            },
+            onFailed = {
+              _enterPassword.value = true
+            },
             onCanceled = { _enterPassword.value = true },
             title = title,
             subtitle = subtitle

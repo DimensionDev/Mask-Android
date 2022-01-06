@@ -19,11 +19,9 @@ class BiometricEnableViewModel(
     ) {
         biometricAuthenticator.biometricAuthenticate(
             context = context,
-            onResult = {
-                if (it) {
-                    onEnable.invoke()
-                    repository.setBiometricEnabled(true)
-                }
+            onSuccess = {
+                onEnable.invoke()
+                repository.setBiometricEnabled(true)
             },
             title = title,
             subtitle = subTitle,

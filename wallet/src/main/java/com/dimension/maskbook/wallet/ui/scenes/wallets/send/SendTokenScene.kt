@@ -271,7 +271,7 @@ private fun ColumnScope.SendButton(
     Spacer(modifier = Modifier.weight(1f))
     when(unlockType) {
         UnlockType.BIOMETRIC -> {
-            // TODO Replace UI
+            // TODO Biometrics Replace UI
             PrimaryButton(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = { onSend.invoke(unlockType) }
