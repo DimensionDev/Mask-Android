@@ -111,10 +111,9 @@ enum class GasPriceEditMode {
     CUSTOM
 }
 
-enum class UnlockWays {
+enum class UnlockType {
     PASSWORD,
-    FACE_ID,
-    TOUCH_ID
+    BIOMETRIC
 }
 
 
