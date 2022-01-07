@@ -3,6 +3,7 @@ package com.dimension.maskbook.wallet.ui.scenes.wallets.create.import
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
@@ -33,7 +35,6 @@ import com.dimension.maskbook.wallet.ui.widget.MaskSingleLineTopAppBar
 import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
 import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.wallet.viewmodel.wallets.import.ImportWalletMnemonicViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.import.ImportWalletPrivateKeyViewModel
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -83,7 +84,7 @@ fun ImportWalletMnemonicScene(
                         placeholder = {
                             Text(
                                 text = "Please enter 12 mnemonic words \n" +
-                                    "separated by spaces"
+                                        "separated by spaces"
                             )
                         }
                     )
@@ -106,18 +107,20 @@ fun ImportWalletMnemonicScene(
                         Text(text = "Confirm")
                     }
                     AnimatedVisibility(visible = hintWords.isNotEmpty()) {
-                        LazyRow(modifier = Modifier.padding(top = 24.dp)) {
-                            items(hintWords.size) { index ->
+                        LazyRow(
+                            contentPadding = PaddingValues(top = 24.dp),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            items(hintWords) { word ->
                                 TextButton(
-                                    onClick = { viewModel.applyHintWords(hintWords[index]) },
+                                    onClick = { viewModel.applyHintWords(word) },
                                     modifier = Modifier
-                                        .padding(end = 12.dp)
                                         .background(
                                             color = MaterialTheme.colors.surface,
                                             shape = MaterialTheme.shapes.small,
                                         )
                                 ) {
-                                    Text(text = hintWords[index])
+                                    Text(text = word)
                                 }
                             }
                         }

@@ -1,7 +1,11 @@
 package com.dimension.maskbook.wallet.repository
 
 import com.dimension.maskbook.debankapi.model.ChainID
-import com.dimension.maskbook.wallet.db.model.*
+import com.dimension.maskbook.wallet.db.model.CoinPlatformType
+import com.dimension.maskbook.wallet.db.model.DbWalletBalanceType
+import com.dimension.maskbook.wallet.db.model.DbWalletTokenTokenWithWallet
+import com.dimension.maskbook.wallet.db.model.DbWalletTokenWithToken
+import com.dimension.maskbook.wallet.db.model.WalletSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.Serializable
 import java.math.BigDecimal
@@ -202,6 +206,7 @@ interface IWalletRepository {
     suspend fun importWallet(name: String, privateKey: String, platformType: CoinPlatformType)
     suspend fun getKeyStore(walletData: WalletData, platformType: CoinPlatformType): String
     suspend fun getPrivateKey(walletData: WalletData, platformType: CoinPlatformType): String
+    suspend fun getTotalBalance(address: String): Double
     fun deleteCurrentWallet()
     fun renameWallet(value: String, id: String)
     fun renameCurrentWallet(value: String)

@@ -7,8 +7,8 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import com.dimension.maskbook.wallet.ext.decodeUrl
 import com.dimension.maskbook.wallet.ext.encodeUrl
-import com.dimension.maskbook.wallet.repository.WalletData
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
@@ -76,14 +76,12 @@ fun ImportWalletHost(
             "DerivationPath/{mnemonicCode}",
             arguments = listOf(navArgument("mnemonicCode") { type = NavType.StringType })
         ) {
-            val code = it.arguments?.getString("mnemonicCode")?.split(" ")?.let {
-                ImportWalletDerivationPathScene(
-                    onBack = { navController.popBackStack() },
-                    onDone = { onDone.invoke() },
-                    wallet = wallet,
-                    code = it,
-                )
-            }
+            ImportWalletDerivationPathScene(
+                onBack = { navController.popBackStack() },
+                onDone = { onDone.invoke() },
+                wallet = wallet,
+                code = it.arguments?.getString("mnemonicCode")?.decodeUrl()?.split(" ").orEmpty(),
+            )
         }
     }
 }
