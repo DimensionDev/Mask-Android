@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -223,16 +224,25 @@ private fun DerivationPathPager(
                     modifier = Modifier.weight(1f),
                     textAlign = TextAlign.End,
                 )
-                Box(
-                    modifier = Modifier
-                        .weight(1f)
-                        .clickable { onCheckClicked(item) },
-                ) {
-                    Checkbox(
-                        checked = isChecked(item),
-                        onCheckedChange = null,
-                        modifier = Modifier.align(Alignment.CenterEnd)
+                if (item.isAdded) {
+                    Text(
+                        text = ImportWalletDerivationPathDefaults.DerivationPathItemIsAdded,
+                        modifier = Modifier.weight(1f),
+                        textAlign = TextAlign.End,
                     )
+                } else {
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
+                            .clickable { onCheckClicked(item) },
+                        contentAlignment = Alignment.CenterEnd,
+                    ) {
+                        Checkbox(
+                            checked = isChecked(item),
+                            onCheckedChange = null,
+                        )
+                    }
                 }
             }
         }
@@ -262,6 +272,7 @@ private fun PagerSwitcherIcon(
 
 object ImportWalletDerivationPathDefaults {
     val DerivationPathItemHeight = 35.dp
+    const val DerivationPathItemIsAdded = "Is Added"
     val SwitcherIconSize = 20.dp
     const val SwitcherSelectLeft = "select left"
     const val SwitcherSelectRight = "select right"

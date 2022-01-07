@@ -53,8 +53,8 @@ class ImportWalletDerivationPathViewModel(
     }
 
     fun switchStatus(selectPath: String) {
-        _checked.value.let {
-            if (it.any { it == selectPath }) {
+        _checked.value.let { list ->
+            if (list.any { it == selectPath }) {
                 _checked.value -= selectPath
             } else {
                 _checked.value += selectPath
@@ -74,16 +74,18 @@ class ImportWalletDerivationPathViewModel(
         val startIndex = page * pageSize
         val list =
             (startIndex until startIndex + pageSize).map { index ->
+                val derivationPath = DerivationPath(44, 60, 0, 0, index).toString()
                 val walletAccount = walletKey.addNewAccountAtPath(
                     CoinType.Ethereum,
-                    DerivationPath(44, 60, 0, 0, index).toString(),
+                    derivationPath,
                     "${wallet}-${index}",
                     ""
                 )
                 BalanceRow(
                     address = walletAccount.address,
                     balances = 0f,// TODO: Load balances
-                    path = DerivationPath(44, 60, 0, 0, index).toString(),
+                    path = derivationPath,
+                    isAdded = walletRepository.findWalletByAddress(walletAccount.address) != null,
                 )
             }
         emit(list)
@@ -98,6 +100,7 @@ class ImportWalletDerivationPathViewModel(
         val address: String,
         val balances: Float,
         val path: String,
+        val isAdded: Boolean,
     )
 
     companion object {
