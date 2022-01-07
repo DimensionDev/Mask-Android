@@ -106,7 +106,7 @@ fun PersonaMenu(
                             if (backupPassword.isEmpty()) {
                                 navController.navigate("SetupPasswordDialog")
                             } else {
-                                navController.navigate("ExportPrivateKeyScene")
+                                navController.navigate("BackUpPassword/ExportPrivateKeyScene")
                             }
                         }
                     ) {

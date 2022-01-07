@@ -6,14 +6,17 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.DialogProperties
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ui.widget.*
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun UnlockWalletDialog(
     onBack: () -> Unit,
@@ -24,6 +27,9 @@ fun UnlockWalletDialog(
     onConfirm: () -> Unit,
 ) {
     MaskDialog(
+        // workaround for https://issuetracker.google.com/issues/194911971
+        properties = DialogProperties(usePlatformDefaultWidth = false),
+        modifier = Modifier.padding(horizontal = 23.dp),
         onDismissRequest = onBack,
         title = {
             Text(text = "Unlock Wallet")
@@ -42,6 +48,7 @@ fun UnlockWalletDialog(
             }
         },
         buttons = {
+            //TODO Biometrics replace UI
             Row {
                 SecondaryButton(
                     onClick = onBack,
@@ -49,6 +56,7 @@ fun UnlockWalletDialog(
                 ) {
                     Text(text = "Cancel")
                 }
+                Spacer(modifier = Modifier.width(8.dp))
                 PrimaryButton(
                     onClick = onConfirm,
                     modifier = Modifier.weight(1f)

@@ -228,6 +228,7 @@ val walletModules = module {
     }
     viewModel { BiometricViewModel(get(), get()) }
     viewModel { UnlockWalletViewModel(get(), get()) }
+    viewModel { BackUpPasswordViewModel(get(), get()) }
 }
 
 val servicesModule = module {
