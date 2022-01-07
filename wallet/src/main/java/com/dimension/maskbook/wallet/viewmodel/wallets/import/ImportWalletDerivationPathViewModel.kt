@@ -1,5 +1,6 @@
 package com.dimension.maskbook.wallet.viewmodel.wallets.import
 
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.wallet.db.model.CoinPlatformType
@@ -62,15 +63,16 @@ class ImportWalletDerivationPathViewModel(
         }
     }
 
-    private val balancesFlows = hashMapOf<Int, StateFlow<List<BalanceRow>>>()
+    private val pagerItemsFlows = hashMapOf<Int, StateFlow<List<BalanceRow>>>()
+    private val balanceFlows = hashMapOf<Int, MutableStateFlow<SnapshotStateMap<String, String>>>()
 
-    fun getBalances(page: Int): StateFlow<List<BalanceRow>> {
-        return balancesFlows.getOrPut(page) {
-            createBalanceFlow(page)
+    fun getPagerItems(page: Int): StateFlow<List<BalanceRow>> {
+        return pagerItemsFlows.getOrPut(page) {
+            createPagerItemsFlow(page)
         }
     }
 
-    private fun createBalanceFlow(page: Int) = flow {
+    private fun createPagerItemsFlow(page: Int) = flow {
         val startIndex = page * pageSize
         val list =
             (startIndex until startIndex + pageSize).map { index ->
@@ -81,9 +83,12 @@ class ImportWalletDerivationPathViewModel(
                     "${wallet}-${index}",
                     ""
                 )
+
+                // too slow
+                loadBalance(page, walletAccount.address)
+
                 BalanceRow(
                     address = walletAccount.address,
-                    balances = 0f,// TODO: Load balances
                     path = derivationPath,
                     isAdded = walletRepository.findWalletByAddress(walletAccount.address) != null,
                 )
@@ -91,14 +96,31 @@ class ImportWalletDerivationPathViewModel(
         emit(list)
     }.flowOn(Dispatchers.IO).asStateIn(viewModelScope, emptyList())
 
+    private fun loadBalance(page: Int, address: String) = viewModelScope.launch {
+        val stateFlow = getBalanceStateMap(page)
+        stateFlow.value = stateFlow.value.apply {
+            put(address, walletRepository.getTotalBalance(address).toString())
+        }
+    }
+
+    private fun getBalanceStateMap(page: Int): MutableStateFlow<SnapshotStateMap<String, String>> {
+        return balanceFlows.getOrPut(page) {
+            MutableStateFlow(SnapshotStateMap())
+        }
+    }
+
+    fun getBalanceMap(page: Int): StateFlow<Map<String, String>> {
+        return getBalanceStateMap(page)
+    }
+
     override fun onCleared() {
         super.onCleared()
-        balancesFlows.clear()
+        pagerItemsFlows.clear()
+        balanceFlows.clear()
     }
 
     data class BalanceRow(
         val address: String,
-        val balances: Float,
         val path: String,
         val isAdded: Boolean,
     )

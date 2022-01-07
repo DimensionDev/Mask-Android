@@ -394,6 +394,10 @@ class WalletRepository(
         }?.exportPrivateKey(platformType.coinType, "") ?: ""
     }
 
+    override suspend fun getTotalBalance(address: String): Double {
+        return services.debankServices.totalBalance(address).totalUsdValue ?: 0.0
+    }
+
     override fun deleteCurrentWallet() {
         scope.launch {
             currentWallet.firstOrNull()?.let { wallet ->

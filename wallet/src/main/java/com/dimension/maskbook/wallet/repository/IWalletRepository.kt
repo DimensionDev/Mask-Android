@@ -203,6 +203,7 @@ interface IWalletRepository {
     suspend fun importWallet(name: String, privateKey: String, platformType: CoinPlatformType)
     suspend fun getKeyStore(walletData: WalletData, platformType: CoinPlatformType): String
     suspend fun getPrivateKey(walletData: WalletData, platformType: CoinPlatformType): String
+    suspend fun getTotalBalance(address: String): Double
     fun deleteCurrentWallet()
     fun renameWallet(value: String, id: String)
     fun renameCurrentWallet(value: String)

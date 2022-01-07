@@ -128,9 +128,11 @@ fun ImportWalletDerivationPathScene(
                         state = pagerState,
                         modifier = Modifier.weight(1f),
                     ) { page ->
-                        val balances by viewModel.getBalances(page).collectAsState()
+                        val items by viewModel.getPagerItems(page).collectAsState()
+                        val balances by viewModel.getBalanceMap(page).collectAsState()
                         DerivationPathPager(
-                            list = balances,
+                            list = items,
+                            balances = balances,
                             isChecked = { item ->
                                 checked.contains(item.path)
                             },
@@ -192,6 +194,7 @@ fun ImportWalletDerivationPathScene(
 @Composable
 private fun DerivationPathPager(
     list: List<DerivationPathItem>,
+    balances: Map<String, String>,
     isChecked: (DerivationPathItem) -> Boolean,
     onCheckClicked: (DerivationPathItem) -> Unit,
 ) {
@@ -220,7 +223,7 @@ private fun DerivationPathPager(
                     overflow = TextOverflow.Ellipsis,
                 )
                 Text(
-                    text = item.balances.toString(),
+                    text = balances[item.address] ?: "--",
                     modifier = Modifier.weight(1f),
                     textAlign = TextAlign.End,
                 )
