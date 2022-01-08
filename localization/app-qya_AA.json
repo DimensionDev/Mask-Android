@@ -1,0 +1,756 @@
+{
+    "tab": {
+        "personas": "crwdns10833:0crwdne10833:0",
+        "wallet": "crwdns10835:0crwdne10835:0",
+        "labs": "crwdns10837:0crwdne10837:0",
+        "setting": "crwdns10839:0crwdne10839:0"
+    },
+    "common": {
+        "alert": {
+            "biometry_id_activate": {
+                "title": "crwdns10841:0crwdne10841:0",
+                "description": "crwdns10843:0%scrwdne10843:0"
+            },
+            "face_id_activate_fail": {
+                "title": "crwdns10845:0crwdne10845:0",
+                "description": "crwdns10847:0crwdne10847:0"
+            },
+            "keychain_auth_prompt": {
+                "title": "crwdns10849:0crwdne10849:0"
+            },
+            "recovery_key": {
+                "title": "crwdns10851:0crwdne10851:0",
+                "description": "crwdns10853:0crwdne10853:0"
+            },
+            "recovery_key_warning": {
+                "title": "crwdns10855:0crwdne10855:0",
+                "description": "crwdns10857:0crwdne10857:0"
+            },
+            "recovery_key_tips": {
+                "title": "crwdns10859:0crwdne10859:0",
+                "description": "crwdns10861:0crwdne10861:0"
+            },
+            "wallet_create_success": {
+                "title": "crwdns10863:0crwdne10863:0",
+                "description": "crwdns10865:0crwdne10865:0"
+            },
+            "wallet_derive_success": {
+                "title": "crwdns10867:0crwdne10867:0",
+                "description": "crwdns10869:0crwdne10869:0"
+            },
+            "wallet_import": {
+                "alert_title_success": "crwdns10871:0crwdne10871:0",
+                "alert_title_fail": "crwdns10873:0crwdne10873:0"
+            },
+            "signout": {
+                "title": "crwdns10875:0crwdne10875:0",
+                "description": "crwdns10877:0crwdne10877:0"
+            },
+            "set_password": {
+                "title": "crwdns10879:0crwdne10879:0",
+                "description": "crwdns10881:0crwdne10881:0"
+            },
+            "change_password": {
+                "title": "crwdns10883:0crwdne10883:0",
+                "description": "crwdns10885:0crwdne10885:0"
+            },
+            "change_password_failed": {
+                "title": "crwdns10887:0crwdne10887:0"
+            },
+            "setup_backup_password": {
+                "title": "crwdns10889:0crwdne10889:0",
+                "description": "crwdns10891:0crwdne10891:0"
+            },
+            "setup_backup_password_failed": {
+                "title": "crwdns10893:0crwdne10893:0"
+            },
+            "change_backup_password": {
+                "title": "crwdns10895:0crwdne10895:0",
+                "description": "crwdns10897:0crwdne10897:0"
+            },
+            "change_backup_password_failed": {
+                "title": "crwdns10899:0crwdne10899:0"
+            },
+            "wallet_backup": {
+                "title": "crwdns10901:0crwdne10901:0"
+            },
+            "identity_phrase": {
+                "title": "crwdns10903:0crwdne10903:0",
+                "description": "crwdns10905:0crwdne10905:0"
+            },
+            "identify_code_screenshot_warning": {
+                "title": "crwdns10907:0crwdne10907:0",
+                "description": "crwdns10909:0crwdne10909:0"
+            },
+            "identity_create": {
+                "title": "crwdns10911:0crwdne10911:0",
+                "description": "crwdns10913:0crwdne10913:0"
+            },
+            "persona_logout": {
+                "title": "crwdns10915:0crwdne10915:0",
+                "description": "crwdns10917:0crwdne10917:0"
+            },
+            "persona_name_duplicated": {
+                "title": "crwdns10919:0crwdne10919:0"
+            },
+            "local_backup": {
+                "backup_completed": "crwdns10921:0crwdne10921:0",
+                "backup_failed": "crwdns10923:0crwdne10923:0"
+            },
+            "setting": {
+                "warning_backup_data_titile": "crwdns10925:0crwdne10925:0",
+                "warning_backup_data_description": "crwdns10927:0crwdne10927:0"
+            },
+            "disconnect_profile": {
+                "title": "crwdns10929:0%scrwdnd10929:0%scrwdne10929:0"
+            },
+            "bind_remote_info": {
+                "title": "crwdns10931:0crwdne10931:0",
+                "detail": "crwdns10933:0crwdne10933:0"
+            },
+            "export_private_key": {
+                "title": "crwdns10935:0crwdne10935:0",
+                "description": "crwdns10937:0%scrwdne10937:0"
+            },
+            "backup_tips_no_backup_password": {
+                "title": "crwdns10939:0crwdne10939:0",
+                "description": "crwdns10941:0%scrwdne10941:0"
+            }
+        },
+        "controls": {
+            "create_wallet": "crwdns10943:0crwdne10943:0",
+            "import_wallet": "crwdns10945:0crwdne10945:0",
+            "accept": "crwdns10947:0crwdne10947:0",
+            "enable": "crwdns10949:0crwdne10949:0",
+            "no_thanks": "crwdns10951:0crwdne10951:0",
+            "done": "crwdns10953:0crwdne10953:0",
+            "ok": "crwdns10955:0crwdne10955:0",
+            "i_understand": "crwdns10957:0crwdne10957:0",
+            "verify": "crwdns10959:0crwdne10959:0",
+            "confirm": "crwdns10961:0crwdne10961:0",
+            "sending": "crwdns10963:0crwdne10963:0",
+            "sent": "crwdns10965:0crwdne10965:0",
+            "clear": "crwdns10967:0crwdne10967:0",
+            "next": "crwdns10969:0crwdne10969:0",
+            "signout": "crwdns10971:0crwdne10971:0",
+            "cancel": "crwdns10973:0crwdne10973:0",
+            "change": "crwdns10975:0crwdne10975:0",
+            "invite": "crwdns10977:0crwdne10977:0",
+            "try_again": "crwdns10979:0crwdne10979:0",
+            "retry": "crwdns10981:0crwdne10981:0",
+            "webview_go_back": "crwdns10983:0crwdne10983:0",
+            "merge_and_back_up": "crwdns10985:0crwdne10985:0",
+            "merge_to_local_data": "crwdns10987:0crwdne10987:0",
+            "back_up_to_cloud": "crwdns10989:0crwdne10989:0",
+            "back_up_locally": "crwdns10991:0crwdne10991:0",
+            "back_up": "crwdns10993:0crwdne10993:0",
+            "resend": "crwdns10995:0crwdne10995:0"
+        },
+        "loading": "crwdns10997:0crwdne10997:0"
+    },
+    "scene": {
+        "terms_of_service": {
+            "title": "crwdns10999:0crwdne10999:0",
+            "description": "crwdns11001:0crwdne11001:0",
+            "service_agreement": "crwdns11003:0crwdne11003:0"
+        },
+        "create_wallet": {
+            "wallet_name": "crwdns11005:0crwdne11005:0",
+            "wallet_name_placeholder": "crwdns11007:0crwdne11007:0",
+            "enter_password": "crwdns11009:0crwdne11009:0",
+            "password_error": "crwdns11011:0crwdne11011:0",
+            "select_network": "crwdns11013:0crwdne11013:0",
+            "multichain_wallet_title": "crwdns11015:0crwdne11015:0",
+            "multichain_wallet_description": "crwdns11017:0crwdne11017:0"
+        },
+        "biometry_recognition": {
+            "face_id": {
+                "title": "crwdns11019:0crwdne11019:0",
+                "description": "crwdns11021:0crwdne11021:0"
+            },
+            "touch_id": {
+                "title": "crwdns11023:0crwdne11023:0",
+                "description": "crwdns11025:0crwdne11025:0"
+            }
+        },
+        "biometry_id": {
+            "face_id": "crwdns11027:0crwdne11027:0",
+            "touch_id": "crwdns11029:0crwdne11029:0",
+            "face_id_reason": "crwdns11031:0crwdne11031:0",
+            "touch_id_reason": "crwdns11033:0crwdne11033:0",
+            "passcode_notSet": "crwdns11035:0crwdne11035:0",
+            "biometry_not_enrolled": "crwdns11037:0%scrwdne11037:0",
+            "biometry_lockout": "crwdns11039:0%scrwdnd11039:0%scrwdnd11039:0%scrwdne11039:0",
+            "biometry_not_available": "crwdns11041:0%scrwdne11041:0",
+            "biometry_has_changed": "crwdns11043:0%scrwdnd11043:0%scrwdne11043:0"
+        },
+        "wallet_detail": {
+            "wallet_items_rename": "crwdns11045:0crwdne11045:0",
+            "wallet_items_backup": "crwdns11047:0crwdne11047:0",
+            "wallet_items_delete": "crwdns11049:0crwdne11049:0",
+            "wallet_title_change": "crwdns11051:0crwdne11051:0",
+            "wallet_items_history": "crwdns11053:0crwdne11053:0"
+        },
+        "wallet_list": {
+            "title": "crwdns11055:0crwdne11055:0",
+            "wallets_items_create": "crwdns11057:0crwdne11057:0",
+            "wallets_items_import": "crwdns11059:0crwdne11059:0",
+            "wallets_items_add": "crwdns11061:0crwdne11061:0",
+            "wallets_list_import": "crwdns11063:0crwdne11063:0"
+        },
+        "mnemonic_word": {
+            "title": "crwdns11065:0crwdne11065:0",
+            "description": "crwdns11067:0crwdne11067:0"
+        },
+        "mnemonic_verify": {
+            "title": "crwdns11069:0crwdne11069:0",
+            "description": "crwdns11071:0crwdne11071:0",
+            "words_title": "crwdns11073:0crwdne11073:0",
+            "mnemonic_error": "crwdns11075:0crwdne11075:0",
+            "mnemonic_prompt": "crwdns11077:0crwdne11077:0"
+        },
+        "select_network": {},
+        "wallets_list_add": {
+            "wallets_items_add": "crwdns11079:0crwdne11079:0",
+            "wallets_list_import": "crwdns11081:0crwdne11081:0"
+        },
+        "wallet_rename": {
+            "name_title": "crwdns11083:0crwdne11083:0",
+            "placeholder": "crwdns11085:0crwdne11085:0",
+            "rename_button": "crwdns11087:0crwdne11087:0"
+        },
+        "wallet_delete": {
+            "title": "crwdns11089:0crwdne11089:0",
+            "content": "crwdns11091:0crwdne11091:0",
+            "password": "crwdns11093:0crwdne11093:0",
+            "placeholder": "crwdns11095:0crwdne11095:0",
+            "btn_cancel": "crwdns11097:0crwdne11097:0",
+            "btn_delete": "crwdns11099:0crwdne11099:0"
+        },
+        "wallet_backup": {
+            "title": "crwdns11101:0crwdne11101:0",
+            "tab_keystore": "crwdns11103:0crwdne11103:0",
+            "tab_private_key": "crwdns11105:0crwdne11105:0",
+            "keystore_tips": "crwdns11107:0crwdne11107:0",
+            "private_key_tips": "crwdns11109:0crwdne11109:0",
+            "btn_cancel": "crwdns11111:0crwdne11111:0",
+            "btn_copy": "crwdns11113:0crwdne11113:0"
+        },
+        "wallet_edit": {
+            "item_rename": "crwdns11115:0crwdne11115:0",
+            "item_delete": "crwdns11117:0crwdne11117:0"
+        },
+        "wallet_import": {
+            "title": "crwdns11119:0crwdne11119:0",
+            "item_mnemonic_words": "crwdns11121:0crwdne11121:0",
+            "item_mnemonic_words_desc": "crwdns11123:0crwdne11123:0",
+            "item_private_key": "crwdns11125:0crwdne11125:0",
+            "item_private_key_desc": "crwdns11127:0crwdne11127:0",
+            "item_keystore": "crwdns11129:0crwdne11129:0",
+            "item_keystore_desc": "crwdns11131:0crwdne11131:0"
+        },
+        "wallet_derivation_path": {
+            "title": "crwdns11133:0crwdne11133:0",
+            "header_address": "crwdns11135:0crwdne11135:0",
+            "header_balance": "crwdns11137:0%@crwdne11137:0",
+            "header_operation": "crwdns11139:0crwdne11139:0",
+            "operation_add": "crwdns11141:0crwdne11141:0",
+            "operation_added": "crwdns11143:0crwdne11143:0"
+        },
+        "wallet_mnemonic": {
+            "title": "crwdns11145:0crwdne11145:0",
+            "btn_confirm": "crwdns11147:0crwdne11147:0",
+            "placeholder": "crwdns11149:0crwdne11149:0"
+        },
+        "wallet_private_key": {
+            "title": "crwdns11151:0crwdne11151:0",
+            "btn_confirm": "crwdns11153:0crwdne11153:0",
+            "placeholder": "crwdns11155:0crwdne11155:0"
+        },
+        "wallet_keystore": {
+            "title": "crwdns11157:0crwdne11157:0",
+            "btn_confirm": "crwdns11159:0crwdne11159:0",
+            "password_placeholder": "crwdns11161:0crwdne11161:0",
+            "keystore_placeholder": "crwdns11163:0crwdne11163:0"
+        },
+        "setting": {
+            "general": {
+                "title": "crwdns11165:0crwdne11165:0",
+                "language": "crwdns11167:0crwdne11167:0",
+                "appearance": "crwdns11169:0crwdne11169:0",
+                "data_source": "crwdns11171:0crwdne11171:0",
+                "sync_with_plug": "crwdns11173:0crwdne11173:0",
+                "setup_payment_password": "crwdns11175:0crwdne11175:0",
+                "change_payment_password": "crwdns11177:0crwdne11177:0",
+                "unlock_wallet_with_face_id": "crwdns11179:0crwdne11179:0",
+                "unlock_wallet_with_touch_id": "crwdns11181:0crwdne11181:0"
+            },
+            "backup_recovery": {
+                "title": "crwdns11183:0crwdne11183:0",
+                "restore_data": "crwdns11185:0crwdne11185:0",
+                "back_up_data": "crwdns11187:0crwdne11187:0",
+                "back_up_password": "crwdns11189:0crwdne11189:0",
+                "back_up_password_empty": "crwdns11191:0crwdne11191:0",
+                "change_backup_password": "crwdns11193:0crwdne11193:0"
+            },
+            "profile": {
+                "title": "crwdns11195:0crwdne11195:0",
+                "email": "crwdns11197:0crwdne11197:0",
+                "email_empty": "crwdns11199:0crwdne11199:0",
+                "phone_number": "crwdns11201:0crwdne11201:0",
+                "phone_number_empty": "crwdns11203:0crwdne11203:0",
+                "log_out": "crwdns11205:0crwdne11205:0"
+            },
+            "detail": {
+                "automatic": "crwdns11207:0crwdne11207:0",
+                "light": "crwdns11209:0crwdne11209:0",
+                "dark": "crwdns11211:0crwdne11211:0"
+            },
+            "backup_data": {
+                "title": "crwdns11213:0crwdne11213:0",
+                "no_backup_title": "crwdns11215:0crwdne11215:0",
+                "subtitle": "crwdns11217:0%@crwdne11217:0",
+                "backup_icloud": "crwdns11219:0crwdne11219:0",
+                "backup_manually": "crwdns11221:0crwdne11221:0"
+            },
+            "recovery": {
+                "title": "crwdns11223:0crwdne11223:0",
+                "backup_icloud": "crwdns11225:0crwdne11225:0",
+                "backup_manually": "crwdns11227:0crwdne11227:0"
+            },
+            "local_backup": {
+                "title": "crwdns11229:0crwdne11229:0",
+                "local_wallet": "crwdns11231:0crwdne11231:0",
+                "loading_text": "crwdns11233:0crwdne11233:0"
+            },
+            "remote_backup": {
+                "title": "crwdns11235:0crwdne11235:0"
+            },
+            "bind_phone_number": {
+                "title": "crwdns11237:0crwdne11237:0",
+                "sub_title": "crwdns11239:0crwdne11239:0"
+            },
+            "change_phone_number": {
+                "title": "crwdns11241:0crwdne11241:0",
+                "sub_title": "crwdns11243:0crwdne11243:0",
+                "tips": "crwdns11245:0crwdne11245:0"
+            },
+            "bind_email": {
+                "title": "crwdns11247:0crwdne11247:0",
+                "sub_title": "crwdns11249:0crwdne11249:0"
+            },
+            "change_email": {
+                "title": "crwdns11251:0crwdne11251:0",
+                "sub_title": "crwdns11253:0crwdne11253:0",
+                "tips": "crwdns11255:0crwdne11255:0"
+            },
+            "bind_remote_info": {
+                "setup_email_title": "crwdns11257:0crwdne11257:0",
+                "change_email_title": "crwdns11259:0crwdne11259:0",
+                "setup_phone_number_title": "crwdns11261:0crwdne11261:0",
+                "change_phone_number_title": "crwdns11263:0crwdne11263:0",
+                "setup_email_detail": "crwdns11265:0crwdne11265:0",
+                "change_email_detail": "crwdns11267:0crwdne11267:0",
+                "setup_phone_number_detail": "crwdns11269:0crwdne11269:0",
+                "change_phone_number_detail": "crwdns11271:0crwdne11271:0"
+            },
+            "validation_code": "crwdns11273:0crwdne11273:0",
+            "validation_code_mismatch": "crwdns11275:0crwdne11275:0",
+            "validation_code_via_email": "crwdns11277:0crwdne11277:0",
+            "validation_code_via_mobile_phone": "crwdns11279:0crwdne11279:0"
+        },
+        "backup_password_verify": {
+            "title": "crwdns11281:0crwdne11281:0"
+        },
+        "set_backup_password": {
+            "title": "crwdns11283:0crwdne11283:0",
+            "backup_password": "crwdns11285:0crwdne11285:0",
+            "confirm_backup_password": "crwdns11287:0crwdne11287:0",
+            "tips": "crwdns11289:0crwdne11289:0",
+            "error_inconsistent_password": "crwdns11291:0crwdne11291:0"
+        },
+        "change_backup_password": {
+            "title": "crwdns11293:0crwdne11293:0",
+            "sub_title": "crwdns11295:0crwdne11295:0",
+            "backup_password": "crwdns11297:0crwdne11297:0",
+            "new_backup_password": "crwdns11299:0crwdne11299:0",
+            "confirm_backup_password": "crwdns11301:0crwdne11301:0",
+            "tips": "crwdns11303:0crwdne11303:0",
+            "error_incorrect_password": "crwdns11305:0crwdne11305:0",
+            "error_inconsistent_password": "crwdns11307:0crwdne11307:0"
+        },
+        "sendTransaction": {
+            "send": {
+                "placeholder_address": "crwdns11309:0crwdne11309:0",
+                "Label_To": "crwdns11311:0crwdne11311:0",
+                "label_Amount": "crwdns11313:0crwdne11313:0",
+                "btn_max": "crwdns11315:0crwdne11315:0",
+                "btn_send": "crwdns11317:0crwdne11317:0",
+                "btn_Next": "crwdns11319:0crwdne11319:0",
+                "Label_Password": "crwdns11321:0crwdne11321:0",
+                "btn_withoutPassword": "crwdns11323:0crwdne11323:0",
+                "amount_error": "crwdns11325:0crwdne11325:0",
+                "password_error": "crwdns11327:0crwdne11327:0"
+            },
+            "addContact": {
+                "btn_add": "crwdns11329:0crwdne11329:0",
+                "placeholder_name": "crwdns11331:0crwdne11331:0"
+            },
+            "tokenList": {
+                "title": "crwdns11333:0crwdne11333:0",
+                "placeholder": "crwdns11335:0crwdne11335:0"
+            },
+            "gasPrice": {
+                "title": "crwdns11337:0crwdne11337:0",
+                "standard": "crwdns11339:0crwdne11339:0",
+                "fast": "crwdns11341:0crwdne11341:0",
+                "custom": "crwdns11343:0crwdne11343:0",
+                "btn_confirm": "crwdns11345:0crwdne11345:0",
+                "fee": "crwdns11347:0crwdne11347:0",
+                "arrives": "crwdns11349:0crwdne11349:0",
+                "gasPrice": "crwdns11351:0crwdne11351:0",
+                "gasLimit": "crwdns11353:0crwdne11353:0",
+                "maxPriorityFee": "crwdns11355:0crwdne11355:0",
+                "maxFee": "crwdns11357:0crwdne11357:0",
+                "costFee": "crwdns11359:0crwdne11359:0",
+                "advancedBtn": "crwdns11361:0crwdne11361:0",
+                "gasLimit_error": "crwdns11363:0crwdne11363:0",
+                "maxPriorityFee_error_low": "crwdns11365:0crwdne11365:0",
+                "maxPriorityFee_error_high": "crwdns11367:0crwdne11367:0",
+                "maxFee_error_low": "crwdns11369:0crwdne11369:0",
+                "maxFee_error_high": "crwdns11371:0crwdne11371:0"
+            },
+            "sendConfirmPop": {
+                "gasFee": "crwdns11373:0crwdne11373:0",
+                "total": "crwdns11375:0crwdne11375:0",
+                "edit": "crwdns11377:0crwdne11377:0",
+                "gasFeeLow": "crwdns11379:0crwdne11379:0",
+                "gasFeeMedium": "crwdns11381:0crwdne11381:0",
+                "gasFeeHigh": "crwdns11383:0crwdne11383:0"
+            }
+        },
+        "set_password": {
+            "title": "crwdns11385:0crwdne11385:0",
+            "payment_password": "crwdns11387:0crwdne11387:0",
+            "repeat_payment_password": "crwdns11389:0crwdne11389:0",
+            "password_invalid": "crwdns11391:0crwdne11391:0",
+            "confirm_payment_password": "crwdns11393:0crwdne11393:0",
+            "input_payment_password": "crwdns11395:0crwdne11395:0",
+            "failed_updating_password": "crwdns11397:0crwdne11397:0"
+        },
+        "change_password": {
+            "title": "crwdns11399:0crwdne11399:0",
+            "sub_title": "crwdns11401:0crwdne11401:0",
+            "failed_loading_password": "crwdns11403:0crwdne11403:0",
+            "password": "crwdns11405:0crwdne11405:0",
+            "new_password": "crwdns11407:0crwdne11407:0",
+            "confirm_Password": "crwdns11409:0crwdne11409:0",
+            "incorrect_password": "crwdns11411:0crwdne11411:0",
+            "password_not_match": "crwdns11413:0crwdne11413:0",
+            "password_demand": "crwdns11415:0crwdne11415:0"
+        },
+        "personas": {
+            "personas": "crwdns11417:0crwdne11417:0",
+            "tabs": {
+                "social": "crwdns11419:0crwdne11419:0",
+                "post": "crwdns11421:0crwdne11421:0",
+                "contacts": "crwdns11423:0crwdne11423:0",
+                "group": "crwdns11425:0crwdne11425:0"
+            },
+            "action": {
+                "change_add_persona": "crwdns11427:0crwdne11427:0",
+                "rename": "crwdns11429:0crwdne11429:0",
+                "export_private_key": "crwdns11431:0crwdne11431:0",
+                "backup": "crwdns11433:0crwdne11433:0",
+                "recovery": "crwdns11435:0crwdne11435:0",
+                "log_out": "crwdns11437:0crwdne11437:0",
+                "delete": "crwdns11439:0crwdne11439:0"
+            },
+            "create": {
+                "persona": "crwdns11441:0crwdne11441:0",
+                "create_persona": "crwdns11443:0crwdne11443:0",
+                "input_persona_name": "crwdns11445:0crwdne11445:0"
+            },
+            "delete": "crwdns11447:0crwdne11447:0",
+            "delete_tip": "crwdns11449:0crwdne11449:0",
+            "add_persona": "crwdns11451:0crwdne11451:0"
+        },
+        "persona_welcome": {
+            "title": "crwdns11453:0crwdne11453:0",
+            "description": "crwdns11455:0crwdne11455:0",
+            "persona": "crwdns11457:0crwdne11457:0"
+        },
+        "persona_export_private_key": {
+            "title": "crwdns11459:0crwdne11459:0",
+            "tips": "crwdns11461:0crwdne11461:0",
+            "backup_recovery": "crwdns11463:0crwdne11463:0"
+        },
+        "persona_contacts": {
+            "empty_contacts_tips": "crwdns11465:0crwdne11465:0",
+            "delete": "crwdns11467:0crwdne11467:0",
+            "contact": "crwdns11469:0crwdne11469:0"
+        },
+        "persona_social": {
+            "twitter": "crwdns11471:0crwdne11471:0",
+            "facebook": "crwdns11473:0crwdne11473:0",
+            "instagram": "crwdns11475:0crwdne11475:0",
+            "minds": "crwdns11477:0crwdne11477:0",
+            "connect_to": "crwdns11479:0%scrwdne11479:0",
+            "disconnect": "crwdns11481:0crwdne11481:0",
+            "accounts": "crwdns11483:0crwdne11483:0"
+        },
+        "wallet_balance": {
+            "btn_swap": "crwdns11485:0crwdne11485:0",
+            "btn_Send": "crwdns11487:0crwdne11487:0",
+            "btn_receive": "crwdns11489:0crwdne11489:0",
+            "header_title_collectibles": "crwdns11491:0crwdne11491:0",
+            "date_today": "crwdns11493:0crwdne11493:0",
+            "date_yestoday": "crwdns11495:0crwdne11495:0",
+            "date_thisMonth": "crwdns11497:0crwdne11497:0",
+            "date_lastMonth": "crwdns11499:0crwdne11499:0",
+            "transaction_received": "crwdns11501:0crwdne11501:0",
+            "transaction_approve": "crwdns11503:0crwdne11503:0",
+            "transaction_send": "crwdns11505:0crwdne11505:0",
+            "transaction_swap": "crwdns11507:0crwdne11507:0",
+            "transaction_deposit": "crwdns11509:0crwdne11509:0",
+            "transaction_cancel": "crwdns11511:0crwdne11511:0",
+            "transaction_action_title": "crwdns11513:0%scrwdne11513:0",
+            "transaction_action_view": "crwdns11515:0%scrwdne11515:0",
+            "balance_expand_all": "crwdns11517:0crwdne11517:0",
+            "balance_expand_less": "crwdns11519:0crwdne11519:0",
+            "header_title_tokens": "crwdns11521:0crwdne11521:0",
+            "empty_token": "crwdns11523:0crwdne11523:0",
+            "empty_collectibles": "crwdns11525:0crwdne11525:0"
+        },
+        "token_detail": {
+            "switch_network": "crwdns11527:0crwdne11527:0",
+            "walletconnect_switch_network_alert": "crwdns11529:0%scrwdnd11529:0%scrwdne11529:0"
+        },
+        "transaction_history": {
+            "no_transaction": "crwdns11531:0crwdne11531:0"
+        },
+        "wallet_receive": {
+            "btn_share": "crwdns11533:0crwdne11533:0",
+            "your_address": "crwdns11535:0%@crwdne11535:0"
+        },
+        "wallet_unlock": {
+            "title": "crwdns11537:0crwdne11537:0",
+            "button": "crwdns11539:0crwdne11539:0"
+        },
+        "identity_empty": {
+            "title": "crwdns11541:0crwdne11541:0",
+            "description": "crwdns11543:0crwdne11543:0",
+            "create_an_identity": "crwdns11545:0crwdne11545:0",
+            "recovery_sign_in": "crwdns11547:0crwdne11547:0",
+            "synchronization": "crwdns11549:0crwdne11549:0"
+        },
+        "identity_create": {
+            "title": "crwdns11551:0crwdne11551:0",
+            "description": "crwdns11553:0crwdne11553:0"
+        },
+        "identify_verify": {
+            "title": "crwdns11555:0crwdne11555:0",
+            "description": "crwdns11557:0crwdne11557:0",
+            "identity_error": "crwdns11559:0crwdne11559:0"
+        },
+        "identity_recovery": {
+            "title": "crwdns11561:0crwdne11561:0",
+            "identity_button": "crwdns11563:0crwdne11563:0",
+            "private_key_button": "crwdns11565:0crwdne11565:0",
+            "local_backup_recovery_button": "crwdns11567:0crwdne11567:0",
+            "cloud_backup_recovery_button_title": "crwdns11569:0crwdne11569:0"
+        },
+        "identity_mnemonic_import": {
+            "title": "crwdns11571:0crwdne11571:0",
+            "description": "crwdns11573:0crwdne11573:0",
+            "placeholder": "crwdns11575:0crwdne11575:0"
+        },
+        "identity_privatekey_import": {
+            "title": "crwdns11577:0crwdne11577:0",
+            "description": "crwdns11579:0crwdne11579:0",
+            "placeholder": "crwdns11581:0crwdne11581:0"
+        },
+        "Identity_restore_signin_success": {
+            "title": "crwdns11583:0crwdne11583:0"
+        },
+        "app": {
+            "market_trend_source": "crwdns11585:0crwdne11585:0",
+            "wallet_address": "crwdns11587:0crwdne11587:0",
+            "riskwarning": "crwdns11589:0crwdne11589:0",
+            "riskwarning_title": "crwdns11591:0crwdne11591:0",
+            "swap_option_source": "crwdns11593:0crwdne11593:0",
+            "swap_network_source": {
+                "eth": "crwdns11595:0crwdne11595:0",
+                "poly": "crwdns11597:0crwdne11597:0",
+                "bsc": "crwdns11599:0crwdne11599:0"
+            },
+            "plugins": {
+                "file_service": "crwdns11601:0crwdne11601:0",
+                "ito": "crwdns11603:0crwdne11603:0",
+                "lucy_drop": "crwdns11605:0crwdne11605:0",
+                "swap": "crwdns11607:0crwdne11607:0",
+                "transaction": "crwdns11609:0crwdne11609:0",
+                "market_trend": "crwdns11611:0crwdne11611:0",
+                "snapshot": "crwdns11613:0crwdne11613:0",
+                "collectibles": "crwdns11615:0crwdne11615:0",
+                "gitcoin": "crwdns11617:0crwdne11617:0",
+                "valuables": "crwdns11619:0crwdne11619:0",
+                "dhedge": "crwdns11621:0crwdne11621:0"
+            }
+        },
+        "social": {
+            "login_in_to_continue": "crwdns11623:0crwdne11623:0",
+            "login_in_notify": "crwdns11625:0crwdne11625:0",
+            "i_understand": "crwdns11627:0crwdne11627:0",
+            "title": "crwdns11629:0crwdne11629:0",
+            "connect_button_title": "crwdns11631:0crwdne11631:0",
+            "profile_select_title": "crwdns11633:0crwdne11633:0",
+            "connected": "crwdns11635:0crwdne11635:0",
+            "connect_hint1": "crwdns11637:0crwdne11637:0",
+            "connect_hint2": "crwdns11639:0crwdne11639:0",
+            "connect_hint_logged_in": "crwdns11641:0crwdne11641:0",
+            "connect_to_mask_network": "crwdns11643:0crwdne11643:0",
+            "account_already_connected": "crwdns11645:0crwdne11645:0",
+            "connect_stop": "crwdns11647:0crwdne11647:0",
+            "error": {
+                "fail_to_connect": "crwdns11649:0crwdne11649:0"
+            }
+        },
+        "share": {
+            "shareLink": "crwdns11651:0crwdne11651:0"
+        },
+        "restore": {
+            "titles": {
+                "restore_buckup": "crwdns11653:0crwdne11653:0",
+                "restore_remote_backup": "crwdns11655:0crwdne11655:0",
+                "recovery_with_email": "crwdns11657:0crwdne11657:0",
+                "recovery_with_mobile": "crwdns11659:0crwdne11659:0",
+                "restore_succeed": "crwdns11661:0crwdne11661:0",
+                "restore_failed": "crwdns11663:0crwdne11663:0",
+                "native_wallets": "crwdns11665:0crwdne11665:0",
+                "unsupport_restore_data": "crwdns11667:0crwdne11667:0",
+                "loading_failed": "crwdns11669:0crwdne11669:0",
+                "verify_wallet_password": "crwdns11671:0crwdne11671:0"
+            },
+            "buttonTitles": {
+                "backup": "crwdns11673:0crwdne11673:0",
+                "restore": "crwdns11675:0crwdne11675:0",
+                "next": "crwdns11677:0crwdne11677:0",
+                "confirm": "crwdns11679:0crwdne11679:0",
+                "resend": "crwdns11681:0crwdne11681:0",
+                "email": "crwdns11683:0crwdne11683:0",
+                "mobile": "crwdns11685:0crwdne11685:0"
+            },
+            "succeed_detail": "crwdns11687:0crwdne11687:0",
+            "completion": "crwdns11689:0crwdne11689:0",
+            "failed_detail": "crwdns11691:0crwdne11691:0",
+            "input_placeholder": {
+                "email": "crwdns11693:0crwdne11693:0"
+            },
+            "check_unsupport_data": "crwdns11695:0crwdne11695:0",
+            "restore_created_date": "crwdns11697:0crwdne11697:0",
+            "restored_post": "crwdns11699:0crwdne11699:0",
+            "restored_account": "crwdns11701:0crwdne11701:0",
+            "restored_persona": "crwdns11703:0crwdne11703:0",
+            "restored_files": "crwdns11705:0crwdne11705:0",
+            "restored_contacts": "crwdns11707:0crwdne11707:0",
+            "restored_relations": "crwdns11709:0crwdne11709:0",
+            "wallet_existed": "crwdns11711:0crwdne11711:0",
+            "input_title": {
+                "remote_backup_password": "crwdns11713:0crwdne11713:0",
+                "email": "crwdns11715:0crwdne11715:0",
+                "validationcode": "crwdns11717:0crwdne11717:0",
+                "mobile": "crwdns11719:0crwdne11719:0",
+                "payment_password": "crwdns11721:0crwdne11721:0"
+            },
+            "tip": {
+                "data_failed_to_fetch": "crwdns11723:0crwdne11723:0",
+                "failed_to_download_file": "crwdns11725:0crwdne11725:0",
+                "incorrect_backup_password": "crwdns11727:0crwdne11727:0",
+                "invalid_email_address": "crwdns11729:0crwdne11729:0",
+                "invalid_mobile_number": "crwdns11731:0crwdne11731:0",
+                "email_validationcode": "crwdns11733:0crwdne11733:0",
+                "mobile_validationcode": "crwdns11735:0crwdne11735:0",
+                "incorrect_validationcode": "crwdns11737:0crwdne11737:0",
+                "invalid_validationcode": "crwdns11739:0crwdne11739:0",
+                "validationcode_five_minutes": "crwdns11741:0crwdne11741:0",
+                "validationcode_ten_minutes": "crwdns11743:0crwdne11743:0",
+                "validationcode_thirty_minutes": "crwdns11745:0crwdne11745:0",
+                "validationcode_one_hour": "crwdns11747:0crwdne11747:0",
+                "validationcode_twentyfour_hours": "crwdns11749:0crwdne11749:0",
+                "failed_loading_remotefile": "crwdns11751:0crwdne11751:0",
+                "remote_restore_succeed": "crwdns11753:0crwdne11753:0",
+                "remote_restore_syncing_password": "crwdns11755:0crwdne11755:0"
+            }
+        },
+        "wallet_connect": {
+            "wallet_connect": "crwdns11757:0crwdne11757:0",
+            "select_wallet": "crwdns11759:0crwdne11759:0",
+            "scan_q_r_code": "crwdns11761:0crwdne11761:0",
+            "qr_code_tips": "crwdns11763:0crwdne11763:0",
+            "tap_to_copy": "crwdns11765:0crwdne11765:0",
+            "connecting": "crwdns11767:0crwdne11767:0",
+            "connect_success": "crwdns11769:0crwdne11769:0",
+            "scan": "crwdns11771:0crwdne11771:0",
+            "disconnect": "crwdns11773:0crwdne11773:0",
+            "connection_fail": "crwdns11775:0crwdne11775:0",
+            "could_not_switch_blockchain_network_title": "crwdns11777:0crwdne11777:0",
+            "could_not_switch_blockchain_network_message": "crwdns11779:0crwdne11779:0",
+            "network_not_match": "crwdns11781:0%scrwdnd11781:0%scrwdnd11781:0%scrwdne11781:0",
+            "network_not_support": "crwdns11783:0%scrwdne11783:0",
+            "address_exist": "crwdns11785:0crwdne11785:0",
+            "replace_wallet_connect_wallet": "crwdns11787:0crwdne11787:0"
+        },
+        "wallet_connect_server": {
+            "want_to_connect": "crwdns11789:0%scrwdne11789:0",
+            "connected_apps": "crwdns11791:0crwdne11791:0",
+            "connect": "crwdns11793:0crwdne11793:0",
+            "wallet_connect_notification": "crwdns11795:0crwdne11795:0",
+            "switch_wallet": "crwdns11797:0crwdne11797:0"
+        },
+        "backup": {
+            "remote_backup_actions_view": {
+                "tips": "crwdns11799:0crwdne11799:0"
+            },
+            "merge_to_local": {
+                "title": "crwdns11801:0crwdne11801:0"
+            },
+            "validation_code": "crwdns11803:0crwdne11803:0",
+            "with_phone": "crwdns11805:0crwdne11805:0",
+            "with_email": "crwdns11807:0crwdne11807:0",
+            "tips_phone": "crwdns11809:0crwdne11809:0",
+            "tips_email": "crwdns11811:0crwdne11811:0",
+            "backup_verify_field_email": "crwdns11813:0crwdne11813:0",
+            "backup_verify_field_phone": "crwdns11815:0crwdne11815:0",
+            "backup_verify_title_email": "crwdns11817:0crwdne11817:0",
+            "backup_verify_title_phone": "crwdns11819:0crwdne11819:0",
+            "restore_created_date": "crwdns11821:0crwdne11821:0",
+            "restored_post": "crwdns11823:0crwdne11823:0",
+            "restored_account": "crwdns11825:0crwdne11825:0",
+            "restored_persona": "crwdns11827:0crwdne11827:0",
+            "restored_files": "crwdns11829:0crwdne11829:0",
+            "restored_contacts": "crwdns11831:0crwdne11831:0",
+            "restored_relations": "crwdns11833:0crwdne11833:0"
+        }
+    },
+    "chain": {
+        "short_name": {
+            "eth": "crwdns11835:0crwdne11835:0",
+            "bsc": "crwdns11837:0crwdne11837:0",
+            "dot": "crwdns11839:0crwdne11839:0",
+            "polygon": "crwdns11841:0crwdne11841:0",
+            "arbitrum": "crwdns11843:0crwdne11843:0",
+            "xdai": "crwdns11845:0crwdne11845:0",
+            "optimism": "crwdns11847:0crwdne11847:0"
+        },
+        "name": {
+            "eth": "crwdns11849:0crwdne11849:0",
+            "bsc": "crwdns11851:0crwdne11851:0",
+            "dot": "crwdns11853:0crwdne11853:0",
+            "polygon": "crwdns11855:0crwdne11855:0",
+            "arbitrum": "crwdns11857:0crwdne11857:0",
+            "xdai": "crwdns11859:0crwdne11859:0",
+            "optimism": "crwdns11861:0crwdne11861:0"
+        }
+    }
+}
