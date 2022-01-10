@@ -44,5 +44,4 @@ class BigDecimalTypeConverter {
         if (input.isNullOrBlank()) return BigDecimal.valueOf(0.0)
         return input.toBigDecimalOrNull() ?: BigDecimal.valueOf(0.0)
     }
-
 }
