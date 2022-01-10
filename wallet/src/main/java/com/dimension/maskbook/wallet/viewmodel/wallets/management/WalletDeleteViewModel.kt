@@ -32,6 +32,6 @@ class WalletDeleteViewModel(
     }
 
     fun confirm() {
-        walletRepository.deleteCurrentWallet()
+        walletRepository.deleteWallet(id)
     }
 }
