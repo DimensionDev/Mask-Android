@@ -44,13 +44,13 @@ object JSMethod {
     object Misc {
         fun openCreateWalletView(): Flow<String> {
             return MessageChannel.subscribeMessage("misc_openCreateWalletView").map {
-                if (!it?.params.isNullOrEmpty()) "maskwallet://Home/Persona" else ""
+                if (!it?.params.isNullOrEmpty()) "maskwallet://Home/Personas" else ""
             }
         }
 
         fun openDashboardView(): Flow<String> {
             return MessageChannel.subscribeMessage("misc_openDashboardView").map {
-                if (!it?.params.isNullOrEmpty()) "maskwallet://Home/Wallet" else ""
+                if (!it?.params.isNullOrEmpty()) "maskwallet://Home/Wallets" else ""
             }
         }
 

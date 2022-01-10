@@ -371,15 +371,8 @@ fun Route(
                             navArgument("tab") { type = NavType.StringType }
                         )
                     ) {
-                        val tab = it.arguments?.getString("tab").orEmpty()
                         MainHost(
-                            initialPage = when (tab) {
-                                "Persona" -> 0
-                                "Wallet" -> 1
-                                "App" -> 2
-                                "Settings" -> 3
-                                else -> 0
-                            },
+                            initialTab = it.arguments?.getString("tab").orEmpty(),
                             onBack = onBack,
                         )
                     }
