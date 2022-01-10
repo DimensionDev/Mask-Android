@@ -364,11 +364,17 @@ fun Route(
                         "Home",
                         deepLinks = listOf(
                             navDeepLink {
-                                uriPattern = "maskwallet://Home"
+                                uriPattern = "maskwallet://Home/{tab}"
                             }
+                        ),
+                        arguments = listOf(
+                            navArgument("tab") { type = NavType.StringType }
                         )
                     ) {
-                        MainHost(onBack = onBack)
+                        MainHost(
+                            initialTab = it.arguments?.getString("tab").orEmpty(),
+                            onBack = onBack,
+                        )
                     }
                     wallets(navController = navController)
                     settings(navController = navController)
@@ -795,7 +801,7 @@ private fun NavGraphBuilder.wallets(
             onAccept = {
                 if (password.isNullOrEmpty()) {
                     navController.navigate("WalletIntroHostPassword/$type")
-                } else if (!enableBiometric){
+                } else if (!enableBiometric) {
                     navController.navigate("WalletIntroHostFaceId/$type")
                 } else {
                     navController.navigate("CreateOrImportWallet/${type}")
@@ -817,7 +823,7 @@ private fun NavGraphBuilder.wallets(
         val enableBiometric by get<ISettingsRepository>().biometricEnabled.observeAsState(initial = false)
         SetUpPaymentPassword(
             onNext = {
-                if (!enableBiometric){
+                if (!enableBiometric) {
                     navController.navigate("WalletIntroHostFaceId/$type")
                 } else {
                     navController.navigate("CreateOrImportWallet/${type}")
@@ -840,7 +846,7 @@ private fun NavGraphBuilder.wallets(
             onEnable = { enabled ->
                 if (enabled) {
                     navController.navigate("WalletIntroHostFaceIdEnableSuccess/$type")
-                } else  {
+                } else {
                     navController.navigate("CreateOrImportWallet/${type}")
                 }
             }
