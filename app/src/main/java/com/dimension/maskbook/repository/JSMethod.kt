@@ -44,25 +44,25 @@ object JSMethod {
     object Misc {
         fun openCreateWalletView(): Flow<String> {
             return MessageChannel.subscribeMessage("misc_openCreateWalletView").map {
-                if (it != null) "maskwallet://Home/Persona" else ""
+                if (!it?.params.isNullOrEmpty()) "maskwallet://Home/Persona" else ""
             }
         }
 
         fun openDashboardView(): Flow<String> {
             return MessageChannel.subscribeMessage("misc_openDashboardView").map {
-                if (it != null) "maskwallet://Home/Wallet" else ""
+                if (!it?.params.isNullOrEmpty()) "maskwallet://Home/Wallet" else ""
             }
         }
 
         fun openAppsView(): Flow<String> {
             return MessageChannel.subscribeMessage("misc_openAppsView").map {
-                if (it != null) "maskwallet://Home/App" else ""
+                if (!it?.params.isNullOrEmpty()) "maskwallet://Home/App" else ""
             }
         }
 
         fun openSettingsView(): Flow<String> {
             return MessageChannel.subscribeMessage("misc_openSettingsView").map {
-                if (it != null) "maskwallet://Home/Settings" else ""
+                if (!it?.params.isNullOrEmpty()) "maskwallet://Home/Settings" else ""
             }
         }
     }
