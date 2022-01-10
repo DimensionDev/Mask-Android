@@ -13,7 +13,9 @@ import com.dimension.maskbook.wallet.walletModules
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -44,19 +46,16 @@ fun initRepository() {
 fun initEvent() {
     CoroutineScope(Dispatchers.IO).launch {
         launch {
-            JSMethod.Misc.openCreateWalletView().collect {
-                if (it != null) {
-                    KoinPlatformTools.defaultContext().get().get<IPlatformSwitcher>()
-                        .launchDeeplink("maskwallet://Home")// TODO: maskwallet://Home/Persona
-                }
-            }
-        }
-        launch {
-            JSMethod.Misc.openDashboardView().collect {
-                if (it != null) {
-                    KoinPlatformTools.defaultContext().get().get<IPlatformSwitcher>()
-                        .launchDeeplink("maskwallet://Home")// TODO: maskwallet://Home/Wallet
-                }
+            merge(
+                JSMethod.Misc.openCreateWalletView(),
+                JSMethod.Misc.openDashboardView(),
+                JSMethod.Misc.openAppsView(),
+                JSMethod.Misc.openSettingsView(),
+            ).filter { uri ->
+                uri.isNotEmpty()
+            }.collect { uri ->
+                KoinPlatformTools.defaultContext().get().get<IPlatformSwitcher>()
+                    .launchDeeplink(uri)
             }
         }
         launch {

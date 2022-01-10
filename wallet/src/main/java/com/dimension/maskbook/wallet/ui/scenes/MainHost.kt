@@ -47,9 +47,10 @@ private val items = listOf(
 @OptIn(ExperimentalAnimationApi::class, ExperimentalPagerApi::class)
 @Composable
 fun MainHost(
+    initialPage: Int,
     onBack: () -> Unit,
 ) {
-    val pagerState = rememberPagerState()
+    val pagerState = rememberPagerState(initialPage = initialPage)
     val scope = rememberCoroutineScope()
     MaskTheme {
         MaskScaffold(

@@ -364,11 +364,24 @@ fun Route(
                         "Home",
                         deepLinks = listOf(
                             navDeepLink {
-                                uriPattern = "maskwallet://Home"
+                                uriPattern = "maskwallet://Home/{tab}"
                             }
+                        ),
+                        arguments = listOf(
+                            navArgument("tab") { type = NavType.StringType }
                         )
                     ) {
-                        MainHost(onBack = onBack)
+                        val tab = it.arguments?.getString("tab").orEmpty()
+                        MainHost(
+                            initialPage = when (tab) {
+                                "Persona" -> 0
+                                "Wallet" -> 1
+                                "App" -> 2
+                                "Settings" -> 3
+                                else -> 0
+                            },
+                            onBack = onBack,
+                        )
                     }
                     wallets(navController = navController)
                     settings(navController = navController)

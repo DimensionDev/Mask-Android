@@ -42,12 +42,28 @@ data class JsonRpcPayload(
 
 object JSMethod {
     object Misc {
-        fun openCreateWalletView(): Flow<String?> {
-            return MessageChannel.subscribeMessage("misc_openCreateWalletView").map { it?.params }
+        fun openCreateWalletView(): Flow<String> {
+            return MessageChannel.subscribeMessage("misc_openCreateWalletView").map {
+                if (it != null) "maskwallet://Home/Persona" else ""
+            }
         }
 
-        fun openDashboardView(): Flow<String?> {
-            return MessageChannel.subscribeMessage("misc_openDashboardView").map { it?.params }
+        fun openDashboardView(): Flow<String> {
+            return MessageChannel.subscribeMessage("misc_openDashboardView").map {
+                if (it != null) "maskwallet://Home/Wallet" else ""
+            }
+        }
+
+        fun openAppsView(): Flow<String> {
+            return MessageChannel.subscribeMessage("misc_openAppsView").map {
+                if (it != null) "maskwallet://Home/App" else ""
+            }
+        }
+
+        fun openSettingsView(): Flow<String> {
+            return MessageChannel.subscribeMessage("misc_openSettingsView").map {
+                if (it != null) "maskwallet://Home/Settings" else ""
+            }
         }
     }
 
