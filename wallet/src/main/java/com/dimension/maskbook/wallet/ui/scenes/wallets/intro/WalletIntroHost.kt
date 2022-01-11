@@ -15,7 +15,9 @@ import org.koin.androidx.compose.getViewModel
 @ExperimentalMaterialNavigationApi
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun WalletIntroHost() {
+fun WalletIntroHost(
+    onBack: () -> Unit,
+) {
     val rootNavController = LocalRootNavController.current
     val viewModel = getViewModel<WalletBalancesViewModel>()
     val dWebData by viewModel.dWebData.observeAsState(initial = null)
@@ -60,7 +62,8 @@ fun WalletIntroHost() {
                     onSceneTypeChanged = {
                         viewModel.setSceneType(it)
                     },
-                    chainType = dWebData.chainType
+                    chainType = dWebData.chainType,
+                    onBack = onBack,
                 )
             }
         }

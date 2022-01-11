@@ -112,7 +112,7 @@ fun MainHost(
                     HomeScreen.App -> AppScene(onBack = onBack)
                     HomeScreen.Personas -> PersonaScreen(onBack = onBack)
                     HomeScreen.Settings -> SettingsScene(onBack = onBack)
-                    HomeScreen.Wallets -> WalletIntroHost()
+                    HomeScreen.Wallets -> WalletIntroHost(onBack = onBack)
                 }
             }
         }
