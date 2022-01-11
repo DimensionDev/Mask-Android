@@ -31,6 +31,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun walletContactDao(): WalletContactDao
     abstract fun storedKeyDao(): StoredKeyDao
     abstract fun walletBalanceDao(): WalletBalanceDao
+    abstract fun wcWalletDao(): WCWalletDao
 }
 
 class BigDecimalTypeConverter {

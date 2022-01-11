@@ -5,6 +5,7 @@ import com.dimension.maskbook.debankapi.api.DebankResources
 import com.dimension.maskbook.wallet.BuildConfig
 import com.dimension.maskbook.wallet.ext.JSON
 import com.dimension.maskbook.wallet.services.model.GasFeeResponse
+import com.dimension.maskbook.wallet.services.model.WCSupportedWalletResponse
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.Serializable
 import okhttp3.MediaType.Companion.toMediaType
@@ -135,6 +136,11 @@ interface GasServices {
     suspend fun maticGasFee(): MaticGasFeeResponse
 }
 
+interface WalletConnectServices{
+    @GET("/data/wallets.json")
+    suspend fun supportedWallets():WCSupportedWalletResponse
+}
+
 class WalletServices {
     val backupServices by lazy {
         retrofit<BackupServices>("https://vaalh28dbi.execute-api.ap-east-1.amazonaws.com")
@@ -144,6 +150,10 @@ class WalletServices {
     }
     val gasServices by lazy {
         retrofit<GasServices>("https://ethgasstation.info")
+    }
+
+    val walletConnectServices by lazy {
+        retrofit<WalletConnectServices>("https://registry.walletconnect.org")
     }
 }
 

@@ -101,6 +101,7 @@ val repositoryModules = module {
     single<ITokenRepository> { TokenRepository(get()) }
     single<ISendHistoryRepository> { SendHistoryRepository(get()) }
     single<IWalletContactRepository> { WalletContactRepository(get()) }
+    single<IWalletConnectRepository> { WalletConnectRepository(get(), get()) }
 }
 
 val platformModules = module {
