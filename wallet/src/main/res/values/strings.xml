@@ -150,7 +150,7 @@
     <string name="scene_setting_backup_recovery_back_up_password">Backup Password</string>
     <string name="scene_setting_backup_recovery_back_up_password_empty">Please set up backup password</string>
     <string name="scene_setting_backup_recovery_restore_data">Restore Data</string>
-    <string name="scene_setting_backup_recovery_title">Backup & Recovery</string>
+    <string name="scene_setting_backup_recovery_title">Backup &amp; Recovery</string>
     <string name="scene_setting_backup_recovery_back_up_data">Back Up Data</string>
     <string name="scene_setting_backup_recovery_change_backup_password">Change Backup Password</string>
     <string name="scene_setting_general_appearance">Appearance</string>
@@ -203,8 +203,8 @@
     <string name="scene_persona_welcome_title">Welcome to Mask Network</string>
     <string name="scene_wallets_list_add_wallets_items_add">Create a New Wallet</string>
     <string name="scene_wallets_list_add_wallets_list_import">Import Wallet</string>
-    <string name="scene_Identity_restore_signin_success_title">Restore & Sign In completed!</string>
-    <string name="scene_identity_empty_recovery_sign_in">Recovery & Sign In</string>
+    <string name="scene_Identity_restore_signin_success_title">Restore &amp; Sign In completed!</string>
+    <string name="scene_identity_empty_recovery_sign_in">Recovery &amp; Sign In</string>
     <string name="scene_identity_empty_description">The portal to a new and open Internet</string>
     <string name="scene_identity_empty_synchronization">Synchronization</string>
     <string name="scene_identity_empty_title">Mask</string>
@@ -293,7 +293,7 @@ Clicking the confirm button means that you agree to bear the above possible risk
     <string name="scene_identity_recovery_cloud_backup_recovery_button_title">Cloud backup Recovery</string>
     <string name="scene_identity_recovery_local_backup_recovery_button">Local Backup Recovery</string>
     <string name="scene_identity_recovery_identity_button">Identity Code</string>
-    <string name="scene_identity_recovery_title">Recovery & Sign In</string>
+    <string name="scene_identity_recovery_title">Recovery &amp; Sign In</string>
     <string name="scene_wallet_backup_keystore_tips">Please remember your current payment password. Your current payment password is required for decryption when using the wallet Keystore for recovery.</string>
     <string name="scene_wallet_backup_private_key_tips">One can use the private key to recover wallet account directly. Please do not let anyone else see the private key.</string>
     <string name="scene_wallet_backup_btn_cancel">Cancel</string>
@@ -323,7 +323,7 @@ separated by spaces</string>
     <string name="scene_wallet_delete_title">Delete wallet</string>
     <string name="scene_wallet_delete_content">Are you sure you want to delete this wallet? Your wallet cannot be recoverd without seed phrase.</string>
     <string name="scene_biometry_id_biometry_lockout">Authentication was not successful because there were too many failed %s attempts and %s is now locked. Passcode is required to unlock %s.</string>
-    <string name="scene_biometry_id_biometry_not_available">Mask need your Authentication of %s. Please go to Setting -> Mask Network to open</string>
+    <string name="scene_biometry_id_biometry_not_available">Mask need your Authentication of %s. Please go to Setting -&gt; Mask Network to open</string>
     <string name="scene_biometry_id_passcode_notSet">Authentication could not start because passcode is not set on the device.</string>
     <string name="scene_biometry_id_face_id_reason">Mask Network needs FaceID to protect your wallet</string>
     <string name="scene_biometry_id_face_id">Face ID</string>
@@ -485,9 +485,9 @@ to scan the QR Code</string>
     <string name="scene_sendTransaction_sendConfirmPop_gasFee">Gas fee</string>
     <string name="scene_sendTransaction_sendConfirmPop_total">Total</string>
     <string name="scene_sendTransaction_sendConfirmPop_edit">Edit</string>
-    <string name="scene_sendTransaction_sendConfirmPop_gasFeeMedium">Likely in < 30 seconds</string>
+    <string name="scene_sendTransaction_sendConfirmPop_gasFeeMedium">Likely in &lt; 30 seconds</string>
     <string name="scene_sendTransaction_sendConfirmPop_gasFeeLow">Maybe in 30 seconds</string>
-    <string name="scene_sendTransaction_sendConfirmPop_gasFeeHigh">Very likely in < 15 seconds</string>
+    <string name="scene_sendTransaction_sendConfirmPop_gasFeeHigh">Very likely in &lt; 15 seconds</string>
     <string name="scene_sendTransaction_send_placeholder_address">Ens or Address(0x...)</string>
     <string name="scene_sendTransaction_send_btn_send">Send</string>
     <string name="scene_sendTransaction_send_amount_error">Insufficient amount.</string>

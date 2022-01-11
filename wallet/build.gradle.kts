@@ -130,6 +130,15 @@ tasks.create("generateTranslation") {
     }
 }
 
+fun String.escapeXml(): String {
+    return this
+        .replace("&", "&amp;")
+        .replace("<", "&lt;")
+        .replace(">", "&gt;")
+        .replace("\"", "&quot;")
+        .replace("'", "&apos;")
+}
+
 fun generateLocalization(appJson: File, target: File) {
     val json = appJson.readText(Charsets.UTF_8)
     val obj = org.json.JSONObject(json)
@@ -147,7 +156,7 @@ fun generateLocalization(appJson: File, target: File) {
             """<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">""" + System.lineSeparator() +
                 result.map {
                     "    <string name=\"${it.key}\">${
-                    it.value.replace("'", "\\'").replace(System.lineSeparator(), "\\n")
+                    it.value.escapeXml().replace(System.lineSeparator(), "\\n")
                     }</string>"
                 }.joinToString(System.lineSeparator()) + System.lineSeparator() +
                 "</resources>"
