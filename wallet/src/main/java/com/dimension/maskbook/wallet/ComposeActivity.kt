@@ -51,13 +51,7 @@ import com.dimension.maskbook.wallet.viewmodel.settings.LanguageSettingsViewMode
 import com.dimension.maskbook.wallet.viewmodel.settings.PaymentPasswordSettingsViewModel
 import com.dimension.maskbook.wallet.viewmodel.settings.PhoneBackupViewModel
 import com.dimension.maskbook.wallet.viewmodel.settings.PhoneSetupViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.BiometricViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.BiometricEnableViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.SetUpPaymentPasswordViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.TokenDetailViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.TouchIdEnableViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.WalletBalancesViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.WalletManagementModalViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.*
 import com.dimension.maskbook.wallet.viewmodel.wallets.create.CreateWalletRecoveryKeyViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.import.ImportWalletDerivationPathViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.import.ImportWalletKeystoreViewModel
@@ -73,6 +67,9 @@ import com.dimension.maskbook.wallet.viewmodel.wallets.send.GasFeeViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.SearchAddressViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendConfirmViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendTokenViewModel
+import com.dimension.maskbook.wallet.walletconnect.WalletConnectManager
+import com.dimension.maskbook.wallet.walletconnect.WalletConnectManagerV1
+import org.koin.android.ext.android.get
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -83,6 +80,7 @@ class ComposeActivity : AppCompatActivity() {
             val main = "Main"
         }
     }
+    val wcManager = get<WalletConnectManager>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -97,6 +95,16 @@ class ComposeActivity : AppCompatActivity() {
                 )
             }
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        wcManager.setUp()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        wcManager.shutDown()
     }
 }
 
@@ -123,6 +131,11 @@ val walletModules = module {
     }
     single {
         BiometricAuthenticator()
+    }
+    
+    single<WalletConnectManager> {
+        // V2 SDK support only provides the Responder implementation at the Beta stage
+        WalletConnectManagerV1(get())
     }
 
     viewModel { (uri: Uri) -> RecoveryLocalViewModel(get(), uri, get<Context>().contentResolver) }
@@ -233,6 +246,7 @@ val walletModules = module {
         SendConfirmViewModel(tokenData, toAddress, get(), get())
     }
     viewModel { BiometricViewModel(get(), get()) }
+    viewModel { WalletConnectViewModel(get()) }
 }
 
 val servicesModule = module {

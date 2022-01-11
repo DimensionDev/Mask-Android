@@ -17,13 +17,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
+import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.ui.scenes.persona.social.tabIndicatorOffset3
 import com.dimension.maskbook.wallet.ui.widget.MaskModal
 import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
 import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
+import com.dimension.maskbook.wallet.viewmodel.wallets.WalletConnectViewModel
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import org.koin.androidx.compose.getViewModel
 
 enum class WalletConnectType {
     Manually,
@@ -34,6 +37,8 @@ enum class WalletConnectType {
 @Composable
 fun WalletConnectModal() {
     val navController = rememberAnimatedNavController()
+    val viewModel = getViewModel<WalletConnectViewModel>()
+    val qrCode by viewModel.qrCode.observeAsState(initial = "")
     MaskModal {
         Column(
             modifier = Modifier
@@ -50,7 +55,7 @@ fun WalletConnectModal() {
                 startDestination = "WalletConnectTypeSelect"
             ) {
                 composable("WalletConnectTypeSelect") {
-                    TypeSelectScene()
+                    TypeSelectScene(qrCode = qrCode)
                 }
 
                 composable("WalletConnectConnecting") {
@@ -122,7 +127,7 @@ fun Connecting() {
 
 
 @Composable
-private fun TypeSelectScene() {
+private fun TypeSelectScene(qrCode: String) {
     Column {
         var selectedTabIndex by remember {
             mutableStateOf(0)
@@ -168,13 +173,13 @@ private fun TypeSelectScene() {
         }
         when (WalletConnectType.values()[selectedTabIndex]) {
             WalletConnectType.Manually -> WalletConnectManually()
-            WalletConnectType.QRCode -> WalletConnectQRCode()
+            WalletConnectType.QRCode -> WalletConnectQRCode(qrCode = qrCode)
         }
     }
 }
 
 @Composable
-fun WalletConnectQRCode() {
+fun WalletConnectQRCode(qrCode: String) {
     Text(text = "Use a WalletConnect compatiable wallet to scan the QR Code")
     Box(
         modifier = Modifier
@@ -186,7 +191,7 @@ fun WalletConnectQRCode() {
             Icons.Default.Home,
             contentDescription = null,
         )// TODO: Display qr code
-
+        Text(text = "qrCode:$qrCode")
     }
     Text(text = "Tap to copy to clipboard")// TODO: Copy
 }
