@@ -121,7 +121,7 @@ fun RecoveryLocalHost(
                         modifier = Modifier
                             .padding(ScaffoldPadding),
                     ) {
-                        Text(text = "Backup password")
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_set_backup_password_backup_password))
                         Spacer(modifier = Modifier.height(8.dp))
                         OutlinedTextField(
                             modifier = Modifier.fillMaxWidth(),
@@ -139,7 +139,7 @@ fun RecoveryLocalHost(
                             modifier = Modifier.fillMaxWidth(),
                             onClick = { viewModel.confirmPassword() },
                         ) {
-                            Text(text = "Next")
+                            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_next))
                         }
                     }
                 }
@@ -156,10 +156,10 @@ fun RecoveryLocalHost(
                     onDismissRequest = {
                     },
                     title = {
-                        Text(text = "Unsupported data backup")
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_restore_titles_unsupport_restore_data))
                     },
                     text = {
-                        Text(text = "Please examine your data backup.")
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_restore_check_unsupport_data))
                     },
                     buttons = {
                         PrimaryButton(
@@ -208,7 +208,7 @@ fun RecoveryLocalHost(
                                     navController.popBackStack()
                                 }
                             ) {
-                                Text(text = "Cancel")
+                                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_cancel))
                             }
                             Spacer(modifier = Modifier.width(20.dp))
                             PrimaryButton(
@@ -217,7 +217,7 @@ fun RecoveryLocalHost(
                                     onConfirm.invoke()
                                 },
                             ) {
-                                Text(text = "Confirm")
+                                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_confirm))
                             }
                         }
                     }
@@ -239,7 +239,7 @@ fun ImportSuccessScene(
             topBar = {
                 MaskTopAppBar(
                     title = {
-                        Text(text = "Restore backups")
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_restore_titles_restore_buckup))
                     },
                     navigationIcon = {
                         MaskBackButton {
@@ -266,7 +266,7 @@ fun ImportSuccessScene(
                         onConfirm.invoke()
                     }
                 ) {
-                    Text(text = "Restore Backups")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_restore_buttonTitles_backup))
                 }
             }
         }
@@ -296,7 +296,7 @@ fun ImportingScene(
                 verticalArrangement = Arrangement.Center,
             ) {
                 CircularProgressIndicator()
-                Text(text = "Loading...")
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_loading))
             }
         }
     }

@@ -97,7 +97,7 @@ fun ImportWalletDerivationPathScene(
                         }
                     }
 
-                    Text(text = "Derivation path", style = MaterialTheme.typography.h4)
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_derivation_path_title), style = MaterialTheme.typography.h4)
 
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(text = path)
@@ -109,7 +109,7 @@ fun ImportWalletDerivationPathScene(
                             .padding(vertical = 8.dp)
                     ) {
                         Text(
-                            text = "Address",
+                            text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_derivation_path_header_address),
                             modifier = Modifier.weight(1.5f)
                         )
                         Text(
@@ -118,7 +118,7 @@ fun ImportWalletDerivationPathScene(
                             textAlign = TextAlign.End
                         )
                         Text(
-                            text = "Operation",
+                            text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_derivation_path_header_operation),
                             modifier = Modifier.weight(1f),
                             textAlign = TextAlign.End
                         )
@@ -172,7 +172,7 @@ fun ImportWalletDerivationPathScene(
                             }
                         }
                     ) {
-                        Text(text = "Next")
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_next))
                     }
                     if (showDialog) {
                         result?.let {

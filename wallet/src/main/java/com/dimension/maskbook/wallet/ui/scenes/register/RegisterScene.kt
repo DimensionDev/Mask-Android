@@ -51,7 +51,7 @@ fun RegisterScene(
                     )
                     Spacer(modifier = Modifier.height(9.dp))
                     Text(
-                        text = "The portal to a new and open Internet",
+                        text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_identity_empty_description),
                         style = LocalTextStyle.current.copy(color = MaterialTheme.colors.primary)
                     )
                 }
@@ -67,7 +67,7 @@ fun RegisterScene(
                         .fillMaxWidth(),
                     onClick = { onRecoveryAndSignIn.invoke() },
                 ) {
-                    Text(text = "Recovery & Sign In")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_identity_empty_recovery_sign_in))
                 }
 //                Spacer(modifier = Modifier.height(16.dp))
 //                SecondaryButton(
@@ -75,7 +75,7 @@ fun RegisterScene(
 //                        .fillMaxWidth(),
 //                    onClick = { onSynchronization.invoke() },
 //                ) {
-//                    Text(text = "Synchronization")
+//                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_identity_empty_synchronization))
 //                }
             }
         }

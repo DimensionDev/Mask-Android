@@ -24,7 +24,7 @@ fun BackupPasswordInputModal(
             modifier = Modifier
                 .padding(ScaffoldPadding)
         ) {
-            Text(text = "Backup password")
+            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_set_backup_password_backup_password))
             Spacer(modifier = Modifier.height(8.dp))
             OutlinedTextField(
                 value = password,
@@ -38,7 +38,7 @@ fun BackupPasswordInputModal(
                 modifier = Modifier.fillMaxWidth(),
                 enabled = enabled,
             ) {
-                Text(text = "Next")
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_next))
             }
         }
     }

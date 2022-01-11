@@ -36,7 +36,7 @@ fun PhoneInputModal(
                 style = MaterialTheme.typography.h6,
             )
             Spacer(modifier = Modifier.height(21.dp))
-            Text(text = "Phone Number")
+            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_profile_phone_number))
             Spacer(modifier = Modifier.height(8.dp))
             Row(
                 modifier = Modifier.fillMaxWidth()
@@ -71,7 +71,7 @@ fun PhoneInputModal(
                 },
                 enabled = phoneValid && !buttonEnabled && phone.isNotEmpty(),
             ) {
-                Text(text = "Confirm")
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_confirm))
             }
         }
     }
@@ -107,7 +107,7 @@ fun PhoneCodeInputModal(
                 it.invoke(this)
             }
             Spacer(modifier = Modifier.height(21.dp))
-            Text(text = "Verification Code")
+            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_backup_validation_code))
             Spacer(modifier = Modifier.height(8.dp))
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -129,7 +129,7 @@ fun PhoneCodeInputModal(
                     enabled = canSend && !buttonEnabled,
                 ) {
                     if (canSend) {
-                        Text(text = "Resend")
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_resend))
                     } else {
                         Text(text = countDown.toString() + "s")
                     }
@@ -151,7 +151,7 @@ fun PhoneCodeInputModal(
                 },
                 enabled = code.isNotEmpty() && !buttonEnabled,
             ) {
-                Text(text = "Confirm")
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_confirm))
             }
             footer.invoke(this)
         }

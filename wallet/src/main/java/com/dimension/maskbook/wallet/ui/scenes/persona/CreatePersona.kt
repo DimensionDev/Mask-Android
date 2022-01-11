@@ -40,7 +40,7 @@ fun CreatePersona(
                     onDone.invoke()
                 },
             ) {
-                Text(text = "Next")
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_next))
             }
         }
     }

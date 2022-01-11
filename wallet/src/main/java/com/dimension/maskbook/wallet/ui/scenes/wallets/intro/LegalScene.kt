@@ -55,7 +55,7 @@ fun LegalScene(
                     .fillMaxSize()
                     .padding(ScaffoldPadding),
             ) {
-                Text(text = "Legal", style = MaterialTheme.typography.h4)
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_terms_of_service_title), style = MaterialTheme.typography.h4)
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(text = "Please review the Service Agreement of Mask Network.")
                 Column(
@@ -75,10 +75,10 @@ fun LegalScene(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(text = "Service Agreement", modifier = Modifier.weight(1F))
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_terms_of_service_service_agreement), modifier = Modifier.weight(1F))
                         Icon(
                             imageVector = Icons.Default.ArrowRight,
-                            contentDescription = "Service Agreement"
+                            contentDescription = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_terms_of_service_service_agreement)
                         )
                     }
                 }
@@ -89,7 +89,7 @@ fun LegalScene(
                         onAccept()
                     },
                 ) {
-                    Text(text = "Accept")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_accept))
                 }
             }
         }

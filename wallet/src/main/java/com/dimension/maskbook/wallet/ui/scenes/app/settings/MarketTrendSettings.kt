@@ -38,9 +38,9 @@ private val tradeSources = mapOf(
 
 private val NetworkType.text: String
     get() = when (this) {
-        NetworkType.Ethereum -> "ETH Network"
-        NetworkType.Binance -> "BSC Network"
-        NetworkType.Polygon -> "Polygon/Matic Network"
+        NetworkType.Ethereum -> androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_app_swap_network_source_eth)
+        NetworkType.Binance -> androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_app_swap_network_source_bsc)
+        NetworkType.Polygon -> androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.chain_name_polygon)
         NetworkType.Arbitrum -> TODO()
     }
 

@@ -15,9 +15,9 @@ import com.dimension.maskbook.wallet.viewmodel.settings.AppearanceSettingsViewMo
 import org.koin.androidx.compose.getViewModel
 
 val appearanceMap = mapOf(
-    Appearance.default to "Automatic",
-    Appearance.light to "Light",
-    Appearance.dark to "Dark",
+    Appearance.default to androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_detail_automatic),
+    Appearance.light to androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_detail_light),
+    Appearance.dark to androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_detail_dark),
 )
 @Composable
 fun AppearanceSettings(

@@ -148,7 +148,7 @@ fun SendTokenHost(
                 EditGasPriceSheet(
                     price = (gasTotal * ethPrice).humanizeDollar(),
                     costFee = gasTotal.humanizeToken(),
-                    costFeeUnit = "ETH", // TODO:
+                    costFeeUnit = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.chain_short_name_eth), // TODO:
                     arrivesIn = arrives,
                     mode = mode,
                     gasLimit = gasLimit.toString(),

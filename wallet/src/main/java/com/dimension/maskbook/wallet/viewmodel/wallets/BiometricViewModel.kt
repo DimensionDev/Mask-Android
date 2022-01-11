@@ -29,7 +29,7 @@ open class BiometricViewModel(
     ) {
         biometricAuthenticator.biometricAuthenticate(
             context = context,
-            negativeButtonText = "Enter Password",
+            negativeButtonText = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_create_wallet_enter_password),
             onSuccess = {
                 viewModelScope.launch {
                     onSuccess.invoke(getPassword())

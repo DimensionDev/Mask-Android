@@ -102,7 +102,7 @@ fun BackupWalletScene(
                     val text = remember(selectedTabIndex) {
                         when (BackupType.values()[selectedTabIndex]) {
                             BackupType.Keystore -> "Please remember your current password. Your current login password is required for decryption when using the wallet Keystore for recovery."
-                            BackupType.PrivateKey -> "One can use the private key to recover wallet account directly. Please do not let anyone else see the private key."
+                            BackupType.PrivateKey -> androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_backup_private_key_tips)
                         }
                     }
                     Text(
@@ -117,7 +117,7 @@ fun BackupWalletScene(
                             onClick = onBack,
                             modifier = Modifier.weight(1f),
                         ) {
-                            Text(text = "Cancel")
+                            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_cancel))
                         }
                         Spacer(modifier = Modifier.width(20.dp))
                         val clipboardManager = LocalClipboardManager.current
@@ -127,7 +127,7 @@ fun BackupWalletScene(
                             },
                             modifier = Modifier.weight(1f),
                         ) {
-                            Text(text = "Copy")
+                            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_backup_btn_copy))
                         }
                     }
                 }

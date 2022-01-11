@@ -101,7 +101,7 @@ fun CreateWalletHost(
                         viewModel.deselectWord(it)
                     },
                     title = "Verify your phrase",
-                    subTitle = "Tap each word in the correct order."
+                    subTitle = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_identify_verify_description)
                 )
                 result?.let {
                     if (it.type == WalletCreateOrImportResult.Type.SUCCESS) {
@@ -127,7 +127,7 @@ fun CreateWalletHost(
                     )
                 },
                 title = {
-                    Text(text = "Perfect!")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_alert_wallet_create_success_title))
                 },
                 text = {
                     Text(text = "In order to protect your funds against hackers and thieves, store this mnemonic phrase in a safe and secure place.")
@@ -139,7 +139,7 @@ fun CreateWalletHost(
                             onDone.invoke()
                         },
                     ) {
-                        Text(text = "Done")
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_done))
                     }
                 },
             )

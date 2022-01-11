@@ -65,7 +65,7 @@ fun MnemonicPhraseScene(
                     Row {
                         Text(
                             modifier = Modifier.weight(1f),
-                            text = "Write down each word.",
+                            text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_identity_create_description),
                         )
                         Icon(
                             Icons.Default.Refresh,
@@ -87,7 +87,7 @@ fun MnemonicPhraseScene(
                             onVerify.invoke()
                         },
                     ) {
-                        Text(text = "Verify")
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_verify))
                     }
                 }
 

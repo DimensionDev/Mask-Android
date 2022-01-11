@@ -34,7 +34,7 @@ fun ImportWalletScene(
                         MaskBackButton(onBack = onBack)
                     },
                     title = {
-                        Text(text = "Import wallet")
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_list_wallets_items_import))
                     }
                 )
             }
@@ -47,15 +47,15 @@ fun ImportWalletScene(
             ) {
                 ImportItem(
                     icon = R.drawable.ic_wallet_mnemonic,
-                    title = "Mnemonic words",
-                    subtitle = "The mnemonic is composed of words and separated by spaces",
+                    title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_import_item_mnemonic_words),
+                    subtitle = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_import_item_mnemonic_words_desc),
                     onClick = {
                         onMnemonic.invoke()
                     }
                 )
                 ImportItem(
                     icon = R.drawable.ic_wallet_password,
-                    title = "Private Key",
+                    title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_identity_privatekey_import_title),
                     subtitle = "Plaintext private key ",
                     onClick = {
                         onPassword.invoke()
@@ -63,7 +63,7 @@ fun ImportWalletScene(
                 )
                 ImportItem(
                     icon = R.drawable.ic_wallet_keystore,
-                    title = "Keystore",
+                    title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_import_item_keystore),
                     subtitle = "Encrypted private key JSON content. ",
                     onClick = {
                         onKeystore.invoke()

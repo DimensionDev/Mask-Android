@@ -89,7 +89,7 @@ fun BackupLocalHost(
                         verticalArrangement = Arrangement.Center,
                     ) {
                         CircularProgressIndicator()
-                        Text(text = "Loading...")
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_loading))
                     }
                 }
             }
@@ -113,7 +113,7 @@ fun BackupLocalScene(
         topBar = {
             MaskTopAppBar(
                 title = {
-                    Text(text = "Back up locally")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_back_up_locally))
                 },
                 navigationIcon = {
                     MaskBackButton(
@@ -139,16 +139,16 @@ fun BackupLocalScene(
                     ) {
                         MetaItem(title = "Account", value = meta.account)
                         Spacer(modifier = Modifier.height(16.dp))
-                        MetaItem(title = "Personas", value = meta.personas.toString())
+                        MetaItem(title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.tab_personas), value = meta.personas.toString())
                         Spacer(modifier = Modifier.height(16.dp))
                         MetaItem(
-                            title = "Associated account",
+                            title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_backup_restored_account),
                             value = meta.associatedAccount.toString()
                         )
                         Spacer(modifier = Modifier.height(16.dp))
-                        MetaItem(title = "Encrypted post", value = meta.encryptedPost.toString())
+                        MetaItem(title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_backup_restored_post), value = meta.encryptedPost.toString())
                         Spacer(modifier = Modifier.height(16.dp))
-                        MetaItem(title = "Contacts", value = meta.contacts.toString())
+                        MetaItem(title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_backup_restored_contacts), value = meta.contacts.toString())
                         Spacer(modifier = Modifier.height(16.dp))
                         MetaItem(title = "File", value = meta.file.toString())
                     }
@@ -165,13 +165,13 @@ fun BackupLocalScene(
                     })
                     Spacer(modifier = Modifier.width(10.dp))
                     MetaItem(
-                        title = "Local Wallet",
+                        title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_local_backup_local_wallet),
                         value = meta.wallet.toString()
                     )
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
-            Text(text = "Backup Password")
+            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_backup_recovery_back_up_password))
             Spacer(modifier = Modifier.height(8.dp))
             OutlinedTextField(
                 value = password,
@@ -183,7 +183,7 @@ fun BackupLocalScene(
             )
             if (withWallet) {
                 Spacer(modifier = Modifier.height(16.dp))
-                Text(text = "Payment Password")
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_general_setup_payment_password))
                 Spacer(modifier = Modifier.height(8.dp))
                 OutlinedTextField(
                     value = paymentPassword,
@@ -211,7 +211,7 @@ fun BackupLocalScene(
                 modifier = Modifier.fillMaxWidth(),
                 enabled = backupPasswordValid && (withWallet && paymentPasswordValid)
             ) {
-                Text(text = "Back Up")
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_personas_action_backup))
             }
         }
     }

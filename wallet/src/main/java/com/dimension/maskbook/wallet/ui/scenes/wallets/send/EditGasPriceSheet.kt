@@ -56,7 +56,7 @@ fun EditGasPriceSheet(
 
             Spacer(modifier = Modifier.height(20.dp))
             Text(
-                text = "Edit Gas Price",
+                text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_sendTransaction_gasPrice_title),
                 style = MaterialTheme.typography.h6,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
@@ -102,7 +102,7 @@ fun EditGasPriceSheet(
             Spacer(modifier = Modifier.height(20.dp))
 
             TextButton(onClick = { showAdvanced = !showAdvanced }) {
-                Text(text = "Advanced")
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_sendTransaction_gasPrice_advancedBtn))
                 Spacer(modifier = Modifier.width(10.dp))
                 Icon(
                     painter = painterResource(id = if (showAdvanced) R.drawable.ic_arrow_up else R.drawable.ic_arrow_down),
@@ -131,7 +131,7 @@ fun EditGasPriceSheet(
                 onClick = onConfirm,
                 enabled = canConfirm
             ) {
-                Text(text = "Confirm")
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_confirm))
             }
         }
     }
@@ -172,7 +172,7 @@ private fun CustomContent(
             Spacer(modifier = Modifier.height(16.dp))
             Row(modifier = Modifier.fillMaxWidth()) {
                 Text(
-                    text = "Max priority fee(Gwei)",
+                    text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_sendTransaction_gasPrice_maxPriorityFee),
                     modifier = Modifier.weight(1f)
                 )
                 Text(text = "~$maxPriorityFeePrice")
@@ -190,7 +190,7 @@ private fun CustomContent(
             Spacer(modifier = Modifier.height(16.dp))
             Row(modifier = Modifier.fillMaxWidth()) {
                 Text(
-                    text = "Max fee(Gwei)",
+                    text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_sendTransaction_gasPrice_maxFee),
                     modifier = Modifier.weight(1f)
                 )
                 Text(text = "~$maxFeePrice")

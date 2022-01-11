@@ -73,7 +73,7 @@ fun ImportWalletMnemonicScene(
                         .fillMaxSize()
                         .padding(ScaffoldPadding),
                 ) {
-                    Text(text = "Mnemonic", style = MaterialTheme.typography.h4)
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_mnemonic_title), style = MaterialTheme.typography.h4)
                     Spacer(modifier = Modifier.height(24.dp))
                     MaskInputField(
                         value = words,
@@ -104,7 +104,7 @@ fun ImportWalletMnemonicScene(
                         },
                         enabled = canConfirm
                     ) {
-                        Text(text = "Confirm")
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_confirm))
                     }
                     AnimatedVisibility(visible = hintWords.isNotEmpty()) {
                         LazyRow(

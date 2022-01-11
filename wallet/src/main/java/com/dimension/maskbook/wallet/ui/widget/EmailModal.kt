@@ -33,7 +33,7 @@ fun EmailInputModal(
                 style = MaterialTheme.typography.h6,
             )
             Spacer(modifier = Modifier.height(21.dp))
-            Text(text = "Email")
+            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_backup_backup_verify_field_email))
             Spacer(modifier = Modifier.height(8.dp))
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
@@ -56,7 +56,7 @@ fun EmailInputModal(
                 },
                 enabled = emailValid && !buttonEnabled && email.isNotEmpty(),
             ) {
-                Text(text = "Confirm")
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_confirm))
             }
         }
     }
@@ -92,7 +92,7 @@ fun EmailCodeInputModal(
                 subTitle.invoke(this)
             }
             Spacer(modifier = Modifier.height(21.dp))
-            Text(text = "Verification Code")
+            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_backup_validation_code))
             Spacer(modifier = Modifier.height(8.dp))
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -114,7 +114,7 @@ fun EmailCodeInputModal(
                     enabled = canSend && !buttonEnabled,
                 ) {
                     if (canSend) {
-                        Text(text = "Resend")
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_resend))
                     } else {
                         Text(text = countDown.toString() + "s")
                     }
@@ -136,7 +136,7 @@ fun EmailCodeInputModal(
                 },
                 enabled = code.isNotEmpty() && !buttonEnabled && codeValid,
             ) {
-                Text(text = "Confirm")
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_confirm))
             }
             footer.invoke(this)
         }

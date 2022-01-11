@@ -32,7 +32,7 @@ fun UnlockWalletDialog(
     MaskDialog(
         onDismissRequest = { /*TODO*/ },
         title = {
-            Text(text = "Unlock Wallet")
+            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_unlock_title))
         },
         text = {
             Column(modifier = Modifier.fillMaxWidth()) {
@@ -57,7 +57,7 @@ fun UnlockWalletDialog(
                         onCancel.invoke()
                     }
                 ) {
-                    Text(text = "Cancel")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_cancel))
                 }
                 Spacer(modifier = Modifier.width(20.dp))
                 PrimaryButton(
@@ -66,7 +66,7 @@ fun UnlockWalletDialog(
                         onUnlock.invoke(password)
                     },
                 ) {
-                    Text(text = "Unlock")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_unlock_button))
                 }
             }
         }

@@ -97,7 +97,7 @@ fun WalletQrcodeScene(
                     onClick = { onShare.invoke() },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(text = "Share")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_receive_btn_share))
                 }
             }
         }

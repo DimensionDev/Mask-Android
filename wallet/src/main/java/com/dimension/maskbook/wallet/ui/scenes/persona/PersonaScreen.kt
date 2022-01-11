@@ -44,9 +44,9 @@ import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import org.koin.androidx.compose.getViewModel
 
 private sealed class Screen(val route: String, val name: String) {
-    object Social : Screen("Social", "Social")
-    object Post : Screen("Post", "Post")
-    object Contacts : Screen("Contacts", "Contacts")
+    object Social : Screen("Social", androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_personas_tabs_social))
+    object Post : Screen("Post", androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_personas_tabs_post))
+    object Contacts : Screen("Contacts", androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_backup_restored_contacts))
 }
 
 private val items = listOf(

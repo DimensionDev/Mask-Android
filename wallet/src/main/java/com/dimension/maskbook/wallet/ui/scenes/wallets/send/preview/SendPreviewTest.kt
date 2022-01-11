@@ -21,7 +21,7 @@ private val tokenData = TokenData(
     address = "0x12345",
     chainId = "xxx",
     name = "Eth",
-    symbol = "ETH",
+    symbol = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.chain_short_name_eth),
     decimals = 10,
     logoURI = "https://downloads.coindesk.com/arc-hosted-images/eth.png",
     price = BigDecimal.valueOf(2000)
@@ -104,7 +104,7 @@ fun SignatureRequestSignSheetPreview() {
 @Composable
 fun UnlockWalletPreview() {
     UnlockWalletDialog(
-        unlockError = "Incorrect Password.",
+        unlockError = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_change_password_incorrect_password),
         onCancel = { /*TODO*/ }
     ) {
 

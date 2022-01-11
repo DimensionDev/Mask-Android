@@ -75,7 +75,7 @@ fun EmptyContactsScene() {
                 }
             )
         }) {
-            Text(text = "Invite")
+            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_invite))
         }
     }
 }

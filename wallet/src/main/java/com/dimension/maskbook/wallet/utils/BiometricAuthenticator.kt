@@ -16,7 +16,7 @@ class BiometricAuthenticator {
         context: Context,
         title: String,
         subtitle: String = "",
-        negativeButtonText: String = "Cancel",
+        negativeButtonText: String = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_cancel),
         onSuccess: () -> Unit,
         onFailed: (errString:String) -> Unit =  {},
         onCanceled: () -> Unit = {}

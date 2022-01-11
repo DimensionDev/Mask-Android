@@ -62,8 +62,8 @@ fun SocialScreen() {
 }
 
 private sealed class Screen(val route: String, val name: String, val target: PlatformType) {
-    object Twitter : Screen("Twitter", "Twitter", PlatformType.Twitter)
-    object Facebook : Screen("Facebook", "Facebook", PlatformType.Facebook)
+    object Twitter : Screen("Twitter", androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_persona_social_twitter), PlatformType.Twitter)
+    object Facebook : Screen("Facebook", androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_persona_social_facebook), PlatformType.Facebook)
 }
 
 private val items = listOf(
@@ -224,7 +224,7 @@ fun TwitterSocialScene(
                             modifier = Modifier.clickable {
                                 onDisconnect.invoke(it)
                             },
-                            text = "Disconnect",
+                            text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_connect_disconnect),
                             color = MaterialTheme.colors.primary,
                         )
                     }
@@ -293,7 +293,7 @@ fun FacebookSocialScene(
                             modifier = Modifier.clickable {
                                 onDisconnect.invoke(it)
                             },
-                            text = "Disconnect",
+                            text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_connect_disconnect),
                             color = MaterialTheme.colors.primary,
                         )
                     }
@@ -322,7 +322,7 @@ fun EmptyPersonaSocialScreen(
             contentDescription = null,
             modifier = Modifier.weight(1f)
         )
-        Text(text = "Persona", modifier = Modifier.align(Alignment.Start))
+        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_persona_welcome_persona), modifier = Modifier.align(Alignment.Start))
         Spacer(modifier = Modifier.height(8.dp))
         OutlinedTextField(
             value = name,
@@ -334,7 +334,7 @@ fun EmptyPersonaSocialScreen(
             modifier = Modifier.fillMaxWidth(),
             onClick = { onCreatePersona.invoke(name) },
         ) {
-            Text(text = "Create Persona")
+            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_personas_create_create_persona))
         }
     }
 }

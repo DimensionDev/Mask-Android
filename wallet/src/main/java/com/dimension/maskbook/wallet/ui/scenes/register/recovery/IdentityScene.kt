@@ -25,7 +25,7 @@ fun IdentityScene(
             topBar = {
                 MaskTopAppBar(
                     title = {
-                        Text(text = "Identity")
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_identity_mnemonic_import_title))
                     },
                     navigationIcon = {
                         MaskBackButton(
@@ -57,7 +57,7 @@ fun IdentityScene(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = onConfirm
                 ) {
-                    Text(text = "Confirm")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_confirm))
                 }
             }
         }

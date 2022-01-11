@@ -31,7 +31,7 @@ fun ExportPrivateKeyScene(
                         }
                     },
                     title = {
-                        Text(text = "Export Private Key")
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_persona_export_private_key_title))
                     }
                 )
             }
@@ -64,7 +64,7 @@ fun ExportPrivateKeyScene(
                                 onBack.invoke()
                             }
                         ) {
-                            Text(text = "Cancel")
+                            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_cancel))
                         }
                         Spacer(modifier = Modifier.width(20.dp))
                         val manager = LocalClipboardManager.current
@@ -78,7 +78,7 @@ fun ExportPrivateKeyScene(
                                 })
                             },
                         ) {
-                            Text(text = "Copy")
+                            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_backup_btn_copy))
                         }
                     }
                 }

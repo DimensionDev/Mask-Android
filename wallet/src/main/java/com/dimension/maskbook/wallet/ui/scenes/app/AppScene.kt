@@ -32,46 +32,46 @@ private data class AppDisplayData(
 private val items = listOf(
     AppDisplayData(
         id = "com.maskbook.fileservice",
-        name = "File Service",
+        name = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_app_plugins_file_service),
         onIcon = R.drawable.encrypted_file,
         offIcon = R.drawable.encrypted_file_1,
         canExplore = true,
     ),
     AppDisplayData(
         id = "co.gitcoin",
-        name = "Gitcoin",
+        name = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_app_plugins_gitcoin),
         onIcon = R.drawable.gitcoin,
         offIcon = R.drawable.gitcoin_1
     ),
     AppDisplayData(
         id = "co.dhedge",
-        name = "DHEDGE",
+        name = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_app_plugins_dhedge),
         onIcon = R.drawable.dhedge,
         offIcon = R.drawable.dhedge_1
     ),
     AppDisplayData(
         id = "com.maskbook.red_packet",
-        name = "Lucky Drop",
+        name = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_app_plugins_lucy_drop),
         onIcon = R.drawable.packet,
         offIcon = R.drawable.packet_1,
         canExplore = true,
     ),
     AppDisplayData(
         id = "com.maskbook.transak",
-        name = "Transak",
+        name = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_app_plugins_transaction),
         onIcon = R.drawable.transak,
         offIcon = R.drawable.transak_1,
         canExplore = true,
     ),
     AppDisplayData(
         id = "com.maskbook.collectibles",
-        name = "Collectibles",
+        name = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_app_plugins_collectibles),
         onIcon = R.drawable.collectibles,
         offIcon = R.drawable.collectibles1
     ),
     AppDisplayData(
         id = "org.snapshot",
-        name = "Snapshot",
+        name = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_app_plugins_snapshot),
         onIcon = R.drawable.snapshot,
         offIcon = R.drawable.snapshot_1
     ),
@@ -84,13 +84,13 @@ private val items = listOf(
     ),
     AppDisplayData(
         id = "com.maskbook.tweet",
-        name = "Valuables",
+        name = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_app_plugins_valuables),
         onIcon = R.drawable.union,
         offIcon = R.drawable.union_1
     ),
     AppDisplayData(
         id = "com.maskbook.trader",
-        name = "Market Trend",
+        name = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_app_plugins_market_trend),
         onIcon = R.drawable.market_trend,
         offIcon = R.drawable.market_trend_1,
         settingRoute = "MarketTrendSettings"

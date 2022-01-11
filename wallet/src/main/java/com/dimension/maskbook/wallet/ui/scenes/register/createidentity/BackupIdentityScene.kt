@@ -41,10 +41,10 @@ fun BackupIdentityScene(
                 }
             },
             title = {
-                Text(text = "Identity Phrase")
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_alert_identity_phrase_title))
             },
             text = {
-                Text(text = "Your identity phrase is composed of randomly selected words. Please carefully write down each word in the order it appears.")
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_alert_identity_phrase_description))
             }
         )
     }
@@ -73,7 +73,7 @@ private fun BackupContent(
             topBar = {
                 MaskTopAppBar(
                     title = {
-                        Text(text = "Verify identity code")
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_identify_verify_title))
                     },
                     navigationIcon = {
                         MaskBackButton {
@@ -84,7 +84,7 @@ private fun BackupContent(
                         Row {
                             Text(
                                 modifier = Modifier.weight(1f),
-                                text = "Write down each word.",
+                                text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_identity_create_description),
                             )
                             Icon(
                                 Icons.Default.Refresh,
@@ -124,7 +124,7 @@ private fun BackupContent(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = { onVerify.invoke() },
                 ) {
-                    Text(text = "Verify")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_verify))
                 }
             }
         }

@@ -37,7 +37,7 @@ fun BackUpPasswordModal(
         ) {
             //TODO Biometrics replace UI
             Text(
-                text = if (biometricEnabled) "Unlock with biometrics" else "Backup password",
+                text = if (biometricEnabled) "Unlock with biometrics" else androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_set_backup_password_backup_password),
                 style = MaterialTheme.typography.h6,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
@@ -47,7 +47,7 @@ fun BackUpPasswordModal(
                     MaskPasswordInputField(value = password, onValueChange = onPasswordChanged)
                     if (!passwordValid) {
                         Spacer(modifier = Modifier.height(8.dp))
-                        Text(text = "Incorrect Password.", color = Color.Red)
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_change_password_incorrect_password), color = Color.Red)
                     }
                 }
             }
@@ -57,7 +57,7 @@ fun BackUpPasswordModal(
                     onClick = onConfirm,
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text(text = if (biometricEnabled) "Unlock" else "Confirm")
+                    Text(text = if (biometricEnabled) androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_unlock_button) else androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_confirm))
                 }
             }
         }

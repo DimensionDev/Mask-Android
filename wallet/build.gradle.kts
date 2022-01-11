@@ -1,3 +1,4 @@
+import groovy.util.Node
 import org.jetbrains.kotlin.gradle.internal.ensureParentDirsCreated
 
 plugins {
@@ -22,7 +23,7 @@ android {
         release {
             isMinifyEnabled = false
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"), 
+                getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
         }
@@ -72,7 +73,7 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-common-java8:$lifecycle_version")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version")
 
-    val koin_version= "3.1.4"
+    val koin_version = "3.1.4"
     api("io.insert-koin:koin-android:$koin_version")
 //    implementation("io.insert-koin:koin-android-viewmodel:$koin_version")
     implementation("io.insert-koin:koin-androidx-compose:$koin_version")
@@ -118,7 +119,8 @@ tasks.create("generateTranslation") {
             val target = if (name.isEmpty()) {
                 File(projectDir, "src/main/res/values/strings.xml")
             } else {
-                File(projectDir, "src/main/res/values-${name.split("_").first()}-r${name.split("-").last()}/strings.xml")
+                File(projectDir,
+                    "src/main/res/values-${name.split("_").first()}-r${name.split("-").last()}/strings.xml")
             }.apply {
                 ensureParentDirsCreated()
                 if (!exists()) {
@@ -126,6 +128,31 @@ tasks.create("generateTranslation") {
                 }
             }
             generateLocalization(file, target)
+        }
+    }
+}
+
+tasks.create("replaceText") {
+    doLast {
+        val xml = File(projectDir, "src/main/res/values/strings.xml").let {
+            groovy.xml.XmlParser().parse(it).children()
+        }?.let {
+            it.map {
+                it as Node
+            }.associate {
+                it.attribute("name").toString() to it.value().toString().trimStart('[').trimEnd(']')
+            }
+        }?.let { map ->
+            File(projectDir, "src/main/java").walk().forEach { file ->
+                if (file.isFile) {
+                    var text = file.readText()
+                    map.forEach { (key, value) ->
+                        text = text.replace(" \"${value}\"",
+                            " androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.${key})")
+                    }
+                    file.writeText(text)
+                }
+            }
         }
     }
 }
@@ -156,7 +183,7 @@ fun generateLocalization(appJson: File, target: File) {
             """<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">""" + System.lineSeparator() +
                 result.map {
                     "    <string name=\"${it.key}\">${
-                    it.value.escapeXml().replace(System.lineSeparator(), "\\n")
+                        it.value.escapeXml().replace(System.lineSeparator(), "\\n")
                     }</string>"
                 }.joinToString(System.lineSeparator()) + System.lineSeparator() +
                 "</resources>"

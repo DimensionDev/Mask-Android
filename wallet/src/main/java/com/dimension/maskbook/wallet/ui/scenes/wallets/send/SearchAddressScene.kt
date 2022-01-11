@@ -46,7 +46,7 @@ fun SearchAddressScene(
                     navigationIcon = {
                         MaskBackButton(onBack = onBack)
                     },
-                    title = { Text(text = "Send") }
+                    title = { Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_balance_btn_Send)) }
                 )
             }
         ) {
@@ -140,7 +140,7 @@ private fun SearchResultListContent(
     onItemSelect: (SearchAddressData) -> Unit
 ) {
     LazyColumn(modifier = Modifier.fillMaxSize()) {
-        itemHeader(icon = R.drawable.ic_profile, title = "Contacts")
+        itemHeader(icon = R.drawable.ic_profile, title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_backup_restored_contacts))
         items(contacts.size) { index ->
             SearchAddressItem(
                 item = contacts[index],
@@ -164,7 +164,7 @@ private fun SearchInput(
     onScan: () -> Unit,
 //    searchResult: SearchAddressResult?,
 ) {
-    Text(text = "To")
+    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_sendTransaction_send_Label_To))
     Spacer(modifier = Modifier.height(10.dp))
     Row(
         modifier = Modifier
@@ -259,7 +259,7 @@ private fun EmptyInputContent(
     onItemSelect: (SearchAddressData) -> Unit
 ) {
     LazyColumn {
-        itemHeader(icon = R.drawable.ic_profile, title = "Contacts")
+        itemHeader(icon = R.drawable.ic_profile, title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_backup_restored_contacts))
         items(contacts.size) { index ->
             SearchAddressItem(
                 item = contacts[index],
@@ -405,6 +405,6 @@ private fun ColumnScope.NextButton(
         modifier = Modifier.fillMaxWidth(),
         enabled = enable
     ) {
-        Text(text = "Next")
+        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_next))
     }
 }

@@ -63,7 +63,7 @@ fun ImportWalletPrivateKeyScene(
                         .fillMaxSize()
                         .padding(ScaffoldPadding),
                 ) {
-                    Text(text = "Private key", style = MaterialTheme.typography.h4)
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_private_key_title), style = MaterialTheme.typography.h4)
                     Spacer(modifier = Modifier.height(24.dp))
                     MaskInputField(
                         value = privateKey,
@@ -91,7 +91,7 @@ fun ImportWalletPrivateKeyScene(
                         },
                         enabled = canConfirm
                     ) {
-                        Text(text = "Confirm")
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_confirm))
                     }
                 }
                 if (showDialog) {

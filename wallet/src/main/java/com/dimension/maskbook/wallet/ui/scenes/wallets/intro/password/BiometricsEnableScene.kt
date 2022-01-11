@@ -95,7 +95,7 @@ fun BiometricsEnableScene(
 
 private object FaceIdEnableSceneObjects {
     const val Title = "Unlock with face ID?"
-    const val Subtitle = "Unlock Mask Network faster by setting up facial recognition."
-    const val EnableButton = "Enable"
-    const val CancelButton = "No thanks"
+    const val Subtitle = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_biometry_recognition_face_id_description)
+    const val EnableButton = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_enable)
+    const val CancelButton = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_no_thanks)
 }
