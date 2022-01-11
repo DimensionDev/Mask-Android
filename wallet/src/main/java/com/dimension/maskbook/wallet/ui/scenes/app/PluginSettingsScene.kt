@@ -30,6 +30,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.dimension.maskbook.wallet.ui.widget.MaskBackButton
 import com.dimension.maskbook.wallet.ui.widget.MaskListCardItem
 import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
@@ -129,6 +130,7 @@ private fun TipDialog(
         Text(
             text = PluginSettingsItemDefault.tipMessage,
             color = Color.White,
+            lineHeight = 21.sp,
             modifier = Modifier.weight(1f),
         )
         IconButton(onClick = onClose) {
