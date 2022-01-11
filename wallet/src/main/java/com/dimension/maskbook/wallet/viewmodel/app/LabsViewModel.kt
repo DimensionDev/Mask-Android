@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ext.asStateIn
+import com.dimension.maskbook.wallet.repository.AppKey
 import com.dimension.maskbook.wallet.repository.IAppRepository
 import com.dimension.maskbook.wallet.repository.IWalletRepository
 import kotlinx.coroutines.Dispatchers
@@ -13,7 +14,7 @@ import kotlinx.coroutines.flow.map
 
 
 data class AppDisplayData(
-    val id: String,
+    val key: AppKey,
     @DrawableRes val onIcon: Int,
     val name: String,
     val description: String,
@@ -22,23 +23,23 @@ data class AppDisplayData(
     val enabled: Boolean = true,
 )
 
-private val displayDatas = listOf(
+private val displayDataList = listOf(
     AppDisplayData(
-        id = "com.maskbook.transak",
+        key = AppKey.Transak,
         name = "Transak",
         description = "Buy crypto in 60+ countries with Transak support.",
         onIcon = R.drawable.ic_labs_transak,
         canExplore = true,
     ),
     AppDisplayData(
-        id = "com.maskbook.ito",
+        key = AppKey.ITO,
         name = "ITO",
         description = "Enable users to buy tokens directly on Twitter.",
         onIcon = R.drawable.ic_labs_ito,
         canExplore = true,
     ),
     AppDisplayData(
-        id = "com.maskbook.red_packet",
+        key = AppKey.LuckDrop,
         name = "Lucky Drop",
         description = "Surprise your encrypted friends with Token/NFT Lucky Drops.",
         onIcon = R.drawable.ic_labs_packet,
@@ -46,7 +47,7 @@ private val displayDatas = listOf(
     ),
     // TODO swap ?
     AppDisplayData(
-        id = "com.maskbook.fileservice",
+        key = AppKey.FileService,
         name = "File Service",
         description = "Decentralized file storage for users.",
         onIcon = R.drawable.ic_labs_encrypted_file,
@@ -66,9 +67,9 @@ class LabsViewModel(
     val apps by lazy {
         repository.apps
             .map { apps ->
-                displayDatas.map { item ->
+                displayDataList.map { item ->
                     item.copy(
-                        enabled = apps.find { it.id == item.id }?.enabled ?: true
+                        enabled = apps.find { it.key === item.key }?.enabled ?: true
                     )
                 }.sortedByDescending { it.enabled }
             }
@@ -80,7 +81,7 @@ class LabsViewModel(
         walletRepository.currentWallet.asStateIn(viewModelScope, null)
     }
 
-    fun setEnabled(id: String, enabled: Boolean) {
-        repository.setEnabled(id, enabled)
+    fun setEnabled(key: AppKey, enabled: Boolean) {
+        repository.setEnabled(key, enabled)
     }
 }
