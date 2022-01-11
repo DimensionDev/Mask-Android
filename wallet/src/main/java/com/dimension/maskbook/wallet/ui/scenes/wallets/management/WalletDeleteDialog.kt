@@ -23,7 +23,9 @@ fun WalletDeleteDialog(
     passwordValid: Boolean,
 ) {
     MaskDialog(
+        // workaround for https://issuetracker.google.com/issues/194911971
         properties = DialogProperties(usePlatformDefaultWidth = false),
+        modifier = Modifier.padding(horizontal = 23.dp),
         onDismissRequest = onBack,
         icon = {
             WalletAvatar(

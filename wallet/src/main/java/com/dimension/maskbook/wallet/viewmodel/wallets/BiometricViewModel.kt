@@ -10,9 +10,9 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
-class BiometricViewModel(
+open class BiometricViewModel(
     private val biometricAuthenticator: BiometricAuthenticator,
-    private val settingsRepository: ISettingsRepository
+    protected val settingsRepository: ISettingsRepository
 ) : ViewModel() {
     private var _enterPassword = MutableStateFlow(false)
     val biometricEnabled by lazy {
@@ -32,7 +32,7 @@ class BiometricViewModel(
             negativeButtonText = "Enter Password",
             onSuccess = {
                 viewModelScope.launch {
-                    onSuccess.invoke(settingsRepository.paymentPassword.first())
+                    onSuccess.invoke(getPassword())
                 }
             },
             onFailed = {
@@ -43,4 +43,6 @@ class BiometricViewModel(
             subtitle = subtitle
         )
     }
+
+    protected suspend fun getPassword() = settingsRepository.paymentPassword.first()
 }

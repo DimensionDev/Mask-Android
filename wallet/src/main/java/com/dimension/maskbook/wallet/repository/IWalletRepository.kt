@@ -208,6 +208,7 @@ interface IWalletRepository {
     suspend fun getPrivateKey(walletData: WalletData, platformType: CoinPlatformType): String
     suspend fun getTotalBalance(address: String): Double
     fun deleteCurrentWallet()
+    fun deleteWallet(id: String)
     fun renameWallet(value: String, id: String)
     fun renameCurrentWallet(value: String)
     fun sendTokenWithCurrentWallet(

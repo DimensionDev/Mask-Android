@@ -51,13 +51,7 @@ import com.dimension.maskbook.wallet.viewmodel.settings.LanguageSettingsViewMode
 import com.dimension.maskbook.wallet.viewmodel.settings.PaymentPasswordSettingsViewModel
 import com.dimension.maskbook.wallet.viewmodel.settings.PhoneBackupViewModel
 import com.dimension.maskbook.wallet.viewmodel.settings.PhoneSetupViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.BiometricViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.BiometricEnableViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.SetUpPaymentPasswordViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.TokenDetailViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.TouchIdEnableViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.WalletBalancesViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.WalletManagementModalViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.*
 import com.dimension.maskbook.wallet.viewmodel.wallets.create.CreateWalletRecoveryKeyViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.import.ImportWalletDerivationPathViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.import.ImportWalletKeystoreViewModel
@@ -73,6 +67,8 @@ import com.dimension.maskbook.wallet.viewmodel.wallets.send.GasFeeViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.SearchAddressViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendConfirmViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendTokenViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.asExecutor
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -118,6 +114,8 @@ val walletModules = module {
 
     single {
         Room.databaseBuilder(get(), AppDatabase::class.java, "maskbook")
+            .setQueryExecutor(Dispatchers.IO.asExecutor())
+            .setTransactionExecutor(Dispatchers.IO.asExecutor())
             .fallbackToDestructiveMigration()
             .build()
     }
@@ -233,6 +231,8 @@ val walletModules = module {
         SendConfirmViewModel(tokenData, toAddress, get(), get())
     }
     viewModel { BiometricViewModel(get(), get()) }
+    viewModel { UnlockWalletViewModel(get(), get()) }
+    viewModel { BackUpPasswordViewModel(get(), get()) }
 }
 
 val servicesModule = module {
