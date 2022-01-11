@@ -1,8 +1,12 @@
 package com.dimension.maskbook.wallet.ui.scenes.wallets.management
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -13,9 +17,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import coil.compose.rememberImagePainter
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.ui.scenes.persona.social.tabIndicatorOffset3
@@ -26,6 +33,8 @@ import com.dimension.maskbook.wallet.viewmodel.wallets.WalletConnectViewModel
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import com.google.zxing.BarcodeFormat
+import com.journeyapps.barcodescanner.BarcodeEncoder
 import org.koin.androidx.compose.getViewModel
 
 enum class WalletConnectType {
@@ -39,6 +48,9 @@ fun WalletConnectModal() {
     val navController = rememberAnimatedNavController()
     val viewModel = getViewModel<WalletConnectViewModel>()
     val qrCode by viewModel.qrCode.observeAsState(initial = "")
+    val context = LocalContext.current
+    val clipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+
     MaskModal {
         Column(
             modifier = Modifier
@@ -55,7 +67,14 @@ fun WalletConnectModal() {
                 startDestination = "WalletConnectTypeSelect"
             ) {
                 composable("WalletConnectTypeSelect") {
-                    TypeSelectScene(qrCode = qrCode)
+                    TypeSelectScene(qrCode = qrCode, onCopy = {
+                        clipboardManager.setPrimaryClip(
+                            ClipData.newPlainText(
+                                "WalletConnect Uri",
+                                it
+                            )
+                        )
+                    })
                 }
 
                 composable("WalletConnectConnecting") {
@@ -127,7 +146,10 @@ fun Connecting() {
 
 
 @Composable
-private fun TypeSelectScene(qrCode: String) {
+private fun TypeSelectScene(
+    qrCode: String,
+    onCopy: (String) -> Unit
+) {
     Column {
         var selectedTabIndex by remember {
             mutableStateOf(0)
@@ -173,27 +195,48 @@ private fun TypeSelectScene(qrCode: String) {
         }
         when (WalletConnectType.values()[selectedTabIndex]) {
             WalletConnectType.Manually -> WalletConnectManually()
-            WalletConnectType.QRCode -> WalletConnectQRCode(qrCode = qrCode)
+            WalletConnectType.QRCode -> WalletConnectQRCode(qrCode = qrCode, onCopy = onCopy)
         }
     }
 }
 
 @Composable
-fun WalletConnectQRCode(qrCode: String) {
-    Text(text = "Use a WalletConnect compatiable wallet to scan the QR Code")
+fun WalletConnectQRCode(qrCode: String, onCopy: (String) -> Unit) {
+    val qrCodeBitmap = remember(qrCode) {
+        try {
+            BarcodeEncoder().encodeBitmap(
+                qrCode,
+                BarcodeFormat.QR_CODE,
+                500,
+                500
+            )
+        } catch (e: Throwable) {
+            null
+        }
+    }
+    Text(text = "Use a WalletConnect compatible wallet to scan the QR Code")
     Box(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable { onCopy.invoke(qrCode) }
             .aspectRatio(1f)
             .padding(8.dp)
     ) {
-        Icon(
-            Icons.Default.Home,
-            contentDescription = null,
-        )// TODO: Display qr code
-        Text(text = "qrCode:$qrCode")
+        Image(
+            painter = painterResource(id = R.drawable.ic_qr_code_border),
+            modifier = Modifier.fillMaxSize(),
+            contentDescription = ""
+        )
+        Image(
+            painter = rememberImagePainter(data = qrCodeBitmap),
+            modifier = Modifier
+                .padding(8.dp)
+                .fillMaxSize(),
+            contentScale = ContentScale.FillBounds,
+            contentDescription = "qrCode"
+        )
     }
-    Text(text = "Tap to copy to clipboard")// TODO: Copy
+    Text(text = "Tap to copy to clipboard")
 }
 
 @Composable
