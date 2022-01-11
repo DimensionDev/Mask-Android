@@ -1,6 +1,5 @@
 package com.dimension.maskbook.wallet.ui.scenes.app
 
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -24,49 +23,10 @@ import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.ui.widget.MaskButton
 import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
 import com.dimension.maskbook.wallet.ui.widget.MaskSingleLineTopAppBar
+import com.dimension.maskbook.wallet.viewmodel.app.AppDisplayData
 import com.dimension.maskbook.wallet.viewmodel.app.LabsViewModel
 import org.koin.androidx.compose.getViewModel
 
-private data class AppDisplayData(
-    val id: String,
-    @DrawableRes val onIcon: Int,
-    val name: String,
-    val description: String,
-    val canExplore: Boolean = false,
-    val settingRoute: String? = null
-)
-
-private val items = listOf(
-    AppDisplayData(
-        id = "com.maskbook.transak",
-        name = "Transak",
-        description = "Buy crypto in 60+ countries with Transak support.",
-        onIcon = R.drawable.ic_labs_transak,
-        canExplore = true,
-    ),
-    AppDisplayData(
-        id = "com.maskbook.ito",
-        name = "ITO",
-        description = "Enable users to buy tokens directly on Twitter.",
-        onIcon = R.drawable.ic_labs_ito,
-        canExplore = true,
-    ),
-    AppDisplayData(
-        id = "com.maskbook.red_packet",
-        name = "Lucky Drop",
-        description = "Surprise your encrypted friends with Token/NFT Lucky Drops.",
-        onIcon = R.drawable.ic_labs_packet,
-        canExplore = true,
-    ),
-    // TODO swap ?
-    AppDisplayData(
-        id = "com.maskbook.fileservice",
-        name = "File Service",
-        description = "Decentralized file storage for users.",
-        onIcon = R.drawable.ic_labs_encrypted_file,
-        canExplore = true,
-    ),
-)
 
 @Composable
 fun LabsScene(
@@ -95,11 +55,8 @@ fun LabsScene(
         }
     ) {
         LazyColumn {
-            items(items) { item ->
-                AppItem(
-                    item = item,
-                    enabled = apps.find { it.id == item.id }?.enabled ?: false
-                )
+            items(apps) { item ->
+                AppItem(item)
             }
         }
     }
@@ -109,11 +66,10 @@ fun LabsScene(
 @Composable
 private fun AppItem(
     item: AppDisplayData,
-    enabled: Boolean,
 ) {
     MaskButton(
         onClick = {},
-        enabled = enabled,
+        enabled = item.enabled,
     ) {
         ListItem(
             icon = {
@@ -121,7 +77,7 @@ private fun AppItem(
                     painter = painterResource(id = item.onIcon),
                     contentDescription = null,
                     modifier = Modifier.padding(vertical = 12.dp),
-                    alpha = if (enabled) 1f else LocalContentAlpha.current,
+                    alpha = if (item.enabled) 1f else LocalContentAlpha.current,
                 )
             },
             text = {
