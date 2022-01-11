@@ -9,7 +9,10 @@ import kotlinx.coroutines.flow.Flow
 interface WalletDao {
     @Transaction
     @Query("SELECT * FROM DbWallet")
-    fun getAll(): Flow<List<DbWalletTokenTokenWithWallet>>
+    fun getAllFlow(): Flow<List<DbWalletTokenTokenWithWallet>>
+    @Transaction
+    @Query("SELECT * FROM DbWallet")
+    fun getAll(): List<DbWalletTokenTokenWithWallet>
     @Transaction
     @Query("SELECT * FROM DbWallet WHERE id = :id")
     suspend fun getById(id: String): DbWalletTokenTokenWithWallet?
@@ -19,7 +22,7 @@ interface WalletDao {
     @Transaction
     @Query("SELECT * FROM DbWallet WHERE id = :id")
     fun getByIdFlow(id: String): Flow<DbWalletTokenTokenWithWallet?>
-    @Query("DELETE FROM DBWALLET WHERE id = :id")
+    @Query("DELETE FROM DbWallet WHERE id = :id")
     suspend fun deleteById(id: String)
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun add(data: List<DbWallet>)

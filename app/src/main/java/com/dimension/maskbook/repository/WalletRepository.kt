@@ -189,9 +189,9 @@ class WalletRepository(
     override val wallets: Flow<List<WalletData>>
         get() = database
             .walletDao()
-            .getAll()
-            .map {
-                it.map {
+            .getAllFlow()
+            .map { list ->
+                list.map {
                     WalletData.fromDb(it)
                 }
             }
@@ -207,21 +207,20 @@ class WalletRepository(
         }
 
     override fun setCurrentWallet(walletData: WalletData?) {
-        if (walletData?.id != null) {
-            scope.launch {
-                database.walletDao().getById(walletData.id)?.let {
-                    setCurrentWallet(it.wallet)
-                }
-            }
+        scope.launch {
+            val wallet = if (walletData != null) {
+                database.walletDao().getById(walletData.id)?.wallet
+            } else null
+            setCurrentWallet(dbWallet = wallet)
         }
     }
 
-    fun setCurrentWallet(dbWallet: DbWallet) {
+    fun setCurrentWallet(dbWallet: DbWallet?) {
         scope.launch {
             dataStore.edit {
-                it[CurrentWalletKey] = dbWallet.id
+                it[CurrentWalletKey] = dbWallet?.id.orEmpty()
             }
-            JSMethod.Wallet.updateEthereumAccount(dbWallet.address)
+            JSMethod.Wallet.updateEthereumAccount(dbWallet?.address.orEmpty())
         }
     }
 
@@ -420,22 +419,25 @@ class WalletRepository(
 
     override fun deleteCurrentWallet() {
         scope.launch {
-            currentWallet.firstOrNull()?.let { wallet ->
-                val next = database.walletDao().getAll().firstOrNull()
-                    ?.firstOrNull { it.wallet.id != wallet.id }
-                val storedKeyToDelete =
-                    database.walletDao().getById(wallet.id)?.storedKey?.id?.let {
-                        database.storedKeyDao().getById(it)
-                    }?.let {
-                        if (it.items.size == 1 && it.items.first().id == wallet.id) {
-                            it.storedKey
-                        } else {
-                            null
-                        }
-                    }
-                setCurrentWallet(next?.let { WalletData.fromDb(it) })
-                database.walletDao().deleteById(wallet.id)
-                storedKeyToDelete?.id?.let { database.storedKeyDao().deleteById(it) }
+            val currentWallet = currentWallet.firstOrNull() ?: return@launch
+            deleteWallet(currentWallet.id)
+        }
+    }
+
+    override fun deleteWallet(id: String) {
+        scope.launch {
+            // get it before remove
+            val currentWallet = currentWallet.firstOrNull()
+
+            val tokenWallet = database.walletDao().getById(id) ?: return@launch
+            database.walletDao().deleteById(tokenWallet.wallet.id)
+            database.storedKeyDao().deleteById(tokenWallet.storedKey.id)
+            database.walletBalanceDao().deleteByWalletId(tokenWallet.wallet.id)
+            database.walletTokenDao().deleteByWalletId(tokenWallet.wallet.id)
+
+            if (currentWallet?.id == id) {
+                val next = database.walletDao().getAll().firstOrNull { it.wallet.id != id }
+                setCurrentWallet(next?.wallet)
             }
         }
     }
