@@ -1014,7 +1014,7 @@ private fun NavGraphBuilder.wallets(
             CreateWalletHost(
                 wallet = wallet,
                 onDone = {
-                    navController.navigate(Uri.parse("maskwallet://Home"), navOptions = navOptions {
+                    navController.navigate(Uri.parse("maskwallet://Home/Wallets"), navOptions = navOptions {
                         launchSingleTop = true
                         popUpTo("Home") {
                             inclusive = false
@@ -1036,7 +1036,7 @@ private fun NavGraphBuilder.wallets(
             ImportWalletHost(
                 wallet = wallet,
                 onDone = {
-                    navController.navigate(Uri.parse("maskwallet://Home"), navOptions = navOptions {
+                    navController.navigate(Uri.parse("maskwallet://Home/Wallets"), navOptions = navOptions {
                         launchSingleTop = true
                         popUpTo("Home") {
                             inclusive = false
