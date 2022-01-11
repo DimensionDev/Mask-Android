@@ -43,13 +43,7 @@ import com.dimension.maskbook.wallet.repository.PlatformType
 import com.dimension.maskbook.wallet.route.backup
 import com.dimension.maskbook.wallet.ui.scenes.MainHost
 import com.dimension.maskbook.wallet.ui.scenes.app.settings.MarketTrendSettingsModal
-import com.dimension.maskbook.wallet.ui.scenes.persona.CreatePersona
-import com.dimension.maskbook.wallet.ui.scenes.persona.DeleteDialog
-import com.dimension.maskbook.wallet.ui.scenes.persona.ExportPrivateKeyScene
-import com.dimension.maskbook.wallet.ui.scenes.persona.LogoutDialog
-import com.dimension.maskbook.wallet.ui.scenes.persona.PersonaMenu
-import com.dimension.maskbook.wallet.ui.scenes.persona.RenamePersona
-import com.dimension.maskbook.wallet.ui.scenes.persona.SwitchPersonaModal
+import com.dimension.maskbook.wallet.ui.scenes.persona.*
 import com.dimension.maskbook.wallet.ui.scenes.persona.social.ConnectSocialModal
 import com.dimension.maskbook.wallet.ui.scenes.persona.social.DisconnectSocialDialog
 import com.dimension.maskbook.wallet.ui.scenes.register.RegisterScene
@@ -65,6 +59,7 @@ import com.dimension.maskbook.wallet.ui.scenes.settings.BackupPasswordSettings
 import com.dimension.maskbook.wallet.ui.scenes.settings.DataSourceSettings
 import com.dimension.maskbook.wallet.ui.scenes.settings.LanguageSettings
 import com.dimension.maskbook.wallet.ui.scenes.settings.PaymentPasswordSettings
+import com.dimension.maskbook.wallet.ui.scenes.wallets.UnlockWalletDialog
 import com.dimension.maskbook.wallet.ui.scenes.wallets.WalletQrcodeScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.common.MultiChainWalletDialog
 import com.dimension.maskbook.wallet.ui.scenes.wallets.create.CreateOrImportWalletScene
@@ -102,6 +97,7 @@ import com.dimension.maskbook.wallet.viewmodel.settings.EmailSetupViewModel
 import com.dimension.maskbook.wallet.viewmodel.settings.PhoneSetupViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.BiometricViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.TokenDetailViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.UnlockWalletViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.WalletManagementModalViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletBackupViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletDeleteViewModel
@@ -402,6 +398,50 @@ fun Route(
                             }
                         )
                     }
+                    bottomSheet(
+                        "BackUpPassword/{target}",
+                        arguments = listOf(
+                            navArgument("target") { type = NavType.StringType }
+                        )
+                    ) { backStackEntry ->
+                        val target = backStackEntry.arguments?.getString("target")
+                        val viewModel = getViewModel<UnlockWalletViewModel>()
+                        val biometricEnable by viewModel.biometricEnabled.observeAsState(initial = false)
+                        val password by viewModel.password.observeAsState(initial = "")
+                        val passwordValid by viewModel.passwordValid.observeAsState(initial = false)
+                        val context = LocalContext.current
+                        BackUpPasswordModal(
+                            biometricEnabled = biometricEnable,
+                            password = password,
+                            onPasswordChanged = { viewModel.setPassword(it) },
+                            passwordValid = passwordValid,
+                            onConfirm = {
+                                if (biometricEnable) {
+                                    viewModel.authenticate(
+                                        context = context,
+                                        onSuccess = {
+                                            target?.let {
+                                                navController.navigate(it, navOptions {
+                                                    popUpTo("BackUpPassword") {
+                                                        inclusive = true
+                                                    }
+                                                })
+                                            } ?: navController.popBackStack()
+                                        }
+                                    )
+                                } else {
+                                    target?.let {
+                                        navController.navigate(it, navOptions {
+                                            popUpTo("BackUpPassword") {
+                                                inclusive = true
+                                            }
+                                        })
+                                    } ?: navController.popBackStack()
+                                }
+                            }
+                        )
+                    }
+
                     bottomSheet("MarketTrendSettings") {
                         MarketTrendSettingsModal()
                     }
@@ -685,7 +725,7 @@ private fun NavGraphBuilder.wallets(
             WalletManagementModal(
                 walletData = wallet,
                 onRename = { navController.navigate("WalletManagementRename/${wallet.id}") },
-                onBackup = { navController.navigate("WalletManagementBackup") },
+                onBackup = { navController.navigate("UnlockWalletDialog/WalletManagementBackup") },
                 onTransactionHistory = { navController.navigate("WalletManagementTransactionHistory") },
                 onDelete = {
                     navController.popBackStack()
@@ -1026,6 +1066,51 @@ private fun NavGraphBuilder.wallets(
                 )
             }
         }
+    }
+
+    dialog(
+        "UnlockWalletDialog/{target}",
+        arguments = listOf(
+            navArgument("target") { type = NavType.StringType }
+        )
+    ) { backStackEntry ->
+        val viewModel = getViewModel<UnlockWalletViewModel>()
+        val biometricEnable by viewModel.biometricEnabled.observeAsState(initial = false)
+        val password by viewModel.password.observeAsState(initial = "")
+        val passwordValid by viewModel.passwordValid.observeAsState(initial = false)
+        val context = LocalContext.current
+        val target = backStackEntry.arguments?.getString("target")
+        UnlockWalletDialog(
+            onBack = { navController.popBackStack() },
+            biometricEnabled = biometricEnable,
+            password = password,
+            onPasswordChanged = { viewModel.setPassword(it) },
+            passwordValid = passwordValid,
+            onConfirm = {
+                if (biometricEnable) {
+                    viewModel.authenticate(
+                        context = context,
+                        onSuccess = {
+                            target?.let {
+                                navController.navigate(it, navOptions {
+                                    popUpTo("UnlockWalletDialog") {
+                                        inclusive = true
+                                    }
+                                })
+                            } ?: navController.popBackStack()
+                        }
+                    )
+                } else {
+                    target?.let {
+                        navController.navigate(it, navOptions {
+                            popUpTo("UnlockWalletDialog") {
+                                inclusive = true
+                            }
+                        })
+                    } ?: navController.popBackStack()
+                }
+            }
+        )
     }
 }
 
