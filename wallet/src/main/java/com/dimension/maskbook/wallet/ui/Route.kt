@@ -42,6 +42,7 @@ import com.dimension.maskbook.wallet.repository.IWalletRepository
 import com.dimension.maskbook.wallet.repository.PlatformType
 import com.dimension.maskbook.wallet.route.backup
 import com.dimension.maskbook.wallet.ui.scenes.MainHost
+import com.dimension.maskbook.wallet.ui.scenes.app.PluginSettingsScene
 import com.dimension.maskbook.wallet.ui.scenes.app.settings.MarketTrendSettingsModal
 import com.dimension.maskbook.wallet.ui.scenes.persona.CreatePersona
 import com.dimension.maskbook.wallet.ui.scenes.persona.DeleteDialog
@@ -374,10 +375,20 @@ fun Route(
                         MainHost(
                             initialTab = it.arguments?.getString("tab").orEmpty(),
                             onBack = onBack,
+                            onAppSettingClick = {
+                                navController.navigate("PluginSettings")
+                            }
                         )
                     }
                     wallets(navController = navController)
                     settings(navController = navController)
+                    composable("PluginSettings") {
+                        PluginSettingsScene(
+                            onBack = {
+                                navController.popBackStack()
+                            }
+                        )
+                    }
                     composable("ExportPrivateKeyScene") {
                         ExportPrivateKeyScene(
                             onBack = {

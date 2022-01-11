@@ -6,7 +6,7 @@ import com.dimension.maskbook.wallet.ext.asStateIn
 import com.dimension.maskbook.wallet.repository.IAppRepository
 import com.dimension.maskbook.wallet.repository.IWalletRepository
 
-class AppViewModel(
+class PluginSettingsViewModel(
     private val repository: IAppRepository,
     private val walletRepository: IWalletRepository,
 ) : ViewModel() {

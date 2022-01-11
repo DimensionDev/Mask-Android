@@ -33,7 +33,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ui.MaskTheme
-import com.dimension.maskbook.wallet.ui.scenes.app.AppScene
+import com.dimension.maskbook.wallet.ui.scenes.app.LabsScene
 import com.dimension.maskbook.wallet.ui.scenes.persona.PersonaScreen
 import com.dimension.maskbook.wallet.ui.scenes.settings.SettingsScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.WalletIntroHost
@@ -47,7 +47,7 @@ import kotlinx.coroutines.launch
 private enum class HomeScreen(val route: String, val title: String, @DrawableRes val icon: Int) {
     Personas("Personas", "Personas", R.drawable.ic_persona),
     Wallets("Wallets", "Wallets", R.drawable.ic_wallet),
-    App("App", "App", R.drawable.ic_app),
+    Labs("Labs", "Labs", R.drawable.ic_labs),
     Settings("Settings", "Settings", R.drawable.ic_settings),
 }
 
@@ -59,13 +59,14 @@ private val items = HomeScreen.values()
 fun MainHost(
     initialTab: String,
     onBack: () -> Unit,
+    onAppSettingClick: () -> Unit,
 ) {
     val initialPage = remember(initialTab) {
         if (initialTab.isEmpty()) return@remember 0
         when (HomeScreen.valueOf(initialTab)) {
             HomeScreen.Personas -> 0
             HomeScreen.Wallets -> 1
-            HomeScreen.App -> 2
+            HomeScreen.Labs -> 2
             HomeScreen.Settings -> 3
         }
     }
@@ -109,7 +110,7 @@ fun MainHost(
                 state = pagerState,
             ) {
                 when (items[it]) {
-                    HomeScreen.App -> AppScene(onBack = onBack)
+                    HomeScreen.Labs -> LabsScene(onSettingClick = onAppSettingClick)
                     HomeScreen.Personas -> PersonaScreen(onBack = onBack)
                     HomeScreen.Settings -> SettingsScene(onBack = onBack)
                     HomeScreen.Wallets -> WalletIntroHost()
