@@ -17,8 +17,6 @@ data class PluginDisplayData(
     val key: AppKey,
     @DrawableRes val onIcon: Int,
     val name: String,
-    val canExplore: Boolean = false,
-    val settingRoute: String? = null,
     val enabled: Boolean = true,
 )
 
@@ -27,25 +25,21 @@ private val displayDataList = listOf(
         key = AppKey.FileService,
         name = "File Service",
         onIcon = R.drawable.ic_labs_encrypted_file,
-        canExplore = true,
     ),
     PluginDisplayData(
         key = AppKey.ITO,
         name = "ITO",
         onIcon = R.drawable.ic_labs_ito,
-        canExplore = true,
     ),
     PluginDisplayData(
         key = AppKey.LuckDrop,
         name = "Lucky Drop",
         onIcon = R.drawable.ic_labs_packet,
-        canExplore = true,
     ),
     PluginDisplayData(
         key = AppKey.Transak,
         name = "Transak",
         onIcon = R.drawable.ic_labs_transak,
-        canExplore = true,
     ),
     PluginDisplayData(
         key = AppKey.Snapshot,
@@ -63,10 +57,9 @@ private val displayDataList = listOf(
         onIcon = R.drawable.ic_labs_gitcoin,
     ),
     PluginDisplayData(
-        key = AppKey.MarketTrend,
-        name = "Market Trend",
-        onIcon = R.drawable.ic_labs_market_trend,
-        settingRoute = "MarketTrendSettings"
+        key = AppKey.Swap,
+        name = "Swap",
+        onIcon = R.drawable.ic_labs_swap,
     ),
     PluginDisplayData(
         key = AppKey.Collectibles,

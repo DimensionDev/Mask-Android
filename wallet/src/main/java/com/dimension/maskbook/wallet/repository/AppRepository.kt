@@ -12,7 +12,7 @@ enum class AppKey(val id: String) {
     Snapshot("org.snapshot"),
     DHEDGE("co.dhedge"),
     GitCoin("co.gitcoin"),
-    MarketTrend("com.maskbook.trader"),
+    Swap("com.maskbook.trader"),
     Collectibles("com.maskbook.collectibles"),
     Valuables("com.maskbook.tweet"),
 }

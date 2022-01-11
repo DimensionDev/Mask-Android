@@ -34,6 +34,7 @@ import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ext.decodeUrl
 import com.dimension.maskbook.wallet.ext.encodeUrl
 import com.dimension.maskbook.wallet.ext.observeAsState
+import com.dimension.maskbook.wallet.repository.AppKey
 import com.dimension.maskbook.wallet.repository.ChainType
 import com.dimension.maskbook.wallet.repository.IPersonaRepository
 import com.dimension.maskbook.wallet.repository.ISettingsRepository
@@ -375,8 +376,16 @@ fun Route(
                         MainHost(
                             initialTab = it.arguments?.getString("tab").orEmpty(),
                             onBack = onBack,
-                            onAppSettingClick = {
+                            onLabsSettingClick = {
                                 navController.navigate("PluginSettings")
+                            },
+                            onLabsItemClick = { appKey ->
+                                when(appKey) {
+                                    AppKey.Swap -> {
+                                        navController.navigate("MarketTrendSettings")
+                                    }
+                                    else -> Unit
+                                }
                             }
                         )
                     }

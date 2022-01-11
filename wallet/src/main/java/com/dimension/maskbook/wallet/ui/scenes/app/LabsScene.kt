@@ -20,6 +20,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ext.observeAsState
+import com.dimension.maskbook.wallet.repository.AppKey
 import com.dimension.maskbook.wallet.ui.widget.MaskButton
 import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
 import com.dimension.maskbook.wallet.ui.widget.MaskSingleLineTopAppBar
@@ -31,6 +32,7 @@ import org.koin.androidx.compose.getViewModel
 @Composable
 fun LabsScene(
     onSettingClick: () -> Unit,
+    onItemClick: (AppKey) -> Unit,
 ) {
     val viewModel: LabsViewModel = getViewModel()
     val apps by viewModel.apps.observeAsState(initial = emptyList())
@@ -56,7 +58,10 @@ fun LabsScene(
     ) {
         LazyColumn {
             items(apps) { item ->
-                AppItem(item)
+                AppItem(
+                    item = item,
+                    onItemClick = { onItemClick(item.key) }
+                )
             }
         }
     }
@@ -66,9 +71,10 @@ fun LabsScene(
 @Composable
 private fun AppItem(
     item: AppDisplayData,
+    onItemClick: () -> Unit
 ) {
     MaskButton(
-        onClick = {},
+        onClick = { onItemClick() },
         enabled = item.enabled,
     ) {
         ListItem(

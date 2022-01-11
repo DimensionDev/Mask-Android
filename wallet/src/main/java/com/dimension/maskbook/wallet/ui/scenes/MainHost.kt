@@ -32,6 +32,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
+import com.dimension.maskbook.wallet.repository.AppKey
 import com.dimension.maskbook.wallet.ui.MaskTheme
 import com.dimension.maskbook.wallet.ui.scenes.app.LabsScene
 import com.dimension.maskbook.wallet.ui.scenes.persona.PersonaScreen
@@ -59,7 +60,8 @@ private val items = HomeScreen.values()
 fun MainHost(
     initialTab: String,
     onBack: () -> Unit,
-    onAppSettingClick: () -> Unit,
+    onLabsSettingClick: () -> Unit,
+    onLabsItemClick: (AppKey) -> Unit,
 ) {
     val initialPage = remember(initialTab) {
         if (initialTab.isEmpty()) return@remember 0
@@ -110,7 +112,10 @@ fun MainHost(
                 state = pagerState,
             ) {
                 when (items[it]) {
-                    HomeScreen.Labs -> LabsScene(onSettingClick = onAppSettingClick)
+                    HomeScreen.Labs -> LabsScene(
+                        onSettingClick = onLabsSettingClick,
+                        onItemClick = onLabsItemClick,
+                    )
                     HomeScreen.Personas -> PersonaScreen(onBack = onBack)
                     HomeScreen.Settings -> SettingsScene(onBack = onBack)
                     HomeScreen.Wallets -> WalletIntroHost()

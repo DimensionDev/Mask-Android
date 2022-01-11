@@ -18,8 +18,6 @@ data class AppDisplayData(
     @DrawableRes val onIcon: Int,
     val name: String,
     val description: String,
-    val canExplore: Boolean = false,
-    val settingRoute: String? = null,
     val enabled: Boolean = true,
 )
 
@@ -29,29 +27,30 @@ private val displayDataList = listOf(
         name = "Transak",
         description = "Buy crypto in 60+ countries with Transak support.",
         onIcon = R.drawable.ic_labs_transak,
-        canExplore = true,
     ),
     AppDisplayData(
         key = AppKey.ITO,
         name = "ITO",
         description = "Enable users to buy tokens directly on Twitter.",
         onIcon = R.drawable.ic_labs_ito,
-        canExplore = true,
     ),
     AppDisplayData(
         key = AppKey.LuckDrop,
         name = "Lucky Drop",
         description = "Surprise your encrypted friends with Token/NFT Lucky Drops.",
         onIcon = R.drawable.ic_labs_packet,
-        canExplore = true,
     ),
-    // TODO swap ?
+    AppDisplayData(
+        key = AppKey.Swap,
+        name = "Swap",
+        description = "Pop-up trading widget that allows you to instantly view prices of the hottest Crypto/Stock and trade. Can also invest in the best performing managers.",
+        onIcon = R.drawable.ic_labs_swap,
+    ),
     AppDisplayData(
         key = AppKey.FileService,
         name = "File Service",
         description = "Decentralized file storage for users.",
         onIcon = R.drawable.ic_labs_encrypted_file,
-        canExplore = true,
     ),
 )
 
