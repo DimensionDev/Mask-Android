@@ -61,6 +61,7 @@ fun WalletBalancesScene(
     sceneType: BalancesSceneType,
     onSceneTypeChanged: (BalancesSceneType) -> Unit,
     chainType: ChainType,
+    onBack: () -> Unit,
 ) {
     MaskTheme {
         MaskScaffold(
@@ -98,7 +99,9 @@ fun WalletBalancesScene(
                         MaskCard(
                             modifier = Modifier.aspectRatio(1f)
                         ) {
-                            IconButton(onClick = { /*TODO*/ }) {
+                            IconButton(onClick = {
+                                onBack.invoke()
+                            }) {
                                 Image(
                                     painter = painterResource(id = R.drawable.twitter_1),
                                     contentDescription = null,
