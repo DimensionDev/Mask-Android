@@ -31,6 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.dimension.maskbook.wallet.ui.widget.IosSwitch
 import com.dimension.maskbook.wallet.ui.widget.MaskBackButton
 import com.dimension.maskbook.wallet.ui.widget.MaskListCardItem
 import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
@@ -102,7 +103,7 @@ private fun PluginSettingsItem(
             )
         },
         trailing = {
-            Switch(
+            IosSwitch(
                 checked = item.enabled,
                 onCheckedChange = onItemCheckedChange
             )
