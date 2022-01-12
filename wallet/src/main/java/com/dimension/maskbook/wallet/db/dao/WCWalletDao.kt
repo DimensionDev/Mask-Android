@@ -8,9 +8,9 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface WCWalletDao {
-    @Transaction
     @Query("SELECT * FROM DbWCWallet")
     fun getAll(): Flow<List<DbWCWallet>>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun add(data: List<DbWCWallet>)
 }

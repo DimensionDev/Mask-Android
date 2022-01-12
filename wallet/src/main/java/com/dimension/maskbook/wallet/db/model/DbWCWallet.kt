@@ -2,7 +2,6 @@ package com.dimension.maskbook.wallet.db.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.dimension.maskbook.wallet.repository.ChainType
 
 @Entity
 data class DbWCWallet(
@@ -14,5 +13,5 @@ data class DbWCWallet(
     val shortName: String,
     val logo: String,
     val packageName: String,
-    val chains: List<ChainType>
+    val chains: List<String>
 )

@@ -39,6 +39,7 @@ fun initRepository() {
     KoinPlatformTools.defaultContext().get().get<IAppRepository>().init()
     KoinPlatformTools.defaultContext().get().get<IWalletRepository>().init()
     KoinPlatformTools.defaultContext().get().get<ISettingsRepository>().init()
+    KoinPlatformTools.defaultContext().get().get<IWalletConnectRepository>().init()
 }
 
 fun initEvent() {

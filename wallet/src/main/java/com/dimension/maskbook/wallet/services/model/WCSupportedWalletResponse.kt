@@ -4,13 +4,6 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-class WCSupportedWalletResponse(
-    val map:Map<String, WCSupportedWallet>
-) {
-}
-
-
-@Serializable
 data class WCSupportedWallet(
     @SerialName("app")
     val app: App? = null,

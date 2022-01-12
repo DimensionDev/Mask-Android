@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.wallet.ext.asStateIn
 import com.dimension.maskbook.wallet.repository.WalletConnectRepository
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectManager
+import kotlinx.coroutines.launch
 
 class WalletConnectViewModel(
     private val manager: WalletConnectManager,
