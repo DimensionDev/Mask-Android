@@ -54,16 +54,16 @@ class BigDecimalTypeConverter {
 
 internal class StringListConverter {
     @TypeConverter
-    fun fromString(value: String?): List<String>? {
+    fun fromString(value: String?): List<String> {
         return value?.let {
             JSON.decodeFromString<List<String>>(it)
-        }
+        } ?: emptyList()
     }
 
     @TypeConverter
-    fun fromList(list: List<String>?): String? {
+    fun fromList(list: List<String>?): String {
         return list?.let {
             JSON.encodeToString(it)
-        }
+        } ?: "[]"
     }
 }

@@ -1,7 +1,5 @@
 package com.dimension.maskbook.wallet.repository
 
-import android.content.Context
-import android.content.pm.PackageManager
 import android.net.Uri
 import com.dimension.maskbook.wallet.BuildConfig
 import com.dimension.maskbook.wallet.db.AppDatabase
@@ -26,15 +24,12 @@ data class WCWallet(
     val packageName: String,
     val chains: List<ChainType>
 ) {
-    fun isSupported(chainType: ChainType, context: Context): Boolean {
-        val installed = try {
-            context.packageManager.getPackageInfo(packageName, 0)
-            true
-        } catch (e: PackageManager.NameNotFoundException) {
-            false
-        }
+    val displayName: String
+        get() = if (shortName.isNotEmpty()) shortName else name
+
+    fun isSupported(chainType: ChainType, isInstalled: (packageName: String) -> Boolean): Boolean {
         return chains.contains(chainType)
-                && installed
+                && isInstalled.invoke(packageName)
                 && (nativeDeeplink.isNotEmpty() || universalLink.isNotEmpty())
     }
 
@@ -143,5 +138,4 @@ class WalletConnectRepository(
             else -> null
         }
     }
-
 }

@@ -8,7 +8,6 @@ import com.dimension.maskbook.wallet.services.model.GasFeeResponse
 import com.dimension.maskbook.wallet.services.model.WCSupportedWallet
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonElement
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor

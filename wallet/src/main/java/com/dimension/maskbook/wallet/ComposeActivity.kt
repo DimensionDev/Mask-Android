@@ -246,7 +246,7 @@ val walletModules = module {
         SendConfirmViewModel(tokenData, toAddress, get(), get())
     }
     viewModel { BiometricViewModel(get(), get()) }
-    viewModel { WalletConnectViewModel(get(), get()) }
+    viewModel { WalletConnectViewModel(get(), get(), get<Context>().packageManager) }
 }
 
 val servicesModule = module {

@@ -1,5 +1,6 @@
 package com.dimension.maskbook.wallet.ui.widget
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -84,12 +85,17 @@ fun <T> LazyListScope.itemsGridIndexed(
                 .padding(horizontal = padding)
         ) {
             Row {
-                for (i in row.indices) {
-                    val item = row[i]
-                    Box(modifier = Modifier.weight(1f)) {
-                        itemContent(data.indexOf(item), item)
+                for (i in 0 until rowSize) {
+                    if (i >= row.size) {
+                        // fill rest positions
+                        Box(modifier = Modifier.weight(1f))
+                    } else {
+                        val item = row[i]
+                        Box(modifier = Modifier.weight(1f)) {
+                            itemContent(data.indexOf(item), item)
+                        }
                     }
-                    if (i != row.lastIndex) {
+                    if (i != rowSize -1) {
                         Spacer(modifier = Modifier.width(spacing))
                     }
                 }
