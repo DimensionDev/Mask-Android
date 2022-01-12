@@ -57,7 +57,7 @@ private val items = listOf(
 
 @ExperimentalAnimationApi
 @Composable
-fun PersonaScreen(
+fun PersonaScene(
     onBack: () -> Unit,
 ) {
     val rootNavController = LocalRootNavController.current

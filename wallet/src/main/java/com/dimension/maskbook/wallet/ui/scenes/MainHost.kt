@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ui.MaskTheme
 import com.dimension.maskbook.wallet.ui.scenes.app.AppScene
-import com.dimension.maskbook.wallet.ui.scenes.persona.PersonaScreen
+import com.dimension.maskbook.wallet.ui.scenes.persona.PersonaScene
 import com.dimension.maskbook.wallet.ui.scenes.settings.SettingsScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.WalletIntroHost
 import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
@@ -110,7 +110,7 @@ fun MainHost(
             ) {
                 when (items[it]) {
                     HomeScreen.App -> AppScene(onBack = onBack)
-                    HomeScreen.Personas -> PersonaScreen(onBack = onBack)
+                    HomeScreen.Personas -> PersonaScene(onBack = onBack)
                     HomeScreen.Settings -> SettingsScene(onBack = onBack)
                     HomeScreen.Wallets -> WalletIntroHost(onBack = onBack)
                 }
