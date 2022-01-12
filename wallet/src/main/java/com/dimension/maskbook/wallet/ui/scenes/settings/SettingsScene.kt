@@ -73,39 +73,39 @@ fun SettingsScene(
             SettingsItem(
                 targetRoute = "LanguageSettings",
                 title = "Language",
-                icon = R.drawable.en1,
+                icon = R.drawable.ic_settings_language,
                 trailingText = languageMap[language],
             )
             SettingsItem(
                 targetRoute = "AppearanceSettings",
                 title = "Appearance",
-                icon = R.drawable.star1,
+                icon = R.drawable.ic_settings_appearance,
                 trailingText = appearanceMap[appearance],
             )
             SettingsItem(
                 targetRoute = "DataSourceSettings",
                 title = "DataSource",
-                icon = R.drawable.chart_1,
+                icon = R.drawable.ic_settings_datasource,
                 trailingText = dataProviderMap[dataProvider],
             )
             if (paymentPassword.isEmpty()) {
                 SettingsItem(
                     targetRoute = "PaymentPasswordSettings",
                     title = "Payment Password",
-                    icon = R.drawable.ic_change_payment_password,
+                    icon = R.drawable.ic_settings_change_payment_password,
                     secondaryText = "Please set up payment password"
                 )
             } else {
                 SettingsItem(
                     targetRoute = "PaymentPasswordSettings",
                     title = "Change Payment Password",
-                    icon = R.drawable.ic_change_payment_password,
+                    icon = R.drawable.ic_settings_change_payment_password,
                 )
             }
             if (biometricEnableViewModel.isSupported(context)) {
                 SettingsItem(
                     title = "Unlock wallet with Face ID",
-                    icon = R.drawable.face_id,
+                    icon = R.drawable.ic_settings_face_id,
                     trailing = {
                         Switch(checked = biometricEnabled, onCheckedChange = {
                             enableBiometric(
@@ -131,25 +131,25 @@ fun SettingsScene(
             }
             SettingsItem(
                 title = "Back Up Data",
-                icon = R.drawable.folder1,
+                icon = R.drawable.ic_settings_backup_data,
                 targetRoute = if (backupPassword.isEmpty() || paymentPassword.isEmpty()) "SetupPasswordDialog" else "BackupData"
             )
             SettingsItem(
                 title = "Restore Data",
-                icon = R.drawable.ic_restore_data,
+                icon = R.drawable.ic_settings_restore_data,
                 targetRoute = "Recovery"
             )
             if (backupPassword.isEmpty()) {
                 SettingsItem(
                     title = "Backup Password",
-                    icon = R.drawable.lock1,
+                    icon = R.drawable.ic_settings_backup_password,
                     targetRoute = "ChangeBackUpPassword",
                     secondaryText = "Please set up backup password"
                 )
             } else {
                 SettingsItem(
                     title = "Change Backup Password",
-                    icon = R.drawable.lock1,
+                    icon = R.drawable.ic_settings_backup_password,
                     targetRoute = "ChangeBackUpPassword"
                 )
             }
@@ -157,14 +157,14 @@ fun SettingsScene(
             if (email == null) {
                 SettingsItem(
                     title = "Email",
-                    icon = R.drawable.message1,
+                    icon = R.drawable.ic_settings_email,
                     secondaryText = "Please bind your email",
                     targetRoute = "Settings_ChangeEmail_Setup"
                 )
             } else {
                 SettingsItem(
                     title = "Email",
-                    icon = R.drawable.message1,
+                    icon = R.drawable.ic_settings_email,
                     secondaryText = email,
                     targetRoute = "Settings_ChangeEmail_Change_Code/${email.encodeUrl()}"
                 )
@@ -173,14 +173,14 @@ fun SettingsScene(
             if (phone == null) {
                 SettingsItem(
                     title = "Phone Number",
-                    icon = R.drawable.phone_number,
+                    icon = R.drawable.ic_settings_phone_number,
                     secondaryText = "Please bind your phone number",
                     targetRoute = "Settings_ChangePhone_Setup"
                 )
             } else {
                 SettingsItem(
                     title = "Phone Number",
-                    icon = R.drawable.phone_number,
+                    icon = R.drawable.ic_settings_phone_number,
                     secondaryText = phone,
                     targetRoute = "Settings_ChangePhone_Change_Code/${phone.encodeUrl()}"
                 )
