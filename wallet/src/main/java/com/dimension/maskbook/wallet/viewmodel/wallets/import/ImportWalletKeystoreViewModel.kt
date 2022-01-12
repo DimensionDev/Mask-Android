@@ -22,8 +22,10 @@ class ImportWalletKeystoreViewModel(
     val password = _password.asStateIn(viewModelScope, "")
 
     val canConfirm by lazy {
-        combine(_keystore, _password) { keystore, passowrd ->
-            keystore.isNotEmpty() && passowrd.isNotEmpty()
+        combine(_keystore, _password) { keystore, password ->
+            keystore.isNotEmpty() &&
+                    password.isNotEmpty() &&
+                    repository.validateKeystore(keyStore = _keystore.value)
         }
     }
 

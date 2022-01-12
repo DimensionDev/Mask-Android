@@ -199,7 +199,7 @@ val walletModules = module {
     viewModel { TouchIdEnableViewModel() }
     viewModel { (wallet: String) -> ImportWalletKeystoreViewModel(wallet, get()) }
     viewModel { (wallet: String) -> ImportWalletPrivateKeyViewModel(wallet, get()) }
-    viewModel { (wallet: String) -> ImportWalletMnemonicViewModel(wallet) }
+    viewModel { (wallet: String) -> ImportWalletMnemonicViewModel(wallet, get()) }
     viewModel { (wallet: String, mnemonicCode: List<String>) ->
         ImportWalletDerivationPathViewModel(
             wallet,

@@ -559,6 +559,12 @@ class WalletRepository(
         }
     }
 
+    override fun validatePrivateKey(privateKey: String) = WalletKey.validate(privateKey = privateKey)
+
+    override fun validateMnemonic(mnemonic: String) =  WalletKey.validate(mnemonic = mnemonic)
+
+    override fun validateKeystore(keyStore: String) = WalletKey.validate(keyStoreJSON = keyStore)
+
     override fun sendTokenWithCurrentWallet(
         amount: BigDecimal,
         address: String,
