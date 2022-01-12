@@ -136,7 +136,7 @@ fun provideShapes(): Shapes {
 
 
 @Composable
-private fun isDarkTheme(): Boolean {
+fun isDarkTheme(): Boolean {
     val repo = get<ISettingsRepository>()
     val appearance by repo.appearance.observeAsState(initial = Appearance.default)
     return when (appearance) {

@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.dimension.maskbook.wallet.ui.isDarkTheme
 
 @Composable
 fun IosSwitch(
@@ -35,16 +36,20 @@ fun IosSwitch(
         checkedThumbColor = Color.White,
         checkedTrackColor = Color.Transparent,
         checkedTrackAlpha = 0f,
-        uncheckedThumbColor = Color.White,
+        uncheckedThumbColor = if (isDarkTheme()) {
+            IosSwitchDefault.unCheckedThumbDarkColor
+        } else {
+            IosSwitchDefault.unCheckedThumbLightColor
+        },
         uncheckedTrackColor = Color.Transparent,
         uncheckedTrackAlpha = 0f,
     )
 ) {
     val background by animateColorAsState(
-        if (checked) {
-            IosSwitchDefault.checkedColor
-        } else {
-            IosSwitchDefault.unCheckedColor
+        when {
+            checked -> IosSwitchDefault.checkedTrackLightColor
+            isDarkTheme() -> IosSwitchDefault.unCheckedTrackDarkColor
+            else -> IosSwitchDefault.unCheckedTrackLightColor
         }
     )
     Box(
@@ -70,8 +75,11 @@ fun IosSwitch(
 private object IosSwitchDefault {
     val TrackWidth = 44.dp
     val TrackHeight = 28.dp
-    val checkedColor = Color(0xFF34C759)
-    val unCheckedColor = Color(0xFFCBD1D9)
+    val checkedTrackLightColor = Color(0xFF34C759)
+    val unCheckedTrackLightColor = Color(0xFFCBD1D9)
+    val unCheckedTrackDarkColor = Color(0xFF2C354C)
+    val unCheckedThumbLightColor = Color.White
+    val unCheckedThumbDarkColor = Color(0xFF4D5873)
 }
 
 @Preview(showBackground = true)
