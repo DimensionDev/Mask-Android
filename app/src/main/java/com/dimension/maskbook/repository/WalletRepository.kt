@@ -310,44 +310,42 @@ class WalletRepository(
         password: String,
         platformType: CoinPlatformType
     ) {
-        scope.launch {
-            val wallet = WalletKey.fromJson(
-                json = keyStore,
-                name = name,
-                coinType = platformType.coinType,
-                password = "",
-                keyStoreJsonPassword = password
-            )
-            val account = wallet.addNewAccountAtPath(
-                platformType.coinType,
-                platformType.derivationPath.toString(),
-                name,
-                ""
-            )
-            val storeKey = DbStoredKey(
-                id = UUID.randomUUID().toString(),
-                hash = wallet.hash,
-                source = WalletSource.ImportedKeyStore,
-                data = wallet.data,
-                createdAt = System.currentTimeMillis(),
-                updatedAt = System.currentTimeMillis(),
-            )
-            val db = DbWallet(
-                id = UUID.randomUUID().toString(),
-                address = account.address,
-                name = name,
-                storeKeyId = storeKey.id,
-                derivationPath = account.derivationPath,
-                extendedPublicKey = account.extendedPublicKey,
-                coin = account.coin,
-                platformType = platformType,
-                createdAt = System.currentTimeMillis(),
-                updatedAt = System.currentTimeMillis(),
-            )
-            database.storedKeyDao().add(listOf(storeKey))
-            database.walletDao().add(listOf(db))
-            setCurrentWallet(db)
-        }
+        val wallet = WalletKey.fromJson(
+            json = keyStore,
+            name = name,
+            coinType = platformType.coinType,
+            password = "",
+            keyStoreJsonPassword = password
+        )
+        val account = wallet.addNewAccountAtPath(
+            platformType.coinType,
+            platformType.derivationPath.toString(),
+            name,
+            ""
+        )
+        val storeKey = DbStoredKey(
+            id = UUID.randomUUID().toString(),
+            hash = wallet.hash,
+            source = WalletSource.ImportedKeyStore,
+            data = wallet.data,
+            createdAt = System.currentTimeMillis(),
+            updatedAt = System.currentTimeMillis(),
+        )
+        val db = DbWallet(
+            id = UUID.randomUUID().toString(),
+            address = account.address,
+            name = name,
+            storeKeyId = storeKey.id,
+            derivationPath = account.derivationPath,
+            extendedPublicKey = account.extendedPublicKey,
+            coin = account.coin,
+            platformType = platformType,
+            createdAt = System.currentTimeMillis(),
+            updatedAt = System.currentTimeMillis(),
+        )
+        database.storedKeyDao().add(listOf(storeKey))
+        database.walletDao().add(listOf(db))
+        setCurrentWallet(db)
     }
 
     override suspend fun importWallet(

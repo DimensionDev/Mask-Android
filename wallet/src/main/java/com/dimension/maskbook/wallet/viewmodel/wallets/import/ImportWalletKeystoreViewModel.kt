@@ -6,10 +6,13 @@ import com.dimension.maskbook.wallet.db.model.CoinPlatformType
 import com.dimension.maskbook.wallet.ext.asStateIn
 import com.dimension.maskbook.wallet.repository.IWalletRepository
 import com.dimension.maskbook.wallet.repository.WalletCreateOrImportResult
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ImportWalletKeystoreViewModel(
     private val wallet: String,
@@ -40,14 +43,24 @@ class ImportWalletKeystoreViewModel(
     private val _result = MutableStateFlow<WalletCreateOrImportResult?>(null)
     val result = _result.asStateIn(viewModelScope, null)
     fun confirm(onResult: (WalletCreateOrImportResult) -> Unit) {
-        viewModelScope.launch {
-            val platform = repository.dWebData.firstOrNull()?.coinPlatformType ?: CoinPlatformType.Ethereum
-            repository.importWallet(
-                name = wallet,
-                keyStore = _keystore.value,
-                password = _password.value,
-                platformType = platform,
+        val handler = CoroutineExceptionHandler { _, _ ->
+            onResult(
+                WalletCreateOrImportResult(
+                    type = WalletCreateOrImportResult.Type.ERROR,
+                )
             )
+        }
+        viewModelScope.launch(handler) {
+            val platform =
+                repository.dWebData.firstOrNull()?.coinPlatformType ?: CoinPlatformType.Ethereum
+            withContext(Dispatchers.IO) {
+                repository.importWallet(
+                    name = wallet,
+                    keyStore = _keystore.value,
+                    password = _password.value,
+                    platformType = platform,
+                )
+            }
             onResult(
                 WalletCreateOrImportResult(
                     type = WalletCreateOrImportResult.Type.SUCCESS,
