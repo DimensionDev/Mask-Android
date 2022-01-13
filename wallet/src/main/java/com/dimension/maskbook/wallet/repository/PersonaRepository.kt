@@ -1,6 +1,7 @@
 package com.dimension.maskbook.wallet.repository
 
 import androidx.lifecycle.LiveData
+import com.dimension.maskbook.wallet.R
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -90,6 +91,15 @@ interface IPersonaRepository {
     fun saveEmailForCurrentPersona(value: String)
     fun savePhoneForCurrentPersona(value: String)
 }
+
+val Network.icon: Int
+    get() = when (this) {
+        Network.Twitter -> R.drawable.twitter
+        Network.Facebook -> R.drawable.facebook
+        Network.Instagram -> R.drawable.instagram
+        Network.Minds -> R.drawable.ic_persona_empty_mind
+    }
+
 //
 //class FakePersonaRepository : IPersonaRepository {
 //    private val _persona = MutableStateFlow(emptyList<PersonaData>())

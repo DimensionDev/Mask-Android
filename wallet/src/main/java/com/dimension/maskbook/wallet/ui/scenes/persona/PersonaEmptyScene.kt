@@ -1,6 +1,5 @@
 package com.dimension.maskbook.wallet.ui.scenes.persona
 
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -37,41 +36,42 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.dimension.maskbook.wallet.R
+import com.dimension.maskbook.wallet.repository.Network
+import com.dimension.maskbook.wallet.repository.icon
 import com.dimension.maskbook.wallet.ui.widget.itemsGridIndexed
 
-enum class ConnectData(
+private class ConnectData(
     val title: String,
-    @DrawableRes val icon: Int,
     val enable: Boolean,
-) {
-    Twitter(
-        title = "Twitter",
-        icon = R.drawable.twitter,
-        enable = true,
-    ),
-    Facebook(
-        title = "Facebook",
-        icon = R.drawable.facebook,
-        enable = true,
-    ),
-    Instagram(
-        title = "Instagram",
-        icon = R.drawable.instagram,
-        enable = false,
-    ),
-    Minds(
-        title = "Minds",
-        icon = R.drawable.ic_persona_empty_mind,
-        enable = false,
-    )
-}
+    val network: Network,
+)
 
-private val showList = ConnectData.values().sortedByDescending { it.enable }
+private val showList = listOf(
+    ConnectData(
+        title = "Twitter",
+        enable = true,
+        network = Network.Twitter,
+    ),
+    ConnectData(
+        title = "Facebook",
+        enable = true,
+        network = Network.Facebook,
+    ),
+    ConnectData(
+        title = "Instagram",
+        enable = false,
+        network = Network.Instagram,
+    ),
+    ConnectData(
+        title = "Minds",
+        enable = false,
+        network = Network.Minds,
+    )
+)
 
 @Composable
 fun PersonaEmptyScene(
-    onItemClick: (ConnectData) -> Unit
+    onItemClick: (Network) -> Unit
 ) {
     var isShowTipDialog by remember { mutableStateOf(true) }
     Box {
@@ -95,7 +95,7 @@ fun PersonaEmptyScene(
             ) { _, item ->
                 ConnectItem(
                     item = item,
-                    onItemClick = { onItemClick(item) }
+                    onItemClick = { onItemClick(item.network) }
                 )
             }
         }
@@ -131,7 +131,7 @@ private fun ConnectItem(item: ConnectData, onItemClick: () -> Unit) {
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Image(
-                    painter = painterResource(item.icon),
+                    painter = painterResource(item.network.icon),
                     contentDescription = null,
                     modifier = Modifier.size(PersonaEmptySceneDefaults.itemIconSize),
                     alpha = LocalContentAlpha.current,
