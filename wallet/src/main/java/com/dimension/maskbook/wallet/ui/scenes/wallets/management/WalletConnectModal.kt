@@ -4,7 +4,10 @@ import android.content.*
 import android.net.Uri
 import android.util.Log
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.*
+import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -28,15 +31,22 @@ import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.repository.ChainType
 import com.dimension.maskbook.wallet.repository.WCWallet
+import com.dimension.maskbook.wallet.ui.LocalRootNavController
 import com.dimension.maskbook.wallet.ui.scenes.persona.social.tabIndicatorOffset3
-import com.dimension.maskbook.wallet.ui.widget.*
+import com.dimension.maskbook.wallet.ui.widget.MaskModal
+import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
+import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
+import com.dimension.maskbook.wallet.ui.widget.itemsGridIndexed
 import com.dimension.maskbook.wallet.viewmodel.wallets.WalletConnectViewModel
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.zxing.BarcodeFormat
 import com.journeyapps.barcodescanner.BarcodeEncoder
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
+import org.koin.core.parameter.parametersOf
 
 enum class WalletConnectType {
     Manually,
@@ -47,17 +57,30 @@ enum class WalletConnectType {
 @Composable
 fun WalletConnectModal() {
     val navController = rememberAnimatedNavController()
-    val viewModel = getViewModel<WalletConnectViewModel>()
+    val rootNavController = LocalRootNavController.current
+    val scope = rememberCoroutineScope()
+    val onResult: (success: Boolean) -> Unit = {
+        scope.launch(Dispatchers.Main) {
+            if (it) {
+                rootNavController.popBackStack()
+            } else {
+                navController.navigate("WalletConnectFailed")
+            }
+        }
+    }
+    val viewModel = getViewModel<WalletConnectViewModel> {
+        parametersOf(onResult)
+    }
     val qrCode by viewModel.qrCode.observeAsState(initial = "")
     val wcUrl by viewModel.wcUrl.observeAsState(initial = "")
     val context = LocalContext.current
     val clipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
     val currentSupportedWallets by viewModel.currentSupportedWallets.observeAsState(initial = emptyList())
-
     MaskModal {
         Column(
             modifier = Modifier
-                .padding(ScaffoldPadding),
+                .padding(ScaffoldPadding)
+                .animateContentSize(),
         ) {
             Text(
                 text = "WalletConnect",
@@ -88,11 +111,13 @@ fun WalletConnectModal() {
                             navController.navigate("WalletConnectConnecting")
                             try {
                                 context.startActivity(Intent(Intent.ACTION_VIEW).apply {
-                                    data = Uri.parse(it.wcDeeplink(wcUrl))
+                                    data = Uri.parse(it.wcDeeplink(wcUrl)).also {
+                                        Log.d("Mimao", "Deeplink:$it")
+                                    }
                                     flags = Intent.FLAG_ACTIVITY_NEW_TASK
                                 })
                             } catch (e: ActivityNotFoundException) {
-                                // TODO haven't install yet, show toast to user
+                                e.printStackTrace()
                                 navController.popBackStack()
                             }
                         }
@@ -106,7 +131,11 @@ fun WalletConnectModal() {
                 composable("WalletConnectFailed") {
                     WalletConnectFailure(
                         onRetry = {
-
+                            viewModel.retry()
+                            navController.popBackStack(
+                                route = "WalletConnectTypeSelect",
+                                inclusive = false
+                            )
                         }
                     )
                 }
@@ -222,15 +251,24 @@ private fun TypeSelectScene(
             WalletConnectType.Manually -> WalletConnectManually(
                 wallets = wallets,
                 onChainSelected = onChainSelected,
-                onWalletConnect = onWalletConnect
+                onWalletConnect = onWalletConnect,
+                loading = qrCode.isEmpty()
             )
-            WalletConnectType.QRCode -> WalletConnectQRCode(qrCode = qrCode, onCopy = onCopy)
+            WalletConnectType.QRCode -> WalletConnectQRCode(
+                qrCode = qrCode,
+                onCopy = onCopy,
+                qrCode.isEmpty()
+            )
         }
     }
 }
 
 @Composable
-fun WalletConnectQRCode(qrCode: String, onCopy: (String) -> Unit) {
+fun WalletConnectQRCode(
+    qrCode: String,
+    onCopy: (String) -> Unit,
+    loading: Boolean
+) {
     val qrCodeBitmap = remember(qrCode) {
         try {
             BarcodeEncoder().encodeBitmap(
@@ -264,6 +302,9 @@ fun WalletConnectQRCode(qrCode: String, onCopy: (String) -> Unit) {
             contentScale = ContentScale.FillBounds,
             contentDescription = "qrCode"
         )
+        if (loading) {
+            LoadingView()
+        }
     }
     Text(text = "Tap to copy to clipboard")
 }
@@ -272,7 +313,8 @@ fun WalletConnectQRCode(qrCode: String, onCopy: (String) -> Unit) {
 fun WalletConnectManually(
     wallets: List<WCWallet>,
     onChainSelected: (chainType: ChainType) -> Unit,
-    onWalletConnect: (wallet: WCWallet) -> Unit
+    onWalletConnect: (wallet: WCWallet) -> Unit,
+    loading: Boolean
 ) {
     var selectedTabIndex by remember {
         mutableStateOf(0)
@@ -322,33 +364,50 @@ fun WalletConnectManually(
             state = rememberLazyListState(),
             contentPadding = PaddingValues(vertical = 20.dp, horizontal = 25.dp)
         ) {
-            itemsGridIndexed(wallets, rowSize = 4, spacing = 10.dp) { index, wallet ->
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable {
-                            onWalletConnect.invoke(wallet)
-                        },
-                ) {
-                    Image(
-                        painter = rememberImagePainter(data = wallet.logo),
-                        contentDescription = "logo",
-                        contentScale = ContentScale.FillBounds,
+            if (loading) {
+                item {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        LoadingView()
+                    }
+                }
+            } else {
+                itemsGridIndexed(wallets, rowSize = 4, spacing = 10.dp) { index, wallet ->
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier
-                            .size(48.dp)
-                            .clip(shape = CircleShape)
-                    )
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Text(
-                        text = wallet.displayName,
-                        style = MaterialTheme.typography.body2, maxLines = 1,
-                        textAlign = TextAlign.Center,
-                        overflow = TextOverflow.Ellipsis
-                    )
+                            .fillMaxWidth()
+                            .clickable {
+                                onWalletConnect.invoke(wallet)
+                            },
+                    ) {
+                        Image(
+                            painter = rememberImagePainter(data = wallet.logo),
+                            contentDescription = "logo",
+                            contentScale = ContentScale.FillBounds,
+                            modifier = Modifier
+                                .size(48.dp)
+                                .clip(shape = CircleShape)
+                        )
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Text(
+                            text = wallet.displayName,
+                            style = MaterialTheme.typography.body2, maxLines = 1,
+                            textAlign = TextAlign.Center,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
                 }
             }
         }
     }
 
+}
+
+@Composable
+private fun BoxScope.LoadingView() {
+    CircularProgressIndicator(
+        modifier = Modifier
+            .align(Alignment.Center)
+            .padding(20.dp)
+    )
 }

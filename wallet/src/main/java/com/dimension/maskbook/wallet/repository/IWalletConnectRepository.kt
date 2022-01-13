@@ -27,9 +27,8 @@ data class WCWallet(
     val displayName: String
         get() = if (shortName.isNotEmpty()) shortName else name
 
-    fun isSupported(chainType: ChainType, isInstalled: (packageName: String) -> Boolean): Boolean {
+    fun isSupported(chainType: ChainType): Boolean {
         return chains.contains(chainType)
-                && isInstalled.invoke(packageName)
                 && (nativeDeeplink.isNotEmpty() || universalLink.isNotEmpty())
     }
 

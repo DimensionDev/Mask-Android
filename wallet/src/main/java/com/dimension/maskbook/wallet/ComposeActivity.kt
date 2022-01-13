@@ -67,9 +67,8 @@ import com.dimension.maskbook.wallet.viewmodel.wallets.send.GasFeeViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.SearchAddressViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendConfirmViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendTokenViewModel
-import com.dimension.maskbook.wallet.walletconnect.WalletConnectManager
-import com.dimension.maskbook.wallet.walletconnect.WalletConnectManagerV1
-import org.koin.android.ext.android.get
+import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager
+import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManagerV1
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -80,7 +79,6 @@ class ComposeActivity : AppCompatActivity() {
             val main = "Main"
         }
     }
-    val wcManager = get<WalletConnectManager>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -95,16 +93,6 @@ class ComposeActivity : AppCompatActivity() {
                 )
             }
         }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        wcManager.setUp()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        wcManager.shutDown()
     }
 }
 
@@ -133,9 +121,9 @@ val walletModules = module {
         BiometricAuthenticator()
     }
     
-    single<WalletConnectManager> {
+    single<WalletConnectClientManager> {
         // V2 SDK support only provides the Responder implementation at the Beta stage
-        WalletConnectManagerV1(get())
+        WalletConnectClientManagerV1(get())
     }
 
     viewModel { (uri: Uri) -> RecoveryLocalViewModel(get(), uri, get<Context>().contentResolver) }
@@ -246,7 +234,7 @@ val walletModules = module {
         SendConfirmViewModel(tokenData, toAddress, get(), get())
     }
     viewModel { BiometricViewModel(get(), get()) }
-    viewModel { WalletConnectViewModel(get(), get(), get<Context>().packageManager) }
+    viewModel { (onResult:(success:Boolean)->Unit)-> WalletConnectViewModel(get(), get(), onResult) }
 }
 
 val servicesModule = module {
