@@ -1,5 +1,7 @@
 package com.dimension.maskbook.wallet.viewmodel.wallets
 
+import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.wallet.ext.asStateIn
@@ -9,6 +11,7 @@ import com.dimension.maskbook.wallet.repository.WCWallet
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import java.net.URL
 
 class WalletConnectViewModel(
     private val manager: WalletConnectClientManager,
@@ -48,6 +51,8 @@ class WalletConnectViewModel(
         // reset session
         connect()
     }
+
+    fun generateDeeplink(it: WCWallet): Uri? = Uri.parse(it.wcDeeplink(Uri.encode(wcUrl.value)))
 
     private val _supportedWallets by lazy {
         repository.supportedWallets.asStateIn(
