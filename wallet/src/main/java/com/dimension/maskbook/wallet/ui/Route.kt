@@ -31,7 +31,6 @@ import androidx.navigation.navDeepLink
 import androidx.navigation.navOptions
 import androidx.navigation.plusAssign
 import com.dimension.maskbook.wallet.R
-import com.dimension.maskbook.wallet.ext.decodeUrl
 import com.dimension.maskbook.wallet.ext.encodeUrl
 import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.repository.ChainType
@@ -492,7 +491,7 @@ fun Route(
                             navArgument("personaId") { type = NavType.StringType },
                         )
                     ) {
-                        val personaId = it.arguments?.getString("personaId")?.decodeUrl()
+                        val personaId = it.arguments?.getString("personaId")
                         if (personaId != null) {
                             val viewModel = getViewModel<RenamePersonaViewModel> {
                                 parametersOf(personaId)
@@ -522,7 +521,7 @@ fun Route(
                             }
                         )
                     ) {
-                        val personaId = it.arguments?.getString("personaId")?.decodeUrl()
+                        val personaId = it.arguments?.getString("personaId")
                         val platform = it.arguments?.getString("platform")
                             ?.let { PlatformType.valueOf(it) }
 //                        val viewModel = when (platform) {
@@ -574,10 +573,10 @@ fun Route(
                             navArgument("id") { type = NavType.StringType },
                         )
                     ) {
-                        val personaId = it.arguments?.getString("personaId")?.decodeUrl()
+                        val personaId = it.arguments?.getString("personaId")
                         val platform =
                             it.arguments?.getString("platform")?.let { PlatformType.valueOf(it) }
-                        val id = it.arguments?.getString("id")?.decodeUrl()
+                        val id = it.arguments?.getString("id")
                         val viewModel = getViewModel<DisconnectSocialViewModel>()
                         if (personaId != null && platform != null && id != null) {
                             DisconnectSocialDialog(
