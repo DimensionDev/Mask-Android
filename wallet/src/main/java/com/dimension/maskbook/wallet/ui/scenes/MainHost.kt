@@ -59,6 +59,7 @@ private val items = HomeScreen.values()
 fun MainHost(
     initialTab: String,
     onBack: () -> Unit,
+    onPersonaNameClick: () -> Unit,
 ) {
     val initialPage = remember(initialTab) {
         if (initialTab.isEmpty()) return@remember 0
@@ -110,7 +111,10 @@ fun MainHost(
             ) {
                 when (items[it]) {
                     HomeScreen.App -> AppScene(onBack = onBack)
-                    HomeScreen.Personas -> PersonaScene(onBack = onBack)
+                    HomeScreen.Personas -> PersonaScene(
+                        onBack = onBack,
+                        onPersonaNameClick = onPersonaNameClick,
+                    )
                     HomeScreen.Settings -> SettingsScene(onBack = onBack)
                     HomeScreen.Wallets -> WalletIntroHost(onBack = onBack)
                 }

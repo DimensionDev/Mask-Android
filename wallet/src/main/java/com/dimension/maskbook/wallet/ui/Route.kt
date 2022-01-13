@@ -370,6 +370,9 @@ fun Route(
                         MainHost(
                             initialTab = it.arguments?.getString("tab").orEmpty(),
                             onBack = onBack,
+                            onPersonaNameClick = {
+                                navController.navigate("PersonaMenu")
+                            }
                         )
                     }
                     wallets(navController = navController)
