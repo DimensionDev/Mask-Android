@@ -41,6 +41,7 @@ data class DbWallet(
     val platformType: CoinPlatformType,
     val createdAt: Long,
     val updatedAt: Long,
+    val walletConnectUri: String = ""
 )
 
 @Entity(

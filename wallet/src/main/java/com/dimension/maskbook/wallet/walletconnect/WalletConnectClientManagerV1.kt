@@ -36,7 +36,7 @@ class WalletConnectClientManagerV1(private val context: Context) : WalletConnect
             Log.d("Mimao", "Current WcUrl:$it")
         }
 
-    override fun connect(onResult: (success: Boolean, wcUrl: String, approvedAccounts: List<String>) -> Unit) {
+    override fun connect(onResult: (success: Boolean, wcUrl: String, responder: WCResponder?) -> Unit) {
         session?.clearCallbacks()
         if (session == null) {
             Session.Config(
@@ -58,7 +58,15 @@ class WalletConnectClientManagerV1(private val context: Context) : WalletConnect
                         onResult.invoke(
                             success,
                             _wcUrl.value,
-                            approvedAccounts() ?: emptyList()
+                            peerMeta()?.let {
+                                WCResponder(
+                                    accounts = approvedAccounts() ?: emptyList(),
+                                    name = it.name ?: "",
+                                    description = it.description ?: "",
+                                    icons = it.icons ?: emptyList(),
+                                    url = it.url ?: ""
+                                )
+                            }
                         )
                         if (!success) {
                             kill()
@@ -109,22 +117,22 @@ class WalletConnectClientManagerV1(private val context: Context) : WalletConnect
         private val onConnect: () -> Unit,
     ) : Session.Callback {
         override fun onMethodCall(call: Session.MethodCall) {
-            // do nothing
             Log.d("Mimao", "resonposne:$call")
             if (call is Session.MethodCall.Response && call.error != null) {
                 dispatchResult(false)
+                // TODO parse response to get infomations:Response(id=1642063871762736, result={approved=true, chainId=4.0, networkId=0.0, accounts=[0xE08D12FEACe8B0a59828F72a9D691C430FB3B041], rpcUrl=, peerId=cd756507-f22f-4446-b651-7e3e17d0ccbf, peerMeta={description=MetaMask Mobile app, url=https://metamask.io, icons=[https://raw.githubusercontent.com/MetaMask/brand-resources/master/SVG/metamask-fox.svg], name=MetaMask, ssl=true}}, error=null)
             }
         }
 
         override fun onStatus(status: Session.Status) {
             //clear callbacks after
-            Log.d("Mimao", "Status:$status")
+            Log.d("Mimao", "Status:$status, ${session.approvedAccounts()}, ${session.peerMeta()}")
             if (status is Session.Status.Error) {
                 status.throwable.printStackTrace()
             }
             when (status) {
                 Session.Status.Approved -> {
-                    dispatchResult(true)
+                    //wait for response,to get chainId
                 }
                 Session.Status.Closed, Session.Status.Disconnected, is Session.Status.Error -> {
                     dispatchResult(false)

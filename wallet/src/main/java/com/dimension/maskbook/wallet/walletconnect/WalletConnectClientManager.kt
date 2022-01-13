@@ -9,6 +9,14 @@ import kotlinx.coroutines.flow.Flow
 
 interface WalletConnectClientManager {
     val wcUrl: Flow<String>
-    fun connect(onResult: (success: Boolean, wcUrl: String, approvedAccounts:List<String>) -> Unit)
+    fun connect(onResult: (success: Boolean, wcUrl: String, responder:WCResponder?) -> Unit)
     fun disConnect(wcUrl: String)
 }
+
+data class WCResponder(
+    val accounts: List<String>,
+    val name : String,
+    val description: String,
+    val icons: List<String>,
+    val url: String,
+)

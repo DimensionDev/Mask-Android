@@ -208,10 +208,14 @@ class WalletRepository(
 
     override fun setCurrentWallet(walletData: WalletData?) {
         if (walletData?.id != null) {
-            scope.launch {
-                database.walletDao().getById(walletData.id)?.let {
-                    setCurrentWallet(it.wallet)
-                }
+            setCurrentWallet(walletData.id)
+        }
+    }
+
+    override fun setCurrentWallet(walletId: String) {
+        scope.launch {
+            database.walletDao().getById(walletId)?.let {
+                setCurrentWallet(it.wallet)
             }
         }
     }

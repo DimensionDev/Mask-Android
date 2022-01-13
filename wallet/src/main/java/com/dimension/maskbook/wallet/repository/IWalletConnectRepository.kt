@@ -3,15 +3,17 @@ package com.dimension.maskbook.wallet.repository
 import android.net.Uri
 import com.dimension.maskbook.wallet.BuildConfig
 import com.dimension.maskbook.wallet.db.AppDatabase
-import com.dimension.maskbook.wallet.db.model.DbWCWallet
+import com.dimension.maskbook.wallet.db.model.*
 import com.dimension.maskbook.wallet.services.WalletServices
 import com.dimension.maskbook.wallet.services.model.WCSupportedWallet
+import com.dimension.maskbook.wallet.walletconnect.WCResponder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import java.util.*
 
 data class WCWallet(
     val id: String,
@@ -63,6 +65,8 @@ data class WCWallet(
 interface IWalletConnectRepository {
     val supportedWallets: Flow<List<WCWallet>>
     fun init()
+    // returns id of first wallet
+    suspend fun saveAccounts(wcUrl: String, responder: WCResponder, platformType: CoinPlatformType):String?
 }
 
 class WalletConnectRepository(
@@ -84,6 +88,45 @@ class WalletConnectRepository(
 
         }
     }
+
+    override suspend fun saveAccounts(
+        wcUrl: String,
+        responder: WCResponder,
+        platformType: CoinPlatformType
+    ): String? {
+        // TODO save chain type
+        val storedKeys = mutableListOf<DbStoredKey>()
+        val wallets = responder.accounts.map { address ->
+            val storedKey = DbStoredKey(
+                id = UUID.randomUUID().toString(),
+                hash = UUID.randomUUID().toString(),
+                source = WalletSource.WalletConnect,
+                data = byteArrayOf(),
+                createdAt = System.currentTimeMillis(),
+                updatedAt = System.currentTimeMillis(),
+            ).also {
+                storedKeys.add(it)
+            }
+            DbWallet(
+                id = UUID.randomUUID().toString(),
+                address = address,
+                name = responder.name,
+                storeKeyId = storedKey.id,
+                derivationPath = "",
+                extendedPublicKey = "",
+                coin = "",
+                platformType = platformType,
+                createdAt = System.currentTimeMillis(),
+                updatedAt = System.currentTimeMillis(),
+                walletConnectUri = wcUrl
+            )
+        }
+
+        database.storedKeyDao().add(storedKeys)
+        database.walletDao().add(wallets)
+        return wallets.firstOrNull()?.id
+    }
+
 
     override val supportedWallets: Flow<List<WCWallet>>
         get() = database.wcWalletDao().getAll().map {
