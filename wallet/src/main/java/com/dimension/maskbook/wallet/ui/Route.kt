@@ -34,6 +34,7 @@ import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ext.decodeUrl
 import com.dimension.maskbook.wallet.ext.encodeUrl
 import com.dimension.maskbook.wallet.ext.observeAsState
+import com.dimension.maskbook.wallet.repository.AppKey
 import com.dimension.maskbook.wallet.repository.ChainType
 import com.dimension.maskbook.wallet.repository.IPersonaRepository
 import com.dimension.maskbook.wallet.repository.ISettingsRepository
@@ -42,6 +43,7 @@ import com.dimension.maskbook.wallet.repository.IWalletRepository
 import com.dimension.maskbook.wallet.repository.PlatformType
 import com.dimension.maskbook.wallet.route.backup
 import com.dimension.maskbook.wallet.ui.scenes.MainHost
+import com.dimension.maskbook.wallet.ui.scenes.app.PluginSettingsScene
 import com.dimension.maskbook.wallet.ui.scenes.app.settings.MarketTrendSettingsModal
 import com.dimension.maskbook.wallet.ui.scenes.persona.*
 import com.dimension.maskbook.wallet.ui.scenes.persona.social.ConnectSocialModal
@@ -370,10 +372,28 @@ fun Route(
                         MainHost(
                             initialTab = it.arguments?.getString("tab").orEmpty(),
                             onBack = onBack,
+                            onLabsSettingClick = {
+                                navController.navigate("PluginSettings")
+                            },
+                            onLabsItemClick = { appKey ->
+                                when(appKey) {
+                                    AppKey.Swap -> {
+                                        navController.navigate("MarketTrendSettings")
+                                    }
+                                    else -> Unit
+                                }
+                            }
                         )
                     }
                     wallets(navController = navController)
                     settings(navController = navController)
+                    composable("PluginSettings") {
+                        PluginSettingsScene(
+                            onBack = {
+                                navController.popBackStack()
+                            }
+                        )
+                    }
                     composable("ExportPrivateKeyScene") {
                         ExportPrivateKeyScene(
                             onBack = {

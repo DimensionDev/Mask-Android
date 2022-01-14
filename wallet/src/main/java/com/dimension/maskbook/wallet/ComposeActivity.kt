@@ -15,8 +15,9 @@ import com.dimension.maskbook.wallet.ui.MaskTheme
 import com.dimension.maskbook.wallet.ui.Route
 import com.dimension.maskbook.wallet.utils.BiometricAuthenticator
 import com.dimension.maskbook.wallet.viewmodel.WelcomeViewModel
-import com.dimension.maskbook.wallet.viewmodel.app.AppViewModel
+import com.dimension.maskbook.wallet.viewmodel.app.LabsViewModel
 import com.dimension.maskbook.wallet.viewmodel.app.MarketTrendSettingsViewModel
+import com.dimension.maskbook.wallet.viewmodel.app.PluginSettingsViewModel
 import com.dimension.maskbook.wallet.viewmodel.persona.ExportPrivateKeyViewModel
 import com.dimension.maskbook.wallet.viewmodel.persona.PersonaViewModel
 import com.dimension.maskbook.wallet.viewmodel.persona.RenamePersonaViewModel
@@ -141,7 +142,8 @@ val walletModules = module {
     viewModel { ExportPrivateKeyViewModel(get()) }
     viewModel { PostViewModel(get(), get()) }
     viewModel { ContactsViewModel(get(), get()) }
-    viewModel { AppViewModel(get(), get()) }
+    viewModel { LabsViewModel(get(), get()) }
+    viewModel { PluginSettingsViewModel(get(), get()) }
     viewModel { LanguageSettingsViewModel(get()) }
     viewModel { AppearanceSettingsViewModel(get()) }
     viewModel { DataSourceSettingsViewModel(get()) }

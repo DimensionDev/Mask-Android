@@ -1,5 +1,6 @@
 package com.dimension.maskbook.wallet.ui.scenes.app.settings
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -79,7 +80,8 @@ fun MarketTrendSettingsModal() {
         Column(
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
-                .padding(ScaffoldPadding),
+                .padding(ScaffoldPadding)
+                .animateContentSize(),
         ) {
             Text(
                 text = "Default trading source",
