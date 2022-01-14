@@ -31,7 +31,6 @@ data class WalletData(
     val fromWalletConnect: Boolean,
     val tokens: List<WalletTokenData>,
     val balance: Map<DbWalletBalanceType, BigDecimal>,
-    val walletConnectUri: String = "",
 ) {
     companion object {
         fun fromDb(data: DbWalletTokenTokenWithWallet) = with(data) {
@@ -45,7 +44,6 @@ data class WalletData(
                     WalletTokenData.fromDb(it)
                 },
                 balance = balance.map { it.type to it.value }.toMap(),
-                walletConnectUri = wallet.walletConnectUri
             )
         }
     }
@@ -210,7 +208,7 @@ interface IWalletRepository {
     suspend fun getKeyStore(walletData: WalletData, platformType: CoinPlatformType): String
     suspend fun getPrivateKey(walletData: WalletData, platformType: CoinPlatformType): String
     suspend fun getTotalBalance(address: String): Double
-    fun deleteCurrentWallet()
+    fun deleteWallet(wallet: WalletData)
     fun renameWallet(value: String, id: String)
     fun renameCurrentWallet(value: String)
     fun sendTokenWithCurrentWallet(

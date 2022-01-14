@@ -10,6 +10,7 @@ import com.dimension.maskbook.wallet.platform.IPlatformSwitcher
 import com.dimension.maskbook.wallet.repository.*
 import com.dimension.maskbook.wallet.servicesModule
 import com.dimension.maskbook.wallet.walletModules
+import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
@@ -81,6 +82,19 @@ fun initEvent() {
                         KoinPlatformTools.defaultContext().get().get<IWalletRepository>()
                             .setChainType(chainType, false)
                     }
+                }
+            }
+        }
+    }
+}
+
+fun initWalletConnect() {
+    val walletRepository = KoinPlatformTools.defaultContext().get().get<IWalletRepository>()
+    KoinPlatformTools.defaultContext().get().get<WalletConnectClientManager>().initSessions {
+        CoroutineScope(Dispatchers.IO).launch {
+            it.accounts.forEach { address ->
+                walletRepository.findWalletByAddress(address)?.let { wallet ->
+                    walletRepository.deleteWallet(wallet)
                 }
             }
         }

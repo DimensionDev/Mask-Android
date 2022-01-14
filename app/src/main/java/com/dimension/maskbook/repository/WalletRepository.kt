@@ -422,25 +422,25 @@ class WalletRepository(
         return services.debankServices.totalBalance(address).totalUsdValue ?: 0.0
     }
 
-    override fun deleteCurrentWallet() {
+    override fun deleteWallet(wallet: WalletData) {
         scope.launch {
-            currentWallet.firstOrNull()?.let { wallet ->
-                val next = database.walletDao().getAll().firstOrNull()
-                    ?.firstOrNull { it.wallet.id != wallet.id }
-                val storedKeyToDelete =
-                    database.walletDao().getById(wallet.id)?.storedKey?.id?.let {
-                        database.storedKeyDao().getById(it)
-                    }?.let {
-                        if (it.items.size == 1 && it.items.first().id == wallet.id) {
-                            it.storedKey
-                        } else {
-                            null
-                        }
+            val next = database.walletDao().getAll().firstOrNull()
+                ?.firstOrNull { it.wallet.id != wallet.id }
+            val storedKeyToDelete =
+                database.walletDao().getById(wallet.id)?.storedKey?.id?.let {
+                    database.storedKeyDao().getById(it)
+                }?.let {
+                    if (it.items.size == 1 && it.items.first().id == wallet.id) {
+                        it.storedKey
+                    } else {
+                        null
                     }
-                setCurrentWallet(next?.let { WalletData.fromDb(it) })
-                database.walletDao().deleteById(wallet.id)
-                storedKeyToDelete?.id?.let { database.storedKeyDao().deleteById(it) }
+                }
+            currentWallet.firstOrNull()?.let {
+                if (it.id == wallet.id) setCurrentWallet(next?.let { it1 -> WalletData.fromDb(it1) })
             }
+            database.walletDao().deleteById(wallet.id)
+            storedKeyToDelete?.id?.let { database.storedKeyDao().deleteById(it) }
         }
     }
 

@@ -27,13 +27,13 @@ class WalletConnectViewModel(
     }
 
     fun connect() {
-        manager.connect(onResult = { success, wcUrl, responder ->
+        manager.connect(onResult = { success, responder ->
             if (success) {
                 responder?.let {
                     // save it
                     viewModelScope.launch {
                         val platform = walletRepository.dWebData.firstOrNull()?.coinPlatformType ?: CoinPlatformType.Ethereum
-                        repository.saveAccounts(wcUrl = wcUrl, responder = responder, platformType = platform)?.let {
+                        repository.saveAccounts(responder = responder, platformType = platform)?.let {
                             // TODO IF chainType is different show switch chainType dialog
                             walletRepository.setCurrentWallet(it)
                         }

@@ -102,6 +102,7 @@ import com.dimension.maskbook.wallet.viewmodel.settings.EmailSetupViewModel
 import com.dimension.maskbook.wallet.viewmodel.settings.PhoneSetupViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.BiometricViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.TokenDetailViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.WalletConnectManagementViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.WalletManagementModalViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletBackupViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletDeleteViewModel
@@ -658,6 +659,7 @@ private fun NavGraphBuilder.wallets(
         it.arguments?.getString("id")?.let { id ->
             val repository = get<IWalletRepository>()
             val wallets by repository.wallets.observeAsState(initial = emptyList())
+            val viewModel = getViewModel<WalletConnectManagementViewModel>()
             wallets.firstOrNull { it.id == id }?.let { wallet ->
                 WalletSwitchModal(
                     walletData = wallet,
@@ -667,6 +669,8 @@ private fun NavGraphBuilder.wallets(
                         navController.navigate("WalletManagementDeleteDialog/${wallet.id}")
                     },
                     onDisconnect = {
+                        viewModel.disconnect(walletData = wallet)
+                        navController.popBackStack()
                     }
                 )
             }
@@ -675,6 +679,7 @@ private fun NavGraphBuilder.wallets(
     bottomSheet("WalletBalancesMenu") {
         val viewModel = getViewModel<WalletManagementModalViewModel>()
         val currentWallet by viewModel.currentWallet.observeAsState(initial = null)
+        val wcViewModel = getViewModel<WalletConnectManagementViewModel>()
         currentWallet?.let { wallet ->
             WalletManagementModal(
                 walletData = wallet,
@@ -686,7 +691,8 @@ private fun NavGraphBuilder.wallets(
                     navController.navigate("WalletManagementDeleteDialog/${wallet.id}")
                 },
                 onDisconnect = {
-
+                    wcViewModel.disconnect(walletData = wallet)
+                    navController.popBackStack()
                 }
             )
         }

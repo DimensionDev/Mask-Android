@@ -15,11 +15,14 @@ import org.walletconnect.impls.OkHttpTransport
 import org.walletconnect.impls.WCSession
 import java.io.File
 import java.util.*
+import java.util.concurrent.CopyOnWriteArrayList
 
 class WalletConnectClientManagerV1(private val context: Context) : WalletConnectClientManager {
     private var config: Session.Config? = null
     private var session: Session? = null
     private val bridgeServer = "https://safe-walletconnect.gnosis.io"
+    private var onDisconnect: (responder: WCResponder) -> Unit = {}
+    private val connectedSessions = CopyOnWriteArrayList<Session>()
     private val moshi by lazy {
         Moshi.Builder().build()
     }
@@ -36,7 +39,7 @@ class WalletConnectClientManagerV1(private val context: Context) : WalletConnect
             Log.d("Mimao", "Current WcUrl:$it")
         }
 
-    override fun connect(onResult: (success: Boolean, wcUrl: String, responder: WCResponder?) -> Unit) {
+    override fun connect(onResult: (success: Boolean, responder: WCResponder?) -> Unit) {
         session?.clearCallbacks()
         if (session == null) {
             Session.Config(
@@ -57,19 +60,12 @@ class WalletConnectClientManagerV1(private val context: Context) : WalletConnect
                     onResult = { success ->
                         onResult.invoke(
                             success,
-                            _wcUrl.value,
-                            peerMeta()?.let {
-                                WCResponder(
-                                    accounts = approvedAccounts() ?: emptyList(),
-                                    name = it.name ?: "",
-                                    description = it.description ?: "",
-                                    icons = it.icons ?: emptyList(),
-                                    url = it.url ?: ""
-                                )
-                            }
+                            responder()
                         )
-                        if (!success) {
-                            kill()
+                        if (success) {
+                            session?.let {
+                                connectedSessions.add(it)
+                            }
                         }
                         resetSession()
                     },
@@ -89,11 +85,35 @@ class WalletConnectClientManagerV1(private val context: Context) : WalletConnect
         _wcUrl.value = ""
     }
 
-    override fun disConnect(wcUrl: String) {
-        wcUrl.session().apply {
-            kill()
-            clearCallbacks()
+    override fun disConnect(address: String):Boolean {
+        return connectedSessions.find { it.approvedAccounts()?.contains(address)?: false }?.let {
+            it.kill()
+            it.clearCallbacks()
+            true
+        } ?: false
+    }
+
+    override fun initSessions(onDisconnect: (responder: WCResponder) -> Unit) {
+        storage.list().forEach {
+            Log.d("Mimao", "Stored state:$it")
+            if (it.handshakeId == null && it.peerData == null) {
+                // end unpaired sessions
+                it.config.session().kill()
+            } else {
+                // check if the session is ended
+                connectedSessions.add(it.config.session().apply {
+                    addCallback(ConnectedSessionCallback(this, onDisconnect = { session ->
+                        // remove from connected sessions
+                        connectedSessions.remove(session)
+                        session.responder()?.let { responder ->
+                            this@WalletConnectClientManagerV1.onDisconnect.invoke(responder)
+                        }
+                    }))
+                    update(approvedAccounts() ?: emptyList(), chainId = it.chainId ?: -1)
+                })
+            }
         }
+        this.onDisconnect = onDisconnect
     }
 
     private fun Session.Config.session() = WCSession(
@@ -109,43 +129,70 @@ class WalletConnectClientManagerV1(private val context: Context) : WalletConnect
     )
 
     private fun String.session() = Session.Config.fromWCUri(this).session()
+}
 
 
-    private class PairCallback(
-        private val session: Session,
-        private val onResult: (success: Boolean) -> Unit,
-        private val onConnect: () -> Unit,
-    ) : Session.Callback {
-        override fun onMethodCall(call: Session.MethodCall) {
-            Log.d("Mimao", "resonposne:$call")
-            if (call is Session.MethodCall.Response && call.error != null) {
+private fun Session.responder() = peerMeta()?.let {
+    WCResponder(
+        accounts = approvedAccounts() ?: emptyList(),
+        name = it.name ?: "",
+        description = it.description ?: "",
+        icons = it.icons ?: emptyList(),
+        url = it.url ?: ""
+    )
+}
+
+private class PairCallback(
+    private val session: Session,
+    private val onResult: (success: Boolean) -> Unit,
+    private val onConnect: () -> Unit,
+) : Session.Callback {
+    override fun onMethodCall(call: Session.MethodCall) {
+        Log.d("Mimao", "resonposne:$call")
+        if (call is Session.MethodCall.Response && call.error != null) {
+            dispatchResult(false)
+            // TODO parse response to get infomations:Response(id=1642063871762736, result={approved=true, chainId=4.0, networkId=0.0, accounts=[0xE08D12FEACe8B0a59828F72a9D691C430FB3B041], rpcUrl=, peerId=cd756507-f22f-4446-b651-7e3e17d0ccbf, peerMeta={description=MetaMask Mobile app, url=https://metamask.io, icons=[https://raw.githubusercontent.com/MetaMask/brand-resources/master/SVG/metamask-fox.svg], name=MetaMask, ssl=true}}, error=null)
+        }
+    }
+
+    override fun onStatus(status: Session.Status) {
+        //clear callbacks after
+        Log.d("Mimao", "Status:$status, ${session.approvedAccounts()}, ${session.peerMeta()}")
+        if (status is Session.Status.Error) {
+            status.throwable.printStackTrace()
+        }
+        when (status) {
+            Session.Status.Approved -> {
+                //wait for response,to get chainId
+                dispatchResult(true)
+            }
+            Session.Status.Closed, Session.Status.Disconnected, is Session.Status.Error -> {
                 dispatchResult(false)
-                // TODO parse response to get infomations:Response(id=1642063871762736, result={approved=true, chainId=4.0, networkId=0.0, accounts=[0xE08D12FEACe8B0a59828F72a9D691C430FB3B041], rpcUrl=, peerId=cd756507-f22f-4446-b651-7e3e17d0ccbf, peerMeta={description=MetaMask Mobile app, url=https://metamask.io, icons=[https://raw.githubusercontent.com/MetaMask/brand-resources/master/SVG/metamask-fox.svg], name=MetaMask, ssl=true}}, error=null)
+            }
+            Session.Status.Connected -> {
+                onConnect.invoke()
             }
         }
+    }
 
-        override fun onStatus(status: Session.Status) {
-            //clear callbacks after
-            Log.d("Mimao", "Status:$status, ${session.approvedAccounts()}, ${session.peerMeta()}")
-            if (status is Session.Status.Error) {
-                status.throwable.printStackTrace()
-            }
-            when (status) {
-                Session.Status.Approved -> {
-                    //wait for response,to get chainId
-                }
-                Session.Status.Closed, Session.Status.Disconnected, is Session.Status.Error -> {
-                    dispatchResult(false)
-                }
-                Session.Status.Connected -> {
-                    onConnect.invoke()
-                }
-            }
-        }
+    private fun dispatchResult(success: Boolean) {
+        session.removeCallback(this)
+        onResult.invoke(success)
+    }
+}
 
-        private fun dispatchResult(success: Boolean) {
-            session.removeCallback(this)
-            onResult.invoke(success)
+private class ConnectedSessionCallback(
+    private val session: Session,
+    private val onDisconnect: (session: Session) -> Unit
+) : Session.Callback {
+    override fun onMethodCall(call: Session.MethodCall) {
+        // do nothing
+    }
+
+    override fun onStatus(status: Session.Status) {
+        if (status == Session.Status.Disconnected) {
+            session.clearCallbacks()
+            onDisconnect.invoke(session)
         }
     }
 }

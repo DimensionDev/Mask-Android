@@ -5,10 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.wallet.ext.asStateIn
 import com.dimension.maskbook.wallet.repository.ISettingsRepository
 import com.dimension.maskbook.wallet.repository.IWalletRepository
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 
 class WalletDeleteViewModel(
     private val id: String,
@@ -32,6 +30,10 @@ class WalletDeleteViewModel(
     }
 
     fun confirm() {
-        walletRepository.deleteCurrentWallet()
+        viewModelScope.launch {
+            wallet.firstOrNull()?.let {
+                walletRepository.deleteWallet(it)
+            }
+        }
     }
 }

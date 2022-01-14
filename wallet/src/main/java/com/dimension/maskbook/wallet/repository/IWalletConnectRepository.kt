@@ -66,7 +66,7 @@ interface IWalletConnectRepository {
     val supportedWallets: Flow<List<WCWallet>>
     fun init()
     // returns id of first wallet
-    suspend fun saveAccounts(wcUrl: String, responder: WCResponder, platformType: CoinPlatformType):String?
+    suspend fun saveAccounts(responder: WCResponder, platformType: CoinPlatformType):String?
 }
 
 class WalletConnectRepository(
@@ -90,7 +90,6 @@ class WalletConnectRepository(
     }
 
     override suspend fun saveAccounts(
-        wcUrl: String,
         responder: WCResponder,
         platformType: CoinPlatformType
     ): String? {
@@ -118,7 +117,6 @@ class WalletConnectRepository(
                 platformType = platformType,
                 createdAt = System.currentTimeMillis(),
                 updatedAt = System.currentTimeMillis(),
-                walletConnectUri = wcUrl
             )
         }
 

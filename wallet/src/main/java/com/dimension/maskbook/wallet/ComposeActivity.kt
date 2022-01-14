@@ -69,6 +69,7 @@ import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendConfirmViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendTokenViewModel
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManagerV1
+import org.koin.android.ext.android.get
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -234,6 +235,7 @@ val walletModules = module {
         SendConfirmViewModel(tokenData, toAddress, get(), get())
     }
     viewModel { BiometricViewModel(get(), get()) }
+    viewModel { WalletConnectManagementViewModel(get(), get()) }
     viewModel { (onResult:(success:Boolean)->Unit)-> WalletConnectViewModel(get(), get(), get(), onResult) }
 }
 
