@@ -15,14 +15,15 @@ import org.walletconnect.impls.OkHttpTransport
 import org.walletconnect.impls.WCSession
 import java.io.File
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 
 class WalletConnectClientManagerV1(private val context: Context) : WalletConnectClientManager {
     private var config: Session.Config? = null
     private var session: Session? = null
     private val bridgeServer = "https://safe-walletconnect.gnosis.io"
-    private var onDisconnect: (responder: WCResponder) -> Unit = {}
-    private val connectedSessions = CopyOnWriteArrayList<Session>()
+    private var onDisconnect: (address: String) -> Unit = {}
+    private val connectedSessions = ConcurrentHashMap<String, Session>()
     private val moshi by lazy {
         Moshi.Builder().build()
     }
@@ -64,7 +65,7 @@ class WalletConnectClientManagerV1(private val context: Context) : WalletConnect
                         )
                         if (success) {
                             session?.let {
-                                connectedSessions.add(it)
+                                addToConnected(it, config?.handshakeTopic ?: "")
                             }
                         }
                         resetSession()
@@ -85,35 +86,42 @@ class WalletConnectClientManagerV1(private val context: Context) : WalletConnect
         _wcUrl.value = ""
     }
 
-    override fun disConnect(address: String):Boolean {
-        return connectedSessions.find { it.approvedAccounts()?.contains(address)?: false }?.let {
+    override fun disConnect(address: String): Boolean {
+        return connectedSessions[address]?.let {
             it.kill()
             it.clearCallbacks()
             true
         } ?: false
     }
 
-    override fun initSessions(onDisconnect: (responder: WCResponder) -> Unit) {
+
+    override fun initSessions(onDisconnect: (address: String) -> Unit) {
+        this.onDisconnect = onDisconnect
         storage.list().forEach {
             Log.d("Mimao", "Stored state:$it")
             if (it.handshakeId == null && it.peerData == null) {
                 // end unpaired sessions
                 it.config.session().kill()
             } else {
-                // check if the session is ended
-                connectedSessions.add(it.config.session().apply {
-                    addCallback(ConnectedSessionCallback(this, onDisconnect = { session ->
-                        // remove from connected sessions
-                        connectedSessions.remove(session)
-                        session.responder()?.let { responder ->
-                            this@WalletConnectClientManagerV1.onDisconnect.invoke(responder)
-                        }
-                    }))
-                    update(approvedAccounts() ?: emptyList(), chainId = it.chainId ?: -1)
-                })
+                addToConnected(it.config.session(), it.config.handshakeTopic)
             }
         }
-        this.onDisconnect = onDisconnect
+    }
+
+    private fun addToConnected(session: Session, handshakeTopic: String) {
+        session.approvedAccounts()?.forEach {
+            connectedSessions[it] = session.apply {
+                addCallback(ConnectedSessionCallback(this, it, onDisconnect = { address, _ ->
+                    // remove from connected sessions
+                    connectedSessions.remove(address)
+                    this@WalletConnectClientManagerV1.onDisconnect.invoke(address)
+                }))
+                update(
+                    approvedAccounts() ?: emptyList(),
+                    chainId = storage.load(handshakeTopic)?.chainId ?: -1
+                )
+            }
+        }
     }
 
     private fun Session.Config.session() = WCSession(
@@ -127,8 +135,6 @@ class WalletConnectClientManagerV1(private val context: Context) : WalletConnect
             description = "Mask Network"
         )
     )
-
-    private fun String.session() = Session.Config.fromWCUri(this).session()
 }
 
 
@@ -183,16 +189,18 @@ private class PairCallback(
 
 private class ConnectedSessionCallback(
     private val session: Session,
-    private val onDisconnect: (session: Session) -> Unit
+    private val address: String,
+    private val onDisconnect: (address: String, session: Session) -> Unit,
 ) : Session.Callback {
     override fun onMethodCall(call: Session.MethodCall) {
         // do nothing
     }
 
     override fun onStatus(status: Session.Status) {
-        if (status == Session.Status.Disconnected) {
+        Log.d("Mimao", "Stored State Changed:$status")
+        if (status == Session.Status.Disconnected || status == Session.Status.Closed) {
             session.clearCallbacks()
-            onDisconnect.invoke(session)
+            onDisconnect.invoke(address, session)
         }
     }
 }

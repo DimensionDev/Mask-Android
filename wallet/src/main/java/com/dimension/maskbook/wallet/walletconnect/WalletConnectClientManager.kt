@@ -11,7 +11,7 @@ interface WalletConnectClientManager {
     val wcUrl: Flow<String>
     fun connect(onResult: (success: Boolean, responder:WCResponder?) -> Unit)
     fun disConnect(address: String): Boolean
-    fun initSessions(onDisconnect:(responder: WCResponder) -> Unit)
+    fun initSessions(onDisconnect:(address: String) -> Unit)
 }
 
 data class WCResponder(

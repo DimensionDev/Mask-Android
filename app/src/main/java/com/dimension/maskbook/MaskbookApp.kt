@@ -90,15 +90,14 @@ fun initEvent() {
 
 fun initWalletConnect() {
     val walletRepository = KoinPlatformTools.defaultContext().get().get<IWalletRepository>()
-    KoinPlatformTools.defaultContext().get().get<WalletConnectClientManager>().initSessions {
-        CoroutineScope(Dispatchers.IO).launch {
-            it.accounts.forEach { address ->
+    KoinPlatformTools.defaultContext().get().get<WalletConnectClientManager>()
+        .initSessions { address ->
+            CoroutineScope(Dispatchers.IO).launch {
                 walletRepository.findWalletByAddress(address)?.let { wallet ->
                     walletRepository.deleteWallet(wallet)
                 }
             }
         }
-    }
 }
 
 val repositoryModules = module {
