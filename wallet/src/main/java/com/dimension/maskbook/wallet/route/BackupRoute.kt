@@ -23,7 +23,6 @@ import androidx.navigation.*
 import androidx.navigation.compose.dialog
 import androidx.navigation.navArgument
 import com.dimension.maskbook.wallet.R
-import com.dimension.maskbook.wallet.ext.decodeUrl
 import com.dimension.maskbook.wallet.ext.encodeUrl
 import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.repository.IPersonaRepository

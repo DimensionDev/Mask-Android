@@ -7,7 +7,6 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
-import com.dimension.maskbook.wallet.ext.decodeUrl
 import com.dimension.maskbook.wallet.ext.encodeUrl
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
@@ -80,7 +79,7 @@ fun ImportWalletHost(
                 onBack = { navController.popBackStack() },
                 onDone = { onDone.invoke() },
                 wallet = wallet,
-                code = it.arguments?.getString("mnemonicCode")?.decodeUrl()?.split(" ").orEmpty(),
+                code = it.arguments?.getString("mnemonicCode")?.split(" ").orEmpty(),
             )
         }
     }
