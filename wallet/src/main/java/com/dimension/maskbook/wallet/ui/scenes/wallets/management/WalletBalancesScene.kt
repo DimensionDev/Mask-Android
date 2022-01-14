@@ -251,6 +251,8 @@ fun WalletBalancesScene(
                         currentWallet.tokens.filter {
                             it.tokenData.chainId == displayAmountType.chainType?.dbank?.name
                         }
+                    }.sortedByDescending {
+                        it.tokenData.price * it.count
                     }
                 ) {
                     val tokenData = it.tokenData
