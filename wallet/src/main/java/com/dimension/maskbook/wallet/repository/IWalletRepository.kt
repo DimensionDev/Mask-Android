@@ -29,6 +29,7 @@ data class WalletData(
     val address: String,
     val imported: Boolean,
     val fromWalletConnect: Boolean,
+    val walletConnectChainType: ChainType? = ChainType.eth,
     val tokens: List<WalletTokenData>,
     val balance: Map<DbWalletBalanceType, BigDecimal>,
 ) {
@@ -44,6 +45,7 @@ data class WalletData(
                     WalletTokenData.fromDb(it)
                 },
                 balance = balance.map { it.type to it.value }.toMap(),
+                walletConnectChainType = wallet.walletConnectChainType
             )
         }
     }
@@ -120,7 +122,7 @@ enum class UnlockType {
     BIOMETRIC
 }
 
-
+@Serializable
 enum class ChainType(
     val chainId: Long,
     val endpoint: String,

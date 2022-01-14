@@ -1,6 +1,7 @@
 package com.dimension.maskbook.wallet.db.model
 
 import androidx.room.*
+import com.dimension.maskbook.wallet.repository.ChainType
 import com.dimension.maskbook.wallet.repository.model.DerivationPath
 import com.dimension.maskwalletcore.CoinType
 
@@ -39,6 +40,7 @@ data class DbWallet(
     val coin: String,
     val name: String,
     val platformType: CoinPlatformType,
+    val walletConnectChainType: ChainType? = null,
     val createdAt: Long,
     val updatedAt: Long,
 )

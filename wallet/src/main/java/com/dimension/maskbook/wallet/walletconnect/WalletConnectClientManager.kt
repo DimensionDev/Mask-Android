@@ -1,5 +1,6 @@
 package com.dimension.maskbook.wallet.walletconnect
 
+import com.dimension.maskbook.wallet.repository.ChainType
 import kotlinx.coroutines.flow.Flow
 
 
@@ -9,15 +10,16 @@ import kotlinx.coroutines.flow.Flow
 
 interface WalletConnectClientManager {
     val wcUrl: Flow<String>
-    fun connect(onResult: (success: Boolean, responder:WCResponder?) -> Unit)
+    fun connect(onResult: (success: Boolean, responder: WCResponder?) -> Unit)
     fun disConnect(address: String): Boolean
-    fun initSessions(onDisconnect:(address: String) -> Unit)
+    fun initSessions(onDisconnect: (address: String) -> Unit)
 }
 
 data class WCResponder(
     val accounts: List<String>,
-    val name : String,
+    val name: String,
     val description: String,
     val icons: List<String>,
     val url: String,
+    val chainType: ChainType,
 )

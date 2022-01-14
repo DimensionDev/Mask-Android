@@ -13,6 +13,7 @@ import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class WalletConnectViewModel(
@@ -21,6 +22,8 @@ class WalletConnectViewModel(
     private val walletRepository: IWalletRepository,
     private val onResult: (success: Boolean) -> Unit,
 ) : ViewModel() {
+    val network =
+        walletRepository.dWebData.map { it.chainType }.asStateIn(viewModelScope, ChainType.eth)
 
     init {
         connect()
@@ -32,11 +35,12 @@ class WalletConnectViewModel(
                 responder?.let {
                     // save it
                     viewModelScope.launch {
-                        val platform = walletRepository.dWebData.firstOrNull()?.coinPlatformType ?: CoinPlatformType.Ethereum
-                        repository.saveAccounts(responder = responder, platformType = platform)?.let {
-                            // TODO IF chainType is different show switch chainType dialog
-                            walletRepository.setCurrentWallet(it)
-                        }
+                        val platform = walletRepository.dWebData.firstOrNull()?.coinPlatformType
+                            ?: CoinPlatformType.Ethereum
+                        repository.saveAccounts(responder = responder, platformType = platform)
+                            ?.let {
+                                walletRepository.setCurrentWallet(it)
+                            }
                     }
                 }
             }

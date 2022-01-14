@@ -2,6 +2,8 @@ package com.dimension.maskbook.wallet.walletconnect
 
 import android.content.Context
 import android.util.Log
+import com.dimension.maskbook.wallet.BuildConfig
+import com.dimension.maskbook.wallet.repository.ChainType
 import com.dimension.maskbook.wallet.services.okHttpClient
 import com.squareup.moshi.Moshi
 import kotlinx.coroutines.flow.Flow
@@ -13,6 +15,10 @@ import org.walletconnect.impls.FileWCSessionStore
 import org.walletconnect.impls.MoshiPayloadAdapter
 import org.walletconnect.impls.OkHttpTransport
 import org.walletconnect.impls.WCSession
+import org.walletconnect.nullOnThrow
+import org.walletconnect.types.extractPeerData
+import org.walletconnect.types.extractSessionParams
+import org.walletconnect.types.toStringList
 import java.io.File
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
@@ -58,15 +64,17 @@ class WalletConnectClientManagerV1(private val context: Context) : WalletConnect
             addCallback(
                 PairCallback(
                     session = this,
-                    onResult = { success ->
+                    onResult = { success, responder ->
                         onResult.invoke(
                             success,
-                            responder()
+                            responder
                         )
                         if (success) {
                             session?.let {
                                 addToConnected(it, config?.handshakeTopic ?: "")
                             }
+                        } else {
+                            session?.kill()
                         }
                         resetSession()
                     },
@@ -124,7 +132,7 @@ class WalletConnectClientManagerV1(private val context: Context) : WalletConnect
         }
     }
 
-    private fun Session.Config.session() = WCSession(
+    private fun Session.Config.session() = WCSessionV1(
         config = this,
         payloadAdapter = MoshiPayloadAdapter(moshi),
         sessionStore = storage,
@@ -138,26 +146,44 @@ class WalletConnectClientManagerV1(private val context: Context) : WalletConnect
 }
 
 
-private fun Session.responder() = peerMeta()?.let {
-    WCResponder(
-        accounts = approvedAccounts() ?: emptyList(),
-        name = it.name ?: "",
-        description = it.description ?: "",
-        icons = it.icons ?: emptyList(),
-        url = it.url ?: ""
-    )
+private fun Session.responder(chainId: Long?) = peerMeta()?.let {
+    Log.d("Mimao", "responder chain id:$chainId")
+    chainId?.let { id ->
+        ChainType.values().find { type ->
+            Log.d("Mimao", "chaind id :${type.chainId}, wc id:$id")
+            type.chainId == id
+        }
+    }?.let { chainType ->
+        WCResponder(
+            accounts = approvedAccounts() ?: emptyList(),
+            name = it.name ?: "",
+            description = it.description ?: "",
+            icons = it.icons ?: emptyList(),
+            url = it.url ?: "",
+            chainType = chainType
+        )
+    }
 }
 
 private class PairCallback(
     private val session: Session,
-    private val onResult: (success: Boolean) -> Unit,
+    private val onResult: (success: Boolean, responder: WCResponder?) -> Unit,
     private val onConnect: () -> Unit,
 ) : Session.Callback {
     override fun onMethodCall(call: Session.MethodCall) {
         Log.d("Mimao", "resonposne:$call")
-        if (call is Session.MethodCall.Response && call.error != null) {
-            dispatchResult(false)
-            // TODO parse response to get infomations:Response(id=1642063871762736, result={approved=true, chainId=4.0, networkId=0.0, accounts=[0xE08D12FEACe8B0a59828F72a9D691C430FB3B041], rpcUrl=, peerId=cd756507-f22f-4446-b651-7e3e17d0ccbf, peerMeta={description=MetaMask Mobile app, url=https://metamask.io, icons=[https://raw.githubusercontent.com/MetaMask/brand-resources/master/SVG/metamask-fox.svg], name=MetaMask, ssl=true}}, error=null)
+        if (call is Session.MethodCall.Response) {
+            if (call.error != null) {
+                dispatchResult(false)
+            }
+            try {
+                (call.result as? Map<String, *>)?.let {
+                    dispatchResult(true, (it["chainId"] as? Number)?.toLong())
+                } ?: throw Error("parse error")
+            } catch (e: Throwable) {
+                if (BuildConfig.DEBUG) e.printStackTrace()
+                dispatchResult(false)
+            }
         }
     }
 
@@ -170,7 +196,6 @@ private class PairCallback(
         when (status) {
             Session.Status.Approved -> {
                 //wait for response,to get chainId
-                dispatchResult(true)
             }
             Session.Status.Closed, Session.Status.Disconnected, is Session.Status.Error -> {
                 dispatchResult(false)
@@ -181,9 +206,11 @@ private class PairCallback(
         }
     }
 
-    private fun dispatchResult(success: Boolean) {
+    private fun dispatchResult(success: Boolean, chainId: Long? = null) {
         session.removeCallback(this)
-        onResult.invoke(success)
+        session.responder(chainId = chainId)?.let {
+            onResult.invoke(success, it)
+        } ?: onResult.invoke(false, null)
     }
 }
 

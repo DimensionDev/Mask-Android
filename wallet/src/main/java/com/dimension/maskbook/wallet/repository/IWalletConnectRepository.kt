@@ -93,7 +93,6 @@ class WalletConnectRepository(
         responder: WCResponder,
         platformType: CoinPlatformType
     ): String? {
-        // TODO save chain type
         val storedKeys = mutableListOf<DbStoredKey>()
         val wallets = responder.accounts.map { address ->
             val storedKey = DbStoredKey(
@@ -117,6 +116,7 @@ class WalletConnectRepository(
                 platformType = platformType,
                 createdAt = System.currentTimeMillis(),
                 updatedAt = System.currentTimeMillis(),
+                walletConnectChainType = responder.chainType,
             )
         }
 
