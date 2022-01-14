@@ -23,52 +23,52 @@ data class PluginDisplayData(
 private val displayDataList = listOf(
     PluginDisplayData(
         key = AppKey.FileService,
-        name = "File Service",
+        name = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_app_plugins_file_service),
         onIcon = R.drawable.ic_labs_encrypted_file,
     ),
     PluginDisplayData(
         key = AppKey.ITO,
-        name = "ITO",
+        name = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_app_plugins_ito),
         onIcon = R.drawable.ic_labs_ito,
     ),
     PluginDisplayData(
         key = AppKey.LuckDrop,
-        name = "Lucky Drop",
+        name = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_app_plugins_lucy_drop),
         onIcon = R.drawable.ic_labs_packet,
     ),
     PluginDisplayData(
         key = AppKey.Transak,
-        name = "Transak",
+        name = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_app_plugins_transaction),
         onIcon = R.drawable.ic_labs_transak,
     ),
     PluginDisplayData(
         key = AppKey.Snapshot,
-        name = "Snapshot",
+        name = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_app_plugins_snapshot),
         onIcon = R.drawable.ic_labs_snapshot,
     ),
     PluginDisplayData(
         key = AppKey.DHEDGE,
-        name = "DHEDGE",
+        name = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_app_plugins_dhedge),
         onIcon = R.drawable.ic_labs_dhedge,
     ),
     PluginDisplayData(
         key = AppKey.GitCoin,
-        name = "Gitcoin",
+        name = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_app_plugins_gitcoin),
         onIcon = R.drawable.ic_labs_gitcoin,
     ),
     PluginDisplayData(
         key = AppKey.Swap,
-        name = "Swap",
+        name = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_app_plugins_swap),
         onIcon = R.drawable.ic_labs_swap,
     ),
     PluginDisplayData(
         key = AppKey.Collectibles,
-        name = "Collectibles",
+        name = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_app_plugins_collectibles),
         onIcon = R.drawable.ic_labs_collectibles,
     ),
     PluginDisplayData(
         key = AppKey.Valuables,
-        name = "Valuables",
+        name = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_app_plugins_valuables),
         onIcon = R.drawable.ic_labs_union,
     ),
 )

@@ -113,5 +113,5 @@ private fun AppItem(
 }
 
 private object LabsSceneDefault {
-    const val title = "Labs"
+    const val title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.tab_labs)
 }

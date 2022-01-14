@@ -24,31 +24,31 @@ data class AppDisplayData(
 private val displayDataList = listOf(
     AppDisplayData(
         key = AppKey.Transak,
-        name = "Transak",
+        name = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_app_plugins_transaction),
         description = "Buy crypto in 60+ countries with Transak support.",
         onIcon = R.drawable.ic_labs_transak,
     ),
     AppDisplayData(
         key = AppKey.ITO,
-        name = "ITO",
+        name = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_app_plugins_ito),
         description = "Enable users to buy tokens directly on Twitter.",
         onIcon = R.drawable.ic_labs_ito,
     ),
     AppDisplayData(
         key = AppKey.LuckDrop,
-        name = "Lucky Drop",
+        name = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_app_plugins_lucy_drop),
         description = "Surprise your encrypted friends with Token/NFT Lucky Drops.",
         onIcon = R.drawable.ic_labs_packet,
     ),
     AppDisplayData(
         key = AppKey.Swap,
-        name = "Swap",
+        name = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_app_plugins_swap),
         description = "Pop-up trading widget that allows you to instantly view prices of the hottest Crypto/Stock and trade. Can also invest in the best performing managers.",
         onIcon = R.drawable.ic_labs_swap,
     ),
     AppDisplayData(
         key = AppKey.FileService,
-        name = "File Service",
+        name = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_app_plugins_file_service),
         description = "Decentralized file storage for users.",
         onIcon = R.drawable.ic_labs_encrypted_file,
     ),

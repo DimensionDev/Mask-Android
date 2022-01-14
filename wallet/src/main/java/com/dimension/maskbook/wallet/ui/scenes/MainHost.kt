@@ -48,7 +48,7 @@ import kotlinx.coroutines.launch
 private enum class HomeScreen(val route: String, val title: String, @DrawableRes val icon: Int) {
     Personas("Personas", androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.tab_personas), R.drawable.ic_persona),
     Wallets("Wallets", "Wallets", R.drawable.ic_wallet),
-    Labs("Labs", "Labs", R.drawable.ic_labs),
+    Labs("Labs", androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.tab_labs), R.drawable.ic_labs),
     Settings("Settings", "Settings", R.drawable.ic_settings),
 }
 
