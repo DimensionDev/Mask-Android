@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ext.encodeUrl
@@ -80,7 +81,7 @@ fun SettingsScene(
                 targetRoute = "AppearanceSettings",
                 title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_general_appearance),
                 icon = R.drawable.star1,
-                trailingText = appearanceMap[appearance],
+                trailingText = appearanceMap[appearance]?.let { it1 -> stringResource(it1) },
             )
             SettingsItem(
                 targetRoute = "DataSourceSettings",
@@ -93,7 +94,7 @@ fun SettingsScene(
                     targetRoute = "PaymentPasswordSettings",
                     title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_general_setup_payment_password),
                     icon = R.drawable.ic_change_payment_password,
-                    secondaryText = "Please set up payment password"
+                    secondaryText = stringResource(R.string.scene_set_password_title)
                 )
             } else {
                 SettingsItem(
@@ -158,7 +159,7 @@ fun SettingsScene(
                 SettingsItem(
                     title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_backup_backup_verify_field_email),
                     icon = R.drawable.message1,
-                    secondaryText = "Please bind your email",
+                    secondaryText = stringResource(R.string.scene_setting_profile_email_empty),
                     targetRoute = "Settings_ChangeEmail_Setup"
                 )
             } else {
@@ -198,8 +199,8 @@ private fun enableBiometric(
     if (enable) {
         viewModel.enable(
             context = context,
-            title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_general_unlock_wallet_with_face_id),
-            negativeButton = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_cancel),
+            title = com.dimension.maskbook.wallet.R.string.scene_setting_general_unlock_wallet_with_face_id,
+            negativeButton = com.dimension.maskbook.wallet.R.string.common_controls_cancel,
         )
     } else {
         repository.setBiometricEnabled(enable)

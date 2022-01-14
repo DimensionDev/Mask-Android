@@ -12,34 +12,17 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.snapshotFlow
-import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
-import androidx.navigation.NavType
+import androidx.compose.ui.res.stringResource
+import androidx.navigation.*
 import androidx.navigation.compose.dialog
-import androidx.navigation.navArgument
-import androidx.navigation.navDeepLink
-import androidx.navigation.navOptions
-import androidx.navigation.plusAssign
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ext.encodeUrl
 import com.dimension.maskbook.wallet.ext.observeAsState
-import com.dimension.maskbook.wallet.repository.AppKey
-import com.dimension.maskbook.wallet.repository.ChainType
-import com.dimension.maskbook.wallet.repository.IPersonaRepository
-import com.dimension.maskbook.wallet.repository.ISettingsRepository
-import com.dimension.maskbook.wallet.repository.ITokenRepository
-import com.dimension.maskbook.wallet.repository.IWalletRepository
-import com.dimension.maskbook.wallet.repository.PlatformType
+import com.dimension.maskbook.wallet.repository.*
 import com.dimension.maskbook.wallet.route.backup
 import com.dimension.maskbook.wallet.ui.scenes.MainHost
 import com.dimension.maskbook.wallet.ui.scenes.app.PluginSettingsScene
@@ -55,11 +38,7 @@ import com.dimension.maskbook.wallet.ui.scenes.register.recovery.RecoveryComplec
 import com.dimension.maskbook.wallet.ui.scenes.register.recovery.RecoveryHomeScene
 import com.dimension.maskbook.wallet.ui.scenes.register.recovery.local.RecoveryLocalHost
 import com.dimension.maskbook.wallet.ui.scenes.register.recovery.remote.remoteBackupRecovery
-import com.dimension.maskbook.wallet.ui.scenes.settings.AppearanceSettings
-import com.dimension.maskbook.wallet.ui.scenes.settings.BackupPasswordSettings
-import com.dimension.maskbook.wallet.ui.scenes.settings.DataSourceSettings
-import com.dimension.maskbook.wallet.ui.scenes.settings.LanguageSettings
-import com.dimension.maskbook.wallet.ui.scenes.settings.PaymentPasswordSettings
+import com.dimension.maskbook.wallet.ui.scenes.settings.*
 import com.dimension.maskbook.wallet.ui.scenes.wallets.UnlockWalletDialog
 import com.dimension.maskbook.wallet.ui.scenes.wallets.WalletQrcodeScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.common.MultiChainWalletDialog
@@ -71,23 +50,10 @@ import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.LegalScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.password.BiometricsEnableScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.password.SetUpPaymentPassword
 import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.password.TouchIdEnableScene
-import com.dimension.maskbook.wallet.ui.scenes.wallets.management.BackupWalletScene
-import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletConnectModal
-import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletDeleteDialog
-import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletManagementModal
-import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletRenameModal
-import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletSwitchAddModal
-import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletSwitchModal
-import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletSwitchScene
-import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletTransactionHistoryScene
+import com.dimension.maskbook.wallet.ui.scenes.wallets.management.*
 import com.dimension.maskbook.wallet.ui.scenes.wallets.send.SendTokenHost
 import com.dimension.maskbook.wallet.ui.scenes.wallets.token.TokenDetailScene
-import com.dimension.maskbook.wallet.ui.widget.EmailCodeInputModal
-import com.dimension.maskbook.wallet.ui.widget.EmailInputModal
-import com.dimension.maskbook.wallet.ui.widget.MaskDialog
-import com.dimension.maskbook.wallet.ui.widget.PhoneCodeInputModal
-import com.dimension.maskbook.wallet.ui.widget.PhoneInputModal
-import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
+import com.dimension.maskbook.wallet.ui.widget.*
 import com.dimension.maskbook.wallet.viewmodel.persona.RenamePersonaViewModel
 import com.dimension.maskbook.wallet.viewmodel.persona.SwitchPersonaViewModel
 import com.dimension.maskbook.wallet.viewmodel.persona.social.DisconnectSocialViewModel
@@ -100,11 +66,7 @@ import com.dimension.maskbook.wallet.viewmodel.wallets.BiometricViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.TokenDetailViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.UnlockWalletViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.WalletManagementModalViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletBackupViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletDeleteViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletRenameViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletSwitchViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletTransactionHistoryViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.management.*
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.navigation
@@ -929,7 +891,7 @@ private fun NavGraphBuilder.wallets(
                 Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_alert_biometry_id_activate_title))
             },
             text = {
-                Text(text = "Face id has been enabled successfully.")
+                Text(text = stringResource(R.string.common_alert_biometry_id_activate_description))
             },
             icon = {
                 Image(
@@ -1156,7 +1118,7 @@ private fun NavGraphBuilder.settings(
                         navController.popBackStack()
                     }
                 ) {
-                    Text(text = "OK")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_ok))
                 }
             },
             icon = {
@@ -1286,7 +1248,7 @@ private fun NavGraphBuilder.settings(
                 emailValid = valid,
                 onConfirm = { viewModel.sendCode(value) },
                 buttonEnabled = loading,
-                title = "Set Up Email"
+                title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_bind_email_title)
             )
         }
         bottomSheet(
@@ -1319,7 +1281,7 @@ private fun NavGraphBuilder.settings(
                 EmailCodeInputModal(
                     email = email,
                     buttonEnabled = loading,
-                    title = "Set Up Email",
+                    title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_bind_email_title),
                     countDown = countDown,
                     canSend = canSend,
                     codeValid = valid,
@@ -1340,7 +1302,7 @@ private fun NavGraphBuilder.settings(
                         contentDescription = null
                     )
                 },
-                text = { Text(text = "You have successfully set up your email. ") },
+                text = { Text(text = stringResource(R.string.scene_setting_bind_remote_info_setup_email_detail)) },
                 buttons = {
                     PrimaryButton(
                         modifier = Modifier.fillMaxWidth(),
@@ -1461,7 +1423,7 @@ private fun NavGraphBuilder.settings(
                         contentDescription = null
                     )
                 },
-                text = { Text(text = "You have successfully changed your email. ") },
+                text = { Text(text = stringResource(R.string.scene_setting_bind_remote_info_setup_email_detail)) },
                 buttons = {
                     PrimaryButton(
                         modifier = Modifier.fillMaxWidth(),
@@ -1497,7 +1459,7 @@ private fun NavGraphBuilder.settings(
                 phoneValid = valid,
                 onConfirm = { viewModel.sendCode(regionCode + phone) },
                 buttonEnabled = loading,
-                title = "Set Up Phone Number",
+                title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_bind_phone_number_title),
             )
         }
         bottomSheet(
@@ -1532,7 +1494,7 @@ private fun NavGraphBuilder.settings(
                     buttonEnabled = loading,
                     onSendCode = { viewModel.sendCode(phone) },
                     onVerify = { viewModel.verifyCode(code = code, value = phone) },
-                    title = "Set Up Phone Number"
+                    title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_bind_phone_number_title)
                 )
             }
         }
@@ -1546,7 +1508,7 @@ private fun NavGraphBuilder.settings(
                         contentDescription = null
                     )
                 },
-                text = { Text(text = "You have successfully set up your email. ") },
+                text = { Text(text = stringResource(R.string.scene_setting_bind_remote_info_change_email_detail)) },
                 buttons = {
                     PrimaryButton(
                         modifier = Modifier.fillMaxWidth(),
@@ -1587,8 +1549,8 @@ private fun NavGraphBuilder.settings(
                     buttonEnabled = loading,
                     onSendCode = { viewModel.sendCode(phone) },
                     onVerify = { viewModel.verifyCode(code = code, value = phone) },
-                    title = "Change Phone Number",
-                    subTitle = { Text(text = "To change your phone, you need to verify your current phone number.") }
+                    title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_change_phone_number_title),
+                    subTitle = { Text(text = stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_change_phone_number_tips)) }
                 )
             }
         }
@@ -1613,7 +1575,7 @@ private fun NavGraphBuilder.settings(
                 phoneValid = valid,
                 onConfirm = { viewModel.sendCode(regionCode + phone) },
                 buttonEnabled = loading,
-                title = "Change Phone Number",
+                title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_change_phone_number_title),
             )
         }
 
@@ -1649,7 +1611,7 @@ private fun NavGraphBuilder.settings(
                     buttonEnabled = loading,
                     onSendCode = { viewModel.sendCode(phone) },
                     onVerify = { viewModel.verifyCode(code = code, value = phone) },
-                    title = "Change Phone Number"
+                    title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_change_phone_number_title)
                 )
             }
         }
@@ -1663,7 +1625,7 @@ private fun NavGraphBuilder.settings(
                         contentDescription = null
                     )
                 },
-                text = { Text(text = "You have successfully changed your phone number.") },
+                text = { Text(text = stringResource(R.string.scene_setting_bind_remote_info_change_phone_number_detail)) },
                 buttons = {
                     PrimaryButton(
                         modifier = Modifier.fillMaxWidth(),

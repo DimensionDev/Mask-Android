@@ -15,6 +15,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.ext.observeAsState
@@ -137,7 +138,7 @@ fun BackupLocalScene(
                     Column(
                         modifier = Modifier.padding(16.dp)
                     ) {
-                        MetaItem(title = "Account", value = meta.account)
+                        MetaItem(title = stringResource(com.dimension.maskbook.wallet.R.string.scene_backup_restored_account), value = meta.account)
                         Spacer(modifier = Modifier.height(16.dp))
                         MetaItem(title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.tab_personas), value = meta.personas.toString())
                         Spacer(modifier = Modifier.height(16.dp))
@@ -150,7 +151,7 @@ fun BackupLocalScene(
                         Spacer(modifier = Modifier.height(16.dp))
                         MetaItem(title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_backup_restored_contacts), value = meta.contacts.toString())
                         Spacer(modifier = Modifier.height(16.dp))
-                        MetaItem(title = "File", value = meta.file.toString())
+                        MetaItem(title = stringResource(com.dimension.maskbook.wallet.R.string.scene_backup_restored_files), value = meta.file.toString())
                     }
                 }
                 Spacer(modifier = Modifier.height(16.dp))

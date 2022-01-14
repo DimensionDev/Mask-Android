@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.repository.GasPriceEditMode
@@ -68,7 +69,7 @@ fun EditGasPriceSheet(
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "cost fee:$costFee $costFeeUnit",
+                text = "${stringResource(R.string.scene_sendTransaction_gasPrice_costFee)}$costFee $costFeeUnit",
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
             Spacer(modifier = Modifier.height(4.dp))
@@ -157,7 +158,7 @@ private fun CustomContent(
         Column(modifier = Modifier.fillMaxWidth()) {
             Spacer(modifier = Modifier.height(20.dp))
             Text(
-                text = "Gas limit",
+                text = stringResource(R.string.scene_sendTransaction_gasPrice_gasLimit),
             )
             Spacer(modifier = Modifier.height(8.dp))
             MaskInputField(

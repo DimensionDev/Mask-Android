@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.repository.ChainType
@@ -72,7 +73,7 @@ fun WalletSwitchScene(
                 Column {
                     MaskSingleLineTopAppBar(
                         title = {
-                            Text(text = "Switch Wallet")
+                            Text(text = stringResource(R.string.scene_wallet_list_title))
                         },
                         actions = {
                             TextButton(
@@ -134,7 +135,7 @@ fun WalletSwitchScene(
                 ) {
                     MaskListItem(
                         text = {
-                            Text(text = "Add Wallet")
+                            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_list_wallets_items_add))
                         },
                         trailing = {
                             IconButton(

@@ -9,7 +9,10 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -18,14 +21,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.dialog
 import androidx.navigation.plusAssign
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ext.observeAsState
-import com.dimension.maskbook.wallet.repository.BackupMeta
 import com.dimension.maskbook.wallet.ui.MaskTheme
-import com.dimension.maskbook.wallet.ui.scenes.settings.MetaItem
 import com.dimension.maskbook.wallet.ui.widget.*
 import com.dimension.maskbook.wallet.viewmodel.recovery.RecoveryLocalViewModel
 import com.google.accompanist.navigation.animation.AnimatedNavHost
@@ -132,7 +134,7 @@ fun RecoveryLocalHost(
                         )
                         if (error) {
                             Spacer(modifier = Modifier.height(8.dp))
-                            Text(text = "Incorrect Password", color = Color.Red)
+                            Text(text = stringResource(R.string.scene_restore_tip_incorrect_backup_password), color = Color.Red)
                         }
                         Spacer(modifier = Modifier.height(16.dp))
                         PrimaryButton(
@@ -166,7 +168,7 @@ fun RecoveryLocalHost(
                             modifier = Modifier.fillMaxWidth(),
                             onClick = { onBack.invoke() },
                         ) {
-                            Text(text = "OK")
+                            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_ok))
                         }
                     },
                     icon = {
@@ -198,7 +200,7 @@ fun RecoveryLocalHost(
                         )
                     },
                     text = {
-                        Text(text = "You have successfully verified your cloud password and the backup is being uploaded. To unify backup passwords, do you want to synchronize your cloud password as local backup password?")
+                        Text(text = stringResource(R.string.scene_restore_tip_remote_restore_succeed))
                     },
                     buttons = {
                         Row {

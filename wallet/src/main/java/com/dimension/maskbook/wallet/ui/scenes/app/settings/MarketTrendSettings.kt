@@ -38,6 +38,7 @@ private val tradeSources = mapOf(
 )
 
 private val NetworkType.text: String
+    @Composable
     get() = when (this) {
         NetworkType.Ethereum -> androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_app_swap_network_source_eth)
         NetworkType.Binance -> androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_app_swap_network_source_bsc)

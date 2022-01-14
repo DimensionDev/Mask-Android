@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.ext.observeAsState
@@ -78,7 +79,7 @@ fun BackupPasswordSettings(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             )
             Spacer(modifier = Modifier.height(20.dp))
-            Text(text = "Confirm New Backup Password")
+            Text(text = stringResource(com.dimension.maskbook.wallet.R.string.scene_set_backup_password_confirm_backup_password))
             Spacer(modifier = Modifier.height(8.dp))
             OutlinedTextField(
                 value = newPasswordConfirm,
@@ -90,10 +91,7 @@ fun BackupPasswordSettings(
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Backup password must be between 8 and 20 \n" +
-                        "characters and contains at least a number, \n" +
-                        "a uppercase letter, a lowercase letter and a \n" +
-                        "special character.",
+                text = stringResource(com.dimension.maskbook.wallet.R.string.scene_set_backup_password_tips),
                 color = MaterialTheme.colors.primary
             )
 

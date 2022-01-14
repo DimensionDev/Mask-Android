@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ext.observeAsState
@@ -33,7 +34,7 @@ fun DeleteDialog(
             )
         },
         title = {
-            Text(text = "Confirm to delete persona Vincent.Xia?")
+            Text(text = stringResource(R.string.scene_personas_delete))
         },
         text = {
             Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_personas_delete_tip))

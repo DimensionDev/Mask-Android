@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -46,7 +47,7 @@ fun EmailInputModal(
             )
             if (!emailValid) {
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(text = "Incorrect Email", color = Color.Red)
+                Text(text = stringResource(com.dimension.maskbook.wallet.R.string.scene_restore_tip_invalid_email_address), color = Color.Red)
             }
             Spacer(modifier = Modifier.height(16.dp))
             PrimaryButton(
@@ -122,11 +123,11 @@ fun EmailCodeInputModal(
             }
             if (!codeValid) {
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(text = "Incorrect Code", color = Color.Red)
+                Text(text = stringResource(com.dimension.maskbook.wallet.R.string.scene_restore_tip_invalid_validationcode), color = Color.Red)
             }
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Verification code has been sent to by Email to $email"
+                text = "${stringResource(com.dimension.maskbook.wallet.R.string.scene_backup_tips_email)} $email"
             )
             Spacer(modifier = Modifier.height(16.dp))
             PrimaryButton(

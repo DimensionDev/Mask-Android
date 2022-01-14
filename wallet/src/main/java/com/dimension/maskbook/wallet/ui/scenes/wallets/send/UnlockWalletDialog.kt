@@ -1,18 +1,9 @@
 package com.dimension.maskbook.wallet.ui.scenes.wallets.send
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.ui.widget.MaskDialog
@@ -36,7 +27,7 @@ fun UnlockWalletDialog(
         },
         text = {
             Column(modifier = Modifier.fillMaxWidth()) {
-                Text(text = "Payment password")
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_general_setup_payment_password))
                 Spacer(modifier = Modifier.height(8.dp))
                 MaskPasswordInputField(
                     value = password,

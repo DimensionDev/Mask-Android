@@ -6,6 +6,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.repository.Appearance
 import com.dimension.maskbook.wallet.ui.widget.MaskModal
@@ -15,9 +16,9 @@ import com.dimension.maskbook.wallet.viewmodel.settings.AppearanceSettingsViewMo
 import org.koin.androidx.compose.getViewModel
 
 val appearanceMap = mapOf(
-    Appearance.default to androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_detail_automatic),
-    Appearance.light to androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_detail_light),
-    Appearance.dark to androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_detail_dark),
+    Appearance.default to com.dimension.maskbook.wallet.R.string.scene_setting_detail_automatic,
+    Appearance.light to com.dimension.maskbook.wallet.R.string.scene_setting_detail_light,
+    Appearance.dark to com.dimension.maskbook.wallet.R.string.scene_setting_detail_dark,
 )
 @Composable
 fun AppearanceSettings(
@@ -33,7 +34,7 @@ fun AppearanceSettings(
                 MaskSelection(
                     selected = it.key == appearance,
                     onClicked = { viewModel.setAppearance(it.key); onBack.invoke() }) {
-                    Text(text = it.value, modifier = Modifier.weight(1f))
+                    Text(text = stringResource(it.value), modifier = Modifier.weight(1f))
                 }
             }
         }

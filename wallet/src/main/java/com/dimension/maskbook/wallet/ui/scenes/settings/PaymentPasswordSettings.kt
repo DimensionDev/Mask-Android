@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.ext.observeAsState
@@ -70,7 +71,7 @@ fun PaymentPasswordSettings(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             )
             Spacer(modifier = Modifier.height(20.dp))
-            Text(text = "Confirm New Payment Password")
+            Text(text = stringResource(com.dimension.maskbook.wallet.R.string.scene_set_password_confirm_payment_password))
             Spacer(modifier = Modifier.height(8.dp))
             OutlinedTextField(
                 value = newPasswordConfirm,

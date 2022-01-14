@@ -1,5 +1,6 @@
 package com.dimension.maskbook.wallet.ui.scenes.persona.social
 
+import androidx.annotation.StringRes
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
@@ -21,6 +22,7 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.debugInspectorInfo
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -61,9 +63,9 @@ fun SocialScreen() {
     }
 }
 
-private sealed class Screen(val route: String, val name: String, val target: PlatformType) {
-    object Twitter : Screen("Twitter", androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_persona_social_twitter), PlatformType.Twitter)
-    object Facebook : Screen("Facebook", androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_persona_social_facebook), PlatformType.Facebook)
+private sealed class Screen(val route: String, @StringRes val name: Int, val target: PlatformType) {
+    object Twitter : Screen("Twitter", com.dimension.maskbook.wallet.R.string.scene_persona_social_twitter, PlatformType.Twitter)
+    object Facebook : Screen("Facebook", com.dimension.maskbook.wallet.R.string.scene_persona_social_facebook, PlatformType.Facebook)
 }
 
 private val items = listOf(
@@ -110,7 +112,7 @@ fun PersonaSocialScreen() {
                         currentDestination?.hierarchy?.any { it.route == screen.route } == true
                     val platformSwitcher = get<IPlatformSwitcher>()
                     Tab(
-                        text = { Text(screen.name) },
+                        text = { Text(stringResource(screen.name)) },
                         selected = selected,
                         onClick = {
                             navController.navigate(screen.route) {
@@ -182,7 +184,7 @@ fun TwitterSocialScene(
                             onAdd.invoke()
                         },
                     text = {
-                        Text(text = "Connect to Twitter")
+                        Text(text = stringResource(R.string.scene_persona_social_connect_to, stringResource(R.string.scene_persona_social_twitter)))
                     },
                     icon = {
                         Image(
@@ -199,7 +201,7 @@ fun TwitterSocialScene(
             item {
                 MaskListItem(
                     text = {
-                        Text("Accounts")
+                        Text(stringResource(R.string.scene_persona_social_accounts))
                     },
                     trailing = {
                         IconButton(onClick = onAdd) {
@@ -251,7 +253,7 @@ fun FacebookSocialScene(
                             onAdd.invoke()
                         },
                     text = {
-                        Text(text = "Connect to Facebook")
+                        Text(text = stringResource(R.string.scene_persona_social_connect_to, stringResource(R.string.scene_persona_social_facebook)))
                     },
                     icon = {
                         Image(
@@ -268,7 +270,7 @@ fun FacebookSocialScene(
             item {
                 MaskListItem(
                     text = {
-                        Text("Accounts")
+                        Text(stringResource(R.string.scene_persona_social_accounts))
                     },
                     trailing = {
                         IconButton(onClick = onAdd) {

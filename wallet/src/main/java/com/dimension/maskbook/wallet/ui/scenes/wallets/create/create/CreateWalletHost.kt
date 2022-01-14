@@ -8,18 +8,14 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.dialog
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.repository.WalletCreateOrImportResult
-import com.dimension.maskbook.wallet.repository.WalletData
 import com.dimension.maskbook.wallet.ui.scenes.register.createidentity.VerifyIdentityScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.common.Dialog
 import com.dimension.maskbook.wallet.ui.widget.MaskDialog
@@ -28,8 +24,6 @@ import com.dimension.maskbook.wallet.viewmodel.wallets.create.CreateWalletRecove
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
-import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.compose.getViewModel
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -100,7 +94,7 @@ fun CreateWalletHost(
                     onWordDeselected = {
                         viewModel.deselectWord(it)
                     },
-                    title = "Verify your phrase",
+                    title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_mnemonic_verify_title),
                     subTitle = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_identify_verify_description)
                 )
                 result?.let {
@@ -130,7 +124,7 @@ fun CreateWalletHost(
                     Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_alert_wallet_create_success_title))
                 },
                 text = {
-                    Text(text = "In order to protect your funds against hackers and thieves, store this mnemonic phrase in a safe and secure place.")
+                    Text(text = stringResource(R.string.common_alert_wallet_create_success_description))
                 },
                 buttons = {
                     PrimaryButton(

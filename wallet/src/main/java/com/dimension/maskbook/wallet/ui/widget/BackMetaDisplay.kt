@@ -20,7 +20,7 @@ fun BackMetaDisplay(
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-            MetaItem(title = "Account", value = meta.account)
+            MetaItem(title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_backup_restored_account), value = meta.account)
             Spacer(modifier = Modifier.height(16.dp))
             MetaItem(title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.tab_personas), value = meta.personas.toString())
             Spacer(modifier = Modifier.height(16.dp))
@@ -36,7 +36,7 @@ fun BackMetaDisplay(
             Spacer(modifier = Modifier.height(16.dp))
             MetaItem(title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_backup_restored_contacts), value = meta.contacts.toString())
             Spacer(modifier = Modifier.height(16.dp))
-            MetaItem(title = "File", value = meta.file.toString())
+            MetaItem(title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_backup_restored_files), value = meta.file.toString())
         }
     }
 }

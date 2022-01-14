@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
@@ -56,7 +57,7 @@ fun ImportWalletScene(
                 ImportItem(
                     icon = R.drawable.ic_wallet_password,
                     title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_identity_privatekey_import_title),
-                    subtitle = "Plaintext private key ",
+                    subtitle = stringResource(R.string.scene_wallet_import_item_private_key_desc),
                     onClick = {
                         onPassword.invoke()
                     }
@@ -64,7 +65,7 @@ fun ImportWalletScene(
                 ImportItem(
                     icon = R.drawable.ic_wallet_keystore,
                     title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_import_item_keystore),
-                    subtitle = "Encrypted private key JSON content. ",
+                    subtitle = stringResource(R.string.scene_wallet_import_item_keystore_desc),
                     onClick = {
                         onKeystore.invoke()
                     }

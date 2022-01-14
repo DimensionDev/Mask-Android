@@ -99,7 +99,7 @@ private fun SendTokenConfirmModal(
         val wallet by repository.currentWallet.observeAsState(initial = null)
         wallet?.let { wallet ->
             addressData?.let { addressData ->
-                wallet.tokens.firstOrNull { it.tokenData.address == "eth" }?.tokenData?.let { tokenData ->
+                wallet.tokens.firstOrNull { it.tokenData.address == androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.chain_short_name_eth) }?.tokenData?.let { tokenData ->
                     val gasFeeViewModel = getViewModel<GasFeeViewModel> {
                         parametersOf(data.data.gas?.fromHexString()?.toDouble() ?: 21000.0)
                     }

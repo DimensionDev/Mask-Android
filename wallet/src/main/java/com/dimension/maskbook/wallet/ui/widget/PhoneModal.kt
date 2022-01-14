@@ -5,11 +5,11 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -61,7 +61,7 @@ fun PhoneInputModal(
             }
             if (!phoneValid) {
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(text = "Incorrect Phone Number", color = Color.Red)
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_restore_tip_invalid_mobile_number), color = Color.Red)
             }
             Spacer(modifier = Modifier.height(16.dp))
             PrimaryButton(
@@ -137,11 +137,11 @@ fun PhoneCodeInputModal(
             }
             if (!codeValid) {
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(text = "Incorrect Code", color = Color.Red)
+                Text(text = stringResource(com.dimension.maskbook.wallet.R.string.scene_restore_tip_invalid_validationcode), color = Color.Red)
             }
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Verification code has been sent to by SMS to $phone"
+                text = "${stringResource(com.dimension.maskbook.wallet.R.string.scene_backup_tips_phone)} $phone"
             )
             Spacer(modifier = Modifier.height(16.dp))
             PrimaryButton(

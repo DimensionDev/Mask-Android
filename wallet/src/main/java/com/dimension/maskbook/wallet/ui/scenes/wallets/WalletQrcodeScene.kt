@@ -13,8 +13,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.repository.WalletData
 import com.dimension.maskbook.wallet.ui.MaskTheme
 import com.dimension.maskbook.wallet.ui.widget.*
@@ -76,7 +78,11 @@ fun WalletQrcodeScene(
                             )
                         }
                         Spacer(modifier = Modifier.height(8.dp))
-                        Text(text = "Your ETH Address")
+                        Text(
+                            text = stringResource(R.string.scene_wallet_receive_your_address,
+                                "ETH", // TODO:
+                            ),
+                        )
                         Box(
                             modifier = Modifier
                                 .padding(horizontal = 16.dp, vertical = 24.dp)

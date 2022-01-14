@@ -37,7 +37,7 @@ fun UnlockWalletDialog(
         text = {
             AnimatedVisibility(visible = !biometricEnabled) {
                 Column {
-                    Text(text = "Payment password")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_general_setup_payment_password))
                     Spacer(modifier = Modifier.height(8.dp))
                     MaskPasswordInputField(value = password, onValueChange = onPasswordChanged)
                     if (!passwordValid) {

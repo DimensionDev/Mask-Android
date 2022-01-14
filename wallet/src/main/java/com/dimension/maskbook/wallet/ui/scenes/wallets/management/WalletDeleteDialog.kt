@@ -48,7 +48,7 @@ fun WalletDeleteDialog(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 AnimatedVisibility(visible = !biometricEnabled) {
-                    Text(text = "Payment password")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_general_setup_payment_password))
                     MaskPasswordInputField(value = password, onValueChange = onPasswordChanged)
                 }
                 Row(

@@ -204,7 +204,7 @@ private fun AmountContent(
                             shape = MaterialTheme.shapes.small
                         )
                     ) {
-                        Text(text = "MAX", color = MaterialTheme.colors.primary)
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_sendTransaction_send_btn_max), color = MaterialTheme.colors.primary)
                     }
                     Spacer(modifier = Modifier.padding(end = 12.dp))
                 }
@@ -224,7 +224,7 @@ private fun PaymentPasswordContent(
     onValueChanged: (String) -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
-        Text(text = "Payment password")
+        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_general_setup_payment_password))
         Spacer(modifier = Modifier.height(8.dp))
         MaskPasswordInputField(
             value = pwd,

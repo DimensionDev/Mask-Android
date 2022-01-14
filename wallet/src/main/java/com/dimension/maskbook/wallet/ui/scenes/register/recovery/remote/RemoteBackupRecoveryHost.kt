@@ -11,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -21,11 +22,7 @@ import androidx.navigation.compose.dialog
 import androidx.navigation.navArgument
 import com.dimension.maskbook.wallet.ext.encodeUrl
 import com.dimension.maskbook.wallet.ext.observeAsState
-import com.dimension.maskbook.wallet.ui.widget.EmailCodeInputModal
-import com.dimension.maskbook.wallet.ui.widget.MaskDialog
-import com.dimension.maskbook.wallet.ui.widget.MaskModal
-import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
-import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
+import com.dimension.maskbook.wallet.ui.widget.*
 import com.dimension.maskbook.wallet.viewmodel.register.EmailRemoteBackupRecoveryViewModel
 import com.dimension.maskbook.wallet.viewmodel.register.PhoneRemoteBackupRecoveryViewModel
 import com.dimension.maskbook.wallet.viewmodel.register.RemoteBackupRecoveryViewModelBase
@@ -123,7 +120,7 @@ fun NavGraphBuilder.remoteBackupRecovery(
                 )
                 if (!emailValid) {
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text(text = "Incorrect Email", color = Color.Red)
+                    Text(text = stringResource(com.dimension.maskbook.wallet.R.string.scene_restore_tip_invalid_email_address), color = Color.Red)
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 PrimaryButton(
@@ -219,11 +216,11 @@ fun NavGraphBuilder.remoteBackupRecovery(
                         }
                         if (!codeValid) {
                             Spacer(modifier = Modifier.height(8.dp))
-                            Text(text = "Incorrect Code", color = Color.Red)
+                            Text(text = stringResource(com.dimension.maskbook.wallet.R.string.scene_restore_tip_invalid_validationcode), color = Color.Red)
                         }
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "Verification code has been sent to by SMS to $phone"
+                            text = "${stringResource(com.dimension.maskbook.wallet.R.string.scene_restore_tip_mobile_validationcode)} $phone"
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         PrimaryButton(
@@ -289,7 +286,7 @@ fun NavGraphBuilder.remoteBackupRecovery(
                 }
                 if (!phoneValid) {
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text(text = "Incorrect Phone Number", color = Color.Red)
+                    Text(text = stringResource(com.dimension.maskbook.wallet.R.string.scene_restore_tip_invalid_mobile_number), color = Color.Red)
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 PrimaryButton(

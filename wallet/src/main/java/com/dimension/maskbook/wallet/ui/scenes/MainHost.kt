@@ -1,26 +1,13 @@
 package com.dimension.maskbook.wallet.ui.scenes
 
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.Icon
-import androidx.compose.material.LocalContentAlpha
-import androidx.compose.material.LocalContentColor
-import androidx.compose.material.LocalTextStyle
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
@@ -29,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
@@ -45,11 +33,11 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
 
-private enum class HomeScreen(val route: String, val title: String, @DrawableRes val icon: Int) {
-    Personas("Personas", androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.tab_personas), R.drawable.ic_persona),
-    Wallets("Wallets", "Wallets", R.drawable.ic_wallet),
-    Labs("Labs", androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.tab_labs), R.drawable.ic_labs),
-    Settings("Settings", "Settings", R.drawable.ic_settings),
+private enum class HomeScreen(val route: String, @StringRes val title: Int, @DrawableRes val icon: Int) {
+    Personas("Personas", R.string.tab_personas, R.drawable.ic_persona),
+    Wallets("Wallets", R.string.tab_wallet, R.drawable.ic_wallet),
+    Labs("Labs", R.string.tab_labs, R.drawable.ic_labs),
+    Settings("Settings", R.string.tab_setting, R.drawable.ic_settings),
 }
 
 private val items = HomeScreen.values()
@@ -91,7 +79,7 @@ fun MainHost(
                                 }
                             },
                             text = {
-                                Text(screen.title)
+                                Text(stringResource(screen.title))
                             },
                             icon = {
                                 Icon(
