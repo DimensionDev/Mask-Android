@@ -93,21 +93,21 @@ fun SettingsScene(
                 .verticalScroll(rememberScrollState())
         ) {
             SettingsTitle(
-                title = "General"
+                title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_general_title)
             )
             SettingsCard {
                 SettingsItem(
                     targetRoute = "LanguageSettings",
-                    title = "Language",
+                    title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_general_language),
                     icon = R.drawable.ic_settings_language,
                     trailingText = languageMap[language],
                 )
                 SettingsDivider()
                 SettingsItem(
                     targetRoute = "AppearanceSettings",
-                    title = "Appearance",
+                    title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_general_appearance),
                     icon = R.drawable.ic_settings_appearance,
-                    trailingText = appearanceMap[appearance],
+                    trailingText = appearanceMap[appearance]?.let { it1 -> stringResource(it1) },
                 )
                 SettingsDivider()
                 SettingsItem(
@@ -120,21 +120,20 @@ fun SettingsScene(
                 if (paymentPassword.isEmpty()) {
                     SettingsItem(
                         targetRoute = "PaymentPasswordSettings",
-                        title = "Payment Password",
+                        title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_general_setup_payment_password),
                         icon = R.drawable.ic_settings_change_payment_password,
-                        secondaryText = "Please set up payment password"
                     )
                 } else {
                     SettingsItem(
                         targetRoute = "PaymentPasswordSettings",
-                        title = "Change Payment Password",
+                        title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_general_change_payment_password),
                         icon = R.drawable.ic_settings_change_payment_password,
                     )
                 }
                 if (biometricEnableViewModel.isSupported(context)) {
                     SettingsDivider()
                     SettingsItem(
-                        title = "Unlock wallet with Face ID",
+                        title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_general_unlock_wallet_with_face_id),
                         icon = R.drawable.ic_settings_face_id,
                         trailing = {
                             IosSwitch(checked = biometricEnabled, onCheckedChange = {
@@ -159,31 +158,31 @@ fun SettingsScene(
             }
             Spacer(Modifier.height(SettingsSceneDefault.spacerHeight))
             SettingsTitle(
-                title = "Backup & Recovery"
+                title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_backup_recovery_title)
             )
             SettingsCard {
                 SettingsItem(
-                    title = "Restore Data",
+                    title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_backup_recovery_restore_data),
                     icon = R.drawable.ic_settings_restore_data,
-                    targetRoute = "Recovery"
+                    targetRoute = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_personas_action_recovery)
                 )
                 SettingsDivider()
                 SettingsItem(
-                    title = "Back Up Data",
+                    title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_backup_recovery_back_up_data),
                     icon = R.drawable.ic_settings_backup_data,
                     targetRoute = if (backupPassword.isEmpty() || paymentPassword.isEmpty()) "SetupPasswordDialog" else "BackupData"
                 )
                 SettingsDivider()
                 if (backupPassword.isEmpty()) {
                     SettingsItem(
-                        title = "Backup Password",
+                        title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_backup_recovery_back_up_password),
                         icon = R.drawable.ic_settings_backup_password,
                         targetRoute = "ChangeBackUpPassword",
-                        secondaryText = "Please set up backup password"
+                        secondaryText = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_backup_recovery_back_up_password_empty)
                     )
                 } else {
                     SettingsItem(
-                        title = "Change Backup Password",
+                        title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_backup_recovery_change_backup_password),
                         icon = R.drawable.ic_settings_backup_password,
                         targetRoute = "ChangeBackUpPassword"
                     )
@@ -192,14 +191,14 @@ fun SettingsScene(
                 val email = persona?.email
                 if (email == null) {
                     SettingsItem(
-                        title = "Email",
+                        title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_backup_backup_verify_field_email),
                         icon = R.drawable.ic_settings_email,
-                        secondaryText = "Please bind your email",
+                        secondaryText = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_profile_email_empty),
                         targetRoute = "Settings_ChangeEmail_Setup"
                     )
                 } else {
                     SettingsItem(
-                        title = "Email",
+                        title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_backup_backup_verify_field_email),
                         icon = R.drawable.ic_settings_email,
                         secondaryText = email,
                         targetRoute = "Settings_ChangeEmail_Change_Code/${email.encodeUrl()}"
@@ -209,14 +208,14 @@ fun SettingsScene(
                 val phone = persona?.phone
                 if (phone == null) {
                     SettingsItem(
-                        title = "Phone Number",
+                        title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_profile_phone_number),
                         icon = R.drawable.ic_settings_phone_number,
-                        secondaryText = "Please bind your phone number",
+                        secondaryText = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_profile_phone_number_empty),
                         targetRoute = "Settings_ChangePhone_Setup"
                     )
                 } else {
                     SettingsItem(
-                        title = "Phone Number",
+                        title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_profile_phone_number),
                         icon = R.drawable.ic_settings_phone_number,
                         secondaryText = phone,
                         targetRoute = "Settings_ChangePhone_Change_Code/${phone.encodeUrl()}"
