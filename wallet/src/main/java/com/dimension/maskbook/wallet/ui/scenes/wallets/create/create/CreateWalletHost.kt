@@ -18,8 +18,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.navigation.compose.dialog
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ext.observeAsState
+import com.dimension.maskbook.wallet.navHostAnimationDurationMillis
 import com.dimension.maskbook.wallet.repository.WalletCreateOrImportResult
-import com.dimension.maskbook.wallet.repository.WalletData
 import com.dimension.maskbook.wallet.ui.scenes.register.createidentity.VerifyIdentityScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.common.Dialog
 import com.dimension.maskbook.wallet.ui.widget.MaskDialog
@@ -28,8 +28,6 @@ import com.dimension.maskbook.wallet.viewmodel.wallets.create.CreateWalletRecove
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
-import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.flow.onEach
 import org.koin.androidx.compose.getViewModel
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -48,17 +46,16 @@ fun CreateWalletHost(
         startDestination = "Pharse",
         route = "CreateWalletHost",
         enterTransition = { _, _ ->
-            slideInHorizontally(initialOffsetX = { 1000 }, animationSpec = tween())
+            slideInHorizontally(initialOffsetX = { it }, animationSpec = tween(navHostAnimationDurationMillis))
         },
         exitTransition = { _, _ ->
-            slideOutHorizontally(targetOffsetX = { -1000 }, animationSpec = tween())
-
+            slideOutHorizontally(targetOffsetX = { -it }, animationSpec = tween(navHostAnimationDurationMillis))
         },
         popEnterTransition = { _, _ ->
-            slideInHorizontally(initialOffsetX = { -1000 }, animationSpec = tween())
+            slideInHorizontally(initialOffsetX = { -it }, animationSpec = tween(navHostAnimationDurationMillis))
         },
         popExitTransition = { _, _ ->
-            slideOutHorizontally(targetOffsetX = { 1000 }, animationSpec = tween())
+            slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween(navHostAnimationDurationMillis))
         },
     ) {
         composable("Pharse") {
