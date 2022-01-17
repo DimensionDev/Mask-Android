@@ -10,6 +10,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
@@ -32,17 +33,17 @@ fun UnlockWalletDialog(
         modifier = Modifier.padding(horizontal = 23.dp),
         onDismissRequest = onBack,
         title = {
-            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_unlock_title))
+            Text(text = stringResource(R.string.scene_wallet_unlock_title))
         },
         text = {
             AnimatedVisibility(visible = !biometricEnabled) {
                 Column {
-                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_general_setup_payment_password))
+                    Text(text = stringResource(R.string.scene_setting_general_setup_payment_password))
                     Spacer(modifier = Modifier.height(8.dp))
                     MaskPasswordInputField(value = password, onValueChange = onPasswordChanged)
                     if (!passwordValid) {
                         Spacer(modifier = Modifier.height(8.dp))
-                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_change_password_incorrect_password), color = Color.Red)
+                        Text(text = stringResource(R.string.scene_change_password_incorrect_password), color = Color.Red)
                     }
                 }
             }
@@ -54,14 +55,14 @@ fun UnlockWalletDialog(
                     onClick = onBack,
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_cancel))
+                    Text(text = stringResource(R.string.common_controls_cancel))
                 }
                 Spacer(modifier = Modifier.width(8.dp))
                 PrimaryButton(
                     onClick = onConfirm,
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_unlock_button))
+                    Text(text = stringResource(R.string.scene_wallet_unlock_button))
                 }
             }
         }

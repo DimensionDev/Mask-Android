@@ -39,9 +39,8 @@ import com.dimension.maskbook.wallet.repository.Network
 import com.dimension.maskbook.wallet.repository.PersonaData
 import com.dimension.maskbook.wallet.repository.SocialData
 import com.dimension.maskbook.wallet.ui.MaskTheme
-import com.dimension.maskbook.wallet.ui.scenes.app.AppScene
 import com.dimension.maskbook.wallet.ui.scenes.app.LabsScene
-import com.dimension.maskbook.wallet.ui.scenes.persona.PersonaScreen
+import com.dimension.maskbook.wallet.ui.scenes.persona.PersonaScene
 import com.dimension.maskbook.wallet.ui.scenes.settings.SettingsScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.WalletIntroHost
 import com.dimension.maskbook.wallet.ui.widget.MaskScaffold

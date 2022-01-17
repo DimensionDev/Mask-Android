@@ -37,7 +37,7 @@ fun DeleteDialog(
             Text(text = stringResource(R.string.scene_personas_delete))
         },
         text = {
-            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_personas_delete_tip))
+            Text(text = stringResource(R.string.scene_personas_delete_tip))
         },
         buttons = {
             Row {
@@ -47,7 +47,7 @@ fun DeleteDialog(
                         onBack.invoke()
                     }
                 ) {
-                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_cancel))
+                    Text(text = stringResource(R.string.common_controls_cancel))
                 }
                 Spacer(modifier = Modifier.width(20.dp))
                 PrimaryButton(
@@ -59,7 +59,7 @@ fun DeleteDialog(
                         onBack.invoke()
                     },
                 ) {
-                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_confirm))
+                    Text(text = stringResource(R.string.common_controls_confirm))
                 }
             }
         }

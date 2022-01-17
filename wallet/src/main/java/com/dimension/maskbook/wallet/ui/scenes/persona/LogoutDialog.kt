@@ -8,6 +8,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.repository.IPersonaRepository
@@ -30,10 +31,10 @@ fun LogoutDialog(
             )
         },
         title = {
-            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_alert_persona_logout_title))
+            Text(text = stringResource(R.string.common_alert_persona_logout_title))
         },
         text = {
-            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_alert_persona_logout_description))
+            Text(text = stringResource(R.string.common_alert_persona_logout_description))
         },
         buttons = {
             Row {
@@ -43,7 +44,7 @@ fun LogoutDialog(
                         onBack.invoke()
                     }
                 ) {
-                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_cancel))
+                    Text(text = stringResource(R.string.common_controls_cancel))
                 }
                 Spacer(modifier = Modifier.width(20.dp))
                 val repository = get<IPersonaRepository>()
@@ -54,7 +55,7 @@ fun LogoutDialog(
                         onDone.invoke()
                     },
                 ) {
-                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_confirm))
+                    Text(text = stringResource(R.string.common_controls_confirm))
                 }
             }
         }

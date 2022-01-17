@@ -6,6 +6,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ui.LocalRootNavController
 import com.dimension.maskbook.wallet.ui.widget.MaskDialog
@@ -32,7 +33,7 @@ fun MnemonicWarningDialog(onDismissRequest: () -> Unit) {
                 modifier = Modifier.fillMaxWidth(),
                 onClick = { onDismissRequest.invoke() },
             ) {
-                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_ok))
+                Text(text = stringResource(R.string.common_controls_ok))
             }
         }
     )
@@ -44,7 +45,7 @@ fun MnemonicScreenShotsWarningDialog() {
     MaskDialog(
         onDismissRequest = { rootNavController.popBackStack() },
         title = {
-            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_alert_recovery_key_warning_title))
+            Text(text = stringResource(R.string.common_alert_recovery_key_warning_title))
         },
         text = {
             Text(text = "Simply taking a screenshot of mnemonic phrase is not safe.")
@@ -60,7 +61,7 @@ fun MnemonicScreenShotsWarningDialog() {
                 modifier = Modifier.fillMaxWidth(),
                 onClick = { rootNavController.popBackStack() },
             ) {
-                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_i_understand))
+                Text(text = stringResource(R.string.common_controls_i_understand))
             }
         }
     )

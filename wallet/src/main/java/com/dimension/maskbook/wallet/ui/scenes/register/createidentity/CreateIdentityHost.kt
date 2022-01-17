@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.dialog
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ext.observeAsState
@@ -113,10 +114,10 @@ fun CreateIdentityHost(
                     )
                 },
                 title = {
-                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_alert_identity_create_title))
+                    Text(text = stringResource(R.string.common_alert_identity_create_title))
                 },
                 text = {
-                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_alert_identity_create_description))
+                    Text(text = stringResource(R.string.common_alert_identity_create_description))
                 },
                 buttons = {
                     PrimaryButton(
@@ -129,7 +130,7 @@ fun CreateIdentityHost(
                             }
                         },
                     ) {
-                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_done))
+                        Text(text = stringResource(R.string.common_controls_done))
                     }
                 },
             )

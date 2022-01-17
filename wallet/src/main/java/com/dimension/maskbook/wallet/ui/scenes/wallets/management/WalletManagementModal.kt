@@ -1,7 +1,14 @@
 package com.dimension.maskbook.wallet.ui.scenes.wallets.management
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.Card
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
@@ -11,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
@@ -56,7 +64,7 @@ fun WalletManagementModal(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_edit_item_rename),
+                        text = stringResource(R.string.scene_wallet_edit_item_rename),
                         style = MaterialTheme.typography.subtitle1,
                         modifier = Modifier.weight(1f)
                     )
@@ -81,7 +89,7 @@ fun WalletManagementModal(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_detail_wallet_items_history),
+                        text = stringResource(R.string.scene_wallet_detail_wallet_items_history),
                         style = MaterialTheme.typography.subtitle1,
                     )
                 }
@@ -104,7 +112,7 @@ fun WalletManagementModal(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_personas_action_backup),
+                            text = stringResource(R.string.scene_personas_action_backup),
                             style = MaterialTheme.typography.subtitle1,
                         )
                     }
@@ -128,7 +136,7 @@ fun WalletManagementModal(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_edit_item_delete),
+                            text = stringResource(R.string.scene_wallet_edit_item_delete),
                             style = MaterialTheme.typography.subtitle1,
                             color = Color.Red,
                         )
@@ -152,7 +160,7 @@ fun WalletManagementModal(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_connect_disconnect),
+                            text = stringResource(R.string.scene_wallet_connect_disconnect),
                             style = MaterialTheme.typography.subtitle1,
                             color = Color.Red,
                         )

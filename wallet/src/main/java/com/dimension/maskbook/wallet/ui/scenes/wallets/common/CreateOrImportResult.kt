@@ -6,6 +6,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.repository.WalletCreateOrImportResult
 import com.dimension.maskbook.wallet.ui.widget.MaskDialog
@@ -27,9 +28,9 @@ fun WalletCreateOrImportResult.Dialog(onDismissRequest: () -> Unit) {
                 }
             ) {
                 when (type) {
-                    WalletCreateOrImportResult.Type.SUCCESS -> Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_done))
-                    WalletCreateOrImportResult.Type.ERROR -> Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_ok))
-                    WalletCreateOrImportResult.Type.WARNING -> Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_i_understand))
+                    WalletCreateOrImportResult.Type.SUCCESS -> Text(text = stringResource(R.string.common_controls_done))
+                    WalletCreateOrImportResult.Type.ERROR -> Text(text = stringResource(R.string.common_controls_ok))
+                    WalletCreateOrImportResult.Type.WARNING -> Text(text = stringResource(R.string.common_controls_i_understand))
                 }
             }
         },
@@ -42,8 +43,8 @@ fun WalletCreateOrImportResult.Dialog(onDismissRequest: () -> Unit) {
 @Composable
 private fun WalletCreateOrImportResult.Title() = when (type) {
     WalletCreateOrImportResult.Type.SUCCESS -> Text(text = title ?: "Success")
-    WalletCreateOrImportResult.Type.ERROR -> Text(text = title ?: androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_alert_wallet_import_alert_title_fail))
-    WalletCreateOrImportResult.Type.WARNING -> Text(text = title ?: androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_alert_recovery_key_warning_title))
+    WalletCreateOrImportResult.Type.ERROR -> Text(text = title ?: androidx.compose.ui.res.stringResource(R.string.common_alert_wallet_import_alert_title_fail))
+    WalletCreateOrImportResult.Type.WARNING -> Text(text = title ?: androidx.compose.ui.res.stringResource(R.string.common_alert_recovery_key_warning_title))
 }
 
 @Composable

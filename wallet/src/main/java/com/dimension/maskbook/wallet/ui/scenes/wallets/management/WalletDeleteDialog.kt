@@ -1,15 +1,27 @@
 package com.dimension.maskbook.wallet.ui.scenes.wallets.management
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.repository.WalletData
-import com.dimension.maskbook.wallet.ui.widget.*
+import com.dimension.maskbook.wallet.ui.widget.MaskDialog
+import com.dimension.maskbook.wallet.ui.widget.MaskPasswordInputField
+import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
+import com.dimension.maskbook.wallet.ui.widget.SecondaryButton
+import com.dimension.maskbook.wallet.ui.widget.WalletAvatar
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -34,13 +46,13 @@ fun WalletDeleteDialog(
             )
         },
         title = {
-            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_edit_item_delete))
+            Text(text = stringResource(R.string.scene_wallet_edit_item_delete))
         },
         text = {
             Column {
                 Text(text = walletData.address)
                 Spacer(modifier = Modifier.height(12.dp))
-                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_delete_content))
+                Text(text = stringResource(R.string.scene_wallet_delete_content))
             }
         },
         buttons = {
@@ -48,7 +60,7 @@ fun WalletDeleteDialog(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 AnimatedVisibility(visible = !biometricEnabled) {
-                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_general_setup_payment_password))
+                    Text(text = stringResource(R.string.scene_setting_general_setup_payment_password))
                     MaskPasswordInputField(value = password, onValueChange = onPasswordChanged)
                 }
                 Row(
@@ -58,14 +70,14 @@ fun WalletDeleteDialog(
                         onClick = onBack,
                         modifier = Modifier.weight(1f),
                     ) {
-                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_cancel))
+                        Text(text = stringResource(R.string.common_controls_cancel))
                     }
                     PrimaryButton(
                         onClick = onDelete,
                         modifier = Modifier.weight(1f),
                         enabled = passwordValid || biometricEnabled
                     ) {
-                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_personas_action_delete))
+                        Text(text = stringResource(R.string.scene_personas_action_delete))
                     }
                 }
             }

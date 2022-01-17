@@ -2,6 +2,8 @@ package com.dimension.maskbook.wallet.ui.scenes.wallets.management
 
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
+import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.repository.TransactionData
 import com.dimension.maskbook.wallet.ui.MaskTheme
 import com.dimension.maskbook.wallet.ui.scenes.wallets.token.TransactionHistoryList
@@ -21,7 +23,7 @@ fun WalletTransactionHistoryScene(
             topBar = {
                 MaskSingleLineTopAppBar(
                     title = {
-                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_detail_wallet_items_history))
+                        Text(text = stringResource(R.string.scene_wallet_detail_wallet_items_history))
                     },
                     navigationIcon = {
                         MaskBackButton(

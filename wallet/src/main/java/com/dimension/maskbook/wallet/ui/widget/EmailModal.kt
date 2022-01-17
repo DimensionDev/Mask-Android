@@ -1,6 +1,13 @@
 package com.dimension.maskbook.wallet.ui.widget
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
@@ -13,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.dimension.maskbook.wallet.R
 
 @Composable
 fun EmailInputModal(
@@ -34,7 +42,7 @@ fun EmailInputModal(
                 style = MaterialTheme.typography.h6,
             )
             Spacer(modifier = Modifier.height(21.dp))
-            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_backup_backup_verify_field_email))
+            Text(text = stringResource(R.string.scene_backup_backup_verify_field_email))
             Spacer(modifier = Modifier.height(8.dp))
             OutlinedTextField(
                 modifier = Modifier.fillMaxWidth(),
@@ -47,7 +55,7 @@ fun EmailInputModal(
             )
             if (!emailValid) {
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(text = stringResource(com.dimension.maskbook.wallet.R.string.scene_restore_tip_invalid_email_address), color = Color.Red)
+                Text(text = stringResource(R.string.scene_restore_tip_invalid_email_address), color = Color.Red)
             }
             Spacer(modifier = Modifier.height(16.dp))
             PrimaryButton(
@@ -57,7 +65,7 @@ fun EmailInputModal(
                 },
                 enabled = emailValid && !buttonEnabled && email.isNotEmpty(),
             ) {
-                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_confirm))
+                Text(text = stringResource(R.string.common_controls_confirm))
             }
         }
     }
@@ -93,7 +101,7 @@ fun EmailCodeInputModal(
                 subTitle.invoke(this)
             }
             Spacer(modifier = Modifier.height(21.dp))
-            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_backup_validation_code))
+            Text(text = stringResource(R.string.scene_backup_validation_code))
             Spacer(modifier = Modifier.height(8.dp))
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -115,7 +123,7 @@ fun EmailCodeInputModal(
                     enabled = canSend && !buttonEnabled,
                 ) {
                     if (canSend) {
-                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_resend))
+                        Text(text = stringResource(R.string.common_controls_resend))
                     } else {
                         Text(text = countDown.toString() + "s")
                     }
@@ -123,11 +131,11 @@ fun EmailCodeInputModal(
             }
             if (!codeValid) {
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(text = stringResource(com.dimension.maskbook.wallet.R.string.scene_restore_tip_invalid_validationcode), color = Color.Red)
+                Text(text = stringResource(R.string.scene_restore_tip_invalid_validationcode), color = Color.Red)
             }
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "${stringResource(com.dimension.maskbook.wallet.R.string.scene_backup_tips_email)} $email"
+                text = "${stringResource(R.string.scene_backup_tips_email)} $email"
             )
             Spacer(modifier = Modifier.height(16.dp))
             PrimaryButton(
@@ -137,7 +145,7 @@ fun EmailCodeInputModal(
                 },
                 enabled = code.isNotEmpty() && !buttonEnabled && codeValid,
             ) {
-                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_confirm))
+                Text(text = stringResource(R.string.common_controls_confirm))
             }
             footer.invoke(this)
         }

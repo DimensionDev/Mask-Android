@@ -1,7 +1,13 @@
 package com.dimension.maskbook.wallet.ui.scenes.register.recovery
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.Icon
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.Text
@@ -10,14 +16,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ui.MaskTheme
-import com.dimension.maskbook.wallet.ui.widget.*
+import com.dimension.maskbook.wallet.ui.widget.MaskBackButton
+import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
+import com.dimension.maskbook.wallet.ui.widget.MaskTopAppBar
+import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
+import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
 
 @Composable
-@Preview
 fun RecoveryHomeScene(
     onBack: () -> Unit,
     onIdentity: () -> Unit,
@@ -30,7 +38,7 @@ fun RecoveryHomeScene(
             topBar = {
                 MaskTopAppBar(
                     title = {
-                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_identity_empty_recovery_sign_in))
+                        Text(text = stringResource(R.string.scene_identity_empty_recovery_sign_in))
                     },
                     navigationIcon = {
                         MaskBackButton(
@@ -61,7 +69,7 @@ fun RecoveryHomeScene(
                         tint = LocalContentColor.current
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_identity_mnemonic_import_title))
+                    Text(text = stringResource(R.string.scene_identity_mnemonic_import_title))
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 PrimaryButton(
@@ -74,7 +82,7 @@ fun RecoveryHomeScene(
                         tint = LocalContentColor.current
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_identity_privatekey_import_title))
+                    Text(text = stringResource(R.string.scene_identity_privatekey_import_title))
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 PrimaryButton(
@@ -87,7 +95,7 @@ fun RecoveryHomeScene(
                         tint = LocalContentColor.current
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_identity_recovery_local_backup_recovery_button))
+                    Text(text = stringResource(R.string.scene_identity_recovery_local_backup_recovery_button))
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 PrimaryButton(

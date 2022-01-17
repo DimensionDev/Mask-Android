@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.repository.PersonaData
@@ -32,7 +33,7 @@ fun SwitchPersonaModal(
                 .padding(ScaffoldPadding),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.tab_personas), style = MaterialTheme.typography.h6)
+            Text(text = stringResource(R.string.tab_personas), style = MaterialTheme.typography.h6)
             LazyColumn {
                 items(items) {
                     MaskSelection(
@@ -71,7 +72,7 @@ fun SwitchPersonaModal(
                                 Icon(Icons.Default.AccountCircle, contentDescription = null)
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
-                                    text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_personas_add_persona),
+                                    text = stringResource(R.string.scene_personas_add_persona),
                                     modifier = Modifier
                                         .weight(1f),
                                     style = MaterialTheme.typography.subtitle1
