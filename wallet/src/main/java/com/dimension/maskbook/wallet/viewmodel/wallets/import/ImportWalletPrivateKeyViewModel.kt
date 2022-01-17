@@ -23,7 +23,9 @@ class ImportWalletPrivateKeyViewModel(
     }
 
     val canConfirm by lazy {
-        _privateKey.map { it.isNotEmpty() }
+        _privateKey.map {
+            it.isNotEmpty() && repository.validatePrivateKey(privateKey = _privateKey.value)
+        }
     }
 
     fun confirm(onResult: (WalletCreateOrImportResult) -> Unit) {

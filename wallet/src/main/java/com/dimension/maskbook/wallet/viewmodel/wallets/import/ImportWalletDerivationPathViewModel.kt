@@ -1,8 +1,8 @@
 package com.dimension.maskbook.wallet.viewmodel.wallets.import
 
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.*
 import com.dimension.maskbook.wallet.db.model.CoinPlatformType
 import com.dimension.maskbook.wallet.ext.asStateIn
 import com.dimension.maskbook.wallet.repository.IWalletRepository
@@ -10,69 +10,29 @@ import com.dimension.maskbook.wallet.repository.WalletCreateOrImportResult
 import com.dimension.maskbook.wallet.repository.model.DerivationPath
 import com.dimension.maskwalletcore.CoinType
 import com.dimension.maskwalletcore.WalletKey
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
-
-class BalanceSource(
-    private val wallet: String,
-    private val walletKey: WalletKey,
-) : PagingSource<Int, ImportWalletDerivationPathViewModel.BalanceRow>() {
-    override fun getRefreshKey(state: PagingState<Int, ImportWalletDerivationPathViewModel.BalanceRow>): Int? {
-        return state.anchorPosition?.let { anchorPosition ->
-            val anchorPage = state.closestPageToPosition(anchorPosition)
-            anchorPage?.prevKey?.plus(1) ?: anchorPage?.nextKey?.minus(1)
-        }
-    }
-
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, ImportWalletDerivationPathViewModel.BalanceRow> {
-        val nextPageNumber = params.key ?: 0
-        return (nextPageNumber..params.loadSize).map { index ->
-            walletKey.addNewAccountAtPath(
-                CoinType.Ethereum,
-                DerivationPath(40, 60, 0, 0, index).toString(),
-                "${wallet}-${index}",
-                ""
-            ).let { walletAccount ->
-                ImportWalletDerivationPathViewModel.BalanceRow(
-                    address = walletAccount.address,
-                    balances = 0f,// TODO: Load balances
-                    path = DerivationPath(40, 60, 0, 0, index).toString(),
-                )
-            }
-        }.let {
-            LoadResult.Page(
-                data = it,
-                prevKey = null,
-                nextKey = nextPageNumber + it.size
-            )
-        }
-    }
-
-}
 
 class ImportWalletDerivationPathViewModel(
     private val wallet: String,
     private val mnemonicCode: List<String>,
     private val walletRepository: IWalletRepository,
 ) : ViewModel() {
+
     private val walletKey by lazy {
         WalletKey.fromMnemonic(mnemonic = mnemonicCode.joinToString(" "), "")
     }
 
     //TODO Logic:get derivation Path*
-    val derivationPath = MutableStateFlow("(m/44'/60'/0'/0/0)").asStateIn(viewModelScope, "")
+    val derivationPath = MutableStateFlow("(m/44'/60'/0'/0)").asStateIn(viewModelScope, "")
 
     private val _checked = MutableStateFlow(listOf<String>())
     val checked = _checked.asStateIn(viewModelScope, emptyList())
-
-    val balancesPager by lazy {
-        Pager(
-            PagingConfig(20)
-        ) {
-            BalanceSource(wallet, walletKey)
-        }.flow.cachedIn(viewModelScope)
-    }
 
     fun next(onResult: (WalletCreateOrImportResult) -> Unit) {
         viewModelScope.launch {
@@ -93,20 +53,79 @@ class ImportWalletDerivationPathViewModel(
         }
     }
 
-    fun switchStatus(
-        selectRow: BalanceRow
-    ) {
-        _checked.value.let {
-            if (it.any { it == selectRow.path }) {
-                _checked.value -= selectRow.path
+    fun switchStatus(selectPath: String) {
+        _checked.value.let { list ->
+            if (list.any { it == selectPath }) {
+                _checked.value -= selectPath
             } else {
-                _checked.value += selectRow.path
+                _checked.value += selectPath
             }
         }
     }
+
+    private val pagerItemsFlows = hashMapOf<Int, StateFlow<List<BalanceRow>>>()
+    private val balanceFlows = hashMapOf<Int, MutableStateFlow<SnapshotStateMap<String, String>>>()
+
+    fun getPagerItems(page: Int): StateFlow<List<BalanceRow>> {
+        return pagerItemsFlows.getOrPut(page) {
+            createPagerItemsFlow(page)
+        }
+    }
+
+    private fun createPagerItemsFlow(page: Int) = flow {
+        val startIndex = page * pageSize
+        val list =
+            (startIndex until startIndex + pageSize).map { index ->
+                val derivationPath = DerivationPath(44, 60, 0, 0, index).toString()
+                val walletAccount = walletKey.addNewAccountAtPath(
+                    CoinType.Ethereum,
+                    derivationPath,
+                    "${wallet}-${index}",
+                    ""
+                )
+
+                // too slow
+                loadBalance(page, walletAccount.address)
+
+                BalanceRow(
+                    address = walletAccount.address,
+                    path = derivationPath,
+                    isAdded = walletRepository.findWalletByAddress(walletAccount.address) != null,
+                )
+            }
+        emit(list)
+    }.flowOn(Dispatchers.IO).asStateIn(viewModelScope, emptyList())
+
+    private fun loadBalance(page: Int, address: String) = viewModelScope.launch {
+        val stateFlow = getBalanceStateMap(page)
+        stateFlow.value = stateFlow.value.apply {
+            put(address, walletRepository.getTotalBalance(address).toString())
+        }
+    }
+
+    private fun getBalanceStateMap(page: Int): MutableStateFlow<SnapshotStateMap<String, String>> {
+        return balanceFlows.getOrPut(page) {
+            MutableStateFlow(SnapshotStateMap())
+        }
+    }
+
+    fun getBalanceMap(page: Int): StateFlow<Map<String, String>> {
+        return getBalanceStateMap(page)
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        pagerItemsFlows.clear()
+        balanceFlows.clear()
+    }
+
     data class BalanceRow(
         val address: String,
-        val balances: Float,
         val path: String,
+        val isAdded: Boolean,
     )
+
+    companion object {
+        private const val pageSize = 10
+    }
 }

@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.ext.observeAsState
+import com.dimension.maskbook.wallet.navHostAnimationDurationMillis
 import com.dimension.maskbook.wallet.ui.MaskTheme
 import com.dimension.maskbook.wallet.ui.widget.*
 import com.dimension.maskbook.wallet.viewmodel.settings.BackupLocalViewModel
@@ -54,16 +55,16 @@ fun BackupLocalHost(
         navController = navController,
         startDestination = "Main",
         enterTransition = { _, _ ->
-            slideInHorizontally(initialOffsetX = { 1000 }, animationSpec = tween())
+            slideInHorizontally(initialOffsetX = { it }, animationSpec = tween(navHostAnimationDurationMillis))
         },
         exitTransition = { _, _ ->
-            slideOutHorizontally(targetOffsetX = { -1000 }, animationSpec = tween())
+            slideOutHorizontally(targetOffsetX = { -it }, animationSpec = tween(navHostAnimationDurationMillis))
         },
         popEnterTransition = { _, _ ->
-            slideInHorizontally(initialOffsetX = { -1000 }, animationSpec = tween())
+            slideInHorizontally(initialOffsetX = { -it }, animationSpec = tween(navHostAnimationDurationMillis))
         },
         popExitTransition = { _, _ ->
-            slideOutHorizontally(targetOffsetX = { 1000 }, animationSpec = tween())
+            slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween(navHostAnimationDurationMillis))
         },
     ) {
         composable("Main") {

@@ -3,6 +3,7 @@ package com.dimension.maskbook.wallet.viewmodel.wallets.import
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.wallet.ext.asStateIn
+import com.dimension.maskbook.wallet.repository.IWalletRepository
 import com.dimension.maskbook.wallet.repository.WalletCreateOrImportResult
 import com.dimension.maskbook.wallet.repository.WalletData
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,6 +14,7 @@ import java.util.*
 
 class ImportWalletMnemonicViewModel(
     private val wallet: String,
+    private val repository: IWalletRepository,
 ) : ViewModel() {
     private val _words = MutableStateFlow("")
     val words = _words.asStateIn(viewModelScope, "")
@@ -23,17 +25,7 @@ class ImportWalletMnemonicViewModel(
     }
 
     private fun generateHintWords(inputWords: String): List<String> {
-        /*TODO Logic:use input words to generate hint words*/
-        return if (inputWords.isEmpty()) emptyList() else listOf(
-            "abc",
-            "cbadfadf",
-            "a",
-            "x",
-            "da",
-            "daf3",
-            "qfd",
-            "daf"
-        )// only for test
+        return if (inputWords.isEmpty()) emptyList() else inputWords.split(" ")
     }
 
     fun setWords(words: String) {
@@ -41,7 +33,7 @@ class ImportWalletMnemonicViewModel(
     }
 
     val canConfirm by lazy {
-        _words.map { it.isNotEmpty() }
+        _words.map { it.isNotEmpty() && repository.validateMnemonic(it) }
     }
 
     fun confirm(onResult: (WalletCreateOrImportResult) -> Unit) {

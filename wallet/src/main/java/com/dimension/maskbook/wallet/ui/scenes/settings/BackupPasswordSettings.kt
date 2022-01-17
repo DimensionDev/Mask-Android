@@ -1,5 +1,6 @@
 package com.dimension.maskbook.wallet.ui.scenes.settings
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -36,7 +37,8 @@ fun BackupPasswordSettings(
         Column(
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
-                .padding(ScaffoldPadding),
+                .padding(ScaffoldPadding)
+                .animateContentSize(),
         ) {
             if (currentPassword.isNotEmpty()) {
                 Text(

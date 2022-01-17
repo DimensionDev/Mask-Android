@@ -63,6 +63,7 @@ fun WalletBalancesScene(
     onSceneTypeChanged: (BalancesSceneType) -> Unit,
     chainType: ChainType,
     onCollectibleDetailClicked: (WalletCollectibleItemData) -> Unit,
+    onBack: () -> Unit,
 ) {
     MaskTheme {
         MaskScaffold(
@@ -100,7 +101,9 @@ fun WalletBalancesScene(
                         MaskCard(
                             modifier = Modifier.aspectRatio(1f)
                         ) {
-                            IconButton(onClick = { /*TODO*/ }) {
+                            IconButton(onClick = {
+                                onBack.invoke()
+                            }) {
                                 Image(
                                     painter = painterResource(id = R.drawable.twitter_1),
                                     contentDescription = null,
@@ -288,8 +291,10 @@ private fun WalletCard(
 ) {
     val clipboardManager = LocalClipboardManager.current
     val pagerState = rememberPagerState(initialPage = maxOf(wallets.indexOf(currentWallet), 0))
-    LaunchedEffect(wallets) {
-        pagerState.scrollToPage(maxOf(wallets.indexOf(currentWallet), 0))
+    LaunchedEffect(wallets, currentWallet, pagerState.pageCount) {
+        if (pagerState.pageCount > 0) {
+            pagerState.scrollToPage(maxOf(wallets.indexOf(currentWallet), 0))
+        }
     }
     LaunchedEffect(pagerState.currentPage) {
         if (wallets.isNotEmpty()) {

@@ -148,7 +148,7 @@ fun MaskPasswordInputField(
 
 @Composable
 private fun maskInputColors() = TextFieldDefaults.textFieldColors(
-    backgroundColor = Color.White,
+    backgroundColor = MaterialTheme.colors.surface,
     cursorColor = MaterialTheme.colors.primary,
     placeholderColor = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled),
     disabledPlaceholderColor = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled),

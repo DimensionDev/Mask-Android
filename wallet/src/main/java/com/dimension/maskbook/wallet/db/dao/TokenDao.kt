@@ -14,7 +14,7 @@ interface TokenDao {
     suspend fun getById(id: String): DbToken
     @Transaction
     @Query("SELECT * FROM DBTOKEN WHERE id = :id")
-    fun getByIdFlow(id: String): Flow<DbToken>
+    fun getByIdFlow(id: String): Flow<DbToken?>
     @Query("DELETE FROM DBTOKEN WHERE id = :id")
     suspend fun deleteById(id: String)
     @Insert(onConflict = OnConflictStrategy.REPLACE)

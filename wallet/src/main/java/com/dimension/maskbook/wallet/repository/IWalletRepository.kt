@@ -1,7 +1,11 @@
 package com.dimension.maskbook.wallet.repository
 
 import com.dimension.maskbook.debankapi.model.ChainID
-import com.dimension.maskbook.wallet.db.model.*
+import com.dimension.maskbook.wallet.db.model.CoinPlatformType
+import com.dimension.maskbook.wallet.db.model.DbWalletBalanceType
+import com.dimension.maskbook.wallet.db.model.DbWalletTokenTokenWithWallet
+import com.dimension.maskbook.wallet.db.model.DbWalletTokenWithToken
+import com.dimension.maskbook.wallet.db.model.WalletSource
 import com.dimension.maskbook.wallet.services.okHttpClient
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.Serializable
@@ -130,10 +134,9 @@ enum class GasPriceEditMode {
     CUSTOM
 }
 
-enum class UnlockWays {
+enum class UnlockType {
     PASSWORD,
-    FACE_ID,
-    TOUCH_ID
+    BIOMETRIC
 }
 
 
@@ -225,7 +228,9 @@ interface IWalletRepository {
     suspend fun importWallet(name: String, privateKey: String, platformType: CoinPlatformType)
     suspend fun getKeyStore(walletData: WalletData, platformType: CoinPlatformType): String
     suspend fun getPrivateKey(walletData: WalletData, platformType: CoinPlatformType): String
+    suspend fun getTotalBalance(address: String): Double
     fun deleteCurrentWallet()
+    fun deleteWallet(id: String)
     fun renameWallet(value: String, id: String)
     fun renameCurrentWallet(value: String)
     fun sendTokenWithCurrentWallet(
@@ -263,6 +268,9 @@ interface IWalletRepository {
         onDone: (String?) -> Unit,
         onError: (Throwable) -> Unit
     )
+    fun validatePrivateKey(privateKey: String): Boolean
+    fun validateMnemonic(mnemonic: String): Boolean
+    fun validateKeystore(keyStore: String): Boolean
 }
 
 //class FakeWalletRepository : IWalletRepository {

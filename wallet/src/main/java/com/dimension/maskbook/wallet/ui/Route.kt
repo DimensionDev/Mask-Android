@@ -12,18 +12,38 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.navigation.*
+import androidx.navigation.NavController
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.dialog
+import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
+import androidx.navigation.navOptions
+import androidx.navigation.plusAssign
 import com.dimension.maskbook.wallet.R
-import com.dimension.maskbook.wallet.ext.decodeUrl
 import com.dimension.maskbook.wallet.ext.encodeUrl
 import com.dimension.maskbook.wallet.ext.observeAsState
-import com.dimension.maskbook.wallet.repository.*
+import com.dimension.maskbook.wallet.navHostAnimationDurationMillis
+import com.dimension.maskbook.wallet.repository.AppKey
+import com.dimension.maskbook.wallet.repository.ChainType
+import com.dimension.maskbook.wallet.repository.IPersonaRepository
+import com.dimension.maskbook.wallet.repository.ISettingsRepository
+import com.dimension.maskbook.wallet.repository.ITokenRepository
+import com.dimension.maskbook.wallet.repository.IWalletRepository
+import com.dimension.maskbook.wallet.repository.PlatformType
 import com.dimension.maskbook.wallet.route.backup
 import com.dimension.maskbook.wallet.ui.scenes.MainHost
+import com.dimension.maskbook.wallet.ui.scenes.app.PluginSettingsScene
 import com.dimension.maskbook.wallet.ui.scenes.app.settings.MarketTrendSettingsModal
 import com.dimension.maskbook.wallet.ui.scenes.persona.*
 import com.dimension.maskbook.wallet.ui.scenes.persona.social.ConnectSocialModal
@@ -36,7 +56,12 @@ import com.dimension.maskbook.wallet.ui.scenes.register.recovery.RecoveryComplec
 import com.dimension.maskbook.wallet.ui.scenes.register.recovery.RecoveryHomeScene
 import com.dimension.maskbook.wallet.ui.scenes.register.recovery.local.RecoveryLocalHost
 import com.dimension.maskbook.wallet.ui.scenes.register.recovery.remote.remoteBackupRecovery
-import com.dimension.maskbook.wallet.ui.scenes.settings.*
+import com.dimension.maskbook.wallet.ui.scenes.settings.AppearanceSettings
+import com.dimension.maskbook.wallet.ui.scenes.settings.BackupPasswordSettings
+import com.dimension.maskbook.wallet.ui.scenes.settings.DataSourceSettings
+import com.dimension.maskbook.wallet.ui.scenes.settings.LanguageSettings
+import com.dimension.maskbook.wallet.ui.scenes.settings.PaymentPasswordSettings
+import com.dimension.maskbook.wallet.ui.scenes.wallets.UnlockWalletDialog
 import com.dimension.maskbook.wallet.ui.scenes.wallets.WalletQrcodeScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.common.MultiChainWalletDialog
 import com.dimension.maskbook.wallet.ui.scenes.wallets.create.CreateOrImportWalletScene
@@ -44,13 +69,26 @@ import com.dimension.maskbook.wallet.ui.scenes.wallets.create.CreateType
 import com.dimension.maskbook.wallet.ui.scenes.wallets.create.create.CreateWalletHost
 import com.dimension.maskbook.wallet.ui.scenes.wallets.create.import.ImportWalletHost
 import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.LegalScene
-import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.password.FaceIdEnableScene
+import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.password.BiometricsEnableScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.password.SetUpPaymentPassword
 import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.password.TouchIdEnableScene
-import com.dimension.maskbook.wallet.ui.scenes.wallets.management.*
+import com.dimension.maskbook.wallet.ui.scenes.wallets.management.BackupWalletScene
+import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletConnectModal
+import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletDeleteDialog
+import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletManagementModal
+import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletRenameModal
+import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletSwitchAddModal
+import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletSwitchModal
+import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletSwitchScene
+import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletTransactionHistoryScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.send.SendTokenHost
 import com.dimension.maskbook.wallet.ui.scenes.wallets.token.TokenDetailScene
-import com.dimension.maskbook.wallet.ui.widget.*
+import com.dimension.maskbook.wallet.ui.widget.EmailCodeInputModal
+import com.dimension.maskbook.wallet.ui.widget.EmailInputModal
+import com.dimension.maskbook.wallet.ui.widget.MaskDialog
+import com.dimension.maskbook.wallet.ui.widget.PhoneCodeInputModal
+import com.dimension.maskbook.wallet.ui.widget.PhoneInputModal
+import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
 import com.dimension.maskbook.wallet.viewmodel.persona.RenamePersonaViewModel
 import com.dimension.maskbook.wallet.viewmodel.persona.SwitchPersonaViewModel
 import com.dimension.maskbook.wallet.viewmodel.persona.social.DisconnectSocialViewModel
@@ -59,9 +97,15 @@ import com.dimension.maskbook.wallet.viewmodel.recovery.PrivateKeyViewModel
 import com.dimension.maskbook.wallet.viewmodel.register.RemoteBackupRecoveryViewModelBase
 import com.dimension.maskbook.wallet.viewmodel.settings.EmailSetupViewModel
 import com.dimension.maskbook.wallet.viewmodel.settings.PhoneSetupViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.BiometricViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.TokenDetailViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.UnlockWalletViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.WalletManagementModalViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.management.*
+import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletBackupViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletDeleteViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletRenameViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletSwitchViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletTransactionHistoryViewModel
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.navigation
@@ -101,16 +145,16 @@ fun Route(
                 navController = navController,
                 startDestination = startDestination,
                 enterTransition = { _, _ ->
-                    slideInHorizontally(initialOffsetX = { 1000 }, animationSpec = tween())
+                    slideInHorizontally(initialOffsetX = { it } , animationSpec = tween(navHostAnimationDurationMillis))
                 },
                 exitTransition = { _, _ ->
-                    slideOutHorizontally(targetOffsetX = { -1000 }, animationSpec = tween())
+                    slideOutHorizontally(targetOffsetX = { -it } , animationSpec = tween(navHostAnimationDurationMillis))
                 },
                 popEnterTransition = { _, _ ->
-                    slideInHorizontally(initialOffsetX = { -1000 }, animationSpec = tween())
+                    slideInHorizontally(initialOffsetX = { -it }, animationSpec = tween(navHostAnimationDurationMillis))
                 },
                 popExitTransition = { _, _ ->
-                    slideOutHorizontally(targetOffsetX = { 1000 }, animationSpec = tween())
+                    slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween(navHostAnimationDurationMillis))
                 },
             ) {
                 navigation(
@@ -318,14 +362,38 @@ fun Route(
                         "Home",
                         deepLinks = listOf(
                             navDeepLink {
-                                uriPattern = "maskwallet://Home"
+                                uriPattern = "maskwallet://Home/{tab}"
                             }
+                        ),
+                        arguments = listOf(
+                            navArgument("tab") { type = NavType.StringType }
                         )
                     ) {
-                        MainHost(onBack = onBack)
+                        MainHost(
+                            initialTab = it.arguments?.getString("tab").orEmpty(),
+                            onBack = onBack,
+                            onLabsSettingClick = {
+                                navController.navigate("PluginSettings")
+                            },
+                            onLabsItemClick = { appKey ->
+                                when(appKey) {
+                                    AppKey.Swap -> {
+                                        navController.navigate("MarketTrendSettings")
+                                    }
+                                    else -> Unit
+                                }
+                            }
+                        )
                     }
                     wallets(navController = navController)
                     settings(navController = navController)
+                    composable("PluginSettings") {
+                        PluginSettingsScene(
+                            onBack = {
+                                navController.popBackStack()
+                            }
+                        )
+                    }
                     composable("ExportPrivateKeyScene") {
                         ExportPrivateKeyScene(
                             onBack = {
@@ -350,6 +418,50 @@ fun Route(
                             }
                         )
                     }
+                    bottomSheet(
+                        "BackUpPassword/{target}",
+                        arguments = listOf(
+                            navArgument("target") { type = NavType.StringType }
+                        )
+                    ) { backStackEntry ->
+                        val target = backStackEntry.arguments?.getString("target")
+                        val viewModel = getViewModel<UnlockWalletViewModel>()
+                        val biometricEnable by viewModel.biometricEnabled.observeAsState(initial = false)
+                        val password by viewModel.password.observeAsState(initial = "")
+                        val passwordValid by viewModel.passwordValid.observeAsState(initial = false)
+                        val context = LocalContext.current
+                        BackUpPasswordModal(
+                            biometricEnabled = biometricEnable,
+                            password = password,
+                            onPasswordChanged = { viewModel.setPassword(it) },
+                            passwordValid = passwordValid,
+                            onConfirm = {
+                                if (biometricEnable) {
+                                    viewModel.authenticate(
+                                        context = context,
+                                        onSuccess = {
+                                            target?.let {
+                                                navController.navigate(it, navOptions {
+                                                    popUpTo("BackUpPassword") {
+                                                        inclusive = true
+                                                    }
+                                                })
+                                            } ?: navController.popBackStack()
+                                        }
+                                    )
+                                } else {
+                                    target?.let {
+                                        navController.navigate(it, navOptions {
+                                            popUpTo("BackUpPassword") {
+                                                inclusive = true
+                                            }
+                                        })
+                                    } ?: navController.popBackStack()
+                                }
+                            }
+                        )
+                    }
+
                     bottomSheet("MarketTrendSettings") {
                         MarketTrendSettingsModal()
                     }
@@ -400,7 +512,7 @@ fun Route(
                             navArgument("personaId") { type = NavType.StringType },
                         )
                     ) {
-                        val personaId = it.arguments?.getString("personaId")?.decodeUrl()
+                        val personaId = it.arguments?.getString("personaId")
                         if (personaId != null) {
                             val viewModel = getViewModel<RenamePersonaViewModel> {
                                 parametersOf(personaId)
@@ -430,7 +542,7 @@ fun Route(
                             }
                         )
                     ) {
-                        val personaId = it.arguments?.getString("personaId")?.decodeUrl()
+                        val personaId = it.arguments?.getString("personaId")
                         val platform = it.arguments?.getString("platform")
                             ?.let { PlatformType.valueOf(it) }
 //                        val viewModel = when (platform) {
@@ -482,10 +594,10 @@ fun Route(
                             navArgument("id") { type = NavType.StringType },
                         )
                     ) {
-                        val personaId = it.arguments?.getString("personaId")?.decodeUrl()
+                        val personaId = it.arguments?.getString("personaId")
                         val platform =
                             it.arguments?.getString("platform")?.let { PlatformType.valueOf(it) }
-                        val id = it.arguments?.getString("id")?.decodeUrl()
+                        val id = it.arguments?.getString("id")
                         val viewModel = getViewModel<DisconnectSocialViewModel>()
                         if (personaId != null && platform != null && id != null) {
                             DisconnectSocialDialog(
@@ -514,11 +626,6 @@ fun Route(
             }
         }
     }
-}
-
-private fun enableFaceIdOrTouchId(navController: NavController, type: CreateType) {
-    val faceId = true // TODO Logic:enable face id or touch id
-    navController.navigate(if (faceId) "WalletIntroHostFaceId/$type" else "WalletIntroHostTouchId/$type")
 }
 
 @ExperimentalAnimationApi
@@ -638,7 +745,7 @@ private fun NavGraphBuilder.wallets(
             WalletManagementModal(
                 walletData = wallet,
                 onRename = { navController.navigate("WalletManagementRename/${wallet.id}") },
-                onBackup = { navController.navigate("WalletManagementBackup") },
+                onBackup = { navController.navigate("UnlockWalletDialog/WalletManagementBackup") },
                 onTransactionHistory = { navController.navigate("WalletManagementTransactionHistory") },
                 onDelete = {
                     navController.popBackStack()
@@ -660,7 +767,10 @@ private fun NavGraphBuilder.wallets(
             val viewModel = getViewModel<WalletDeleteViewModel> {
                 parametersOf(id)
             }
+            val biometricViewModel = getViewModel<BiometricViewModel>()
             val wallet by viewModel.wallet.observeAsState(initial = null)
+            val biometricEnabled by biometricViewModel.biometricEnabled.observeAsState(initial = false)
+            val context = LocalContext.current
             wallet?.let { walletData ->
                 val password by viewModel.password.observeAsState(initial = "")
                 val canConfirm by viewModel.canConfirm.observeAsState(initial = false)
@@ -670,10 +780,21 @@ private fun NavGraphBuilder.wallets(
                     onPasswordChanged = { viewModel.setPassword(it) },
                     onBack = { navController.popBackStack() },
                     onDelete = {
-                        viewModel.confirm()
-                        navController.popBackStack()
+                        if (biometricEnabled) {
+                            biometricViewModel.authenticate(
+                                context = context,
+                                onSuccess = {
+                                    viewModel.confirm()
+                                    navController.popBackStack()
+                                }
+                            )
+                        } else {
+                            viewModel.confirm()
+                            navController.popBackStack()
+                        }
                     },
-                    passwordValid = canConfirm
+                    passwordValid = canConfirm,
+                    biometricEnabled = biometricEnabled
                 )
             }
         }
@@ -732,14 +853,18 @@ private fun NavGraphBuilder.wallets(
         val type = it.arguments?.getString("type")?.let { type ->
             CreateType.valueOf(type)
         } ?: CreateType.CREATE
-        val password by get<ISettingsRepository>().paymentPassword.observeAsState(initial = null)
+        val repo = get<ISettingsRepository>()
+        val password by repo.paymentPassword.observeAsState(initial = null)
+        val enableBiometric by repo.biometricEnabled.observeAsState(initial = false)
         LegalScene(
             onBack = { navController.popBackStack() },
             onAccept = {
                 if (password.isNullOrEmpty()) {
                     navController.navigate("WalletIntroHostPassword/$type")
+                } else if (!enableBiometric) {
+                    navController.navigate("WalletIntroHostFaceId/$type")
                 } else {
-                    enableFaceIdOrTouchId(navController, type)
+                    navController.navigate("CreateOrImportWallet/${type}")
                 }
             },
             onBrowseAgreement = { TODO("Logic:browse service agreement") }
@@ -755,9 +880,14 @@ private fun NavGraphBuilder.wallets(
         val type = it.arguments?.getString("type")?.let { type ->
             CreateType.valueOf(type)
         } ?: CreateType.CREATE
+        val enableBiometric by get<ISettingsRepository>().biometricEnabled.observeAsState(initial = false)
         SetUpPaymentPassword(
             onNext = {
-                enableFaceIdOrTouchId(navController, type)
+                if (!enableBiometric) {
+                    navController.navigate("WalletIntroHostFaceId/$type")
+                } else {
+                    navController.navigate("CreateOrImportWallet/${type}")
+                }
             }
         )
     }
@@ -771,10 +901,14 @@ private fun NavGraphBuilder.wallets(
         val type = it.arguments?.getString("type")?.let { type ->
             CreateType.valueOf(type)
         } ?: CreateType.CREATE
-        FaceIdEnableScene(
+        BiometricsEnableScene(
             onBack = { navController.popBackStack() },
-            onEnable = {
-                navController.navigate("WalletIntroHostFaceIdEnableSuccess/$type")
+            onEnable = { enabled ->
+                if (enabled) {
+                    navController.navigate("WalletIntroHostFaceIdEnableSuccess/$type")
+                } else {
+                    navController.navigate("CreateOrImportWallet/${type}")
+                }
             }
         )
     }
@@ -900,9 +1034,10 @@ private fun NavGraphBuilder.wallets(
             CreateWalletHost(
                 wallet = wallet,
                 onDone = {
-                    navController.navigate(Uri.parse("maskwallet://Home"), navOptions = navOptions {
-                        popUpTo("Main") {
-                            inclusive = true
+                    navController.navigate(Uri.parse("maskwallet://Home/Wallets"), navOptions = navOptions {
+                        launchSingleTop = true
+                        popUpTo("Home") {
+                            inclusive = false
                         }
                     })
                 },
@@ -921,9 +1056,10 @@ private fun NavGraphBuilder.wallets(
             ImportWalletHost(
                 wallet = wallet,
                 onDone = {
-                    navController.navigate(Uri.parse("maskwallet://Home"), navOptions = navOptions {
-                        popUpTo("Main") {
-                            inclusive = true
+                    navController.navigate(Uri.parse("maskwallet://Home/Wallets"), navOptions = navOptions {
+                        launchSingleTop = true
+                        popUpTo("Home") {
+                            inclusive = false
                         }
                     })
                 },
@@ -950,6 +1086,51 @@ private fun NavGraphBuilder.wallets(
                 )
             }
         }
+    }
+
+    dialog(
+        "UnlockWalletDialog/{target}",
+        arguments = listOf(
+            navArgument("target") { type = NavType.StringType }
+        )
+    ) { backStackEntry ->
+        val viewModel = getViewModel<UnlockWalletViewModel>()
+        val biometricEnable by viewModel.biometricEnabled.observeAsState(initial = false)
+        val password by viewModel.password.observeAsState(initial = "")
+        val passwordValid by viewModel.passwordValid.observeAsState(initial = false)
+        val context = LocalContext.current
+        val target = backStackEntry.arguments?.getString("target")
+        UnlockWalletDialog(
+            onBack = { navController.popBackStack() },
+            biometricEnabled = biometricEnable,
+            password = password,
+            onPasswordChanged = { viewModel.setPassword(it) },
+            passwordValid = passwordValid,
+            onConfirm = {
+                if (biometricEnable) {
+                    viewModel.authenticate(
+                        context = context,
+                        onSuccess = {
+                            target?.let {
+                                navController.navigate(it, navOptions {
+                                    popUpTo("UnlockWalletDialog") {
+                                        inclusive = true
+                                    }
+                                })
+                            } ?: navController.popBackStack()
+                        }
+                    )
+                } else {
+                    target?.let {
+                        navController.navigate(it, navOptions {
+                            popUpTo("UnlockWalletDialog") {
+                                inclusive = true
+                            }
+                        })
+                    } ?: navController.popBackStack()
+                }
+            }
+        )
     }
 }
 

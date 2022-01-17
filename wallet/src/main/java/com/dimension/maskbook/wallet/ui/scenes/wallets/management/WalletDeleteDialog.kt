@@ -1,16 +1,21 @@
 package com.dimension.maskbook.wallet.ui.scenes.wallets.management
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import com.dimension.maskbook.wallet.repository.WalletData
 import com.dimension.maskbook.wallet.ui.widget.*
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun WalletDeleteDialog(
     walletData: WalletData,
+    biometricEnabled:Boolean,
     password: String,
     onPasswordChanged: (String) -> Unit,
     onBack: () -> Unit,
@@ -18,6 +23,9 @@ fun WalletDeleteDialog(
     passwordValid: Boolean,
 ) {
     MaskDialog(
+        // workaround for https://issuetracker.google.com/issues/194911971
+        properties = DialogProperties(usePlatformDefaultWidth = false),
+        modifier = Modifier.padding(horizontal = 23.dp),
         onDismissRequest = onBack,
         icon = {
             WalletAvatar(
@@ -39,8 +47,10 @@ fun WalletDeleteDialog(
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Text(text = "Payment password")
-                MaskPasswordInputField(value = password, onValueChange = onPasswordChanged)
+                AnimatedVisibility(visible = !biometricEnabled) {
+                    Text(text = "Payment password")
+                    MaskPasswordInputField(value = password, onValueChange = onPasswordChanged)
+                }
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
@@ -53,7 +63,7 @@ fun WalletDeleteDialog(
                     PrimaryButton(
                         onClick = onDelete,
                         modifier = Modifier.weight(1f),
-                        enabled = passwordValid
+                        enabled = passwordValid || biometricEnabled
                     ) {
                         Text(text = "Delete")
                     }

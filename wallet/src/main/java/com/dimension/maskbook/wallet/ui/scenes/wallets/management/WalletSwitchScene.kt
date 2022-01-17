@@ -209,10 +209,7 @@ fun WalletSwitchScene(
                             }
                             selectedWallet == it -> {
                                 {
-                                    Image(
-                                        painter = painterResource(id = R.drawable.ic_tick_square),
-                                        contentDescription = null
-                                    )
+                                    CircleCheckbox(checked = true)
                                 }
                             }
                             else -> {

@@ -3,6 +3,7 @@ package com.dimension.maskbook.wallet.ui.scenes.wallets.send
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -14,8 +15,9 @@ import com.dimension.maskbook.wallet.ext.humanizeToken
 import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.repository.GasPriceEditMode
 import com.dimension.maskbook.wallet.repository.TokenData
-import com.dimension.maskbook.wallet.repository.UnlockWays
+import com.dimension.maskbook.wallet.repository.UnlockType
 import com.dimension.maskbook.wallet.ui.LocalRootNavController
+import com.dimension.maskbook.wallet.viewmodel.wallets.BiometricViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.*
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.ModalBottomSheetLayout
@@ -99,6 +101,11 @@ fun SendTokenHost(
                     val amount by viewModel.amount.observeAsState(initial = "0")
                     val password by viewModel.password.observeAsState(initial = "")
                     val canConfirm by viewModel.canConfirm.observeAsState(initial = false)
+                    val biometricViewModel = getViewModel<BiometricViewModel>()
+                    val biometricEnabled by biometricViewModel.biometricEnabled.observeAsState(
+                        initial = false
+                    )
+                    val context = LocalContext.current
 
                     addressData?.let { addressData ->
                         walletTokenData?.let { walletTokenData ->
@@ -112,12 +119,20 @@ fun SendTokenHost(
                                 amount = amount,
                                 maxAmount = walletTokenData.count,
                                 onAmountChanged = { viewModel.setAmount(it) },
-                                unlockWays = UnlockWays.PASSWORD,
+                                unlockType = if (biometricEnabled) UnlockType.BIOMETRIC else UnlockType.PASSWORD,
                                 gasFee = (gasTotal * ethPrice).humanizeDollar(),
                                 arrivesIn = arrives,
                                 onEditGasFee = { navController.navigate("EditGasFee") },
-                                onSend = {
-                                    navController.navigate("SendConfirm/${address}/${amount}")
+                                onSend = { type ->
+                                    if (type == UnlockType.BIOMETRIC) {
+                                        biometricViewModel.authenticate(
+                                            context,
+                                            onSuccess = {
+                                                navController.navigate("SendConfirm/${address}/${amount}")
+                                            })
+                                    } else {
+                                        navController.navigate("SendConfirm/${address}/${amount}")
+                                    }
                                 },
                                 sendError = "",
                                 paymentPassword = password,
