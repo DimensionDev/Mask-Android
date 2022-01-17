@@ -18,13 +18,22 @@ class PersonaViewModel(
     }
 
     val socialList by lazy {
-        combine(repository.twitter, repository.facebook) { twitterList, facebookList ->
-            val hasAccount = twitterList.isNotEmpty() || facebookList.isNotEmpty()
-            if (hasAccount) {
-                twitterList + facebookList
-            } else {
-                emptyList()
+        combine(
+            currentPersona,
+            repository.twitter,
+            repository.facebook
+        ) { persona, twitterList, facebookList ->
+            val isEmpty = twitterList.isEmpty() && facebookList.isEmpty()
+            if (isEmpty) {
+                return@combine emptyList()
             }
+
+            val allList = twitterList + facebookList
+            if (persona == null) {
+                return@combine allList
+            }
+
+            allList.filter { it.personaId == persona.id }
         }.flowOn(Dispatchers.IO).asStateIn(viewModelScope, null)
     }
 
