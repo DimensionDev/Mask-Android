@@ -64,7 +64,7 @@ private val showList = listOf(
 )
 
 @Composable
-fun PersonaEmptyScene(
+fun EmptySocialScene(
     onItemClick: (Network) -> Unit
 ) {
     var isShowTipDialog by remember { mutableStateOf(true) }

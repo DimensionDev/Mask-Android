@@ -102,7 +102,7 @@ fun PersonaScene(
                             },
                         )
                     } else {
-                        PersonaEmptyScene(
+                        EmptySocialScene(
                             onItemClick = { network ->
                                 currentPersona?.let {
                                     onAddSocialClick(it, network)
