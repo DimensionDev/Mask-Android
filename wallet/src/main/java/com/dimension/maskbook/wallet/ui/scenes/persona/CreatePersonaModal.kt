@@ -16,20 +16,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
-import com.dimension.maskbook.wallet.repository.IPersonaRepository
 import com.dimension.maskbook.wallet.ui.widget.MaskModal
 import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
 import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
-import org.koin.androidx.compose.get
 
 @Composable
-fun CreatePersona(
-    onDone: () -> Unit,
+fun CreatePersonaModal(
+    onDone: (String) -> Unit,
 ) {
-    val repository = get<IPersonaRepository>()
-    var name by remember {
-        mutableStateOf("")
-    }
+    var name by remember { mutableStateOf("") }
     MaskModal {
         Column(
             modifier = Modifier
@@ -46,8 +41,7 @@ fun CreatePersona(
             PrimaryButton(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {
-                    repository.addPersona(name)
-                    onDone.invoke()
+                    onDone.invoke(name)
                 },
             ) {
                 Text(text = stringResource(R.string.common_controls_next))
