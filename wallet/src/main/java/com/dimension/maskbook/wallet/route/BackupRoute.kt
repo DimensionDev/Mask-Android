@@ -69,7 +69,7 @@ import org.koin.core.parameter.parametersOf
 
 @ExperimentalAnimationApi
 @ExperimentalMaterialNavigationApi
-fun NavGraphBuilder.backup(
+fun NavGraphBuilder.backupRoute(
     navController: NavController,
 ) {
     navigation("BackupSelection", "BackupData") {
