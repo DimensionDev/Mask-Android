@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android" xmlns:aapt="http://schemas.android.com/aapt"
+        android:width="27dp"
+        android:height="28dp"
+        android:viewportWidth="27"
+        android:viewportHeight="28">
+    <path
+        android:pathData="M 4.04492 2.54517 L 22.95462 2.54517 Q 24.95462 2.54517 24.95462 4.54517 L 24.95462 23.45487 Q 24.95462 25.45487 22.95462 25.45487 L 4.04492 25.45487 Q 2.04492 25.45487 2.04492 23.45487 L 2.04492 4.54517 Q 2.04492 2.54517 4.04492 2.54517 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="2.3783"
+                android:startY="3.67051"
+                android:endX="25.4191"
+                android:endY="24.7751"
+                android:type="linear">
+                <item android:offset="0" android:color="#FF0098FF"/>
+                <item android:offset="0.761017" android:color="#FF005BED"/>
+                <item android:offset="0.765516" android:color="#FF006AEC"/>
+                <item android:offset="1" android:color="#FF0064EA"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+    <path
+        android:fillColor="#ffffff"
+        android:fillType="evenOdd"
+        android:pathData="M9.54421 8.65961C10.0978 8.65965 10.5465 9.10842 10.5464 9.66198L10.546 15.5516L16.745 9.29631C16.9327 9.10694 17.1881 9.00014 17.4547 8.99953C17.7213 8.99892 17.9771 9.10455 18.1657 9.29306L22.4375 13.5644C22.8289 13.9558 22.8289 14.5904 22.4375 14.9818C22.0461 15.3733 21.4115 15.3733 21.0201 14.9819L18.4203 12.3825L18.4199 18.164C18.4199 18.7175 17.9711 19.1662 17.4175 19.1662C16.864 19.1662 16.4153 18.7174 16.4153 18.1638L16.4157 12.4765L10.2583 18.6898C10.0707 18.8792 9.81528 18.986 9.54868 18.9866C9.28208 18.9872 9.02622 18.8815 8.83769 18.693L4.55972 14.4156C4.16828 14.0242 4.16824 13.3895 4.55964 12.9981C4.95104 12.6067 5.58566 12.6066 5.9771 12.998L8.54141 15.562L8.54184 9.66183C8.54188 9.10828 8.99065 8.65957 9.54421 8.65961Z"/>
+</vector>

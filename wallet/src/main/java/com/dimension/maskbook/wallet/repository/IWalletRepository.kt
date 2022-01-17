@@ -246,6 +246,9 @@ interface IWalletRepository {
         onDone: (String?) -> Unit,
         onError: (Throwable) -> Unit
     )
+    fun validatePrivateKey(privateKey: String): Boolean
+    fun validateMnemonic(mnemonic: String): Boolean
+    fun validateKeystore(keyStore: String): Boolean
 }
 
 //class FakeWalletRepository : IWalletRepository {

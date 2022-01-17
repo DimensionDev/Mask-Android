@@ -31,9 +31,9 @@ import androidx.navigation.navDeepLink
 import androidx.navigation.navOptions
 import androidx.navigation.plusAssign
 import com.dimension.maskbook.wallet.R
-import com.dimension.maskbook.wallet.ext.decodeUrl
 import com.dimension.maskbook.wallet.ext.encodeUrl
 import com.dimension.maskbook.wallet.ext.observeAsState
+import com.dimension.maskbook.wallet.repository.AppKey
 import com.dimension.maskbook.wallet.repository.ChainType
 import com.dimension.maskbook.wallet.repository.IPersonaRepository
 import com.dimension.maskbook.wallet.repository.ISettingsRepository
@@ -42,6 +42,7 @@ import com.dimension.maskbook.wallet.repository.IWalletRepository
 import com.dimension.maskbook.wallet.repository.PlatformType
 import com.dimension.maskbook.wallet.route.backup
 import com.dimension.maskbook.wallet.ui.scenes.MainHost
+import com.dimension.maskbook.wallet.ui.scenes.app.PluginSettingsScene
 import com.dimension.maskbook.wallet.ui.scenes.app.settings.MarketTrendSettingsModal
 import com.dimension.maskbook.wallet.ui.scenes.persona.*
 import com.dimension.maskbook.wallet.ui.scenes.persona.social.ConnectSocialModal
@@ -370,10 +371,28 @@ fun Route(
                         MainHost(
                             initialTab = it.arguments?.getString("tab").orEmpty(),
                             onBack = onBack,
+                            onLabsSettingClick = {
+                                navController.navigate("PluginSettings")
+                            },
+                            onLabsItemClick = { appKey ->
+                                when(appKey) {
+                                    AppKey.Swap -> {
+                                        navController.navigate("MarketTrendSettings")
+                                    }
+                                    else -> Unit
+                                }
+                            }
                         )
                     }
                     wallets(navController = navController)
                     settings(navController = navController)
+                    composable("PluginSettings") {
+                        PluginSettingsScene(
+                            onBack = {
+                                navController.popBackStack()
+                            }
+                        )
+                    }
                     composable("ExportPrivateKeyScene") {
                         ExportPrivateKeyScene(
                             onBack = {
@@ -492,7 +511,7 @@ fun Route(
                             navArgument("personaId") { type = NavType.StringType },
                         )
                     ) {
-                        val personaId = it.arguments?.getString("personaId")?.decodeUrl()
+                        val personaId = it.arguments?.getString("personaId")
                         if (personaId != null) {
                             val viewModel = getViewModel<RenamePersonaViewModel> {
                                 parametersOf(personaId)
@@ -522,7 +541,7 @@ fun Route(
                             }
                         )
                     ) {
-                        val personaId = it.arguments?.getString("personaId")?.decodeUrl()
+                        val personaId = it.arguments?.getString("personaId")
                         val platform = it.arguments?.getString("platform")
                             ?.let { PlatformType.valueOf(it) }
 //                        val viewModel = when (platform) {
@@ -574,10 +593,10 @@ fun Route(
                             navArgument("id") { type = NavType.StringType },
                         )
                     ) {
-                        val personaId = it.arguments?.getString("personaId")?.decodeUrl()
+                        val personaId = it.arguments?.getString("personaId")
                         val platform =
                             it.arguments?.getString("platform")?.let { PlatformType.valueOf(it) }
-                        val id = it.arguments?.getString("id")?.decodeUrl()
+                        val id = it.arguments?.getString("id")
                         val viewModel = getViewModel<DisconnectSocialViewModel>()
                         if (personaId != null && platform != null && id != null) {
                             DisconnectSocialDialog(

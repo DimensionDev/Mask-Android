@@ -56,7 +56,7 @@ object JSMethod {
 
         fun openAppsView(): Flow<String> {
             return MessageChannel.subscribeMessage("misc_openAppsView").map {
-                if (!it?.params.isNullOrEmpty()) "maskwallet://Home/App" else ""
+                if (!it?.params.isNullOrEmpty()) "maskwallet://Home/Labs" else ""
             }
         }
 

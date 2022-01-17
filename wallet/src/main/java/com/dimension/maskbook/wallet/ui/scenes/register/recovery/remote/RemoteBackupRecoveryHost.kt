@@ -19,7 +19,6 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.dialog
 import androidx.navigation.navArgument
-import com.dimension.maskbook.wallet.ext.decodeUrl
 import com.dimension.maskbook.wallet.ext.encodeUrl
 import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.ui.widget.EmailCodeInputModal
@@ -49,7 +48,7 @@ fun NavGraphBuilder.remoteBackupRecovery(
         "RemoteBackupRecovery_Email_Code/{email}",
         arguments = listOf(navArgument("email") { type = NavType.StringType })
     ) { backStackEntry ->
-        backStackEntry.arguments?.getString("email")?.decodeUrl()?.let { email ->
+        backStackEntry.arguments?.getString("email")?.let { email ->
             val requestNavigate: (RemoteBackupRecoveryViewModelBase.NavigateArgs) -> Unit = {
                 when (it.target) {
                     RemoteBackupRecoveryViewModelBase.NavigateTarget.NoBackup -> navController.navigate(
