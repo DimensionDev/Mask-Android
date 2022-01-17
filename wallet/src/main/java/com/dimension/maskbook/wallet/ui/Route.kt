@@ -33,6 +33,7 @@ import androidx.navigation.plusAssign
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ext.encodeUrl
 import com.dimension.maskbook.wallet.ext.observeAsState
+import com.dimension.maskbook.wallet.navHostAnimationDurationMillis
 import com.dimension.maskbook.wallet.repository.AppKey
 import com.dimension.maskbook.wallet.repository.ChainType
 import com.dimension.maskbook.wallet.repository.IPersonaRepository
@@ -144,16 +145,16 @@ fun Route(
                 navController = navController,
                 startDestination = startDestination,
                 enterTransition = { _, _ ->
-                    slideInHorizontally(initialOffsetX = { 1000 }, animationSpec = tween())
+                    slideInHorizontally(initialOffsetX = { it } , animationSpec = tween(navHostAnimationDurationMillis))
                 },
                 exitTransition = { _, _ ->
-                    slideOutHorizontally(targetOffsetX = { -1000 }, animationSpec = tween())
+                    slideOutHorizontally(targetOffsetX = { -it } , animationSpec = tween(navHostAnimationDurationMillis))
                 },
                 popEnterTransition = { _, _ ->
-                    slideInHorizontally(initialOffsetX = { -1000 }, animationSpec = tween())
+                    slideInHorizontally(initialOffsetX = { -it }, animationSpec = tween(navHostAnimationDurationMillis))
                 },
                 popExitTransition = { _, _ ->
-                    slideOutHorizontally(targetOffsetX = { 1000 }, animationSpec = tween())
+                    slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween(navHostAnimationDurationMillis))
                 },
             ) {
                 navigation(
