@@ -6,6 +6,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -42,11 +43,11 @@ fun SpeedUpOrCancelTransactionModal(
             Text(text = price, style = MaterialTheme.typography.h4)
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "cost fee: $costFee",
+                text = "${stringResource(com.dimension.maskbook.wallet.R.string.scene_sendTransaction_gasPrice_costFee)} $costFee",
                 style = MaterialTheme.typography.caption.copy(fontSize = 16.sp),
             )
             Spacer(modifier = Modifier.height(20.dp))
-            Text(text = "Gas limit")
+            Text(text = stringResource(com.dimension.maskbook.wallet.R.string.scene_sendTransaction_gasPrice_gasLimit))
             Spacer(modifier = Modifier.height(8.dp))
             MaskInputField(
                 value = gasLimit.toString(),
@@ -58,7 +59,7 @@ fun SpeedUpOrCancelTransactionModal(
 
 
             Spacer(modifier = Modifier.height(16.dp))
-            Text(text = "Max priority fee(Gwei)")
+            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_sendTransaction_gasPrice_maxPriorityFee))
             Spacer(modifier = Modifier.height(8.dp))
             MaskInputField(
                 value = maxPriorityFee.toString(),
@@ -69,7 +70,7 @@ fun SpeedUpOrCancelTransactionModal(
             )
 
             Spacer(modifier = Modifier.height(16.dp))
-            Text(text = "Max fee(Gwei)")
+            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_sendTransaction_gasPrice_maxFee))
             Spacer(modifier = Modifier.height(8.dp))
             MaskInputField(
                 value = maxFee.toString(),
@@ -84,7 +85,7 @@ fun SpeedUpOrCancelTransactionModal(
                 onClick = onConfirm,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(text = "Confirm")
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_confirm))
             }
         }
     }

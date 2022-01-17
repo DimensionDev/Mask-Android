@@ -23,7 +23,7 @@ fun RecoveryComplectedScene(
             topBar = {
                 MaskTopAppBar(
                     title = {
-                        Text(text = "Restore & Sign In completed!")
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_Identity_restore_signin_success_title))
                     },
                     navigationIcon = {
                         MaskBackButton(
@@ -48,7 +48,7 @@ fun RecoveryComplectedScene(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = onConfirm
                 ) {
-                    Text(text = "Confirm")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_confirm))
                 }
             }
         }

@@ -21,7 +21,7 @@ fun WalletTransactionHistoryScene(
             topBar = {
                 MaskSingleLineTopAppBar(
                     title = {
-                        Text(text = "Transaction History")
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_detail_wallet_items_history))
                     },
                     navigationIcon = {
                         MaskBackButton(

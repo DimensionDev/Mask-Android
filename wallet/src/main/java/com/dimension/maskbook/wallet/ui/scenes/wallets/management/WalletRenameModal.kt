@@ -21,14 +21,14 @@ fun WalletRenameModal(
             modifier = Modifier
                 .padding(ScaffoldPadding),
         ) {
-            Text(text = "Wallet Name")
+            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_create_wallet_wallet_name))
             Spacer(modifier = Modifier.height(8.dp))
             OutlinedTextField(
                 value = name,
                 onValueChange = { onNameChanged.invoke(it) },
                 modifier = Modifier.fillMaxWidth(),
                 placeholder = {
-                    Text(text = "Name your wallet")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_create_wallet_wallet_name_placeholder))
                 }
             )
             Spacer(modifier = Modifier.height(20.dp))
@@ -38,7 +38,7 @@ fun WalletRenameModal(
                     onDone.invoke()
                 },
             ) {
-                Text(text = "Rename")
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_personas_action_rename))
             }
         }
     }

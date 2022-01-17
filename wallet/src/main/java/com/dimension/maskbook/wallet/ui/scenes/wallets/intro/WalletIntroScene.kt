@@ -52,7 +52,7 @@ fun WalletIntroScene(
                         onCreate.invoke()
                     },
                 ) {
-                    Text(text = "Create Wallet")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_create_wallet))
                 }
                 ButtonSpacing()
                 SecondaryButton(
@@ -62,7 +62,7 @@ fun WalletIntroScene(
                         onImport.invoke()
                     },
                 ) {
-                    Text(text = "Import Wallet")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_import_wallet))
                 }
                 ButtonSpacing()
                 SecondaryButton(
@@ -72,7 +72,7 @@ fun WalletIntroScene(
                         onConnect.invoke()
                     },
                 ) {
-                    Text(text = "WalletConnect")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_connect_wallet_connect))
                 }
                 ButtonSpacing()
             }

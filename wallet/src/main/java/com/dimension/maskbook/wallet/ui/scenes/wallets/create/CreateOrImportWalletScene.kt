@@ -86,7 +86,7 @@ fun CreateOrImportWalletScene(
                         contentDescription = null
                     )
                     Text(
-                        text = "Multi-chain wallet",
+                        text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_create_wallet_multichain_wallet_title),
                         style = MaterialTheme.typography.body1.copy(fontWeight = FontWeight.Bold),
                         modifier = Modifier.weight(1F)
                     )
@@ -101,7 +101,7 @@ fun CreateOrImportWalletScene(
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 CompositionLocalProvider(LocalContentColor provides MaterialTheme.colors.primary) {
-                    Text(text = "Wallet Name")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_create_wallet_wallet_name))
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -110,7 +110,7 @@ fun CreateOrImportWalletScene(
                     onValueChange = { input = it },
                     modifier = Modifier.fillMaxWidth(),
                     placeholder = {
-                        Text(text = "Name your wallet")
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_create_wallet_wallet_name_placeholder))
                     }
                 )
                 Spacer(modifier = Modifier.height(24.dp))
@@ -124,7 +124,7 @@ fun CreateOrImportWalletScene(
                     },
                     enabled = input.isNotEmpty()
                 ) {
-                    Text(text = "Accept")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_accept))
                 }
             }
         }
@@ -147,7 +147,7 @@ private fun CreateSuccessDialog(onDismissRequest: () -> Unit) {
                 onClick = onDismissRequest,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(text = "Done")
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_done))
             }
         }
     )

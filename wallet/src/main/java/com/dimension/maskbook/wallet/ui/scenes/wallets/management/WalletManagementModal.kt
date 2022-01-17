@@ -56,7 +56,7 @@ fun WalletManagementModal(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Rename Wallet",
+                        text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_edit_item_rename),
                         style = MaterialTheme.typography.subtitle1,
                         modifier = Modifier.weight(1f)
                     )
@@ -81,7 +81,7 @@ fun WalletManagementModal(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Transaction History",
+                        text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_detail_wallet_items_history),
                         style = MaterialTheme.typography.subtitle1,
                     )
                 }
@@ -104,7 +104,7 @@ fun WalletManagementModal(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "Back Up",
+                            text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_personas_action_backup),
                             style = MaterialTheme.typography.subtitle1,
                         )
                     }
@@ -128,7 +128,7 @@ fun WalletManagementModal(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "Delete Wallet",
+                            text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_edit_item_delete),
                             style = MaterialTheme.typography.subtitle1,
                             color = Color.Red,
                         )
@@ -152,7 +152,7 @@ fun WalletManagementModal(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "Disconnect",
+                            text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_connect_disconnect),
                             style = MaterialTheme.typography.subtitle1,
                             color = Color.Red,
                         )

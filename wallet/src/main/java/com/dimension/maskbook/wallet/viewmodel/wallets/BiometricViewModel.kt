@@ -23,13 +23,13 @@ open class BiometricViewModel(
 
     fun authenticate(
         context: Context,
-        title: String = "Unlock with biometrics",
-        subtitle: String = "",
+        title: Int = com.dimension.maskbook.wallet.R.string.scene_biometry_id_face_id,
+        subTitle: Int = -1,
         onSuccess: (password: String) -> Unit
     ) {
         biometricAuthenticator.biometricAuthenticate(
             context = context,
-            negativeButtonText = "Enter Password",
+            negativeButtonText = com.dimension.maskbook.wallet.R.string.scene_create_wallet_enter_password,
             onSuccess = {
                 viewModelScope.launch {
                     onSuccess.invoke(getPassword())
@@ -40,7 +40,7 @@ open class BiometricViewModel(
             },
             onCanceled = { _enterPassword.value = true },
             title = title,
-            subtitle = subtitle
+            subTitle = subTitle
         )
     }
 

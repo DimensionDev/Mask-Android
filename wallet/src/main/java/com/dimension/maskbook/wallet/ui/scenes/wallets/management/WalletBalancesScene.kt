@@ -154,7 +154,7 @@ fun WalletBalancesScene(
                                     contentDescription = null,
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Text(text = "Send", style = MaterialTheme.typography.subtitle1)
+                                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_balance_btn_Send), style = MaterialTheme.typography.subtitle1)
                             }
                         }
 
@@ -174,7 +174,7 @@ fun WalletBalancesScene(
                                     contentDescription = null,
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Text(text = "Receive", style = MaterialTheme.typography.subtitle1)
+                                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_balance_btn_receive), style = MaterialTheme.typography.subtitle1)
                             }
                         }
                     }
@@ -232,7 +232,7 @@ fun WalletBalancesScene(
                             modifier = Modifier.align(Alignment.CenterEnd),
                         ) {
                             TextButton(onClick = { /*TODO*/ }) {
-                                Text(text = "Add")
+                                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_derivation_path_operation_add))
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Icon(Icons.Default.Add, contentDescription = null)
                             }

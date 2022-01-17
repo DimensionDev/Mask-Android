@@ -32,7 +32,7 @@ fun SwitchPersonaModal(
                 .padding(ScaffoldPadding),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Text(text = "Personas", style = MaterialTheme.typography.h6)
+            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.tab_personas), style = MaterialTheme.typography.h6)
             LazyColumn {
                 items(items) {
                     MaskSelection(
@@ -71,7 +71,7 @@ fun SwitchPersonaModal(
                                 Icon(Icons.Default.AccountCircle, contentDescription = null)
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
-                                    text = "Add Persona",
+                                    text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_personas_add_persona),
                                     modifier = Modifier
                                         .weight(1f),
                                     style = MaterialTheme.typography.subtitle1

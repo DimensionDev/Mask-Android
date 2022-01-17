@@ -4,18 +4,12 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.ListItem
-import androidx.compose.material.LocalContentAlpha
-import androidx.compose.material.LocalTextStyle
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
@@ -41,7 +35,7 @@ fun LabsScene(
             MaskSingleLineTopAppBar(
                 title = {
                     Text(
-                        text = LabsSceneDefault.title,
+                        text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.tab_labs),
                         style = MaterialTheme.typography.h6,
                     )
                 },
@@ -88,7 +82,7 @@ private fun AppItem(
             },
             text = {
                 Text(
-                    text = item.name,
+                    text = stringResource(item.name),
                     color = LocalTextStyle.current.color.copy(LocalContentAlpha.current),
                 )
             },
@@ -110,8 +104,4 @@ private fun AppItem(
             }
         )
     }
-}
-
-private object LabsSceneDefault {
-    const val title = "Labs"
 }

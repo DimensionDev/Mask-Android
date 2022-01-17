@@ -47,9 +47,9 @@ fun TouchIdEnableScene(
                     .fillMaxSize()
                     .padding(ScaffoldPadding),
             ) {
-                Text(text = "Unlock with touch ID?", style = MaterialTheme.typography.h4)
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_biometry_recognition_touch_id_title), style = MaterialTheme.typography.h4)
                 Spacer(modifier = Modifier.height(12.dp))
-                Text(text = "Unlock Mask faster with touch ID.")
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_biometry_recognition_touch_id_description))
                 Column(
                     modifier = Modifier
                         .weight(1f)
@@ -71,7 +71,7 @@ fun TouchIdEnableScene(
                         }
                     },
                 ) {
-                    Text(text = "Enable")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_enable))
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 SecondaryButton(
@@ -79,7 +79,7 @@ fun TouchIdEnableScene(
                     onClick = {
                     onEnable.invoke(false)
                 }) {
-                    Text(text = "No thanks")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_no_thanks))
                 }
             }
         }

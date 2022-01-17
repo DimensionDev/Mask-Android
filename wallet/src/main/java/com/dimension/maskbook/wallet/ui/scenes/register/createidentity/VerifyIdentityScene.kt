@@ -30,8 +30,8 @@ import kotlin.math.max
 @Preview
 fun VerifyIdentityScene(
     words: List<String>,
-    title: String = "Verify identity code",
-    subTitle: String = "Tap each word in the correct order.",
+    title: String = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_identify_verify_title),
+    subTitle: String = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_identify_verify_description),
     selectedWords: List<String>,
     onWordSelected: (String) -> Unit,
     onWordDeselected: (String) -> Unit,
@@ -163,14 +163,14 @@ fun VerifyIdentityScene(
                     Spacer(modifier = Modifier.height(12.dp))
                     if (!canConfirm) {
                         Text(
-                            text = "Tap the middle to replace the word.",
+                            text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_mnemonic_verify_mnemonic_prompt),
                             style = LocalTextStyle.current.copy(
                                 Color(0XFFFFB915)
                             )
                         )
                     } else if (!correct) {
                         Text(
-                            text = "The identity code is incorrect",
+                            text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_identify_verify_identity_error),
                             style = LocalTextStyle.current.copy(
                                 Color(0XFFFF5F5F)
                             )
@@ -217,14 +217,14 @@ fun VerifyIdentityScene(
                         onClick = { onConfirm.invoke() },
                         enabled = correct,
                     ) {
-                        Text(text = "Confirm")
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_confirm))
                     }
                     Spacer(modifier = Modifier.height(16.dp))
                     SecondaryButton(
                         modifier = Modifier.fillMaxWidth(),
                         onClick = { onClear.invoke() },
                     ) {
-                        Text(text = "Clear")
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_clear))
                     }
                 }
             }

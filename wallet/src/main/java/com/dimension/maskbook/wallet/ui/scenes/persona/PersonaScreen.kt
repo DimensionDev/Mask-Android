@@ -1,5 +1,6 @@
 package com.dimension.maskbook.wallet.ui.scenes.persona
 
+import androidx.annotation.StringRes
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
@@ -23,6 +24,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.debugInspectorInfo
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -43,10 +45,10 @@ import com.dimension.maskbook.wallet.viewmodel.persona.PersonaViewModel
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import org.koin.androidx.compose.getViewModel
 
-private sealed class Screen(val route: String, val name: String) {
-    object Social : Screen("Social", "Social")
-    object Post : Screen("Post", "Post")
-    object Contacts : Screen("Contacts", "Contacts")
+private sealed class Screen(val route: String, @StringRes val name: Int) {
+    object Social : Screen("Social", com.dimension.maskbook.wallet.R.string.scene_personas_tabs_social)
+    object Post : Screen("Post", com.dimension.maskbook.wallet.R.string.scene_personas_tabs_post)
+    object Contacts : Screen("Contacts", com.dimension.maskbook.wallet.R.string.scene_backup_restored_contacts)
 }
 
 private val items = listOf(
@@ -145,7 +147,7 @@ fun PersonaScreen(
                             ) {
                                 items.forEachIndexed { _, screen ->
                                     Tab(
-                                        text = { Text(screen.name) },
+                                        text = { Text(stringResource(screen.name)) },
                                         selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                                         onClick = {
                                             navController.navigate(screen.route) {

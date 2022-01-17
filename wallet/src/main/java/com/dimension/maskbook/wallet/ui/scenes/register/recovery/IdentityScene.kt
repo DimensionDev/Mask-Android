@@ -7,6 +7,7 @@ import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.ui.MaskTheme
@@ -25,7 +26,7 @@ fun IdentityScene(
             topBar = {
                 MaskTopAppBar(
                     title = {
-                        Text(text = "Identity")
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_identity_mnemonic_import_title))
                     },
                     navigationIcon = {
                         MaskBackButton(
@@ -49,7 +50,7 @@ fun IdentityScene(
                         .fillMaxWidth()
                         .height(100.dp),
                     placeholder = {
-                        Text(text = "Please enter 12 mnemonic words separated by spaces")
+                        Text(text = stringResource(com.dimension.maskbook.wallet.R.string.scene_identity_mnemonic_import_placeholder))
                     }
                 )
                 Spacer(modifier = Modifier.weight(1f))
@@ -57,7 +58,7 @@ fun IdentityScene(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = onConfirm
                 ) {
-                    Text(text = "Confirm")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_confirm))
                 }
             }
         }

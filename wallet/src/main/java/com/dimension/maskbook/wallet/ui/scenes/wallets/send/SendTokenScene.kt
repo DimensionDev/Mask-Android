@@ -56,7 +56,7 @@ fun SendTokenScene(
                     navigationIcon = {
                         MaskBackButton(onBack = onBack)
                     },
-                    title = { Text(text = "Send") }
+                    title = { Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_balance_btn_Send)) }
                 )
             }
         ) {
@@ -66,7 +66,7 @@ fun SendTokenScene(
                     .verticalScroll(rememberScrollState())
                     .padding(ScaffoldPadding)
             ) {
-                Text(text = "To")
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_sendTransaction_send_Label_To))
                 Spacer(modifier = Modifier.height(10.dp))
                 AddressContent(
                     name = addressData.name ?: addressData.ens ?: addressData.address,
@@ -189,7 +189,7 @@ private fun AmountContent(
     error: Boolean,
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
-        Text(text = "Amount")
+        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_sendTransaction_send_label_Amount))
         Spacer(modifier = Modifier.height(8.dp))
         MaskInputField(
             modifier = Modifier.fillMaxWidth(),
@@ -204,7 +204,7 @@ private fun AmountContent(
                             shape = MaterialTheme.shapes.small
                         )
                     ) {
-                        Text(text = "MAX", color = MaterialTheme.colors.primary)
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_sendTransaction_send_btn_max), color = MaterialTheme.colors.primary)
                     }
                     Spacer(modifier = Modifier.padding(end = 12.dp))
                 }
@@ -213,7 +213,7 @@ private fun AmountContent(
         )
         if (error) {
             Spacer(modifier = Modifier.padding(end = 8.dp))
-            Text(text = "Insufficient amount.", color = MaterialTheme.colors.error)
+            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_sendTransaction_send_amount_error), color = MaterialTheme.colors.error)
         }
     }
 }
@@ -224,7 +224,7 @@ private fun PaymentPasswordContent(
     onValueChanged: (String) -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
-        Text(text = "Payment password")
+        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_general_setup_payment_password))
         Spacer(modifier = Modifier.height(8.dp))
         MaskPasswordInputField(
             value = pwd,
@@ -280,7 +280,7 @@ private fun ColumnScope.SendButton(
                     painter = painterResource(id = R.drawable.ic_faceid_small),
                     contentDescription = null
                 )
-                Text(text = "Send", modifier = Modifier.padding(start = 8.dp))
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_balance_btn_Send), modifier = Modifier.padding(start = 8.dp))
             }
         }
         UnlockType.PASSWORD -> {
@@ -293,7 +293,7 @@ private fun ColumnScope.SendButton(
                     painter = painterResource(id = R.drawable.ic_upload_small),
                     contentDescription = null
                 )
-                Text(text = "Send", modifier = Modifier.padding(start = 8.dp))
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_balance_btn_Send), modifier = Modifier.padding(start = 8.dp))
             }
         }
     }

@@ -113,10 +113,10 @@ fun CreateIdentityHost(
                     )
                 },
                 title = {
-                    Text(text = "Identity created!")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_alert_identity_create_title))
                 },
                 text = {
-                    Text(text = "Please don’t forget your identity code. Your identity code is the only proof of your user identity and the only basis for you to encrypt or decrypt social activities. ")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_alert_identity_create_description))
                 },
                 buttons = {
                     PrimaryButton(
@@ -129,7 +129,7 @@ fun CreateIdentityHost(
                             }
                         },
                     ) {
-                        Text(text = "Done")
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_done))
                     }
                 },
             )

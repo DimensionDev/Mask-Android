@@ -23,7 +23,7 @@ fun BackupSelectionModal(
         Column(
             modifier = Modifier.padding(ScaffoldPadding)
         ) {
-            Text(text = "Back up your data", style = MaterialTheme.typography.h6)
+            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_backup_data_title), style = MaterialTheme.typography.h6)
             Spacer(modifier = Modifier.height(21.dp))
             PrimaryButton(
                 modifier = Modifier.fillMaxWidth(),
@@ -37,7 +37,7 @@ fun BackupSelectionModal(
                     tint = LocalContentColor.current
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(text = "Back up to cloud")
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_back_up_to_cloud))
             }
             Spacer(modifier = Modifier.height(16.dp))
             PrimaryButton(
@@ -52,7 +52,7 @@ fun BackupSelectionModal(
                     tint = LocalContentColor.current
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(text = "Back up locally")
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_back_up_locally))
             }
         }
     }

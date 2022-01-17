@@ -11,6 +11,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -21,11 +22,7 @@ import androidx.navigation.compose.dialog
 import androidx.navigation.navArgument
 import com.dimension.maskbook.wallet.ext.encodeUrl
 import com.dimension.maskbook.wallet.ext.observeAsState
-import com.dimension.maskbook.wallet.ui.widget.EmailCodeInputModal
-import com.dimension.maskbook.wallet.ui.widget.MaskDialog
-import com.dimension.maskbook.wallet.ui.widget.MaskModal
-import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
-import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
+import com.dimension.maskbook.wallet.ui.widget.*
 import com.dimension.maskbook.wallet.viewmodel.register.EmailRemoteBackupRecoveryViewModel
 import com.dimension.maskbook.wallet.viewmodel.register.PhoneRemoteBackupRecoveryViewModel
 import com.dimension.maskbook.wallet.viewmodel.register.RemoteBackupRecoveryViewModelBase
@@ -83,7 +80,7 @@ fun NavGraphBuilder.remoteBackupRecovery(
                 buttonEnabled = loading,
                 onSendCode = { viewModel.sendCode(email) },
                 onVerify = { viewModel.verifyCode(code, email) },
-                title = "Recovery with Email"
+                title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_restore_titles_recovery_with_email)
             )
         } ?: run {
             navController.popBackStack()
@@ -105,12 +102,12 @@ fun NavGraphBuilder.remoteBackupRecovery(
             ) {
                 Text(
                     modifier = Modifier.fillMaxWidth(),
-                    text = "Recovery with Email",
+                    text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_restore_titles_recovery_with_email),
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.h6,
                 )
                 Spacer(modifier = Modifier.height(21.dp))
-                Text(text = "Email")
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_backup_backup_verify_field_email))
                 Spacer(modifier = Modifier.height(8.dp))
                 OutlinedTextField(
                     modifier = Modifier.fillMaxWidth(),
@@ -123,7 +120,7 @@ fun NavGraphBuilder.remoteBackupRecovery(
                 )
                 if (!emailValid) {
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text(text = "Incorrect Email", color = Color.Red)
+                    Text(text = stringResource(com.dimension.maskbook.wallet.R.string.scene_restore_tip_invalid_email_address), color = Color.Red)
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 PrimaryButton(
@@ -133,7 +130,7 @@ fun NavGraphBuilder.remoteBackupRecovery(
                     },
                     enabled = emailValid && !loading && email.isNotEmpty(),
                 ) {
-                    Text(text = "Next")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_next))
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 TextButton(
@@ -146,7 +143,7 @@ fun NavGraphBuilder.remoteBackupRecovery(
                         }
                     },
                 ) {
-                    Text(text = "Recovery with Mobile")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_restore_buttonTitles_email))
                 }
             }
         }
@@ -184,12 +181,12 @@ fun NavGraphBuilder.remoteBackupRecovery(
                     ) {
                         Text(
                             modifier = Modifier.fillMaxWidth(),
-                            text = "Recovery with Phone Number",
+                            text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_restore_titles_recovery_with_mobile),
                             textAlign = TextAlign.Center,
                             style = MaterialTheme.typography.h6,
                         )
                         Spacer(modifier = Modifier.height(21.dp))
-                        Text(text = "Verification Code")
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_backup_validation_code))
                         Spacer(modifier = Modifier.height(8.dp))
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
@@ -211,7 +208,7 @@ fun NavGraphBuilder.remoteBackupRecovery(
                                 enabled = canSend && !loading,
                             ) {
                                 if (canSend) {
-                                    Text(text = "Resend")
+                                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_resend))
                                 } else {
                                     Text(text = countDown.toString() + "s")
                                 }
@@ -219,11 +216,11 @@ fun NavGraphBuilder.remoteBackupRecovery(
                         }
                         if (!codeValid) {
                             Spacer(modifier = Modifier.height(8.dp))
-                            Text(text = "Incorrect Code", color = Color.Red)
+                            Text(text = stringResource(com.dimension.maskbook.wallet.R.string.scene_restore_tip_invalid_validationcode), color = Color.Red)
                         }
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "Verification code has been sent to by SMS to $phone"
+                            text = "${stringResource(com.dimension.maskbook.wallet.R.string.scene_restore_tip_mobile_validationcode)} $phone"
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         PrimaryButton(
@@ -233,7 +230,7 @@ fun NavGraphBuilder.remoteBackupRecovery(
                             },
                             enabled = code.isNotEmpty() && !loading,
                         ) {
-                            Text(text = "Confirm")
+                            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_confirm))
                         }
                     }
                 }
@@ -259,12 +256,12 @@ fun NavGraphBuilder.remoteBackupRecovery(
             ) {
                 Text(
                     modifier = Modifier.fillMaxWidth(),
-                    text = "Recovery with Phone Number",
+                    text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_restore_titles_recovery_with_mobile),
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.h6,
                 )
                 Spacer(modifier = Modifier.height(21.dp))
-                Text(text = "Phone")
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_backup_backup_verify_field_phone))
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth()
@@ -289,7 +286,7 @@ fun NavGraphBuilder.remoteBackupRecovery(
                 }
                 if (!phoneValid) {
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text(text = "Incorrect Phone Number", color = Color.Red)
+                    Text(text = stringResource(com.dimension.maskbook.wallet.R.string.scene_restore_tip_invalid_mobile_number), color = Color.Red)
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 PrimaryButton(
@@ -299,7 +296,7 @@ fun NavGraphBuilder.remoteBackupRecovery(
                     },
                     enabled = phoneValid && !loading && phone.isNotEmpty(),
                 ) {
-                    Text(text = "Next")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_next))
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 TextButton(
@@ -312,7 +309,7 @@ fun NavGraphBuilder.remoteBackupRecovery(
                         }
                     },
                 ) {
-                    Text(text = "Recovery with Email")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_restore_titles_recovery_with_email))
                 }
             }
         }

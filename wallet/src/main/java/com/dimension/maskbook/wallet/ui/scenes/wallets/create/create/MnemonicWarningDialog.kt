@@ -32,7 +32,7 @@ fun MnemonicWarningDialog(onDismissRequest: () -> Unit) {
                 modifier = Modifier.fillMaxWidth(),
                 onClick = { onDismissRequest.invoke() },
             ) {
-                Text(text = "Ok")
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_ok))
             }
         }
     )
@@ -44,7 +44,7 @@ fun MnemonicScreenShotsWarningDialog() {
     MaskDialog(
         onDismissRequest = { rootNavController.popBackStack() },
         title = {
-            Text(text = "Warning")
+            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_alert_recovery_key_warning_title))
         },
         text = {
             Text(text = "Simply taking a screenshot of mnemonic phrase is not safe.")
@@ -60,7 +60,7 @@ fun MnemonicScreenShotsWarningDialog() {
                 modifier = Modifier.fillMaxWidth(),
                 onClick = { rootNavController.popBackStack() },
             ) {
-                Text(text = "Understood")
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_i_understand))
             }
         }
     )

@@ -109,7 +109,7 @@ fun TokenDetailScene(
 //                    ) {
 //                        Icon(painterResource(id = R.drawable.filter2), contentDescription = null)
 //                        Spacer(modifier = Modifier.width(4.dp))
-//                        Text(text = "Swap", maxLines = 1)
+//                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_app_plugins_swap), maxLines = 1)
 //                    }
                         PrimaryButton(
                             modifier = Modifier.weight(1f),
@@ -119,7 +119,7 @@ fun TokenDetailScene(
                         ) {
                             Icon(painterResource(id = R.drawable.upload), contentDescription = null)
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text(text = "Send", maxLines = 1)
+                            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_balance_btn_Send), maxLines = 1)
                         }
                         PrimaryButton(
                             modifier = Modifier.weight(1f),
@@ -131,7 +131,7 @@ fun TokenDetailScene(
                                 contentDescription = null
                             )
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text(text = "Receive", maxLines = 1)
+                            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_balance_btn_receive), maxLines = 1)
                         }
                     }
                     Spacer(modifier = Modifier.height(41.dp))
@@ -159,7 +159,7 @@ fun TransactionHistoryList(
                 contentDescription = null,
             )
             Spacer(modifier = Modifier.height(12.dp))
-            Text(text = "You don’t have any transaction records")
+            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_transaction_history_no_transaction))
         }
     } else {
         val items = remember(transactions) {
@@ -224,7 +224,7 @@ fun TransactionItem(
                         Text(text = "Spend up")
                     }
                     SecondaryButton(onClick = onCancel) {
-                        Text(text = "Cancel")
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_cancel))
                     }
                 }
             }

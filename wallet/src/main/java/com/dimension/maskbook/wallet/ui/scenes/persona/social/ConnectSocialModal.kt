@@ -29,7 +29,7 @@ fun ConnectSocialModal(
                 .padding(ScaffoldPadding),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Text(text = "Select Username", style = MaterialTheme.typography.h6)
+            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_social_profile_select_title), style = MaterialTheme.typography.h6)
             Spacer(modifier = Modifier.height(4.dp))
             LazyColumn {
                 items(socials) {
@@ -66,7 +66,7 @@ fun ConnectSocialModal(
                                 )
                                 if (it.personaId != null) {
                                     Text(
-                                        text = "Connected",
+                                        text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_social_connected),
                                     )
                                 }
                             }
@@ -81,9 +81,9 @@ fun ConnectSocialModal(
                 enabled = selectedSocial != null
             ) {
                 if (socials.all { it.personaId != null }) {
-                    Text(text = "Done")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_done))
                 } else {
-                    Text(text = "Connect")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_connect_server_connect))
                 }
             }
         }
@@ -100,15 +100,15 @@ fun ConnectSocialModal(
                 .padding(ScaffoldPadding),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Text(text = "Log in to continue", style = MaterialTheme.typography.h6)
+            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_social_login_in_to_continue), style = MaterialTheme.typography.h6)
             Spacer(modifier = Modifier.height(4.dp))
-            Text(text = "Please log in to Twitter first and we will guide you through the next steps to connect to Mask Network.")
+            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_social_login_in_notify))
             Spacer(modifier = Modifier.height(8.dp))
             PrimaryButton(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = { onDone.invoke() },
             ) {
-                Text(text = "I understand")
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_social_i_understand))
             }
         }
     }
