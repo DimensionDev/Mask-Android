@@ -24,7 +24,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.ListItem
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
@@ -45,6 +44,7 @@ import com.dimension.maskbook.wallet.repository.IPersonaRepository
 import com.dimension.maskbook.wallet.repository.ISettingsRepository
 import com.dimension.maskbook.wallet.repository.Language
 import com.dimension.maskbook.wallet.ui.LocalRootNavController
+import com.dimension.maskbook.wallet.ui.widget.IosSwitch
 import com.dimension.maskbook.wallet.ui.widget.MaskCard
 import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
 import com.dimension.maskbook.wallet.ui.widget.MaskTopAppBar
@@ -136,7 +136,7 @@ fun SettingsScene(
                         title = "Unlock wallet with Face ID",
                         icon = R.drawable.ic_settings_face_id,
                         trailing = {
-                            Switch(checked = biometricEnabled, onCheckedChange = {
+                            IosSwitch(checked = biometricEnabled, onCheckedChange = {
                                 enableBiometric(
                                     !biometricEnabled,
                                     context,
