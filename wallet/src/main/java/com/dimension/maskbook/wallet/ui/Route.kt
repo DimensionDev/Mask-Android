@@ -22,7 +22,14 @@ import androidx.navigation.compose.dialog
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ext.encodeUrl
 import com.dimension.maskbook.wallet.ext.observeAsState
-import com.dimension.maskbook.wallet.repository.*
+import com.dimension.maskbook.wallet.navHostAnimationDurationMillis
+import com.dimension.maskbook.wallet.repository.AppKey
+import com.dimension.maskbook.wallet.repository.ChainType
+import com.dimension.maskbook.wallet.repository.IPersonaRepository
+import com.dimension.maskbook.wallet.repository.ISettingsRepository
+import com.dimension.maskbook.wallet.repository.ITokenRepository
+import com.dimension.maskbook.wallet.repository.IWalletRepository
+import com.dimension.maskbook.wallet.repository.PlatformType
 import com.dimension.maskbook.wallet.route.backup
 import com.dimension.maskbook.wallet.ui.scenes.MainHost
 import com.dimension.maskbook.wallet.ui.scenes.app.PluginSettingsScene
@@ -106,16 +113,16 @@ fun Route(
                 navController = navController,
                 startDestination = startDestination,
                 enterTransition = { _, _ ->
-                    slideInHorizontally(initialOffsetX = { 1000 }, animationSpec = tween())
+                    slideInHorizontally(initialOffsetX = { it } , animationSpec = tween(navHostAnimationDurationMillis))
                 },
                 exitTransition = { _, _ ->
-                    slideOutHorizontally(targetOffsetX = { -1000 }, animationSpec = tween())
+                    slideOutHorizontally(targetOffsetX = { -it } , animationSpec = tween(navHostAnimationDurationMillis))
                 },
                 popEnterTransition = { _, _ ->
-                    slideInHorizontally(initialOffsetX = { -1000 }, animationSpec = tween())
+                    slideInHorizontally(initialOffsetX = { -it }, animationSpec = tween(navHostAnimationDurationMillis))
                 },
                 popExitTransition = { _, _ ->
-                    slideOutHorizontally(targetOffsetX = { 1000 }, animationSpec = tween())
+                    slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween(navHostAnimationDurationMillis))
                 },
             ) {
                 navigation(

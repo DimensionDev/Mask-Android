@@ -15,6 +15,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.dialog
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ext.observeAsState
+import com.dimension.maskbook.wallet.navHostAnimationDurationMillis
 import com.dimension.maskbook.wallet.repository.WalletCreateOrImportResult
 import com.dimension.maskbook.wallet.ui.scenes.register.createidentity.VerifyIdentityScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.common.Dialog
@@ -42,17 +43,16 @@ fun CreateWalletHost(
         startDestination = "Pharse",
         route = "CreateWalletHost",
         enterTransition = { _, _ ->
-            slideInHorizontally(initialOffsetX = { 1000 }, animationSpec = tween())
+            slideInHorizontally(initialOffsetX = { it }, animationSpec = tween(navHostAnimationDurationMillis))
         },
         exitTransition = { _, _ ->
-            slideOutHorizontally(targetOffsetX = { -1000 }, animationSpec = tween())
-
+            slideOutHorizontally(targetOffsetX = { -it }, animationSpec = tween(navHostAnimationDurationMillis))
         },
         popEnterTransition = { _, _ ->
-            slideInHorizontally(initialOffsetX = { -1000 }, animationSpec = tween())
+            slideInHorizontally(initialOffsetX = { -it }, animationSpec = tween(navHostAnimationDurationMillis))
         },
         popExitTransition = { _, _ ->
-            slideOutHorizontally(targetOffsetX = { 1000 }, animationSpec = tween())
+            slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween(navHostAnimationDurationMillis))
         },
     ) {
         composable("Pharse") {

@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.dimension.maskbook.wallet.ext.encodeUrl
+import com.dimension.maskbook.wallet.navHostAnimationDurationMillis
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
@@ -25,17 +26,16 @@ fun ImportWalletHost(
         startDestination = "Import",
         route = "ImportWalletHost",
         enterTransition = { _, _ ->
-            slideInHorizontally(initialOffsetX = { 1000 }, animationSpec = tween())
+            slideInHorizontally(initialOffsetX = { it }, animationSpec = tween(navHostAnimationDurationMillis))
         },
         exitTransition = { _, _ ->
-            slideOutHorizontally(targetOffsetX = { -1000 }, animationSpec = tween())
-
+            slideOutHorizontally(targetOffsetX = { -it }, animationSpec = tween(navHostAnimationDurationMillis))
         },
         popEnterTransition = { _, _ ->
-            slideInHorizontally(initialOffsetX = { -1000 }, animationSpec = tween())
+            slideInHorizontally(initialOffsetX = { -it }, animationSpec = tween(navHostAnimationDurationMillis))
         },
         popExitTransition = { _, _ ->
-            slideOutHorizontally(targetOffsetX = { 1000 }, animationSpec = tween())
+            slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween(navHostAnimationDurationMillis))
         },
     ) {
         composable("Import") {
