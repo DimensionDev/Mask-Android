@@ -65,6 +65,8 @@ private val items = HomeScreen.values()
 fun MainHost(
     initialTab: String,
     onBack: () -> Unit,
+    onPersonaCreateClick: () -> Unit,
+    onPersonaRecoveryClick: () -> Unit,
     onPersonaNameClick: () -> Unit,
     onAddSocialClick: (PersonaData, Network?) -> Unit,
     onRemoveSocialClick: (PersonaData, SocialData) -> Unit,
@@ -126,6 +128,8 @@ fun MainHost(
                     )
                     HomeScreen.Personas -> PersonaScene(
                         onBack = onBack,
+                        onPersonaCreateClick = onPersonaCreateClick,
+                        onPersonaRecoveryClick = onPersonaRecoveryClick,
                         onPersonaNameClick = onPersonaNameClick,
                         onAddSocialClick = onAddSocialClick,
                         onRemoveSocialClick = onRemoveSocialClick,

@@ -64,6 +64,12 @@ fun NavGraphBuilder.mainRoute(
             MainHost(
                 initialTab = it.arguments?.getString("tab").orEmpty(),
                 onBack = onBack,
+                onPersonaCreateClick = {
+                    navController.navigate("CreateIdentity")
+                },
+                onPersonaRecoveryClick = {
+                    navController.navigate("Recovery")
+                },
                 onPersonaNameClick = {
                     navController.navigate("PersonaMenu")
                 },

@@ -22,11 +22,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.unit.dp
-import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.repository.Network
 import com.dimension.maskbook.wallet.repository.PersonaData
 import com.dimension.maskbook.wallet.repository.SocialData
-import com.dimension.maskbook.wallet.ui.MaskTheme
 import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
 import com.dimension.maskbook.wallet.ui.widget.MaskSingleLineTopAppBar
 import com.dimension.maskbook.wallet.viewmodel.persona.PersonaViewModel
@@ -36,81 +34,76 @@ import org.koin.androidx.compose.getViewModel
 @Composable
 fun PersonaScene(
     onBack: () -> Unit,
+    onPersonaCreateClick: () -> Unit,
+    onPersonaRecoveryClick: () -> Unit,
     onPersonaNameClick: () -> Unit,
     onAddSocialClick: (PersonaData, Network?) -> Unit,
     onRemoveSocialClick: (PersonaData, SocialData) -> Unit,
 ) {
     val viewModel: PersonaViewModel = getViewModel()
-    val currentPersona by viewModel.currentPersona.observeAsState(initial = null)
+    val currentPersona by viewModel.currentPersona.collectAsState()
     val socialList by viewModel.socialList.collectAsState()
-    MaskTheme {
-        MaskScaffold(
-            topBar = {
-                MaskSingleLineTopAppBar(
-                    backgroundColor = if (socialList.isNullOrEmpty()) {
-                        MaterialTheme.colors.background
-                    } else {
-                        MaterialTheme.colors.surface
-                    },
-                    actions = {
-                        IconButton(onClick = onBack) {
-                            Icon(
-                                imageVector = Icons.Filled.Close,
-                                contentDescription = null,
-                            )
-                        }
-                    },
-                    title = {
-                        currentPersona?.let { persona ->
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.clickable(onClick = onPersonaNameClick)
-                            ) {
-                                Text(text = persona.name)
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Icon(
-                                    Icons.Default.ChevronLeft,
-                                    contentDescription = null,
-                                    modifier = Modifier.rotate(-90f)
-                                )
-                            }
-                        }
-                    }
-                )
-            }
-        ) { innerPadding ->
-            Box(
-                modifier = Modifier
-                    .padding(innerPadding)
-                    .fillMaxSize(),
-            ) {
-                socialList?.let { list ->
-                    if (list.isNotEmpty()) {
-                        PersonaInfoScene(
-                            socialList = list,
-                            onAddSocialClick = {
-                                currentPersona?.let {
-                                    onAddSocialClick(it, null)
-                                }
-                            },
-                            onSocialItemClick = { data, isEditing ->
-                                currentPersona?.let {
-                                    if (isEditing) {
-                                        onRemoveSocialClick(it, data)
-                                    }
-                                }
-                            },
+
+    val persona = currentPersona
+    if (persona == null) {
+        EmptyPersonaScene(
+            onPersonaCreateClick = onPersonaCreateClick,
+            onPersonaRecoveryClick = onPersonaRecoveryClick,
+        )
+        return
+    }
+
+    val list = socialList
+    MaskScaffold(
+        topBar = {
+            MaskSingleLineTopAppBar(
+                backgroundColor = if (list.isNullOrEmpty()) {
+                    MaterialTheme.colors.background
+                } else {
+                    MaterialTheme.colors.surface
+                },
+                actions = {
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            imageVector = Icons.Filled.Close,
+                            contentDescription = null,
                         )
-                    } else {
-                        EmptySocialScene(
-                            onItemClick = { network ->
-                                currentPersona?.let {
-                                    onAddSocialClick(it, network)
-                                }
-                            }
+                    }
+                },
+                title = {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.clickable(onClick = onPersonaNameClick)
+                    ) {
+                        Text(text = persona.name)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Icon(
+                            Icons.Default.ChevronLeft,
+                            contentDescription = null,
+                            modifier = Modifier.rotate(-90f)
                         )
                     }
                 }
+            )
+        }
+    ) { innerPadding ->
+        Box(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize(),
+        ) {
+            if (list != null) {
+                PersonaInfoScene(
+                    socialList = list,
+                    onAddSocialClick = { network ->
+                        onAddSocialClick(persona, network)
+                    },
+                    onSocialItemClick = { data, isEditing ->
+                        if (isEditing) {
+                            onRemoveSocialClick(persona, data)
+                        }
+                    },
+                )
             }
         }
     }
