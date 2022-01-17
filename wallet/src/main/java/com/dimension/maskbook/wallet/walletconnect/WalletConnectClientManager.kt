@@ -2,6 +2,7 @@ package com.dimension.maskbook.wallet.walletconnect
 
 import com.dimension.maskbook.wallet.repository.ChainType
 import kotlinx.coroutines.flow.Flow
+import java.math.BigDecimal
 
 
 // wallets that supported wallet connection
@@ -13,6 +14,14 @@ interface WalletConnectClientManager {
     fun connect(onResult: (success: Boolean, responder: WCResponder?) -> Unit)
     fun disConnect(address: String): Boolean
     fun initSessions(onDisconnect: (address: String) -> Unit)
+    fun sendToken(
+        amount: BigDecimal, // ether
+        fromAddress: String,
+        toAddress: String,
+        data: String,
+        gasLimit: Double,
+        gasPrice: BigDecimal,// ether
+    )
 }
 
 data class WCResponder(

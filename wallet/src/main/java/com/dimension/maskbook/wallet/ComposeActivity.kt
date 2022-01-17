@@ -122,11 +122,6 @@ val walletModules = module {
         BiometricAuthenticator()
     }
     
-    single<WalletConnectClientManager> {
-        // V2 SDK support only provides the Responder implementation at the Beta stage
-        WalletConnectClientManagerV1(get())
-    }
-
     viewModel { (uri: Uri) -> RecoveryLocalViewModel(get(), uri, get<Context>().contentResolver) }
     viewModel { IdentityViewModel(get()) }
     viewModel { PrivateKeyViewModel(get()) }

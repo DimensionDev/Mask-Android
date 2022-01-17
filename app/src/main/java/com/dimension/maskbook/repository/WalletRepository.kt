@@ -28,6 +28,7 @@ import com.dimension.maskbook.wallet.repository.WalletData
 import com.dimension.maskbook.wallet.repository.dbank
 import com.dimension.maskbook.wallet.services.WalletServices
 import com.dimension.maskbook.wallet.services.okHttpClient
+import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager
 import com.dimension.maskwalletcore.WalletKey
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -63,6 +64,7 @@ class WalletRepository(
     private val dataStore: DataStore<Preferences>,
     private val database: AppDatabase,
     private val services: WalletServices,
+    private val walletConnectManager: WalletConnectClientManager
 ) : IWalletRepository {
     private val tokenScope = CoroutineScope(Dispatchers.IO)
     private val scope = CoroutineScope(Dispatchers.IO)
@@ -504,9 +506,22 @@ class WalletRepository(
         onDone: (String?) -> Unit,
         onError: (Throwable) -> Unit
     ) {
+        Log.d("Mimao", "gasfee:${gasFee.ether.gwei}")
         scope.launch {
             try {
                 val hash = currentWallet.firstOrNull()?.let { wallet ->
+                    if (wallet.fromWalletConnect) {
+                        walletConnectManager.sendToken(
+                            amount = amount,
+                            fromAddress = wallet.address,
+                            toAddress = address,
+                            data = data,
+                            gasLimit = gasLimit,
+                            // TODO Mimao gas fee
+                            gasPrice = gasFee + maxPriorityFee.toBigDecimal().gwei.ether
+                        )
+                        return@launch
+                    }
                     val credentials = Credentials.create(
                         getPrivateKey(
                             wallet,

@@ -11,6 +11,7 @@ import com.dimension.maskbook.wallet.repository.*
 import com.dimension.maskbook.wallet.servicesModule
 import com.dimension.maskbook.wallet.walletModules
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager
+import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManagerV1
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
@@ -101,6 +102,10 @@ fun initWalletConnect() {
 }
 
 val repositoryModules = module {
+    single<WalletConnectClientManager> {
+        // V2 SDK support only provides the Responder implementation at the Beta stage
+        WalletConnectClientManagerV1(get())
+    }
     single { PersonaRepository(get<Context>().personaDataStore, get(), get()) } binds arrayOf(
         IPersonaRepository::class,
         IContactsRepository::class
@@ -110,7 +115,7 @@ val repositoryModules = module {
     single<IAppRepository> { AppRepository() }
 //    single<IWalletRepository> { FakeWalletRepository() }
     single<ISettingsRepository> { SettingsRepository(get<Context>().settingsDataStore) }
-    single<IWalletRepository> { WalletRepository(get<Context>().walletDataStore, get(), get()) }
+    single<IWalletRepository> { WalletRepository(get<Context>().walletDataStore, get(), get(), get()) }
     single<ITransactionRepository> { TransactionRepository(get(), get()) }
     single<ITokenRepository> { TokenRepository(get()) }
     single<ISendHistoryRepository> { SendHistoryRepository(get()) }

@@ -3,6 +3,7 @@ package com.dimension.maskbook.wallet.walletconnect
 import android.content.Context
 import android.util.Log
 import com.dimension.maskbook.wallet.BuildConfig
+import com.dimension.maskbook.wallet.ext.ether
 import com.dimension.maskbook.wallet.repository.ChainType
 import com.dimension.maskbook.wallet.services.okHttpClient
 import com.squareup.moshi.Moshi
@@ -14,15 +15,10 @@ import org.walletconnect.Session
 import org.walletconnect.impls.FileWCSessionStore
 import org.walletconnect.impls.MoshiPayloadAdapter
 import org.walletconnect.impls.OkHttpTransport
-import org.walletconnect.impls.WCSession
-import org.walletconnect.nullOnThrow
-import org.walletconnect.types.extractPeerData
-import org.walletconnect.types.extractSessionParams
-import org.walletconnect.types.toStringList
 import java.io.File
+import java.math.BigDecimal
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.CopyOnWriteArrayList
 
 class WalletConnectClientManagerV1(private val context: Context) : WalletConnectClientManager {
     private var config: Session.Config? = null
@@ -113,6 +109,37 @@ class WalletConnectClientManagerV1(private val context: Context) : WalletConnect
             } else {
                 addToConnected(it.config.session(), it.config.handshakeTopic)
             }
+        }
+    }
+
+    override fun sendToken(
+        amount: BigDecimal,
+        fromAddress: String,
+        toAddress: String,
+        data: String,
+        gasLimit: Double,
+        gasPrice: BigDecimal
+    ) {
+        connectedSessions[fromAddress]?.let {
+            it.performMethodCall(
+                Session.MethodCall.SendTransaction(
+                    id = System.currentTimeMillis(),
+                    from = fromAddress,
+                    to = toAddress,
+                    nonce = "",
+                    gasPrice = "0x${gasPrice.ether.also { 
+                        Log.d("Mimao", "gas price is ${it.gwei}, total is:${gasLimit * it.gwei.toLong()}")
+                    }.wei.toBigInteger().toString(16)}",
+                    gasLimit = gasLimit.toString(),//"0x${gasLimit.toBigDecimal().toBigInteger().toString(16)}",
+                    data = data,
+                    value = "0x${amount.ether.wei.toLong().toBigInteger().toString(16)}"
+                ).also {
+                       Log.d("Mimao", "send params:$it")
+                },
+                callback = {
+                    Log.d("Mimao", "transaction response:$it")
+                }
+            )
         }
     }
 
