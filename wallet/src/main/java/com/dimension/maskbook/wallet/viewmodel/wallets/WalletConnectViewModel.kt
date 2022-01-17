@@ -20,7 +20,7 @@ class WalletConnectViewModel(
     private val manager: WalletConnectClientManager,
     private val repository: IWalletConnectRepository,
     private val walletRepository: IWalletRepository,
-    private val onResult: (success: Boolean) -> Unit,
+    private val onResult: (success: Boolean, needToSwitchNetwork: Boolean) -> Unit,
 ) : ViewModel() {
     val network =
         walletRepository.dWebData.map { it.chainType }.asStateIn(viewModelScope, ChainType.eth)
@@ -31,18 +31,24 @@ class WalletConnectViewModel(
 
     fun connect() {
         manager.connect(onResult = { success, responder ->
-            if (success) {
-                responder?.let {
-                    // save it
-                    viewModelScope.launch {
+            viewModelScope.launch {
+                var needToSwitchNetwork = false
+                if (success) {
+                    responder?.let {
+                        // save it
+
                         val platform = walletRepository.dWebData.firstOrNull()?.coinPlatformType
                             ?: CoinPlatformType.Ethereum
                         repository.saveAccounts(responder = responder, platformType = platform)
-                            ?.let { walletRepository.setCurrentWallet(it) }
+                            ?.let {
+                                walletRepository.setCurrentWallet(it)
+                            }
+                        needToSwitchNetwork =
+                            walletRepository.currentWallet.firstOrNull()?.walletConnectChainType != network.value
                     }
                 }
+                onResult.invoke(success, needToSwitchNetwork)
             }
-            onResult.invoke(success)
         })
     }
 

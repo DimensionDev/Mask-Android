@@ -236,7 +236,7 @@ val walletModules = module {
     }
     viewModel { BiometricViewModel(get(), get()) }
     viewModel { WalletConnectManagementViewModel(get(), get()) }
-    viewModel { (onResult:(success:Boolean)->Unit)-> WalletConnectViewModel(get(), get(), get(), onResult) }
+    viewModel { (onResult:(success:Boolean, needToSwitchNetwork: Boolean)->Unit)-> WalletConnectViewModel(get(), get(), get(), onResult) }
 }
 
 val servicesModule = module {

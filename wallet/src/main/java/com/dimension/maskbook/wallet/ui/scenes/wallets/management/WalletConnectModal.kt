@@ -26,6 +26,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.navigation.navOptions
 import coil.compose.rememberImagePainter
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ext.observeAsState
@@ -59,10 +60,14 @@ fun WalletConnectModal() {
     val navController = rememberAnimatedNavController()
     val rootNavController = LocalRootNavController.current
     val scope = rememberCoroutineScope()
-    val onResult: (success: Boolean) -> Unit = {
+    val onResult: (success: Boolean, needToSwitchNetwork:Boolean) -> Unit = { success, switch ->
         scope.launch(Dispatchers.Main) {
-            if (it) {
-                rootNavController.popBackStack()
+            if (success) {
+                if (switch) rootNavController.navigate("WalletNetworkSwitchWarningDialog", navOptions {
+                    popUpTo("SwitchWalletAddWalletConnect") {
+                        inclusive = true
+                    }
+                }) else rootNavController.popBackStack()
             } else {
                 navController.navigate("WalletConnectFailed")
             }

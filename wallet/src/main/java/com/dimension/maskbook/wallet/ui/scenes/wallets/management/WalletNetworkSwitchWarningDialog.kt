@@ -1,15 +1,21 @@
 package com.dimension.maskbook.wallet.ui.scenes.wallets.management
 
+import android.text.SpannableString
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import com.dimension.maskbook.wallet.R
@@ -26,7 +32,6 @@ fun WalletNetworkSwitchWarningDialog(
     onSwitch: () -> Unit,
 ) {
     MaskDialog(
-        properties = DialogProperties(usePlatformDefaultWidth = false),
         onDismissRequest = onCancel,
         icon = {
             Image(
@@ -37,7 +42,24 @@ fun WalletNetworkSwitchWarningDialog(
         },
         text = {
             Column {
-                Text(text = "The current network ($currentNetwork) is different from the connecting network ($connectingNetwork). Do you want to switch your current network to $connectingNetwork?.")
+                Text(
+                    text = buildAnnotatedString {
+                        append("The current network ")
+                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                            append("($currentNetwork)")
+                        }
+                        append(" is different from the connecting network ")
+                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                            append("($connectingNetwork)")
+                        }
+                        append(". Do you want to switch your current network to ")
+                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                            append(connectingNetwork)
+                        }
+                        append("?.")
+                    },
+                    style = MaterialTheme.typography.body1
+                )
             }
         },
         buttons = {

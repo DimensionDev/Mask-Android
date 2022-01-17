@@ -75,15 +75,7 @@ import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.LegalScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.password.BiometricsEnableScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.password.SetUpPaymentPassword
 import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.password.TouchIdEnableScene
-import com.dimension.maskbook.wallet.ui.scenes.wallets.management.BackupWalletScene
-import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletConnectModal
-import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletDeleteDialog
-import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletManagementModal
-import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletRenameModal
-import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletSwitchAddModal
-import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletSwitchModal
-import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletSwitchScene
-import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletTransactionHistoryScene
+import com.dimension.maskbook.wallet.ui.scenes.wallets.management.*
 import com.dimension.maskbook.wallet.ui.scenes.wallets.send.SendTokenHost
 import com.dimension.maskbook.wallet.ui.scenes.wallets.token.TokenDetailScene
 import com.dimension.maskbook.wallet.ui.widget.EmailCodeInputModal
@@ -623,6 +615,27 @@ private fun NavGraphBuilder.wallets(
     bottomSheet("SwitchWalletAddWalletConnect") {
         WalletConnectModal()
     }
+
+    dialog("WalletNetworkSwitchWarningDialog") {
+        val viewModel = getViewModel<WalletSwitchViewModel>()
+        val currentNetwork by viewModel.network.observeAsState(initial = ChainType.eth)
+        val wallet by viewModel.currentWallet.observeAsState(initial = null)
+        wallet?.let {
+            if (!it.fromWalletConnect || it.walletConnectChainType == currentNetwork || it.walletConnectChainType == null) navController.popBackStack()
+            WalletNetworkSwitchWarningDialog(
+                currentNetwork = currentNetwork.name,
+                connectingNetwork = it.walletConnectChainType?.name ?: "",
+                onCancel = { navController.popBackStack()},
+                onSwitch = {
+                    it.walletConnectChainType?.let { type ->
+                        viewModel.setChainType(type)
+                    }
+                    navController.popBackStack()
+                }
+            )
+        }
+    }
+
     bottomSheet("SwitchWallet") {
         val viewModel = getViewModel<WalletSwitchViewModel>()
         val wallet by viewModel.currentWallet.observeAsState(initial = null)
