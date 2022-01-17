@@ -225,7 +225,10 @@ private class ConnectedSessionCallback(
 
     override fun onStatus(status: Session.Status) {
         Log.d("Mimao", "Stored State Changed:$status")
-        if (status == Session.Status.Disconnected || status == Session.Status.Closed) {
+        if (status is Session.Status.Error) {
+            status.throwable.printStackTrace()
+        }
+        if (status == Session.Status.Disconnected) {
             session.clearCallbacks()
             onDisconnect.invoke(address, session)
         }

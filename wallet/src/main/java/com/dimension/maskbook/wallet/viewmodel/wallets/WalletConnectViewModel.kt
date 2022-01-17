@@ -38,9 +38,7 @@ class WalletConnectViewModel(
                         val platform = walletRepository.dWebData.firstOrNull()?.coinPlatformType
                             ?: CoinPlatformType.Ethereum
                         repository.saveAccounts(responder = responder, platformType = platform)
-                            ?.let {
-                                walletRepository.setCurrentWallet(it)
-                            }
+                            ?.let { walletRepository.setCurrentWallet(it) }
                     }
                 }
             }
@@ -54,8 +52,6 @@ class WalletConnectViewModel(
     val wcUrl = manager.wcUrl.asStateIn(
         viewModelScope, ""
     )
-
-    private val _selectedWallet = MutableStateFlow<WCWallet?>(null)
 
     private val _chainType = MutableStateFlow(ChainType.eth)
 

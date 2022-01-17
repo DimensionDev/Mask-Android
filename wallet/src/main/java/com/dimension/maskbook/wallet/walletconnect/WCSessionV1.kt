@@ -256,7 +256,7 @@ class WCSessionV1(
         approvedAccounts = null
         chainId = null
         internalClose()
-        propagateToCallbacks { onStatus(Session.Status.Closed) }
+        propagateToCallbacks { onStatus(Session.Status.Disconnected) }
     }
 
     private fun storeSession() {
