@@ -37,7 +37,9 @@ class PersonaRepository(
                 SocialData(
                     id = profile.identifier,
                     name = profile.nickname ?: "",
-                    personaId = b.firstOrNull { it.linkedProfiles.containsKey(profile.identifier) }?.identifier
+                    avatar = "",
+                    personaId = b.firstOrNull { it.linkedProfiles.containsKey(profile.identifier) }?.identifier,
+                    network = Network.Twitter,
                 )
             }
         }
@@ -48,7 +50,9 @@ class PersonaRepository(
                 SocialData(
                     id = profile.identifier,
                     name = profile.nickname ?: "",
-                    personaId = b.firstOrNull { it.linkedProfiles.containsKey(profile.identifier) }?.identifier
+                    avatar = "",
+                    personaId = b.firstOrNull { it.linkedProfiles.containsKey(profile.identifier) }?.identifier,
+                    network = Network.Facebook,
                 )
             }
         }

@@ -17,7 +17,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
-import com.dimension.maskbook.wallet.ui.scenes.persona.social.tabIndicatorOffset3
 import com.dimension.maskbook.wallet.ui.widget.MaskModal
 import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
 import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
@@ -202,7 +201,7 @@ fun WalletConnectManually() {
         indicator = { tabPositions ->
             Box(
                 Modifier
-                    .tabIndicatorOffset3(tabPositions[selectedTabIndex])
+                    .tabIndicatorOffset(tabPositions[selectedTabIndex])
                     .fillMaxWidth()
                     .fillMaxHeight()
                     .background(

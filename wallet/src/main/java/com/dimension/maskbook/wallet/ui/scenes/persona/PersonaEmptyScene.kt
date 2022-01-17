@@ -4,18 +4,15 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LocalContentAlpha
@@ -38,32 +35,29 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.repository.Network
 import com.dimension.maskbook.wallet.repository.icon
+import com.dimension.maskbook.wallet.repository.title
+import com.dimension.maskbook.wallet.ui.widget.MaskGridButton
 import com.dimension.maskbook.wallet.ui.widget.itemsGridIndexed
 
 private class ConnectData(
-    val title: String,
     val enable: Boolean,
     val network: Network,
 )
 
 private val showList = listOf(
     ConnectData(
-        title = "Twitter",
         enable = true,
         network = Network.Twitter,
     ),
     ConnectData(
-        title = "Facebook",
         enable = true,
         network = Network.Facebook,
     ),
     ConnectData(
-        title = "Instagram",
         enable = false,
         network = Network.Instagram,
     ),
     ConnectData(
-        title = "Minds",
         enable = false,
         network = Network.Minds,
     )
@@ -74,7 +68,7 @@ fun PersonaEmptyScene(
     onItemClick: (Network) -> Unit
 ) {
     var isShowTipDialog by remember { mutableStateOf(true) }
-    Box {
+    Box(Modifier.fillMaxSize()) {
         LazyColumn(
             contentPadding = PaddingValues(
                 horizontal = PersonaEmptySceneDefaults.contentHorizontalPadding,
@@ -111,40 +105,32 @@ fun PersonaEmptyScene(
 }
 
 @Composable
-private fun ConnectItem(item: ConnectData, onItemClick: () -> Unit) {
-    Button(
+private fun ConnectItem(
+    item: ConnectData,
+    onItemClick: () -> Unit
+) {
+    MaskGridButton(
         enabled = item.enable,
         onClick = onItemClick,
-        elevation = null,
-        colors = ButtonDefaults.buttonColors(
-            backgroundColor = Color.Transparent,
-            disabledBackgroundColor = Color.Transparent,
-        )
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(PersonaEmptySceneDefaults.itemHeight),
-            contentAlignment = Alignment.Center,
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Image(
-                    painter = painterResource(item.network.icon),
-                    contentDescription = null,
-                    modifier = Modifier.size(PersonaEmptySceneDefaults.itemIconSize),
-                    alpha = LocalContentAlpha.current,
-                )
-                Spacer(Modifier.height(6.dp))
-                Text(
-                    text = item.title,
-                    style = MaterialTheme.typography.subtitle2,
-                    color = LocalContentColor.current.copy(LocalContentAlpha.current),
-                )
-            }
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(PersonaEmptySceneDefaults.itemHeight),
+        icon = {
+            Image(
+                painter = painterResource(item.network.icon),
+                contentDescription = null,
+                modifier = Modifier.size(PersonaEmptySceneDefaults.itemIconSize),
+                alpha = LocalContentAlpha.current,
+            )
+        },
+        text = {
+            Text(
+                text = item.network.title,
+                style = MaterialTheme.typography.subtitle2,
+                color = LocalContentColor.current.copy(LocalContentAlpha.current),
+            )
         }
-    }
+    )
 }
 
 @Composable

@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
+import com.dimension.maskbook.wallet.repository.SocialData
 import com.dimension.maskbook.wallet.ui.scenes.persona.contacts.ContactsScene
 import com.dimension.maskbook.wallet.ui.scenes.persona.post.PostScene
 import com.dimension.maskbook.wallet.ui.scenes.persona.social.SocialScreen
@@ -47,7 +48,11 @@ private val items = listOf(
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun PersonaInfoScene() {
+fun PersonaInfoScene(
+    socialList: List<SocialData>,
+    onAddSocialClick: () -> Unit,
+    onSocialItemClick: (SocialData, isEditing: Boolean) -> Unit,
+) {
     val pagerState = rememberPagerState()
     val scope = rememberCoroutineScope()
     Column {
@@ -100,7 +105,11 @@ fun PersonaInfoScene() {
             state = pagerState,
         ) { page ->
             when (items[page]) {
-                PersonaInfoData.Social -> SocialScreen()
+                PersonaInfoData.Social -> SocialScreen(
+                    socialList = socialList,
+                    onAddSocialClick = onAddSocialClick,
+                    onItemClick = onSocialItemClick,
+                )
                 PersonaInfoData.Contacts -> ContactsScene()
                 PersonaInfoData.Post -> PostScene()
             }

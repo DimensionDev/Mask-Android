@@ -1,94 +1,19 @@
 package com.dimension.maskbook.wallet.ui.scenes.persona.social
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.dimension.maskbook.wallet.repository.SocialData
 import com.dimension.maskbook.wallet.ui.widget.MaskModal
 import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
 import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
-
-@OptIn(ExperimentalMaterialApi::class)
-@Composable
-fun ConnectSocialModal(
-    socials: List<SocialData>,
-    onConnect: (SocialData) -> Unit,
-) {
-    var selectedSocial by remember {
-        mutableStateOf<SocialData?>(null)
-    }
-    MaskModal {
-        Column(
-            modifier = Modifier
-                .padding(ScaffoldPadding),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Text(text = "Select Username", style = MaterialTheme.typography.h6)
-            Spacer(modifier = Modifier.height(4.dp))
-            LazyColumn {
-                items(socials) {
-                    Box(modifier = Modifier.padding(vertical = 8.dp)) {
-                        val backgroundColor = if (selectedSocial == it) {
-                            MaterialTheme.colors.primary
-                        } else {
-                            if (it.personaId != null) {
-                                Color(0XFFCBD1D9)
-                            } else {
-                                MaterialTheme.colors.surface
-                            }
-                        }
-                        Card(
-                            elevation = 0.dp,
-                            backgroundColor = backgroundColor,
-                            onClick = {
-                                selectedSocial = it
-                            },
-                            enabled = it.personaId == null,
-                            modifier = Modifier.fillMaxWidth(),
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .padding(14.dp)
-                            ) {
-                                Text(
-                                    text = it.name,
-                                    modifier = Modifier
-                                        .weight(1f),
-                                    color = contentColorFor(
-                                        backgroundColor = backgroundColor
-                                    )
-                                )
-                                if (it.personaId != null) {
-                                    Text(
-                                        text = "Connected",
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            Spacer(modifier = Modifier.height(4.dp))
-            PrimaryButton(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = { selectedSocial?.let { onConnect.invoke(it) } },
-                enabled = selectedSocial != null
-            ) {
-                if (socials.all { it.personaId != null }) {
-                    Text(text = "Done")
-                } else {
-                    Text(text = "Connect")
-                }
-            }
-        }
-    }
-}
 
 @Composable
 fun ConnectSocialModal(

@@ -39,13 +39,22 @@ import com.dimension.maskbook.wallet.repository.IPersonaRepository
 import com.dimension.maskbook.wallet.repository.ISettingsRepository
 import com.dimension.maskbook.wallet.repository.ITokenRepository
 import com.dimension.maskbook.wallet.repository.IWalletRepository
+import com.dimension.maskbook.wallet.repository.Network
 import com.dimension.maskbook.wallet.repository.PlatformType
 import com.dimension.maskbook.wallet.route.backup
 import com.dimension.maskbook.wallet.ui.scenes.MainHost
 import com.dimension.maskbook.wallet.ui.scenes.app.settings.MarketTrendSettingsModal
-import com.dimension.maskbook.wallet.ui.scenes.persona.*
+import com.dimension.maskbook.wallet.ui.scenes.persona.BackUpPasswordModal
+import com.dimension.maskbook.wallet.ui.scenes.persona.CreatePersona
+import com.dimension.maskbook.wallet.ui.scenes.persona.DeleteDialog
+import com.dimension.maskbook.wallet.ui.scenes.persona.ExportPrivateKeyScene
+import com.dimension.maskbook.wallet.ui.scenes.persona.LogoutDialog
+import com.dimension.maskbook.wallet.ui.scenes.persona.PersonaMenu
+import com.dimension.maskbook.wallet.ui.scenes.persona.RenamePersona
+import com.dimension.maskbook.wallet.ui.scenes.persona.SwitchPersonaModal
 import com.dimension.maskbook.wallet.ui.scenes.persona.social.ConnectSocialModal
 import com.dimension.maskbook.wallet.ui.scenes.persona.social.DisconnectSocialDialog
+import com.dimension.maskbook.wallet.ui.scenes.persona.social.SelectPlatformModal
 import com.dimension.maskbook.wallet.ui.scenes.register.RegisterScene
 import com.dimension.maskbook.wallet.ui.scenes.register.createidentity.CreateIdentityHost
 import com.dimension.maskbook.wallet.ui.scenes.register.recovery.IdentityScene
@@ -372,6 +381,28 @@ fun Route(
                             onBack = onBack,
                             onPersonaNameClick = {
                                 navController.navigate("PersonaMenu")
+                            },
+                            onAddSocialClick = { persona, network ->
+                                val platform = when (network) {
+                                    Network.Twitter -> PlatformType.Twitter
+                                    Network.Facebook -> PlatformType.Facebook
+                                    else -> null // TODO support other network
+                                }
+                                if (platform == null) {
+                                    navController.navigate("SelectPlatform/${persona.id.encodeUrl()}")
+                                } else {
+                                    navController.navigate("ConnectSocial/${persona.id.encodeUrl()}/${platform}")
+                                }
+                            },
+                            onRemoveSocialClick = { persona, social ->
+                                val platform = when (social.network) {
+                                    Network.Twitter -> PlatformType.Twitter
+                                    Network.Facebook -> PlatformType.Facebook
+                                    else -> null // TODO support other network
+                                }
+                                if (platform != null) {
+                                    navController.navigate("DisconnectSocial/${persona.id.encodeUrl()}/${platform}/${social.id.encodeUrl()}")
+                                }
                             }
                         )
                     }
@@ -514,7 +545,20 @@ fun Route(
                         }
                     }
                     bottomSheet(
-                        "ConnectSocial/{personaId}/{platform}",
+                        route = "SelectPlatform/{personaId}",
+                        arguments = listOf(
+                            navArgument("personaId") { type = NavType.StringType },
+                        ),
+                    ) {
+                        val personaId = it.arguments?.getString("personaId").orEmpty()
+                        SelectPlatformModal(
+                            onDone = { platform ->
+                                navController.navigate("ConnectSocial/${personaId.encodeUrl()}/${platform}")
+                            }
+                        )
+                    }
+                    bottomSheet(
+                        route = "ConnectSocial/{personaId}/{platform}",
                         arguments = listOf(
                             navArgument("personaId") { type = NavType.StringType },
                             navArgument("platform") { type = NavType.StringType },
@@ -527,47 +571,18 @@ fun Route(
                     ) {
                         val personaId = it.arguments?.getString("personaId")?.decodeUrl()
                         val platform = it.arguments?.getString("platform")
-                            ?.let { PlatformType.valueOf(it) }
-//                        val viewModel = when (platform) {
-//                            PlatformType.Twitter -> getViewModel<TwitterConnectSocialViewModel>()
-//                            PlatformType.Facebook -> getViewModel<FaceBookConnectSocialViewModel>()
-//                            else -> null
-//                        }
                         if (personaId != null && platform != null) {
                             val repository = get<IPersonaRepository>()
                             ConnectSocialModal(
                                 onDone = {
                                     repository.beginConnectingProcess(
                                         personaId = personaId,
-                                        platformType = platform,
+                                        platformType = PlatformType.valueOf(platform),
                                     )
                                     onBack.invoke()
                                 }
                             )
                         }
-//                        if (viewModel != null && personaId != null && platform != null) {
-//                            val items by viewModel.items.observeAsState(initial = emptyList())
-//                            if (items.any()) {
-//                                ConnectSocialModal(
-//                                    onConnect = {
-//                                        viewModel.connect(data = it, personaId = personaId)
-//                                        navController.popBackStack()
-//                                    },
-//                                    socials = items
-//                                )
-//                            } else {
-//                                val repository = get<IPersonaRepository>()
-//                                ConnectSocialModal(
-//                                    onDone = {
-//                                        repository.beginConnectingProcess(
-//                                            personaId = personaId,
-//                                            platformType = platform,
-//                                        )
-//                                        onBack.invoke()
-//                                    }
-//                                )
-//                            }
-//                        }
                     }
                     dialog(
                         "DisconnectSocial/{personaId}/{platform}/{id}",

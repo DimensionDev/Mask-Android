@@ -32,6 +32,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
+import com.dimension.maskbook.wallet.repository.Network
+import com.dimension.maskbook.wallet.repository.PersonaData
+import com.dimension.maskbook.wallet.repository.SocialData
 import com.dimension.maskbook.wallet.ui.MaskTheme
 import com.dimension.maskbook.wallet.ui.scenes.app.AppScene
 import com.dimension.maskbook.wallet.ui.scenes.persona.PersonaScene
@@ -60,6 +63,8 @@ fun MainHost(
     initialTab: String,
     onBack: () -> Unit,
     onPersonaNameClick: () -> Unit,
+    onAddSocialClick: (PersonaData, Network?) -> Unit,
+    onRemoveSocialClick: (PersonaData, SocialData) -> Unit,
 ) {
     val initialPage = remember(initialTab) {
         if (initialTab.isEmpty()) return@remember 0
@@ -114,6 +119,8 @@ fun MainHost(
                     HomeScreen.Personas -> PersonaScene(
                         onBack = onBack,
                         onPersonaNameClick = onPersonaNameClick,
+                        onAddSocialClick = onAddSocialClick,
+                        onRemoveSocialClick = onRemoveSocialClick,
                     )
                     HomeScreen.Settings -> SettingsScene(onBack = onBack)
                     HomeScreen.Wallets -> WalletIntroHost(onBack = onBack)

@@ -1,363 +1,265 @@
 package com.dimension.maskbook.wallet.ui.scenes.persona.social
 
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.Icon
+import androidx.compose.material.LocalContentAlpha
+import androidx.compose.material.LocalContentColor
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ChevronRight
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Remove
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.debugInspectorInfo
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavDestination.Companion.hierarchy
-import androidx.navigation.NavGraph.Companion.findStartDestination
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
-import com.dimension.maskbook.wallet.R
-import com.dimension.maskbook.wallet.ext.encodeUrl
-import com.dimension.maskbook.wallet.ext.observeAsState
-import com.dimension.maskbook.wallet.platform.IPlatformSwitcher
-import com.dimension.maskbook.wallet.repository.PlatformType
+import coil.compose.rememberImagePainter
+import com.dimension.maskbook.wallet.repository.Network
 import com.dimension.maskbook.wallet.repository.SocialData
-import com.dimension.maskbook.wallet.ui.LocalRootNavController
-import com.dimension.maskbook.wallet.ui.widget.MaskListCardItem
-import com.dimension.maskbook.wallet.ui.widget.MaskListItem
-import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
-import com.dimension.maskbook.wallet.ui.widget.TabScaffoldPadding
-import com.dimension.maskbook.wallet.viewmodel.persona.social.FacebookSocialViewModel
-import com.dimension.maskbook.wallet.viewmodel.persona.social.PersonaSocialViewModel
-import com.dimension.maskbook.wallet.viewmodel.persona.social.SocialViewModel
-import com.dimension.maskbook.wallet.viewmodel.persona.social.TwitterSocialViewModel
-import org.koin.androidx.compose.get
-import org.koin.androidx.compose.getViewModel
+import com.dimension.maskbook.wallet.repository.icon
+import com.dimension.maskbook.wallet.ui.widget.MaskGridButton
+import com.dimension.maskbook.wallet.ui.widget.itemsGridIndexed
 
-@Composable
-fun SocialScreen() {
-    val viewModel: SocialViewModel = getViewModel()
-    val hasPersona by viewModel.hasPersona.observeAsState(initial = false)
-    if (hasPersona) {
-        PersonaSocialScreen()
-    } else {
-        EmptyPersonaSocialScreen(
-            onCreatePersona = {
-                viewModel.setPersona(it)
-            },
-        )
-    }
-}
-
-private sealed class Screen(val route: String, val name: String, val target: PlatformType) {
-    object Twitter : Screen("Twitter", "Twitter", PlatformType.Twitter)
-    object Facebook : Screen("Facebook", "Facebook", PlatformType.Facebook)
-}
-
-private val items = listOf(
-    Screen.Twitter,
-    Screen.Facebook,
+private val addIcon = SocialData(
+    id = "",
+    name = "",
+    avatar = "",
+    personaId = null,
+    network = Network.Twitter,
 )
 
 @Composable
-fun PersonaSocialScreen() {
-    val navController = rememberNavController()
-    val rootNavController = LocalRootNavController.current
-    val viewModel = getViewModel<PersonaSocialViewModel>()
-    val currentPersona by viewModel.currentPersonaData.observeAsState(initial = null)
-    Column {
-        val navBackStackEntry by navController.currentBackStackEntryAsState()
-        val currentDestination = navBackStackEntry?.destination
-        val selectedTabIndex =
-            currentDestination?.route?.let { route -> items.indexOfFirst { it.route == route } }
-                ?: 0
-        CompositionLocalProvider(
-            LocalTextStyle provides LocalTextStyle.current.copy(color = Color.Unspecified)
-        ) {
-            ScrollableTabRow(
-                selectedTabIndex = selectedTabIndex,
-                backgroundColor = MaterialTheme.colors.background,
-                indicator = { tabPositions ->
-                    Box(
-                        Modifier
-                            .tabIndicatorOffset3(tabPositions[selectedTabIndex])
-                            .fillMaxWidth()
-                            .fillMaxHeight()
-                            .background(
-                                color = MaterialTheme.colors.primary.copy(alpha = 0.1f),
-                                shape = RoundedCornerShape(8.dp)
-                            )
-                    )
-                },
-                edgePadding = 14.dp,
-                divider = { },
-                modifier = Modifier.padding(vertical = 20.dp)
-            ) {
-                items.forEachIndexed { _, screen ->
-                    val selected =
-                        currentDestination?.hierarchy?.any { it.route == screen.route } == true
-                    val platformSwitcher = get<IPlatformSwitcher>()
-                    Tab(
-                        text = { Text(screen.name) },
-                        selected = selected,
-                        onClick = {
-                            navController.navigate(screen.route) {
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
-                                }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
-                            platformSwitcher.switchTo(screen.target)
-                        },
-                        selectedContentColor = MaterialTheme.colors.primary,
-                        unselectedContentColor = MaterialTheme.colors.onBackground.copy(
-                            alpha = ContentAlpha.medium
-                        ),
-                    )
-                }
-            }
-        }
-
-
-        NavHost(
-            navController,
-            startDestination = Screen.Twitter.route,
-        ) {
-            composable(Screen.Twitter.route) {
-                currentPersona?.let { persona ->
-                    TwitterSocialScene(
-                        onAdd = {
-                            rootNavController.navigate("ConnectSocial/${persona.id.encodeUrl()}/${PlatformType.Twitter}")
-                        },
-                        onDisconnect = {
-                            rootNavController.navigate("DisconnectSocial/${persona.id.encodeUrl()}/${PlatformType.Twitter}/${it.id.encodeUrl()}")
-                        }
-                    )
-                }
-
-            }
-            composable(Screen.Facebook.route) {
-                currentPersona?.let { persona ->
-                    FacebookSocialScene(
-                        onAdd = {
-                            rootNavController.navigate("ConnectSocial/${persona.id.encodeUrl()}/${PlatformType.Facebook}")
-                        },
-                        onDisconnect = {
-                            rootNavController.navigate("DisconnectSocial/${persona.id.encodeUrl()}/${PlatformType.Facebook}/${it.id.encodeUrl()}")
-                        }
-                    )
-                }
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterialApi::class)
-@Composable
-fun TwitterSocialScene(
-    onAdd: () -> Unit,
-    onDisconnect: (SocialData) -> Unit,
+fun SocialScreen(
+    socialList: List<SocialData>,
+    onAddSocialClick: () -> Unit,
+    onItemClick: (SocialData, isEditing: Boolean) -> Unit,
 ) {
-    val viewModel: TwitterSocialViewModel = getViewModel()
-    val items by viewModel.items.observeAsState(initial = emptyList())
-    LazyColumn {
-        if (items.isEmpty()) {
-            item {
-                MaskListCardItem(
-                    modifier = Modifier
-                        .clickable {
-                            onAdd.invoke()
-                        },
-                    text = {
-                        Text(text = "Connect to Twitter")
-                    },
-                    icon = {
-                        Image(
-                            painterResource(id = R.drawable.ic_twitter),
-                            contentDescription = null
-                        )
-                    },
-                    trailing = {
-                        Icon(Icons.Default.ChevronRight, contentDescription = null)
-                    }
-                )
-            }
-        } else {
-            item {
-                MaskListItem(
-                    text = {
-                        Text("Accounts")
-                    },
-                    trailing = {
-                        IconButton(onClick = onAdd) {
-                            Icon(Icons.Default.Add, contentDescription = null)
-                        }
-                    }
-                )
-            }
-            items(items) {
-                MaskListCardItem(
-                    text = {
-                        Text(text = it.name)
-                    },
-                    icon = {
-                        Image(
-                            painterResource(id = R.drawable.ic_twitter),
-                            contentDescription = null
-                        )
-                    },
-                    trailing = {
-                        Text(
-                            modifier = Modifier.clickable {
-                                onDisconnect.invoke(it)
-                            },
-                            text = "Disconnect",
-                            color = MaterialTheme.colors.primary,
-                        )
-                    }
-                )
-            }
-        }
+    var isEditing by rememberSaveable { mutableStateOf(false) }
+    val finalSocialList = remember(socialList) {
+        listOf(addIcon) + socialList
     }
-}
-
-@OptIn(ExperimentalMaterialApi::class)
-@Composable
-fun FacebookSocialScene(
-    onAdd: () -> Unit,
-    onDisconnect: (SocialData) -> Unit,
-) {
-    val viewModel: FacebookSocialViewModel = getViewModel()
-    val items by viewModel.items.observeAsState(initial = emptyList())
-    LazyColumn {
-        if (items.isEmpty()) {
-            item {
-                MaskListCardItem(
-                    modifier = Modifier
-                        .clickable {
-                            onAdd.invoke()
-                        },
-                    text = {
-                        Text(text = "Connect to Facebook")
-                    },
-                    icon = {
-                        Image(
-                            painterResource(id = R.drawable.ic_twitter),
-                            contentDescription = null
-                        )
-                    },
-                    trailing = {
-                        Icon(Icons.Default.ChevronRight, contentDescription = null)
-                    }
-                )
-            }
-        } else {
-            item {
-                MaskListItem(
-                    text = {
-                        Text("Accounts")
-                    },
-                    trailing = {
-                        IconButton(onClick = onAdd) {
-                            Icon(Icons.Default.Add, contentDescription = null)
-                        }
-                    }
-                )
-            }
-            items(items) {
-                MaskListCardItem(
-                    text = {
-                        Text(text = it.name)
-                    },
-                    icon = {
-                        Image(
-                            painterResource(id = R.drawable.ic_twitter),
-                            contentDescription = null
-                        )
-                    },
-                    trailing = {
-                        Text(
-                            modifier = Modifier.clickable {
-                                onDisconnect.invoke(it)
-                            },
-                            text = "Disconnect",
-                            color = MaterialTheme.colors.primary,
-                        )
-                    }
-                )
-            }
-        }
-    }
-}
-
-
-@Composable
-fun EmptyPersonaSocialScreen(
-    onCreatePersona: (String) -> Unit,
-) {
-    var name by remember {
-        mutableStateOf("")
-    }
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(TabScaffoldPadding),
-        horizontalAlignment = Alignment.CenterHorizontally,
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(horizontal = 22.5f.dp, vertical = 25.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        Image(
-            painterResource(id = R.drawable.ic_group_81),
-            contentDescription = null,
-            modifier = Modifier.weight(1f)
-        )
-        Text(text = "Persona", modifier = Modifier.align(Alignment.Start))
-        Spacer(modifier = Modifier.height(8.dp))
-        OutlinedTextField(
-            value = name,
-            onValueChange = { name = it },
-            modifier = Modifier.fillMaxWidth(),
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        PrimaryButton(
-            modifier = Modifier.fillMaxWidth(),
-            onClick = { onCreatePersona.invoke(name) },
-        ) {
-            Text(text = "Create Persona")
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = "Accounts",
+                    style = MaterialTheme.typography.h5,
+                )
+                TextButton(
+                    onClick = {
+                        isEditing = !isEditing
+                    }
+                ) {
+                    Text(
+                        text = if (isEditing) {
+                            SocialScreenDefaults.done
+                        } else {
+                            SocialScreenDefaults.edit
+                        },
+                        color = MaterialTheme.colors.primary,
+                    )
+                }
+            }
+        }
+        itemsGridIndexed(
+            data = finalSocialList,
+            rowSize = 3
+        ) { _, item ->
+            if (item === addIcon) {
+                AddIcon(
+                    enabled = !isEditing,
+                    onClick = onAddSocialClick
+                )
+            } else {
+                SocialItem(
+                    item = item,
+                    onItemClick = {
+                        onItemClick(item, isEditing)
+                    },
+                    isEditing = isEditing,
+                )
+            }
         }
     }
 }
 
-
-fun Modifier.tabIndicatorOffset3(
-    currentTabPosition: TabPosition
-): Modifier = composed(
-    inspectorInfo = debugInspectorInfo {
-        name = "tabIndicatorOffset"
-        value = currentTabPosition
-    }
+@Composable
+private fun AddIcon(
+    enabled: Boolean,
+    onClick: () -> Unit
 ) {
-    val currentTabWidth by animateDpAsState(
-        targetValue = currentTabPosition.width,
-        animationSpec = tween(durationMillis = 250, easing = FastOutSlowInEasing)
+    MaskGridButton(
+        enabled = enabled,
+        onClick = onClick,
+        modifier = Modifier
+            .size(
+                width = SocialScreenDefaults.itemWidth,
+                height = SocialScreenDefaults.itemHeight,
+            ),
+        icon = {
+            Icon(
+                imageVector = Icons.Rounded.Add,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(SocialScreenDefaults.itemIconSize)
+                    .shadow(if (enabled) 6.dp else 0.dp, shape = CircleShape, clip = false)
+                    .background(MaterialTheme.colors.surface, shape = CircleShape)
+                    .padding(10.dp),
+            )
+        },
+        text = {
+            Text(
+                text = SocialScreenDefaults.add,
+                style = MaterialTheme.typography.subtitle2,
+                color = LocalContentColor.current.copy(LocalContentAlpha.current),
+            )
+        }
     )
-    val indicatorOffset by animateDpAsState(
-        targetValue = currentTabPosition.left,
-        animationSpec = tween(durationMillis = 250, easing = FastOutSlowInEasing)
+}
+
+@Composable
+private fun SocialItem(
+    item: SocialData,
+    onItemClick: () -> Unit,
+    isEditing: Boolean,
+) {
+    MaskGridButton(
+        onClick = onItemClick,
+        modifier = Modifier
+            .size(
+                width = SocialScreenDefaults.itemWidth,
+                height = SocialScreenDefaults.itemHeight,
+            ),
+        icon = {
+            Box {
+                Image(
+                    painter = rememberImagePainter(item.avatar),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(SocialScreenDefaults.itemIconSize)
+                        .background(Color.Gray, shape = CircleShape), // TODO load avatar
+                    alpha = LocalContentAlpha.current,
+                )
+                Image(
+                    painter = painterResource(item.network.icon),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .size(SocialScreenDefaults.itemSmallIconSize)
+                        .border(1.dp, MaterialTheme.colors.background, shape = CircleShape)
+                        .clip(shape = CircleShape),
+                )
+                if (isEditing) {
+                    Icon(
+                        imageVector = Icons.Rounded.Remove,
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier
+                            .align(Alignment.TopStart)
+                            .size(SocialScreenDefaults.itemSmallIconSize)
+                            .background(SocialScreenDefaults.deleteColor, shape = CircleShape),
+                    )
+                }
+            }
+        },
+        text = {
+            Text(
+                text = item.name,
+                style = MaterialTheme.typography.subtitle2,
+                color = LocalContentColor.current.copy(LocalContentAlpha.current),
+            )
+        }
     )
-    fillMaxWidth()
-        .wrapContentSize(Alignment.BottomStart)
-        .offset(x = indicatorOffset)
-        .width(currentTabWidth)
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun AddIconPreview() {
+    Row {
+        AddIcon(
+            enabled = true,
+            onClick = {}
+        )
+        Spacer(Modifier.width(10.dp))
+        AddIcon(
+            enabled = false,
+            onClick = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun SocialItemPreview() {
+    Row {
+        SocialItem(
+            item = SocialData(
+                id = "",
+                name = "AAA",
+                avatar = "",
+                personaId = null,
+                network = Network.Twitter,
+            ),
+            onItemClick = {},
+            isEditing = false,
+        )
+        Spacer(Modifier.width(10.dp))
+        SocialItem(
+            item = SocialData(
+                id = "",
+                name = "AAA",
+                avatar = "",
+                personaId = null,
+                network = Network.Twitter,
+            ),
+            onItemClick = {},
+            isEditing = true,
+        )
+    }
+}
+
+private object SocialScreenDefaults {
+    val itemWidth = 100.dp
+    val itemHeight = 115.dp
+    val itemIconSize = 64.dp
+    val itemSmallIconSize = 20.dp
+
+    val deleteColor = Color(0xFFFF5F5F)
+
+    const val add = "Add"
+    const val edit = "Edit"
+    const val done = "Done"
 }
