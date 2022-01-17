@@ -64,6 +64,8 @@ fun WalletBalancesScene(
     onSceneTypeChanged: (BalancesSceneType) -> Unit,
     chainType: ChainType,
     onBack: () -> Unit,
+    displayAmountType: DisplayAmountType,
+    onDisplayAmountTypeChanged: (DisplayAmountType) -> Unit,
 ) {
     MaskTheme {
         MaskScaffold(
@@ -114,10 +116,6 @@ fun WalletBalancesScene(
                 )
             }
         ) {
-            var displayAmountType by rememberSaveable {
-                mutableStateOf(DisplayAmountType.All)
-            }
-
             LazyColumn {
                 item {
                     WalletCard(
@@ -129,9 +127,7 @@ fun WalletBalancesScene(
                         },
                         chainType = chainType,
                         displayAmountType = displayAmountType,
-                        onDisplayAmountTypeChanged = {
-                            displayAmountType = it
-                        },
+                        onDisplayAmountTypeChanged = onDisplayAmountTypeChanged,
                     )
                 }
                 item {

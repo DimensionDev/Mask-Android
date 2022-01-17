@@ -6,6 +6,7 @@ import com.dimension.maskbook.wallet.ext.asStateIn
 import com.dimension.maskbook.wallet.repository.IWalletRepository
 import com.dimension.maskbook.wallet.repository.WalletData
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.BalancesSceneType
+import com.dimension.maskbook.wallet.ui.scenes.wallets.management.DisplayAmountType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.mapNotNull
 
@@ -28,6 +29,12 @@ class WalletBalancesViewModel(
     }
     fun setCurrentWallet(walletData: WalletData) {
         repository.setCurrentWallet(walletData = walletData)
+    }
+
+    private val _displayAmountType = MutableStateFlow(DisplayAmountType.All)
+    val displayAmountType = _displayAmountType.asStateIn(viewModelScope, DisplayAmountType.All)
+    fun setCurrentDisplayAmountType(displayAmountType: DisplayAmountType) {
+        _displayAmountType.value = displayAmountType
     }
 
 }
