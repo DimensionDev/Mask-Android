@@ -7,32 +7,19 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import androidx.paging.*
 import androidx.room.withTransaction
 import com.dimension.maskbook.debankapi.model.ChainID
 import com.dimension.maskbook.wallet.db.AppDatabase
-import com.dimension.maskbook.wallet.db.model.CoinPlatformType
-import com.dimension.maskbook.wallet.db.model.DbStoredKey
-import com.dimension.maskbook.wallet.db.model.DbToken
-import com.dimension.maskbook.wallet.db.model.DbWallet
-import com.dimension.maskbook.wallet.db.model.DbWalletBalance
-import com.dimension.maskbook.wallet.db.model.DbWalletBalanceType
-import com.dimension.maskbook.wallet.db.model.DbWalletToken
-import com.dimension.maskbook.wallet.db.model.WalletSource
+import com.dimension.maskbook.wallet.db.model.*
 import com.dimension.maskbook.wallet.ext.ether
 import com.dimension.maskbook.wallet.ext.gwei
+import com.dimension.maskbook.wallet.paging.mediator.CollectibleMediator
 import com.dimension.maskbook.wallet.repository.*
 import com.dimension.maskbook.wallet.services.WalletServices
 import com.dimension.maskwalletcore.WalletKey
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
 import org.web3j.abi.FunctionEncoder
 import org.web3j.abi.datatypes.Address
 import org.web3j.abi.datatypes.Function
@@ -41,7 +28,7 @@ import org.web3j.crypto.Credentials
 import org.web3j.protocol.Web3j
 import org.web3j.tx.RawTransactionManager
 import java.math.BigDecimal
-import java.util.UUID
+import java.util.*
 import kotlin.math.pow
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
@@ -66,6 +53,7 @@ class WalletRepository(
             while (true) {
                 delay(12.seconds)
                 refreshCurrentWalletToken()
+                refreshCurrentWalletCollectibles()
             }
         }
     }
@@ -103,6 +91,20 @@ class WalletRepository(
 
     override suspend fun findWalletByAddress(address: String): WalletData? {
         return database.walletDao().getByAddress(address)?.let { WalletData.fromDb(it) }
+    }
+
+    private suspend fun refreshCurrentWalletCollectibles() {
+        val currentWallet = currentWallet.firstOrNull() ?: return
+        try {
+            CollectibleMediator(
+                walletId = currentWallet.id,
+                database = database,
+                openSeaServices = services.openSeaServices,
+                walletAddress = currentWallet.address,
+            ).load(LoadType.REFRESH, PagingState(emptyList(), null, PagingConfig(pageSize = 10), 0))
+        } catch (e: Throwable) {
+            e.printStackTrace()
+        }
     }
 
     private suspend fun refreshCurrentWalletToken() {
@@ -514,7 +516,7 @@ class WalletRepository(
                             maxFee.gwei.wei.toBigInteger(),
                             gasLimit.toBigDecimal().toBigInteger(),
                             address,
-                            data
+                            data,
                             actualAmount,
                         )
                     } else {
@@ -549,7 +551,7 @@ class WalletRepository(
 
     override fun validatePrivateKey(privateKey: String) = WalletKey.validate(privateKey = privateKey)
 
-    override fun validateMnemonic(mnemonic: String) =  WalletKey.validate(mnemonic = mnemonic)
+    override fun validateMnemonic(mnemonic: String) = WalletKey.validate(mnemonic = mnemonic)
 
     override fun validateKeystore(keyStore: String) = WalletKey.validate(keyStoreJSON = keyStore)
 
@@ -596,5 +598,24 @@ class WalletRepository(
 
     private fun createNewMnemonic(password: String = ""): String {
         return WalletKey.create(password).mnemonic
+    }
+
+    @OptIn(ExperimentalPagingApi::class)
+    override fun getCollectiblesByWallet(walletData: WalletData): Flow<PagingData<WalletCollectibleData>> {
+        return Pager(
+            config = PagingConfig(pageSize = 20),
+            remoteMediator = CollectibleMediator(
+                walletId = walletData.id,
+                database = database,
+                openSeaServices = services.openSeaServices,
+                walletAddress = walletData.address
+            ),
+        ) {
+            database.collectibleDao().getByWallet(walletData.id)
+        }.flow.map {
+            it.map {
+                WalletCollectibleData.fromDb(it)
+            }
+        }
     }
 }

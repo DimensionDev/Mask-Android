@@ -6,7 +6,7 @@ import retrofit2.http.GET
 
 interface EtherscanServices {
     @GET("/api")
-    fun assetEvent(
+    suspend fun assetEvent(
         contractaddress: String,
         address: String,
         module: String = "account",

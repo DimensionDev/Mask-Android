@@ -1,11 +1,8 @@
 package com.dimension.maskbook.wallet.repository
 
+import androidx.paging.PagingData
 import com.dimension.maskbook.debankapi.model.ChainID
-import com.dimension.maskbook.wallet.db.model.CoinPlatformType
-import com.dimension.maskbook.wallet.db.model.DbWalletBalanceType
-import com.dimension.maskbook.wallet.db.model.DbWalletTokenTokenWithWallet
-import com.dimension.maskbook.wallet.db.model.DbWalletTokenWithToken
-import com.dimension.maskbook.wallet.db.model.WalletSource
+import com.dimension.maskbook.wallet.db.model.*
 import com.dimension.maskbook.wallet.services.okHttpClient
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.Serializable
@@ -33,7 +30,6 @@ data class WalletData(
     val fromWalletConnect: Boolean,
     val tokens: List<WalletTokenData>,
     val balance: Map<DbWalletBalanceType, BigDecimal>,
-    val collectibles: List<WalletCollectibleData>,
 ) {
     companion object {
         fun fromDb(data: DbWalletTokenTokenWithWallet) = with(data) {
@@ -46,8 +42,7 @@ data class WalletData(
                 tokens = items.map {
                     WalletTokenData.fromDb(it)
                 },
-                balance = balance.map { it.type to it.value }.toMap(),
-                collectibles = emptyList()// TODO: collectibles
+                balance = balance.associate { it.type to it.value },
             )
         }
     }
@@ -70,16 +65,41 @@ data class WalletTokenData(
 }
 
 data class WalletCollectibleData(
-    val id: String,
+    val _id: String,
+    val id: Long,
     val chainType: ChainType,
     val icon: String?,
     val name: String,
     val items: List<WalletCollectibleItemData>,
-)
+) {
+    companion object {
+        fun fromDb(data: DbCollectible) = with(data) {
+            WalletCollectibleData(
+                _id = _id,
+                id = id,
+                chainType = chainType,
+                icon = this.collection.imageURL,
+                name = collection.name ?: name,
+                items = listOf(
+                    WalletCollectibleItemData(
+                        _id = _id,
+                        id = id,
+                        link = this.permalink ?: this.externalLink ?: "",
+                        imageUrl = this.url.imageURL ?: this.url.imageOriginalURL ?: "",
+                        previewUrl = this.url.imagePreviewURL ?: this.url.imageThumbnailURL ?: "",
+                        videoUrl = this.url.animationOriginalURL ?: this.url.animationURL ?: "",
+                    )
+                ),
+            )
+        }
+    }
+}
 
 data class WalletCollectibleItemData(
-    val id: String,
+    val _id: String,
+    val id: Long,
     val link: String,
+    val previewUrl: String?,
     val imageUrl: String?,
     val videoUrl: String?,
 )
@@ -229,6 +249,9 @@ interface IWalletRepository {
     suspend fun getKeyStore(walletData: WalletData, platformType: CoinPlatformType): String
     suspend fun getPrivateKey(walletData: WalletData, platformType: CoinPlatformType): String
     suspend fun getTotalBalance(address: String): Double
+    fun getCollectiblesByWallet(
+        walletData: WalletData,
+    ): Flow<PagingData<WalletCollectibleData>>
     fun deleteCurrentWallet()
     fun deleteWallet(id: String)
     fun renameWallet(value: String, id: String)

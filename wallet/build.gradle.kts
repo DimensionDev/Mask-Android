@@ -90,10 +90,11 @@ dependencies {
 
     implementation(project(":debankapi"))
 
-    val roomVersion = "2.4.0"
+    val roomVersion = "2.4.1"
     api("androidx.room:room-runtime:$roomVersion")
     api("androidx.room:room-ktx:$roomVersion")
     ksp("androidx.room:room-compiler:$roomVersion")
+    implementation("androidx.room:room-paging:$roomVersion")
 
     implementation("androidx.paging:paging-runtime-ktx:3.1.0")
     implementation("androidx.paging:paging-compose:1.0.0-alpha14")

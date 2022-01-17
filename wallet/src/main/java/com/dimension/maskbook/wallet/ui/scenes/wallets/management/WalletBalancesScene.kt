@@ -11,8 +11,10 @@ import androidx.compose.material.*
 import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -25,17 +27,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.items
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.db.model.DbWalletBalanceType
 import com.dimension.maskbook.wallet.ext.humanizeDollar
 import com.dimension.maskbook.wallet.ext.humanizeToken
-import com.dimension.maskbook.wallet.repository.ChainType
-import com.dimension.maskbook.wallet.repository.TokenData
-import com.dimension.maskbook.wallet.repository.WalletCollectibleItemData
-import com.dimension.maskbook.wallet.repository.WalletData
-import com.dimension.maskbook.wallet.repository.dbank
+import com.dimension.maskbook.wallet.repository.*
 import com.dimension.maskbook.wallet.ui.MaskTheme
 import com.dimension.maskbook.wallet.ui.widget.*
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -68,6 +68,7 @@ fun WalletBalancesScene(
     onBack: () -> Unit,
     displayAmountType: DisplayAmountType,
     onDisplayAmountTypeChanged: (DisplayAmountType) -> Unit,
+    collectible: LazyPagingItems<WalletCollectibleData>,
 ) {
     MaskTheme {
         MaskScaffold(
@@ -281,13 +282,15 @@ fun WalletBalancesScene(
                         }
                     }
                     BalancesSceneType.Collectible -> {
-                        items(currentWallet.collectibles) {
-                            CollectibleCard(
-                                data = it,
-                                onItemClicked = {
-                                    onCollectibleDetailClicked.invoke(it)
-                                },
-                            )
+                        items(collectible) {
+                            if (it != null) {
+                                CollectibleCard(
+                                    data = it,
+                                    onItemClicked = {
+                                        onCollectibleDetailClicked.invoke(it)
+                                    },
+                                )
+                            }
                         }
                     }
                 }

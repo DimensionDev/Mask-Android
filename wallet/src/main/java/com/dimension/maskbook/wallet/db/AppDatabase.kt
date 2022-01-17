@@ -18,8 +18,9 @@ import java.math.BigDecimal
         DbWalletContact::class,
         DbStoredKey::class,
         DbWalletBalance::class,
+        DbCollectible::class,
     ],
-    version = 3,
+    version = 4,
 )
 @TypeConverters(BigDecimalTypeConverter::class)
 abstract class AppDatabase : RoomDatabase() {
@@ -31,6 +32,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun walletContactDao(): WalletContactDao
     abstract fun storedKeyDao(): StoredKeyDao
     abstract fun walletBalanceDao(): WalletBalanceDao
+    abstract fun collectibleDao(): CollectibleDao
 }
 
 class BigDecimalTypeConverter {
