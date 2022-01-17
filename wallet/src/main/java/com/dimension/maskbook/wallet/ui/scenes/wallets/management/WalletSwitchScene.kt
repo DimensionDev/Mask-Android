@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.repository.ChainType
@@ -72,7 +73,7 @@ fun WalletSwitchScene(
                 Column {
                     MaskSingleLineTopAppBar(
                         title = {
-                            Text(text = "Switch Wallet")
+                            Text(text = stringResource(R.string.scene_wallet_list_title))
                         },
                         actions = {
                             TextButton(
@@ -81,9 +82,9 @@ fun WalletSwitchScene(
                                 },
                             ) {
                                 if (editMode) {
-                                    Text(text = "Done")
+                                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_done))
                                 } else {
-                                    Text(text = "Edit")
+                                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_sendTransaction_sendConfirmPop_edit))
                                 }
                             }
                         }
@@ -134,7 +135,7 @@ fun WalletSwitchScene(
                 ) {
                     MaskListItem(
                         text = {
-                            Text(text = "Add Wallet")
+                            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_list_wallets_items_add))
                         },
                         trailing = {
                             IconButton(
@@ -171,7 +172,7 @@ fun WalletSwitchScene(
                                 if (it.imported) {
                                     Spacer(modifier = Modifier.width(8.dp))
                                     Text(
-                                        text = "Imported",
+                                        text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_list_wallets_list_import),
                                         modifier = Modifier
                                             .background(
                                                 color = Color(0XFFEBF0F8),
@@ -227,7 +228,7 @@ fun WalletSwitchScene(
                             enabled = !editMode,
                         ),
                         text = {
-                            Text(text = "WalletConnect")
+                            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_connect_wallet_connect))
                         },
                         icon = {
                             Image(
@@ -276,7 +277,7 @@ fun WalletSwitchAddModal(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Create a New Wallet",
+                        text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallets_list_add_wallets_items_add),
                         style = MaterialTheme.typography.subtitle1,
                         modifier = Modifier.weight(1f)
                     )
@@ -299,7 +300,7 @@ fun WalletSwitchAddModal(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Import Wallet",
+                        text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_import_wallet),
                         style = MaterialTheme.typography.subtitle1,
                         modifier = Modifier.weight(1f)
                     )
@@ -337,7 +338,7 @@ fun WalletSwitchModal(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Rename Wallet",
+                        text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_edit_item_rename),
                         style = MaterialTheme.typography.subtitle1,
                         modifier = Modifier.weight(1f)
                     )
@@ -363,7 +364,7 @@ fun WalletSwitchModal(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "Delete Wallet",
+                            text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_edit_item_delete),
                             style = MaterialTheme.typography.subtitle1,
                             color = Color.Red,
                         )
@@ -386,7 +387,7 @@ fun WalletSwitchModal(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "Disconnect",
+                            text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_connect_disconnect),
                             style = MaterialTheme.typography.subtitle1,
                             color = Color.Red,
                         )

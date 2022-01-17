@@ -25,10 +25,10 @@ fun WelcomeScene(
             topBar = {
                 MaskTopAppBar(
                     title = {
-                        Text(text = "Welcome to Mask Network")
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_persona_welcome_title))
                     },
                     subTitle = {
-                        Text(text = "Create personas and connect social accounts")
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_persona_welcome_description))
                     },
                     navigationIcon = {
                         MaskBackButton(onBack = onBack)
@@ -43,7 +43,7 @@ fun WelcomeScene(
                     .padding(ScaffoldPadding)
             ) {
                 Spacer(modifier = Modifier.height(32.dp))
-                Text(text = "Persona")
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_persona_welcome_persona))
                 Spacer(modifier = Modifier.height(8.dp))
                 OutlinedTextField(
                     value = persona,
@@ -55,7 +55,7 @@ fun WelcomeScene(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = onNext
                 ) {
-                    Text(text = "Next")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_next))
                 }
             }
         }

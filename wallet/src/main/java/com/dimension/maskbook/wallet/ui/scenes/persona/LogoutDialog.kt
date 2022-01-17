@@ -30,10 +30,10 @@ fun LogoutDialog(
             )
         },
         title = {
-            Text(text = "Confirm to log out?")
+            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_alert_persona_logout_title))
         },
         text = {
-            Text(text = "After logging out, your associated social accounts can no longer decrypt past encrypted messages.")
+            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_alert_persona_logout_description))
         },
         buttons = {
             Row {
@@ -43,7 +43,7 @@ fun LogoutDialog(
                         onBack.invoke()
                     }
                 ) {
-                    Text(text = "Cancel")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_cancel))
                 }
                 Spacer(modifier = Modifier.width(20.dp))
                 val repository = get<IPersonaRepository>()
@@ -54,7 +54,7 @@ fun LogoutDialog(
                         onDone.invoke()
                     },
                 ) {
-                    Text(text = "Confirm")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_confirm))
                 }
             }
         }

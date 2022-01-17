@@ -107,11 +107,9 @@ class WalletRepository(
 
     private suspend fun refreshCurrentWalletToken() {
         val currentWallet = currentWallet.firstOrNull() ?: return
-        val currentNetwork = dWebData.firstOrNull()?.chainType ?: return
         try {
             val token = services.debankServices.tokenList(
                 currentWallet.address,
-                currentNetwork.dbank,
                 is_all = true,
                 has_balance = false
             ).filter { it.isVerified == true }

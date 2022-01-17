@@ -1,7 +1,6 @@
 package com.dimension.maskbook.wallet.viewmodel.wallets
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.dimension.maskbook.wallet.repository.ISettingsRepository
 import com.dimension.maskbook.wallet.utils.BiometricAuthenticator
@@ -12,9 +11,9 @@ class BiometricEnableViewModel(
 ) : ViewModel() {
     fun enable(
         context: Context,
-        title: String = "Enable Biometric",
-        subTitle: String = "",
-        negativeButton: String = "",
+        title: Int,
+        subTitle: Int = -1,
+        negativeButton: Int,
         onEnable: () -> Unit = {},
     ) {
         biometricAuthenticator.biometricAuthenticate(
@@ -24,7 +23,7 @@ class BiometricEnableViewModel(
                 repository.setBiometricEnabled(true)
             },
             title = title,
-            subtitle = subTitle,
+            subTitle = subTitle,
             negativeButtonText = negativeButton,
         )
     }

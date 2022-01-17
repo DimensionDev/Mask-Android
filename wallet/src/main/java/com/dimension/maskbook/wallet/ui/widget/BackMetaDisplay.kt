@@ -20,23 +20,23 @@ fun BackMetaDisplay(
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-            MetaItem(title = "Account", value = meta.account)
+            MetaItem(title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_backup_restored_account), value = meta.account)
             Spacer(modifier = Modifier.height(16.dp))
-            MetaItem(title = "Personas", value = meta.personas.toString())
+            MetaItem(title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.tab_personas), value = meta.personas.toString())
             Spacer(modifier = Modifier.height(16.dp))
             MetaItem(
-                title = "Associated account",
+                title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_backup_restored_account),
                 value = meta.associatedAccount.toString()
             )
             Spacer(modifier = Modifier.height(16.dp))
             MetaItem(
-                title = "Encrypted post",
+                title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_backup_restored_post),
                 value = meta.encryptedPost.toString()
             )
             Spacer(modifier = Modifier.height(16.dp))
-            MetaItem(title = "Contacts", value = meta.contacts.toString())
+            MetaItem(title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_backup_restored_contacts), value = meta.contacts.toString())
             Spacer(modifier = Modifier.height(16.dp))
-            MetaItem(title = "File", value = meta.file.toString())
+            MetaItem(title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_backup_restored_files), value = meta.file.toString())
         }
     }
 }

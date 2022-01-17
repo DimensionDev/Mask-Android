@@ -12,6 +12,7 @@ import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -34,6 +35,7 @@ import com.dimension.maskbook.wallet.repository.ChainType
 import com.dimension.maskbook.wallet.repository.TokenData
 import com.dimension.maskbook.wallet.repository.WalletCollectibleItemData
 import com.dimension.maskbook.wallet.repository.WalletData
+import com.dimension.maskbook.wallet.repository.dbank
 import com.dimension.maskbook.wallet.ui.MaskTheme
 import com.dimension.maskbook.wallet.ui.widget.*
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -64,6 +66,8 @@ fun WalletBalancesScene(
     chainType: ChainType,
     onCollectibleDetailClicked: (WalletCollectibleItemData) -> Unit,
     onBack: () -> Unit,
+    displayAmountType: DisplayAmountType,
+    onDisplayAmountTypeChanged: (DisplayAmountType) -> Unit,
 ) {
     MaskTheme {
         MaskScaffold(
@@ -124,6 +128,8 @@ fun WalletBalancesScene(
                             onWalletMenuClicked.invoke()
                         },
                         chainType = chainType,
+                        displayAmountType = displayAmountType,
+                        onDisplayAmountTypeChanged = onDisplayAmountTypeChanged,
                     )
                 }
                 item {
@@ -150,7 +156,7 @@ fun WalletBalancesScene(
                                     contentDescription = null,
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Text(text = "Send", style = MaterialTheme.typography.subtitle1)
+                                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_balance_btn_Send), style = MaterialTheme.typography.subtitle1)
                             }
                         }
 
@@ -170,7 +176,7 @@ fun WalletBalancesScene(
                                     contentDescription = null,
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Text(text = "Receive", style = MaterialTheme.typography.subtitle1)
+                                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_balance_btn_receive), style = MaterialTheme.typography.subtitle1)
                             }
                         }
                     }
@@ -228,7 +234,7 @@ fun WalletBalancesScene(
                             modifier = Modifier.align(Alignment.CenterEnd),
                         ) {
                             TextButton(onClick = { /*TODO*/ }) {
-                                Text(text = "Add")
+                                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_derivation_path_operation_add))
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Icon(Icons.Default.Add, contentDescription = null)
                             }
@@ -238,7 +244,17 @@ fun WalletBalancesScene(
                 }
                 when (sceneType) {
                     BalancesSceneType.Token -> {
-                        items(currentWallet.tokens) {
+                        items(
+                            if (displayAmountType.chainType == null) {
+                                currentWallet.tokens
+                            } else {
+                                currentWallet.tokens.filter {
+                                    it.tokenData.chainId == displayAmountType.chainType?.dbank?.name
+                                }
+                            }.sortedByDescending {
+                                it.tokenData.price * it.count
+                            }
+                        ) {
                             val tokenData = it.tokenData
                             MaskListCardItem(
                                 modifier = Modifier
@@ -288,6 +304,8 @@ private fun WalletCard(
     currentWallet: WalletData,
     onWalletChanged: (WalletData) -> Unit,
     onMoreClicked: () -> Unit,
+    displayAmountType: DisplayAmountType,
+    onDisplayAmountTypeChanged: (DisplayAmountType) -> Unit,
 ) {
     val clipboardManager = LocalClipboardManager.current
     val pagerState = rememberPagerState(initialPage = maxOf(wallets.indexOf(currentWallet), 0))
@@ -326,9 +344,6 @@ private fun WalletCard(
                 }
                 .fillMaxWidth(0.9f),
         ) {
-            var displayAmountType by remember {
-                mutableStateOf(DisplayAmountType.All)
-            }
             val wallet = wallets[page]
             val amount = remember(displayAmountType, wallet) {
                 when (displayAmountType) {
@@ -343,9 +358,7 @@ private fun WalletCard(
                 walletData = wallets[page],
                 amount = amount,
                 selectedDisplayAmountType = displayAmountType,
-                onDisplayAmountTypeChanged = {
-                    displayAmountType = it
-                },
+                onDisplayAmountTypeChanged = onDisplayAmountTypeChanged,
                 onCopyClicked = {
                     clipboardManager.setText(buildAnnotatedString { append(wallet.address) })
                 },

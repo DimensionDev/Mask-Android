@@ -56,7 +56,6 @@ interface UserResources {
     @GET("/v1/user/token_list")
     suspend fun tokenList(
         @Query("id") address: String,
-        @Query("chain_id") chainId: ChainID,
         @Query("is_all") is_all: Boolean,
         @Query("has_balance") has_balance: Boolean,
     ): List<Token>

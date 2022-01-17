@@ -48,7 +48,7 @@ fun SearchTokenScene(
                     navigationIcon = {
                         MaskBackButton(onBack = onBack)
                     },
-                    title = { Text(text = "Search Token") }
+                    title = { Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_sendTransaction_tokenList_title)) }
                 )
             }
         ) {
@@ -69,7 +69,7 @@ fun SearchTokenScene(
                         )
                     },
                     placeholder = {
-                        Text(text = "Token name or contract address")
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_sendTransaction_tokenList_placeholder))
                     }
                 )
                 Spacer(modifier = Modifier.height(20.dp))

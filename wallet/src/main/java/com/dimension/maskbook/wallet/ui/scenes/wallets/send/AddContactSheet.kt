@@ -52,7 +52,7 @@ fun AddContactSheet(
             MaskInputField(
                 value = nameInput,
                 onValueChange = onNameChanged,
-                placeholder = { Text(text = "Name") },
+                placeholder = { Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_sendTransaction_addContact_placeholder_name)) },
                 modifier = Modifier.fillMaxWidth(),
             )
             Spacer(modifier = Modifier.height(8.dp))
@@ -67,7 +67,7 @@ fun AddContactSheet(
                 onClick = onAddContact,
                 enabled = canConfirm
             ) {
-                Text(text = "Add Contact")
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_sendTransaction_addContact_btn_add))
             }
         }
     }
