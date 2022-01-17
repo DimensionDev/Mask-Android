@@ -8,6 +8,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ui.widget.MaskDialog
@@ -28,7 +29,7 @@ fun DisconnectSocialDialog(
             )
         },
         text = {
-            Text(text = "Are you sure you want to disconnect the Twitter account of @pineapple ? After disconnection, this account will no longer be able to decrypt and encrypt any information with Mask Network.")
+            Text(text = stringResource(R.string.common_alert_disconnect_profile_title))
         },
         buttons = {
             Row {
@@ -38,7 +39,7 @@ fun DisconnectSocialDialog(
                         onBack.invoke()
                     }
                 ) {
-                    Text(text = "Cancel")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_cancel))
                 }
                 Spacer(modifier = Modifier.width(20.dp))
                 PrimaryButton(
@@ -47,7 +48,7 @@ fun DisconnectSocialDialog(
                         onConfirm.invoke()
                     },
                 ) {
-                    Text(text = "Confirm")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_confirm))
                 }
             }
         }

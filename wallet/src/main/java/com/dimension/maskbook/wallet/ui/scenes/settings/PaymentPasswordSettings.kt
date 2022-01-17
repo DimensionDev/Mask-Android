@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.ext.observeAsState
@@ -41,13 +42,13 @@ fun PaymentPasswordSettings(
                 .animateContentSize(),
         ) {
             Text(
-                text = "Change Payment Password",
+                text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_general_change_payment_password),
                 style = MaterialTheme.typography.h6,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
             Spacer(modifier = Modifier.height(20.dp))
             if (currentPassword.isNotEmpty()) {
-                Text(text = "Payment Password")
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_general_setup_payment_password))
                 Spacer(modifier = Modifier.height(8.dp))
                 OutlinedTextField(
                     value = password,
@@ -59,7 +60,7 @@ fun PaymentPasswordSettings(
                 )
                 Spacer(modifier = Modifier.height(20.dp))
             }
-            Text(text = "New Payment Password")
+            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_change_password_new_password))
             Spacer(modifier = Modifier.height(8.dp))
             OutlinedTextField(
                 value = newPassword,
@@ -70,7 +71,7 @@ fun PaymentPasswordSettings(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             )
             Spacer(modifier = Modifier.height(20.dp))
-            Text(text = "Confirm New Payment Password")
+            Text(text = stringResource(com.dimension.maskbook.wallet.R.string.scene_set_password_confirm_payment_password))
             Spacer(modifier = Modifier.height(8.dp))
             OutlinedTextField(
                 value = newPasswordConfirm,
@@ -82,7 +83,7 @@ fun PaymentPasswordSettings(
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Payment Password must be a combination of 2 categories out of numbers, letters and special characters with a length of 8-20 characters.",
+                text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_change_password_password_demand),
                 color = MaterialTheme.colors.primary
             )
 
@@ -94,7 +95,7 @@ fun PaymentPasswordSettings(
                         onBack.invoke()
                     }
                 ) {
-                    Text(text = "Cancel")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_cancel))
                 }
                 Spacer(modifier = Modifier.width(20.dp))
                 PrimaryButton(
@@ -105,7 +106,7 @@ fun PaymentPasswordSettings(
                     },
                     enabled = canConfirm
                 ) {
-                    Text(text = "Confirm")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_confirm))
                 }
             }
         }

@@ -32,17 +32,17 @@ fun UnlockWalletDialog(
         modifier = Modifier.padding(horizontal = 23.dp),
         onDismissRequest = onBack,
         title = {
-            Text(text = "Unlock Wallet")
+            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_unlock_title))
         },
         text = {
             AnimatedVisibility(visible = !biometricEnabled) {
                 Column {
-                    Text(text = "Payment password")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_general_setup_payment_password))
                     Spacer(modifier = Modifier.height(8.dp))
                     MaskPasswordInputField(value = password, onValueChange = onPasswordChanged)
                     if (!passwordValid) {
                         Spacer(modifier = Modifier.height(8.dp))
-                        Text(text = "Incorrect Password.", color = Color.Red)
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_change_password_incorrect_password), color = Color.Red)
                     }
                 }
             }
@@ -54,14 +54,14 @@ fun UnlockWalletDialog(
                     onClick = onBack,
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text(text = "Cancel")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_cancel))
                 }
                 Spacer(modifier = Modifier.width(8.dp))
                 PrimaryButton(
                     onClick = onConfirm,
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text(text = "Unlock")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_unlock_button))
                 }
             }
         }

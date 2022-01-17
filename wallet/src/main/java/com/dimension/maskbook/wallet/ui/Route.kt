@@ -26,14 +26,11 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.dialog
-import androidx.navigation.navArgument
-import androidx.navigation.navDeepLink
-import androidx.navigation.navOptions
-import androidx.navigation.plusAssign
 import com.dimension.maskbook.wallet.R
-import com.dimension.maskbook.wallet.ext.decodeUrl
 import com.dimension.maskbook.wallet.ext.encodeUrl
 import com.dimension.maskbook.wallet.ext.observeAsState
+import com.dimension.maskbook.wallet.navHostAnimationDurationMillis
+import com.dimension.maskbook.wallet.repository.AppKey
 import com.dimension.maskbook.wallet.repository.ChainType
 import com.dimension.maskbook.wallet.repository.IPersonaRepository
 import com.dimension.maskbook.wallet.repository.ISettingsRepository
@@ -43,6 +40,7 @@ import com.dimension.maskbook.wallet.repository.Network
 import com.dimension.maskbook.wallet.repository.PlatformType
 import com.dimension.maskbook.wallet.route.backup
 import com.dimension.maskbook.wallet.ui.scenes.MainHost
+import com.dimension.maskbook.wallet.ui.scenes.app.PluginSettingsScene
 import com.dimension.maskbook.wallet.ui.scenes.app.settings.MarketTrendSettingsModal
 import com.dimension.maskbook.wallet.ui.scenes.persona.BackUpPasswordModal
 import com.dimension.maskbook.wallet.ui.scenes.persona.CreatePersona
@@ -152,16 +150,16 @@ fun Route(
                 navController = navController,
                 startDestination = startDestination,
                 enterTransition = { _, _ ->
-                    slideInHorizontally(initialOffsetX = { 1000 }, animationSpec = tween())
+                    slideInHorizontally(initialOffsetX = { it } , animationSpec = tween(navHostAnimationDurationMillis))
                 },
                 exitTransition = { _, _ ->
-                    slideOutHorizontally(targetOffsetX = { -1000 }, animationSpec = tween())
+                    slideOutHorizontally(targetOffsetX = { -it } , animationSpec = tween(navHostAnimationDurationMillis))
                 },
                 popEnterTransition = { _, _ ->
-                    slideInHorizontally(initialOffsetX = { -1000 }, animationSpec = tween())
+                    slideInHorizontally(initialOffsetX = { -it }, animationSpec = tween(navHostAnimationDurationMillis))
                 },
                 popExitTransition = { _, _ ->
-                    slideOutHorizontally(targetOffsetX = { 1000 }, animationSpec = tween())
+                    slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween(navHostAnimationDurationMillis))
                 },
             ) {
                 navigation(
@@ -404,10 +402,28 @@ fun Route(
                                     navController.navigate("DisconnectSocial/${persona.id.encodeUrl()}/${platform}/${social.id.encodeUrl()}")
                                 }
                             }
+                            onLabsSettingClick = {
+                                navController.navigate("PluginSettings")
+                            },
+                            onLabsItemClick = { appKey ->
+                                when(appKey) {
+                                    AppKey.Swap -> {
+                                        navController.navigate("MarketTrendSettings")
+                                    }
+                                    else -> Unit
+                                }
+                            }
                         )
                     }
                     wallets(navController = navController)
                     settings(navController = navController)
+                    composable("PluginSettings") {
+                        PluginSettingsScene(
+                            onBack = {
+                                navController.popBackStack()
+                            }
+                        )
+                    }
                     composable("ExportPrivateKeyScene") {
                         ExportPrivateKeyScene(
                             onBack = {
@@ -526,7 +542,7 @@ fun Route(
                             navArgument("personaId") { type = NavType.StringType },
                         )
                     ) {
-                        val personaId = it.arguments?.getString("personaId")?.decodeUrl()
+                        val personaId = it.arguments?.getString("personaId")
                         if (personaId != null) {
                             val viewModel = getViewModel<RenamePersonaViewModel> {
                                 parametersOf(personaId)
@@ -569,7 +585,7 @@ fun Route(
                             }
                         )
                     ) {
-                        val personaId = it.arguments?.getString("personaId")?.decodeUrl()
+                        val personaId = it.arguments?.getString("personaId")
                         val platform = it.arguments?.getString("platform")
                         if (personaId != null && platform != null) {
                             val repository = get<IPersonaRepository>()
@@ -592,10 +608,10 @@ fun Route(
                             navArgument("id") { type = NavType.StringType },
                         )
                     ) {
-                        val personaId = it.arguments?.getString("personaId")?.decodeUrl()
+                        val personaId = it.arguments?.getString("personaId")
                         val platform =
                             it.arguments?.getString("platform")?.let { PlatformType.valueOf(it) }
-                        val id = it.arguments?.getString("id")?.decodeUrl()
+                        val id = it.arguments?.getString("id")
                         val viewModel = getViewModel<DisconnectSocialViewModel>()
                         if (personaId != null && platform != null && id != null) {
                             DisconnectSocialDialog(
@@ -925,10 +941,10 @@ private fun NavGraphBuilder.wallets(
                 navController.navigate("CreateOrImportWallet/${type}")
             },
             title = {
-                Text(text = "Activation successful")
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_alert_biometry_id_activate_title))
             },
             text = {
-                Text(text = "Face id has been enabled successfully.")
+                Text(text = stringResource(R.string.common_alert_biometry_id_activate_description))
             },
             icon = {
                 Image(
@@ -943,7 +959,7 @@ private fun NavGraphBuilder.wallets(
                         navController.navigate("CreateOrImportWallet/${type}")
                     },
                 ) {
-                    Text(text = "Done")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_done))
                 }
             }
         )
@@ -980,7 +996,7 @@ private fun NavGraphBuilder.wallets(
                 navController.navigate("CreateOrImportWallet/${type}")
             },
             title = {
-                Text(text = "Activation successful")
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_alert_biometry_id_activate_title))
             },
             text = {
                 Text(text = "Touch id has been enabled successfully.")
@@ -998,7 +1014,7 @@ private fun NavGraphBuilder.wallets(
                         navController.navigate("CreateOrImportWallet/${type}")
                     },
                 ) {
-                    Text(text = "Done")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_done))
                 }
             }
         )
@@ -1143,10 +1159,10 @@ private fun NavGraphBuilder.settings(
                 navController.popBackStack()
             },
             title = {
-                Text(text = " Set up password before backup")
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_alert_setting_warning_backup_data_titile))
             },
             text = {
-                Text(text = "We have detected that you haven’t set up your backup password and/or payment password. Please set up your backup password and/or payment password before you back up.")
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_alert_setting_warning_backup_data_description))
             },
             buttons = {
                 PrimaryButton(
@@ -1155,7 +1171,7 @@ private fun NavGraphBuilder.settings(
                         navController.popBackStack()
                     }
                 ) {
-                    Text(text = "OK")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_ok))
                 }
             },
             icon = {
@@ -1208,7 +1224,7 @@ private fun NavGraphBuilder.settings(
                 Text(text = "Payment Password changed successfully!")
             },
             text = {
-                Text(text = "You have successfully changed your payment password.")
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_alert_change_password_description))
             },
             icon = {
                 Image(
@@ -1221,7 +1237,7 @@ private fun NavGraphBuilder.settings(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = { navController.popBackStack() },
                 ) {
-                    Text(text = "Done")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_done))
                 }
             }
         )
@@ -1244,10 +1260,10 @@ private fun NavGraphBuilder.settings(
         MaskDialog(
             onDismissRequest = { /*TODO*/ },
             title = {
-                Text(text = "Backup Password changed successfully!")
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_alert_change_backup_password_title))
             },
             text = {
-                Text(text = "You have successfully changed your backup password.")
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_alert_change_backup_password_description))
             },
             icon = {
                 Image(
@@ -1260,7 +1276,7 @@ private fun NavGraphBuilder.settings(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = { navController.popBackStack() },
                 ) {
-                    Text(text = "Done")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_done))
                 }
             }
         )
@@ -1285,7 +1301,7 @@ private fun NavGraphBuilder.settings(
                 emailValid = valid,
                 onConfirm = { viewModel.sendCode(value) },
                 buttonEnabled = loading,
-                title = "Set Up Email"
+                title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_bind_email_title)
             )
         }
         bottomSheet(
@@ -1318,7 +1334,7 @@ private fun NavGraphBuilder.settings(
                 EmailCodeInputModal(
                     email = email,
                     buttonEnabled = loading,
-                    title = "Set Up Email",
+                    title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_bind_email_title),
                     countDown = countDown,
                     canSend = canSend,
                     codeValid = valid,
@@ -1332,20 +1348,20 @@ private fun NavGraphBuilder.settings(
         dialog("Settings_ChangeEmail_Setup_Success") {
             MaskDialog(
                 onDismissRequest = { navController.popBackStack() },
-                title = { Text(text = "Email successfully set up!") },
+                title = { Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_bind_remote_info_setup_email_title)) },
                 icon = {
                     Image(
                         painter = painterResource(id = R.drawable.ic_property_1_snccess),
                         contentDescription = null
                     )
                 },
-                text = { Text(text = "You have successfully set up your email. ") },
+                text = { Text(text = stringResource(R.string.scene_setting_bind_remote_info_setup_email_detail)) },
                 buttons = {
                     PrimaryButton(
                         modifier = Modifier.fillMaxWidth(),
                         onClick = { navController.popBackStack() },
                     ) {
-                        Text(text = "Done")
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_done))
                     }
                 }
             )
@@ -1375,8 +1391,8 @@ private fun NavGraphBuilder.settings(
                 EmailCodeInputModal(
                     email = email,
                     buttonEnabled = loading,
-                    title = "Change Email",
-                    subTitle = { Text(text = "To change Email, please verify your current Email address") },
+                    title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_change_email_title),
+                    subTitle = { Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_change_email_tips)) },
                     countDown = countDown,
                     canSend = canSend,
                     codeValid = valid,
@@ -1405,7 +1421,7 @@ private fun NavGraphBuilder.settings(
                 emailValid = valid,
                 onConfirm = { viewModel.sendCode(value) },
                 buttonEnabled = loading,
-                title = "Change Email"
+                title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_change_email_title)
             )
         }
 
@@ -1439,7 +1455,7 @@ private fun NavGraphBuilder.settings(
                 EmailCodeInputModal(
                     email = email,
                     buttonEnabled = loading,
-                    title = "Change Email",
+                    title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_change_email_title),
                     countDown = countDown,
                     canSend = canSend,
                     codeValid = valid,
@@ -1453,20 +1469,20 @@ private fun NavGraphBuilder.settings(
         dialog("Settings_ChangeEmail_Change_Success") {
             MaskDialog(
                 onDismissRequest = { navController.popBackStack() },
-                title = { Text(text = "Email successfully changed!") },
+                title = { Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_bind_remote_info_change_email_title)) },
                 icon = {
                     Image(
                         painter = painterResource(id = R.drawable.ic_property_1_snccess),
                         contentDescription = null
                     )
                 },
-                text = { Text(text = "You have successfully changed your email. ") },
+                text = { Text(text = stringResource(R.string.scene_setting_bind_remote_info_setup_email_detail)) },
                 buttons = {
                     PrimaryButton(
                         modifier = Modifier.fillMaxWidth(),
                         onClick = { navController.popBackStack() },
                     ) {
-                        Text(text = "Done")
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_done))
                     }
                 }
             )
@@ -1496,7 +1512,7 @@ private fun NavGraphBuilder.settings(
                 phoneValid = valid,
                 onConfirm = { viewModel.sendCode(regionCode + phone) },
                 buttonEnabled = loading,
-                title = "Set Up Phone Number",
+                title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_bind_phone_number_title),
             )
         }
         bottomSheet(
@@ -1531,27 +1547,27 @@ private fun NavGraphBuilder.settings(
                     buttonEnabled = loading,
                     onSendCode = { viewModel.sendCode(phone) },
                     onVerify = { viewModel.verifyCode(code = code, value = phone) },
-                    title = "Set Up Phone Number"
+                    title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_bind_phone_number_title)
                 )
             }
         }
         dialog("Settings_ChangePhone_Setup_Success") {
             MaskDialog(
                 onDismissRequest = { navController.popBackStack() },
-                title = { Text(text = "Phone number successfully set up!") },
+                title = { Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_bind_remote_info_setup_phone_number_title)) },
                 icon = {
                     Image(
                         painter = painterResource(id = R.drawable.ic_property_1_snccess),
                         contentDescription = null
                     )
                 },
-                text = { Text(text = "You have successfully set up your email. ") },
+                text = { Text(text = stringResource(R.string.scene_setting_bind_remote_info_change_email_detail)) },
                 buttons = {
                     PrimaryButton(
                         modifier = Modifier.fillMaxWidth(),
                         onClick = { navController.popBackStack() },
                     ) {
-                        Text(text = "Done")
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_done))
                     }
                 }
             )
@@ -1586,8 +1602,8 @@ private fun NavGraphBuilder.settings(
                     buttonEnabled = loading,
                     onSendCode = { viewModel.sendCode(phone) },
                     onVerify = { viewModel.verifyCode(code = code, value = phone) },
-                    title = "Change Phone Number",
-                    subTitle = { Text(text = "To change your phone, you need to verify your current phone number.") }
+                    title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_change_phone_number_title),
+                    subTitle = { Text(text = stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_change_phone_number_tips)) }
                 )
             }
         }
@@ -1612,7 +1628,7 @@ private fun NavGraphBuilder.settings(
                 phoneValid = valid,
                 onConfirm = { viewModel.sendCode(regionCode + phone) },
                 buttonEnabled = loading,
-                title = "Change Phone Number",
+                title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_change_phone_number_title),
             )
         }
 
@@ -1648,27 +1664,27 @@ private fun NavGraphBuilder.settings(
                     buttonEnabled = loading,
                     onSendCode = { viewModel.sendCode(phone) },
                     onVerify = { viewModel.verifyCode(code = code, value = phone) },
-                    title = "Change Phone Number"
+                    title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_change_phone_number_title)
                 )
             }
         }
         dialog("Settings_ChangePhone_Change_Success") {
             MaskDialog(
                 onDismissRequest = { navController.popBackStack() },
-                title = { Text(text = "Phone number successfully changed!") },
+                title = { Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_bind_remote_info_change_phone_number_title)) },
                 icon = {
                     Image(
                         painter = painterResource(id = R.drawable.ic_property_1_snccess),
                         contentDescription = null
                     )
                 },
-                text = { Text(text = "You have successfully changed your phone number.") },
+                text = { Text(text = stringResource(R.string.scene_setting_bind_remote_info_change_phone_number_detail)) },
                 buttons = {
                     PrimaryButton(
                         modifier = Modifier.fillMaxWidth(),
                         onClick = { navController.popBackStack() },
                     ) {
-                        Text(text = "Done")
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_done))
                     }
                 }
             )

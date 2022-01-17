@@ -37,12 +37,12 @@ fun SetUpPaymentPassword(
                 .padding(ScaffoldPadding),
         ) {
             Text(
-                text = "Set Up Payment Password",
+                text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_set_password_title),
                 style = MaterialTheme.typography.h6,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
             Spacer(modifier = Modifier.height(20.dp))
-            Text(text = "Payment Password")
+            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_general_setup_payment_password))
             Spacer(modifier = Modifier.height(8.dp))
             MaskPasswordInputField(
                 value = newPassword,
@@ -52,7 +52,7 @@ fun SetUpPaymentPassword(
                 modifier = Modifier.fillMaxWidth(),
             )
             Spacer(modifier = Modifier.height(20.dp))
-            Text(text = "Repeat Payment Password")
+            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_set_password_repeat_payment_password))
             Spacer(modifier = Modifier.height(8.dp))
             MaskPasswordInputField(
                 value = newPasswordConfirm,
@@ -63,7 +63,7 @@ fun SetUpPaymentPassword(
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Payment Password must be a combination of 2 categories out of numbers, letters and special characters with a length of 8-20 characters.",
+                text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_change_password_password_demand),
                 color = MaterialTheme.colors.primary
             )
             Spacer(modifier = Modifier.height(16.dp))
@@ -75,7 +75,7 @@ fun SetUpPaymentPassword(
                 },
                 enabled = canConfirm
             ) {
-                Text(text = "Next")
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_next))
             }
         }
     }

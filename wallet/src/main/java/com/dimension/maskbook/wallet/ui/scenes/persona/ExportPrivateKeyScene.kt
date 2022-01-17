@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.ext.observeAsState
@@ -31,7 +32,7 @@ fun ExportPrivateKeyScene(
                         }
                     },
                     title = {
-                        Text(text = "Export Private Key")
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_persona_export_private_key_title))
                     }
                 )
             }
@@ -51,9 +52,7 @@ fun ExportPrivateKeyScene(
                 }
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "This export is only for exporting private key. \n" +
-                            "We do not export any other data. If you need more\n" +
-                            "data, please go to Settings: Backup and Recovery"
+                    text = stringResource(com.dimension.maskbook.wallet.R.string.scene_personas_action_export_private_key)
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 Row {
@@ -64,7 +63,7 @@ fun ExportPrivateKeyScene(
                                 onBack.invoke()
                             }
                         ) {
-                            Text(text = "Cancel")
+                            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_cancel))
                         }
                         Spacer(modifier = Modifier.width(20.dp))
                         val manager = LocalClipboardManager.current
@@ -78,7 +77,7 @@ fun ExportPrivateKeyScene(
                                 })
                             },
                         ) {
-                            Text(text = "Copy")
+                            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_backup_btn_copy))
                         }
                     }
                 }

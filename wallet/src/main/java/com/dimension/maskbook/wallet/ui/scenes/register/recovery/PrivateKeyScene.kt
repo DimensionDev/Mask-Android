@@ -25,7 +25,7 @@ fun PrivateKeyScene(
             topBar = {
                 MaskTopAppBar(
                     title = {
-                        Text(text = "Private Key")
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_identity_privatekey_import_title))
                     },
                     navigationIcon = {
                         MaskBackButton(
@@ -49,7 +49,7 @@ fun PrivateKeyScene(
                         .fillMaxWidth()
                         .height(100.dp),
                     placeholder = {
-                        Text(text = "Input your private key")
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_identity_privatekey_import_placeholder))
                     }
                 )
                 Spacer(modifier = Modifier.weight(1f))
@@ -57,7 +57,7 @@ fun PrivateKeyScene(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = onConfirm
                 ) {
-                    Text(text = "Confirm")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_confirm))
                 }
             }
         }

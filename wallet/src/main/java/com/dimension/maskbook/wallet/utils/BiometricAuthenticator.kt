@@ -14,9 +14,9 @@ class BiometricAuthenticator {
 
     fun biometricAuthenticate(
         context: Context,
-        title: String,
-        subtitle: String = "",
-        negativeButtonText: String = "Cancel",
+        title: Int,
+        subTitle: Int = -1,
+        negativeButtonText: Int = com.dimension.maskbook.wallet.R.string.common_controls_cancel,
         onSuccess: () -> Unit,
         onFailed: (errString:String) -> Unit =  {},
         onCanceled: () -> Unit = {}
@@ -40,9 +40,9 @@ class BiometricAuthenticator {
                 }
             })
             val promptInfo = BiometricPrompt.PromptInfo.Builder()
-                .setTitle(title)
-                .setSubtitle(subtitle)
-                .setNegativeButtonText(negativeButtonText)
+                .setTitle(context.resources.getText(title))
+                .setSubtitle(if (subTitle == -1) null else context.resources.getText(subTitle))
+                .setNegativeButtonText(context.resources.getText(negativeButtonText))
                 .setAllowedAuthenticators(BIOMETRIC_STRONG)
                 .build()
             try {

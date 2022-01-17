@@ -1,0 +1,3 @@
+files:
+  - source: /localization/app.json
+    translation: /localization/%file_name%-%locale_with_underscore%.json

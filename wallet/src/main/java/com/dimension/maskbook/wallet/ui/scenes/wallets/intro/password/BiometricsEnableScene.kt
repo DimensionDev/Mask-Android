@@ -1,13 +1,7 @@
 package com.dimension.maskbook.wallet.ui.scenes.wallets.intro.password
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -15,15 +9,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ui.MaskTheme
-import com.dimension.maskbook.wallet.ui.widget.MaskBackButton
-import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
-import com.dimension.maskbook.wallet.ui.widget.MaskSingleLineTopAppBar
-import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
-import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
-import com.dimension.maskbook.wallet.ui.widget.SecondaryButton
+import com.dimension.maskbook.wallet.ui.widget.*
 import com.dimension.maskbook.wallet.viewmodel.wallets.BiometricEnableViewModel
 import org.koin.androidx.compose.get
 
@@ -51,9 +41,9 @@ fun BiometricsEnableScene(
                     .fillMaxSize()
                     .padding(ScaffoldPadding),
             ) {
-                Text(text = FaceIdEnableSceneObjects.Title, style = MaterialTheme.typography.h4)
+                Text(text = stringResource(FaceIdEnableSceneObjects.Title), style = MaterialTheme.typography.h4)
                 Spacer(modifier = Modifier.height(12.dp))
-                Text(text = FaceIdEnableSceneObjects.Subtitle)
+                Text(text = stringResource(FaceIdEnableSceneObjects.Subtitle))
                 Column(
                     modifier = Modifier
                         .weight(1f)
@@ -72,13 +62,13 @@ fun BiometricsEnableScene(
                         viewModel.enable(
                             context = context,
                             onEnable = { onEnable.invoke(true) },
-                            title = FaceIdEnableSceneObjects.Title,
-                            subTitle = FaceIdEnableSceneObjects.Subtitle,
-                            negativeButton = FaceIdEnableSceneObjects.CancelButton
+                            title = R.string.scene_biometry_recognition_face_id_title,
+                            subTitle = R.string.scene_biometry_recognition_face_id_description,
+                            negativeButton = R.string.common_controls_no_thanks
                         )
                     },
                 ) {
-                    Text(text = FaceIdEnableSceneObjects.EnableButton)
+                    Text(text = stringResource(FaceIdEnableSceneObjects.EnableButton))
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 SecondaryButton(
@@ -86,7 +76,7 @@ fun BiometricsEnableScene(
                     onClick = {
                         onEnable.invoke(false)
                     }) {
-                    Text(text = FaceIdEnableSceneObjects.CancelButton)
+                    Text(text = stringResource(FaceIdEnableSceneObjects.CancelButton))
                 }
             }
         }
@@ -94,8 +84,8 @@ fun BiometricsEnableScene(
 }
 
 private object FaceIdEnableSceneObjects {
-    const val Title = "Unlock with face ID?"
-    const val Subtitle = "Unlock Mask Network faster by setting up facial recognition."
-    const val EnableButton = "Enable"
-    const val CancelButton = "No thanks"
+    val Title = R.string.scene_biometry_recognition_face_id_title
+    val Subtitle = R.string.scene_biometry_recognition_face_id_description
+    val EnableButton = R.string.common_controls_enable
+    val CancelButton = R.string.common_controls_no_thanks
 }

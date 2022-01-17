@@ -114,11 +114,9 @@ class WalletRepository(
 
     private suspend fun refreshCurrentWalletToken() {
         val currentWallet = currentWallet.firstOrNull() ?: return
-        val currentNetwork = dWebData.firstOrNull()?.chainType ?: return
         try {
             val token = services.debankServices.tokenList(
                 currentWallet.address,
-                currentNetwork.dbank,
                 is_all = true,
                 has_balance = false
             ).filter { it.isVerified == true }
@@ -310,44 +308,42 @@ class WalletRepository(
         password: String,
         platformType: CoinPlatformType
     ) {
-        scope.launch {
-            val wallet = WalletKey.fromJson(
-                json = keyStore,
-                name = name,
-                coinType = platformType.coinType,
-                password = "",
-                keyStoreJsonPassword = password
-            )
-            val account = wallet.addNewAccountAtPath(
-                platformType.coinType,
-                platformType.derivationPath.toString(),
-                name,
-                ""
-            )
-            val storeKey = DbStoredKey(
-                id = UUID.randomUUID().toString(),
-                hash = wallet.hash,
-                source = WalletSource.ImportedKeyStore,
-                data = wallet.data,
-                createdAt = System.currentTimeMillis(),
-                updatedAt = System.currentTimeMillis(),
-            )
-            val db = DbWallet(
-                id = UUID.randomUUID().toString(),
-                address = account.address,
-                name = name,
-                storeKeyId = storeKey.id,
-                derivationPath = account.derivationPath,
-                extendedPublicKey = account.extendedPublicKey,
-                coin = account.coin,
-                platformType = platformType,
-                createdAt = System.currentTimeMillis(),
-                updatedAt = System.currentTimeMillis(),
-            )
-            database.storedKeyDao().add(listOf(storeKey))
-            database.walletDao().add(listOf(db))
-            setCurrentWallet(db)
-        }
+        val wallet = WalletKey.fromJson(
+            json = keyStore,
+            name = name,
+            coinType = platformType.coinType,
+            password = "",
+            keyStoreJsonPassword = password
+        )
+        val account = wallet.addNewAccountAtPath(
+            platformType.coinType,
+            platformType.derivationPath.toString(),
+            name,
+            ""
+        )
+        val storeKey = DbStoredKey(
+            id = UUID.randomUUID().toString(),
+            hash = wallet.hash,
+            source = WalletSource.ImportedKeyStore,
+            data = wallet.data,
+            createdAt = System.currentTimeMillis(),
+            updatedAt = System.currentTimeMillis(),
+        )
+        val db = DbWallet(
+            id = UUID.randomUUID().toString(),
+            address = account.address,
+            name = name,
+            storeKeyId = storeKey.id,
+            derivationPath = account.derivationPath,
+            extendedPublicKey = account.extendedPublicKey,
+            coin = account.coin,
+            platformType = platformType,
+            createdAt = System.currentTimeMillis(),
+            updatedAt = System.currentTimeMillis(),
+        )
+        database.storedKeyDao().add(listOf(storeKey))
+        database.walletDao().add(listOf(db))
+        setCurrentWallet(db)
     }
 
     override suspend fun importWallet(
@@ -558,6 +554,12 @@ class WalletRepository(
             }
         }
     }
+
+    override fun validatePrivateKey(privateKey: String) = WalletKey.validate(privateKey = privateKey)
+
+    override fun validateMnemonic(mnemonic: String) =  WalletKey.validate(mnemonic = mnemonic)
+
+    override fun validateKeystore(keyStore: String) = WalletKey.validate(keyStoreJSON = keyStore)
 
     override fun sendTokenWithCurrentWallet(
         amount: BigDecimal,

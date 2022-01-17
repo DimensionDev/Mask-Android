@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.ui.MaskTheme
@@ -32,7 +33,7 @@ fun BackupWalletScene(
                 MaskSingleLineTopAppBar(
                     elevation = 0.dp,
                     title = {
-                        Text(text = "Back Up wallet")
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_backup_title))
                     }
                 )
             }
@@ -101,12 +102,12 @@ fun BackupWalletScene(
                     )
                     val text = remember(selectedTabIndex) {
                         when (BackupType.values()[selectedTabIndex]) {
-                            BackupType.Keystore -> "Please remember your current password. Your current login password is required for decryption when using the wallet Keystore for recovery."
-                            BackupType.PrivateKey -> "One can use the private key to recover wallet account directly. Please do not let anyone else see the private key."
+                            BackupType.Keystore -> com.dimension.maskbook.wallet.R.string.scene_wallet_backup_keystore_tips
+                            BackupType.PrivateKey -> com.dimension.maskbook.wallet.R.string.scene_wallet_backup_private_key_tips
                         }
                     }
                     Text(
-                        text = text,
+                        text = stringResource(text),
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxWidth(),
@@ -117,7 +118,7 @@ fun BackupWalletScene(
                             onClick = onBack,
                             modifier = Modifier.weight(1f),
                         ) {
-                            Text(text = "Cancel")
+                            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_cancel))
                         }
                         Spacer(modifier = Modifier.width(20.dp))
                         val clipboardManager = LocalClipboardManager.current
@@ -127,7 +128,7 @@ fun BackupWalletScene(
                             },
                             modifier = Modifier.weight(1f),
                         ) {
-                            Text(text = "Copy")
+                            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_backup_btn_copy))
                         }
                     }
                 }

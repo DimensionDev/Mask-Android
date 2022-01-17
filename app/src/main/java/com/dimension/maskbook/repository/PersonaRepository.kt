@@ -98,7 +98,7 @@ class PersonaRepository(
                 }
                 refreshSocial()
                 refreshPersona()
-                platformSwitcher.launchDeeplink("maskwallet://Home")
+                platformSwitcher.launchDeeplink("maskwallet://Home/Personas")
 //            platformSwitcher.launchDeeplink("maskwallet://ConnectSocial/${personaId.encodeUrl()}/${platformType}")
 //            while (true) {
 //                delay(Duration.Companion.seconds(5))

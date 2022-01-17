@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
@@ -51,7 +52,7 @@ fun RegisterScene(
                     )
                     Spacer(modifier = Modifier.height(9.dp))
                     Text(
-                        text = "The portal to a new and open Internet",
+                        text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_identity_empty_description),
                         style = LocalTextStyle.current.copy(color = MaterialTheme.colors.primary)
                     )
                 }
@@ -59,7 +60,7 @@ fun RegisterScene(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = { onCreateIdentity.invoke() },
                 ) {
-                    Text(text = "Create an identity")
+                    Text(text = stringResource(R.string.scene_identity_empty_create_an_identity))
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 SecondaryButton(
@@ -67,7 +68,7 @@ fun RegisterScene(
                         .fillMaxWidth(),
                     onClick = { onRecoveryAndSignIn.invoke() },
                 ) {
-                    Text(text = "Recovery & Sign In")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_identity_empty_recovery_sign_in))
                 }
 //                Spacer(modifier = Modifier.height(16.dp))
 //                SecondaryButton(
@@ -75,7 +76,7 @@ fun RegisterScene(
 //                        .fillMaxWidth(),
 //                    onClick = { onSynchronization.invoke() },
 //                ) {
-//                    Text(text = "Synchronization")
+//                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_identity_empty_synchronization))
 //                }
             }
         }

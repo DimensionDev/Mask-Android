@@ -14,6 +14,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.navigation.compose.dialog
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ext.observeAsState
+import com.dimension.maskbook.wallet.navHostAnimationDurationMillis
 import com.dimension.maskbook.wallet.ui.scenes.register.BackupIdentityScene
 import com.dimension.maskbook.wallet.ui.scenes.register.WelcomeScene
 import com.dimension.maskbook.wallet.ui.widget.MaskDialog
@@ -37,17 +38,16 @@ fun CreateIdentityHost(
         startDestination = "Backup",
         route = "CreateIdentity",
         enterTransition = { _, _ ->
-            slideInHorizontally(initialOffsetX = { 1000 }, animationSpec = tween())
+            slideInHorizontally(initialOffsetX = { it }, animationSpec = tween(navHostAnimationDurationMillis))
         },
         exitTransition = { _, _ ->
-            slideOutHorizontally(targetOffsetX = { -1000 }, animationSpec = tween())
-
+            slideOutHorizontally(targetOffsetX = { -it }, animationSpec = tween(navHostAnimationDurationMillis))
         },
         popEnterTransition = { _, _ ->
-            slideInHorizontally(initialOffsetX = { -1000 }, animationSpec = tween())
+            slideInHorizontally(initialOffsetX = { -it }, animationSpec = tween(navHostAnimationDurationMillis))
         },
         popExitTransition = { _, _ ->
-            slideOutHorizontally(targetOffsetX = { 1000 }, animationSpec = tween())
+            slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween(navHostAnimationDurationMillis))
         },
     ) {
         composable("Backup") {
@@ -113,10 +113,10 @@ fun CreateIdentityHost(
                     )
                 },
                 title = {
-                    Text(text = "Identity created!")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_alert_identity_create_title))
                 },
                 text = {
-                    Text(text = "Please don’t forget your identity code. Your identity code is the only proof of your user identity and the only basis for you to encrypt or decrypt social activities. ")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_alert_identity_create_description))
                 },
                 buttons = {
                     PrimaryButton(
@@ -129,7 +129,7 @@ fun CreateIdentityHost(
                             }
                         },
                     ) {
-                        Text(text = "Done")
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_done))
                     }
                 },
             )

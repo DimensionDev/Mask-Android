@@ -1,5 +1,6 @@
 package com.dimension.maskbook.wallet.ui.scenes.app.settings
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -37,10 +38,11 @@ private val tradeSources = mapOf(
 )
 
 private val NetworkType.text: String
+    @Composable
     get() = when (this) {
-        NetworkType.Ethereum -> "ETH Network"
-        NetworkType.Binance -> "BSC Network"
-        NetworkType.Polygon -> "Polygon/Matic Network"
+        NetworkType.Ethereum -> androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_app_swap_network_source_eth)
+        NetworkType.Binance -> androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_app_swap_network_source_bsc)
+        NetworkType.Polygon -> androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.chain_name_polygon)
         NetworkType.Arbitrum -> TODO()
     }
 
@@ -79,7 +81,8 @@ fun MarketTrendSettingsModal() {
         Column(
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
-                .padding(ScaffoldPadding),
+                .padding(ScaffoldPadding)
+                .animateContentSize(),
         ) {
             Text(
                 text = "Default trading source",

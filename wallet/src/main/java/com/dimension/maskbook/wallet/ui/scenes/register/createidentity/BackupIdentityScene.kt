@@ -12,8 +12,10 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ui.MaskTheme
 import com.dimension.maskbook.wallet.ui.widget.*
 
@@ -37,14 +39,14 @@ fun BackupIdentityScene(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = { showDialog = false },
                 ) {
-                    Text(text = "OK")
+                    Text(text = stringResource(R.string.common_controls_ok))
                 }
             },
             title = {
-                Text(text = "Identity Phrase")
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_alert_identity_phrase_title))
             },
             text = {
-                Text(text = "Your identity phrase is composed of randomly selected words. Please carefully write down each word in the order it appears.")
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_alert_identity_phrase_description))
             }
         )
     }
@@ -73,7 +75,7 @@ private fun BackupContent(
             topBar = {
                 MaskTopAppBar(
                     title = {
-                        Text(text = "Verify identity code")
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_identify_verify_title))
                     },
                     navigationIcon = {
                         MaskBackButton {
@@ -84,7 +86,7 @@ private fun BackupContent(
                         Row {
                             Text(
                                 modifier = Modifier.weight(1f),
-                                text = "Write down each word.",
+                                text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_identity_create_description),
                             )
                             Icon(
                                 Icons.Default.Refresh,
@@ -124,7 +126,7 @@ private fun BackupContent(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = { onVerify.invoke() },
                 ) {
-                    Text(text = "Verify")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_verify))
                 }
             }
         }

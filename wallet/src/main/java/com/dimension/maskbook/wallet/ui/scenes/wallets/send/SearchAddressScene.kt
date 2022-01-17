@@ -1,6 +1,7 @@
 package com.dimension.maskbook.wallet.ui.scenes.wallets.send
 
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
@@ -15,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -46,7 +48,7 @@ fun SearchAddressScene(
                     navigationIcon = {
                         MaskBackButton(onBack = onBack)
                     },
-                    title = { Text(text = "Send") }
+                    title = { Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_balance_btn_Send)) }
                 )
             }
         ) {
@@ -140,7 +142,7 @@ private fun SearchResultListContent(
     onItemSelect: (SearchAddressData) -> Unit
 ) {
     LazyColumn(modifier = Modifier.fillMaxSize()) {
-        itemHeader(icon = R.drawable.ic_profile, title = "Contacts")
+        itemHeader(icon = R.drawable.ic_profile, title = com.dimension.maskbook.wallet.R.string.scene_backup_restored_contacts)
         items(contacts.size) { index ->
             SearchAddressItem(
                 item = contacts[index],
@@ -164,7 +166,7 @@ private fun SearchInput(
     onScan: () -> Unit,
 //    searchResult: SearchAddressResult?,
 ) {
-    Text(text = "To")
+    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_sendTransaction_send_Label_To))
     Spacer(modifier = Modifier.height(10.dp))
     Row(
         modifier = Modifier
@@ -259,7 +261,7 @@ private fun EmptyInputContent(
     onItemSelect: (SearchAddressData) -> Unit
 ) {
     LazyColumn {
-        itemHeader(icon = R.drawable.ic_profile, title = "Contacts")
+        itemHeader(icon = R.drawable.ic_profile, title = com.dimension.maskbook.wallet.R.string.scene_backup_restored_contacts)
         items(contacts.size) { index ->
             SearchAddressItem(
                 item = contacts[index],
@@ -271,6 +273,29 @@ private fun EmptyInputContent(
             SearchAddressItem(
                 recent[index],
                 onClick = { if (selectItemEnable) onItemSelect.invoke(it) }
+            )
+        }
+    }
+}
+
+private fun LazyListScope.itemHeader(
+    @DrawableRes icon: Int,
+    @StringRes title: Int,
+) {
+    item {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(vertical = 8.dp)
+        ) {
+            Image(
+                painter = painterResource(id = icon),
+                contentDescription = null,
+                modifier = Modifier.size(24.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = stringResource(title),
+                style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.Bold)
             )
         }
     }
@@ -405,6 +430,6 @@ private fun ColumnScope.NextButton(
         modifier = Modifier.fillMaxWidth(),
         enabled = enable
     ) {
-        Text(text = "Next")
+        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_next))
     }
 }

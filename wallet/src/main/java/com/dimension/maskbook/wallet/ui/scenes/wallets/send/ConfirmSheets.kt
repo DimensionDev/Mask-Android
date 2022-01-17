@@ -31,7 +31,7 @@ fun ApproveConfirmSheet(
     onEditGasFee: () -> Unit,
 ) {
     ConfirmSheet(
-        title = "Approve",
+        title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_balance_transaction_approve),
         addressData = addressData,
         tokenData = tokenData,
         sendPrice = sendPrice,
@@ -55,7 +55,7 @@ fun SendConfirmSheet(
     onEditGasFee: () -> Unit,
 ) {
     ConfirmSheet(
-        title = "Send",
+        title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_balance_btn_Send),
         addressData = addressData,
         tokenData = tokenData,
         sendPrice = sendPrice,
@@ -191,10 +191,10 @@ private fun ColumnScope.GasFeeAndTotalContent(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = "Gas fee", modifier = Modifier.weight(1f))
+        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_sendTransaction_sendConfirmPop_gasFee), modifier = Modifier.weight(1f))
         Text(text = gasFee)
         TextButton(onClick = onEditGasFee) {
-            Text(text = "Edit", color = MaterialTheme.colors.primary)
+            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_sendTransaction_sendConfirmPop_edit), color = MaterialTheme.colors.primary)
         }
     }
     Spacer(modifier = Modifier.height(10.dp))
@@ -202,7 +202,7 @@ private fun ColumnScope.GasFeeAndTotalContent(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(text = "Total", modifier = Modifier.weight(1f))
+        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_sendTransaction_sendConfirmPop_total), modifier = Modifier.weight(1f))
         Text(text = total)
     }
 }
@@ -211,7 +211,7 @@ private fun ColumnScope.GasFeeAndTotalContent(
 private fun ColumnScope.ButtonContent(
     onCancel: () -> Unit,
     onConfirm: () -> Unit,
-    confirmText: String = "Confirm"
+    confirmText: String = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_confirm)
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -221,7 +221,7 @@ private fun ColumnScope.ButtonContent(
             onClick = onCancel,
             modifier = Modifier.weight(1f),
         ) {
-            Text(text = "Cancel")
+            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_cancel))
         }
         Spacer(modifier = Modifier.width(20.dp))
         PrimaryButton(
