@@ -20,12 +20,7 @@ import com.dimension.maskbook.wallet.db.model.DbWalletToken
 import com.dimension.maskbook.wallet.db.model.WalletSource
 import com.dimension.maskbook.wallet.ext.ether
 import com.dimension.maskbook.wallet.ext.gwei
-import com.dimension.maskbook.wallet.repository.ChainType
-import com.dimension.maskbook.wallet.repository.DWebData
-import com.dimension.maskbook.wallet.repository.IWalletRepository
-import com.dimension.maskbook.wallet.repository.TokenData
-import com.dimension.maskbook.wallet.repository.WalletData
-import com.dimension.maskbook.wallet.repository.dbank
+import com.dimension.maskbook.wallet.repository.*
 import com.dimension.maskbook.wallet.services.WalletServices
 import com.dimension.maskwalletcore.WalletKey
 import kotlinx.coroutines.CoroutineScope
@@ -521,7 +516,7 @@ class WalletRepository(
                             maxFee.gwei.wei.toBigInteger(),
                             gasLimit.toBigDecimal().toBigInteger(),
                             address,
-                            data,
+                            data
                             actualAmount,
                         )
                     } else {
