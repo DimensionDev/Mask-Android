@@ -10,7 +10,6 @@ import com.dimension.maskbook.wallet.db.model.*
 import com.dimension.maskbook.wallet.repository.ChainType
 import com.dimension.maskbook.wallet.services.OpenSeaServices
 import com.dimension.maskbook.wallet.services.model.AssetElement
-import java.util.*
 
 @OptIn(ExperimentalPagingApi::class)
 class CollectibleMediator(
@@ -43,7 +42,7 @@ class CollectibleMediator(
 
     private fun mapToDbCollectible(element: AssetElement): DbCollectible {
         return DbCollectible(
-            _id = UUID.randomUUID().toString(),
+            _id = "${element.assetContract?.address}@${element.tokenID}",
             name = element.name ?: "",
             description = element.description,
             walletId = walletId,

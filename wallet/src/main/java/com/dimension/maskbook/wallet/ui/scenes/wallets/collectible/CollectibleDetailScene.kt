@@ -54,6 +54,7 @@ fun CollectibleDetailScene(
                         Image(
                             painter = rememberImagePainter(item.imageUrl),
                             modifier = Modifier
+                                .fillMaxWidth()
                                 .clip(RoundedCornerShape(12.dp)),
                             contentDescription = null
                         )
@@ -61,6 +62,7 @@ fun CollectibleDetailScene(
                         Image(
                             painter = painterResource(R.drawable.mask),
                             modifier = Modifier
+                                .fillMaxWidth()
                                 .clip(RoundedCornerShape(12.dp)),
                             contentDescription = null
                         )
