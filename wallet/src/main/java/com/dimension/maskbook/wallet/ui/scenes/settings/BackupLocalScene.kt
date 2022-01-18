@@ -41,6 +41,7 @@ import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.navHostAnimationDurationMillis
 import com.dimension.maskbook.wallet.ui.MaskTheme
 import com.dimension.maskbook.wallet.ui.widget.MaskBackButton
+import com.dimension.maskbook.wallet.ui.widget.MaskInputField
 import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
 import com.dimension.maskbook.wallet.ui.widget.MaskTopAppBar
 import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
@@ -198,7 +199,7 @@ fun BackupLocalScene(
             Spacer(modifier = Modifier.height(16.dp))
             Text(text = stringResource(R.string.scene_setting_backup_recovery_back_up_password))
             Spacer(modifier = Modifier.height(8.dp))
-            OutlinedTextField(
+            MaskInputField(
                 value = password,
                 onValueChange = {
                     viewModel.setPassword(it)

@@ -5,6 +5,7 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
@@ -46,20 +47,32 @@ fun BackUpPasswordModal(
             Spacer(modifier = Modifier.height(8.dp))
             AnimatedVisibility(visible = !biometricEnabled) {
                 Column {
-                    MaskPasswordInputField(value = password, onValueChange = onPasswordChanged)
-                    if (!passwordValid) {
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(text = stringResource(R.string.scene_change_password_incorrect_password), color = Color.Red)
-                    }
+                    MaskPasswordInputField(
+                        value = password,
+                        onValueChange = onPasswordChanged,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = if (password.isNotEmpty() && !passwordValid) {
+                            stringResource(R.string.scene_change_password_incorrect_password)
+                        } else "",
+                        color = Color.Red
+                    )
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
             Row {
                 PrimaryButton(
                     onClick = onConfirm,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    enabled = biometricEnabled || passwordValid,
                 ) {
-                    Text(text = if (biometricEnabled) stringResource(R.string.scene_wallet_unlock_button) else stringResource(R.string.common_controls_confirm))
+                    Text(
+                        text = if (biometricEnabled) stringResource(R.string.scene_wallet_unlock_button) else stringResource(
+                            R.string.common_controls_next
+                        )
+                    )
                 }
             }
         }

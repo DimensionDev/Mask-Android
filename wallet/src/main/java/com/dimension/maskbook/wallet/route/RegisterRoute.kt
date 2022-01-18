@@ -84,12 +84,6 @@ fun NavGraphBuilder.registerRoute(
             CreateIdentityHost(
                 personaName = it.arguments?.getString("personaName").orEmpty(),
                 onDone = {
-                    // navController.navigate("Main") {
-                    //     launchSingleTop = true
-                    //     popUpTo("Home") {
-                    //         inclusive = false
-                    //     }
-                    // }
                     navController.navigate(Uri.parse("maskwallet://Home/Personas"), navOptions = navOptions {
                         launchSingleTop = true
                         popUpTo("Home") {

@@ -14,6 +14,7 @@ import com.dimension.maskbook.wallet.ext.encodeUrl
 import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.repository.AppKey
 import com.dimension.maskbook.wallet.repository.IPersonaRepository
+import com.dimension.maskbook.wallet.repository.ISettingsRepository
 import com.dimension.maskbook.wallet.repository.Network
 import com.dimension.maskbook.wallet.repository.PlatformType
 import com.dimension.maskbook.wallet.ui.scenes.MainHost
@@ -23,8 +24,8 @@ import com.dimension.maskbook.wallet.ui.scenes.persona.BackUpPasswordModal
 import com.dimension.maskbook.wallet.ui.scenes.persona.DeleteDialog
 import com.dimension.maskbook.wallet.ui.scenes.persona.ExportPrivateKeyScene
 import com.dimension.maskbook.wallet.ui.scenes.persona.LogoutDialog
-import com.dimension.maskbook.wallet.ui.scenes.persona.PersonaMenu
-import com.dimension.maskbook.wallet.ui.scenes.persona.RenamePersona
+import com.dimension.maskbook.wallet.ui.scenes.persona.PersonaMenuScene
+import com.dimension.maskbook.wallet.ui.scenes.persona.RenamePersonaModal
 import com.dimension.maskbook.wallet.ui.scenes.persona.SwitchPersonaModal
 import com.dimension.maskbook.wallet.ui.scenes.persona.social.ConnectSocialModal
 import com.dimension.maskbook.wallet.ui.scenes.persona.social.DisconnectSocialDialog
@@ -98,7 +99,7 @@ fun NavGraphBuilder.mainRoute(
                     navController.navigate("PluginSettings")
                 },
                 onLabsItemClick = { appKey ->
-                    when(appKey) {
+                    when (appKey) {
                         AppKey.Swap -> {
                             navController.navigate("MarketTrendSettings")
                         }
@@ -109,13 +110,6 @@ fun NavGraphBuilder.mainRoute(
         }
         composable("PluginSettings") {
             PluginSettingsScene(
-                onBack = {
-                    navController.popBackStack()
-                }
-            )
-        }
-        composable("ExportPrivateKeyScene") {
-            ExportPrivateKeyScene(
                 onBack = {
                     navController.popBackStack()
                 }
@@ -185,15 +179,16 @@ fun NavGraphBuilder.mainRoute(
         bottomSheet("MarketTrendSettings") {
             MarketTrendSettingsModal()
         }
-        composable(
-            "PersonaMenu"
-        ) {
-            val persona by get<IPersonaRepository>().currentPersona.observeAsState(
-                initial = null
-            )
+        composable("PersonaMenu") {
+            val persona by get<IPersonaRepository>().currentPersona.observeAsState(initial = null)
+            val repository = get<ISettingsRepository>()
+            val backupPassword by repository.backupPassword.observeAsState(initial = "")
+            val paymentPassword by repository.paymentPassword.observeAsState(initial = "")
             persona?.let {
-                PersonaMenu(
+                PersonaMenuScene(
                     personaData = it,
+                    backupPassword = backupPassword,
+                    paymentPassword = paymentPassword,
                     navController = navController,
                     onBack = {
                         navController.navigateUp()
@@ -205,19 +200,16 @@ fun NavGraphBuilder.mainRoute(
             val viewModel = getViewModel<SwitchPersonaViewModel>()
             val current by viewModel.current.observeAsState(initial = null)
             val items by viewModel.items.observeAsState(initial = emptyList())
-
-            current?.let { it1 ->
-                SwitchPersonaModal(
-                    currentPersonaData = it1,
-                    items = items,
-                    onAdd = {
-                        navController.navigate("CreatePersona")
-                    },
-                    onItemClicked = {
-                        viewModel.switch(it)
-                    }
-                )
-            }
+            SwitchPersonaModal(
+                currentPersonaData = current,
+                items = items,
+                onAdd = {
+                    navController.navigate("CreatePersona")
+                },
+                onItemClicked = {
+                    viewModel.switch(it)
+                }
+            )
         }
         bottomSheet(
             "RenamePersona/{personaId}",
@@ -231,10 +223,10 @@ fun NavGraphBuilder.mainRoute(
                     parametersOf(personaId)
                 }
                 val name by viewModel.name.observeAsState(initial = "")
-                RenamePersona(
+                RenamePersonaModal(
                     name = name,
-                    onNameChanged = {
-                        viewModel.setName(it)
+                    onNameChanged = { value ->
+                        viewModel.setName(value)
                     },
                     onDone = {
                         viewModel.confirm()
@@ -242,6 +234,13 @@ fun NavGraphBuilder.mainRoute(
                     },
                 )
             }
+        }
+        composable("ExportPrivateKey") {
+            ExportPrivateKeyScene(
+                onBack = {
+                    navController.popBackStack()
+                }
+            )
         }
         bottomSheet(
             route = "SelectPlatform/{personaId}",
