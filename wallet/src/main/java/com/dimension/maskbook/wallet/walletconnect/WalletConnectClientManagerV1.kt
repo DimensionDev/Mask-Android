@@ -5,16 +5,17 @@ import android.util.Log
 import com.dimension.maskbook.wallet.BuildConfig
 import com.dimension.maskbook.wallet.ext.ether
 import com.dimension.maskbook.wallet.repository.ChainType
-import com.dimension.maskbook.wallet.services.okHttpClient
 import com.squareup.moshi.Moshi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.onEach
+import okhttp3.OkHttpClient
 import org.komputing.khex.extensions.toNoPrefixHexString
 import org.walletconnect.Session
 import org.walletconnect.impls.FileWCSessionStore
 import org.walletconnect.impls.MoshiPayloadAdapter
 import org.walletconnect.impls.OkHttpTransport
+import org.walletconnect.impls.WCSession
 import java.io.File
 import java.math.BigDecimal
 import java.util.*
@@ -28,6 +29,9 @@ class WalletConnectClientManagerV1(private val context: Context) : WalletConnect
     private val connectedSessions = ConcurrentHashMap<String, Session>()
     private val moshi by lazy {
         Moshi.Builder().build()
+    }
+    private val client by lazy {
+        OkHttpClient.Builder().build()
     }
 
     private val storage by lazy {
@@ -51,7 +55,7 @@ class WalletConnectClientManagerV1(private val context: Context) : WalletConnect
                 key = ByteArray(32).also { Random().nextBytes(it) }.toNoPrefixHexString()
             ).let {
                 config = it
-                session = it.session().apply {
+                session = it.toFullyQualifiedConfig().session().apply {
                     offer()
                 }
             }
@@ -127,15 +131,12 @@ class WalletConnectClientManagerV1(private val context: Context) : WalletConnect
                     from = fromAddress,
                     to = toAddress,
                     nonce = "",
-                    gasPrice = "0x${gasPrice.ether.also { 
-                        Log.d("Mimao", "gas price is ${it.gwei}, total is:${gasLimit * it.gwei.toLong()}")
-                    }.wei.toBigInteger().toString(16)}",
-                    gasLimit = gasLimit.toString(),//"0x${gasLimit.toBigDecimal().toBigInteger().toString(16)}",
+                    // calculation of gas fee in wallet connect sdk was wrong
+                    gasPrice = null,// "0x${gasPrice.ether.wei.toBigInteger().toString(16)}",
+                    gasLimit = null,//"0x${gasLimit.toBigDecimal().toBigInteger().toString(16)}",
                     data = data,
                     value = "0x${amount.ether.wei.toLong().toBigInteger().toString(16)}"
-                ).also {
-                       Log.d("Mimao", "send params:$it")
-                },
+                ),
                 callback = {
                     Log.d("Mimao", "transaction response:$it")
                 }
@@ -159,11 +160,11 @@ class WalletConnectClientManagerV1(private val context: Context) : WalletConnect
         }
     }
 
-    private fun Session.Config.session() = WCSessionV1(
+    private fun Session.FullyQualifiedConfig.session() = WCSessionV1(
         config = this,
         payloadAdapter = MoshiPayloadAdapter(moshi),
         sessionStore = storage,
-        transportBuilder = OkHttpTransport.Builder(client = okHttpClient, moshi = moshi),
+        transportBuilder = OkHttpTransport.Builder(client = client, moshi = moshi),
         clientMeta = Session.PeerMeta(
             name = "Mask Network",
             url = "https://mask.io",

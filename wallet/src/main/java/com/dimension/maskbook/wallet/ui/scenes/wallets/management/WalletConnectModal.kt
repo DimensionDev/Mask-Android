@@ -116,7 +116,7 @@ fun WalletConnectModal() {
                             navController.navigate("WalletConnectConnecting")
                             try {
                                 context.startActivity(Intent(Intent.ACTION_VIEW).apply {
-                                    data = viewModel.generateDeeplink(it)
+                                    data = viewModel.generateDeeplink()
                                     flags = Intent.FLAG_ACTIVITY_NEW_TASK
                                 })
                             } catch (e: ActivityNotFoundException) {

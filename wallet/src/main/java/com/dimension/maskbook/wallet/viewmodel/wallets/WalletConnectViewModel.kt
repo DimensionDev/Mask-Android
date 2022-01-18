@@ -70,7 +70,8 @@ class WalletConnectViewModel(
         connect()
     }
 
-    fun generateDeeplink(it: WCWallet): Uri? = Uri.parse(it.wcDeeplink(Uri.encode(wcUrl.value)))
+    // not all wallet can handle: appScheme://wc?uri=wcUrl e.g. MetaMask, so we use origin wcUrl instead
+    fun generateDeeplink(): Uri? = Uri.parse(wcUrl.value)
 
     private val _supportedWallets by lazy {
         repository.supportedWallets.asStateIn(

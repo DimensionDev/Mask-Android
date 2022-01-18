@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentHashMap
 
 // origin WCSession has some bugs parsing response, so we created a new one
 class WCSessionV1(
-    private val config: Session.Config,
+    private val config: Session.FullyQualifiedConfig,
     private val payloadAdapter: Session.PayloadAdapter,
     private val sessionStore: WCSessionStore,
     transportBuilder: Session.Transport.Builder,
