@@ -1,6 +1,5 @@
 package com.dimension.maskbook.wallet.repository
 
-import androidx.paging.PagingData
 import com.dimension.maskbook.debankapi.model.ChainID
 import com.dimension.maskbook.wallet.db.model.*
 import com.dimension.maskbook.wallet.services.okHttpClient
@@ -65,8 +64,7 @@ data class WalletTokenData(
 }
 
 data class WalletCollectibleData(
-    val _id: String,
-    val id: Long,
+    val id: String,
     val chainType: ChainType,
     val icon: String?,
     val name: String,
@@ -75,15 +73,13 @@ data class WalletCollectibleData(
     companion object {
         fun fromDb(data: DbCollectible) = with(data) {
             WalletCollectibleData(
-                _id = _id,
-                id = id,
+                id = _id,
                 chainType = chainType,
                 icon = this.collection.imageURL,
                 name = collection.name ?: name,
                 items = listOf(
                     WalletCollectibleItemData(
-                        _id = _id,
-                        id = id,
+                        id = _id,
                         link = this.permalink ?: this.externalLink ?: "",
                         imageUrl = this.url.imageURL ?: this.url.imageOriginalURL ?: "",
                         previewUrl = this.url.imagePreviewURL ?: this.url.imageThumbnailURL ?: "",
@@ -96,8 +92,7 @@ data class WalletCollectibleData(
 }
 
 data class WalletCollectibleItemData(
-    val _id: String,
-    val id: Long,
+    val id: String,
     val link: String,
     val previewUrl: String?,
     val imageUrl: String?,
@@ -249,9 +244,6 @@ interface IWalletRepository {
     suspend fun getKeyStore(walletData: WalletData, platformType: CoinPlatformType): String
     suspend fun getPrivateKey(walletData: WalletData, platformType: CoinPlatformType): String
     suspend fun getTotalBalance(address: String): Double
-    fun getCollectiblesByWallet(
-        walletData: WalletData,
-    ): Flow<PagingData<WalletCollectibleData>>
     fun deleteCurrentWallet()
     fun deleteWallet(id: String)
     fun renameWallet(value: String, id: String)

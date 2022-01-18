@@ -23,13 +23,7 @@ import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ext.encodeUrl
 import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.navHostAnimationDurationMillis
-import com.dimension.maskbook.wallet.repository.AppKey
-import com.dimension.maskbook.wallet.repository.ChainType
-import com.dimension.maskbook.wallet.repository.IPersonaRepository
-import com.dimension.maskbook.wallet.repository.ISettingsRepository
-import com.dimension.maskbook.wallet.repository.ITokenRepository
-import com.dimension.maskbook.wallet.repository.IWalletRepository
-import com.dimension.maskbook.wallet.repository.PlatformType
+import com.dimension.maskbook.wallet.repository.*
 import com.dimension.maskbook.wallet.route.backup
 import com.dimension.maskbook.wallet.ui.scenes.MainHost
 import com.dimension.maskbook.wallet.ui.scenes.app.PluginSettingsScene
@@ -48,6 +42,7 @@ import com.dimension.maskbook.wallet.ui.scenes.register.recovery.remote.remoteBa
 import com.dimension.maskbook.wallet.ui.scenes.settings.*
 import com.dimension.maskbook.wallet.ui.scenes.wallets.UnlockWalletDialog
 import com.dimension.maskbook.wallet.ui.scenes.wallets.WalletQrcodeScene
+import com.dimension.maskbook.wallet.ui.scenes.wallets.collectible.CollectibleDetailScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.common.MultiChainWalletDialog
 import com.dimension.maskbook.wallet.ui.scenes.wallets.create.CreateOrImportWalletScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.create.CreateType
@@ -73,6 +68,7 @@ import com.dimension.maskbook.wallet.viewmodel.wallets.BiometricViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.TokenDetailViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.UnlockWalletViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.WalletManagementModalViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.collectible.CollectibleDetailViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.management.*
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
@@ -82,7 +78,6 @@ import com.google.accompanist.navigation.material.ExperimentalMaterialNavigation
 import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 import com.google.accompanist.navigation.material.bottomSheet
 import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.distinctUntilChanged
 import org.koin.androidx.compose.get
 import org.koin.androidx.compose.getViewModel
@@ -352,6 +347,33 @@ fun Route(
                                 }
                             }
                         )
+                    }
+                    composable(
+                        "CollectibleDetail/{id}",
+                        arguments = listOf(
+                            navArgument("id") { type = NavType.StringType }
+                        )
+                    ) {
+                        it.arguments?.getString("id")?.let { id ->
+                            val viewModel = getViewModel<CollectibleDetailViewModel> {
+                                parametersOf(id)
+                            }
+                            val data by viewModel.data.observeAsState(initial = null)
+                            data?.let {
+                                CollectibleDetailScene(
+                                    data = it,
+                                    onBack = {
+                                        navController.popBackStack()
+                                    },
+                                    onSend = {
+
+                                    },
+                                    onReceive = {
+                                        navController.navigate("WalletQrcode")
+                                    }
+                                )
+                            }
+                        }
                     }
                     wallets(navController = navController)
                     settings(navController = navController)

@@ -4,36 +4,14 @@ import android.app.Application
 import android.content.Context
 import com.dimension.maskbook.handler.Web3MessageHandler
 import com.dimension.maskbook.platform.PlatformSwitcher
-import com.dimension.maskbook.repository.AppRepository
-import com.dimension.maskbook.repository.JSMethod
-import com.dimension.maskbook.repository.PersonaRepository
-import com.dimension.maskbook.repository.SettingsRepository
-import com.dimension.maskbook.repository.WalletRepository
-import com.dimension.maskbook.repository.personaDataStore
-import com.dimension.maskbook.repository.settingsDataStore
-import com.dimension.maskbook.repository.walletDataStore
+import com.dimension.maskbook.repository.*
 import com.dimension.maskbook.wallet.db.model.CoinPlatformType
 import com.dimension.maskbook.wallet.platform.IPlatformSwitcher
-import com.dimension.maskbook.wallet.repository.BackupRepository
-import com.dimension.maskbook.wallet.repository.ChainType
-import com.dimension.maskbook.wallet.repository.IAppRepository
-import com.dimension.maskbook.wallet.repository.IContactsRepository
-import com.dimension.maskbook.wallet.repository.IPersonaRepository
-import com.dimension.maskbook.wallet.repository.ISendHistoryRepository
-import com.dimension.maskbook.wallet.repository.ISettingsRepository
-import com.dimension.maskbook.wallet.repository.ITokenRepository
-import com.dimension.maskbook.wallet.repository.ITransactionRepository
-import com.dimension.maskbook.wallet.repository.IWalletContactRepository
-import com.dimension.maskbook.wallet.repository.IWalletRepository
-import com.dimension.maskbook.wallet.repository.SendHistoryRepository
-import com.dimension.maskbook.wallet.repository.TokenRepository
-import com.dimension.maskbook.wallet.repository.TransactionRepository
-import com.dimension.maskbook.wallet.repository.WalletContactRepository
+import com.dimension.maskbook.wallet.repository.*
 import com.dimension.maskbook.wallet.servicesModule
 import com.dimension.maskbook.wallet.walletModules
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.merge
@@ -117,6 +95,7 @@ val repositoryModules = module {
 //    single<IWalletRepository> { FakeWalletRepository() }
     single<ISettingsRepository> { SettingsRepository(get<Context>().settingsDataStore) }
     single<IWalletRepository> { WalletRepository(get<Context>().walletDataStore, get(), get()) }
+    single<ICollectibleRepository> { CollectibleRepository(get(), get()) }
     single<ITransactionRepository> { TransactionRepository(get(), get()) }
     single<ITokenRepository> { TokenRepository(get()) }
     single<ISendHistoryRepository> { SendHistoryRepository(get()) }

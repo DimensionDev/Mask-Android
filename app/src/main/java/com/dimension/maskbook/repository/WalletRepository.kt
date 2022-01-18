@@ -7,7 +7,9 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import androidx.paging.*
+import androidx.paging.LoadType
+import androidx.paging.PagingConfig
+import androidx.paging.PagingState
 import androidx.room.withTransaction
 import com.dimension.maskbook.debankapi.model.ChainID
 import com.dimension.maskbook.wallet.db.AppDatabase
@@ -600,22 +602,4 @@ class WalletRepository(
         return WalletKey.create(password).mnemonic
     }
 
-    @OptIn(ExperimentalPagingApi::class)
-    override fun getCollectiblesByWallet(walletData: WalletData): Flow<PagingData<WalletCollectibleData>> {
-        return Pager(
-            config = PagingConfig(pageSize = 20),
-            remoteMediator = CollectibleMediator(
-                walletId = walletData.id,
-                database = database,
-                openSeaServices = services.openSeaServices,
-                walletAddress = walletData.address
-            ),
-        ) {
-            database.collectibleDao().getByWallet(walletData.id)
-        }.flow.map {
-            it.map {
-                WalletCollectibleData.fromDb(it)
-            }
-        }
-    }
 }

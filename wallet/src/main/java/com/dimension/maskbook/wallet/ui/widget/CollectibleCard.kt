@@ -21,8 +21,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
+import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.repository.WalletCollectibleData
 import com.dimension.maskbook.wallet.repository.WalletCollectibleItemData
 
@@ -80,18 +82,21 @@ fun CollectibleCard(
                         contentPadding = PaddingValues(12.dp),
                     ) {
                         items(data.items) {
-                            if (it.imageUrl != null) {
-                                Image(
-                                    painter = rememberImagePainter(it.imageUrl),
-                                    modifier = Modifier
-                                        .size(145.dp)
-                                        .clip(RoundedCornerShape(12.dp))
-                                        .clickable {
-                                            onItemClicked.invoke(it)
-                                        },
-                                    contentDescription = null
-                                )
+                            val painter = if (!it.previewUrl.isNullOrEmpty()) {
+                                rememberImagePainter(it.previewUrl)
+                            } else {
+                                painterResource(R.drawable.mask)
                             }
+                            Image(
+                                painter = painter,
+                                modifier = Modifier
+                                    .size(145.dp)
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .clickable {
+                                        onItemClicked.invoke(it)
+                                    },
+                                contentDescription = null
+                            )
                         }
                     }
                 }
