@@ -8,11 +8,31 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.MutableLiveData
 import com.dimension.maskbook.wallet.platform.IPlatformSwitcher
-import com.dimension.maskbook.wallet.repository.*
+import com.dimension.maskbook.wallet.repository.ContactData
+import com.dimension.maskbook.wallet.repository.IContactsRepository
+import com.dimension.maskbook.wallet.repository.IPersonaRepository
+import com.dimension.maskbook.wallet.repository.Network
+import com.dimension.maskbook.wallet.repository.Persona
+import com.dimension.maskbook.wallet.repository.PersonaData
+import com.dimension.maskbook.wallet.repository.PlatformType
+import com.dimension.maskbook.wallet.repository.Profile
+import com.dimension.maskbook.wallet.repository.RedirectTarget
+import com.dimension.maskbook.wallet.repository.SocialData
 import com.dimension.maskwalletcore.WalletKey
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import kotlin.time.ExperimentalTime
 
 private val CurrentPersonaKey = stringPreferencesKey("current_persona")
@@ -210,22 +230,25 @@ class PersonaRepository(
 
     override fun logout() {
         scope.launch {
-            currentPersona.firstOrNull()?.let {
-                removePersona(it.id)
+            val deletePersona = currentPersona.firstOrNull() ?: return@launch
+            val newCurrentPersona = persona.firstOrNull()?.first { it.id != deletePersona.id }
+
+            removePersona(deletePersona.id)
+
+            if (newCurrentPersona != null) {
+                setCurrentPersona(newCurrentPersona.id)
             }
+            refreshPersona()
         }
     }
 
-    override fun removePersona(id: String) {
-        scope.launch {
-            JSMethod.Persona.removePersona(id)
-            val emailKey = stringPreferencesKey("${id}_email")
-            val phoneKey = stringPreferencesKey("${id}_phone")
-            dataStore.edit {
-                it[emailKey] = ""
-                it[phoneKey] = ""
-            }
-            refreshPersona()
+    private suspend fun removePersona(id: String) {
+        JSMethod.Persona.removePersona(id)
+        val emailKey = stringPreferencesKey("${id}_email")
+        val phoneKey = stringPreferencesKey("${id}_phone")
+        dataStore.edit {
+            it[emailKey] = ""
+            it[phoneKey] = ""
         }
     }
 

@@ -21,7 +21,6 @@ import com.dimension.maskbook.wallet.ui.scenes.MainHost
 import com.dimension.maskbook.wallet.ui.scenes.app.PluginSettingsScene
 import com.dimension.maskbook.wallet.ui.scenes.app.settings.MarketTrendSettingsModal
 import com.dimension.maskbook.wallet.ui.scenes.persona.BackUpPasswordModal
-import com.dimension.maskbook.wallet.ui.scenes.persona.DeleteDialog
 import com.dimension.maskbook.wallet.ui.scenes.persona.ExportPrivateKeyScene
 import com.dimension.maskbook.wallet.ui.scenes.persona.LogoutDialog
 import com.dimension.maskbook.wallet.ui.scenes.persona.PersonaMenuScene
@@ -116,18 +115,13 @@ fun NavGraphBuilder.mainRoute(
             )
         }
         dialog("Logout") {
+            val repository = get<IPersonaRepository>()
             LogoutDialog(
                 onBack = {
                     navController.popBackStack()
                 },
                 onDone = {
-                    navController.popBackStack("Home", inclusive = false)
-                }
-            )
-        }
-        dialog("Delete") {
-            DeleteDialog(
-                onBack = {
+                    repository.logout()
                     navController.popBackStack("Home", inclusive = false)
                 }
             )

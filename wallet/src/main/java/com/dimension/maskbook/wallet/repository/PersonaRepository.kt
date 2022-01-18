@@ -81,7 +81,6 @@ interface IPersonaRepository {
     fun setCurrentPersona(id: String)
     fun generateNewMnemonic(): List<String>
     fun logout()
-    fun removePersona(id: String)
     fun updatePersona(id: String, value: String)
     fun connectTwitter(personaId: String, userName: String)
     fun connectFacebook(personaId: String, userName: String)

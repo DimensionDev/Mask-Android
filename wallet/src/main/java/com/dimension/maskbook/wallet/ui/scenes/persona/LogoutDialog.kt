@@ -11,11 +11,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
-import com.dimension.maskbook.wallet.repository.IPersonaRepository
 import com.dimension.maskbook.wallet.ui.widget.MaskDialog
 import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
 import com.dimension.maskbook.wallet.ui.widget.SecondaryButton
-import org.koin.androidx.compose.get
 
 @Composable
 fun LogoutDialog(
@@ -40,20 +38,14 @@ fun LogoutDialog(
             Row {
                 SecondaryButton(
                     modifier = Modifier.weight(1f),
-                    onClick = {
-                        onBack.invoke()
-                    }
+                    onClick = onBack,
                 ) {
                     Text(text = stringResource(R.string.common_controls_cancel))
                 }
                 Spacer(modifier = Modifier.width(20.dp))
-                val repository = get<IPersonaRepository>()
                 PrimaryButton(
                     modifier = Modifier.weight(1f),
-                    onClick = {
-                        repository.logout()
-                        onDone.invoke()
-                    },
+                    onClick = onDone,
                 ) {
                     Text(text = stringResource(R.string.common_controls_confirm))
                 }
