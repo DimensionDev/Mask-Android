@@ -24,7 +24,7 @@ import com.dimension.maskbook.wallet.repository.Network
 import com.dimension.maskbook.wallet.repository.SocialData
 import com.dimension.maskbook.wallet.ui.scenes.persona.contacts.ContactsScene
 import com.dimension.maskbook.wallet.ui.scenes.persona.post.PostScene
-import com.dimension.maskbook.wallet.ui.scenes.persona.social.SocialScreen
+import com.dimension.maskbook.wallet.ui.scenes.persona.social.SocialScene
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
@@ -113,7 +113,7 @@ fun PersonaInfoScene(
             state = pagerState,
         ) { page ->
             when (items[page]) {
-                PersonaInfoData.Social -> SocialScreen(
+                PersonaInfoData.Social -> SocialScene(
                     socialList = socialList,
                     onAddSocialClick = { onAddSocialClick(null) },
                     onItemClick = onSocialItemClick,

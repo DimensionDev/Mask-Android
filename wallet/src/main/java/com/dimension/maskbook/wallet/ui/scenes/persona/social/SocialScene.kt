@@ -1,9 +1,5 @@
 package com.dimension.maskbook.wallet.ui.scenes.persona.social
 
-import androidx.annotation.StringRes
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -36,12 +32,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import com.dimension.maskbook.wallet.repository.Network
@@ -59,7 +55,7 @@ private val addIcon = SocialData(
 )
 
 @Composable
-fun SocialScreen(
+fun SocialScene(
     socialList: List<SocialData>,
     onAddSocialClick: () -> Unit,
     onItemClick: (SocialData, isEditing: Boolean) -> Unit,
@@ -170,14 +166,7 @@ private fun SocialItem(
             ),
         icon = {
             Box {
-                Image(
-                    painter = rememberImagePainter(item.avatar),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(SocialScreenDefaults.itemIconSize)
-                        .background(Color.Gray, shape = CircleShape), // TODO load avatar
-                    alpha = LocalContentAlpha.current,
-                )
+                AvatarImage(item.avatar, item.name)
                 Image(
                     painter = painterResource(item.network.icon),
                     contentDescription = null,
@@ -208,6 +197,34 @@ private fun SocialItem(
             )
         }
     )
+}
+
+@Composable
+private fun AvatarImage(avatar: String, name: String) {
+    if (avatar.isNotEmpty()) {
+        Image(
+            painter = rememberImagePainter(avatar),
+            contentDescription = null,
+            modifier = Modifier
+                .size(SocialScreenDefaults.itemIconSize)
+                .clip(CircleShape),
+            alpha = LocalContentAlpha.current,
+        )
+    } else {
+        Box(
+            modifier = Modifier
+                .alpha(LocalContentAlpha.current)
+                .size(SocialScreenDefaults.itemIconSize)
+                .background(MaterialTheme.colors.primary, shape = CircleShape),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(
+                text = name.firstOrNull()?.toString() ?: "N",
+                style = MaterialTheme.typography.h4,
+                color = MaterialTheme.colors.onPrimary,
+            )
+        }
+    }
 }
 
 @Preview(showBackground = true)
