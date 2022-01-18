@@ -11,6 +11,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.util.*
@@ -117,6 +119,13 @@ class WalletConnectRepository(
                 createdAt = System.currentTimeMillis(),
                 updatedAt = System.currentTimeMillis(),
                 walletConnectChainType = responder.chainType,
+                walletConnectDeepLink = supportedWallets.firstOrNull()?.find {
+                    try {
+                        Uri.parse(it.homePage).host.equals(Uri.parse(responder.url).host, ignoreCase = true)
+                    } catch (e: Throwable) {
+                        false
+                    }
+                }?.nativeDeeplink
             )
         }
 

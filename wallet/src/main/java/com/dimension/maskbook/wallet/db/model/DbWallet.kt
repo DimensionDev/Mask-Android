@@ -41,6 +41,7 @@ data class DbWallet(
     val name: String,
     val platformType: CoinPlatformType,
     val walletConnectChainType: ChainType? = null,
+    val walletConnectDeepLink: String? = null,
     val createdAt: Long,
     val updatedAt: Long,
 )

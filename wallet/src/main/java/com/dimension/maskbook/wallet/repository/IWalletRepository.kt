@@ -30,6 +30,7 @@ data class WalletData(
     val imported: Boolean,
     val fromWalletConnect: Boolean,
     val walletConnectChainType: ChainType? = ChainType.eth,
+    val walletConnectDeepLink: String? = null,
     val tokens: List<WalletTokenData>,
     val balance: Map<DbWalletBalanceType, BigDecimal>,
 ) {
@@ -45,7 +46,8 @@ data class WalletData(
                     WalletTokenData.fromDb(it)
                 },
                 balance = balance.map { it.type to it.value }.toMap(),
-                walletConnectChainType = wallet.walletConnectChainType
+                walletConnectChainType = wallet.walletConnectChainType,
+                walletConnectDeepLink = wallet.walletConnectDeepLink
             )
         }
     }

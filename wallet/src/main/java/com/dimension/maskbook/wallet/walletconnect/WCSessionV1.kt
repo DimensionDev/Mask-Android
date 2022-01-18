@@ -18,7 +18,6 @@ class WCSessionV1(
     clientMeta: Session.PeerMeta,
     clientId: String? = null
 ) : Session {
-
     private val keyLock = Any()
 
     // Persisted state
@@ -256,7 +255,7 @@ class WCSessionV1(
         approvedAccounts = null
         chainId = null
         internalClose()
-        propagateToCallbacks { onStatus(Session.Status.Disconnected) }
+        propagateToCallbacks { onStatus(Session.Status.Closed) }
     }
 
     private fun storeSession() {

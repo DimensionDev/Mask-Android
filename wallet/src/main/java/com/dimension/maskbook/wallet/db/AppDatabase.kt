@@ -23,7 +23,7 @@ import java.math.BigDecimal
         DbWalletBalance::class,
         DbWCWallet::class
     ],
-    version = 5,
+    version = 6,
 )
 @TypeConverters(BigDecimalTypeConverter::class, StringListConverter::class)
 abstract class AppDatabase : RoomDatabase() {
