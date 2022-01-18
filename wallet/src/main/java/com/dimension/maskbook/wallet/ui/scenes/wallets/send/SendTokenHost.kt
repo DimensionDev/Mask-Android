@@ -1,8 +1,7 @@
 package com.dimension.maskbook.wallet.ui.scenes.wallets.send
 
 import androidx.compose.material.MaterialTheme
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -31,7 +30,7 @@ import kotlin.time.ExperimentalTime
 @OptIn(ExperimentalMaterialNavigationApi::class, ExperimentalTime::class)
 @Composable
 fun SendTokenHost(
-    tokenData: TokenData,
+    initialTokenData: TokenData,
     onDone: () -> Unit,
 ) {
     val rootNavController = LocalRootNavController.current
@@ -48,6 +47,11 @@ fun SendTokenHost(
     val arrives by gasFeeViewModel.arrives.observeAsState(initial = "")
     val ethPrice by gasFeeViewModel.ethPrice.observeAsState(initial = BigDecimal.ZERO)
     val gasTotal by gasFeeViewModel.gasTotal.observeAsState(initial = BigDecimal.ZERO)
+
+    val tokenDataViewModel = getViewModel<SendTokenDataViewModel> {
+        parametersOf(initialTokenData)
+    }
+    val tokenData by tokenDataViewModel.tokenData.observeAsState(initial = initialTokenData)
 
     ModalBottomSheetLayout(
         bottomSheetNavigator,
@@ -86,6 +90,26 @@ fun SendTokenHost(
                     }
                 )
             }
+            composable("SearchToken") {
+                val walletTokens by tokenDataViewModel.walletTokens.observeAsState(emptyList())
+                var query by remember {
+                    mutableStateOf("")
+                }
+                SearchTokenScene(
+                    onBack = {
+                        navController.popBackStack()
+                    },
+                    query = query,
+                    onQueryChanged = {
+                        query = it
+                    },
+                    onSelect = {
+                        tokenDataViewModel.setTokenData(it.tokenData)
+                        navController.popBackStack()
+                    },
+                    tokens = walletTokens
+                )
+            }
             composable(
                 "Send/{address}",
                 arguments = listOf(
@@ -94,10 +118,9 @@ fun SendTokenHost(
             ) {
                 it.arguments?.getString("address")?.let { address ->
                     val viewModel = getViewModel<SendTokenViewModel> {
-                        parametersOf(tokenData, address)
+                        parametersOf(address)
                     }
                     val addressData by viewModel.addressData.observeAsState(initial = null)
-                    val walletTokenData by viewModel.walletTokenData.observeAsState(initial = null)
                     val amount by viewModel.amount.observeAsState(initial = "0")
                     val password by viewModel.password.observeAsState(initial = "")
                     val canConfirm by viewModel.canConfirm.observeAsState(initial = false)
@@ -108,6 +131,7 @@ fun SendTokenHost(
                     val context = LocalContext.current
 
                     addressData?.let { addressData ->
+                        val walletTokenData by tokenDataViewModel.walletTokenData.observeAsState(initial = null)
                         walletTokenData?.let { walletTokenData ->
                             SendTokenScene(
                                 onBack = { navController.popBackStack() },
@@ -115,7 +139,7 @@ fun SendTokenHost(
                                 onAddContact = { navController.navigate("AddContactSheet/${address}") },
                                 tokenData = tokenData,
                                 walletTokenData = walletTokenData,
-                                onSelectToken = { /*TODO*/ },
+                                onSelectToken = { navController.navigate("SearchToken") },
                                 amount = amount,
                                 maxAmount = walletTokenData.count,
                                 onAmountChanged = { viewModel.setAmount(it) },
@@ -213,7 +237,7 @@ fun SendTokenHost(
                 it.arguments?.getString("amount")?.let { BigDecimal(it) }?.let { amount ->
                     it.arguments?.getString("address")?.let { address ->
                         val viewModel = getViewModel<SendConfirmViewModel> {
-                            parametersOf(tokenData, address)
+                            parametersOf(address)
                         }
                         val addressData by viewModel.addressData.observeAsState(initial = null)
                         addressData?.let { addressData ->
@@ -224,7 +248,7 @@ fun SendTokenHost(
                                 gasFee = (gasTotal * ethPrice).humanizeDollar(),
                                 total = (amount * tokenData.price + gasTotal * ethPrice).humanizeDollar(),
                                 onConfirm = {
-                                    viewModel.send(amount, gasLimit, gasFee, maxFee, maxPriorityFee)
+                                    viewModel.send(tokenData, amount, gasLimit, gasFee, maxFee, maxPriorityFee)
                                     onDone.invoke()
                                 },
                                 onCancel = { navController.popBackStack() },

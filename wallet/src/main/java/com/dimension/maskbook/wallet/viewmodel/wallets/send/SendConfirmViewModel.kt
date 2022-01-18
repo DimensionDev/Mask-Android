@@ -10,13 +10,13 @@ import kotlinx.coroutines.flow.mapNotNull
 import java.math.BigDecimal
 
 class SendConfirmViewModel(
-    private val tokenData: TokenData,
     private val toAddress: String,
     private val sendHistoryRepository: ISendHistoryRepository,
     private val walletRepository: IWalletRepository,
 ): ViewModel() {
 
     fun send(
+        tokenData: TokenData,
         amount: BigDecimal,
         gasLimit: Double,
         gasFee: BigDecimal,
