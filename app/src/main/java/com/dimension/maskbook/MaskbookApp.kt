@@ -4,7 +4,14 @@ import android.app.Application
 import android.content.Context
 import com.dimension.maskbook.handler.Web3MessageHandler
 import com.dimension.maskbook.platform.PlatformSwitcher
-import com.dimension.maskbook.repository.*
+import com.dimension.maskbook.repository.AppRepository
+import com.dimension.maskbook.repository.JSMethod
+import com.dimension.maskbook.repository.PersonaRepository
+import com.dimension.maskbook.repository.SettingsRepository
+import com.dimension.maskbook.repository.WalletRepository
+import com.dimension.maskbook.repository.personaDataStore
+import com.dimension.maskbook.repository.settingsDataStore
+import com.dimension.maskbook.repository.walletDataStore
 import com.dimension.maskbook.wallet.db.model.CoinPlatformType
 import com.dimension.maskbook.wallet.platform.IPlatformSwitcher
 import com.dimension.maskbook.wallet.repository.*
@@ -15,7 +22,9 @@ import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManagerV1
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -47,19 +56,16 @@ fun initRepository() {
 fun initEvent() {
     CoroutineScope(Dispatchers.IO).launch {
         launch {
-            JSMethod.Misc.openCreateWalletView().collect {
-                if (it != null) {
-                    KoinPlatformTools.defaultContext().get().get<IPlatformSwitcher>()
-                        .launchDeeplink("maskwallet://Home")// TODO: maskwallet://Home/Persona
-                }
-            }
-        }
-        launch {
-            JSMethod.Misc.openDashboardView().collect {
-                if (it != null) {
-                    KoinPlatformTools.defaultContext().get().get<IPlatformSwitcher>()
-                        .launchDeeplink("maskwallet://Home")// TODO: maskwallet://Home/Wallet
-                }
+            merge(
+                JSMethod.Misc.openCreateWalletView(),
+                JSMethod.Misc.openDashboardView(),
+                JSMethod.Misc.openAppsView(),
+                JSMethod.Misc.openSettingsView(),
+            ).filter { uri ->
+                uri.isNotEmpty()
+            }.collect { uri ->
+                KoinPlatformTools.defaultContext().get().get<IPlatformSwitcher>()
+                    .launchDeeplink(uri)
             }
         }
         launch {
@@ -95,7 +101,7 @@ fun initWalletConnect() {
         .initSessions { address ->
             CoroutineScope(Dispatchers.IO).launch {
                 walletRepository.findWalletByAddress(address)?.let { wallet ->
-                    walletRepository.deleteWallet(wallet)
+                    walletRepository.deleteWallet(wallet.id)
                 }
             }
         }

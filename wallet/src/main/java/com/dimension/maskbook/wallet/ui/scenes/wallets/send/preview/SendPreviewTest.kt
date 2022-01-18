@@ -104,7 +104,7 @@ fun SignatureRequestSignSheetPreview() {
 @Composable
 fun UnlockWalletPreview() {
     UnlockWalletDialog(
-        unlockError = "Incorrect Password.",
+        unlockError = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_change_password_incorrect_password),
         onCancel = { /*TODO*/ }
     ) {
 
@@ -116,7 +116,7 @@ fun EditGasPriceSheetPreview() {
     EditGasPriceSheet(
         price = "1.44",
         costFee = "0.0034",
-        costFeeUnit = "Eth",
+        costFeeUnit = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.chain_short_name_eth),
         arrivesIn = "30 Sec",
         mode = GasPriceEditMode.MEDIUM,
         gasLimit = "45000",

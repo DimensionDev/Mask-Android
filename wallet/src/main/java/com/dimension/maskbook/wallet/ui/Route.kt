@@ -12,28 +12,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.snapshotFlow
-import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
-import androidx.navigation.NavType
+import androidx.compose.ui.res.stringResource
+import androidx.navigation.*
 import androidx.navigation.compose.dialog
-import androidx.navigation.navArgument
-import androidx.navigation.navDeepLink
-import androidx.navigation.navOptions
-import androidx.navigation.plusAssign
 import com.dimension.maskbook.wallet.R
-import com.dimension.maskbook.wallet.ext.decodeUrl
 import com.dimension.maskbook.wallet.ext.encodeUrl
 import com.dimension.maskbook.wallet.ext.observeAsState
+import com.dimension.maskbook.wallet.navHostAnimationDurationMillis
+import com.dimension.maskbook.wallet.repository.AppKey
 import com.dimension.maskbook.wallet.repository.ChainType
 import com.dimension.maskbook.wallet.repository.IPersonaRepository
 import com.dimension.maskbook.wallet.repository.ISettingsRepository
@@ -42,14 +32,9 @@ import com.dimension.maskbook.wallet.repository.IWalletRepository
 import com.dimension.maskbook.wallet.repository.PlatformType
 import com.dimension.maskbook.wallet.route.backup
 import com.dimension.maskbook.wallet.ui.scenes.MainHost
+import com.dimension.maskbook.wallet.ui.scenes.app.PluginSettingsScene
 import com.dimension.maskbook.wallet.ui.scenes.app.settings.MarketTrendSettingsModal
-import com.dimension.maskbook.wallet.ui.scenes.persona.CreatePersona
-import com.dimension.maskbook.wallet.ui.scenes.persona.DeleteDialog
-import com.dimension.maskbook.wallet.ui.scenes.persona.ExportPrivateKeyScene
-import com.dimension.maskbook.wallet.ui.scenes.persona.LogoutDialog
-import com.dimension.maskbook.wallet.ui.scenes.persona.PersonaMenu
-import com.dimension.maskbook.wallet.ui.scenes.persona.RenamePersona
-import com.dimension.maskbook.wallet.ui.scenes.persona.SwitchPersonaModal
+import com.dimension.maskbook.wallet.ui.scenes.persona.*
 import com.dimension.maskbook.wallet.ui.scenes.persona.social.ConnectSocialModal
 import com.dimension.maskbook.wallet.ui.scenes.persona.social.DisconnectSocialDialog
 import com.dimension.maskbook.wallet.ui.scenes.register.RegisterScene
@@ -60,11 +45,8 @@ import com.dimension.maskbook.wallet.ui.scenes.register.recovery.RecoveryComplec
 import com.dimension.maskbook.wallet.ui.scenes.register.recovery.RecoveryHomeScene
 import com.dimension.maskbook.wallet.ui.scenes.register.recovery.local.RecoveryLocalHost
 import com.dimension.maskbook.wallet.ui.scenes.register.recovery.remote.remoteBackupRecovery
-import com.dimension.maskbook.wallet.ui.scenes.settings.AppearanceSettings
-import com.dimension.maskbook.wallet.ui.scenes.settings.BackupPasswordSettings
-import com.dimension.maskbook.wallet.ui.scenes.settings.DataSourceSettings
-import com.dimension.maskbook.wallet.ui.scenes.settings.LanguageSettings
-import com.dimension.maskbook.wallet.ui.scenes.settings.PaymentPasswordSettings
+import com.dimension.maskbook.wallet.ui.scenes.settings.*
+import com.dimension.maskbook.wallet.ui.scenes.wallets.UnlockWalletDialog
 import com.dimension.maskbook.wallet.ui.scenes.wallets.WalletQrcodeScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.common.MultiChainWalletDialog
 import com.dimension.maskbook.wallet.ui.scenes.wallets.create.CreateOrImportWalletScene
@@ -78,12 +60,7 @@ import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.password.TouchIdEna
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.*
 import com.dimension.maskbook.wallet.ui.scenes.wallets.send.SendTokenHost
 import com.dimension.maskbook.wallet.ui.scenes.wallets.token.TokenDetailScene
-import com.dimension.maskbook.wallet.ui.widget.EmailCodeInputModal
-import com.dimension.maskbook.wallet.ui.widget.EmailInputModal
-import com.dimension.maskbook.wallet.ui.widget.MaskDialog
-import com.dimension.maskbook.wallet.ui.widget.PhoneCodeInputModal
-import com.dimension.maskbook.wallet.ui.widget.PhoneInputModal
-import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
+import com.dimension.maskbook.wallet.ui.widget.*
 import com.dimension.maskbook.wallet.viewmodel.persona.RenamePersonaViewModel
 import com.dimension.maskbook.wallet.viewmodel.persona.SwitchPersonaViewModel
 import com.dimension.maskbook.wallet.viewmodel.persona.social.DisconnectSocialViewModel
@@ -95,12 +72,9 @@ import com.dimension.maskbook.wallet.viewmodel.settings.PhoneSetupViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.BiometricViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.TokenDetailViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.WalletConnectManagementViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.UnlockWalletViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.WalletManagementModalViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletBackupViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletDeleteViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletRenameViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletSwitchViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletTransactionHistoryViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.management.*
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.navigation
@@ -140,16 +114,16 @@ fun Route(
                 navController = navController,
                 startDestination = startDestination,
                 enterTransition = { _, _ ->
-                    slideInHorizontally(initialOffsetX = { 1000 }, animationSpec = tween())
+                    slideInHorizontally(initialOffsetX = { it } , animationSpec = tween(navHostAnimationDurationMillis))
                 },
                 exitTransition = { _, _ ->
-                    slideOutHorizontally(targetOffsetX = { -1000 }, animationSpec = tween())
+                    slideOutHorizontally(targetOffsetX = { -it } , animationSpec = tween(navHostAnimationDurationMillis))
                 },
                 popEnterTransition = { _, _ ->
-                    slideInHorizontally(initialOffsetX = { -1000 }, animationSpec = tween())
+                    slideInHorizontally(initialOffsetX = { -it }, animationSpec = tween(navHostAnimationDurationMillis))
                 },
                 popExitTransition = { _, _ ->
-                    slideOutHorizontally(targetOffsetX = { 1000 }, animationSpec = tween())
+                    slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween(navHostAnimationDurationMillis))
                 },
             ) {
                 navigation(
@@ -357,14 +331,38 @@ fun Route(
                         "Home",
                         deepLinks = listOf(
                             navDeepLink {
-                                uriPattern = "maskwallet://Home"
+                                uriPattern = "maskwallet://Home/{tab}"
                             }
+                        ),
+                        arguments = listOf(
+                            navArgument("tab") { type = NavType.StringType }
                         )
                     ) {
-                        MainHost(onBack = onBack)
+                        MainHost(
+                            initialTab = it.arguments?.getString("tab").orEmpty(),
+                            onBack = onBack,
+                            onLabsSettingClick = {
+                                navController.navigate("PluginSettings")
+                            },
+                            onLabsItemClick = { appKey ->
+                                when(appKey) {
+                                    AppKey.Swap -> {
+                                        navController.navigate("MarketTrendSettings")
+                                    }
+                                    else -> Unit
+                                }
+                            }
+                        )
                     }
                     wallets(navController = navController)
                     settings(navController = navController)
+                    composable("PluginSettings") {
+                        PluginSettingsScene(
+                            onBack = {
+                                navController.popBackStack()
+                            }
+                        )
+                    }
                     composable("ExportPrivateKeyScene") {
                         ExportPrivateKeyScene(
                             onBack = {
@@ -389,6 +387,50 @@ fun Route(
                             }
                         )
                     }
+                    bottomSheet(
+                        "BackUpPassword/{target}",
+                        arguments = listOf(
+                            navArgument("target") { type = NavType.StringType }
+                        )
+                    ) { backStackEntry ->
+                        val target = backStackEntry.arguments?.getString("target")
+                        val viewModel = getViewModel<UnlockWalletViewModel>()
+                        val biometricEnable by viewModel.biometricEnabled.observeAsState(initial = false)
+                        val password by viewModel.password.observeAsState(initial = "")
+                        val passwordValid by viewModel.passwordValid.observeAsState(initial = false)
+                        val context = LocalContext.current
+                        BackUpPasswordModal(
+                            biometricEnabled = biometricEnable,
+                            password = password,
+                            onPasswordChanged = { viewModel.setPassword(it) },
+                            passwordValid = passwordValid,
+                            onConfirm = {
+                                if (biometricEnable) {
+                                    viewModel.authenticate(
+                                        context = context,
+                                        onSuccess = {
+                                            target?.let {
+                                                navController.navigate(it, navOptions {
+                                                    popUpTo("BackUpPassword") {
+                                                        inclusive = true
+                                                    }
+                                                })
+                                            } ?: navController.popBackStack()
+                                        }
+                                    )
+                                } else {
+                                    target?.let {
+                                        navController.navigate(it, navOptions {
+                                            popUpTo("BackUpPassword") {
+                                                inclusive = true
+                                            }
+                                        })
+                                    } ?: navController.popBackStack()
+                                }
+                            }
+                        )
+                    }
+
                     bottomSheet("MarketTrendSettings") {
                         MarketTrendSettingsModal()
                     }
@@ -439,7 +481,7 @@ fun Route(
                             navArgument("personaId") { type = NavType.StringType },
                         )
                     ) {
-                        val personaId = it.arguments?.getString("personaId")?.decodeUrl()
+                        val personaId = it.arguments?.getString("personaId")
                         if (personaId != null) {
                             val viewModel = getViewModel<RenamePersonaViewModel> {
                                 parametersOf(personaId)
@@ -469,7 +511,7 @@ fun Route(
                             }
                         )
                     ) {
-                        val personaId = it.arguments?.getString("personaId")?.decodeUrl()
+                        val personaId = it.arguments?.getString("personaId")
                         val platform = it.arguments?.getString("platform")
                             ?.let { PlatformType.valueOf(it) }
 //                        val viewModel = when (platform) {
@@ -521,10 +563,10 @@ fun Route(
                             navArgument("id") { type = NavType.StringType },
                         )
                     ) {
-                        val personaId = it.arguments?.getString("personaId")?.decodeUrl()
+                        val personaId = it.arguments?.getString("personaId")
                         val platform =
                             it.arguments?.getString("platform")?.let { PlatformType.valueOf(it) }
-                        val id = it.arguments?.getString("id")?.decodeUrl()
+                        val id = it.arguments?.getString("id")
                         val viewModel = getViewModel<DisconnectSocialViewModel>()
                         if (personaId != null && platform != null && id != null) {
                             DisconnectSocialDialog(
@@ -697,7 +739,7 @@ private fun NavGraphBuilder.wallets(
             WalletManagementModal(
                 walletData = wallet,
                 onRename = { navController.navigate("WalletManagementRename/${wallet.id}") },
-                onBackup = { navController.navigate("WalletManagementBackup") },
+                onBackup = { navController.navigate("UnlockWalletDialog/WalletManagementBackup") },
                 onTransactionHistory = { navController.navigate("WalletManagementTransactionHistory") },
                 onDelete = {
                     navController.popBackStack()
@@ -814,7 +856,7 @@ private fun NavGraphBuilder.wallets(
             onAccept = {
                 if (password.isNullOrEmpty()) {
                     navController.navigate("WalletIntroHostPassword/$type")
-                } else if (!enableBiometric){
+                } else if (!enableBiometric) {
                     navController.navigate("WalletIntroHostFaceId/$type")
                 } else {
                     navController.navigate("CreateOrImportWallet/${type}")
@@ -836,7 +878,7 @@ private fun NavGraphBuilder.wallets(
         val enableBiometric by get<ISettingsRepository>().biometricEnabled.observeAsState(initial = false)
         SetUpPaymentPassword(
             onNext = {
-                if (!enableBiometric){
+                if (!enableBiometric) {
                     navController.navigate("WalletIntroHostFaceId/$type")
                 } else {
                     navController.navigate("CreateOrImportWallet/${type}")
@@ -859,7 +901,7 @@ private fun NavGraphBuilder.wallets(
             onEnable = { enabled ->
                 if (enabled) {
                     navController.navigate("WalletIntroHostFaceIdEnableSuccess/$type")
-                } else  {
+                } else {
                     navController.navigate("CreateOrImportWallet/${type}")
                 }
             }
@@ -880,10 +922,10 @@ private fun NavGraphBuilder.wallets(
                 navController.navigate("CreateOrImportWallet/${type}")
             },
             title = {
-                Text(text = "Activation successful")
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_alert_biometry_id_activate_title))
             },
             text = {
-                Text(text = "Face id has been enabled successfully.")
+                Text(text = stringResource(R.string.common_alert_biometry_id_activate_description))
             },
             icon = {
                 Image(
@@ -898,7 +940,7 @@ private fun NavGraphBuilder.wallets(
                         navController.navigate("CreateOrImportWallet/${type}")
                     },
                 ) {
-                    Text(text = "Done")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_done))
                 }
             }
         )
@@ -935,7 +977,7 @@ private fun NavGraphBuilder.wallets(
                 navController.navigate("CreateOrImportWallet/${type}")
             },
             title = {
-                Text(text = "Activation successful")
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_alert_biometry_id_activate_title))
             },
             text = {
                 Text(text = "Touch id has been enabled successfully.")
@@ -953,7 +995,7 @@ private fun NavGraphBuilder.wallets(
                         navController.navigate("CreateOrImportWallet/${type}")
                     },
                 ) {
-                    Text(text = "Done")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_done))
                 }
             }
         )
@@ -987,7 +1029,7 @@ private fun NavGraphBuilder.wallets(
             CreateWalletHost(
                 wallet = wallet,
                 onDone = {
-                    navController.navigate(Uri.parse("maskwallet://Home"), navOptions = navOptions {
+                    navController.navigate(Uri.parse("maskwallet://Home/Wallets"), navOptions = navOptions {
                         launchSingleTop = true
                         popUpTo("Home") {
                             inclusive = false
@@ -1009,7 +1051,7 @@ private fun NavGraphBuilder.wallets(
             ImportWalletHost(
                 wallet = wallet,
                 onDone = {
-                    navController.navigate(Uri.parse("maskwallet://Home"), navOptions = navOptions {
+                    navController.navigate(Uri.parse("maskwallet://Home/Wallets"), navOptions = navOptions {
                         launchSingleTop = true
                         popUpTo("Home") {
                             inclusive = false
@@ -1040,6 +1082,51 @@ private fun NavGraphBuilder.wallets(
             }
         }
     }
+
+    dialog(
+        "UnlockWalletDialog/{target}",
+        arguments = listOf(
+            navArgument("target") { type = NavType.StringType }
+        )
+    ) { backStackEntry ->
+        val viewModel = getViewModel<UnlockWalletViewModel>()
+        val biometricEnable by viewModel.biometricEnabled.observeAsState(initial = false)
+        val password by viewModel.password.observeAsState(initial = "")
+        val passwordValid by viewModel.passwordValid.observeAsState(initial = false)
+        val context = LocalContext.current
+        val target = backStackEntry.arguments?.getString("target")
+        UnlockWalletDialog(
+            onBack = { navController.popBackStack() },
+            biometricEnabled = biometricEnable,
+            password = password,
+            onPasswordChanged = { viewModel.setPassword(it) },
+            passwordValid = passwordValid,
+            onConfirm = {
+                if (biometricEnable) {
+                    viewModel.authenticate(
+                        context = context,
+                        onSuccess = {
+                            target?.let {
+                                navController.navigate(it, navOptions {
+                                    popUpTo("UnlockWalletDialog") {
+                                        inclusive = true
+                                    }
+                                })
+                            } ?: navController.popBackStack()
+                        }
+                    )
+                } else {
+                    target?.let {
+                        navController.navigate(it, navOptions {
+                            popUpTo("UnlockWalletDialog") {
+                                inclusive = true
+                            }
+                        })
+                    } ?: navController.popBackStack()
+                }
+            }
+        )
+    }
 }
 
 @ExperimentalAnimationApi
@@ -1053,10 +1140,10 @@ private fun NavGraphBuilder.settings(
                 navController.popBackStack()
             },
             title = {
-                Text(text = " Set up password before backup")
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_alert_setting_warning_backup_data_titile))
             },
             text = {
-                Text(text = "We have detected that you haven’t set up your backup password and/or payment password. Please set up your backup password and/or payment password before you back up.")
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_alert_setting_warning_backup_data_description))
             },
             buttons = {
                 PrimaryButton(
@@ -1065,7 +1152,7 @@ private fun NavGraphBuilder.settings(
                         navController.popBackStack()
                     }
                 ) {
-                    Text(text = "OK")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_ok))
                 }
             },
             icon = {
@@ -1118,7 +1205,7 @@ private fun NavGraphBuilder.settings(
                 Text(text = "Payment Password changed successfully!")
             },
             text = {
-                Text(text = "You have successfully changed your payment password.")
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_alert_change_password_description))
             },
             icon = {
                 Image(
@@ -1131,7 +1218,7 @@ private fun NavGraphBuilder.settings(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = { navController.popBackStack() },
                 ) {
-                    Text(text = "Done")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_done))
                 }
             }
         )
@@ -1154,10 +1241,10 @@ private fun NavGraphBuilder.settings(
         MaskDialog(
             onDismissRequest = { /*TODO*/ },
             title = {
-                Text(text = "Backup Password changed successfully!")
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_alert_change_backup_password_title))
             },
             text = {
-                Text(text = "You have successfully changed your backup password.")
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_alert_change_backup_password_description))
             },
             icon = {
                 Image(
@@ -1170,7 +1257,7 @@ private fun NavGraphBuilder.settings(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = { navController.popBackStack() },
                 ) {
-                    Text(text = "Done")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_done))
                 }
             }
         )
@@ -1195,7 +1282,7 @@ private fun NavGraphBuilder.settings(
                 emailValid = valid,
                 onConfirm = { viewModel.sendCode(value) },
                 buttonEnabled = loading,
-                title = "Set Up Email"
+                title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_bind_email_title)
             )
         }
         bottomSheet(
@@ -1228,7 +1315,7 @@ private fun NavGraphBuilder.settings(
                 EmailCodeInputModal(
                     email = email,
                     buttonEnabled = loading,
-                    title = "Set Up Email",
+                    title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_bind_email_title),
                     countDown = countDown,
                     canSend = canSend,
                     codeValid = valid,
@@ -1242,20 +1329,20 @@ private fun NavGraphBuilder.settings(
         dialog("Settings_ChangeEmail_Setup_Success") {
             MaskDialog(
                 onDismissRequest = { navController.popBackStack() },
-                title = { Text(text = "Email successfully set up!") },
+                title = { Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_bind_remote_info_setup_email_title)) },
                 icon = {
                     Image(
                         painter = painterResource(id = R.drawable.ic_property_1_snccess),
                         contentDescription = null
                     )
                 },
-                text = { Text(text = "You have successfully set up your email. ") },
+                text = { Text(text = stringResource(R.string.scene_setting_bind_remote_info_setup_email_detail)) },
                 buttons = {
                     PrimaryButton(
                         modifier = Modifier.fillMaxWidth(),
                         onClick = { navController.popBackStack() },
                     ) {
-                        Text(text = "Done")
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_done))
                     }
                 }
             )
@@ -1285,8 +1372,8 @@ private fun NavGraphBuilder.settings(
                 EmailCodeInputModal(
                     email = email,
                     buttonEnabled = loading,
-                    title = "Change Email",
-                    subTitle = { Text(text = "To change Email, please verify your current Email address") },
+                    title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_change_email_title),
+                    subTitle = { Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_change_email_tips)) },
                     countDown = countDown,
                     canSend = canSend,
                     codeValid = valid,
@@ -1315,7 +1402,7 @@ private fun NavGraphBuilder.settings(
                 emailValid = valid,
                 onConfirm = { viewModel.sendCode(value) },
                 buttonEnabled = loading,
-                title = "Change Email"
+                title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_change_email_title)
             )
         }
 
@@ -1349,7 +1436,7 @@ private fun NavGraphBuilder.settings(
                 EmailCodeInputModal(
                     email = email,
                     buttonEnabled = loading,
-                    title = "Change Email",
+                    title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_change_email_title),
                     countDown = countDown,
                     canSend = canSend,
                     codeValid = valid,
@@ -1363,20 +1450,20 @@ private fun NavGraphBuilder.settings(
         dialog("Settings_ChangeEmail_Change_Success") {
             MaskDialog(
                 onDismissRequest = { navController.popBackStack() },
-                title = { Text(text = "Email successfully changed!") },
+                title = { Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_bind_remote_info_change_email_title)) },
                 icon = {
                     Image(
                         painter = painterResource(id = R.drawable.ic_property_1_snccess),
                         contentDescription = null
                     )
                 },
-                text = { Text(text = "You have successfully changed your email. ") },
+                text = { Text(text = stringResource(R.string.scene_setting_bind_remote_info_setup_email_detail)) },
                 buttons = {
                     PrimaryButton(
                         modifier = Modifier.fillMaxWidth(),
                         onClick = { navController.popBackStack() },
                     ) {
-                        Text(text = "Done")
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_done))
                     }
                 }
             )
@@ -1406,7 +1493,7 @@ private fun NavGraphBuilder.settings(
                 phoneValid = valid,
                 onConfirm = { viewModel.sendCode(regionCode + phone) },
                 buttonEnabled = loading,
-                title = "Set Up Phone Number",
+                title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_bind_phone_number_title),
             )
         }
         bottomSheet(
@@ -1441,27 +1528,27 @@ private fun NavGraphBuilder.settings(
                     buttonEnabled = loading,
                     onSendCode = { viewModel.sendCode(phone) },
                     onVerify = { viewModel.verifyCode(code = code, value = phone) },
-                    title = "Set Up Phone Number"
+                    title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_bind_phone_number_title)
                 )
             }
         }
         dialog("Settings_ChangePhone_Setup_Success") {
             MaskDialog(
                 onDismissRequest = { navController.popBackStack() },
-                title = { Text(text = "Phone number successfully set up!") },
+                title = { Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_bind_remote_info_setup_phone_number_title)) },
                 icon = {
                     Image(
                         painter = painterResource(id = R.drawable.ic_property_1_snccess),
                         contentDescription = null
                     )
                 },
-                text = { Text(text = "You have successfully set up your email. ") },
+                text = { Text(text = stringResource(R.string.scene_setting_bind_remote_info_change_email_detail)) },
                 buttons = {
                     PrimaryButton(
                         modifier = Modifier.fillMaxWidth(),
                         onClick = { navController.popBackStack() },
                     ) {
-                        Text(text = "Done")
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_done))
                     }
                 }
             )
@@ -1496,8 +1583,8 @@ private fun NavGraphBuilder.settings(
                     buttonEnabled = loading,
                     onSendCode = { viewModel.sendCode(phone) },
                     onVerify = { viewModel.verifyCode(code = code, value = phone) },
-                    title = "Change Phone Number",
-                    subTitle = { Text(text = "To change your phone, you need to verify your current phone number.") }
+                    title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_change_phone_number_title),
+                    subTitle = { Text(text = stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_change_phone_number_tips)) }
                 )
             }
         }
@@ -1522,7 +1609,7 @@ private fun NavGraphBuilder.settings(
                 phoneValid = valid,
                 onConfirm = { viewModel.sendCode(regionCode + phone) },
                 buttonEnabled = loading,
-                title = "Change Phone Number",
+                title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_change_phone_number_title),
             )
         }
 
@@ -1558,27 +1645,27 @@ private fun NavGraphBuilder.settings(
                     buttonEnabled = loading,
                     onSendCode = { viewModel.sendCode(phone) },
                     onVerify = { viewModel.verifyCode(code = code, value = phone) },
-                    title = "Change Phone Number"
+                    title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_change_phone_number_title)
                 )
             }
         }
         dialog("Settings_ChangePhone_Change_Success") {
             MaskDialog(
                 onDismissRequest = { navController.popBackStack() },
-                title = { Text(text = "Phone number successfully changed!") },
+                title = { Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_bind_remote_info_change_phone_number_title)) },
                 icon = {
                     Image(
                         painter = painterResource(id = R.drawable.ic_property_1_snccess),
                         contentDescription = null
                     )
                 },
-                text = { Text(text = "You have successfully changed your phone number.") },
+                text = { Text(text = stringResource(R.string.scene_setting_bind_remote_info_change_phone_number_detail)) },
                 buttons = {
                     PrimaryButton(
                         modifier = Modifier.fillMaxWidth(),
                         onClick = { navController.popBackStack() },
                     ) {
-                        Text(text = "Done")
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_done))
                     }
                 }
             )

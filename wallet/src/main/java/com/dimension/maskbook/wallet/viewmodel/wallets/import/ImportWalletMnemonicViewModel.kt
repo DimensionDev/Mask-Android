@@ -3,6 +3,7 @@ package com.dimension.maskbook.wallet.viewmodel.wallets.import
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.wallet.ext.asStateIn
+import com.dimension.maskbook.wallet.repository.IWalletRepository
 import com.dimension.maskbook.wallet.repository.WalletCreateOrImportResult
 import com.dimension.maskbook.wallet.repository.WalletData
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,6 +14,7 @@ import java.util.*
 
 class ImportWalletMnemonicViewModel(
     private val wallet: String,
+    private val repository: IWalletRepository,
 ) : ViewModel() {
     private val _words = MutableStateFlow("")
     val words = _words.asStateIn(viewModelScope, "")
@@ -31,7 +33,7 @@ class ImportWalletMnemonicViewModel(
     }
 
     val canConfirm by lazy {
-        _words.map { it.isNotEmpty() }
+        _words.map { it.isNotEmpty() && repository.validateMnemonic(it) }
     }
 
     fun confirm(onResult: (WalletCreateOrImportResult) -> Unit) {

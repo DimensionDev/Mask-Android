@@ -7,6 +7,7 @@ import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.ui.LocalRootNavController
 import com.dimension.maskbook.wallet.ui.scenes.wallets.create.CreateType
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.BalancesSceneType
+import com.dimension.maskbook.wallet.ui.scenes.wallets.management.DisplayAmountType
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletBalancesScene
 import com.dimension.maskbook.wallet.viewmodel.wallets.WalletBalancesViewModel
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
@@ -15,13 +16,16 @@ import org.koin.androidx.compose.getViewModel
 @ExperimentalMaterialNavigationApi
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun WalletIntroHost() {
+fun WalletIntroHost(
+    onBack: () -> Unit,
+) {
     val rootNavController = LocalRootNavController.current
     val viewModel = getViewModel<WalletBalancesViewModel>()
     val dWebData by viewModel.dWebData.observeAsState(initial = null)
     val sceneType by viewModel.sceneType.observeAsState(initial = BalancesSceneType.Token)
     val currentWallet by viewModel.currentWallet.observeAsState(initial = null)
     val wallets by viewModel.wallets.observeAsState(initial = emptyList())
+    val displayAmountType by viewModel.displayAmountType.observeAsState(initial = DisplayAmountType.All)
     if (currentWallet == null) {
         WalletIntroScene(
             onCreate = {
@@ -62,7 +66,12 @@ fun WalletIntroHost() {
                     onSceneTypeChanged = {
                         viewModel.setSceneType(it)
                     },
-                    chainType = dWebData.chainType
+                    chainType = dWebData.chainType,
+                    onBack = onBack,
+                    displayAmountType = displayAmountType,
+                    onDisplayAmountTypeChanged = {
+                        viewModel.setCurrentDisplayAmountType(it)
+                    }
                 )
             }
         }

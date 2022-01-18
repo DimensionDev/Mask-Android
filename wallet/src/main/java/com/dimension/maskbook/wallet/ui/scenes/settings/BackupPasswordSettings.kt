@@ -1,5 +1,6 @@
 package com.dimension.maskbook.wallet.ui.scenes.settings
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -11,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.ext.observeAsState
@@ -36,24 +38,25 @@ fun BackupPasswordSettings(
         Column(
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
-                .padding(ScaffoldPadding),
+                .padding(ScaffoldPadding)
+                .animateContentSize(),
         ) {
             if (currentPassword.isNotEmpty()) {
                 Text(
-                    text = "Set Up Backup Password",
+                    text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_set_backup_password_title),
                     style = MaterialTheme.typography.h6,
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
             } else {
                 Text(
-                    text = "Change Backup Password",
+                    text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_backup_recovery_change_backup_password),
                     style = MaterialTheme.typography.h6,
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
             }
             Spacer(modifier = Modifier.height(20.dp))
             if (currentPassword.isNotEmpty()) {
-                Text(text = "Backup Password")
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_backup_recovery_back_up_password))
                 Spacer(modifier = Modifier.height(8.dp))
                 OutlinedTextField(
                     value = password,
@@ -65,7 +68,7 @@ fun BackupPasswordSettings(
                 )
                 Spacer(modifier = Modifier.height(20.dp))
             }
-            Text(text = "New Backup Password")
+            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_change_backup_password_new_backup_password))
             Spacer(modifier = Modifier.height(8.dp))
             OutlinedTextField(
                 value = newPassword,
@@ -76,7 +79,7 @@ fun BackupPasswordSettings(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             )
             Spacer(modifier = Modifier.height(20.dp))
-            Text(text = "Confirm New Backup Password")
+            Text(text = stringResource(com.dimension.maskbook.wallet.R.string.scene_set_backup_password_confirm_backup_password))
             Spacer(modifier = Modifier.height(8.dp))
             OutlinedTextField(
                 value = newPasswordConfirm,
@@ -88,10 +91,7 @@ fun BackupPasswordSettings(
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Backup password must be between 8 and 20 \n" +
-                        "characters and contains at least a number, \n" +
-                        "a uppercase letter, a lowercase letter and a \n" +
-                        "special character.",
+                text = stringResource(com.dimension.maskbook.wallet.R.string.scene_set_backup_password_tips),
                 color = MaterialTheme.colors.primary
             )
 
@@ -103,7 +103,7 @@ fun BackupPasswordSettings(
                         onBack.invoke()
                     }
                 ) {
-                    Text(text = "Cancel")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_cancel))
                 }
                 Spacer(modifier = Modifier.width(20.dp))
                 PrimaryButton(
@@ -114,7 +114,7 @@ fun BackupPasswordSettings(
                     },
                     enabled = canConfirm
                 ) {
-                    Text(text = "Confirm")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_confirm))
                 }
             }
         }

@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
@@ -34,7 +35,7 @@ fun ImportWalletScene(
                         MaskBackButton(onBack = onBack)
                     },
                     title = {
-                        Text(text = "Import wallet")
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_list_wallets_items_import))
                     }
                 )
             }
@@ -47,24 +48,24 @@ fun ImportWalletScene(
             ) {
                 ImportItem(
                     icon = R.drawable.ic_wallet_mnemonic,
-                    title = "Mnemonic words",
-                    subtitle = "The mnemonic is composed of words and separated by spaces",
+                    title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_import_item_mnemonic_words),
+                    subtitle = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_import_item_mnemonic_words_desc),
                     onClick = {
                         onMnemonic.invoke()
                     }
                 )
                 ImportItem(
                     icon = R.drawable.ic_wallet_password,
-                    title = "Private Key",
-                    subtitle = "Plaintext private key ",
+                    title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_identity_privatekey_import_title),
+                    subtitle = stringResource(R.string.scene_wallet_import_item_private_key_desc),
                     onClick = {
                         onPassword.invoke()
                     }
                 )
                 ImportItem(
                     icon = R.drawable.ic_wallet_keystore,
-                    title = "Keystore",
-                    subtitle = "Encrypted private key JSON content. ",
+                    title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_import_item_keystore),
+                    subtitle = stringResource(R.string.scene_wallet_import_item_keystore_desc),
                     onClick = {
                         onKeystore.invoke()
                     }

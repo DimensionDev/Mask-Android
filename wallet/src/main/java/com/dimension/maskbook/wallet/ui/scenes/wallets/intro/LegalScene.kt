@@ -1,14 +1,7 @@
 package com.dimension.maskbook.wallet.ui.scenes.wallets.intro
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -19,20 +12,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
-import com.dimension.maskbook.wallet.repository.ISettingsRepository
 import com.dimension.maskbook.wallet.ui.MaskTheme
-import com.dimension.maskbook.wallet.ui.widget.MaskBackButton
-import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
-import com.dimension.maskbook.wallet.ui.widget.MaskSingleLineTopAppBar
-import com.dimension.maskbook.wallet.ui.widget.MaskTopAppBar
-import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
-import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
-import com.dimension.maskbook.wallet.ui.widget.SecondaryButton
-import kotlinx.coroutines.flow.firstOrNull
-import org.koin.androidx.compose.get
+import com.dimension.maskbook.wallet.ui.widget.*
 
 @Composable
 fun LegalScene(
@@ -55,9 +39,9 @@ fun LegalScene(
                     .fillMaxSize()
                     .padding(ScaffoldPadding),
             ) {
-                Text(text = "Legal", style = MaterialTheme.typography.h4)
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_terms_of_service_title), style = MaterialTheme.typography.h4)
                 Spacer(modifier = Modifier.height(12.dp))
-                Text(text = "Please review the Service Agreement of Mask Network.")
+                Text(text = stringResource(R.string.scene_terms_of_service_description))
                 Column(
                     modifier = Modifier
                         .weight(1f)
@@ -75,10 +59,10 @@ fun LegalScene(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(text = "Service Agreement", modifier = Modifier.weight(1F))
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_terms_of_service_service_agreement), modifier = Modifier.weight(1F))
                         Icon(
                             imageVector = Icons.Default.ArrowRight,
-                            contentDescription = "Service Agreement"
+                            contentDescription = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_terms_of_service_service_agreement)
                         )
                     }
                 }
@@ -89,7 +73,7 @@ fun LegalScene(
                         onAccept()
                     },
                 ) {
-                    Text(text = "Accept")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_accept))
                 }
             }
         }

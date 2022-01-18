@@ -1,8 +1,6 @@
 package com.dimension.maskbook.wallet.ui.scenes.wallets.management
 
 import android.content.*
-import android.net.Uri
-import android.util.Log
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
@@ -23,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -88,7 +87,7 @@ fun WalletConnectModal() {
                 .animateContentSize(),
         ) {
             Text(
-                text = "WalletConnect",
+                text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_connect_wallet_connect),
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center,
             )
@@ -166,10 +165,10 @@ fun WalletConnectFailure(
             Image(painterResource(id = R.drawable.ic_close_square), contentDescription = null)
         }
         Spacer(modifier = Modifier.height(20.dp))
-        Text(text = "Connection failed.", color = Color(0xFFFF5F5F))
+        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_connect_connection_fail), color = Color(0xFFFF5F5F))
         Spacer(modifier = Modifier.height(20.dp))
         PrimaryButton(onClick = onRetry) {
-            Text(text = "Try Again")
+            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_try_again))
         }
     }
 }
@@ -194,7 +193,7 @@ fun Connecting() {
             Image(painterResource(id = R.drawable.mask1), contentDescription = null)
         }
         Spacer(modifier = Modifier.height(24.dp))
-        Text(text = "Connecting...")
+        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_connect_connecting))
     }
 }
 
@@ -284,7 +283,7 @@ fun WalletConnectQRCode(
             null
         }
     }
-    Text(text = "Use a WalletConnect compatible wallet to scan the QR Code")
+    Text(text = stringResource(R.string.scene_wallet_connect_qr_code_tips))
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -309,7 +308,7 @@ fun WalletConnectQRCode(
             LoadingView()
         }
     }
-    Text(text = "Tap to copy to clipboard")
+    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_connect_tap_to_copy))// TODO: Copy
 }
 
 @Composable

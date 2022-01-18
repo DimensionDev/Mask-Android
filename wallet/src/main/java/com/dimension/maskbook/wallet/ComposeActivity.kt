@@ -15,8 +15,9 @@ import com.dimension.maskbook.wallet.ui.MaskTheme
 import com.dimension.maskbook.wallet.ui.Route
 import com.dimension.maskbook.wallet.utils.BiometricAuthenticator
 import com.dimension.maskbook.wallet.viewmodel.WelcomeViewModel
-import com.dimension.maskbook.wallet.viewmodel.app.AppViewModel
+import com.dimension.maskbook.wallet.viewmodel.app.LabsViewModel
 import com.dimension.maskbook.wallet.viewmodel.app.MarketTrendSettingsViewModel
+import com.dimension.maskbook.wallet.viewmodel.app.PluginSettingsViewModel
 import com.dimension.maskbook.wallet.viewmodel.persona.ExportPrivateKeyViewModel
 import com.dimension.maskbook.wallet.viewmodel.persona.PersonaViewModel
 import com.dimension.maskbook.wallet.viewmodel.persona.RenamePersonaViewModel
@@ -67,9 +68,8 @@ import com.dimension.maskbook.wallet.viewmodel.wallets.send.GasFeeViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.SearchAddressViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendConfirmViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendTokenViewModel
-import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager
-import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManagerV1
-import org.koin.android.ext.android.get
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.asExecutor
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -115,6 +115,8 @@ val walletModules = module {
 
     single {
         Room.databaseBuilder(get(), AppDatabase::class.java, "maskbook")
+            .setQueryExecutor(Dispatchers.IO.asExecutor())
+            .setTransactionExecutor(Dispatchers.IO.asExecutor())
             .fallbackToDestructiveMigration()
             .build()
     }
@@ -140,7 +142,8 @@ val walletModules = module {
     viewModel { ExportPrivateKeyViewModel(get()) }
     viewModel { PostViewModel(get(), get()) }
     viewModel { ContactsViewModel(get(), get()) }
-    viewModel { AppViewModel(get(), get()) }
+    viewModel { LabsViewModel(get(), get()) }
+    viewModel { PluginSettingsViewModel(get(), get()) }
     viewModel { LanguageSettingsViewModel(get()) }
     viewModel { AppearanceSettingsViewModel(get()) }
     viewModel { DataSourceSettingsViewModel(get()) }
@@ -198,7 +201,7 @@ val walletModules = module {
     viewModel { TouchIdEnableViewModel() }
     viewModel { (wallet: String) -> ImportWalletKeystoreViewModel(wallet, get()) }
     viewModel { (wallet: String) -> ImportWalletPrivateKeyViewModel(wallet, get()) }
-    viewModel { (wallet: String) -> ImportWalletMnemonicViewModel(wallet) }
+    viewModel { (wallet: String) -> ImportWalletMnemonicViewModel(wallet, get()) }
     viewModel { (wallet: String, mnemonicCode: List<String>) ->
         ImportWalletDerivationPathViewModel(
             wallet,
@@ -232,6 +235,8 @@ val walletModules = module {
     viewModel { BiometricViewModel(get(), get()) }
     viewModel { WalletConnectManagementViewModel(get(), get()) }
     viewModel { (onResult:(success:Boolean, needToSwitchNetwork: Boolean)->Unit)-> WalletConnectViewModel(get(), get(), get(), onResult) }
+    viewModel { UnlockWalletViewModel(get(), get()) }
+    viewModel { BackUpPasswordViewModel(get(), get()) }
 }
 
 val servicesModule = module {

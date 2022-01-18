@@ -9,7 +9,10 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -18,14 +21,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.dialog
 import androidx.navigation.plusAssign
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ext.observeAsState
-import com.dimension.maskbook.wallet.repository.BackupMeta
+import com.dimension.maskbook.wallet.navHostAnimationDurationMillis
 import com.dimension.maskbook.wallet.ui.MaskTheme
-import com.dimension.maskbook.wallet.ui.scenes.settings.MetaItem
 import com.dimension.maskbook.wallet.ui.widget.*
 import com.dimension.maskbook.wallet.viewmodel.recovery.RecoveryLocalViewModel
 import com.google.accompanist.navigation.animation.AnimatedNavHost
@@ -101,16 +104,16 @@ fun RecoveryLocalHost(
             startDestination = "Loading",
             route = "RecoveryLocal",
             enterTransition = { _, _ ->
-                slideInHorizontally(initialOffsetX = { 1000 }, animationSpec = tween())
+                slideInHorizontally(initialOffsetX = { it }, animationSpec = tween(navHostAnimationDurationMillis))
             },
             exitTransition = { _, _ ->
-                slideOutHorizontally(targetOffsetX = { -1000 }, animationSpec = tween())
+                slideOutHorizontally(targetOffsetX = { -it }, animationSpec = tween(navHostAnimationDurationMillis))
             },
             popEnterTransition = { _, _ ->
-                slideInHorizontally(initialOffsetX = { -1000 }, animationSpec = tween())
+                slideInHorizontally(initialOffsetX = { -it }, animationSpec = tween(navHostAnimationDurationMillis))
             },
             popExitTransition = { _, _ ->
-                slideOutHorizontally(targetOffsetX = { 1000 }, animationSpec = tween())
+                slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween(navHostAnimationDurationMillis))
             },
         ) {
             bottomSheet("Password") {
@@ -121,7 +124,7 @@ fun RecoveryLocalHost(
                         modifier = Modifier
                             .padding(ScaffoldPadding),
                     ) {
-                        Text(text = "Backup password")
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_set_backup_password_backup_password))
                         Spacer(modifier = Modifier.height(8.dp))
                         OutlinedTextField(
                             modifier = Modifier.fillMaxWidth(),
@@ -132,14 +135,14 @@ fun RecoveryLocalHost(
                         )
                         if (error) {
                             Spacer(modifier = Modifier.height(8.dp))
-                            Text(text = "Incorrect Password", color = Color.Red)
+                            Text(text = stringResource(R.string.scene_restore_tip_incorrect_backup_password), color = Color.Red)
                         }
                         Spacer(modifier = Modifier.height(16.dp))
                         PrimaryButton(
                             modifier = Modifier.fillMaxWidth(),
                             onClick = { viewModel.confirmPassword() },
                         ) {
-                            Text(text = "Next")
+                            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_next))
                         }
                     }
                 }
@@ -156,17 +159,17 @@ fun RecoveryLocalHost(
                     onDismissRequest = {
                     },
                     title = {
-                        Text(text = "Unsupported data backup")
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_restore_titles_unsupport_restore_data))
                     },
                     text = {
-                        Text(text = "Please examine your data backup.")
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_restore_check_unsupport_data))
                     },
                     buttons = {
                         PrimaryButton(
                             modifier = Modifier.fillMaxWidth(),
                             onClick = { onBack.invoke() },
                         ) {
-                            Text(text = "OK")
+                            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_ok))
                         }
                     },
                     icon = {
@@ -198,7 +201,7 @@ fun RecoveryLocalHost(
                         )
                     },
                     text = {
-                        Text(text = "You have successfully verified your cloud password and the backup is being uploaded. To unify backup passwords, do you want to synchronize your cloud password as local backup password?")
+                        Text(text = stringResource(R.string.scene_restore_tip_remote_restore_succeed))
                     },
                     buttons = {
                         Row {
@@ -208,7 +211,7 @@ fun RecoveryLocalHost(
                                     navController.popBackStack()
                                 }
                             ) {
-                                Text(text = "Cancel")
+                                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_cancel))
                             }
                             Spacer(modifier = Modifier.width(20.dp))
                             PrimaryButton(
@@ -217,7 +220,7 @@ fun RecoveryLocalHost(
                                     onConfirm.invoke()
                                 },
                             ) {
-                                Text(text = "Confirm")
+                                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_confirm))
                             }
                         }
                     }
@@ -239,7 +242,7 @@ fun ImportSuccessScene(
             topBar = {
                 MaskTopAppBar(
                     title = {
-                        Text(text = "Restore backups")
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_restore_titles_restore_buckup))
                     },
                     navigationIcon = {
                         MaskBackButton {
@@ -266,7 +269,7 @@ fun ImportSuccessScene(
                         onConfirm.invoke()
                     }
                 ) {
-                    Text(text = "Restore Backups")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_restore_buttonTitles_backup))
                 }
             }
         }
@@ -296,7 +299,7 @@ fun ImportingScene(
                 verticalArrangement = Arrangement.Center,
             ) {
                 CircularProgressIndicator()
-                Text(text = "Loading...")
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_loading))
             }
         }
     }

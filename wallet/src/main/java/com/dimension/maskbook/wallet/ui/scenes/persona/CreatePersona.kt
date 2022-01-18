@@ -5,7 +5,9 @@ import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.repository.IPersonaRepository
 import com.dimension.maskbook.wallet.ui.widget.MaskModal
 import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
@@ -25,7 +27,7 @@ fun CreatePersona(
             modifier = Modifier
                 .padding(ScaffoldPadding),
         ) {
-            Text(text = "Create persona")
+            Text(text = stringResource(R.string.scene_personas_create_create_persona))
             Spacer(modifier = Modifier.height(8.dp))
             OutlinedTextField(
                 value = name,
@@ -40,7 +42,7 @@ fun CreatePersona(
                     onDone.invoke()
                 },
             ) {
-                Text(text = "Next")
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_next))
             }
         }
     }

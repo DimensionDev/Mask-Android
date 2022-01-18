@@ -15,7 +15,7 @@ class WalletConnectManagementViewModel(
             if (!walletData.fromWalletConnect) return@launch
             // if session is no longer exists, we have to delete this wallet manually
             if (!manager.disConnect(address = walletData.address)) {
-                walletRepository.deleteWallet(wallet = walletData)
+                walletRepository.deleteWallet(walletData.id)
             }
         }
     }

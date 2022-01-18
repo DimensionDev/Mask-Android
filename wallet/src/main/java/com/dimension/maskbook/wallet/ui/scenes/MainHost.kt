@@ -1,6 +1,7 @@
 package com.dimension.maskbook.wallet.ui.scenes
 
 import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -9,16 +10,19 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
+import com.dimension.maskbook.wallet.repository.AppKey
 import com.dimension.maskbook.wallet.ui.MaskTheme
-import com.dimension.maskbook.wallet.ui.scenes.app.AppScene
+import com.dimension.maskbook.wallet.ui.scenes.app.LabsScene
 import com.dimension.maskbook.wallet.ui.scenes.persona.PersonaScreen
 import com.dimension.maskbook.wallet.ui.scenes.settings.SettingsScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.WalletIntroHost
@@ -29,27 +33,34 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
 
-private sealed class Screen(val route: String, val name: String, @DrawableRes val icon: Int) {
-    object Personas : Screen("Personas", "Personas", R.drawable.ic_persona)
-    object Wallets : Screen("Wallets", "Wallets", R.drawable.ic_wallet)
-    object App : Screen("App", "App", R.drawable.ic_app)
-    object Settings : Screen("Settings", "Settings", R.drawable.ic_settings)
+private enum class HomeScreen(val route: String, @StringRes val title: Int, @DrawableRes val icon: Int) {
+    Personas("Personas", R.string.tab_personas, R.drawable.ic_persona),
+    Wallets("Wallets", R.string.tab_wallet, R.drawable.ic_wallet),
+    Labs("Labs", R.string.tab_labs, R.drawable.ic_labs),
+    Settings("Settings", R.string.tab_setting, R.drawable.ic_settings),
 }
 
-private val items = listOf(
-    Screen.Personas,
-    Screen.Wallets,
-    Screen.App,
-    Screen.Settings,
-)
+private val items = HomeScreen.values()
 
 @ExperimentalMaterialNavigationApi
 @OptIn(ExperimentalAnimationApi::class, ExperimentalPagerApi::class)
 @Composable
 fun MainHost(
+    initialTab: String,
     onBack: () -> Unit,
+    onLabsSettingClick: () -> Unit,
+    onLabsItemClick: (AppKey) -> Unit,
 ) {
-    val pagerState = rememberPagerState()
+    val initialPage = remember(initialTab) {
+        if (initialTab.isEmpty()) return@remember 0
+        when (HomeScreen.valueOf(initialTab)) {
+            HomeScreen.Personas -> 0
+            HomeScreen.Wallets -> 1
+            HomeScreen.Labs -> 2
+            HomeScreen.Settings -> 3
+        }
+    }
+    val pagerState = rememberPagerState(initialPage = initialPage)
     val scope = rememberCoroutineScope()
     MaskTheme {
         MaskScaffold(
@@ -68,7 +79,7 @@ fun MainHost(
                                 }
                             },
                             text = {
-                                Text(screen.name)
+                                Text(stringResource(screen.title))
                             },
                             icon = {
                                 Icon(
@@ -89,10 +100,13 @@ fun MainHost(
                 state = pagerState,
             ) {
                 when (items[it]) {
-                    Screen.App -> AppScene(onBack = onBack)
-                    Screen.Personas -> PersonaScreen(onBack = onBack)
-                    Screen.Settings -> SettingsScene(onBack = onBack)
-                    Screen.Wallets -> WalletIntroHost()
+                    HomeScreen.Labs -> LabsScene(
+                        onSettingClick = onLabsSettingClick,
+                        onItemClick = onLabsItemClick,
+                    )
+                    HomeScreen.Personas -> PersonaScreen(onBack = onBack)
+                    HomeScreen.Settings -> SettingsScene(onBack = onBack)
+                    HomeScreen.Wallets -> WalletIntroHost(onBack = onBack)
                 }
             }
         }

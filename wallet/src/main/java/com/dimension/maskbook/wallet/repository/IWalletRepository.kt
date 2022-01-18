@@ -210,7 +210,8 @@ interface IWalletRepository {
     suspend fun getKeyStore(walletData: WalletData, platformType: CoinPlatformType): String
     suspend fun getPrivateKey(walletData: WalletData, platformType: CoinPlatformType): String
     suspend fun getTotalBalance(address: String): Double
-    fun deleteWallet(wallet: WalletData)
+    fun deleteCurrentWallet()
+    fun deleteWallet(id: String)
     fun renameWallet(value: String, id: String)
     fun renameCurrentWallet(value: String)
     fun sendTokenWithCurrentWallet(
@@ -248,6 +249,9 @@ interface IWalletRepository {
         onDone: (String?) -> Unit,
         onError: (Throwable) -> Unit
     )
+    fun validatePrivateKey(privateKey: String): Boolean
+    fun validateMnemonic(mnemonic: String): Boolean
+    fun validateKeystore(keyStore: String): Boolean
 }
 
 //class FakeWalletRepository : IWalletRepository {

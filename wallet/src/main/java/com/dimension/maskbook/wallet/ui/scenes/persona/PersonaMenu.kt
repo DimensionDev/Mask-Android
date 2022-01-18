@@ -74,7 +74,7 @@ fun PersonaMenu(
                                 contentDescription = null
                             )
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text(text = "Change or Add Persona")
+                            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_personas_action_change_add_persona))
                         }
                     }
                     Spacer(modifier = Modifier.height(16.dp))
@@ -94,7 +94,7 @@ fun PersonaMenu(
                                 contentDescription = null
                             )
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text(text = "Rename")
+                            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_personas_action_rename))
                         }
                     }
                     Spacer(modifier = Modifier.height(16.dp))
@@ -102,7 +102,12 @@ fun PersonaMenu(
                         modifier = Modifier.fillMaxWidth(),
                         elevation = 0.dp,
                         onClick = {
-                            navController.navigate("ExportPrivateKeyScene")
+                            //first check if it has backup password
+                            if (backupPassword.isEmpty()) {
+                                navController.navigate("SetupPasswordDialog")
+                            } else {
+                                navController.navigate("BackUpPassword/ExportPrivateKeyScene")
+                            }
                         }
                     ) {
                         Row(
@@ -114,7 +119,7 @@ fun PersonaMenu(
                                 contentDescription = null
                             )
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text(text = "Export Private Key")
+                            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_persona_export_private_key_title))
                         }
                     }
                     Spacer(modifier = Modifier.height(16.dp))
@@ -136,7 +141,7 @@ fun PersonaMenu(
                                 contentDescription = null
                             )
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text(text = "Back up")
+                            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_back_up))
                         }
                     }
 //                Spacer(modifier = Modifier.height(16.dp))
@@ -153,7 +158,7 @@ fun PersonaMenu(
 //                            contentDescription = null
 //                        )
 //                        Spacer(modifier = Modifier.width(8.dp))
-//                        Text(text = "Recovery")
+//                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_personas_action_recovery))
 //                    }
 //                }
                     Spacer(modifier = Modifier.height(16.dp))
@@ -174,7 +179,7 @@ fun PersonaMenu(
                                 tint = Color.Red,
                             )
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text(text = "Log Out", color = Color.Red)
+                            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_profile_log_out), color = Color.Red)
                         }
                     }
 //                Spacer(modifier = Modifier.height(16.dp))
@@ -194,7 +199,7 @@ fun PersonaMenu(
 //                            contentDescription = null
 //                        )
 //                        Spacer(modifier = Modifier.width(8.dp))
-//                        Text(text = "Delete")
+//                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_personas_action_delete))
 //                    }
 //                }
                 }

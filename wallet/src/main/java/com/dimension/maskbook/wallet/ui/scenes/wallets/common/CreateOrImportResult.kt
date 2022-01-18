@@ -27,9 +27,9 @@ fun WalletCreateOrImportResult.Dialog(onDismissRequest: () -> Unit) {
                 }
             ) {
                 when (type) {
-                    WalletCreateOrImportResult.Type.SUCCESS -> Text(text = "Done")
-                    WalletCreateOrImportResult.Type.ERROR -> Text(text = "Ok")
-                    WalletCreateOrImportResult.Type.WARNING -> Text(text = "Understood")
+                    WalletCreateOrImportResult.Type.SUCCESS -> Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_done))
+                    WalletCreateOrImportResult.Type.ERROR -> Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_ok))
+                    WalletCreateOrImportResult.Type.WARNING -> Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_i_understand))
                 }
             }
         },
@@ -42,8 +42,8 @@ fun WalletCreateOrImportResult.Dialog(onDismissRequest: () -> Unit) {
 @Composable
 private fun WalletCreateOrImportResult.Title() = when (type) {
     WalletCreateOrImportResult.Type.SUCCESS -> Text(text = title ?: "Success")
-    WalletCreateOrImportResult.Type.ERROR -> Text(text = title ?: "Error!")
-    WalletCreateOrImportResult.Type.WARNING -> Text(text = title ?: "Warning")
+    WalletCreateOrImportResult.Type.ERROR -> Text(text = title ?: androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_alert_wallet_import_alert_title_fail))
+    WalletCreateOrImportResult.Type.WARNING -> Text(text = title ?: androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_alert_recovery_key_warning_title))
 }
 
 @Composable

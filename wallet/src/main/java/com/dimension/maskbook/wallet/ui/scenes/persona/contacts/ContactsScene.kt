@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ext.observeAsState
@@ -63,19 +64,18 @@ fun EmptyContactsScene() {
             contentDescription = null
         )
         Spacer(modifier = Modifier.height(24.dp))
-        Text(text = "You don’t have encrypted friends. \n" +
-                "Invite friends to download Mask Network.")
+        Text(text = stringResource(R.string.scene_persona_contacts_empty_contacts_tips))
         Spacer(modifier = Modifier.height(24.dp))
         PrimaryButton(onClick = {
             context.startActivity(
                 Intent().apply {
                     action = Intent.ACTION_SEND
-                    putExtra(Intent.EXTRA_TEXT, "Share Mask Network Link:\nhttps://mask.io/download-links/")
+                    putExtra(Intent.EXTRA_TEXT, "${context.resources.getText(R.string.scene_share_shareLink)}\nhttps://mask.io/download-links/")
                     type = "text/plain"
                 }
             )
         }) {
-            Text(text = "Invite")
+            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_invite))
         }
     }
 }

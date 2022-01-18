@@ -23,7 +23,9 @@ fun WalletDeleteDialog(
     passwordValid: Boolean,
 ) {
     MaskDialog(
+        // workaround for https://issuetracker.google.com/issues/194911971
         properties = DialogProperties(usePlatformDefaultWidth = false),
+        modifier = Modifier.padding(horizontal = 23.dp),
         onDismissRequest = onBack,
         icon = {
             WalletAvatar(
@@ -32,13 +34,13 @@ fun WalletDeleteDialog(
             )
         },
         title = {
-            Text(text = "Delete Wallet")
+            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_edit_item_delete))
         },
         text = {
             Column {
                 Text(text = walletData.address)
                 Spacer(modifier = Modifier.height(12.dp))
-                Text(text = "Are you sure you want to delete this wallet? Your wallet cannot be recoverd without seed phrase.")
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_delete_content))
             }
         },
         buttons = {
@@ -46,7 +48,7 @@ fun WalletDeleteDialog(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 AnimatedVisibility(visible = !biometricEnabled) {
-                    Text(text = "Payment password")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_general_setup_payment_password))
                     MaskPasswordInputField(value = password, onValueChange = onPasswordChanged)
                 }
                 Row(
@@ -56,14 +58,14 @@ fun WalletDeleteDialog(
                         onClick = onBack,
                         modifier = Modifier.weight(1f),
                     ) {
-                        Text(text = "Cancel")
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_cancel))
                     }
                     PrimaryButton(
                         onClick = onDelete,
                         modifier = Modifier.weight(1f),
                         enabled = passwordValid || biometricEnabled
                     ) {
-                        Text(text = "Delete")
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_personas_action_delete))
                     }
                 }
             }

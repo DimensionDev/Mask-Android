@@ -21,7 +21,7 @@ fun RenamePersona(
             modifier = Modifier
                 .padding(ScaffoldPadding),
         ) {
-            Text(text = "Rename")
+            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_personas_action_rename))
             Spacer(modifier = Modifier.height(8.dp))
             OutlinedTextField(
                 value = name,
@@ -35,7 +35,7 @@ fun RenamePersona(
                     onDone.invoke()
                 },
             ) {
-                Text(text = "Confirm")
+                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_confirm))
             }
         }
     }

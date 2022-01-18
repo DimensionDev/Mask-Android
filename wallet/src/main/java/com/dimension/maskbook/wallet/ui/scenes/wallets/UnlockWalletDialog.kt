@@ -1,55 +1,67 @@
 package com.dimension.maskbook.wallet.ui.scenes.wallets
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.DialogProperties
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ui.widget.*
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun UnlockWalletWithPasswordDialog(
+fun UnlockWalletDialog(
     onBack: () -> Unit,
+    biometricEnabled: Boolean,
     password: String,
     onPasswordChanged: (String) -> Unit,
     passwordValid: Boolean,
     onConfirm: () -> Unit,
 ) {
     MaskDialog(
+        // workaround for https://issuetracker.google.com/issues/194911971
+        properties = DialogProperties(usePlatformDefaultWidth = false),
+        modifier = Modifier.padding(horizontal = 23.dp),
         onDismissRequest = onBack,
         title = {
-            Text(text = "Unlock Wallet")
+            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_unlock_title))
         },
         text = {
-            Column {
-                Text(text = "Payment password")
-                Spacer(modifier = Modifier.height(8.dp))
-                MaskPasswordInputField(value = password, onValueChange = onPasswordChanged)
-                if (!passwordValid) {
+            AnimatedVisibility(visible = !biometricEnabled) {
+                Column {
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_general_setup_payment_password))
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text(text = "Incorrect Password.", color = Color.Red)
+                    MaskPasswordInputField(value = password, onValueChange = onPasswordChanged)
+                    if (!passwordValid) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_change_password_incorrect_password), color = Color.Red)
+                    }
                 }
             }
         },
         buttons = {
+            //TODO Biometrics replace UI
             Row {
                 SecondaryButton(
                     onClick = onBack,
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text(text = "Cancel")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_cancel))
                 }
+                Spacer(modifier = Modifier.width(8.dp))
                 PrimaryButton(
                     onClick = onConfirm,
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text(text = "Unlock")
+                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_unlock_button))
                 }
             }
         }

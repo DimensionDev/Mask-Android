@@ -116,11 +116,9 @@ class WalletRepository(
 
     private suspend fun refreshCurrentWalletToken() {
         val currentWallet = currentWallet.firstOrNull() ?: return
-        val currentNetwork = dWebData.firstOrNull()?.chainType ?: return
         try {
             val token = services.debankServices.tokenList(
                 currentWallet.address,
-                currentNetwork.dbank,
                 is_all = true,
                 has_balance = false
             ).filter { it.isVerified == true }
@@ -191,9 +189,9 @@ class WalletRepository(
     override val wallets: Flow<List<WalletData>>
         get() = database
             .walletDao()
-            .getAll()
-            .map {
-                it.map {
+            .getAllFlow()
+            .map { list ->
+                list.map {
                     WalletData.fromDb(it)
                 }
             }
@@ -222,12 +220,12 @@ class WalletRepository(
         }
     }
 
-    fun setCurrentWallet(dbWallet: DbWallet) {
+    fun setCurrentWallet(dbWallet: DbWallet?) {
         scope.launch {
             dataStore.edit {
-                it[CurrentWalletKey] = dbWallet.id
+                it[CurrentWalletKey] = dbWallet?.id.orEmpty()
             }
-            JSMethod.Wallet.updateEthereumAccount(dbWallet.address)
+            JSMethod.Wallet.updateEthereumAccount(dbWallet?.address.orEmpty())
         }
     }
 
@@ -317,44 +315,42 @@ class WalletRepository(
         password: String,
         platformType: CoinPlatformType
     ) {
-        scope.launch {
-            val wallet = WalletKey.fromJson(
-                json = keyStore,
-                name = name,
-                coinType = platformType.coinType,
-                password = "",
-                keyStoreJsonPassword = password
-            )
-            val account = wallet.addNewAccountAtPath(
-                platformType.coinType,
-                platformType.derivationPath.toString(),
-                name,
-                ""
-            )
-            val storeKey = DbStoredKey(
-                id = UUID.randomUUID().toString(),
-                hash = wallet.hash,
-                source = WalletSource.ImportedKeyStore,
-                data = wallet.data,
-                createdAt = System.currentTimeMillis(),
-                updatedAt = System.currentTimeMillis(),
-            )
-            val db = DbWallet(
-                id = UUID.randomUUID().toString(),
-                address = account.address,
-                name = name,
-                storeKeyId = storeKey.id,
-                derivationPath = account.derivationPath,
-                extendedPublicKey = account.extendedPublicKey,
-                coin = account.coin,
-                platformType = platformType,
-                createdAt = System.currentTimeMillis(),
-                updatedAt = System.currentTimeMillis(),
-            )
-            database.storedKeyDao().add(listOf(storeKey))
-            database.walletDao().add(listOf(db))
-            setCurrentWallet(db)
-        }
+        val wallet = WalletKey.fromJson(
+            json = keyStore,
+            name = name,
+            coinType = platformType.coinType,
+            password = "",
+            keyStoreJsonPassword = password
+        )
+        val account = wallet.addNewAccountAtPath(
+            platformType.coinType,
+            platformType.derivationPath.toString(),
+            name,
+            ""
+        )
+        val storeKey = DbStoredKey(
+            id = UUID.randomUUID().toString(),
+            hash = wallet.hash,
+            source = WalletSource.ImportedKeyStore,
+            data = wallet.data,
+            createdAt = System.currentTimeMillis(),
+            updatedAt = System.currentTimeMillis(),
+        )
+        val db = DbWallet(
+            id = UUID.randomUUID().toString(),
+            address = account.address,
+            name = name,
+            storeKeyId = storeKey.id,
+            derivationPath = account.derivationPath,
+            extendedPublicKey = account.extendedPublicKey,
+            coin = account.coin,
+            platformType = platformType,
+            createdAt = System.currentTimeMillis(),
+            updatedAt = System.currentTimeMillis(),
+        )
+        database.storedKeyDao().add(listOf(storeKey))
+        database.walletDao().add(listOf(db))
+        setCurrentWallet(db)
     }
 
     override suspend fun importWallet(
@@ -424,25 +420,28 @@ class WalletRepository(
         return services.debankServices.totalBalance(address).totalUsdValue ?: 0.0
     }
 
-    override fun deleteWallet(wallet: WalletData) {
+    override fun deleteCurrentWallet() {
         scope.launch {
-            val next = database.walletDao().getAll().firstOrNull()
-                ?.firstOrNull { it.wallet.id != wallet.id }
-            val storedKeyToDelete =
-                database.walletDao().getById(wallet.id)?.storedKey?.id?.let {
-                    database.storedKeyDao().getById(it)
-                }?.let {
-                    if (it.items.size == 1 && it.items.first().id == wallet.id) {
-                        it.storedKey
-                    } else {
-                        null
-                    }
-                }
-            currentWallet.firstOrNull()?.let {
-                if (it.id == wallet.id) setCurrentWallet(next?.let { it1 -> WalletData.fromDb(it1) })
+            val currentWallet = currentWallet.firstOrNull() ?: return@launch
+            deleteWallet(currentWallet.id)
+        }
+    }
+
+    override fun deleteWallet(id: String) {
+        scope.launch {
+            // get it before remove
+            val currentWallet = currentWallet.firstOrNull()
+
+            val tokenWallet = database.walletDao().getById(id) ?: return@launch
+            database.walletDao().deleteById(tokenWallet.wallet.id)
+            database.storedKeyDao().deleteById(tokenWallet.storedKey.id)
+            database.walletBalanceDao().deleteByWalletId(tokenWallet.wallet.id)
+            database.walletTokenDao().deleteByWalletId(tokenWallet.wallet.id)
+
+            if (currentWallet?.id == id) {
+                val next = database.walletDao().getAll().firstOrNull { it.wallet.id != id }
+                setCurrentWallet(next?.wallet)
             }
-            database.walletDao().deleteById(wallet.id)
-            storedKeyToDelete?.id?.let { database.storedKeyDao().deleteById(it) }
         }
     }
 
@@ -575,6 +574,12 @@ class WalletRepository(
             }
         }
     }
+
+    override fun validatePrivateKey(privateKey: String) = WalletKey.validate(privateKey = privateKey)
+
+    override fun validateMnemonic(mnemonic: String) =  WalletKey.validate(mnemonic = mnemonic)
+
+    override fun validateKeystore(keyStore: String) = WalletKey.validate(keyStoreJSON = keyStore)
 
     override fun sendTokenWithCurrentWallet(
         amount: BigDecimal,

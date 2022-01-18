@@ -30,10 +30,6 @@ class WalletDeleteViewModel(
     }
 
     fun confirm() {
-        viewModelScope.launch {
-            wallet.firstOrNull()?.let {
-                walletRepository.deleteWallet(it)
-            }
-        }
+        walletRepository.deleteWallet(id)
     }
 }
