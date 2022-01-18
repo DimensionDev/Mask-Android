@@ -25,7 +25,6 @@ import com.dimension.maskbook.wallet.repository.DWebData
 import com.dimension.maskbook.wallet.repository.IWalletRepository
 import com.dimension.maskbook.wallet.repository.TokenData
 import com.dimension.maskbook.wallet.repository.WalletData
-import com.dimension.maskbook.wallet.repository.dbank
 import com.dimension.maskbook.wallet.services.WalletServices
 import com.dimension.maskbook.wallet.services.okHttpClient
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager
@@ -505,7 +504,6 @@ class WalletRepository(
         onDone: (String?) -> Unit,
         onError: (Throwable) -> Unit
     ) {
-        Log.d("Mimao", "gasfee:${gasFee.ether.gwei}")
         scope.launch {
             try {
                 val hash = currentWallet.firstOrNull()?.let { wallet ->
@@ -516,7 +514,6 @@ class WalletRepository(
                             toAddress = address,
                             data = data,
                             gasLimit = gasLimit,
-                            // TODO Mimao gas fee
                             gasPrice = gasFee + maxPriorityFee.toBigDecimal().gwei.ether
                         )
                         return@launch

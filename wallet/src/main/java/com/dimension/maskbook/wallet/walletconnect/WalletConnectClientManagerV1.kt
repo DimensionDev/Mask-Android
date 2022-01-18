@@ -42,9 +42,7 @@ class WalletConnectClientManagerV1(private val context: Context) : WalletConnect
 
     private val _wcUrl = MutableStateFlow("")
     override val wcUrl: Flow<String>
-        get() = _wcUrl.onEach {
-            Log.d("Mimao", "Current WcUrl:$it")
-        }
+        get() = _wcUrl
 
     override fun connect(onResult: (success: Boolean, responder: WCResponder?) -> Unit) {
         session?.clearCallbacks()
@@ -88,7 +86,6 @@ class WalletConnectClientManagerV1(private val context: Context) : WalletConnect
     }
 
     private fun resetSession() {
-        Log.d("Mimao", "resetSession")
         session = null
         config = null
         _wcUrl.value = ""
@@ -106,7 +103,6 @@ class WalletConnectClientManagerV1(private val context: Context) : WalletConnect
     override fun initSessions(onDisconnect: (address: String) -> Unit) {
         this.onDisconnect = onDisconnect
         storage.list().forEach {
-            Log.d("Mimao", "Stored state:$it")
             if (it.handshakeId == null && it.peerData == null) {
                 // end unpaired sessions
                 it.config.session().kill()
@@ -138,7 +134,7 @@ class WalletConnectClientManagerV1(private val context: Context) : WalletConnect
                     value = "0x${amount.ether.wei.toLong().toBigInteger().toString(16)}"
                 ),
                 callback = {
-                    Log.d("Mimao", "transaction response:$it")
+                    "Transaction response:$it".log()
                 }
             )
         }
@@ -175,10 +171,8 @@ class WalletConnectClientManagerV1(private val context: Context) : WalletConnect
 
 
 private fun Session.responder(chainId: Long?) = peerMeta()?.let {
-    Log.d("Mimao", "responder chain id:$chainId")
     chainId?.let { id ->
         ChainType.values().find { type ->
-            Log.d("Mimao", "chaind id :${type.chainId}, wc id:$id")
             type.chainId == id
         }
     }?.let { chainType ->
@@ -199,7 +193,7 @@ private class PairCallback(
     private val onConnect: () -> Unit,
 ) : Session.Callback {
     override fun onMethodCall(call: Session.MethodCall) {
-        Log.d("Mimao", "resonposne:$call")
+        "Pair response:$call".log()
         if (call is Session.MethodCall.Response) {
             if (call.error != null) {
                 dispatchResult(false)
@@ -216,8 +210,8 @@ private class PairCallback(
     }
 
     override fun onStatus(status: Session.Status) {
-        //clear callbacks after
-        Log.d("Mimao", "Status:$status, ${session.approvedAccounts()}, ${session.peerMeta()}")
+        //clear callbacks after approved or not
+        "Pair Status:$status".log()
         if (status is Session.Status.Error) {
             status.throwable.printStackTrace()
         }
@@ -252,13 +246,19 @@ private class ConnectedSessionCallback(
     }
 
     override fun onStatus(status: Session.Status) {
-        Log.d("Mimao", "Stored State Changed:$status")
-        if (status is Session.Status.Error) {
+        "$address Status:$status".log()
+        if (status is Session.Status.Error && BuildConfig.DEBUG) {
             status.throwable.printStackTrace()
         }
-        if (status == Session.Status.Disconnected) {
+        if (status == Session.Status.Closed) {
             session.clearCallbacks()
             onDisconnect.invoke(address, session)
         }
+    }
+}
+
+private fun String.log() {
+    if (BuildConfig.DEBUG) {
+        Log.d("WalletConnect", this)
     }
 }

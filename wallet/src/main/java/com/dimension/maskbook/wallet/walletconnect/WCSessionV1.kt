@@ -216,7 +216,6 @@ class WCSessionV1(
                 if (!data.params.approved) {
                     endSession()
                 }
-                // TODO handle session update -> not important for our usecase
             }
             is Session.MethodCall.SendTransaction -> {
                 accountToCheck = data.from
@@ -236,7 +235,7 @@ class WCSessionV1(
     }
 
     private fun accountCheck(id: Long, address: String): Boolean {
-        approvedAccounts?.find { it.toLowerCase() == address.toLowerCase() } ?: run {
+        approvedAccounts?.find { it.equals(address, ignoreCase = true) } ?: run {
             handlePayloadError(Session.MethodCallException.InvalidAccount(id, address))
             return false
         }
