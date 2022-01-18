@@ -17,7 +17,6 @@ import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.navHostAnimationDurationMillis
 import com.dimension.maskbook.wallet.ui.scenes.register.BackupIdentityScene
-import com.dimension.maskbook.wallet.ui.scenes.register.WelcomeScene
 import com.dimension.maskbook.wallet.ui.widget.MaskDialog
 import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
 import com.dimension.maskbook.wallet.viewmodel.register.CreateIdentityViewModel
@@ -25,18 +24,22 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import org.koin.androidx.compose.getViewModel
+import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun CreateIdentityHost(
+    personaName: String,
     onDone: () -> Unit,
     onBack: () -> Unit,
 ) {
     val navController = rememberAnimatedNavController()
-    val viewModel: CreateIdentityViewModel = getViewModel()
+    val viewModel: CreateIdentityViewModel = getViewModel {
+        parametersOf(personaName)
+    }
     AnimatedNavHost(
         navController = navController,
-        startDestination = "Welcome",
+        startDestination = "Backup",
         route = "CreateIdentity",
         enterTransition = { _, _ ->
             slideInHorizontally(initialOffsetX = { it }, animationSpec = tween(navHostAnimationDurationMillis))
@@ -51,21 +54,6 @@ fun CreateIdentityHost(
             slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween(navHostAnimationDurationMillis))
         },
     ) {
-        composable("Welcome") {
-            val persona by viewModel.persona.observeAsState(initial = "")
-            WelcomeScene(
-                persona = persona,
-                onPersonaChanged = {
-                    viewModel.setPersona(it)
-                },
-                onNext = {
-                    navController.navigate("Backup")
-                },
-                onBack = {
-                    navController.popBackStack()
-                }
-            )
-        }
         composable("Backup") {
             val words by viewModel.words.observeAsState(emptyList())
             BackupIdentityScene(

@@ -20,7 +20,6 @@ import com.dimension.maskbook.wallet.ui.scenes.MainHost
 import com.dimension.maskbook.wallet.ui.scenes.app.PluginSettingsScene
 import com.dimension.maskbook.wallet.ui.scenes.app.settings.MarketTrendSettingsModal
 import com.dimension.maskbook.wallet.ui.scenes.persona.BackUpPasswordModal
-import com.dimension.maskbook.wallet.ui.scenes.persona.CreatePersonaModal
 import com.dimension.maskbook.wallet.ui.scenes.persona.DeleteDialog
 import com.dimension.maskbook.wallet.ui.scenes.persona.ExportPrivateKeyScene
 import com.dimension.maskbook.wallet.ui.scenes.persona.LogoutDialog
@@ -65,7 +64,7 @@ fun NavGraphBuilder.mainRoute(
                 initialTab = it.arguments?.getString("tab").orEmpty(),
                 onBack = onBack,
                 onPersonaCreateClick = {
-                    navController.navigate("CreateIdentity")
+                    navController.navigate("WelcomeCreatePersona")
                 },
                 onPersonaRecoveryClick = {
                     navController.navigate("Recovery")
@@ -219,15 +218,6 @@ fun NavGraphBuilder.mainRoute(
                     }
                 )
             }
-        }
-        bottomSheet("CreatePersona") {
-            val repository = get<IPersonaRepository>()
-            CreatePersonaModal(
-                onDone = { name ->
-                    repository.addPersona(name)
-                    navController.popBackStack()
-                }
-            )
         }
         bottomSheet(
             "RenamePersona/{personaId}",

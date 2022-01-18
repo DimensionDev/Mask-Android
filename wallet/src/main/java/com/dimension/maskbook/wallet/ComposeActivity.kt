@@ -125,7 +125,7 @@ val walletModules = module {
     viewModel { (uri: Uri) -> RecoveryLocalViewModel(get(), uri, get<Context>().contentResolver) }
     viewModel { IdentityViewModel(get()) }
     viewModel { PrivateKeyViewModel(get()) }
-    viewModel { CreateIdentityViewModel(get()) }
+    viewModel { (personaName: String) -> CreateIdentityViewModel(personaName, get()) }
     viewModel { PersonaViewModel(get()) }
     viewModel { TwitterSocialViewModel(get()) }
     viewModel { FacebookSocialViewModel(get()) }

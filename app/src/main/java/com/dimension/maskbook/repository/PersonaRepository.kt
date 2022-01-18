@@ -204,13 +204,6 @@ class PersonaRepository(
         return createNewMnemonic().split(" ")
     }
 
-    override fun addPersona(value: String) {
-        scope.launch {
-            JSMethod.Persona.createPersonaByMnemonic(createNewMnemonic(), value, "")
-            refreshPersona()
-        }
-    }
-
     private fun createNewMnemonic(password: String = ""): String {
         return WalletKey.create(password).mnemonic
     }

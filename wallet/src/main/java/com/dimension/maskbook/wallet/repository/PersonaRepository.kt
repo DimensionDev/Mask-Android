@@ -80,7 +80,6 @@ interface IPersonaRepository {
     fun cancelConnectingProcess()
     fun setCurrentPersona(id: String)
     fun generateNewMnemonic(): List<String>
-    fun addPersona(value: String)
     fun logout()
     fun removePersona(id: String)
     fun updatePersona(id: String, value: String)
