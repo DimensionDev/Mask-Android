@@ -36,7 +36,7 @@ fun CreateIdentityHost(
     val viewModel: CreateIdentityViewModel = getViewModel()
     AnimatedNavHost(
         navController = navController,
-        startDestination = "Backup",
+        startDestination = "Welcome",
         route = "CreateIdentity",
         enterTransition = { _, _ ->
             slideInHorizontally(initialOffsetX = { it }, animationSpec = tween(navHostAnimationDurationMillis))
@@ -51,6 +51,21 @@ fun CreateIdentityHost(
             slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween(navHostAnimationDurationMillis))
         },
     ) {
+        composable("Welcome") {
+            val persona by viewModel.persona.observeAsState(initial = "")
+            WelcomeScene(
+                persona = persona,
+                onPersonaChanged = {
+                    viewModel.setPersona(it)
+                },
+                onNext = {
+                    navController.navigate("Backup")
+                },
+                onBack = {
+                    navController.popBackStack()
+                }
+            )
+        }
         composable("Backup") {
             val words by viewModel.words.observeAsState(emptyList())
             BackupIdentityScene(
@@ -58,7 +73,9 @@ fun CreateIdentityHost(
                 onRefreshWords = {
                     viewModel.refreshWords()
                 },
-                onVerify = { navController.navigate("Verify") },
+                onVerify = {
+                    navController.navigate("Verify")
+                },
                 onBack = onBack,
             )
         }
@@ -86,22 +103,6 @@ fun CreateIdentityHost(
                 }
             )
         }
-        composable("Welcome") {
-            val persona by viewModel.persona.observeAsState(initial = "")
-            WelcomeScene(
-                persona = persona,
-                onPersonaChanged = {
-                    viewModel.setPersona(it)
-                },
-                onNext = {
-                    viewModel.confirm()
-                    onDone.invoke()
-                },
-                onBack = {
-                    navController.popBackStack()
-                }
-            )
-        }
         dialog("Confirm") {
             MaskDialog(
                 onDismissRequest = {
@@ -123,11 +124,8 @@ fun CreateIdentityHost(
                     PrimaryButton(
                         modifier = Modifier.fillMaxWidth(),
                         onClick = {
-                            navController.navigate("Welcome") {
-                                popUpTo("Backup") {
-                                    inclusive = true
-                                }
-                            }
+                            viewModel.confirm()
+                            onDone.invoke()
                         },
                     ) {
                         Text(text = stringResource(R.string.common_controls_done))
