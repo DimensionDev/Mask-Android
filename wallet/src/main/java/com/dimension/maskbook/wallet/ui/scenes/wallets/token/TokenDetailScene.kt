@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -119,7 +120,10 @@ fun TokenDetailScene(
                         ) {
                             Icon(painterResource(id = R.drawable.upload), contentDescription = null)
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_balance_btn_Send), maxLines = 1)
+                            Text(
+                                text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_balance_btn_Send),
+                                maxLines = 1
+                            )
                         }
                         PrimaryButton(
                             modifier = Modifier.weight(1f),
@@ -131,7 +135,10 @@ fun TokenDetailScene(
                                 contentDescription = null
                             )
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_balance_btn_receive), maxLines = 1)
+                            Text(
+                                text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_balance_btn_receive),
+                                maxLines = 1
+                            )
                         }
                     }
                     Spacer(modifier = Modifier.height(41.dp))
@@ -178,7 +185,7 @@ fun TransactionHistoryList(
                 }
                 items(entry.value) { item ->
                     TransactionItem(
-                        item,
+                        item.copy(status = TransactionStatus.Pending),
                         item.tokenData,
                         onSpeedUp = {
                             onSpeedUp.invoke(item)
@@ -203,31 +210,51 @@ fun TransactionItem(
 ) {
     ListItem(
         text = {
-            Text(text = it.message, style = MaterialTheme.typography.subtitle1)
-        },
-        secondaryText = {
-            Column {
-                when (it.status) {
-                    TransactionStatus.Pending -> {
-                        Spacer(modifier = Modifier.height(6.dp))
-                        Text(text = "Pending...", color = Color(0xFFFFB915))
+            Column(modifier = Modifier.fillMaxHeight(), verticalArrangement = Arrangement.Center) {
+                Row {
+                    Text(text = it.title(), style = MaterialTheme.typography.subtitle1)
+                    when (it.status) {
+                        TransactionStatus.Pending -> {
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(text = "Pending...", color = Color(0xFFFFB915))
+                        }
+                        TransactionStatus.Failure -> {
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(text = "Failed", color = Color(0xFFFF5F5F))
+                        }
+                        else -> Unit
                     }
-                    TransactionStatus.Failure -> {
-                        Spacer(modifier = Modifier.height(6.dp))
-                        Text(text = "Failed", color = Color(0xFFFF5F5F))
-                    }
-                    else -> Unit
                 }
+
                 if (it.status == TransactionStatus.Pending) {
                     Spacer(modifier = Modifier.height(6.dp))
-                    PrimaryButton(onClick = onSpeedUp) {
-                        Text(text = "Spend up")
-                    }
-                    SecondaryButton(onClick = onCancel) {
-                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_cancel))
+                    Row {
+                        PrimaryButton(
+                            onClick = onSpeedUp,
+                            modifier = Modifier.size(width = 62.dp, height = 28.dp),
+                            contentPadding = PaddingValues(vertical = 6.dp, horizontal = 8.dp)
+                        ) {
+                            Text(
+                                text = "Spend up",
+                                style = MaterialTheme.typography.overline.copy(color = MaterialTheme.colors.onSurface)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        SecondaryButton(
+                            onClick = onCancel,
+                            modifier = Modifier.size(width = 62.dp, height = 28.dp),
+                            contentPadding = PaddingValues(vertical = 6.dp, horizontal = 8.dp)
+                        ) {
+                            Text(
+                                text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_cancel),
+                                style = MaterialTheme.typography.overline.copy(color = MaterialTheme.colors.onSurface)
+                            )
+                        }
                     }
                 }
+
             }
+
         },
         trailing = {
             Column(
@@ -238,7 +265,9 @@ fun TransactionItem(
                 )
                 Text(
                     text = (it.count * tokenData.price).humanizeDollar(),
-                    style = MaterialTheme.typography.subtitle1,
+                    style = if (it.type == TransactionType.Receive) MaterialTheme.typography.subtitle1.copy(
+                        color = Color(0xFF1FB885)
+                    ) else MaterialTheme.typography.subtitle1,
                 )
             }
         },
@@ -248,23 +277,29 @@ fun TransactionItem(
                 it.type == TransactionType.Receive -> R.drawable.download
                 it.type == TransactionType.Send -> R.drawable.upload
                 it.type == TransactionType.Swap -> R.drawable.filter2
+                it.type == TransactionType.Approve -> R.drawable.filter2
                 else -> null
             }
             if (icon != null) {
                 val color = if (it.status == TransactionStatus.Failure) {
                     Color(0x0AFF5F5F)
-                } else {
+                } else if (it.type == TransactionType.Receive) {
                     Color(0x1A1C68F3)
+                } else {
+                    Color(0x1AFFB915)
                 }
                 val iconColor = if (it.status == TransactionStatus.Failure) {
                     Color(0xFFFF5F5F)
-                } else {
+                } else if (it.type == TransactionType.Receive) {
                     Color(0xFF1C68F3)
+                } else {
+                    Color(0xFFFFB915)
                 }
+
                 Box(
                     modifier = Modifier
                         .size(38.dp)
-                        .background(color),
+                        .background(color, shape = CircleShape),
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(painterResource(id = icon), contentDescription = null, tint = iconColor)
@@ -272,4 +307,15 @@ fun TransactionItem(
             }
         }
     )
+}
+
+@Composable
+private fun TransactionData.title() = if (message.isNotEmpty()) message else {
+    when (type) {
+        TransactionType.Swap -> "WETH Deposit"
+        TransactionType.Receive -> "Received ${tokenData.symbol}"
+        TransactionType.Send -> "Send ${tokenData.symbol}"
+        TransactionType.Approve -> "Approve ${tokenData.symbol}"
+        TransactionType.Cancel -> "Cancel ${tokenData.symbol}"
+    }
 }
