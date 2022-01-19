@@ -8,13 +8,12 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
-import com.dimension.maskbook.wallet.repository.IPersonaRepository
 import com.dimension.maskbook.wallet.ui.widget.MaskDialog
 import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
 import com.dimension.maskbook.wallet.ui.widget.SecondaryButton
-import org.koin.androidx.compose.get
 
 @Composable
 fun LogoutDialog(
@@ -30,31 +29,25 @@ fun LogoutDialog(
             )
         },
         title = {
-            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_alert_persona_logout_title))
+            Text(text = stringResource(R.string.common_alert_persona_logout_title))
         },
         text = {
-            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_alert_persona_logout_description))
+            Text(text = stringResource(R.string.common_alert_persona_logout_description))
         },
         buttons = {
             Row {
                 SecondaryButton(
                     modifier = Modifier.weight(1f),
-                    onClick = {
-                        onBack.invoke()
-                    }
+                    onClick = onBack,
                 ) {
-                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_cancel))
+                    Text(text = stringResource(R.string.common_controls_cancel))
                 }
                 Spacer(modifier = Modifier.width(20.dp))
-                val repository = get<IPersonaRepository>()
                 PrimaryButton(
                     modifier = Modifier.weight(1f),
-                    onClick = {
-                        repository.logout()
-                        onDone.invoke()
-                    },
+                    onClick = onDone,
                 ) {
-                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_confirm))
+                    Text(text = stringResource(R.string.common_controls_confirm))
                 }
             }
         }

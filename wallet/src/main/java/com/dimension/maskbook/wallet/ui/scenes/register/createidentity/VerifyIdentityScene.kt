@@ -1,10 +1,23 @@
 package com.dimension.maskbook.wallet.ui.scenes.register.createidentity
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.Card
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.LocalTextStyle
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
+import androidx.compose.material.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.snapshotFlow
@@ -12,11 +25,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
+import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ui.MaskTheme
-import com.dimension.maskbook.wallet.ui.widget.*
+import com.dimension.maskbook.wallet.ui.widget.MaskBackButton
+import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
+import com.dimension.maskbook.wallet.ui.widget.MaskTopAppBar
+import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
+import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
+import com.dimension.maskbook.wallet.ui.widget.SecondaryButton
+import com.dimension.maskbook.wallet.ui.widget.itemsGridIndexed
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.calculateCurrentOffsetForPage
@@ -27,11 +47,10 @@ import kotlin.math.max
 
 @OptIn(ExperimentalPagerApi::class, ExperimentalMaterialApi::class)
 @Composable
-@Preview
 fun VerifyIdentityScene(
     words: List<String>,
-    title: String = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_identify_verify_title),
-    subTitle: String = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_identify_verify_description),
+    title: String = stringResource(R.string.scene_identify_verify_title),
+    subTitle: String = stringResource(R.string.scene_identify_verify_description),
     selectedWords: List<String>,
     onWordSelected: (String) -> Unit,
     onWordDeselected: (String) -> Unit,
@@ -163,14 +182,14 @@ fun VerifyIdentityScene(
                     Spacer(modifier = Modifier.height(12.dp))
                     if (!canConfirm) {
                         Text(
-                            text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_mnemonic_verify_mnemonic_prompt),
+                            text = stringResource(R.string.scene_mnemonic_verify_mnemonic_prompt),
                             style = LocalTextStyle.current.copy(
                                 Color(0XFFFFB915)
                             )
                         )
                     } else if (!correct) {
                         Text(
-                            text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_identify_verify_identity_error),
+                            text = stringResource(R.string.scene_identify_verify_identity_error),
                             style = LocalTextStyle.current.copy(
                                 Color(0XFFFF5F5F)
                             )
@@ -217,14 +236,14 @@ fun VerifyIdentityScene(
                         onClick = { onConfirm.invoke() },
                         enabled = correct,
                     ) {
-                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_confirm))
+                        Text(text = stringResource(R.string.common_controls_confirm))
                     }
                     Spacer(modifier = Modifier.height(16.dp))
                     SecondaryButton(
                         modifier = Modifier.fillMaxWidth(),
                         onClick = { onClear.invoke() },
                     ) {
-                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_clear))
+                        Text(text = stringResource(R.string.common_controls_clear))
                     }
                 }
             }

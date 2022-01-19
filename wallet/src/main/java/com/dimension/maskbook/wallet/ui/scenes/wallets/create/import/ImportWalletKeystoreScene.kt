@@ -15,7 +15,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.repository.WalletCreateOrImportResult
 import com.dimension.maskbook.wallet.ui.MaskTheme
@@ -65,7 +67,7 @@ fun ImportWalletKeyStoreScene(
                         .fillMaxSize()
                         .padding(ScaffoldPadding),
                 ) {
-                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_import_item_keystore), style = MaterialTheme.typography.h4)
+                    Text(text = stringResource(R.string.scene_wallet_import_item_keystore), style = MaterialTheme.typography.h4)
                     Spacer(modifier = Modifier.height(24.dp))
                     MaskInputField(
                         value = keystore,
@@ -74,11 +76,11 @@ fun ImportWalletKeyStoreScene(
                             .fillMaxWidth()
                             .height(124.dp),
                         placeholder = {
-                            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_keystore_keystore_placeholder))
+                            Text(text = stringResource(R.string.scene_wallet_keystore_keystore_placeholder))
                         }
                     )
                     Spacer(modifier = Modifier.height(16.dp))
-                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_delete_password), style = MaterialTheme.typography.body1)
+                    Text(text = stringResource(R.string.scene_wallet_delete_password), style = MaterialTheme.typography.body1)
                     Spacer(modifier = Modifier.height(8.dp))
                     MaskPasswordInputField(
                         value = password,
@@ -103,7 +105,7 @@ fun ImportWalletKeyStoreScene(
                         },
                         enabled = canConfirm
                     ) {
-                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_confirm))
+                        Text(text = stringResource(R.string.common_controls_confirm))
                     }
                 }
             }

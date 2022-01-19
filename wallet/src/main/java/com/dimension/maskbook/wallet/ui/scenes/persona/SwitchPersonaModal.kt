@@ -1,16 +1,24 @@
 package com.dimension.maskbook.wallet.ui.scenes.persona
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.*
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.rounded.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.repository.PersonaData
@@ -21,7 +29,7 @@ import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun SwitchPersonaModal(
-    currentPersonaData: PersonaData,
+    currentPersonaData: PersonaData?,
     items: List<PersonaData>,
     onAdd: () -> Unit,
     onItemClicked: (PersonaData) -> Unit,
@@ -32,57 +40,52 @@ fun SwitchPersonaModal(
                 .padding(ScaffoldPadding),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.tab_personas), style = MaterialTheme.typography.h6)
+            Text(
+                text = stringResource(R.string.tab_personas),
+                style = MaterialTheme.typography.h6
+            )
+            Spacer(Modifier.height(12.dp))
             LazyColumn {
-                items(items) {
+                items(items) { item ->
                     MaskSelection(
-                        selected = currentPersonaData == it,
-                        enabled = currentPersonaData != it,
+                        selected = currentPersonaData == item,
+                        enabled = currentPersonaData == null || currentPersonaData != item,
                         onClicked = {
-                            onItemClicked.invoke(it)
+                            onItemClicked.invoke(item)
                         },
                         content = {
-                            Icon(Icons.Default.AccountCircle, contentDescription = null)
+                            Image(
+                                painter = painterResource(R.drawable.ic_default_persona_avatar),
+                                contentDescription = null,
+                            )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                text = it.name,
-                                modifier = Modifier
-                                    .weight(1f),
+                                text = item.name,
+                                modifier = Modifier.weight(1f),
                                 style = MaterialTheme.typography.subtitle1
                             )
                         }
                     )
                 }
                 item {
-                    Box(modifier = Modifier.padding(vertical = 8.dp)) {
-                        Card(
-                            elevation = 0.dp,
-                            backgroundColor = MaterialTheme.colors.background,
-                            onClick = {
-                                onAdd.invoke()
-                            },
-                            modifier = Modifier.fillMaxWidth(),
-                        ) {
-                            Row(
+                    MaskSelection(
+                        selected = false,
+                        onClicked = {
+                            onAdd.invoke()
+                        },
+                        content = {
+                            Text(
+                                text = stringResource(R.string.scene_personas_add_persona),
                                 modifier = Modifier
-                                    .padding(14.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                            ) {
-                                Icon(Icons.Default.AccountCircle, contentDescription = null)
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(
-                                    text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_personas_add_persona),
-                                    modifier = Modifier
-                                        .weight(1f),
-                                    style = MaterialTheme.typography.subtitle1
-                                )
-                                Image(
-                                    painterResource(id = R.drawable.ic_plus),
-                                    contentDescription = null
-                                )
-                            }
+                                    .weight(1f),
+                                style = MaterialTheme.typography.subtitle1
+                            )
+                            Icon(
+                                imageVector = Icons.Rounded.Add,
+                                contentDescription = null,
+                            )
                         }
-                    }
+                    )
                 }
             }
         }

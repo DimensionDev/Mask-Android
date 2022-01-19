@@ -11,12 +11,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.dialog
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.navHostAnimationDurationMillis
 import com.dimension.maskbook.wallet.ui.scenes.register.BackupIdentityScene
-import com.dimension.maskbook.wallet.ui.scenes.register.WelcomeScene
 import com.dimension.maskbook.wallet.ui.widget.MaskDialog
 import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
 import com.dimension.maskbook.wallet.viewmodel.register.CreateIdentityViewModel
@@ -24,15 +24,19 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import org.koin.androidx.compose.getViewModel
+import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun CreateIdentityHost(
+    personaName: String,
     onDone: () -> Unit,
     onBack: () -> Unit,
 ) {
     val navController = rememberAnimatedNavController()
-    val viewModel: CreateIdentityViewModel = getViewModel()
+    val viewModel: CreateIdentityViewModel = getViewModel {
+        parametersOf(personaName)
+    }
     AnimatedNavHost(
         navController = navController,
         startDestination = "Backup",
@@ -57,7 +61,9 @@ fun CreateIdentityHost(
                 onRefreshWords = {
                     viewModel.refreshWords()
                 },
-                onVerify = { navController.navigate("Verify") },
+                onVerify = {
+                    navController.navigate("Verify")
+                },
                 onBack = onBack,
             )
         }
@@ -85,22 +91,6 @@ fun CreateIdentityHost(
                 }
             )
         }
-        composable("Welcome") {
-            val persona by viewModel.persona.observeAsState(initial = "")
-            WelcomeScene(
-                persona = persona,
-                onPersonaChanged = {
-                    viewModel.setPersona(it)
-                },
-                onNext = {
-                    viewModel.confirm()
-                    onDone.invoke()
-                },
-                onBack = {
-                    navController.popBackStack()
-                }
-            )
-        }
         dialog("Confirm") {
             MaskDialog(
                 onDismissRequest = {
@@ -113,23 +103,20 @@ fun CreateIdentityHost(
                     )
                 },
                 title = {
-                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_alert_identity_create_title))
+                    Text(text = stringResource(R.string.common_alert_identity_create_title))
                 },
                 text = {
-                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_alert_identity_create_description))
+                    Text(text = stringResource(R.string.common_alert_identity_create_description))
                 },
                 buttons = {
                     PrimaryButton(
                         modifier = Modifier.fillMaxWidth(),
                         onClick = {
-                            navController.navigate("Welcome") {
-                                popUpTo("Backup") {
-                                    inclusive = true
-                                }
-                            }
+                            viewModel.confirm()
+                            onDone.invoke()
                         },
                     ) {
-                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_done))
+                        Text(text = stringResource(R.string.common_controls_done))
                     }
                 },
             )

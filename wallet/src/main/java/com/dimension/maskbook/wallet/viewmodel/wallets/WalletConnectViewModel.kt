@@ -36,7 +36,6 @@ class WalletConnectViewModel(
                 if (success) {
                     responder?.let {
                         // save it
-
                         val platform = walletRepository.dWebData.firstOrNull()?.coinPlatformType
                             ?: CoinPlatformType.Ethereum
                         repository.saveAccounts(responder = responder, platformType = platform)
