@@ -1,39 +1,14 @@
 package com.dimension.maskbook.wallet.ui.scenes.wallets.management
 
 import androidx.annotation.DrawableRes
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.*
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.LocalTextStyle
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ScrollableTabRow
-import androidx.compose.material.Tab
+import androidx.compose.material.*
 import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
@@ -62,13 +37,8 @@ import com.dimension.maskbook.wallet.ext.humanizeToken
 import com.dimension.maskbook.wallet.repository.ChainType
 import com.dimension.maskbook.wallet.repository.TokenData
 import com.dimension.maskbook.wallet.repository.WalletData
-import com.dimension.maskbook.wallet.repository.dbank
 import com.dimension.maskbook.wallet.ui.MaskTheme
-import com.dimension.maskbook.wallet.ui.widget.MaskCard
-import com.dimension.maskbook.wallet.ui.widget.MaskListCardItem
-import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
-import com.dimension.maskbook.wallet.ui.widget.MaskSingleLineTopAppBar
-import com.dimension.maskbook.wallet.ui.widget.TokenAddressText
+import com.dimension.maskbook.wallet.ui.widget.*
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.calculateCurrentOffsetForPage
@@ -277,7 +247,7 @@ fun WalletBalancesScene(
                         currentWallet.tokens
                     } else {
                         currentWallet.tokens.filter {
-                            it.tokenData.chainId == displayAmountType.chainType?.dbank?.name
+                            it.tokenData.chainType == displayAmountType.chainType
                         }
                     }.sortedByDescending {
                         it.tokenData.price * it.count
@@ -299,11 +269,18 @@ fun WalletBalancesScene(
                             Text(text = (it.count * tokenData.price).humanizeDollar())
                         },
                         icon = {
-                            Image(
-                                painter = rememberImagePainter(data = tokenData.logoURI),
-                                contentDescription = null,
-                                modifier = Modifier.size(38.dp)
-                            )
+                            Box {
+                                Image(
+                                    painter = rememberImagePainter(data = tokenData.logoURI),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(38.dp)
+                                )
+                                Image(
+                                    painter = rememberImagePainter(data = tokenData.chainType.onDrawableRes),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(16.dp).align(Alignment.BottomEnd)
+                                )
+                            }
                         }
                     )
                 }

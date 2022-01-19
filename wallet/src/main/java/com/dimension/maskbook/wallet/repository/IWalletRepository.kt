@@ -1,11 +1,7 @@
 package com.dimension.maskbook.wallet.repository
 
 import com.dimension.maskbook.debankapi.model.ChainID
-import com.dimension.maskbook.wallet.db.model.CoinPlatformType
-import com.dimension.maskbook.wallet.db.model.DbWalletBalanceType
-import com.dimension.maskbook.wallet.db.model.DbWalletTokenTokenWithWallet
-import com.dimension.maskbook.wallet.db.model.DbWalletTokenWithToken
-import com.dimension.maskbook.wallet.db.model.WalletSource
+import com.dimension.maskbook.wallet.db.model.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.Serializable
 import java.math.BigDecimal
@@ -134,6 +130,19 @@ enum class ChainType(
     xdai(100, "https://rpc.xdaichain.com", false),
     optimism(10, "https://mainnet.optimism.io", false),
     polka(1, "", false),// TODO: json rpc endpoint
+    kovan(42, "https://kovan.infura.io/v3/d74bd8586b9e44449cef131d39ceeefb", true),
+    goerli(5, "https://goerli.infura.io/v3/d74bd8586b9e44449cef131d39ceeefb", true),
+    kusama(8, "https://kusama-rpc.polkadot.io/", false),
+    westend(9, "https://westend-rpc.polkadot.io/", false),
+    edgeware(10, "https://edgeware-node.edgewa.re/", false),
+    polkadot(17, "https://polkadot-rpc.polkadot.io/", false),
+    node(0, "", false),
+    custom(0, "", false),
+    unknown(0, "", false),
+}
+
+fun String.toChainType(): ChainType {
+    return kotlin.runCatching { ChainType.valueOf(this) }.getOrNull() ?: ChainType.unknown
 }
 
 val ChainType.dbank: ChainID
@@ -146,6 +155,18 @@ val ChainType.dbank: ChainID
         ChainType.xdai -> ChainID.xdai
         ChainType.optimism -> ChainID.op
         ChainType.polka -> ChainID.eth
+        else -> throw NotImplementedError("ChainType $this not supported")
+    }
+
+val ChainID.chainType: ChainType
+    get() = when (this) {
+        ChainID.eth -> ChainType.eth
+        ChainID.bsc -> ChainType.bsc
+        ChainID.matic -> ChainType.polygon
+        ChainID.arb -> ChainType.arbitrum
+        ChainID.xdai -> ChainType.xdai
+        ChainID.op -> ChainType.optimism
+        else -> ChainType.unknown
     }
 
 data class DWebData(

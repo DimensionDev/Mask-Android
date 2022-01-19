@@ -9,7 +9,7 @@ import java.math.BigDecimal
 
 class TokenData(
     val address: String,
-    val chainId: String,
+    val chainType: ChainType,
     val name: String,
     val symbol: String,
     val decimals: Long,
@@ -20,7 +20,7 @@ class TokenData(
         fun fromDb(data: DbToken) = with(data) {
             TokenData(
                 address,
-                chainId,
+                chainType,
                 name,
                 symbol,
                 decimals,
@@ -37,14 +37,14 @@ class TokenData(
         other as TokenData
 
         if (address != other.address) return false
-        if (chainId != other.chainId) return false
+        if (chainType != other.chainType) return false
 
         return true
     }
 
     override fun hashCode(): Int {
         var result = address.hashCode()
-        result = 31 * result + chainId.hashCode()
+        result = 31 * result + chainType.hashCode()
         return result
     }
 }

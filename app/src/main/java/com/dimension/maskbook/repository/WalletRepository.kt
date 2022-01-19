@@ -10,35 +10,15 @@ import androidx.datastore.preferences.preferencesDataStore
 import androidx.room.withTransaction
 import com.dimension.maskbook.debankapi.model.ChainID
 import com.dimension.maskbook.wallet.db.AppDatabase
-import com.dimension.maskbook.wallet.db.model.CoinPlatformType
-import com.dimension.maskbook.wallet.db.model.DbStoredKey
-import com.dimension.maskbook.wallet.db.model.DbToken
-import com.dimension.maskbook.wallet.db.model.DbWallet
-import com.dimension.maskbook.wallet.db.model.DbWalletBalance
-import com.dimension.maskbook.wallet.db.model.DbWalletBalanceType
-import com.dimension.maskbook.wallet.db.model.DbWalletToken
-import com.dimension.maskbook.wallet.db.model.WalletSource
+import com.dimension.maskbook.wallet.db.model.*
 import com.dimension.maskbook.wallet.ext.ether
 import com.dimension.maskbook.wallet.ext.gwei
-import com.dimension.maskbook.wallet.repository.ChainType
-import com.dimension.maskbook.wallet.repository.DWebData
-import com.dimension.maskbook.wallet.repository.IWalletRepository
-import com.dimension.maskbook.wallet.repository.TokenData
-import com.dimension.maskbook.wallet.repository.WalletData
-import com.dimension.maskbook.wallet.repository.dbank
+import com.dimension.maskbook.wallet.repository.*
 import com.dimension.maskbook.wallet.services.WalletServices
 import com.dimension.maskbook.wallet.services.okHttpClient
 import com.dimension.maskwalletcore.WalletKey
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
 import org.web3j.abi.FunctionEncoder
 import org.web3j.abi.datatypes.Address
 import org.web3j.abi.datatypes.Function
@@ -48,7 +28,7 @@ import org.web3j.protocol.Web3j
 import org.web3j.protocol.http.HttpService
 import org.web3j.tx.RawTransactionManager
 import java.math.BigDecimal
-import java.util.UUID
+import java.util.*
 import kotlin.math.pow
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
@@ -155,10 +135,11 @@ class WalletRepository(
                 }
 
             val tokens = token.map {
+                val chainId = kotlin.runCatching { it.chain?.let { it1 -> ChainID.valueOf(it1) } }.getOrNull()
                 DbToken(
                     id = it.id ?: "",
                     address = it.id ?: "",
-                    chainId = it.chain ?: "eth",
+                    chainType = chainId?.chainType ?: ChainType.unknown,
                     name = it.name ?: "",
                     symbol = it.symbol ?: "",
                     decimals = it.decimals ?: 0L,
@@ -468,21 +449,18 @@ class WalletRepository(
         onDone: (String?) -> Unit,
         onError: (Throwable) -> Unit
     ) {
-        runCatching { ChainType.valueOf(tokenData.chainId) }.getOrNull()
-            ?.let { chainType ->
-                sendTokenWithCurrentWalletAndChainType(
-                    amount = amount,
-                    address = address,
-                    chainType = chainType,
-                    gasLimit = gasLimit,
-                    gasFee = gasFee,
-                    maxFee = maxFee,
-                    maxPriorityFee = maxPriorityFee,
-                    onDone = onDone,
-                    onError = onError,
-                    data = data,
-                )
-            }
+        sendTokenWithCurrentWalletAndChainType(
+            amount = amount,
+            address = address,
+            chainType = tokenData.chainType,
+            gasLimit = gasLimit,
+            gasFee = gasFee,
+            maxFee = maxFee,
+            maxPriorityFee = maxPriorityFee,
+            onDone = onDone,
+            onError = onError,
+            data = data,
+        )
     }
 
 

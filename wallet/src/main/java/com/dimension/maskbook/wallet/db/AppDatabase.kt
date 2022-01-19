@@ -19,7 +19,7 @@ import java.math.BigDecimal
         DbStoredKey::class,
         DbWalletBalance::class,
     ],
-    version = 3,
+    version = 4,
 )
 @TypeConverters(BigDecimalTypeConverter::class)
 abstract class AppDatabase : RoomDatabase() {
