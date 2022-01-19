@@ -20,6 +20,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import com.dimension.maskbook.wallet.R
@@ -48,7 +49,7 @@ fun SearchTokenScene(
                     navigationIcon = {
                         MaskBackButton(onBack = onBack)
                     },
-                    title = { Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_sendTransaction_tokenList_title)) }
+                    title = { Text(text = stringResource(R.string.scene_sendTransaction_tokenList_title)) }
                 )
             }
         ) {
@@ -69,7 +70,7 @@ fun SearchTokenScene(
                         )
                     },
                     placeholder = {
-                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_sendTransaction_tokenList_placeholder))
+                        Text(text = stringResource(R.string.scene_sendTransaction_tokenList_placeholder))
                     }
                 )
                 Spacer(modifier = Modifier.height(20.dp))

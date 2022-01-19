@@ -1,11 +1,19 @@
 package com.dimension.maskbook.wallet.ui.scenes.wallets.send.preview
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
+import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.repository.GasPriceEditMode
 import com.dimension.maskbook.wallet.repository.SearchAddressData
 import com.dimension.maskbook.wallet.repository.TokenData
 import com.dimension.maskbook.wallet.repository.WalletTokenData
-import com.dimension.maskbook.wallet.ui.scenes.wallets.send.*
+import com.dimension.maskbook.wallet.ui.scenes.wallets.send.AddContactSheet
+import com.dimension.maskbook.wallet.ui.scenes.wallets.send.ApproveConfirmSheet
+import com.dimension.maskbook.wallet.ui.scenes.wallets.send.EditGasPriceSheet
+import com.dimension.maskbook.wallet.ui.scenes.wallets.send.SearchTokenScene
+import com.dimension.maskbook.wallet.ui.scenes.wallets.send.SendConfirmSheet
+import com.dimension.maskbook.wallet.ui.scenes.wallets.send.SignatureRequestSignSheet
+import com.dimension.maskbook.wallet.ui.scenes.wallets.send.UnlockWalletDialog
 import java.math.BigDecimal
 
 /*TODO delete this class later*/
@@ -104,7 +112,7 @@ fun SignatureRequestSignSheetPreview() {
 @Composable
 fun UnlockWalletPreview() {
     UnlockWalletDialog(
-        unlockError = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_change_password_incorrect_password),
+        unlockError = stringResource(R.string.scene_change_password_incorrect_password),
         onCancel = { /*TODO*/ }
     ) {
 
@@ -116,7 +124,7 @@ fun EditGasPriceSheetPreview() {
     EditGasPriceSheet(
         price = "1.44",
         costFee = "0.0034",
-        costFeeUnit = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.chain_short_name_eth),
+        costFeeUnit = stringResource(R.string.chain_short_name_eth),
         arrivesIn = "30 Sec",
         mode = GasPriceEditMode.MEDIUM,
         gasLimit = "45000",
