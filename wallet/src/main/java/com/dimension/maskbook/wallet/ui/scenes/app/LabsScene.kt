@@ -1,20 +1,23 @@
 package com.dimension.maskbook.wallet.ui.scenes.app
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
-import androidx.compose.material.ListItem
 import androidx.compose.material.LocalContentAlpha
-import androidx.compose.material.LocalTextStyle
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -23,8 +26,10 @@ import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.repository.AppKey
 import com.dimension.maskbook.wallet.ui.widget.MaskButton
+import com.dimension.maskbook.wallet.ui.widget.MaskListItem
 import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
 import com.dimension.maskbook.wallet.ui.widget.MaskSingleLineTopAppBar
+import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.wallet.viewmodel.app.AppDisplayData
 import com.dimension.maskbook.wallet.viewmodel.app.LabsViewModel
 import org.koin.androidx.compose.getViewModel
@@ -41,10 +46,7 @@ fun LabsScene(
         topBar = {
             MaskSingleLineTopAppBar(
                 title = {
-                    Text(
-                        text = stringResource(R.string.tab_labs),
-                        style = MaterialTheme.typography.h6,
-                    )
+                    Text(text = stringResource(R.string.tab_labs))
                 },
                 actions = {
                     IconButton(onClick = { onSettingClick() }) {
@@ -57,11 +59,14 @@ fun LabsScene(
             )
         }
     ) {
-        LazyColumn {
+        LazyColumn(
+            modifier = Modifier.padding(ScaffoldPadding),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
             items(apps) { item ->
                 AppItem(
                     item = item,
-                    onItemClick = { onItemClick(item.key) }
+                    onClick = { onItemClick(item.key) }
                 )
             }
         }
@@ -72,25 +77,24 @@ fun LabsScene(
 @Composable
 private fun AppItem(
     item: AppDisplayData,
-    onItemClick: () -> Unit
+    onClick: () -> Unit
 ) {
     MaskButton(
-        onClick = { onItemClick() },
+        onClick = onClick,
         enabled = item.enabled,
     ) {
-        ListItem(
+        MaskListItem(
+            modifier = Modifier.height(86.dp).alpha(LocalContentAlpha.current),
             icon = {
                 Image(
                     painter = painterResource(id = item.onIcon),
                     contentDescription = null,
-                    modifier = Modifier.padding(vertical = 12.dp),
-                    alpha = if (item.enabled) 1f else LocalContentAlpha.current,
+                    modifier = Modifier.size(40.dp),
                 )
             },
             text = {
                 Text(
                     text = stringResource(item.name),
-                    color = LocalTextStyle.current.color.copy(LocalContentAlpha.current),
                 )
             },
             secondaryText = {
@@ -98,15 +102,13 @@ private fun AppItem(
                     text = item.description,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
-                    color = LocalTextStyle.current.color.copy(LocalContentAlpha.current),
                 )
             },
-            singleLineSecondaryText = false,
             trailing = {
                 Icon(
-                    painter = painterResource(R.drawable.ic_arrow_right),
+                    imageVector = Icons.Filled.ArrowForwardIos,
                     contentDescription = null,
-                    modifier = Modifier.padding(vertical = 22.dp),
+                    modifier = Modifier.size(16.dp),
                 )
             }
         )

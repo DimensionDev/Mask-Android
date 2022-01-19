@@ -70,11 +70,8 @@ fun MaskTopAppBar(
             if (title != null) {
                 Row {
                     Spacer(TitleInsetWithoutIcon)
-                    ProvideTextStyle(value = MaterialTheme.typography.h4) {
-                        CompositionLocalProvider(
-                            LocalContentAlpha provides ContentAlpha.high,
-                            content = title
-                        )
+                    ProvideTextStyle(value = MaterialTheme.typography.h1) {
+                        title()
                     }
                 }
             }
@@ -156,11 +153,8 @@ fun MaskSingleLineTopAppBar(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    ProvideTextStyle(value = MaterialTheme.typography.h6) {
-                        CompositionLocalProvider(
-                            LocalContentAlpha provides ContentAlpha.high,
-                            content = title
-                        )
+                    ProvideTextStyle(value = MaterialTheme.typography.h4) {
+                        title()
                     }
                 }
             }

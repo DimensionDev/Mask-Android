@@ -3,7 +3,6 @@ package com.dimension.maskbook.wallet.ui.scenes.settings
 import android.content.Context
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -12,6 +11,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,11 +22,10 @@ import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
-import androidx.compose.material.ListItem
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -46,7 +45,9 @@ import com.dimension.maskbook.wallet.repository.ISettingsRepository
 import com.dimension.maskbook.wallet.repository.Language
 import com.dimension.maskbook.wallet.ui.LocalRootNavController
 import com.dimension.maskbook.wallet.ui.widget.IosSwitch
+import com.dimension.maskbook.wallet.ui.widget.MaskButton
 import com.dimension.maskbook.wallet.ui.widget.MaskCard
+import com.dimension.maskbook.wallet.ui.widget.MaskListItem
 import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
 import com.dimension.maskbook.wallet.ui.widget.MaskTopAppBar
 import com.dimension.maskbook.wallet.viewmodel.wallets.BiometricEnableViewModel
@@ -244,7 +245,6 @@ private fun enableBiometric(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun SettingsItem(
     targetRoute: String? = null,
@@ -256,44 +256,57 @@ fun SettingsItem(
     onClicked: (() -> Unit)? = null,
 ) {
     val rootNavController = LocalRootNavController.current
-    ListItem(
-        modifier = Modifier
-            .clickable {
-                if (targetRoute != null) {
-                    rootNavController.navigate(targetRoute)
-                } else onClicked?.invoke()
+    MaskButton(
+        onClick = {
+            if (targetRoute != null) {
+                rootNavController.navigate(targetRoute)
+            } else onClicked?.invoke()
+        }
+    ) {
+        MaskListItem(
+            text = {
+                Text(text = title)
             },
-        text = {
-            Text(text = title)
-        },
-        icon = {
-            Image(
-                painter = painterResource(id = icon),
-                contentDescription = null,
-            )
-        },
-        trailing = {
-            if (trailing != null) {
-                trailing.invoke()
-            } else {
-                Row(
-                    modifier = Modifier.alpha(ContentAlpha.medium),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    if (trailingText != null) {
-                        Text(text = trailingText)
-                        Spacer(modifier = Modifier.width(8.dp))
+            icon = {
+                Image(
+                    painter = painterResource(id = icon),
+                    contentDescription = null,
+                    modifier = Modifier.size(32.dp),
+                )
+            },
+            trailing = {
+                if (trailing != null) {
+                    trailing.invoke()
+                } else {
+                    Row(
+                        modifier = Modifier.alpha(ContentAlpha.medium),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        if (trailingText != null) {
+                            Text(
+                                text = trailingText,
+                                style = MaterialTheme.typography.body1,
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                        }
+                        Icon(
+                            imageVector = Icons.Filled.ArrowForwardIos,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp),
+                        )
                     }
-                    Icon(Icons.Default.ChevronRight, contentDescription = null)
+                }
+            },
+            secondaryText = secondaryText?.let { text ->
+                {
+                    Text(
+                        text = text,
+                        style = MaterialTheme.typography.body1,
+                    )
                 }
             }
-        },
-        secondaryText = secondaryText?.let {
-            {
-                Text(text = it)
-            }
-        }
-    )
+        )
+    }
 }
 
 @Composable
@@ -312,7 +325,7 @@ private fun SettingsCard(content: @Composable ColumnScope.() -> Unit) {
 private fun SettingsTitle(title: String) {
     Text(
         text = title,
-        style = MaterialTheme.typography.h6,
+        style = MaterialTheme.typography.h3,
         modifier = Modifier.padding(
             vertical = SettingsSceneDefault.titleVerticalPadding,
             horizontal = SettingsSceneDefault.contentHorizontalPadding,

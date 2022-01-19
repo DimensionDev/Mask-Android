@@ -36,30 +36,3 @@ fun MaskListCardItem(
         }
     }
 }
-
-@OptIn(ExperimentalMaterialApi::class)
-@Composable
-fun MaskListItem(
-    modifier: Modifier = Modifier,
-    icon: @Composable (() -> Unit)? = null,
-    secondaryText: @Composable (() -> Unit)? = null,
-    singleLineSecondaryText: Boolean = true,
-    overlineText: @Composable (() -> Unit)? = null,
-    trailing: @Composable (() -> Unit)? = null,
-    text: @Composable () -> Unit
-) {
-    Box(
-        modifier = Modifier
-            .padding(horizontal = 6.dp)
-            .then(modifier),
-    ) {
-        ListItem(
-            icon = icon,
-            secondaryText = secondaryText,
-            singleLineSecondaryText = singleLineSecondaryText,
-            overlineText = overlineText,
-            trailing = trailing,
-            text = text,
-        )
-    }
-}

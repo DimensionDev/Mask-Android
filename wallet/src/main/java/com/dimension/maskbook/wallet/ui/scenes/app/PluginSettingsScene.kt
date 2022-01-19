@@ -2,17 +2,27 @@ package com.dimension.maskbook.wallet.ui.scenes.app
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -22,7 +32,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.dimension.maskbook.wallet.ui.widget.*
+import com.dimension.maskbook.wallet.ui.widget.IosSwitch
+import com.dimension.maskbook.wallet.ui.widget.MaskBackButton
+import com.dimension.maskbook.wallet.ui.widget.MaskButton
+import com.dimension.maskbook.wallet.ui.widget.MaskListItem
+import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
+import com.dimension.maskbook.wallet.ui.widget.MaskSingleLineTopAppBar
+import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.wallet.viewmodel.app.PluginDisplayData
 import com.dimension.maskbook.wallet.viewmodel.app.PluginSettingsViewModel
 import org.koin.androidx.compose.viewModel
@@ -38,10 +54,7 @@ fun PluginSettingsScene(
         topBar = {
             MaskSingleLineTopAppBar(
                 title = {
-                    Text(
-                        text = PluginSettingsItemDefault.title,
-                        style = MaterialTheme.typography.h6,
-                    )
+                    Text(text = PluginSettingsItemDefault.title)
                 },
                 navigationIcon = {
                     MaskBackButton(onBack = onBack)
@@ -49,13 +62,18 @@ fun PluginSettingsScene(
             )
         }
     ) { padding ->
-        Box(Modifier.padding(padding).fillMaxSize()) {
-            LazyColumn {
+        Box(
+            modifier = Modifier.padding(padding)
+        ) {
+            LazyColumn(
+                modifier = Modifier.padding(ScaffoldPadding),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
                 items(apps) { item ->
                     PluginSettingsItem(
                         item = item,
-                        onItemCheckedChange = { enabled ->
-                            viewModel.setEnabled(item.key, enabled)
+                        onClick = {
+                            viewModel.setEnabled(item.key, !item.enabled)
                         },
                     )
                 }
@@ -75,27 +93,31 @@ fun PluginSettingsScene(
 @Composable
 private fun PluginSettingsItem(
     item: PluginDisplayData,
-    onItemCheckedChange: (Boolean) -> Unit,
+    onClick: () -> Unit,
 ) {
-    MaskListCardItem(
-        icon = {
-            Image(
-                painter = painterResource(id = item.onIcon),
-                contentDescription = null,
-            )
-        },
-        text = {
-            Text(
-                text = stringResource(item.name),
-            )
-        },
-        trailing = {
-            IosSwitch(
-                checked = item.enabled,
-                onCheckedChange = onItemCheckedChange
-            )
-        }
-    )
+    MaskButton(onClick = onClick) {
+        MaskListItem(
+            modifier = Modifier.height(56.dp),
+            icon = {
+                Image(
+                    painter = painterResource(id = item.onIcon),
+                    contentDescription = null,
+                    modifier = Modifier.size(32.dp),
+                )
+            },
+            text = {
+                Text(
+                    text = stringResource(item.name),
+                )
+            },
+            trailing = {
+                IosSwitch(
+                    checked = item.enabled,
+                    onCheckedChange = null,
+                )
+            }
+        )
+    }
 }
 
 @Composable

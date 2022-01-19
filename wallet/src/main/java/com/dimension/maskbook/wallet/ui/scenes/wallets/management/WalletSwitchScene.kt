@@ -160,6 +160,7 @@ fun WalletSwitchScene(
                     modifier = Modifier.background(MaterialTheme.colors.surface)
                 ) {
                     MaskListItem(
+                        modifier = Modifier.padding(horizontal = 6.dp),
                         text = {
                             Text(text = stringResource(R.string.scene_wallet_list_wallets_items_add))
                         },
