@@ -10,45 +10,26 @@ import androidx.datastore.preferences.preferencesDataStore
 import androidx.room.withTransaction
 import com.dimension.maskbook.debankapi.model.ChainID
 import com.dimension.maskbook.wallet.db.AppDatabase
-import com.dimension.maskbook.wallet.db.model.CoinPlatformType
-import com.dimension.maskbook.wallet.db.model.DbStoredKey
-import com.dimension.maskbook.wallet.db.model.DbToken
-import com.dimension.maskbook.wallet.db.model.DbWallet
-import com.dimension.maskbook.wallet.db.model.DbWalletBalance
-import com.dimension.maskbook.wallet.db.model.DbWalletBalanceType
-import com.dimension.maskbook.wallet.db.model.DbWalletToken
-import com.dimension.maskbook.wallet.db.model.WalletSource
+import com.dimension.maskbook.wallet.db.model.*
 import com.dimension.maskbook.wallet.ext.ether
 import com.dimension.maskbook.wallet.ext.gwei
-import com.dimension.maskbook.wallet.repository.ChainType
-import com.dimension.maskbook.wallet.repository.DWebData
-import com.dimension.maskbook.wallet.repository.IWalletRepository
-import com.dimension.maskbook.wallet.repository.TokenData
-import com.dimension.maskbook.wallet.repository.WalletData
-import com.dimension.maskbook.wallet.repository.dbank
+import com.dimension.maskbook.wallet.repository.*
 import com.dimension.maskbook.wallet.services.WalletServices
 import com.dimension.maskbook.wallet.services.okHttpClient
 import com.dimension.maskwalletcore.WalletKey
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
 import org.web3j.abi.FunctionEncoder
 import org.web3j.abi.datatypes.Address
 import org.web3j.abi.datatypes.Function
 import org.web3j.abi.datatypes.generated.Uint256
 import org.web3j.crypto.Credentials
+import org.web3j.ens.EnsResolver
 import org.web3j.protocol.Web3j
 import org.web3j.protocol.http.HttpService
 import org.web3j.tx.RawTransactionManager
 import java.math.BigDecimal
-import java.util.UUID
+import java.util.*
 import kotlin.math.pow
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
@@ -546,6 +527,7 @@ class WalletRepository(
                         )
                         throw Exception(result.error?.message ?: "")
                     }
+                    web3.shutdown()
                     result.transactionHash
                 }
                 onDone.invoke(hash)
@@ -572,28 +554,41 @@ class WalletRepository(
         onDone: (String?) -> Unit,
         onError: (Throwable) -> Unit,
     ) {
-        val data = Function(
-            "transfer",
-            listOf(
-                Address(address),
-                Uint256((amount * (10.0.pow(tokenData.decimals.toInt())).toBigDecimal()).toBigInteger())
-            ),
-            listOf(),
-        ).let {
-            FunctionEncoder.encode(it)
+        scope.launch {
+            val realAddress = if (EnsResolver.isValidEnsName(address)) {
+                runCatching { ChainType.valueOf(tokenData.chainId) }.getOrNull()?.let {
+                    val web3 = Web3j.build(HttpService(it.endpoint, okHttpClient))
+                    val ensResolver = EnsResolver(web3)
+                    ensResolver.resolve(address).also {
+                        web3.shutdown()
+                    }
+                } ?: address
+            } else {
+                address
+            }
+            val data = Function(
+                "transfer",
+                listOf(
+                    Address(realAddress),
+                    Uint256((amount * (10.0.pow(tokenData.decimals.toInt())).toBigDecimal()).toBigInteger())
+                ),
+                listOf(),
+            ).let {
+                FunctionEncoder.encode(it)
+            }
+            sendTokenWithCurrentWallet(
+                amount = amount,
+                address = realAddress,
+                tokenData = tokenData,
+                gasLimit = gasLimit,
+                gasFee = gasFee,
+                maxFee = maxFee,
+                maxPriorityFee = maxPriorityFee,
+                data = data,
+                onDone = onDone,
+                onError = onError
+            )
         }
-        sendTokenWithCurrentWallet(
-            amount = amount,
-            address = address,
-            tokenData = tokenData,
-            gasLimit = gasLimit,
-            gasFee = gasFee,
-            maxFee = maxFee,
-            maxPriorityFee = maxPriorityFee,
-            data = data,
-            onDone = onDone,
-            onError = onError
-        )
     }
 
     private suspend fun getWalletKey(walletData: WalletData): WalletKey? {
