@@ -1,7 +1,6 @@
 package com.dimension.maskbook.wallet.ui.scenes.wallets.create
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -9,18 +8,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
-import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
-import androidx.compose.material.TextFieldDefaults
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowRight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -29,10 +20,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ui.LocalRootNavController
@@ -42,10 +32,8 @@ import com.dimension.maskbook.wallet.ui.widget.MaskDialog
 import com.dimension.maskbook.wallet.ui.widget.MaskInputField
 import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
 import com.dimension.maskbook.wallet.ui.widget.MaskSingleLineTopAppBar
-import com.dimension.maskbook.wallet.ui.widget.MaskTopAppBar
 import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
 import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
-import com.dimension.maskbook.wallet.ui.widget.SecondaryButton
 
 @Composable
 fun CreateOrImportWalletScene(
@@ -86,7 +74,7 @@ fun CreateOrImportWalletScene(
                         contentDescription = null
                     )
                     Text(
-                        text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_create_wallet_multichain_wallet_title),
+                        text = stringResource(R.string.scene_create_wallet_multichain_wallet_title),
                         style = MaterialTheme.typography.body1.copy(fontWeight = FontWeight.Bold),
                         modifier = Modifier.weight(1F)
                     )
@@ -101,7 +89,7 @@ fun CreateOrImportWalletScene(
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 CompositionLocalProvider(LocalContentColor provides MaterialTheme.colors.primary) {
-                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_create_wallet_wallet_name))
+                    Text(text = stringResource(R.string.scene_create_wallet_wallet_name))
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -110,7 +98,7 @@ fun CreateOrImportWalletScene(
                     onValueChange = { input = it },
                     modifier = Modifier.fillMaxWidth(),
                     placeholder = {
-                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_create_wallet_wallet_name_placeholder))
+                        Text(text = stringResource(R.string.scene_create_wallet_wallet_name_placeholder))
                     }
                 )
                 Spacer(modifier = Modifier.height(24.dp))
@@ -124,7 +112,7 @@ fun CreateOrImportWalletScene(
                     },
                     enabled = input.isNotEmpty()
                 ) {
-                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_accept))
+                    Text(text = stringResource(R.string.common_controls_accept))
                 }
             }
         }
@@ -147,7 +135,7 @@ private fun CreateSuccessDialog(onDismissRequest: () -> Unit) {
                 onClick = onDismissRequest,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_done))
+                Text(text = stringResource(R.string.common_controls_done))
             }
         }
     )

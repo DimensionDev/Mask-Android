@@ -4,12 +4,14 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.navigation.plusAssign
+import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ext.humanizeDollar
 import com.dimension.maskbook.wallet.ext.humanizeToken
 import com.dimension.maskbook.wallet.ext.observeAsState
@@ -18,7 +20,11 @@ import com.dimension.maskbook.wallet.repository.TokenData
 import com.dimension.maskbook.wallet.repository.UnlockType
 import com.dimension.maskbook.wallet.ui.LocalRootNavController
 import com.dimension.maskbook.wallet.viewmodel.wallets.BiometricViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.send.*
+import com.dimension.maskbook.wallet.viewmodel.wallets.send.AddContactViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.send.GasFeeViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.send.SearchAddressViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendConfirmViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendTokenViewModel
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 import com.google.accompanist.navigation.material.bottomSheet
@@ -148,7 +154,7 @@ fun SendTokenHost(
                 EditGasPriceSheet(
                     price = (gasTotal * ethPrice).humanizeDollar(),
                     costFee = gasTotal.humanizeToken(),
-                    costFeeUnit = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.chain_short_name_eth), // TODO:
+                    costFeeUnit = stringResource(R.string.chain_short_name_eth), // TODO:
                     arrivesIn = arrives,
                     mode = mode,
                     gasLimit = gasLimit.toString(),

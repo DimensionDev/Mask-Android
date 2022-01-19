@@ -2,10 +2,12 @@ package com.dimension.maskbook.wallet.ui.scenes.persona
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -13,12 +15,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.DialogProperties
 import com.dimension.maskbook.wallet.R
-import com.dimension.maskbook.wallet.ui.widget.*
+import com.dimension.maskbook.wallet.ui.widget.MaskModal
+import com.dimension.maskbook.wallet.ui.widget.MaskPasswordInputField
+import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
+import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -37,27 +40,39 @@ fun BackUpPasswordModal(
         ) {
             //TODO Biometrics replace UI
             Text(
-                text = if (biometricEnabled) "Unlock with biometrics" else androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_set_backup_password_backup_password),
+                text = if (biometricEnabled) "Unlock with biometrics" else stringResource(R.string.scene_set_backup_password_backup_password),
                 style = MaterialTheme.typography.h6,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
             Spacer(modifier = Modifier.height(8.dp))
             AnimatedVisibility(visible = !biometricEnabled) {
                 Column {
-                    MaskPasswordInputField(value = password, onValueChange = onPasswordChanged)
-                    if (!passwordValid) {
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_change_password_incorrect_password), color = Color.Red)
-                    }
+                    MaskPasswordInputField(
+                        value = password,
+                        onValueChange = onPasswordChanged,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = if (password.isNotEmpty() && !passwordValid) {
+                            stringResource(R.string.scene_change_password_incorrect_password)
+                        } else "",
+                        color = Color.Red
+                    )
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
             Row {
                 PrimaryButton(
                     onClick = onConfirm,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    enabled = biometricEnabled || passwordValid,
                 ) {
-                    Text(text = if (biometricEnabled) androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_unlock_button) else androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_confirm))
+                    Text(
+                        text = if (biometricEnabled) stringResource(R.string.scene_wallet_unlock_button) else stringResource(
+                            R.string.common_controls_next
+                        )
+                    )
                 }
             }
         }

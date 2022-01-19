@@ -1,6 +1,14 @@
 package com.dimension.maskbook.wallet.ui.widget
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
@@ -83,14 +91,22 @@ fun <T> LazyListScope.itemsGridIndexed(
                 .fillParentMaxWidth()
                 .padding(horizontal = padding)
         ) {
-            Row {
+            Row(Modifier.fillMaxWidth()) {
+                val subSize = rowSize - row.size
                 for (i in row.indices) {
                     val item = row[i]
                     Box(modifier = Modifier.weight(1f)) {
                         itemContent(data.indexOf(item), item)
                     }
-                    if (i != row.lastIndex) {
+                    if (i != row.lastIndex && subSize == 0) {
                         Spacer(modifier = Modifier.width(spacing))
+                    }
+                }
+
+                if (subSize > 0) {
+                    for (j in 0 until subSize) {
+                        Spacer(modifier = Modifier.width(spacing))
+                        Spacer(modifier = Modifier.weight(1f))
                     }
                 }
             }

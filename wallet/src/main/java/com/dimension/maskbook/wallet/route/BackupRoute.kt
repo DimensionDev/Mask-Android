@@ -1,25 +1,39 @@
 package com.dimension.maskbook.wallet.route
 
-import android.net.Uri
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Text
+import androidx.compose.material.TextButton
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.navigation.*
+import androidx.navigation.NavController
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavType
 import androidx.navigation.compose.dialog
 import androidx.navigation.navArgument
 import com.dimension.maskbook.wallet.R
@@ -27,53 +41,35 @@ import com.dimension.maskbook.wallet.ext.encodeUrl
 import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.repository.IPersonaRepository
 import com.dimension.maskbook.wallet.repository.ISettingsRepository
-import com.dimension.maskbook.wallet.repository.PlatformType
-import com.dimension.maskbook.wallet.services.model.DownloadResponse
+import com.dimension.maskbook.wallet.services.DownloadResponse
 import com.dimension.maskbook.wallet.ui.MaskTheme
-import com.dimension.maskbook.wallet.ui.scenes.MainHost
-import com.dimension.maskbook.wallet.ui.scenes.app.settings.MarketTrendSettingsModal
-import com.dimension.maskbook.wallet.ui.scenes.persona.*
-import com.dimension.maskbook.wallet.ui.scenes.persona.social.ConnectSocialModal
-import com.dimension.maskbook.wallet.ui.scenes.persona.social.DisconnectSocialDialog
-import com.dimension.maskbook.wallet.ui.scenes.register.RegisterScene
-import com.dimension.maskbook.wallet.ui.scenes.register.createidentity.CreateIdentityHost
-import com.dimension.maskbook.wallet.ui.scenes.register.recovery.IdentityScene
-import com.dimension.maskbook.wallet.ui.scenes.register.recovery.PrivateKeyScene
-import com.dimension.maskbook.wallet.ui.scenes.register.recovery.RecoveryComplectedScene
-import com.dimension.maskbook.wallet.ui.scenes.register.recovery.RecoveryHomeScene
 import com.dimension.maskbook.wallet.ui.scenes.register.recovery.local.BackupPasswordInputModal
-import com.dimension.maskbook.wallet.ui.scenes.register.recovery.local.RecoveryLocalHost
-import com.dimension.maskbook.wallet.ui.scenes.register.recovery.remote.remoteBackupRecovery
-import com.dimension.maskbook.wallet.ui.scenes.settings.*
+import com.dimension.maskbook.wallet.ui.scenes.settings.BackupLocalHost
 import com.dimension.maskbook.wallet.ui.scenes.settings.backup.BackupCloudScene
 import com.dimension.maskbook.wallet.ui.scenes.settings.backup.BackupSelectionModal
-import com.dimension.maskbook.wallet.ui.widget.*
-import com.dimension.maskbook.wallet.viewmodel.persona.RenamePersonaViewModel
-import com.dimension.maskbook.wallet.viewmodel.persona.SwitchPersonaViewModel
-import com.dimension.maskbook.wallet.viewmodel.persona.social.DisconnectSocialViewModel
-import com.dimension.maskbook.wallet.viewmodel.persona.social.FaceBookConnectSocialViewModel
-import com.dimension.maskbook.wallet.viewmodel.persona.social.TwitterConnectSocialViewModel
-import com.dimension.maskbook.wallet.viewmodel.recovery.IdentityViewModel
-import com.dimension.maskbook.wallet.viewmodel.recovery.PrivateKeyViewModel
-import com.dimension.maskbook.wallet.viewmodel.register.RemoteBackupRecoveryViewModelBase
-import com.dimension.maskbook.wallet.viewmodel.settings.*
-import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.dimension.maskbook.wallet.ui.widget.EmailCodeInputModal
+import com.dimension.maskbook.wallet.ui.widget.MaskDialog
+import com.dimension.maskbook.wallet.ui.widget.MaskModal
+import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
+import com.dimension.maskbook.wallet.ui.widget.PhoneCodeInputModal
+import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
+import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
+import com.dimension.maskbook.wallet.ui.widget.SecondaryButton
+import com.dimension.maskbook.wallet.viewmodel.settings.BackupCloudExecuteViewModel
+import com.dimension.maskbook.wallet.viewmodel.settings.BackupMergeConfirmViewModel
+import com.dimension.maskbook.wallet.viewmodel.settings.EmailBackupViewModel
+import com.dimension.maskbook.wallet.viewmodel.settings.PhoneBackupViewModel
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.navigation
-import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
-import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 import com.google.accompanist.navigation.material.bottomSheet
-import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.distinctUntilChanged
 import org.koin.androidx.compose.get
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 
 @ExperimentalAnimationApi
 @ExperimentalMaterialNavigationApi
-fun NavGraphBuilder.backup(
+fun NavGraphBuilder.backupRoute(
     navController: NavController,
 ) {
     navigation("BackupSelection", "BackupData") {
@@ -83,7 +79,7 @@ fun NavGraphBuilder.backup(
                     navController.popBackStack()
                 },
                 title = {
-                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_alert_local_backup_backup_completed))
+                    Text(text = stringResource(R.string.common_alert_local_backup_backup_completed))
                 },
                 buttons = {
                     PrimaryButton(
@@ -92,7 +88,7 @@ fun NavGraphBuilder.backup(
                             navController.popBackStack()
                         },
                     ) {
-                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_done))
+                        Text(text = stringResource(R.string.common_controls_done))
                     }
                 },
                 icon = {
@@ -109,7 +105,7 @@ fun NavGraphBuilder.backup(
                     navController.popBackStack()
                 },
                 title = {
-                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_alert_local_backup_backup_failed))
+                    Text(text = stringResource(R.string.common_alert_local_backup_backup_failed))
                 },
                 buttons = {
                     PrimaryButton(
@@ -193,7 +189,7 @@ fun NavGraphBuilder.backup(
                         ) {
                             CircularProgressIndicator()
                             Spacer(modifier = Modifier.height(20.dp))
-                            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_local_backup_loading_text))
+                            Text(text = stringResource(R.string.scene_setting_local_backup_loading_text))
                         }
                     }
                 }
@@ -250,7 +246,7 @@ fun NavGraphBuilder.backup(
                                 navController.popBackStack("BackupSelection", inclusive = true)
                             }
                         ) {
-                            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_cancel))
+                            Text(text = stringResource(R.string.common_controls_cancel))
                         }
                         Spacer(modifier = Modifier.width(20.dp))
                         PrimaryButton(
@@ -311,7 +307,7 @@ fun NavGraphBuilder.backup(
                     modifier = Modifier.padding(ScaffoldPadding)
                 ) {
                     Text(
-                        text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_backup_merge_to_local_title),
+                        text = stringResource(R.string.scene_backup_merge_to_local_title),
                         style = MaterialTheme.typography.h6,
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center,
@@ -337,7 +333,7 @@ fun NavGraphBuilder.backup(
                         Text(text = size.toString())
                     }
                     Spacer(modifier = Modifier.height(16.dp))
-                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_set_backup_password_backup_password))
+                    Text(text = stringResource(R.string.scene_set_backup_password_backup_password))
                     OutlinedTextField(
                         value = password,
                         onValueChange = { viewModel.setBackupPassword(it) },
@@ -351,7 +347,7 @@ fun NavGraphBuilder.backup(
                         },
                         enabled = passwordValid && !loading
                     ) {
-                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_merge_to_local_data))
+                        Text(text = stringResource(R.string.common_controls_merge_to_local_data))
                     }
                 }
             }
@@ -407,7 +403,7 @@ fun NavGraphBuilder.backup(
                         Text(text = size.toString())
                     }
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_backup_remote_backup_actions_view_tips))
+                    Text(text = stringResource(R.string.scene_backup_remote_backup_actions_view_tips))
                     Spacer(modifier = Modifier.height(20.dp))
                     PrimaryButton(
                         modifier = Modifier.fillMaxWidth(),
@@ -415,13 +411,13 @@ fun NavGraphBuilder.backup(
                             navController.navigate("BackupData_BackupMerge_Confirm/${type}/${value}/${code}?download_url=${download_url}&size=${size}&uploaded_at=${uploaded_at}&abstract=${abstract.encodeUrl()}")
                         },
                     ) {
-                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_merge_and_back_up))
+                        Text(text = stringResource(R.string.common_controls_merge_and_back_up))
                     }
                     Spacer(modifier = Modifier.height(16.dp))
                     PrimaryButton(onClick = {
                         navController.navigate("BackupData_BackupCloud/${type}/${value}/${code}")
                     }) {
-                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_back_up))
+                        Text(text = stringResource(R.string.common_controls_back_up))
                     }
                 }
             }
@@ -458,7 +454,7 @@ fun NavGraphBuilder.backup(
                 EmailCodeInputModal(
                     email = email,
                     buttonEnabled = loading,
-                    title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_backup_backup_verify_title_email),
+                    title = stringResource(R.string.scene_backup_backup_verify_title_email),
                     countDown = countDown,
                     canSend = canSend,
                     codeValid = valid,
@@ -467,7 +463,7 @@ fun NavGraphBuilder.backup(
                     onSendCode = { viewModel.sendCode(email) },
                     onVerify = { viewModel.verifyCode(code, email) },
                     subTitle = {
-                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_backup_backup_verify_field_email))
+                        Text(text = stringResource(R.string.scene_backup_backup_verify_field_email))
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(text = email, color = MaterialTheme.colors.primary)
                     },
@@ -484,7 +480,7 @@ fun NavGraphBuilder.backup(
                                     }
                                 },
                             ) {
-                                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_backup_with_email))
+                                Text(text = stringResource(R.string.scene_backup_with_email))
                             }
                         }
                     }
@@ -528,9 +524,9 @@ fun NavGraphBuilder.backup(
                     buttonEnabled = loading,
                     onSendCode = { viewModel.sendCode(phone) },
                     onVerify = { viewModel.verifyCode(code = code, value = phone) },
-                    title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_backup_backup_verify_title_phone),
+                    title = stringResource(R.string.scene_backup_backup_verify_title_phone),
                     subTitle = {
-                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_backup_backup_verify_field_phone))
+                        Text(text = stringResource(R.string.scene_backup_backup_verify_field_phone))
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(text = phone, color = MaterialTheme.colors.primary)
                     },
@@ -547,7 +543,7 @@ fun NavGraphBuilder.backup(
                                     }
                                 },
                             ) {
-                                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_backup_with_email))
+                                Text(text = stringResource(R.string.scene_backup_with_email))
                             }
                         }
                     }
@@ -628,7 +624,7 @@ fun NavGraphBuilder.backup(
                         contentDescription = null
                     )
                 },
-                title = { Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_alert_local_backup_backup_failed)) },
+                title = { Text(text = stringResource(R.string.common_alert_local_backup_backup_failed)) },
             )
         }
         dialog("BackupLocalSuccess") {
@@ -640,7 +636,7 @@ fun NavGraphBuilder.backup(
                         contentDescription = null
                     )
                 },
-                title = { Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_alert_local_backup_backup_completed)) },
+                title = { Text(text = stringResource(R.string.common_alert_local_backup_backup_completed)) },
             )
         }
     }
