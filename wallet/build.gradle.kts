@@ -184,6 +184,7 @@ fun generateLocalization(appJson: File, target: File) {
                 result.map {
                     "    <string name=\"${it.key}\">${
                         it.value.escapeXml().replace(System.lineSeparator(), "\\n")
+                            .replace("%@", "%s")
                     }</string>"
                 }.joinToString(System.lineSeparator()) + System.lineSeparator() +
                 "</resources>"
