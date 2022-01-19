@@ -19,10 +19,6 @@ import com.dimension.maskbook.wallet.services.okHttpClient
 import com.dimension.maskwalletcore.WalletKey
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import org.web3j.abi.FunctionEncoder
-import org.web3j.abi.datatypes.Address
-import org.web3j.abi.datatypes.Function
-import org.web3j.abi.datatypes.generated.Uint256
 import org.web3j.crypto.Credentials
 import org.web3j.ens.EnsResolver
 import org.web3j.protocol.Web3j
@@ -30,7 +26,6 @@ import org.web3j.protocol.http.HttpService
 import org.web3j.tx.RawTransactionManager
 import java.math.BigDecimal
 import java.util.*
-import kotlin.math.pow
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
 
@@ -566,16 +561,16 @@ class WalletRepository(
             } else {
                 address
             }
-            val data = Function(
-                "transfer",
-                listOf(
-                    Address(realAddress),
-                    Uint256((amount * (10.0.pow(tokenData.decimals.toInt())).toBigDecimal()).toBigInteger())
-                ),
-                listOf(),
-            ).let {
-                FunctionEncoder.encode(it)
-            }
+//            val data = Function(
+//                "transfer",
+//                listOf(
+//                    Address(realAddress),
+//                    Uint256((amount * (10.0.pow(tokenData.decimals.toInt())).toBigDecimal()).toBigInteger())
+//                ),
+//                listOf(),
+//            ).let {
+//                FunctionEncoder.encode(it)
+//            }
             sendTokenWithCurrentWallet(
                 amount = amount,
                 address = realAddress,
@@ -584,7 +579,7 @@ class WalletRepository(
                 gasFee = gasFee,
                 maxFee = maxFee,
                 maxPriorityFee = maxPriorityFee,
-                data = data,
+                data = "",
                 onDone = onDone,
                 onError = onError
             )
