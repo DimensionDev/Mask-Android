@@ -44,6 +44,7 @@ fun TokenDetailScene(
     onSpeedUp: (TransactionData) -> Unit,
     onCancel: (TransactionData) -> Unit,
     onSend: () -> Unit,
+    onReceive: () -> Unit
 ) {
     MaskTheme {
         MaskScaffold(
@@ -128,7 +129,7 @@ fun TokenDetailScene(
                         }
                         PrimaryButton(
                             modifier = Modifier.weight(1f),
-                            onClick = { /*TODO*/ },
+                            onClick = onReceive,
                             elevation = ButtonDefaults.elevation(defaultElevation = 0.dp),
                         ) {
                             Icon(
@@ -218,11 +219,17 @@ fun TransactionItem(
                     when (it.status) {
                         TransactionStatus.Pending -> {
                             Spacer(modifier = Modifier.width(6.dp))
-                            Text(text = stringResource(R.string.scene_transaction_history_status_pending), color = Color(0xFFFFB915))
+                            Text(
+                                text = stringResource(R.string.scene_transaction_history_status_pending),
+                                color = Color(0xFFFFB915)
+                            )
                         }
                         TransactionStatus.Failure -> {
                             Spacer(modifier = Modifier.width(6.dp))
-                            Text(text = stringResource(R.string.scene_transaction_history_status_fail), color = Color(0xFFFF5F5F))
+                            Text(
+                                text = stringResource(R.string.scene_transaction_history_status_fail),
+                                color = Color(0xFFFF5F5F)
+                            )
                         }
                         else -> Unit
                     }
@@ -322,8 +329,8 @@ private fun TransactionData.title() = message.ifEmpty {
     when (type) {
         TransactionType.Swap -> stringResource(R.string.scene_transaction_history_type_swap)
         TransactionType.Receive -> stringResource(R.string.scene_transaction_history_type_receive, tokenData.symbol)
-        TransactionType.Send ->  stringResource(R.string.scene_transaction_history_type_send, tokenData.symbol)
-        TransactionType.Approve ->  stringResource(R.string.scene_transaction_history_type_approve, tokenData.symbol)
-        TransactionType.Cancel ->  stringResource(R.string.scene_transaction_history_type_cancel, tokenData.symbol)
+        TransactionType.Send -> stringResource(R.string.scene_transaction_history_type_send, tokenData.symbol)
+        TransactionType.Approve -> stringResource(R.string.scene_transaction_history_type_approve, tokenData.symbol)
+        TransactionType.Cancel -> stringResource(R.string.scene_transaction_history_type_cancel, tokenData.symbol)
     }
 }

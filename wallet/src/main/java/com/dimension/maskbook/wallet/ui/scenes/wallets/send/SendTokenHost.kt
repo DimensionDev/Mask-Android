@@ -21,11 +21,7 @@ import com.dimension.maskbook.wallet.repository.TokenData
 import com.dimension.maskbook.wallet.repository.UnlockType
 import com.dimension.maskbook.wallet.ui.LocalRootNavController
 import com.dimension.maskbook.wallet.viewmodel.wallets.BiometricViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.send.AddContactViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.send.GasFeeViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.send.SearchAddressViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendConfirmViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendTokenViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.send.*
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 import com.google.accompanist.navigation.material.bottomSheet
@@ -42,7 +38,7 @@ fun SendTokenHost(
     onDone: () -> Unit,
 ) {
     val rootNavController = LocalRootNavController.current
-    val context  = LocalContext.current
+    val context = LocalContext.current
     val navController = rememberNavController()
     val bottomSheetNavigator = rememberBottomSheetNavigator()
     navController.navigatorProvider += bottomSheetNavigator

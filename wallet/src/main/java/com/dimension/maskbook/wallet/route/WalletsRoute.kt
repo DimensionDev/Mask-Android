@@ -57,17 +57,25 @@ import org.koin.core.parameter.parametersOf
 fun NavGraphBuilder.walletsRoute(
     navController: NavController
 ) {
-    composable("WalletQrcode") {
+    composable(
+        "WalletQrcode/{name}",
+        arguments = listOf(
+            navArgument("name") { type = NavType.StringType }
+        )
+    ) {
         val repository = get<IWalletRepository>()
         val currentWallet by repository.currentWallet.observeAsState(initial = null)
+        val name = it.arguments?.getString("name") ?: ""
         currentWallet?.let {
             WalletQrcodeScene(
-                walletData = it,
+                address = it.address,
+                name = name,
                 onShare = { /*TODO*/ },
                 onBack = { navController.popBackStack() },
                 onCopy = {},
             )
         }
+
     }
     composable(
         "TokenDetail/{id}",
@@ -93,7 +101,10 @@ fun NavGraphBuilder.walletsRoute(
                         onCancel = { },
                         onSend = {
                             navController.navigate("SendTokenScene/${token.address}")
-                        }
+                        },
+                        onReceive = {
+                            navController.navigate("WalletQrcode/${token.symbol}")
+                        },
                     )
                 }
             }
