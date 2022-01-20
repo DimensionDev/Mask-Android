@@ -114,7 +114,7 @@ fun ImportWalletDerivationPathScene(
                             modifier = Modifier.weight(1.5f)
                         )
                         Text(
-                            text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_derivation_path_header_balance, "ETH"),
+                            text = stringResource(R.string.scene_wallet_derivation_path_header_balance, "ETH"),
                             modifier = Modifier.weight(1f),
                             textAlign = TextAlign.End
                         )
