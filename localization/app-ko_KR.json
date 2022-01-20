@@ -115,6 +115,9 @@
             "backup_tips_no_backup_password": {
                 "title": "",
                 "description": ""
+            },
+            "copied_to_clipboard": {
+                "title": ""
             }
         },
         "controls": {
@@ -527,7 +530,19 @@
             "walletconnect_switch_network_alert": ""
         },
         "transaction_history": {
-            "no_transaction": ""
+            "no_transaction": "",
+            "status": {
+                "pending": "",
+                "fail": ""
+            },
+            "speed_up": "",
+            "type": {
+                "send": "",
+                "receive": "",
+                "swap": "",
+                "cancel": "",
+                "approve": ""
+            }
         },
         "wallet_receive": {
             "btn_share": "",
