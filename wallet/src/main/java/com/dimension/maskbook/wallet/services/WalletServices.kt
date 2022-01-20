@@ -4,19 +4,12 @@ import android.util.Log
 import com.dimension.maskbook.debankapi.api.DebankResources
 import com.dimension.maskbook.wallet.BuildConfig
 import com.dimension.maskbook.wallet.ext.JSON
-import com.dimension.maskbook.wallet.services.model.GasFeeResponse
-import com.dimension.maskbook.wallet.services.model.WCSupportedWallet
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
-
-interface WalletConnectServices{
-    @GET("/data/wallets.json")
-    suspend fun supportedWallets():Map<String, WCSupportedWallet>
-}
 
 class WalletServices {
     val backupServices by lazy {

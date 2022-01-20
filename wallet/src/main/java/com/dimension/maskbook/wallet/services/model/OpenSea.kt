@@ -370,7 +370,7 @@ data class SellOrder (
     @SerialName("order_hash")
     val orderHash: String? = null,
 
-    val metadata: Metadata? = null,
+    val metadata: OpenSeaMetadata? = null,
     val exchange: String? = null,
     val maker: FeeRecipient? = null,
     val taker: FeeRecipient? = null,
@@ -467,7 +467,7 @@ data class FeeRecipient (
 )
 
 @Serializable
-data class Metadata (
+data class OpenSeaMetadata (
     val asset: MetadataAsset? = null,
     val schema: String? = null
 )
