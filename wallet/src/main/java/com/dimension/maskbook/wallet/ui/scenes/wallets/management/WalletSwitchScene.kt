@@ -56,7 +56,7 @@ val ChainType.onDrawableRes: Int
         ChainType.eth -> R.drawable.ethereum_o1_2
         ChainType.bsc -> R.drawable.binance_2
         ChainType.polygon -> R.drawable.polygon_2
-        ChainType.optimism -> R.drawable.logos_and_symbols
+        ChainType.arbitrum -> R.drawable.logos_and_symbols
         ChainType.xdai -> R.drawable._4
         else -> -1
     }

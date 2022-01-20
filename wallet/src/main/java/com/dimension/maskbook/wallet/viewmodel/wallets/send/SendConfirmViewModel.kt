@@ -6,17 +6,18 @@ import com.dimension.maskbook.wallet.ext.asStateIn
 import com.dimension.maskbook.wallet.repository.ISendHistoryRepository
 import com.dimension.maskbook.wallet.repository.IWalletRepository
 import com.dimension.maskbook.wallet.repository.TokenData
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import java.math.BigDecimal
 
 class SendConfirmViewModel(
-    private val tokenData: TokenData,
     private val toAddress: String,
     private val sendHistoryRepository: ISendHistoryRepository,
     private val walletRepository: IWalletRepository,
 ): ViewModel() {
 
     fun send(
+        tokenData: TokenData,
         amount: BigDecimal,
         gasLimit: Double,
         gasFee: BigDecimal,
@@ -39,4 +40,9 @@ class SendConfirmViewModel(
             .asStateIn(viewModelScope, null)
             .mapNotNull { it }
     }
+
+
+    val deepLink = walletRepository.currentWallet.map {
+        it?.walletConnectDeepLink ?:""
+    }.asStateIn(viewModelScope, "")
 }

@@ -17,7 +17,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
-import com.dimension.maskbook.wallet.repository.WalletData
 import com.dimension.maskbook.wallet.ui.MaskTheme
 import com.dimension.maskbook.wallet.ui.widget.*
 import com.google.zxing.BarcodeFormat
@@ -25,7 +24,8 @@ import com.journeyapps.barcodescanner.BarcodeEncoder
 
 @Composable
 fun WalletQrcodeScene(
-    walletData: WalletData,
+    address: String,
+    name: String,
     onShare: () -> Unit,
     onBack: () -> Unit,
     onCopy: () -> Unit,
@@ -61,10 +61,10 @@ fun WalletQrcodeScene(
                                 .padding(25.dp)
                                 .aspectRatio(1f)
                         ) {
-                            val bitmap = remember(walletData.address) {
+                            val bitmap = remember(address) {
                                 val barcodeEncoder = BarcodeEncoder()
                                 barcodeEncoder.encodeBitmap(
-                                    walletData.address,
+                                    address,
                                     BarcodeFormat.QR_CODE,
                                     400,
                                     400
@@ -79,8 +79,9 @@ fun WalletQrcodeScene(
                         }
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = stringResource(R.string.scene_wallet_receive_your_address,
-                                "ETH", // TODO:
+                            text = stringResource(
+                                R.string.scene_wallet_receive_your_address,
+                                name,
                             ),
                         )
                         Box(
@@ -93,7 +94,7 @@ fun WalletQrcodeScene(
                                     onCopy.invoke()
                                 }
                         ) {
-                            Text(text = walletData.address, textAlign = TextAlign.Center)
+                            Text(text = address, textAlign = TextAlign.Center)
                         }
                     }
                 }

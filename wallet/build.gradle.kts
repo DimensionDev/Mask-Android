@@ -66,6 +66,7 @@ dependencies {
     implementation("androidx.navigation:navigation-ui-ktx:$nav_version")
     implementation("androidx.navigation:navigation-compose:$nav_version")
     implementation("io.coil-kt:coil-compose:1.4.0")
+    implementation("io.coil-kt:coil-svg:1.4.0")
 
     val lifecycle_version = "2.4.0"
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
@@ -79,21 +80,24 @@ dependencies {
     implementation("io.insert-koin:koin-androidx-compose:$koin_version")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.1")
 
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0")
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-scalars:2.9.0")
     implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0")
-    implementation("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.3")
-    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.3")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.9.2")
+    implementation("com.squareup.okhttp3:okhttp:4.9.2")
     implementation("joda-time:joda-time:2.10.13")
     implementation(("org.web3j:core:4.8.8-android"))
     implementation("io.github.dimensiondev:maskwalletcore:0.4.0")
 
     implementation(project(":debankapi"))
 
-    val roomVersion = "2.4.0"
+    val roomVersion = "2.4.1"
     api("androidx.room:room-runtime:$roomVersion")
     api("androidx.room:room-ktx:$roomVersion")
     ksp("androidx.room:room-compiler:$roomVersion")
+    implementation("androidx.room:room-paging:$roomVersion")
 
     implementation("androidx.paging:paging-runtime-ktx:3.1.0")
     implementation("androidx.paging:paging-compose:1.0.0-alpha14")
@@ -101,13 +105,16 @@ dependencies {
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
 
     implementation("androidx.core:core-ktx:1.7.0")
-    implementation("androidx.appcompat:appcompat:1.4.0")
-    implementation("com.google.android.material:material:1.4.0")
+    implementation("androidx.appcompat:appcompat:1.4.1")
+    implementation("com.google.android.material:material:1.5.0")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.3")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
 
     implementation("androidx.biometric:biometric-ktx:1.2.0-alpha04")
+    implementation("com.github.WalletConnect:kotlin-walletconnect-lib:0.9.7")
+    implementation("com.squareup.moshi:moshi:1.8.0")
+    implementation("com.github.komputing.khex:extensions:1.1.2")
 }
 
 
@@ -120,7 +127,7 @@ tasks.create("generateTranslation") {
                 File(projectDir, "src/main/res/values/strings.xml")
             } else {
                 File(projectDir,
-                    "src/main/res/values-${name.split("_").first()}-r${name.split("-").last()}/strings.xml")
+                    "src/main/res/values-${name.split("_").first()}-r${name.split("_").last()}/strings.xml")
             }.apply {
                 ensureParentDirsCreated()
                 if (!exists()) {
@@ -184,6 +191,7 @@ fun generateLocalization(appJson: File, target: File) {
                 result.map {
                     "    <string name=\"${it.key}\">${
                         it.value.escapeXml().replace(System.lineSeparator(), "\\n")
+                            .replace("%@", "%s")
                     }</string>"
                 }.joinToString(System.lineSeparator()) + System.lineSeparator() +
                 "</resources>"

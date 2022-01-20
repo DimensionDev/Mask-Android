@@ -7,15 +7,11 @@ import com.dimension.maskbook.wallet.repository.ISendHistoryRepository
 import com.dimension.maskbook.wallet.repository.ISettingsRepository
 import com.dimension.maskbook.wallet.repository.IWalletRepository
 import com.dimension.maskbook.wallet.repository.TokenData
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.*
 
 class SendTokenViewModel(
-    private val tokenData: TokenData,
     private val toAddress: String,
     private val sendHistoryRepository: ISendHistoryRepository,
-    private val walletRepository: IWalletRepository,
     private val settingsRepository: ISettingsRepository,
 ) : ViewModel() {
     private val _password = MutableStateFlow("")
@@ -38,13 +34,6 @@ class SendTokenViewModel(
 
     val addressData by lazy {
         sendHistoryRepository.getByAddress(toAddress)
-            .asStateIn(viewModelScope, null)
-            .mapNotNull { it }
-    }
-    val walletTokenData by lazy {
-        walletRepository.currentWallet
-            .mapNotNull { it }
-            .mapNotNull { it.tokens.firstOrNull { it.tokenAddress == tokenData.address } }
             .asStateIn(viewModelScope, null)
             .mapNotNull { it }
     }

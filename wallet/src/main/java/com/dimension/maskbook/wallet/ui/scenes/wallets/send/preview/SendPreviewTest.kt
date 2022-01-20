@@ -3,10 +3,7 @@ package com.dimension.maskbook.wallet.ui.scenes.wallets.send.preview
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.dimension.maskbook.wallet.R
-import com.dimension.maskbook.wallet.repository.GasPriceEditMode
-import com.dimension.maskbook.wallet.repository.SearchAddressData
-import com.dimension.maskbook.wallet.repository.TokenData
-import com.dimension.maskbook.wallet.repository.WalletTokenData
+import com.dimension.maskbook.wallet.repository.*
 import com.dimension.maskbook.wallet.ui.scenes.wallets.send.AddContactSheet
 import com.dimension.maskbook.wallet.ui.scenes.wallets.send.ApproveConfirmSheet
 import com.dimension.maskbook.wallet.ui.scenes.wallets.send.EditGasPriceSheet
@@ -27,7 +24,7 @@ private val addressData = SearchAddressData(
 
 private val tokenData = TokenData(
     address = "0x12345",
-    chainId = "xxx",
+    chainType = ChainType.eth,
     name = "Eth",
     symbol = "ETH",
     decimals = 10,
@@ -64,7 +61,7 @@ private val walletData = WalletTokenData(
 
 @Composable
 fun SearchTokenScenePreview() {
-    SearchTokenScene(onBack = { /*TODO*/ }, query = "", onQueryChanged = {})
+//    SearchTokenScene(onBack = { /*TODO*/ }, query = "", onQueryChanged = {})
 }
 
 @Composable

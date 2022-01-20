@@ -3,27 +3,12 @@ package com.dimension.maskbook.wallet.ui.scenes.wallets.token
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
-import androidx.compose.material.ListItem
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
-import androidx.compose.material.contentColorFor
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -47,7 +32,6 @@ import com.dimension.maskbook.wallet.ui.widget.MaskBackButton
 import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
 import com.dimension.maskbook.wallet.ui.widget.MaskTopAppBar
 import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
-import com.dimension.maskbook.wallet.ui.widget.SecondaryButton
 import org.joda.time.DateTime
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
@@ -60,6 +44,7 @@ fun TokenDetailScene(
     onSpeedUp: (TransactionData) -> Unit,
     onCancel: (TransactionData) -> Unit,
     onSend: () -> Unit,
+    onReceive: () -> Unit
 ) {
     MaskTheme {
         MaskScaffold(
@@ -129,13 +114,6 @@ fun TokenDetailScene(
                             .padding(horizontal = 23.dp),
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-//                    PrimaryButton(
-//                        onClick = { /*TODO*/ },
-//                    ) {
-//                        Icon(painterResource(id = R.drawable.filter2), contentDescription = null)
-//                        Spacer(modifier = Modifier.width(4.dp))
-//                        Text(text = stringResource(R.string.scene_app_plugins_swap), maxLines = 1)
-//                    }
                         PrimaryButton(
                             modifier = Modifier.weight(1f),
                             onClick = { onSend.invoke() },
@@ -144,11 +122,14 @@ fun TokenDetailScene(
                         ) {
                             Icon(painterResource(id = R.drawable.upload), contentDescription = null)
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text(text = stringResource(R.string.scene_wallet_balance_btn_Send), maxLines = 1)
+                            Text(
+                                text = stringResource(R.string.scene_wallet_balance_btn_Send),
+                                maxLines = 1
+                            )
                         }
                         PrimaryButton(
                             modifier = Modifier.weight(1f),
-                            onClick = { /*TODO*/ },
+                            onClick = onReceive,
                             elevation = ButtonDefaults.elevation(defaultElevation = 0.dp),
                         ) {
                             Icon(
@@ -156,7 +137,10 @@ fun TokenDetailScene(
                                 contentDescription = null
                             )
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text(text = stringResource(R.string.scene_wallet_balance_btn_receive), maxLines = 1)
+                            Text(
+                                text = stringResource(R.string.scene_wallet_balance_btn_receive),
+                                maxLines = 1
+                            )
                         }
                     }
                     Spacer(modifier = Modifier.height(41.dp))
@@ -227,32 +211,65 @@ fun TransactionItem(
     onCancel: () -> Unit,
 ) {
     ListItem(
+        modifier = Modifier.padding(vertical = 10.dp),
         text = {
-            Text(text = it.message, style = MaterialTheme.typography.subtitle1)
-        },
-        secondaryText = {
-            Column {
-                when (it.status) {
-                    TransactionStatus.Pending -> {
-                        Spacer(modifier = Modifier.height(6.dp))
-                        Text(text = "Pending...", color = Color(0xFFFFB915))
+            Column(modifier = Modifier.fillMaxHeight(), verticalArrangement = Arrangement.Center) {
+                Row {
+                    Text(text = it.title(), style = MaterialTheme.typography.subtitle1)
+                    when (it.status) {
+                        TransactionStatus.Pending -> {
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = stringResource(R.string.scene_transaction_history_status_pending),
+                                color = Color(0xFFFFB915)
+                            )
+                        }
+                        TransactionStatus.Failure -> {
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = stringResource(R.string.scene_transaction_history_status_fail),
+                                color = Color(0xFFFF5F5F)
+                            )
+                        }
+                        else -> Unit
                     }
-                    TransactionStatus.Failure -> {
-                        Spacer(modifier = Modifier.height(6.dp))
-                        Text(text = "Failed", color = Color(0xFFFF5F5F))
-                    }
-                    else -> Unit
                 }
+
                 if (it.status == TransactionStatus.Pending) {
                     Spacer(modifier = Modifier.height(6.dp))
-                    PrimaryButton(onClick = onSpeedUp) {
-                        Text(text = "Spend up")
-                    }
-                    SecondaryButton(onClick = onCancel) {
-                        Text(text = stringResource(R.string.common_controls_cancel))
+                    Row {
+                        PrimaryButton(
+                            onClick = onSpeedUp,
+                            modifier = Modifier.height(height = 28.dp),
+                            contentPadding = PaddingValues(vertical = 6.dp, horizontal = 8.dp)
+                        ) {
+                            Text(
+                                text = stringResource(R.string.scene_transaction_history_speed_up),
+                                style = MaterialTheme.typography.button.copy(fontSize = 10.sp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Button(
+                            onClick = onCancel,
+                            modifier = Modifier.height(height = 28.dp),
+                            contentPadding = PaddingValues(vertical = 0.dp, horizontal = 0.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                backgroundColor = Color(0xFFD7E6FF),
+                            )
+                        ) {
+                            Text(
+                                text = stringResource(R.string.common_controls_cancel),
+                                style = MaterialTheme.typography.button.copy(
+                                    fontSize = 10.sp,
+                                    color = MaterialTheme.colors.primary
+                                )
+                            )
+                        }
                     }
                 }
+
             }
+
         },
         trailing = {
             Column(
@@ -263,7 +280,9 @@ fun TransactionItem(
                 )
                 Text(
                     text = (it.count * tokenData.price).humanizeDollar(),
-                    style = MaterialTheme.typography.subtitle1,
+                    style = if (it.type == TransactionType.Receive) MaterialTheme.typography.subtitle1.copy(
+                        color = Color(0xFF1FB885)
+                    ) else MaterialTheme.typography.subtitle1,
                 )
             }
         },
@@ -273,23 +292,29 @@ fun TransactionItem(
                 it.type == TransactionType.Receive -> R.drawable.download
                 it.type == TransactionType.Send -> R.drawable.upload
                 it.type == TransactionType.Swap -> R.drawable.filter2
+                it.type == TransactionType.Approve -> R.drawable.filter2
                 else -> null
             }
             if (icon != null) {
                 val color = if (it.status == TransactionStatus.Failure) {
                     Color(0x0AFF5F5F)
-                } else {
+                } else if (it.type == TransactionType.Receive) {
                     Color(0x1A1C68F3)
+                } else {
+                    Color(0x1AFFB915)
                 }
                 val iconColor = if (it.status == TransactionStatus.Failure) {
                     Color(0xFFFF5F5F)
-                } else {
+                } else if (it.type == TransactionType.Receive) {
                     Color(0xFF1C68F3)
+                } else {
+                    Color(0xFFFFB915)
                 }
+
                 Box(
                     modifier = Modifier
                         .size(38.dp)
-                        .background(color),
+                        .background(color, shape = CircleShape),
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(painterResource(id = icon), contentDescription = null, tint = iconColor)
@@ -297,4 +322,15 @@ fun TransactionItem(
             }
         }
     )
+}
+
+@Composable
+private fun TransactionData.title() = message.ifEmpty {
+    when (type) {
+        TransactionType.Swap -> stringResource(R.string.scene_transaction_history_type_swap)
+        TransactionType.Receive -> stringResource(R.string.scene_transaction_history_type_receive, tokenData.symbol)
+        TransactionType.Send -> stringResource(R.string.scene_transaction_history_type_send, tokenData.symbol)
+        TransactionType.Approve -> stringResource(R.string.scene_transaction_history_type_approve, tokenData.symbol)
+        TransactionType.Cancel -> stringResource(R.string.scene_transaction_history_type_cancel, tokenData.symbol)
+    }
 }

@@ -16,6 +16,9 @@ class TokenDetailViewModel(
     private val transactionRepository: ITransactionRepository,
     private val walletRepository: IWalletRepository,
 ): ViewModel() {
+    val dWebData by lazy {
+        walletRepository.dWebData
+    }
     val tokenData by lazy {
         tokenRepository.getTokenByAddress(id).asStateIn(viewModelScope, null).mapNotNull { it }
     }

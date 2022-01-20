@@ -64,6 +64,7 @@
     <string name="common_alert_wallet_derive_success_title">Perfect!</string>
     <string name="common_alert_setting_warning_backup_data_titile"> Set up password before backup</string>
     <string name="common_alert_setting_warning_backup_data_description">We have detected that you haven’t set up your backup password and/or payment password. Please set up your backup password and/or payment password before you back up.</string>
+    <string name="common_alert_copied_to_clipboard_title">Copied to clipboard</string>
     <string name="common_alert_change_password_description">You have successfully changed your payment password.</string>
     <string name="common_alert_change_password_title">Password changed successfully!</string>
     <string name="common_alert_disconnect_profile_title">Are you sure you want to disconnect the %s account of %s ? After disconnection, this account will no longer be able to decrypt and encrypt any information with Mask Network.</string>
@@ -116,7 +117,7 @@
     <string name="scene_backup_backup_verify_field_email">Email</string>
     <string name="scene_wallet_derivation_path_header_operation">Operation</string>
     <string name="scene_wallet_derivation_path_operation_added">Added</string>
-    <string name="scene_wallet_derivation_path_header_balance">Balance (%@)</string>
+    <string name="scene_wallet_derivation_path_header_balance">Balance (%s)</string>
     <string name="scene_wallet_derivation_path_header_address">Address</string>
     <string name="scene_wallet_derivation_path_operation_add">Add</string>
     <string name="scene_wallet_derivation_path_title">Derivation path</string>
@@ -165,7 +166,7 @@
     <string name="scene_setting_backup_data_backup_manually">Back Up Manually</string>
     <string name="scene_setting_backup_data_backup_icloud">Back Up All to iCloud</string>
     <string name="scene_setting_backup_data_no_backup_title">You haven’t backed up yet</string>
-    <string name="scene_setting_backup_data_subtitle">Your most recent backup is %@.</string>
+    <string name="scene_setting_backup_data_subtitle">Your most recent backup is %s.</string>
     <string name="scene_setting_backup_data_title">Back up your data</string>
     <string name="scene_setting_change_phone_number_sub_title">New Phone number</string>
     <string name="scene_setting_change_phone_number_title">Change Phone number</string>
@@ -215,7 +216,7 @@
     <string name="scene_set_backup_password_tips">Backup password must be between 8 and 20 characters and contains at least a number, a uppercase letter, a lowercase letter and a special character.</string>
     <string name="scene_set_backup_password_confirm_backup_password">Confirm Backup Password</string>
     <string name="scene_app_wallet_address">Wallet address</string>
-    <string name="scene_app_riskwarning">Dear User,\nWhen using any wallet-related plugins in Mask Network, please confirm to accept the following usage risks: \nMask Network provides non-commercial free services. The plug-ins are provided by community members and other excellent third-party DApp teams. Due to the freedom of the decentralized network and other uncertain risk factors, users are requested to properly protect their sensitive information such as wallet mnemonic words and private keys. Please be cautious when conducting any blockchain contract interaction. The risks caused by any third-party DApps (plug-ins) are borne by the third-party DApps themselves. \nClicking the confirm button means that you agree to bear the above possible risks.</string>
+    <string name="scene_app_riskwarning">Dear User,\n\nWhen using any wallet-related plugins in Mask Network, please confirm to accept the following usage risks:\n\nMask Network provides non-commercial free services. The plug-ins are provided by community members and other excellent third-party DApp teams. Due to the freedom of the decentralized network and other uncertain risk factors, users are requested to properly protect their sensitive information such as wallet mnemonic words and private keys. Please be cautious when conducting any blockchain contract interaction. The risks caused by any third-party DApps (plug-ins) are borne by the third-party DApps themselves.\n\nClicking the confirm button means that you agree to bear the above possible risks.</string>
     <string name="scene_app_plugins_gitcoin">Gitcoin</string>
     <string name="scene_app_plugins_ito">ITO</string>
     <string name="scene_app_plugins_swap">Swap</string>
@@ -252,7 +253,7 @@
     <string name="scene_create_wallet_multichain_wallet_title">Multi-chain wallet</string>
     <string name="scene_create_wallet_wallet_name_placeholder">Name your wallet</string>
     <string name="scene_wallet_receive_btn_share">Share</string>
-    <string name="scene_wallet_receive_your_address">Your %@ Address</string>
+    <string name="scene_wallet_receive_your_address">Your %s Address</string>
     <string name="scene_identify_verify_identity_error">The identity code is incorrect</string>
     <string name="scene_identify_verify_description">Tap each word in the correct order.</string>
     <string name="scene_identify_verify_title">Verify identity code</string>
@@ -281,7 +282,7 @@
     <string name="scene_personas_create_create_persona">Create Persona</string>
     <string name="scene_personas_add_persona">Add Persona</string>
     <string name="scene_personas_personas">Personas</string>
-    <string name="scene_personas_delete">Confirm to delete persona</string>
+    <string name="scene_personas_delete">Confirm to delete persona\n</string>
     <string name="scene_identity_recovery_private_key_button">Private Key</string>
     <string name="scene_identity_recovery_cloud_backup_recovery_button_title">Cloud backup Recovery</string>
     <string name="scene_identity_recovery_local_backup_recovery_button">Local Backup Recovery</string>
@@ -425,6 +426,14 @@
     <string name="scene_set_password_confirm_payment_password">Confirm Payment Password </string>
     <string name="scene_set_password_input_payment_password">Input Payment Password</string>
     <string name="scene_transaction_history_no_transaction">You don’t have any transaction records</string>
+    <string name="scene_transaction_history_speed_up">Speed up</string>
+    <string name="scene_transaction_history_type_cancel">Cancel %s</string>
+    <string name="scene_transaction_history_type_receive">Received %s</string>
+    <string name="scene_transaction_history_type_swap">WETH Deposit</string>
+    <string name="scene_transaction_history_type_approve">Approve %s</string>
+    <string name="scene_transaction_history_type_send">Send %s</string>
+    <string name="scene_transaction_history_status_fail">Failed</string>
+    <string name="scene_transaction_history_status_pending">Pending...</string>
     <string name="scene_social_i_understand">I understand</string>
     <string name="scene_social_connect_hint2"> to connect to Mask Network.</string>
     <string name="scene_social_account_already_connected">Account already connected</string>

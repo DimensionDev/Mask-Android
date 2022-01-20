@@ -40,7 +40,7 @@ import com.dimension.maskbook.wallet.ext.encodeUrl
 import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.repository.IPersonaRepository
 import com.dimension.maskbook.wallet.repository.ISettingsRepository
-import com.dimension.maskbook.wallet.services.DownloadResponse
+import com.dimension.maskbook.wallet.services.model.DownloadResponse
 import com.dimension.maskbook.wallet.ui.MaskTheme
 import com.dimension.maskbook.wallet.ui.scenes.register.recovery.local.BackupPasswordInputModal
 import com.dimension.maskbook.wallet.ui.scenes.settings.BackupLocalHost

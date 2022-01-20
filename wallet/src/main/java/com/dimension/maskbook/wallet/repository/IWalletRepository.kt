@@ -1,13 +1,11 @@
 package com.dimension.maskbook.wallet.repository
 
 import com.dimension.maskbook.debankapi.model.ChainID
-import com.dimension.maskbook.wallet.db.model.CoinPlatformType
-import com.dimension.maskbook.wallet.db.model.DbWalletBalanceType
-import com.dimension.maskbook.wallet.db.model.DbWalletTokenTokenWithWallet
-import com.dimension.maskbook.wallet.db.model.DbWalletTokenWithToken
-import com.dimension.maskbook.wallet.db.model.WalletSource
+import com.dimension.maskbook.wallet.db.model.*
+import com.dimension.maskbook.wallet.services.okHttpClient
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.Serializable
+import org.web3j.protocol.http.HttpService
 import java.math.BigDecimal
 
 data class WalletCreateOrImportResult(
@@ -29,8 +27,10 @@ data class WalletData(
     val address: String,
     val imported: Boolean,
     val fromWalletConnect: Boolean,
+    val walletConnectChainType: ChainType? = ChainType.eth,
+    val walletConnectDeepLink: String? = null,
     val tokens: List<WalletTokenData>,
-    val balance: Map<DbWalletBalanceType, BigDecimal>
+    val balance: Map<DbWalletBalanceType, BigDecimal>,
 ) {
     companion object {
         fun fromDb(data: DbWalletTokenTokenWithWallet) = with(data) {
@@ -43,7 +43,9 @@ data class WalletData(
                 tokens = items.map {
                     WalletTokenData.fromDb(it)
                 },
-                balance = balance.map { it.type to it.value }.toMap()
+                balance = balance.associate { it.type to it.value },
+                walletConnectChainType = wallet.walletConnectChainType,
+                walletConnectDeepLink = wallet.walletConnectDeepLink
             )
         }
     }
@@ -64,6 +66,42 @@ data class WalletTokenData(
         }
     }
 }
+
+data class WalletCollectibleData(
+    val id: String,
+    val chainType: ChainType,
+    val icon: String?,
+    val name: String,
+    val items: List<WalletCollectibleItemData>,
+) {
+    companion object {
+        fun fromDb(data: DbCollectible) = with(data) {
+            WalletCollectibleData(
+                id = _id,
+                chainType = chainType,
+                icon = this.collection.imageURL,
+                name = collection.name ?: name,
+                items = listOf(
+                    WalletCollectibleItemData(
+                        id = _id,
+                        link = this.permalink ?: this.externalLink ?: "",
+                        imageUrl = this.url.imageURL ?: this.url.imageOriginalURL ?: "",
+                        previewUrl = this.url.imagePreviewURL ?: this.url.imageThumbnailURL ?: "",
+                        videoUrl = this.url.animationOriginalURL ?: this.url.animationURL ?: "",
+                    )
+                ),
+            )
+        }
+    }
+}
+
+data class WalletCollectibleItemData(
+    val id: String,
+    val link: String,
+    val previewUrl: String?,
+    val imageUrl: String?,
+    val videoUrl: String?,
+)
 
 enum class TransactionType {
     Swap,
@@ -120,7 +158,7 @@ enum class UnlockType {
     BIOMETRIC
 }
 
-
+@Serializable
 enum class ChainType(
     val chainId: Long,
     val endpoint: String,
@@ -134,7 +172,23 @@ enum class ChainType(
     xdai(100, "https://rpc.xdaichain.com", false),
     optimism(10, "https://mainnet.optimism.io", false),
     polka(1, "", false),// TODO: json rpc endpoint
+    kovan(42, "https://kovan.infura.io/v3/d74bd8586b9e44449cef131d39ceeefb", true),
+    goerli(5, "https://goerli.infura.io/v3/d74bd8586b9e44449cef131d39ceeefb", true),
+    kusama(8, "https://kusama-rpc.polkadot.io/", false),
+    westend(9, "https://westend-rpc.polkadot.io/", false),
+    edgeware(10, "https://edgeware-node.edgewa.re/", false),
+    polkadot(17, "https://polkadot-rpc.polkadot.io/", false),
+    node(0, "", false),
+    custom(0, "", false),
+    unknown(0, "", false),
 }
+
+fun String.toChainType(): ChainType {
+    return kotlin.runCatching { ChainType.valueOf(this) }.getOrNull() ?: ChainType.unknown
+}
+
+val ChainType.httpService: HttpService
+    get() = HttpService(endpoint, okHttpClient)
 
 val ChainType.dbank: ChainID
     get() = when (this) {
@@ -146,6 +200,18 @@ val ChainType.dbank: ChainID
         ChainType.xdai -> ChainID.xdai
         ChainType.optimism -> ChainID.op
         ChainType.polka -> ChainID.eth
+        else -> throw NotImplementedError("ChainType $this not supported")
+    }
+
+val ChainID.chainType: ChainType
+    get() = when (this) {
+        ChainID.eth -> ChainType.eth
+        ChainID.bsc -> ChainType.bsc
+        ChainID.matic -> ChainType.polygon
+        ChainID.arb -> ChainType.arbitrum
+        ChainID.xdai -> ChainType.xdai
+        ChainID.op -> ChainType.optimism
+        else -> ChainType.unknown
     }
 
 data class DWebData(
@@ -199,6 +265,7 @@ interface IWalletRepository {
     val wallets: Flow<List<WalletData>>
     val currentWallet: Flow<WalletData?>
     fun setCurrentWallet(walletData: WalletData?)
+    fun setCurrentWallet(walletId: String)
     fun generateNewMnemonic(): List<String>
     suspend fun createWallet(mnemonic: List<String>, name: String, platformType: CoinPlatformType)
     suspend fun importWallet(mnemonicCode: List<String>, name: String, path: List<String>, platformType: CoinPlatformType)

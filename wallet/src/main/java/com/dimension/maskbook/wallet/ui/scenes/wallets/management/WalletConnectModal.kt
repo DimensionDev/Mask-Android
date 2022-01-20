@@ -1,8 +1,15 @@
 package com.dimension.maskbook.wallet.ui.scenes.wallets.management
 
+import android.content.*
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,38 +23,43 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.Icon
-import androidx.compose.material.LinearProgressIndicator
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ScrollableTabRow
-import androidx.compose.material.Tab
-import androidx.compose.material.TabRow
-import androidx.compose.material.TabRowDefaults
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.*
 import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
-import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.navigation.navOptions
+import coil.compose.rememberImagePainter
 import com.dimension.maskbook.wallet.R
+import com.dimension.maskbook.wallet.ext.copyText
+import com.dimension.maskbook.wallet.ext.observeAsState
+import com.dimension.maskbook.wallet.repository.ChainType
+import com.dimension.maskbook.wallet.repository.WCWallet
+import com.dimension.maskbook.wallet.ui.LocalRootNavController
 import com.dimension.maskbook.wallet.ui.widget.MaskModal
 import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
 import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
+import com.dimension.maskbook.wallet.ui.widget.itemsGridIndexed
+import com.dimension.maskbook.wallet.viewmodel.wallets.WalletConnectViewModel
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import com.google.zxing.BarcodeFormat
+import com.journeyapps.barcodescanner.BarcodeEncoder
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import org.koin.androidx.compose.getViewModel
+import org.koin.core.parameter.parametersOf
 
 enum class WalletConnectType {
     Manually,
@@ -58,10 +70,32 @@ enum class WalletConnectType {
 @Composable
 fun WalletConnectModal() {
     val navController = rememberAnimatedNavController()
+    val rootNavController = LocalRootNavController.current
+    val scope = rememberCoroutineScope()
+    val onResult: (success: Boolean, needToSwitchNetwork: Boolean) -> Unit = { success, switch ->
+        scope.launch(Dispatchers.Main) {
+            if (success) {
+                if (switch) rootNavController.navigate("WalletNetworkSwitchWarningDialog", navOptions {
+                    popUpTo("SwitchWalletAddWalletConnect") {
+                        inclusive = true
+                    }
+                }) else rootNavController.popBackStack()
+            } else {
+                navController.navigate("WalletConnectFailed")
+            }
+        }
+    }
+    val viewModel = getViewModel<WalletConnectViewModel> {
+        parametersOf(onResult)
+    }
+    val wcUrl by viewModel.wcUrl.observeAsState(initial = "")
+    val context = LocalContext.current
+    val currentSupportedWallets by viewModel.currentSupportedWallets.observeAsState(initial = emptyList())
     MaskModal {
         Column(
             modifier = Modifier
-                .padding(ScaffoldPadding),
+                .padding(ScaffoldPadding)
+                .animateContentSize(),
         ) {
             Text(
                 text = stringResource(R.string.scene_wallet_connect_wallet_connect),
@@ -74,7 +108,30 @@ fun WalletConnectModal() {
                 startDestination = "WalletConnectTypeSelect"
             ) {
                 composable("WalletConnectTypeSelect") {
-                    TypeSelectScene()
+                    TypeSelectScene(
+                        qrCode = wcUrl,
+                        onCopy = {
+                            context.copyText(
+                                text = it,
+                            )
+                        },
+                        wallets = currentSupportedWallets,
+                        onChainSelected = {
+                            viewModel.selectChain(it)
+                        },
+                        onWalletConnect = {
+                            navController.navigate("WalletConnectConnecting")
+                            try {
+                                context.startActivity(Intent(Intent.ACTION_VIEW).apply {
+                                    data = viewModel.generateDeeplink()
+                                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                                })
+                            } catch (e: ActivityNotFoundException) {
+                                e.printStackTrace()
+                                navController.popBackStack()
+                            }
+                        }
+                    )
                 }
 
                 composable("WalletConnectConnecting") {
@@ -84,7 +141,11 @@ fun WalletConnectModal() {
                 composable("WalletConnectFailed") {
                     WalletConnectFailure(
                         onRetry = {
-
+                            viewModel.retry()
+                            navController.popBackStack(
+                                route = "WalletConnectTypeSelect",
+                                inclusive = false
+                            )
                         }
                     )
                 }
@@ -146,7 +207,13 @@ fun Connecting() {
 
 
 @Composable
-private fun TypeSelectScene() {
+private fun TypeSelectScene(
+    qrCode: String,
+    onCopy: (String) -> Unit,
+    wallets: List<WCWallet>,
+    onChainSelected: (chainType: ChainType) -> Unit,
+    onWalletConnect: (wallet: WCWallet) -> Unit
+) {
     Column {
         var selectedTabIndex by remember {
             mutableStateOf(0)
@@ -170,7 +237,7 @@ private fun TypeSelectScene() {
                             .fillMaxHeight()
                             .background(
                                 color = MaterialTheme.colors.primary,
-                                shape = CircleShape,
+                                shape = RoundedCornerShape(99.dp)
                             )
                     )
                 }
@@ -191,68 +258,164 @@ private fun TypeSelectScene() {
             }
         }
         when (WalletConnectType.values()[selectedTabIndex]) {
-            WalletConnectType.Manually -> WalletConnectManually()
-            WalletConnectType.QRCode -> WalletConnectQRCode()
+            WalletConnectType.Manually -> WalletConnectManually(
+                wallets = wallets,
+                onChainSelected = onChainSelected,
+                onWalletConnect = onWalletConnect,
+                loading = qrCode.isEmpty()
+            )
+            WalletConnectType.QRCode -> WalletConnectQRCode(
+                qrCode = qrCode,
+                onCopy = onCopy,
+                qrCode.isEmpty()
+            )
         }
     }
 }
 
 @Composable
-fun WalletConnectQRCode() {
+fun WalletConnectQRCode(
+    qrCode: String,
+    onCopy: (String) -> Unit,
+    loading: Boolean
+) {
+    val qrCodeBitmap = remember(qrCode) {
+        try {
+            BarcodeEncoder().encodeBitmap(
+                qrCode,
+                BarcodeFormat.QR_CODE,
+                500,
+                500
+            )
+        } catch (e: Throwable) {
+            null
+        }
+    }
     Text(text = stringResource(R.string.scene_wallet_connect_qr_code_tips))
     Box(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable { onCopy.invoke(qrCode) }
             .aspectRatio(1f)
             .padding(8.dp)
     ) {
-        Icon(
-            Icons.Default.Home,
-            contentDescription = null,
-        )// TODO: Display qr code
-
+        Image(
+            painter = painterResource(id = R.drawable.ic_qr_code_border),
+            modifier = Modifier.fillMaxSize(),
+            contentDescription = ""
+        )
+        Image(
+            painter = rememberImagePainter(data = qrCodeBitmap),
+            modifier = Modifier
+                .padding(8.dp)
+                .fillMaxSize(),
+            contentScale = ContentScale.FillBounds,
+            contentDescription = "qrCode"
+        )
+        if (loading) {
+            LoadingView()
+        }
     }
     Text(text = stringResource(R.string.scene_wallet_connect_tap_to_copy))// TODO: Copy
 }
 
 @Composable
-fun WalletConnectManually() {
+fun WalletConnectManually(
+    wallets: List<WCWallet>,
+    onChainSelected: (chainType: ChainType) -> Unit,
+    onWalletConnect: (wallet: WCWallet) -> Unit,
+    loading: Boolean
+) {
     var selectedTabIndex by remember {
         mutableStateOf(0)
     }
-    ScrollableTabRow(
-        selectedTabIndex = selectedTabIndex,
-        backgroundColor = MaterialTheme.colors.background,
-        indicator = { tabPositions ->
-            Box(
-                Modifier
-                    .tabIndicatorOffset(tabPositions[selectedTabIndex])
-                    .fillMaxWidth()
-                    .fillMaxHeight()
-                    .background(
-                        color = MaterialTheme.colors.primary.copy(alpha = 0.1f),
-                        shape = MaterialTheme.shapes.small,
-                    )
-            )
-        },
-        edgePadding = 14.dp,
-        divider = { },
-        modifier = Modifier.padding(vertical = 20.dp)
-    ) {
-        supportedChainType.forEachIndexed { index, type ->
-            val selected = selectedTabIndex == index
-            Tab(
-                text = { Text(type.name) },
-                selected = selected,
-                onClick = {
-                    selectedTabIndex = index
-                },
-                selectedContentColor = MaterialTheme.colors.primary,
-                unselectedContentColor = MaterialTheme.colors.onBackground.copy(
-                    alpha = ContentAlpha.medium
-                ),
-            )
-        }
+    Column {
+        ScrollableTabRow(
+            selectedTabIndex = selectedTabIndex,
+            backgroundColor = MaterialTheme.colors.background,
+            indicator = { tabPositions ->
+                Box(
+                    Modifier
+                        .tabIndicatorOffset(tabPositions[selectedTabIndex])
+                        .fillMaxWidth()
+                        .fillMaxHeight()
+                        .background(
+                            color = MaterialTheme.colors.primary.copy(alpha = 0.1f),
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                )
+            },
+            edgePadding = 14.dp,
+            divider = { },
+            modifier = Modifier.padding(vertical = 20.dp)
+        ) {
+            supportedChainType.forEachIndexed { index, type ->
+                val selected = selectedTabIndex == index
+                Tab(
+                    text = { Text(type.name) },
+                    selected = selected,
+                    onClick = {
+                        selectedTabIndex = index
+                    },
+                    selectedContentColor = MaterialTheme.colors.primary,
+                    unselectedContentColor = MaterialTheme.colors.onBackground.copy(
+                        alpha = ContentAlpha.medium
+                    ),
+                )
+            }
 
+        }
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(0.dp, max = 500.dp)
+                .background(MaterialTheme.colors.surface, shape = MaterialTheme.shapes.medium),
+            state = rememberLazyListState(),
+            contentPadding = PaddingValues(vertical = 20.dp, horizontal = 25.dp)
+        ) {
+            if (loading) {
+                item {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        LoadingView()
+                    }
+                }
+            } else {
+                itemsGridIndexed(wallets, rowSize = 4, spacing = 10.dp) { index, wallet ->
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                onWalletConnect.invoke(wallet)
+                            },
+                    ) {
+                        Image(
+                            painter = rememberImagePainter(data = wallet.logo),
+                            contentDescription = "logo",
+                            contentScale = ContentScale.FillBounds,
+                            modifier = Modifier
+                                .size(48.dp)
+                                .clip(shape = CircleShape)
+                        )
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Text(
+                            text = wallet.displayName,
+                            style = MaterialTheme.typography.body2, maxLines = 1,
+                            textAlign = TextAlign.Center,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                }
+            }
+        }
     }
+}
+
+@Composable
+private fun BoxScope.LoadingView() {
+    CircularProgressIndicator(
+        modifier = Modifier
+            .align(Alignment.Center)
+            .padding(20.dp)
+    )
 }

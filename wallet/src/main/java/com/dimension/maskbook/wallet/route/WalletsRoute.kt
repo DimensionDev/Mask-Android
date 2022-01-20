@@ -10,20 +10,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavType
+import androidx.navigation.*
 import androidx.navigation.compose.dialog
-import androidx.navigation.navArgument
-import androidx.navigation.navOptions
 import com.dimension.maskbook.wallet.R
+import com.dimension.maskbook.wallet.ext.copyText
 import com.dimension.maskbook.wallet.ext.observeAsState
+import com.dimension.maskbook.wallet.ext.shareText
 import com.dimension.maskbook.wallet.repository.ChainType
 import com.dimension.maskbook.wallet.repository.ISettingsRepository
 import com.dimension.maskbook.wallet.repository.ITokenRepository
 import com.dimension.maskbook.wallet.repository.IWalletRepository
 import com.dimension.maskbook.wallet.ui.scenes.wallets.UnlockWalletDialog
 import com.dimension.maskbook.wallet.ui.scenes.wallets.WalletQrcodeScene
+import com.dimension.maskbook.wallet.ui.scenes.wallets.collectible.CollectibleDetailScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.common.MultiChainWalletDialog
 import com.dimension.maskbook.wallet.ui.scenes.wallets.create.CreateOrImportWalletScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.create.CreateType
@@ -33,28 +32,14 @@ import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.LegalScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.password.BiometricsEnableScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.password.SetUpPaymentPassword
 import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.password.TouchIdEnableScene
-import com.dimension.maskbook.wallet.ui.scenes.wallets.management.BackupWalletScene
-import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletConnectModal
-import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletDeleteDialog
-import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletManagementModal
-import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletRenameModal
-import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletSwitchAddModal
-import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletSwitchModal
-import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletSwitchScene
-import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletTransactionHistoryScene
+import com.dimension.maskbook.wallet.ui.scenes.wallets.management.*
 import com.dimension.maskbook.wallet.ui.scenes.wallets.send.SendTokenHost
 import com.dimension.maskbook.wallet.ui.scenes.wallets.token.TokenDetailScene
 import com.dimension.maskbook.wallet.ui.widget.MaskDialog
 import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
-import com.dimension.maskbook.wallet.viewmodel.wallets.BiometricViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.TokenDetailViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.UnlockWalletViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.WalletManagementModalViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletBackupViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletDeleteViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletRenameViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletSwitchViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletTransactionHistoryViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.*
+import com.dimension.maskbook.wallet.viewmodel.wallets.collectible.CollectibleDetailViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.management.*
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.bottomSheet
@@ -68,17 +53,52 @@ import org.koin.core.parameter.parametersOf
 fun NavGraphBuilder.walletsRoute(
     navController: NavController
 ) {
-    composable("WalletQrcode") {
+    composable(
+        "CollectibleDetail/{id}",
+        arguments = listOf(
+            navArgument("id") { type = NavType.StringType }
+        )
+    ) {
+        it.arguments?.getString("id")?.let { id ->
+            val viewModel = getViewModel<CollectibleDetailViewModel> {
+                parametersOf(id)
+            }
+            val data by viewModel.data.observeAsState(initial = null)
+            data?.let {
+                CollectibleDetailScene(
+                    data = it,
+                    onBack = {
+                        navController.popBackStack()
+                    },
+                    onSend = {
+
+                    },
+                    onReceive = {
+                        navController.navigate("WalletQrcode/${it.chainType.name}")
+                    }
+                )
+            }
+        }
+    }
+
+    composable(
+    "WalletQrcode/{name}",
+        arguments = listOf(navArgument("name"){ type = NavType.StringType })
+    ) {
         val repository = get<IWalletRepository>()
         val currentWallet by repository.currentWallet.observeAsState(initial = null)
+        val name = it.arguments?.getString("name") ?: ""
+        val context = LocalContext.current
         currentWallet?.let {
             WalletQrcodeScene(
-                walletData = it,
-                onShare = { /*TODO*/ },
+                address = it.address,
+                name = name,
+                onShare = { context.shareText(it.address) },
                 onBack = { navController.popBackStack() },
-                onCopy = {},
+                onCopy = { context.copyText(it.address) }
             )
         }
+
     }
     composable(
         "TokenDetail/{id}",
@@ -93,6 +113,7 @@ fun NavGraphBuilder.walletsRoute(
             val token by viewModel.tokenData.observeAsState(initial = null)
             val transaction by viewModel.transaction.observeAsState(initial = emptyList())
             val walletTokenData by viewModel.walletTokenData.observeAsState(initial = null)
+            val dWebData by viewModel.dWebData.observeAsState(initial = null)
             walletTokenData?.let { walletTokenData ->
                 token?.let { token ->
                     TokenDetailScene(
@@ -103,8 +124,15 @@ fun NavGraphBuilder.walletsRoute(
                         onSpeedUp = { },
                         onCancel = { },
                         onSend = {
-                            navController.navigate("SendTokenScene/${token.address}")
-                        }
+                            if (token.chainType != dWebData?.chainType) {
+                                navController.navigate("WalletNetworkSwitch/${token.chainType}")
+                            } else {
+                                navController.navigate("SendTokenScene/${token.address}")
+                            }
+                        },
+                        onReceive = {
+                            navController.navigate("WalletQrcode/${token.symbol}")
+                        },
                     )
                 }
             }
@@ -123,6 +151,48 @@ fun NavGraphBuilder.walletsRoute(
     bottomSheet("SwitchWalletAddWalletConnect") {
         WalletConnectModal()
     }
+
+    dialog(
+        "WalletNetworkSwitch/{target}",
+        arguments = listOf(navArgument("target") { type = NavType.StringType })
+    ) {
+        it.arguments?.getString("target")?.let {
+            ChainType.valueOf(it)
+        }?.let { target ->
+            val viewModel = getViewModel<WalletSwitchViewModel>()
+            val currentNetwork by viewModel.network.observeAsState(initial = ChainType.eth)
+            WalletNetworkSwitchWarningDialog(
+                currentNetwork = currentNetwork.name,
+                connectingNetwork = target.name,
+                onCancel = { navController.popBackStack() },
+                onSwitch = {
+                    viewModel.setChainType(target)
+                    navController.popBackStack()
+                }
+            )
+        }
+    }
+
+    dialog("WalletNetworkSwitchWarningDialog") {
+        val viewModel = getViewModel<WalletSwitchViewModel>()
+        val currentNetwork by viewModel.network.observeAsState(initial = ChainType.eth)
+        val wallet by viewModel.currentWallet.observeAsState(initial = null)
+        wallet?.let {
+            if (!it.fromWalletConnect || it.walletConnectChainType == currentNetwork || it.walletConnectChainType == null) navController.popBackStack()
+            WalletNetworkSwitchWarningDialog(
+                currentNetwork = currentNetwork.name,
+                connectingNetwork = it.walletConnectChainType?.name ?: "",
+                onCancel = { navController.popBackStack() },
+                onSwitch = {
+                    it.walletConnectChainType?.let { type ->
+                        viewModel.setChainType(type)
+                    }
+                    navController.popBackStack()
+                }
+            )
+        }
+    }
+
     bottomSheet("SwitchWallet") {
         val viewModel = getViewModel<WalletSwitchViewModel>()
         val wallet by viewModel.currentWallet.observeAsState(initial = null)
@@ -159,6 +229,7 @@ fun NavGraphBuilder.walletsRoute(
         it.arguments?.getString("id")?.let { id ->
             val repository = get<IWalletRepository>()
             val wallets by repository.wallets.observeAsState(initial = emptyList())
+            val viewModel = getViewModel<WalletConnectManagementViewModel>()
             wallets.firstOrNull { it.id == id }?.let { wallet ->
                 WalletSwitchModal(
                     walletData = wallet,
@@ -168,6 +239,8 @@ fun NavGraphBuilder.walletsRoute(
                         navController.navigate("WalletManagementDeleteDialog/${wallet.id}")
                     },
                     onDisconnect = {
+                        viewModel.disconnect(walletData = wallet)
+                        navController.popBackStack()
                     }
                 )
             }
@@ -176,6 +249,7 @@ fun NavGraphBuilder.walletsRoute(
     bottomSheet("WalletBalancesMenu") {
         val viewModel = getViewModel<WalletManagementModalViewModel>()
         val currentWallet by viewModel.currentWallet.observeAsState(initial = null)
+        val wcViewModel = getViewModel<WalletConnectManagementViewModel>()
         currentWallet?.let { wallet ->
             WalletManagementModal(
                 walletData = wallet,
@@ -187,7 +261,8 @@ fun NavGraphBuilder.walletsRoute(
                     navController.navigate("WalletManagementDeleteDialog/${wallet.id}")
                 },
                 onDisconnect = {
-
+                    wcViewModel.disconnect(walletData = wallet)
+                    navController.popBackStack()
                 }
             )
         }
@@ -469,12 +544,14 @@ fun NavGraphBuilder.walletsRoute(
             CreateWalletHost(
                 wallet = wallet,
                 onDone = {
-                    navController.navigate(Uri.parse("maskwallet://Home/Wallets"), navOptions = navOptions {
-                        launchSingleTop = true
-                        popUpTo("Home") {
-                            inclusive = false
-                        }
-                    })
+                    navController.navigate(
+                        Uri.parse("maskwallet://Home/Wallets"),
+                        navOptions = navOptions {
+                            launchSingleTop = true
+                            popUpTo("Home") {
+                                inclusive = false
+                            }
+                        })
                 },
                 onBack = { navController.popBackStack() }
             )
@@ -491,12 +568,14 @@ fun NavGraphBuilder.walletsRoute(
             ImportWalletHost(
                 wallet = wallet,
                 onDone = {
-                    navController.navigate(Uri.parse("maskwallet://Home/Wallets"), navOptions = navOptions {
-                        launchSingleTop = true
-                        popUpTo("Home") {
-                            inclusive = false
-                        }
-                    })
+                    navController.navigate(
+                        Uri.parse("maskwallet://Home/Wallets"),
+                        navOptions = navOptions {
+                            launchSingleTop = true
+                            popUpTo("Home") {
+                                inclusive = false
+                            }
+                        })
                 },
                 onBack = { navController.popBackStack() }
             )
