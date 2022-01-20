@@ -4,14 +4,7 @@ import android.app.Application
 import android.content.Context
 import com.dimension.maskbook.handler.Web3MessageHandler
 import com.dimension.maskbook.platform.PlatformSwitcher
-import com.dimension.maskbook.repository.AppRepository
-import com.dimension.maskbook.repository.JSMethod
-import com.dimension.maskbook.repository.PersonaRepository
-import com.dimension.maskbook.repository.SettingsRepository
-import com.dimension.maskbook.repository.WalletRepository
-import com.dimension.maskbook.repository.personaDataStore
-import com.dimension.maskbook.repository.settingsDataStore
-import com.dimension.maskbook.repository.walletDataStore
+import com.dimension.maskbook.repository.*
 import com.dimension.maskbook.wallet.db.model.CoinPlatformType
 import com.dimension.maskbook.wallet.platform.IPlatformSwitcher
 import com.dimension.maskbook.wallet.repository.*
@@ -21,7 +14,6 @@ import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManagerV1
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.merge
@@ -122,6 +114,7 @@ val repositoryModules = module {
 //    single<IWalletRepository> { FakeWalletRepository() }
     single<ISettingsRepository> { SettingsRepository(get<Context>().settingsDataStore) }
     single<IWalletRepository> { WalletRepository(get<Context>().walletDataStore, get(), get(), get()) }
+    single<ICollectibleRepository> { CollectibleRepository(get(), get()) }
     single<ITransactionRepository> { TransactionRepository(get(), get()) }
     single<ITokenRepository> { TokenRepository(get()) }
     single<ISendHistoryRepository> { SendHistoryRepository(get()) }

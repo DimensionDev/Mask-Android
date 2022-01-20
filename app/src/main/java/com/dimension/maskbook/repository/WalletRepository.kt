@@ -7,6 +7,9 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import androidx.paging.LoadType
+import androidx.paging.PagingConfig
+import androidx.paging.PagingState
 import androidx.room.withTransaction
 import com.dimension.maskbook.debankapi.model.ChainID
 import com.dimension.maskbook.wallet.db.AppDatabase
@@ -14,6 +17,7 @@ import com.dimension.maskbook.wallet.db.model.*
 import com.dimension.maskbook.wallet.ext.ether
 import com.dimension.maskbook.wallet.ext.gwei
 import com.dimension.maskbook.wallet.repository.*
+import com.dimension.maskbook.wallet.paging.mediator.CollectibleMediator
 import com.dimension.maskbook.wallet.services.WalletServices
 import com.dimension.maskbook.wallet.services.okHttpClient
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager
@@ -26,7 +30,6 @@ import org.web3j.abi.datatypes.Function
 import org.web3j.abi.datatypes.generated.Uint256
 import org.web3j.crypto.Credentials
 import org.web3j.protocol.Web3j
-import org.web3j.protocol.http.HttpService
 import org.web3j.tx.RawTransactionManager
 import java.math.BigDecimal
 import java.util.*
@@ -55,6 +58,7 @@ class WalletRepository(
             while (true) {
                 delay(12.seconds)
                 refreshCurrentWalletToken()
+                refreshCurrentWalletCollectibles()
             }
         }
     }
@@ -92,6 +96,20 @@ class WalletRepository(
 
     override suspend fun findWalletByAddress(address: String): WalletData? {
         return database.walletDao().getByAddress(address)?.let { WalletData.fromDb(it) }
+    }
+
+    private suspend fun refreshCurrentWalletCollectibles() {
+        val currentWallet = currentWallet.firstOrNull() ?: return
+        try {
+            CollectibleMediator(
+                walletId = currentWallet.id,
+                database = database,
+                openSeaServices = services.openSeaServices,
+                walletAddress = currentWallet.address,
+            ).load(LoadType.REFRESH, PagingState(emptyList(), null, PagingConfig(pageSize = 10), 0))
+        } catch (e: Throwable) {
+            e.printStackTrace()
+        }
     }
 
     private suspend fun refreshCurrentWalletToken() {
@@ -217,7 +235,7 @@ class WalletRepository(
     override suspend fun createWallet(
         mnemonic: List<String>,
         name: String,
-        platformType: CoinPlatformType
+        platformType: CoinPlatformType,
     ) {
         val wallet = WalletKey.fromMnemonic(mnemonic = mnemonic.joinToString(" "), "")
         val account = wallet.addNewAccountAtPath(
@@ -255,7 +273,7 @@ class WalletRepository(
         mnemonicCode: List<String>,
         name: String,
         path: List<String>,
-        platformType: CoinPlatformType
+        platformType: CoinPlatformType,
     ) {
         scope.launch {
             val wallet = WalletKey.fromMnemonic(mnemonic = mnemonicCode.joinToString(" "), "")
@@ -294,7 +312,7 @@ class WalletRepository(
         name: String,
         keyStore: String,
         password: String,
-        platformType: CoinPlatformType
+        platformType: CoinPlatformType,
     ) {
         val wallet = WalletKey.fromJson(
             json = keyStore,
@@ -337,7 +355,7 @@ class WalletRepository(
     override suspend fun importWallet(
         name: String,
         privateKey: String,
-        platformType: CoinPlatformType
+        platformType: CoinPlatformType,
     ) {
         scope.launch {
             val wallet = WalletKey.fromPrivateKey(
@@ -381,7 +399,7 @@ class WalletRepository(
 
     override suspend fun getKeyStore(
         walletData: WalletData,
-        platformType: CoinPlatformType
+        platformType: CoinPlatformType,
     ): String {
         return database.walletDao().getById(walletData.id)?.let {
             WalletKey.load(it.storedKey.data).firstOrNull()
@@ -390,7 +408,7 @@ class WalletRepository(
 
     override suspend fun getPrivateKey(
         walletData: WalletData,
-        platformType: CoinPlatformType
+        platformType: CoinPlatformType,
     ): String {
         return database.walletDao().getById(walletData.id)?.let {
             WalletKey.load(it.storedKey.data).firstOrNull()
@@ -454,7 +472,7 @@ class WalletRepository(
         maxPriorityFee: Double,
         data: String,
         onDone: (String?) -> Unit,
-        onError: (Throwable) -> Unit
+        onError: (Throwable) -> Unit,
     ) {
         sendTokenWithCurrentWalletAndChainType(
             amount = amount,
@@ -481,7 +499,7 @@ class WalletRepository(
         maxPriorityFee: Double,
         data: String,
         onDone: (String?) -> Unit,
-        onError: (Throwable) -> Unit
+        onError: (Throwable) -> Unit,
     ) {
         scope.launch {
             try {
@@ -508,10 +526,8 @@ class WalletRepository(
                     } else {
                         null
                     }
-                    val web3 = Web3j.build(HttpService(chainType.endpoint, okHttpClient))
-                    val manager =
-                        RawTransactionManager(web3, credentials, chainType.chainId)
-
+                    val web3 = Web3j.build(chainType.httpService)
+                    val manager = RawTransactionManager(web3, credentials, chainType.chainId)
                     val result = if (chainType.supportEip25519) {
                         manager.sendEIP1559Transaction(
                             chainType.chainId,
@@ -542,6 +558,7 @@ class WalletRepository(
                         )
                         throw Exception(result.error?.message ?: "")
                     }
+                    web3.shutdown()
                     result.transactionHash
                 }
                 onDone.invoke(hash)
@@ -553,7 +570,7 @@ class WalletRepository(
 
     override fun validatePrivateKey(privateKey: String) = WalletKey.validate(privateKey = privateKey)
 
-    override fun validateMnemonic(mnemonic: String) =  WalletKey.validate(mnemonic = mnemonic)
+    override fun validateMnemonic(mnemonic: String) = WalletKey.validate(mnemonic = mnemonic)
 
     override fun validateKeystore(keyStore: String) = WalletKey.validate(keyStoreJSON = keyStore)
 
@@ -601,4 +618,5 @@ class WalletRepository(
     private fun createNewMnemonic(password: String = ""): String {
         return WalletKey.create(password).mnemonic
     }
+
 }

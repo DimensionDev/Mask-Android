@@ -20,6 +20,7 @@ import com.dimension.maskbook.wallet.repository.ITokenRepository
 import com.dimension.maskbook.wallet.repository.IWalletRepository
 import com.dimension.maskbook.wallet.ui.scenes.wallets.UnlockWalletDialog
 import com.dimension.maskbook.wallet.ui.scenes.wallets.WalletQrcodeScene
+import com.dimension.maskbook.wallet.ui.scenes.wallets.collectible.CollectibleDetailScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.common.MultiChainWalletDialog
 import com.dimension.maskbook.wallet.ui.scenes.wallets.create.CreateOrImportWalletScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.create.CreateType
@@ -35,6 +36,7 @@ import com.dimension.maskbook.wallet.ui.scenes.wallets.token.TokenDetailScene
 import com.dimension.maskbook.wallet.ui.widget.MaskDialog
 import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
 import com.dimension.maskbook.wallet.viewmodel.wallets.*
+import com.dimension.maskbook.wallet.viewmodel.wallets.collectible.CollectibleDetailViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.management.*
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
@@ -49,6 +51,33 @@ import org.koin.core.parameter.parametersOf
 fun NavGraphBuilder.walletsRoute(
     navController: NavController
 ) {
+    composable(
+        "CollectibleDetail/{id}",
+        arguments = listOf(
+            navArgument("id") { type = NavType.StringType }
+        )
+    ) {
+        it.arguments?.getString("id")?.let { id ->
+            val viewModel = getViewModel<CollectibleDetailViewModel> {
+                parametersOf(id)
+            }
+            val data by viewModel.data.observeAsState(initial = null)
+            data?.let {
+                CollectibleDetailScene(
+                    data = it,
+                    onBack = {
+                        navController.popBackStack()
+                    },
+                    onSend = {
+
+                    },
+                    onReceive = {
+                        navController.navigate("WalletQrcode")
+                    }
+                )
+            }
+        }
+    }
     composable("WalletQrcode") {
         val repository = get<IWalletRepository>()
         val currentWallet by repository.currentWallet.observeAsState(initial = null)

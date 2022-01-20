@@ -21,3 +21,86 @@ data class GasFeeResponse (
     val fastestWait: Double? = null,
     val gasPriceRange: Map<String, Double>? = null
 )
+
+
+@Serializable
+enum class AccountType {
+    email,
+    phone,
+}
+
+@Serializable
+enum class Scenario {
+    backup,
+    create_binding,
+    change_binding
+}
+
+@Serializable
+enum class Locale {
+    en,
+    zh
+}
+
+@Serializable
+data class SendCodeBody(
+    val account_type: AccountType,
+    val account: String,
+    val scenario: Scenario,
+    val locale: Locale,
+)
+
+@Serializable
+data class ValidateCodeBody(
+    val code: String,
+    val account_type: AccountType,
+    val account: String,
+)
+
+@Serializable
+data class UploadBody(
+    val code: String,
+    val account_type: AccountType,
+    val account: String,
+    val abstract: String,
+)
+
+@Serializable
+data class UploadResponse(
+    val upload_url: String?,
+)
+
+@Serializable
+data class DownloadResponse(
+    val download_url: String?,
+    val size: Long?,
+    val uploaded_at: Long?,
+    val abstract: String?,
+)
+
+@Serializable
+data class EthGasFeeResponse(
+    val low: EthGasFee? = null,
+    val medium: EthGasFee? = null,
+    val high: EthGasFee? = null,
+    val estimatedBaseFee: String? = null,
+    val networkCongestion: Double? = null
+)
+
+@Serializable
+data class EthGasFee(
+    val suggestedMaxPriorityFeePerGas: String? = null,
+    val suggestedMaxFeePerGas: String? = null,
+    val minWaitTimeEstimate: Long? = null,
+    val maxWaitTimeEstimate: Long? = null
+)
+
+@Serializable
+data class MaticGasFeeResponse(
+    val safeLow: Double? = null,
+    val standard: Double? = null,
+    val fast: Double? = null,
+    val fastest: Double? = null,
+    val blockTime: Long? = null,
+    val blockNumber: Long? = null
+)

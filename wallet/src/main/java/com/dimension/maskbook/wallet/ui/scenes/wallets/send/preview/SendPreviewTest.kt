@@ -61,7 +61,7 @@ private val walletData = WalletTokenData(
 
 @Composable
 fun SearchTokenScenePreview() {
-    SearchTokenScene(onBack = { /*TODO*/ }, query = "", onQueryChanged = {})
+//    SearchTokenScene(onBack = { /*TODO*/ }, query = "", onQueryChanged = {})
 }
 
 @Composable
