@@ -30,7 +30,7 @@ fun MaskButton(
         backgroundColor = MaterialTheme.colors.surface,
         disabledBackgroundColor = MaterialTheme.colors.surface.copy(alpha = 0.5f),
     ),
-    contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
     content: @Composable RowScope.() -> Unit
 ) {
     Button(

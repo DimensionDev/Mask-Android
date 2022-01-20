@@ -10,6 +10,19 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
@@ -32,7 +45,6 @@ import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.repository.ChainType
 import com.dimension.maskbook.wallet.repository.WCWallet
 import com.dimension.maskbook.wallet.ui.LocalRootNavController
-import com.dimension.maskbook.wallet.ui.scenes.persona.social.tabIndicatorOffset3
 import com.dimension.maskbook.wallet.ui.widget.MaskModal
 import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
 import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
@@ -87,7 +99,7 @@ fun WalletConnectModal() {
                 .animateContentSize(),
         ) {
             Text(
-                text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_connect_wallet_connect),
+                text = stringResource(R.string.scene_wallet_connect_wallet_connect),
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center,
             )
@@ -165,10 +177,10 @@ fun WalletConnectFailure(
             Image(painterResource(id = R.drawable.ic_close_square), contentDescription = null)
         }
         Spacer(modifier = Modifier.height(20.dp))
-        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_connect_connection_fail), color = Color(0xFFFF5F5F))
+        Text(text = stringResource(R.string.scene_wallet_connect_connection_fail), color = Color(0xFFFF5F5F))
         Spacer(modifier = Modifier.height(20.dp))
         PrimaryButton(onClick = onRetry) {
-            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_try_again))
+            Text(text = stringResource(R.string.common_controls_try_again))
         }
     }
 }
@@ -193,7 +205,7 @@ fun Connecting() {
             Image(painterResource(id = R.drawable.mask1), contentDescription = null)
         }
         Spacer(modifier = Modifier.height(24.dp))
-        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_connect_connecting))
+        Text(text = stringResource(R.string.scene_wallet_connect_connecting))
     }
 }
 
@@ -308,7 +320,7 @@ fun WalletConnectQRCode(
             LoadingView()
         }
     }
-    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_connect_tap_to_copy))// TODO: Copy
+    Text(text = stringResource(R.string.scene_wallet_connect_tap_to_copy))// TODO: Copy
 }
 
 @Composable
@@ -328,7 +340,7 @@ fun WalletConnectManually(
             indicator = { tabPositions ->
                 Box(
                     Modifier
-                        .tabIndicatorOffset3(tabPositions[selectedTabIndex])
+                        .tabIndicatorOffset(tabPositions[selectedTabIndex])
                         .fillMaxWidth()
                         .fillMaxHeight()
                         .background(
@@ -348,7 +360,6 @@ fun WalletConnectManually(
                     selected = selected,
                     onClick = {
                         selectedTabIndex = index
-                        onChainSelected.invoke(type)
                     },
                     selectedContentColor = MaterialTheme.colors.primary,
                     unselectedContentColor = MaterialTheme.colors.onBackground.copy(
@@ -402,7 +413,6 @@ fun WalletConnectManually(
             }
         }
     }
-
 }
 
 @Composable

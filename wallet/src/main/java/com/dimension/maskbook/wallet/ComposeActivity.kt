@@ -27,8 +27,6 @@ import com.dimension.maskbook.wallet.viewmodel.persona.post.PostViewModel
 import com.dimension.maskbook.wallet.viewmodel.persona.social.DisconnectSocialViewModel
 import com.dimension.maskbook.wallet.viewmodel.persona.social.FaceBookConnectSocialViewModel
 import com.dimension.maskbook.wallet.viewmodel.persona.social.FacebookSocialViewModel
-import com.dimension.maskbook.wallet.viewmodel.persona.social.PersonaSocialViewModel
-import com.dimension.maskbook.wallet.viewmodel.persona.social.SocialViewModel
 import com.dimension.maskbook.wallet.viewmodel.persona.social.TwitterConnectSocialViewModel
 import com.dimension.maskbook.wallet.viewmodel.persona.social.TwitterSocialViewModel
 import com.dimension.maskbook.wallet.viewmodel.recovery.IdentityViewModel
@@ -127,9 +125,8 @@ val walletModules = module {
     viewModel { (uri: Uri) -> RecoveryLocalViewModel(get(), uri, get<Context>().contentResolver) }
     viewModel { IdentityViewModel(get()) }
     viewModel { PrivateKeyViewModel(get()) }
-    viewModel { CreateIdentityViewModel(get()) }
+    viewModel { (personaName: String) -> CreateIdentityViewModel(personaName, get()) }
     viewModel { PersonaViewModel(get()) }
-    viewModel { SocialViewModel(get()) }
     viewModel { TwitterSocialViewModel(get()) }
     viewModel { FacebookSocialViewModel(get()) }
     viewModel { WelcomeViewModel(get()) }
@@ -138,7 +135,6 @@ val walletModules = module {
     viewModel { DisconnectSocialViewModel(get()) }
     viewModel { SwitchPersonaViewModel(get()) }
     viewModel { (personaId: String) -> RenamePersonaViewModel(get(), personaId) }
-    viewModel { PersonaSocialViewModel(get()) }
     viewModel { ExportPrivateKeyViewModel(get()) }
     viewModel { PostViewModel(get(), get()) }
     viewModel { ContactsViewModel(get(), get()) }

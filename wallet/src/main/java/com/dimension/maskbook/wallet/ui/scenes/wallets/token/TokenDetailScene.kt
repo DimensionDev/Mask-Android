@@ -22,9 +22,16 @@ import coil.compose.rememberImagePainter
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ext.humanizeDollar
 import com.dimension.maskbook.wallet.ext.humanizeToken
-import com.dimension.maskbook.wallet.repository.*
+import com.dimension.maskbook.wallet.repository.TokenData
+import com.dimension.maskbook.wallet.repository.TransactionData
+import com.dimension.maskbook.wallet.repository.TransactionStatus
+import com.dimension.maskbook.wallet.repository.TransactionType
+import com.dimension.maskbook.wallet.repository.WalletTokenData
 import com.dimension.maskbook.wallet.ui.MaskTheme
-import com.dimension.maskbook.wallet.ui.widget.*
+import com.dimension.maskbook.wallet.ui.widget.MaskBackButton
+import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
+import com.dimension.maskbook.wallet.ui.widget.MaskTopAppBar
+import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
 import org.joda.time.DateTime
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
@@ -115,7 +122,7 @@ fun TokenDetailScene(
                             Icon(painterResource(id = R.drawable.upload), contentDescription = null)
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
-                                text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_balance_btn_Send),
+                                text = stringResource(R.string.scene_wallet_balance_btn_Send),
                                 maxLines = 1
                             )
                         }
@@ -130,7 +137,7 @@ fun TokenDetailScene(
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
-                                text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_balance_btn_receive),
+                                text = stringResource(R.string.scene_wallet_balance_btn_receive),
                                 maxLines = 1
                             )
                         }
@@ -160,7 +167,7 @@ fun TransactionHistoryList(
                 contentDescription = null,
             )
             Spacer(modifier = Modifier.height(12.dp))
-            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_transaction_history_no_transaction))
+            Text(text = stringResource(R.string.scene_transaction_history_no_transaction))
         }
     } else {
         val items = remember(transactions) {
@@ -244,7 +251,7 @@ fun TransactionItem(
                             )
                         ) {
                             Text(
-                                text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_cancel),
+                                text = stringResource(R.string.common_controls_cancel),
                                 style = MaterialTheme.typography.button.copy(
                                     fontSize = 10.sp,
                                     color = MaterialTheme.colors.primary
@@ -310,7 +317,6 @@ fun TransactionItem(
     )
 }
 
-// TODO into app json
 @Composable
 private fun TransactionData.title() = message.ifEmpty {
     when (type) {

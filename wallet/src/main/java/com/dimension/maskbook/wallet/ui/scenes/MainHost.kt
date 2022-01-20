@@ -4,10 +4,24 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.*
+import androidx.compose.material.ContentAlpha
+import androidx.compose.material.Icon
+import androidx.compose.material.LocalContentAlpha
+import androidx.compose.material.LocalContentColor
+import androidx.compose.material.LocalTextStyle
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
@@ -21,9 +35,12 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.repository.AppKey
+import com.dimension.maskbook.wallet.repository.Network
+import com.dimension.maskbook.wallet.repository.PersonaData
+import com.dimension.maskbook.wallet.repository.SocialData
 import com.dimension.maskbook.wallet.ui.MaskTheme
 import com.dimension.maskbook.wallet.ui.scenes.app.LabsScene
-import com.dimension.maskbook.wallet.ui.scenes.persona.PersonaScreen
+import com.dimension.maskbook.wallet.ui.scenes.persona.PersonaScene
 import com.dimension.maskbook.wallet.ui.scenes.settings.SettingsScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.WalletIntroHost
 import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
@@ -48,6 +65,11 @@ private val items = HomeScreen.values()
 fun MainHost(
     initialTab: String,
     onBack: () -> Unit,
+    onPersonaCreateClick: () -> Unit,
+    onPersonaRecoveryClick: () -> Unit,
+    onPersonaNameClick: () -> Unit,
+    onAddSocialClick: (PersonaData, Network?) -> Unit,
+    onRemoveSocialClick: (PersonaData, SocialData) -> Unit,
     onLabsSettingClick: () -> Unit,
     onLabsItemClick: (AppKey) -> Unit,
 ) {
@@ -104,7 +126,14 @@ fun MainHost(
                         onSettingClick = onLabsSettingClick,
                         onItemClick = onLabsItemClick,
                     )
-                    HomeScreen.Personas -> PersonaScreen(onBack = onBack)
+                    HomeScreen.Personas -> PersonaScene(
+                        onBack = onBack,
+                        onPersonaCreateClick = onPersonaCreateClick,
+                        onPersonaRecoveryClick = onPersonaRecoveryClick,
+                        onPersonaNameClick = onPersonaNameClick,
+                        onAddSocialClick = onAddSocialClick,
+                        onRemoveSocialClick = onRemoveSocialClick,
+                    )
                     HomeScreen.Settings -> SettingsScene(onBack = onBack)
                     HomeScreen.Wallets -> WalletIntroHost(onBack = onBack)
                 }

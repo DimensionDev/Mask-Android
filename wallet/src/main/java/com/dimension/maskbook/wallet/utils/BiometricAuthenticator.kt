@@ -6,6 +6,7 @@ import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
 import androidx.biometric.BiometricPrompt
 import androidx.fragment.app.FragmentActivity
+import com.dimension.maskbook.wallet.R
 
 class BiometricAuthenticator {
     fun canAuthenticate(context: Context): Boolean {
@@ -16,7 +17,7 @@ class BiometricAuthenticator {
         context: Context,
         title: Int,
         subTitle: Int = -1,
-        negativeButtonText: Int = com.dimension.maskbook.wallet.R.string.common_controls_cancel,
+        negativeButtonText: Int = R.string.common_controls_cancel,
         onSuccess: () -> Unit,
         onFailed: (errString:String) -> Unit =  {},
         onCanceled: () -> Unit = {}

@@ -1,11 +1,30 @@
 package com.dimension.maskbook.wallet.ui.scenes.wallets.send
 
 import androidx.annotation.DrawableRes
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.*
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowRight
 import androidx.compose.runtime.Composable
@@ -13,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -25,7 +45,14 @@ import com.dimension.maskbook.wallet.repository.TokenData
 import com.dimension.maskbook.wallet.repository.UnlockType
 import com.dimension.maskbook.wallet.repository.WalletTokenData
 import com.dimension.maskbook.wallet.ui.MaskTheme
-import com.dimension.maskbook.wallet.ui.widget.*
+import com.dimension.maskbook.wallet.ui.widget.MaskBackButton
+import com.dimension.maskbook.wallet.ui.widget.MaskInputField
+import com.dimension.maskbook.wallet.ui.widget.MaskPasswordInputField
+import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
+import com.dimension.maskbook.wallet.ui.widget.MaskSingleLineTopAppBar
+import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
+import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
+import com.dimension.maskbook.wallet.ui.widget.SecondaryButton
 import java.math.BigDecimal
 
 @Composable
@@ -56,7 +83,7 @@ fun SendTokenScene(
                     navigationIcon = {
                         MaskBackButton(onBack = onBack)
                     },
-                    title = { Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_balance_btn_Send)) }
+                    title = { Text(text = stringResource(R.string.scene_wallet_balance_btn_Send)) }
                 )
             }
         ) {
@@ -66,7 +93,7 @@ fun SendTokenScene(
                     .verticalScroll(rememberScrollState())
                     .padding(ScaffoldPadding)
             ) {
-                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_sendTransaction_send_Label_To))
+                Text(text = stringResource(R.string.scene_sendTransaction_send_Label_To))
                 Spacer(modifier = Modifier.height(10.dp))
                 AddressContent(
                     name = addressData.name ?: addressData.ens ?: addressData.address,
@@ -189,7 +216,7 @@ private fun AmountContent(
     error: Boolean,
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
-        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_sendTransaction_send_label_Amount))
+        Text(text = stringResource(R.string.scene_sendTransaction_send_label_Amount))
         Spacer(modifier = Modifier.height(8.dp))
         MaskInputField(
             modifier = Modifier.fillMaxWidth(),
@@ -204,7 +231,7 @@ private fun AmountContent(
                             shape = MaterialTheme.shapes.small
                         )
                     ) {
-                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_sendTransaction_send_btn_max), color = MaterialTheme.colors.primary)
+                        Text(text = stringResource(R.string.scene_sendTransaction_send_btn_max), color = MaterialTheme.colors.primary)
                     }
                     Spacer(modifier = Modifier.padding(end = 12.dp))
                 }
@@ -213,7 +240,7 @@ private fun AmountContent(
         )
         if (error) {
             Spacer(modifier = Modifier.padding(end = 8.dp))
-            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_sendTransaction_send_amount_error), color = MaterialTheme.colors.error)
+            Text(text = stringResource(R.string.scene_sendTransaction_send_amount_error), color = MaterialTheme.colors.error)
         }
     }
 }
@@ -224,7 +251,7 @@ private fun PaymentPasswordContent(
     onValueChanged: (String) -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
-        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_setting_general_setup_payment_password))
+        Text(text = stringResource(R.string.scene_setting_general_setup_payment_password))
         Spacer(modifier = Modifier.height(8.dp))
         MaskPasswordInputField(
             value = pwd,
@@ -280,7 +307,7 @@ private fun ColumnScope.SendButton(
                     painter = painterResource(id = R.drawable.ic_faceid_small),
                     contentDescription = null
                 )
-                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_balance_btn_Send), modifier = Modifier.padding(start = 8.dp))
+                Text(text = stringResource(R.string.scene_wallet_balance_btn_Send), modifier = Modifier.padding(start = 8.dp))
             }
         }
         UnlockType.PASSWORD -> {
@@ -293,7 +320,7 @@ private fun ColumnScope.SendButton(
                     painter = painterResource(id = R.drawable.ic_upload_small),
                     contentDescription = null
                 )
-                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_balance_btn_Send), modifier = Modifier.padding(start = 8.dp))
+                Text(text = stringResource(R.string.scene_wallet_balance_btn_Send), modifier = Modifier.padding(start = 8.dp))
             }
         }
     }

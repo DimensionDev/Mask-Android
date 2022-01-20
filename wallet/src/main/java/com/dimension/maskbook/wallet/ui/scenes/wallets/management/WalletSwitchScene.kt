@@ -3,14 +3,33 @@ package com.dimension.maskbook.wallet.ui.scenes.wallets.management
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.material.Card
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
+import androidx.compose.material.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -20,7 +39,14 @@ import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.repository.ChainType
 import com.dimension.maskbook.wallet.repository.WalletData
-import com.dimension.maskbook.wallet.ui.widget.*
+import com.dimension.maskbook.wallet.ui.widget.CircleCheckbox
+import com.dimension.maskbook.wallet.ui.widget.MaskListCardItem
+import com.dimension.maskbook.wallet.ui.widget.MaskListItem
+import com.dimension.maskbook.wallet.ui.widget.MaskModal
+import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
+import com.dimension.maskbook.wallet.ui.widget.MaskSingleLineTopAppBar
+import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
+import com.dimension.maskbook.wallet.ui.widget.WalletAvatar
 
 val ChainType.onDrawableRes: Int
     get() = when (this) {
@@ -82,9 +108,9 @@ fun WalletSwitchScene(
                                 },
                             ) {
                                 if (editMode) {
-                                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_done))
+                                    Text(text = stringResource(R.string.common_controls_done))
                                 } else {
-                                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_sendTransaction_sendConfirmPop_edit))
+                                    Text(text = stringResource(R.string.scene_sendTransaction_sendConfirmPop_edit))
                                 }
                             }
                         }
@@ -135,7 +161,7 @@ fun WalletSwitchScene(
                 ) {
                     MaskListItem(
                         text = {
-                            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_list_wallets_items_add))
+                            Text(text = stringResource(R.string.scene_wallet_list_wallets_items_add))
                         },
                         trailing = {
                             IconButton(
@@ -172,7 +198,7 @@ fun WalletSwitchScene(
                                 if (it.imported) {
                                     Spacer(modifier = Modifier.width(8.dp))
                                     Text(
-                                        text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_list_wallets_list_import),
+                                        text = stringResource(R.string.scene_wallet_list_wallets_list_import),
                                         modifier = Modifier
                                             .background(
                                                 color = Color(0XFFEBF0F8),
@@ -228,7 +254,7 @@ fun WalletSwitchScene(
                             enabled = !editMode,
                         ),
                         text = {
-                            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_connect_wallet_connect))
+                            Text(text = stringResource(R.string.scene_wallet_connect_wallet_connect))
                         },
                         icon = {
                             Image(
@@ -277,7 +303,7 @@ fun WalletSwitchAddModal(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallets_list_add_wallets_items_add),
+                        text = stringResource(R.string.scene_wallets_list_add_wallets_items_add),
                         style = MaterialTheme.typography.subtitle1,
                         modifier = Modifier.weight(1f)
                     )
@@ -300,7 +326,7 @@ fun WalletSwitchAddModal(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_import_wallet),
+                        text = stringResource(R.string.common_controls_import_wallet),
                         style = MaterialTheme.typography.subtitle1,
                         modifier = Modifier.weight(1f)
                     )
@@ -338,7 +364,7 @@ fun WalletSwitchModal(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_edit_item_rename),
+                        text = stringResource(R.string.scene_wallet_edit_item_rename),
                         style = MaterialTheme.typography.subtitle1,
                         modifier = Modifier.weight(1f)
                     )
@@ -364,7 +390,7 @@ fun WalletSwitchModal(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_edit_item_delete),
+                            text = stringResource(R.string.scene_wallet_edit_item_delete),
                             style = MaterialTheme.typography.subtitle1,
                             color = Color.Red,
                         )
@@ -387,7 +413,7 @@ fun WalletSwitchModal(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_connect_disconnect),
+                            text = stringResource(R.string.scene_wallet_connect_disconnect),
                             style = MaterialTheme.typography.subtitle1,
                             color = Color.Red,
                         )
