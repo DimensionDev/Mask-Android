@@ -27,6 +27,8 @@ data class WalletData(
     val address: String,
     val imported: Boolean,
     val fromWalletConnect: Boolean,
+    val walletConnectChainType: ChainType? = ChainType.eth,
+    val walletConnectDeepLink: String? = null,
     val tokens: List<WalletTokenData>,
     val balance: Map<DbWalletBalanceType, BigDecimal>,
 ) {
@@ -42,6 +44,8 @@ data class WalletData(
                     WalletTokenData.fromDb(it)
                 },
                 balance = balance.associate { it.type to it.value },
+                walletConnectChainType = wallet.walletConnectChainType,
+                walletConnectDeepLink = wallet.walletConnectDeepLink
             )
         }
     }
@@ -154,7 +158,7 @@ enum class UnlockType {
     BIOMETRIC
 }
 
-
+@Serializable
 enum class ChainType(
     val chainId: Long,
     val endpoint: String,
@@ -236,6 +240,7 @@ interface IWalletRepository {
     val wallets: Flow<List<WalletData>>
     val currentWallet: Flow<WalletData?>
     fun setCurrentWallet(walletData: WalletData?)
+    fun setCurrentWallet(walletId: String)
     fun generateNewMnemonic(): List<String>
     suspend fun createWallet(mnemonic: List<String>, name: String, platformType: CoinPlatformType)
     suspend fun importWallet(mnemonicCode: List<String>, name: String, path: List<String>, platformType: CoinPlatformType)

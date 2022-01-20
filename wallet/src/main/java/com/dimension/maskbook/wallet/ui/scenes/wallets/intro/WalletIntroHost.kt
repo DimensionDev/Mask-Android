@@ -36,7 +36,9 @@ fun WalletIntroHost(
             onImport = {
                 rootNavController.navigate("WalletIntroHostLegal/${CreateType.IMPORT}")
             },
-            onConnect = {/*TODO Logic: connect wallet*/ }
+            onConnect = {
+                rootNavController.navigate("SwitchWalletAddWalletConnect")
+            }
         )
     } else {
         dWebData?.let { dWebData ->

@@ -10,6 +10,8 @@ import com.dimension.maskbook.wallet.platform.IPlatformSwitcher
 import com.dimension.maskbook.wallet.repository.*
 import com.dimension.maskbook.wallet.servicesModule
 import com.dimension.maskbook.wallet.walletModules
+import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager
+import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManagerV1
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.filter
@@ -40,6 +42,7 @@ fun initRepository() {
     KoinPlatformTools.defaultContext().get().get<IAppRepository>().init()
     KoinPlatformTools.defaultContext().get().get<IWalletRepository>().init()
     KoinPlatformTools.defaultContext().get().get<ISettingsRepository>().init()
+    KoinPlatformTools.defaultContext().get().get<IWalletConnectRepository>().init()
 }
 
 fun initEvent() {
@@ -84,7 +87,23 @@ fun initEvent() {
     }
 }
 
+fun initWalletConnect() {
+    val walletRepository = KoinPlatformTools.defaultContext().get().get<IWalletRepository>()
+    KoinPlatformTools.defaultContext().get().get<WalletConnectClientManager>()
+        .initSessions { address ->
+            CoroutineScope(Dispatchers.IO).launch {
+                walletRepository.findWalletByAddress(address)?.let { wallet ->
+                    walletRepository.deleteWallet(wallet.id)
+                }
+            }
+        }
+}
+
 val repositoryModules = module {
+    single<WalletConnectClientManager> {
+        // V2 SDK support only provides the Responder implementation at the Beta stage
+        WalletConnectClientManagerV1(get())
+    }
     single { PersonaRepository(get<Context>().personaDataStore, get(), get()) } binds arrayOf(
         IPersonaRepository::class,
         IContactsRepository::class
@@ -94,12 +113,13 @@ val repositoryModules = module {
     single<IAppRepository> { AppRepository() }
 //    single<IWalletRepository> { FakeWalletRepository() }
     single<ISettingsRepository> { SettingsRepository(get<Context>().settingsDataStore) }
-    single<IWalletRepository> { WalletRepository(get<Context>().walletDataStore, get(), get()) }
+    single<IWalletRepository> { WalletRepository(get<Context>().walletDataStore, get(), get(), get()) }
     single<ICollectibleRepository> { CollectibleRepository(get(), get()) }
     single<ITransactionRepository> { TransactionRepository(get(), get()) }
     single<ITokenRepository> { TokenRepository(get()) }
     single<ISendHistoryRepository> { SendHistoryRepository(get()) }
     single<IWalletContactRepository> { WalletContactRepository(get()) }
+    single<IWalletConnectRepository> { WalletConnectRepository(get(), get()) }
 }
 
 val platformModules = module {

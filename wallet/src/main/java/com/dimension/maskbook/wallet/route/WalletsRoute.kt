@@ -34,23 +34,12 @@ import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.LegalScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.password.BiometricsEnableScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.password.SetUpPaymentPassword
 import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.password.TouchIdEnableScene
-import com.dimension.maskbook.wallet.ui.scenes.wallets.management.BackupWalletScene
-import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletConnectModal
-import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletDeleteDialog
-import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletManagementModal
-import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletRenameModal
-import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletSwitchAddModal
-import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletSwitchModal
-import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletSwitchScene
-import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletTransactionHistoryScene
+import com.dimension.maskbook.wallet.ui.scenes.wallets.management.*
 import com.dimension.maskbook.wallet.ui.scenes.wallets.send.SendTokenHost
 import com.dimension.maskbook.wallet.ui.scenes.wallets.token.TokenDetailScene
 import com.dimension.maskbook.wallet.ui.widget.MaskDialog
 import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
-import com.dimension.maskbook.wallet.viewmodel.wallets.BiometricViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.TokenDetailViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.UnlockWalletViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.WalletManagementModalViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.*
 import com.dimension.maskbook.wallet.viewmodel.wallets.collectible.CollectibleDetailViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletBackupViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletDeleteViewModel
@@ -152,6 +141,27 @@ fun NavGraphBuilder.walletsRoute(
     bottomSheet("SwitchWalletAddWalletConnect") {
         WalletConnectModal()
     }
+
+    dialog("WalletNetworkSwitchWarningDialog") {
+        val viewModel = getViewModel<WalletSwitchViewModel>()
+        val currentNetwork by viewModel.network.observeAsState(initial = ChainType.eth)
+        val wallet by viewModel.currentWallet.observeAsState(initial = null)
+        wallet?.let {
+            if (!it.fromWalletConnect || it.walletConnectChainType == currentNetwork || it.walletConnectChainType == null) navController.popBackStack()
+            WalletNetworkSwitchWarningDialog(
+                currentNetwork = currentNetwork.name,
+                connectingNetwork = it.walletConnectChainType?.name ?: "",
+                onCancel = { navController.popBackStack() },
+                onSwitch = {
+                    it.walletConnectChainType?.let { type ->
+                        viewModel.setChainType(type)
+                    }
+                    navController.popBackStack()
+                }
+            )
+        }
+    }
+
     bottomSheet("SwitchWallet") {
         val viewModel = getViewModel<WalletSwitchViewModel>()
         val wallet by viewModel.currentWallet.observeAsState(initial = null)
@@ -188,6 +198,7 @@ fun NavGraphBuilder.walletsRoute(
         it.arguments?.getString("id")?.let { id ->
             val repository = get<IWalletRepository>()
             val wallets by repository.wallets.observeAsState(initial = emptyList())
+            val viewModel = getViewModel<WalletConnectManagementViewModel>()
             wallets.firstOrNull { it.id == id }?.let { wallet ->
                 WalletSwitchModal(
                     walletData = wallet,
@@ -197,6 +208,8 @@ fun NavGraphBuilder.walletsRoute(
                         navController.navigate("WalletManagementDeleteDialog/${wallet.id}")
                     },
                     onDisconnect = {
+                        viewModel.disconnect(walletData = wallet)
+                        navController.popBackStack()
                     }
                 )
             }
@@ -205,6 +218,7 @@ fun NavGraphBuilder.walletsRoute(
     bottomSheet("WalletBalancesMenu") {
         val viewModel = getViewModel<WalletManagementModalViewModel>()
         val currentWallet by viewModel.currentWallet.observeAsState(initial = null)
+        val wcViewModel = getViewModel<WalletConnectManagementViewModel>()
         currentWallet?.let { wallet ->
             WalletManagementModal(
                 walletData = wallet,
@@ -216,7 +230,8 @@ fun NavGraphBuilder.walletsRoute(
                     navController.navigate("WalletManagementDeleteDialog/${wallet.id}")
                 },
                 onDisconnect = {
-
+                    wcViewModel.disconnect(walletData = wallet)
+                    navController.popBackStack()
                 }
             )
         }
@@ -498,12 +513,14 @@ fun NavGraphBuilder.walletsRoute(
             CreateWalletHost(
                 wallet = wallet,
                 onDone = {
-                    navController.navigate(Uri.parse("maskwallet://Home/Wallets"), navOptions = navOptions {
-                        launchSingleTop = true
-                        popUpTo("Home") {
-                            inclusive = false
-                        }
-                    })
+                    navController.navigate(
+                        Uri.parse("maskwallet://Home/Wallets"),
+                        navOptions = navOptions {
+                            launchSingleTop = true
+                            popUpTo("Home") {
+                                inclusive = false
+                            }
+                        })
                 },
                 onBack = { navController.popBackStack() }
             )
@@ -520,12 +537,14 @@ fun NavGraphBuilder.walletsRoute(
             ImportWalletHost(
                 wallet = wallet,
                 onDone = {
-                    navController.navigate(Uri.parse("maskwallet://Home/Wallets"), navOptions = navOptions {
-                        launchSingleTop = true
-                        popUpTo("Home") {
-                            inclusive = false
-                        }
-                    })
+                    navController.navigate(
+                        Uri.parse("maskwallet://Home/Wallets"),
+                        navOptions = navOptions {
+                            launchSingleTop = true
+                            popUpTo("Home") {
+                                inclusive = false
+                            }
+                        })
                 },
                 onBack = { navController.popBackStack() }
             )
