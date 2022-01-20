@@ -53,22 +53,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.items
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.db.model.DbWalletBalanceType
 import com.dimension.maskbook.wallet.ext.humanizeDollar
 import com.dimension.maskbook.wallet.ext.humanizeToken
-import com.dimension.maskbook.wallet.repository.ChainType
-import com.dimension.maskbook.wallet.repository.TokenData
-import com.dimension.maskbook.wallet.repository.WalletData
-import com.dimension.maskbook.wallet.repository.dbank
+import com.dimension.maskbook.wallet.repository.*
 import com.dimension.maskbook.wallet.ui.MaskTheme
-import com.dimension.maskbook.wallet.ui.widget.MaskCard
-import com.dimension.maskbook.wallet.ui.widget.MaskListCardItem
-import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
-import com.dimension.maskbook.wallet.ui.widget.MaskSingleLineTopAppBar
-import com.dimension.maskbook.wallet.ui.widget.TokenAddressText
+import com.dimension.maskbook.wallet.ui.widget.*
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.calculateCurrentOffsetForPage
@@ -95,9 +90,11 @@ fun WalletBalancesScene(
     sceneType: BalancesSceneType,
     onSceneTypeChanged: (BalancesSceneType) -> Unit,
     chainType: ChainType,
+    onCollectibleDetailClicked: (WalletCollectibleItemData) -> Unit,
     onBack: () -> Unit,
     displayAmountType: DisplayAmountType,
     onDisplayAmountTypeChanged: (DisplayAmountType) -> Unit,
+    collectible: LazyPagingItems<WalletCollectibleData>,
 ) {
     MaskTheme {
         MaskScaffold(
@@ -272,40 +269,56 @@ fun WalletBalancesScene(
                         }
                     }
                 }
-                items(
-                    if (displayAmountType.chainType == null) {
-                        currentWallet.tokens
-                    } else {
-                        currentWallet.tokens.filter {
-                            it.tokenData.chainId == displayAmountType.chainType?.dbank?.name
-                        }
-                    }.sortedByDescending {
-                        it.tokenData.price * it.count
-                    }
-                ) {
-                    val tokenData = it.tokenData
-                    MaskListCardItem(
-                        modifier = Modifier
-                            .clickable {
-                                onTokenDetailClicked.invoke(tokenData)
-                            },
-                        text = {
-                            Text(text = tokenData.name)
-                        },
-                        secondaryText = {
-                            Text(text = it.count.humanizeToken() + " ${tokenData.symbol}")
-                        },
-                        trailing = {
-                            Text(text = (it.count * tokenData.price).humanizeDollar())
-                        },
-                        icon = {
-                            Image(
-                                painter = rememberImagePainter(data = tokenData.logoURI),
-                                contentDescription = null,
-                                modifier = Modifier.size(38.dp)
+                when (sceneType) {
+                    BalancesSceneType.Token -> {
+                        items(
+                            if (displayAmountType.chainType == null) {
+                                currentWallet.tokens
+                            } else {
+                                currentWallet.tokens.filter {
+                                    it.tokenData.chainId == displayAmountType.chainType?.dbank?.name
+                                }
+                            }.sortedByDescending {
+                                it.tokenData.price * it.count
+                            }
+                        ) {
+                            val tokenData = it.tokenData
+                            MaskListCardItem(
+                                modifier = Modifier
+                                    .clickable {
+                                        onTokenDetailClicked.invoke(tokenData)
+                                    },
+                                text = {
+                                    Text(text = tokenData.name)
+                                },
+                                secondaryText = {
+                                    Text(text = it.count.humanizeToken() + " ${tokenData.symbol}")
+                                },
+                                trailing = {
+                                    Text(text = (it.count * tokenData.price).humanizeDollar())
+                                },
+                                icon = {
+                                    Image(
+                                        painter = rememberImagePainter(data = tokenData.logoURI),
+                                        contentDescription = null,
+                                        modifier = Modifier.size(38.dp)
+                                    )
+                                }
                             )
                         }
-                    )
+                    }
+                    BalancesSceneType.Collectible -> {
+                        items(collectible) {
+                            if (it != null) {
+                                CollectibleCard(
+                                    data = it,
+                                    onItemClicked = {
+                                        onCollectibleDetailClicked.invoke(it)
+                                    },
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }

@@ -48,7 +48,7 @@ class ImportWalletMnemonicViewModel(
                     fromWalletConnect = false,
                     imported = false,
                     tokens = emptyList(),
-                    balance = emptyMap()
+                    balance = emptyMap(),
                 )
             )
         )
