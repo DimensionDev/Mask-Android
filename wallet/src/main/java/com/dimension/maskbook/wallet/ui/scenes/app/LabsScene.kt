@@ -84,7 +84,9 @@ private fun AppItem(
         enabled = item.enabled,
     ) {
         MaskListItem(
-            modifier = Modifier.height(86.dp).alpha(LocalContentAlpha.current),
+            modifier = Modifier
+                .height(86.dp)
+                .alpha(if (item.enabled) 1f else 0.5f),
             icon = {
                 Image(
                     painter = painterResource(id = item.onIcon),
