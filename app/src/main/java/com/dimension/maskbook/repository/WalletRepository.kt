@@ -157,7 +157,8 @@ class WalletRepository(
                 }
 
             val tokens = token.map {
-                val chainId = kotlin.runCatching { it.chain?.let { it1 -> ChainID.valueOf(it1) } }.getOrNull()
+                val chainId =
+                    kotlin.runCatching { it.chain?.let { it1 -> ChainID.valueOf(it1) } }.getOrNull()
                 DbToken(
                     id = it.id ?: "",
                     address = it.id ?: "",
@@ -570,7 +571,8 @@ class WalletRepository(
         }
     }
 
-    override fun validatePrivateKey(privateKey: String) = WalletKey.validate(privateKey = privateKey)
+    override fun validatePrivateKey(privateKey: String) =
+        WalletKey.validate(privateKey = privateKey)
 
     override fun validateMnemonic(mnemonic: String) = WalletKey.validate(mnemonic = mnemonic)
 
@@ -589,13 +591,11 @@ class WalletRepository(
     ) {
         scope.launch {
             val realAddress = if (EnsResolver.isValidEnsName(address)) {
-                runCatching { ChainType.valueOf(tokenData.chainId) }.getOrNull()?.let {
-                    val web3 = Web3j.build(HttpService(it.endpoint, okHttpClient))
-                    val ensResolver = EnsResolver(web3)
-                    ensResolver.resolve(address).also {
-                        web3.shutdown()
-                    }
-                } ?: address
+                val web3 = Web3j.build(HttpService(tokenData.chainType.endpoint, okHttpClient))
+                val ensResolver = EnsResolver(web3)
+                ensResolver.resolve(address).also {
+                    web3.shutdown()
+                }
             } else {
                 address
             }
