@@ -6,6 +6,9 @@ import androidx.room.TypeConverter
 import androidx.room.TypeConverters
 import com.dimension.maskbook.wallet.db.dao.*
 import com.dimension.maskbook.wallet.db.model.*
+import com.dimension.maskbook.wallet.ext.JSON
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import java.math.BigDecimal
 
 @Database(
@@ -18,10 +21,11 @@ import java.math.BigDecimal
         DbWalletContact::class,
         DbStoredKey::class,
         DbWalletBalance::class,
+        DbWCWallet::class
     ],
-    version = 4,
+    version = 6,
 )
-@TypeConverters(BigDecimalTypeConverter::class)
+@TypeConverters(BigDecimalTypeConverter::class, StringListConverter::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun tokenDao(): TokenDao
     abstract fun transactionDao(): TransactionDao
@@ -31,6 +35,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun walletContactDao(): WalletContactDao
     abstract fun storedKeyDao(): StoredKeyDao
     abstract fun walletBalanceDao(): WalletBalanceDao
+    abstract fun wcWalletDao(): WCWalletDao
 }
 
 class BigDecimalTypeConverter {
@@ -43,5 +48,21 @@ class BigDecimalTypeConverter {
     fun stringToBigDecimal(input: String?): BigDecimal {
         if (input.isNullOrBlank()) return BigDecimal.valueOf(0.0)
         return input.toBigDecimalOrNull() ?: BigDecimal.valueOf(0.0)
+    }
+}
+
+internal class StringListConverter {
+    @TypeConverter
+    fun fromString(value: String?): List<String> {
+        return value?.let {
+            JSON.decodeFromString<List<String>>(it)
+        } ?: emptyList()
+    }
+
+    @TypeConverter
+    fun fromList(list: List<String>?): String {
+        return list?.let {
+            JSON.encodeToString(it)
+        } ?: "[]"
     }
 }
