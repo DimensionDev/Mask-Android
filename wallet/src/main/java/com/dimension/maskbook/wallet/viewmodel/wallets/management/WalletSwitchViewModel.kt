@@ -6,6 +6,7 @@ import com.dimension.maskbook.wallet.ext.asStateIn
 import com.dimension.maskbook.wallet.repository.ChainType
 import com.dimension.maskbook.wallet.repository.IWalletRepository
 import com.dimension.maskbook.wallet.repository.WalletData
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 
@@ -24,8 +25,12 @@ class WalletSwitchViewModel(
         walletRepository.currentWallet.asStateIn(viewModelScope, null).mapNotNull { it }
     }
 
-    val wallets by lazy {
+    private val _wallets by lazy {
         walletRepository.wallets.asStateIn(viewModelScope, emptyList())
+    }
+
+    val wallets = combine(network, _wallets) { n, w ->
+        w.filter { !it.fromWalletConnect || it.walletConnectChainType == n }
     }
 
     fun setCurrentWallet(data: WalletData) {

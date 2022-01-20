@@ -121,7 +121,7 @@ val walletModules = module {
     single {
         BiometricAuthenticator()
     }
-
+    
     viewModel { (uri: Uri) -> RecoveryLocalViewModel(get(), uri, get<Context>().contentResolver) }
     viewModel { IdentityViewModel(get()) }
     viewModel { PrivateKeyViewModel(get()) }
@@ -229,6 +229,8 @@ val walletModules = module {
         SendConfirmViewModel(tokenData, toAddress, get(), get())
     }
     viewModel { BiometricViewModel(get(), get()) }
+    viewModel { WalletConnectManagementViewModel(get(), get()) }
+    viewModel { (onResult:(success:Boolean, needToSwitchNetwork: Boolean)->Unit)-> WalletConnectViewModel(get(), get(), get(), onResult) }
     viewModel { UnlockWalletViewModel(get(), get()) }
     viewModel { BackUpPasswordViewModel(get(), get()) }
 }

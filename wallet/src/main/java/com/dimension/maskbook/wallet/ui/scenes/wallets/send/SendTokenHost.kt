@@ -1,5 +1,7 @@
 package com.dimension.maskbook.wallet.ui.scenes.wallets.send
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -41,6 +43,7 @@ fun SendTokenHost(
     onDone: () -> Unit,
 ) {
     val rootNavController = LocalRootNavController.current
+    val context  = LocalContext.current
     val navController = rememberNavController()
     val bottomSheetNavigator = rememberBottomSheetNavigator()
     navController.navigatorProvider += bottomSheetNavigator
@@ -221,6 +224,7 @@ fun SendTokenHost(
                         val viewModel = getViewModel<SendConfirmViewModel> {
                             parametersOf(tokenData, address)
                         }
+                        val deeplink by viewModel.deepLink.observeAsState(initial = "")
                         val addressData by viewModel.addressData.observeAsState(initial = null)
                         addressData?.let { addressData ->
                             SendConfirmSheet(
@@ -232,6 +236,16 @@ fun SendTokenHost(
                                 onConfirm = {
                                     viewModel.send(amount, gasLimit, gasFee, maxFee, maxPriorityFee)
                                     onDone.invoke()
+                                    // open Wallet App if it is connected
+                                    if (deeplink.isNotEmpty()) {
+                                        try {
+                                            context.startActivity(Intent().apply {
+                                                data = Uri.parse(deeplink)
+                                            })
+                                        } catch (e: Throwable) {
+                                            //ignore
+                                        }
+                                    }
                                 },
                                 onCancel = { navController.popBackStack() },
                                 onEditGasFee = { navController.navigate("EditGasFee") },
