@@ -202,18 +202,16 @@ val walletModules = module {
     viewModel { SearchAddressViewModel(get(), get(), get()) }
     viewModel { (id: String) -> TokenDetailViewModel(id, get(), get(), get()) }
     viewModel { (initialGasLimit: Double) -> GasFeeViewModel(initialGasLimit = initialGasLimit, get(), get()) }
-    viewModel { (tokenData: TokenData, toAddress: String) ->
+    viewModel { (toAddress: String) ->
         SendTokenViewModel(
-            tokenData = tokenData,
             toAddress = toAddress,
-            get(),
             get(),
             get(),
         )
     }
     viewModel { AddContactViewModel(get()) }
-    viewModel { (tokenData: TokenData, toAddress: String) ->
-        SendConfirmViewModel(tokenData, toAddress, get(), get())
+    viewModel { (toAddress: String) ->
+        SendConfirmViewModel(toAddress, get(), get())
     }
     viewModel { BiometricViewModel(get(), get()) }
     viewModel { WalletConnectManagementViewModel(get(), get()) }
@@ -221,6 +219,7 @@ val walletModules = module {
     viewModel { UnlockWalletViewModel(get(), get()) }
     viewModel { BackUpPasswordViewModel(get(), get()) }
     viewModel { (id: String) -> CollectibleDetailViewModel(id, get()) }
+    viewModel { (tokenData: TokenData) -> SendTokenDataViewModel(tokenData, get()) }
 }
 
 val servicesModule = module {
