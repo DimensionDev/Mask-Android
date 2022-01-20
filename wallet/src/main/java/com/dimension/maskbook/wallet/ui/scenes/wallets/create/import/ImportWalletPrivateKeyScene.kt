@@ -1,16 +1,33 @@
 package com.dimension.maskbook.wallet.ui.scenes.wallets.create.import
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.repository.WalletCreateOrImportResult
 import com.dimension.maskbook.wallet.ui.MaskTheme
 import com.dimension.maskbook.wallet.ui.scenes.wallets.common.Dialog
-import com.dimension.maskbook.wallet.ui.widget.*
+import com.dimension.maskbook.wallet.ui.widget.MaskBackButton
+import com.dimension.maskbook.wallet.ui.widget.MaskInputField
+import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
+import com.dimension.maskbook.wallet.ui.widget.MaskSingleLineTopAppBar
+import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
+import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.wallet.viewmodel.wallets.import.ImportWalletPrivateKeyViewModel
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
@@ -48,7 +65,7 @@ fun ImportWalletPrivateKeyScene(
                         .fillMaxSize()
                         .padding(ScaffoldPadding),
                 ) {
-                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_private_key_title), style = MaterialTheme.typography.h4)
+                    Text(text = stringResource(R.string.scene_wallet_private_key_title), style = MaterialTheme.typography.h4)
                     Spacer(modifier = Modifier.height(24.dp))
                     MaskInputField(
                         value = privateKey,
@@ -57,7 +74,7 @@ fun ImportWalletPrivateKeyScene(
                             .fillMaxWidth()
                             .height(124.dp),
                         placeholder = {
-                            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_private_key_placeholder))
+                            Text(text = stringResource(R.string.scene_wallet_private_key_placeholder))
                         }
                     )
                     Spacer(modifier = Modifier.weight(1f))
@@ -76,7 +93,7 @@ fun ImportWalletPrivateKeyScene(
                         },
                         enabled = canConfirm
                     ) {
-                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_confirm))
+                        Text(text = stringResource(R.string.common_controls_confirm))
                     }
                 }
                 if (showDialog) {

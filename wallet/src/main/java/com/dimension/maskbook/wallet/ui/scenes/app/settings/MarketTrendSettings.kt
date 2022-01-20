@@ -2,7 +2,12 @@ package com.dimension.maskbook.wallet.ui.scenes.app.settings
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
@@ -11,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
@@ -40,9 +46,9 @@ private val tradeSources = mapOf(
 private val NetworkType.text: String
     @Composable
     get() = when (this) {
-        NetworkType.Ethereum -> androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_app_swap_network_source_eth)
-        NetworkType.Binance -> androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_app_swap_network_source_bsc)
-        NetworkType.Polygon -> androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.chain_name_polygon)
+        NetworkType.Ethereum -> stringResource(R.string.scene_app_swap_network_source_eth)
+        NetworkType.Binance -> stringResource(R.string.scene_app_swap_network_source_bsc)
+        NetworkType.Polygon -> stringResource(R.string.chain_name_polygon)
         NetworkType.Arbitrum -> TODO()
     }
 

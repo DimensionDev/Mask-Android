@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ui.LocalRootNavController
@@ -27,21 +28,21 @@ fun MultiChainWalletDialog() {
     MaskDialog(
         onDismissRequest = { rootNavController.popBackStack() },
         title = {
-            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_create_wallet_multichain_wallet_title))
+            Text(text = stringResource(R.string.scene_create_wallet_multichain_wallet_title))
         },
         text = {
             Column {
-                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_create_wallet_multichain_wallet_description))
+                Text(text = stringResource(R.string.scene_create_wallet_multichain_wallet_description))
                 Spacer(modifier = Modifier.height(20.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    InfoItem(icon = R.drawable.ic_chain_eth, name = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.chain_short_name_eth))
-                    InfoItem(icon = R.drawable.ic_chain_bsc, name = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.chain_short_name_bsc))
-                    InfoItem(icon = R.drawable.ic_chain_arbitrum, name = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.chain_name_arbitrum))
-                    InfoItem(icon = R.drawable.ic_chain_optimism, name = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.chain_name_optimism))
+                    InfoItem(icon = R.drawable.ic_chain_eth, name = stringResource(R.string.chain_short_name_eth))
+                    InfoItem(icon = R.drawable.ic_chain_bsc, name = stringResource(R.string.chain_short_name_bsc))
+                    InfoItem(icon = R.drawable.ic_chain_arbitrum, name = stringResource(R.string.chain_name_arbitrum))
+                    InfoItem(icon = R.drawable.ic_chain_optimism, name = stringResource(R.string.chain_name_optimism))
                 }
                 Spacer(modifier = Modifier.height(12.dp))
                 Row(
@@ -61,7 +62,7 @@ fun MultiChainWalletDialog() {
                 modifier = Modifier.fillMaxWidth(),
                 onClick = { rootNavController.popBackStack() },
             ) {
-                Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_ok))
+                Text(text = stringResource(R.string.common_controls_ok))
             }
         }
     )

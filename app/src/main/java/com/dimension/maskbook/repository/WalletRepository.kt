@@ -16,6 +16,7 @@ import com.dimension.maskbook.wallet.ext.gwei
 import com.dimension.maskbook.wallet.repository.*
 import com.dimension.maskbook.wallet.services.WalletServices
 import com.dimension.maskbook.wallet.services.okHttpClient
+import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager
 import com.dimension.maskwalletcore.WalletKey
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
@@ -39,6 +40,7 @@ class WalletRepository(
     private val dataStore: DataStore<Preferences>,
     private val database: AppDatabase,
     private val services: WalletServices,
+    private val walletConnectManager: WalletConnectClientManager
 ) : IWalletRepository {
     private val tokenScope = CoroutineScope(Dispatchers.IO)
     private val scope = CoroutineScope(Dispatchers.IO)
@@ -181,11 +183,16 @@ class WalletRepository(
         }
 
     override fun setCurrentWallet(walletData: WalletData?) {
+        if (walletData?.id != null) {
+            setCurrentWallet(walletData.id)
+        }
+    }
+
+    override fun setCurrentWallet(walletId: String) {
         scope.launch {
-            val wallet = if (walletData != null) {
-                database.walletDao().getById(walletData.id)?.wallet
-            } else null
-            setCurrentWallet(dbWallet = wallet)
+            database.walletDao().getById(walletId)?.let {
+                setCurrentWallet(it.wallet)
+            }
         }
     }
 
@@ -477,6 +484,17 @@ class WalletRepository(
         scope.launch {
             try {
                 val hash = currentWallet.firstOrNull()?.let { wallet ->
+                    if (wallet.fromWalletConnect) {
+                        walletConnectManager.sendToken(
+                            amount = amount,
+                            fromAddress = wallet.address,
+                            toAddress = address,
+                            data = data,
+                            gasLimit = gasLimit,
+                            gasPrice = gasFee + maxPriorityFee.toBigDecimal().gwei.ether
+                        )
+                        return@launch
+                    }
                     val credentials = Credentials.create(
                         getPrivateKey(
                             wallet,

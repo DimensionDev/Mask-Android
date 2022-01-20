@@ -3,26 +3,52 @@ package com.dimension.maskbook.wallet.ui.scenes.wallets.token
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
+import androidx.compose.material.ListItem
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.material.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ext.humanizeDollar
 import com.dimension.maskbook.wallet.ext.humanizeToken
-import com.dimension.maskbook.wallet.repository.*
+import com.dimension.maskbook.wallet.repository.TokenData
+import com.dimension.maskbook.wallet.repository.TransactionData
+import com.dimension.maskbook.wallet.repository.TransactionStatus
+import com.dimension.maskbook.wallet.repository.TransactionType
+import com.dimension.maskbook.wallet.repository.WalletTokenData
 import com.dimension.maskbook.wallet.ui.MaskTheme
-import com.dimension.maskbook.wallet.ui.widget.*
+import com.dimension.maskbook.wallet.ui.widget.MaskBackButton
+import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
+import com.dimension.maskbook.wallet.ui.widget.MaskTopAppBar
+import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
+import com.dimension.maskbook.wallet.ui.widget.SecondaryButton
 import org.joda.time.DateTime
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
@@ -109,7 +135,7 @@ fun TokenDetailScene(
 //                    ) {
 //                        Icon(painterResource(id = R.drawable.filter2), contentDescription = null)
 //                        Spacer(modifier = Modifier.width(4.dp))
-//                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_app_plugins_swap), maxLines = 1)
+//                        Text(text = stringResource(R.string.scene_app_plugins_swap), maxLines = 1)
 //                    }
                         PrimaryButton(
                             modifier = Modifier.weight(1f),
@@ -119,7 +145,7 @@ fun TokenDetailScene(
                         ) {
                             Icon(painterResource(id = R.drawable.upload), contentDescription = null)
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_balance_btn_Send), maxLines = 1)
+                            Text(text = stringResource(R.string.scene_wallet_balance_btn_Send), maxLines = 1)
                         }
                         PrimaryButton(
                             modifier = Modifier.weight(1f),
@@ -131,7 +157,7 @@ fun TokenDetailScene(
                                 contentDescription = null
                             )
                             Spacer(modifier = Modifier.width(4.dp))
-                            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_wallet_balance_btn_receive), maxLines = 1)
+                            Text(text = stringResource(R.string.scene_wallet_balance_btn_receive), maxLines = 1)
                         }
                     }
                     Spacer(modifier = Modifier.height(41.dp))
@@ -159,7 +185,7 @@ fun TransactionHistoryList(
                 contentDescription = null,
             )
             Spacer(modifier = Modifier.height(12.dp))
-            Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_transaction_history_no_transaction))
+            Text(text = stringResource(R.string.scene_transaction_history_no_transaction))
         }
     } else {
         val items = remember(transactions) {
@@ -224,7 +250,7 @@ fun TransactionItem(
                         Text(text = "Spend up")
                     }
                     SecondaryButton(onClick = onCancel) {
-                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_cancel))
+                        Text(text = stringResource(R.string.common_controls_cancel))
                     }
                 }
             }

@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.repository.Appearance
 import com.dimension.maskbook.wallet.ui.widget.MaskModal
@@ -16,10 +17,11 @@ import com.dimension.maskbook.wallet.viewmodel.settings.AppearanceSettingsViewMo
 import org.koin.androidx.compose.getViewModel
 
 val appearanceMap = mapOf(
-    Appearance.default to com.dimension.maskbook.wallet.R.string.scene_setting_detail_automatic,
-    Appearance.light to com.dimension.maskbook.wallet.R.string.scene_setting_detail_light,
-    Appearance.dark to com.dimension.maskbook.wallet.R.string.scene_setting_detail_dark,
+    Appearance.default to R.string.scene_setting_detail_automatic,
+    Appearance.light to R.string.scene_setting_detail_light,
+    Appearance.dark to R.string.scene_setting_detail_dark,
 )
+
 @Composable
 fun AppearanceSettings(
     onBack: () -> Unit,

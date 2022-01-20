@@ -320,6 +320,8 @@ public class WebExtensionManager implements WebExtension.ActionDelegate,
         sendSetupPortMessages();
         MaskbookAppKt.initRepository();
         MaskbookAppKt.initEvent();
+        MaskbookAppKt.initWalletConnect();
+
 //        MaskbookAppKt.initKoinModules();
     }
 
