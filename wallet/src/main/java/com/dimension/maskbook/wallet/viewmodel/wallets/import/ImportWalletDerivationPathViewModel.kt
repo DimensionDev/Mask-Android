@@ -92,7 +92,7 @@ class ImportWalletDerivationPathViewModel(
                     path = derivationPath,
                     isAdded = walletRepository.findWalletByAddress(walletAccount.address) != null,
                 )
-            }
+            }.sortedBy { it.isAdded }
         emit(list)
     }.flowOn(Dispatchers.IO).asStateIn(viewModelScope, emptyList())
 

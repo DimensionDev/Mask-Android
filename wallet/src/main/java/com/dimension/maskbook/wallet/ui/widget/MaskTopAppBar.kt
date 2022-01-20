@@ -68,17 +68,17 @@ fun MaskTopAppBar(
             if (title != null) {
                 Row {
                     Spacer(TitleInsetWithoutIcon)
-                    ProvideTextStyle(value = MaterialTheme.typography.h1) {
+                    ProvideTextStyle(MaterialTheme.typography.h1) {
                         title()
                     }
                 }
             }
             if (subTitle != null) {
                 Spacer(modifier = Modifier.height(12.dp))
-                Row(
-                    modifier = Modifier.padding(horizontal = 23.dp)
-                ) {
-                    subTitle.invoke()
+                Row(Modifier.padding(horizontal = 23.dp)) {
+                    ProvideTextStyle(MaterialTheme.typography.subtitle1) {
+                        subTitle()
+                    }
                 }
             }
         }

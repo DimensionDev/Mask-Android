@@ -1,9 +1,9 @@
 package com.dimension.maskbook.wallet.ui.scenes.wallets.create.import
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -15,9 +15,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Checkbox
+import androidx.compose.material.CheckboxDefaults
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -43,7 +45,9 @@ import com.dimension.maskbook.wallet.ui.scenes.wallets.common.Dialog
 import com.dimension.maskbook.wallet.ui.widget.MaskBackButton
 import com.dimension.maskbook.wallet.ui.widget.MaskIconButton
 import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
-import com.dimension.maskbook.wallet.ui.widget.MaskSingleLineTopAppBar
+import com.dimension.maskbook.wallet.ui.widget.MaskTextButton
+import com.dimension.maskbook.wallet.ui.widget.MaskTopAppBar
+import com.dimension.maskbook.wallet.ui.widget.MiddleEllipsisText
 import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
 import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.wallet.viewmodel.wallets.import.ImportWalletDerivationPathViewModel
@@ -64,127 +68,121 @@ fun ImportWalletDerivationPathScene(
     wallet: String,
     code: List<String>,
 ) {
+    val viewModel = getViewModel<ImportWalletDerivationPathViewModel> {
+        parametersOf(wallet, code)
+    }
+    val path by viewModel.derivationPath.observeAsState(initial = "")
+    val checked by viewModel.checked.observeAsState(initial = emptyList())
+
+    var showDialog by remember { mutableStateOf(false) }
+    var result by remember { mutableStateOf<WalletCreateOrImportResult?>(null) }
+
+    val scope = rememberCoroutineScope()
+    val pagerState = rememberPagerState()
+
+    fun scrollToPage(page: Int) {
+        scope.launch {
+            pagerState.animateScrollToPage(page)
+        }
+    }
+
     MaskTheme {
         MaskScaffold(
             topBar = {
-                MaskSingleLineTopAppBar(
+                MaskTopAppBar(
                     navigationIcon = {
                         MaskBackButton(onBack = onBack)
                     },
+                    title = {
+                        Text(text = stringResource(R.string.scene_wallet_derivation_path_title))
+                    },
+                    subTitle = {
+                        Text(text = path)
+                    }
                 )
             }
         ) {
-            Box {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(ScaffoldPadding),
-                ) {
-                    val viewModel = getViewModel<ImportWalletDerivationPathViewModel> {
-                        parametersOf(wallet, code)
-                    }
-                    val path by viewModel.derivationPath.observeAsState(initial = "")
-                    val checked by viewModel.checked.observeAsState(initial = emptyList())
-
-                    var showDialog by remember { mutableStateOf(false) }
-                    var result by remember { mutableStateOf<WalletCreateOrImportResult?>(null) }
-
-                    val scope = rememberCoroutineScope()
-                    val pagerState = rememberPagerState()
-
-                    fun scrollToPage(page: Int) {
-                        scope.launch {
-                            pagerState.animateScrollToPage(page)
-                        }
-                    }
-
-                    Text(text = stringResource(R.string.scene_wallet_derivation_path_title), style = MaterialTheme.typography.h4)
-
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Text(text = path)
-
-                    Spacer(modifier = Modifier.height(25.dp))
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp)
-                    ) {
-                        Text(
-                            text = stringResource(R.string.scene_wallet_derivation_path_header_address),
-                            modifier = Modifier.weight(1.5f)
-                        )
-                        Text(
-                            text = stringResource(R.string.scene_wallet_derivation_path_header_balance, "ETH"),
-                            modifier = Modifier.weight(1f),
-                            textAlign = TextAlign.End
-                        )
-                        Text(
-                            text = stringResource(R.string.scene_wallet_derivation_path_header_operation),
-                            modifier = Modifier.weight(1f),
-                            textAlign = TextAlign.End
-                        )
-                    }
-                    HorizontalPager(
-                        count = Int.MAX_VALUE,
-                        state = pagerState,
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(ScaffoldPadding),
+            ) {
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = stringResource(R.string.scene_wallet_derivation_path_header_address),
                         modifier = Modifier.weight(1f),
-                    ) { page ->
-                        val items by viewModel.getPagerItems(page).collectAsState()
-                        val balances by viewModel.getBalanceMap(page).collectAsState()
-                        DerivationPathPager(
-                            list = items,
-                            balances = balances,
-                            isChecked = { item ->
-                                checked.contains(item.path)
-                            },
-                            onCheckClicked = { item ->
-                                viewModel.switchStatus(item.path)
-                            }
-                        )
-                    }
+                    )
+                    Text(
+                        text = stringResource(R.string.scene_wallet_derivation_path_header_balance, "ETH"),
+                        modifier = Modifier.weight(1f),
+                        textAlign = TextAlign.End
+                    )
+                    Text(
+                        text = stringResource(R.string.scene_wallet_derivation_path_header_operation),
+                        modifier = Modifier.weight(0.6f),
+                        textAlign = TextAlign.End
+                    )
+                }
+                HorizontalPager(
+                    count = Int.MAX_VALUE,
+                    state = pagerState,
+                    modifier = Modifier.weight(1f),
+                ) { page ->
+                    val items by viewModel.getPagerItems(page).collectAsState()
+                    val balances by viewModel.getBalanceMap(page).collectAsState()
+                    DerivationPathPager(
+                        list = items,
+                        balances = balances,
+                        isChecked = { item ->
+                            checked.contains(item.path)
+                        },
+                        onItemClick = { item ->
+                            viewModel.switchStatus(item.path)
+                        }
+                    )
+                }
 
-                    Spacer(modifier = Modifier.height(15.dp))
-                    Row(Modifier.align(Alignment.CenterHorizontally)) {
-                        PagerSwitcherIcon(
-                            painter = painterResource(id = R.drawable.ic_select_left),
-                            contentDescription = ImportWalletDerivationPathDefaults.SwitcherSelectRight,
-                            enabled = pagerState.currentPage > 0,
-                            onClick = {
-                                scrollToPage(pagerState.currentPage - 1)
-                            },
-                        )
-                        PagerSwitcherIcon(
-                            painter = painterResource(id = R.drawable.ic_select_right),
-                            contentDescription = ImportWalletDerivationPathDefaults.SwitcherSelectLeft,
-                            enabled = pagerState.currentPage < Int.MAX_VALUE,
-                            onClick = {
-                                scrollToPage(pagerState.currentPage + 1)
-                            },
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(30.dp))
-                    PrimaryButton(
-                        modifier = Modifier.fillMaxWidth(),
+                Spacer(modifier = Modifier.height(16.dp))
+                Row(Modifier.align(Alignment.CenterHorizontally)) {
+                    PagerSwitcherIcon(
+                        painter = painterResource(id = R.drawable.ic_select_left),
+                        contentDescription = ImportWalletDerivationPathDefaults.SwitcherSelectRight,
+                        enabled = pagerState.currentPage > 0,
                         onClick = {
-                            viewModel.next {
-                                result = it
-                                showDialog = true
-                            }
+                            scrollToPage(pagerState.currentPage - 1)
+                        },
+                    )
+                    PagerSwitcherIcon(
+                        painter = painterResource(id = R.drawable.ic_select_right),
+                        contentDescription = ImportWalletDerivationPathDefaults.SwitcherSelectLeft,
+                        enabled = pagerState.currentPage < Int.MAX_VALUE,
+                        onClick = {
+                            scrollToPage(pagerState.currentPage + 1)
+                        },
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(30.dp))
+                PrimaryButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+                        viewModel.next {
+                            result = it
+                            showDialog = true
                         }
-                    ) {
-                        Text(text = stringResource(R.string.common_controls_next))
                     }
-                    if (showDialog) {
-                        result?.let {
-                            it.Dialog(onDismissRequest = {
-                                showDialog = false
-                                if (it.type == WalletCreateOrImportResult.Type.SUCCESS) onDone.invoke(
-                                    it.copy()
-                                )
-                                result = null
-                            })
-                        }
+                ) {
+                    Text(text = stringResource(R.string.common_controls_next))
+                }
+                if (showDialog) {
+                    result?.let {
+                        it.Dialog(onDismissRequest = {
+                            showDialog = false
+                            if (it.type == WalletCreateOrImportResult.Type.SUCCESS) onDone.invoke(
+                                it.copy()
+                            )
+                            result = null
+                        })
                     }
                 }
             }
@@ -197,7 +195,7 @@ private fun DerivationPathPager(
     list: List<DerivationPathItem>,
     balances: Map<String, String>,
     isChecked: (DerivationPathItem) -> Boolean,
-    onCheckClicked: (DerivationPathItem) -> Unit,
+    onItemClick: (DerivationPathItem) -> Unit,
 ) {
     if (list.isEmpty()) {
         Box(Modifier.fillMaxSize(), Alignment.Center) {
@@ -208,43 +206,47 @@ private fun DerivationPathPager(
 
     LazyColumn(
         modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         items(list) { item ->
-            Row(
+            MaskTextButton(
+                enabled = !item.isAdded,
+                onClick = { onItemClick(item) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(ImportWalletDerivationPathDefaults.DerivationPathItemHeight),
-                verticalAlignment = Alignment.CenterVertically,
+                contentPadding = PaddingValues(0.dp)
             ) {
-                Text(
+                MiddleEllipsisText(
                     text = item.address,
-                    modifier = Modifier.weight(1.5f),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f),
+                    textAlign = TextAlign.Start,
                 )
                 Text(
                     text = balances[item.address] ?: "--",
                     modifier = Modifier.weight(1f),
                     textAlign = TextAlign.End,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
                 if (item.isAdded) {
                     Text(
                         text = ImportWalletDerivationPathDefaults.DerivationPathItemIsAdded,
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier.weight(0.6f),
                         textAlign = TextAlign.End,
+                        color = LocalTextStyle.current.color.copy(ContentAlpha.disabled),
                     )
                 } else {
                     Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxHeight()
-                            .clickable { onCheckClicked(item) },
+                        modifier = Modifier.weight(0.6f).fillMaxHeight(),
                         contentAlignment = Alignment.CenterEnd,
                     ) {
                         Checkbox(
                             checked = isChecked(item),
                             onCheckedChange = null,
+                            colors = CheckboxDefaults.colors(
+                                checkedColor = ImportWalletDerivationPathDefaults.SwitcherBoxCheckedColor
+                            )
                         )
                     }
                 }
@@ -275,11 +277,13 @@ private fun PagerSwitcherIcon(
 }
 
 object ImportWalletDerivationPathDefaults {
-    val DerivationPathItemHeight = 35.dp
-    const val DerivationPathItemIsAdded = "Is Added"
+    val DerivationPathItemHeight = 40.dp
+    const val DerivationPathItemIsAdded = "Added"
     val SwitcherIconSize = 20.dp
     const val SwitcherSelectLeft = "select left"
     const val SwitcherSelectRight = "select right"
     val SwitcherIconEnableColor = Color(0xFF6B738D)
     val SwitcherIconDisEnableColor = Color(0xFFCBD1D9)
+    val SwitcherBoxCheckedColor = Color(0xFF1FB885)
+    val SwitcherIsAddedTextColor = Color(0xFFB4B8C8)
 }
