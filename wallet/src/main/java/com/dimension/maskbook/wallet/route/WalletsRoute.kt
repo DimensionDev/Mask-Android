@@ -17,7 +17,9 @@ import androidx.navigation.compose.dialog
 import androidx.navigation.navArgument
 import androidx.navigation.navOptions
 import com.dimension.maskbook.wallet.R
+import com.dimension.maskbook.wallet.ext.copyText
 import com.dimension.maskbook.wallet.ext.observeAsState
+import com.dimension.maskbook.wallet.ext.shareText
 import com.dimension.maskbook.wallet.repository.ChainType
 import com.dimension.maskbook.wallet.repository.ISettingsRepository
 import com.dimension.maskbook.wallet.repository.ITokenRepository
@@ -80,23 +82,31 @@ fun NavGraphBuilder.walletsRoute(
 
                     },
                     onReceive = {
-                        navController.navigate("WalletQrcode")
+                        navController.navigate("WalletQrcode/${it.chainType.name}")
                     }
                 )
             }
         }
     }
-    composable("WalletQrcode") {
+
+    composable(
+    "WalletQrcode/{name}",
+        arguments = listOf(navArgument("name"){ type = NavType.StringType })
+    ) {
         val repository = get<IWalletRepository>()
         val currentWallet by repository.currentWallet.observeAsState(initial = null)
+        val name = it.arguments?.getString("name") ?: ""
+        val context = LocalContext.current
         currentWallet?.let {
             WalletQrcodeScene(
-                walletData = it,
-                onShare = { /*TODO*/ },
+                address = it.address,
+                name = name,
+                onShare = { context.shareText(it.address) },
                 onBack = { navController.popBackStack() },
-                onCopy = {},
+                onCopy = { context.copyText(it.address) }
             )
         }
+
     }
     composable(
         "TokenDetail/{id}",
@@ -122,7 +132,10 @@ fun NavGraphBuilder.walletsRoute(
                         onCancel = { },
                         onSend = {
                             navController.navigate("SendTokenScene/${token.address}")
-                        }
+                        },
+                        onReceive = {
+                            navController.navigate("WalletQrcode/${token.symbol}")
+                        },
                     )
                 }
             }

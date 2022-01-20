@@ -38,7 +38,7 @@ fun SendTokenHost(
     onDone: () -> Unit,
 ) {
     val rootNavController = LocalRootNavController.current
-    val context  = LocalContext.current
+    val context = LocalContext.current
     val navController = rememberNavController()
     val bottomSheetNavigator = rememberBottomSheetNavigator()
     navController.navigatorProvider += bottomSheetNavigator

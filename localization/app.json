@@ -115,6 +115,9 @@
             "backup_tips_no_backup_password": {
                 "title": " Set up backup password",
                 "description": "Please set up your %s before you back up."
+            },
+            "copied_to_clipboard": {
+                "title": "Copied to clipboard",
             }
         },
         "controls": {
@@ -528,7 +531,19 @@
             "walletconnect_switch_network_alert": "The walletConnect wallet network is not the same as the asset network (%s). Please reconnect your wallet to %s network to continue."
         },
         "transaction_history": {
-            "no_transaction": "You don’t have any transaction records"
+            "no_transaction": "You don’t have any transaction records",
+            "status": {
+                "pending": "Pending...",
+                "fail": "Failed"
+            },
+            "speed_up": "Speed up",
+            "type": {
+                "send": "Send %s",
+                "receive": "Received %s",
+                "swap": "WETH Deposit",
+                "cancel": "Cancel %s",
+                "approve": "Approve %s"
+            }
         },
         "wallet_receive": {
             "btn_share": "Share",
