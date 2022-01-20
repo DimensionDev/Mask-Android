@@ -162,10 +162,7 @@ fun MaskSingleLineTopAppBar(
 
 
 private val AppBarHeight = 56.dp
-private val AppBarHorizontalPadding = 4.dp
-private val TitleInsetWithoutIcon = Modifier.width(23.dp)
+private val TitleInsetWithoutIcon = Modifier.width(24.dp)
 private val TitleIconModifier = Modifier
-//    .fillMaxHeight()
     .height(40.dp)
     .padding(start = 22.dp)
-//    .width(72.dp - AppBarHorizontalPadding)

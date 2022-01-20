@@ -59,6 +59,20 @@ fun provideTypography(isDarkTheme: Boolean): Typography {
             fontWeight = FontWeight.W700,
             color = if (isDarkTheme) Color.White.copy(0.8f) else Color(0xFF1D2238),
         ),
+        subtitle1 = TextStyle(
+            fontSize = 18.sp,
+            lineHeight = 21.6.sp,
+            fontStyle = FontStyle.Normal,
+            fontWeight = FontWeight.W400,
+            color = if (isDarkTheme) Color.White.copy(0.4f) else Color(0xFF6B738D),
+        ),
+        subtitle2 = TextStyle(
+            fontSize = 16.sp,
+            lineHeight = 24.sp,
+            fontStyle = FontStyle.Normal,
+            fontWeight = FontWeight(510),
+            color = if (isDarkTheme) Color.White.copy(0.4f) else Color(0xFF6B738D),
+        ),
         h5 = TextStyle(
             fontSize = 16.sp,
             lineHeight = 24.sp,
