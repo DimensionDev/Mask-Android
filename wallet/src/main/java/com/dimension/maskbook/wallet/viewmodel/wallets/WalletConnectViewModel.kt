@@ -51,9 +51,6 @@ class WalletConnectViewModel(
         })
     }
 
-    val qrCode = manager.wcUrl.asStateIn(
-        viewModelScope, ""
-    )
     val wcUrl = manager.wcUrl.asStateIn(
         viewModelScope, ""
     )

@@ -59,7 +59,7 @@ fun WalletIntroHost(
                         rootNavController.navigate("TokenDetail/${it.address}")
                     },
                     onReceiveClicked = {
-                        rootNavController.navigate("WalletQrcode")
+                        rootNavController.navigate("WalletQrcode/${dWebData.chainType.name}")
                     },
                     onSendClicked = {
                         rootNavController.navigate("SendTokenScene/eth")

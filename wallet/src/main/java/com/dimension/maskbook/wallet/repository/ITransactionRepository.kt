@@ -29,22 +29,23 @@ class TransactionRepository(
     }
 
     override suspend fun getTransactionByWallet(walletData: WalletData): List<TransactionData> {
-        val current = walletRepository.dWebData.firstOrNull()?.chainType?.dbank ?: return emptyList()
+        val current =
+            walletRepository.dWebData.firstOrNull()?.chainType?.dbank ?: return emptyList()
         val result =
             walletServices.debankServices.history(current, walletData.address.lowercase())
-        return result.data?.historyList?.map {
+        return result.data?.historyList?.mapNotNull {
             val tokenId = it.tokenApprove?.tokenID
-                ?: it.receives?.firstOrNull { it.tokenID != null }?.tokenID
-                ?: it.sends?.firstOrNull { it.tokenID != null }?.tokenID
-            val tokenData = result.data?.tokenDict?.get(tokenId).let {
+                ?: it.receives?.firstOrNull()?.tokenID
+                ?: it.sends?.firstOrNull()?.tokenID
+            val tokenData = result.data?.tokenDict?.get(tokenId).let { token ->
                 TokenData(
-                    address = it?.id ?: "",
-                    chainType = it?.chain?.name?.toChainType() ?: ChainType.eth,
-                    name = it?.name ?: "",
-                    symbol = it?.symbol ?: "",
-                    decimals = it?.decimals ?: 0,
-                    logoURI = it?.logoURL,
-                    price = java.math.BigDecimal(it?.price ?: 0.0)
+                    address = token?.id ?: "",
+                    chainType = token?.chain?.name?.toChainType() ?: ChainType.unknown,
+                    name = token?.name ?: "",
+                    symbol = token?.symbol ?: "",
+                    decimals = token?.decimals ?: 0,
+                    logoURI = token?.logoURL,
+                    price = java.math.BigDecimal(token?.price ?: 0.0)
                 )
             }
             TransactionData(
@@ -61,9 +62,12 @@ class TransactionRepository(
                     it.sends?.any { it.toAddr == walletData.address } == true -> TransactionType.Receive
                     else -> TransactionType.Approve
                 },
-                count = java.math.BigDecimal(it.tx?.value ?: 0.0),
+                count = java.math.BigDecimal(
+                    it.tx?.value ?: it.sends?.firstOrNull()?.amount
+                    ?: it.receives?.firstOrNull()?.amount ?: 0.0
+                ),
                 status = TransactionStatus.Success,
-                message = "",
+                message = it.tx?.name ?: "",
                 tokenData = tokenData,
             )
         } ?: emptyList()
