@@ -115,6 +115,9 @@
             "backup_tips_no_backup_password": {
                 "title": "crwdns11993:0crwdne11993:0",
                 "description": "crwdns11995:0%scrwdne11995:0"
+            },
+            "copied_to_clipboard": {
+                "title": "crwdns12959:0crwdne12959:0"
             }
         },
         "controls": {
@@ -527,7 +530,19 @@
             "walletconnect_switch_network_alert": "crwdns12583:0%scrwdnd12583:0%scrwdne12583:0"
         },
         "transaction_history": {
-            "no_transaction": "crwdns12585:0crwdne12585:0"
+            "no_transaction": "crwdns12585:0crwdne12585:0",
+            "status": {
+                "pending": "crwdns12961:0crwdne12961:0",
+                "fail": "crwdns12963:0crwdne12963:0"
+            },
+            "speed_up": "crwdns12965:0crwdne12965:0",
+            "type": {
+                "send": "crwdns12967:0%scrwdne12967:0",
+                "receive": "crwdns12969:0%scrwdne12969:0",
+                "swap": "crwdns12971:0crwdne12971:0",
+                "cancel": "crwdns12973:0%scrwdne12973:0",
+                "approve": "crwdns12975:0%scrwdne12975:0"
+            }
         },
         "wallet_receive": {
             "btn_share": "crwdns12587:0crwdne12587:0",
