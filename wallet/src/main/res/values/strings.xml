@@ -116,7 +116,7 @@
     <string name="scene_backup_backup_verify_field_email">Email</string>
     <string name="scene_wallet_derivation_path_header_operation">Operation</string>
     <string name="scene_wallet_derivation_path_operation_added">Added</string>
-    <string name="scene_wallet_derivation_path_header_balance">Balance (%@)</string>
+    <string name="scene_wallet_derivation_path_header_balance">Balance (%s)</string>
     <string name="scene_wallet_derivation_path_header_address">Address</string>
     <string name="scene_wallet_derivation_path_operation_add">Add</string>
     <string name="scene_wallet_derivation_path_title">Derivation path</string>
@@ -165,7 +165,7 @@
     <string name="scene_setting_backup_data_backup_manually">Back Up Manually</string>
     <string name="scene_setting_backup_data_backup_icloud">Back Up All to iCloud</string>
     <string name="scene_setting_backup_data_no_backup_title">You haven’t backed up yet</string>
-    <string name="scene_setting_backup_data_subtitle">Your most recent backup is %@.</string>
+    <string name="scene_setting_backup_data_subtitle">Your most recent backup is %s.</string>
     <string name="scene_setting_backup_data_title">Back up your data</string>
     <string name="scene_setting_change_phone_number_sub_title">New Phone number</string>
     <string name="scene_setting_change_phone_number_title">Change Phone number</string>
@@ -252,7 +252,7 @@
     <string name="scene_create_wallet_multichain_wallet_title">Multi-chain wallet</string>
     <string name="scene_create_wallet_wallet_name_placeholder">Name your wallet</string>
     <string name="scene_wallet_receive_btn_share">Share</string>
-    <string name="scene_wallet_receive_your_address">Your %@ Address</string>
+    <string name="scene_wallet_receive_your_address">Your %s Address</string>
     <string name="scene_identify_verify_identity_error">The identity code is incorrect</string>
     <string name="scene_identify_verify_description">Tap each word in the correct order.</string>
     <string name="scene_identify_verify_title">Verify identity code</string>
