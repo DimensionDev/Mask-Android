@@ -16,8 +16,8 @@ import com.dimension.maskbook.wallet.db.AppDatabase
 import com.dimension.maskbook.wallet.db.model.*
 import com.dimension.maskbook.wallet.ext.ether
 import com.dimension.maskbook.wallet.ext.gwei
-import com.dimension.maskbook.wallet.paging.mediator.CollectibleMediator
 import com.dimension.maskbook.wallet.repository.*
+import com.dimension.maskbook.wallet.paging.mediator.CollectibleMediator
 import com.dimension.maskbook.wallet.services.WalletServices
 import com.dimension.maskbook.wallet.services.okHttpClient
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager
@@ -29,7 +29,9 @@ import org.web3j.abi.datatypes.Address
 import org.web3j.abi.datatypes.Function
 import org.web3j.abi.datatypes.generated.Uint256
 import org.web3j.crypto.Credentials
+import org.web3j.ens.EnsResolver
 import org.web3j.protocol.Web3j
+import org.web3j.protocol.http.HttpService
 import org.web3j.tx.RawTransactionManager
 import java.math.BigDecimal
 import java.util.*
@@ -587,28 +589,41 @@ class WalletRepository(
         onDone: (String?) -> Unit,
         onError: (Throwable) -> Unit,
     ) {
-        val data = Function(
-            "transfer",
-            listOf(
-                Address(address),
-                Uint256((amount * (10.0.pow(tokenData.decimals.toInt())).toBigDecimal()).toBigInteger())
-            ),
-            listOf(),
-        ).let {
-            FunctionEncoder.encode(it)
+        scope.launch {
+            val realAddress = if (EnsResolver.isValidEnsName(address)) {
+                runCatching { ChainType.valueOf(tokenData.chainId) }.getOrNull()?.let {
+                    val web3 = Web3j.build(HttpService(it.endpoint, okHttpClient))
+                    val ensResolver = EnsResolver(web3)
+                    ensResolver.resolve(address).also {
+                        web3.shutdown()
+                    }
+                } ?: address
+            } else {
+                address
+            }
+//            val data = Function(
+//                "transfer",
+//                listOf(
+//                    Address(realAddress),
+//                    Uint256((amount * (10.0.pow(tokenData.decimals.toInt())).toBigDecimal()).toBigInteger())
+//                ),
+//                listOf(),
+//            ).let {
+//                FunctionEncoder.encode(it)
+//            }
+            sendTokenWithCurrentWallet(
+                amount = amount,
+                address = realAddress,
+                tokenData = tokenData,
+                gasLimit = gasLimit,
+                gasFee = gasFee,
+                maxFee = maxFee,
+                maxPriorityFee = maxPriorityFee,
+                data = "",
+                onDone = onDone,
+                onError = onError
+            )
         }
-        sendTokenWithCurrentWallet(
-            amount = amount,
-            address = address,
-            tokenData = tokenData,
-            gasLimit = gasLimit,
-            gasFee = gasFee,
-            maxFee = maxFee,
-            maxPriorityFee = maxPriorityFee,
-            data = data,
-            onDone = onDone,
-            onError = onError
-        )
     }
 
     private suspend fun getWalletKey(walletData: WalletData): WalletKey? {
