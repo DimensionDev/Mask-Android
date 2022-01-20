@@ -36,6 +36,9 @@ abstract class BaseMnemonicPhraseViewModel : ViewModel() {
     abstract fun confirm()
 
     fun deselectWord(word: String) {
-        _selectedWords.value -= word
+        val index = _selectedWords.value.indexOf(word)
+        if (index >= 0) {
+            _selectedWords.value = _selectedWords.value.subList(0, index)
+        }
     }
 }
