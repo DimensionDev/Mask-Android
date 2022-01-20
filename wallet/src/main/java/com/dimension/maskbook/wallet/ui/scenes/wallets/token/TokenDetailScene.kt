@@ -105,13 +105,6 @@ fun TokenDetailScene(
                             .padding(horizontal = 23.dp),
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-//                    PrimaryButton(
-//                        onClick = { /*TODO*/ },
-//                    ) {
-//                        Icon(painterResource(id = R.drawable.filter2), contentDescription = null)
-//                        Spacer(modifier = Modifier.width(4.dp))
-//                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_app_plugins_swap), maxLines = 1)
-//                    }
                         PrimaryButton(
                             modifier = Modifier.weight(1f),
                             onClick = { onSend.invoke() },
@@ -185,7 +178,7 @@ fun TransactionHistoryList(
                 }
                 items(entry.value) { item ->
                     TransactionItem(
-                        item.copy(status = TransactionStatus.Pending),
+                        item,
                         item.tokenData,
                         onSpeedUp = {
                             onSpeedUp.invoke(item)
@@ -209,6 +202,7 @@ fun TransactionItem(
     onCancel: () -> Unit,
 ) {
     ListItem(
+        modifier = Modifier.padding(vertical = 10.dp),
         text = {
             Column(modifier = Modifier.fillMaxHeight(), verticalArrangement = Arrangement.Center) {
                 Row {
@@ -231,23 +225,29 @@ fun TransactionItem(
                     Row {
                         PrimaryButton(
                             onClick = onSpeedUp,
-                            modifier = Modifier.size(width = 62.dp, height = 28.dp),
+                            modifier = Modifier.height(height = 28.dp),
                             contentPadding = PaddingValues(vertical = 6.dp, horizontal = 8.dp)
                         ) {
                             Text(
                                 text = "Spend up",
-                                style = MaterialTheme.typography.overline.copy(color = MaterialTheme.colors.onSurface)
+                                style = MaterialTheme.typography.button.copy(fontSize = 10.sp)
                             )
                         }
                         Spacer(modifier = Modifier.width(8.dp))
-                        SecondaryButton(
+                        Button(
                             onClick = onCancel,
-                            modifier = Modifier.size(width = 62.dp, height = 28.dp),
-                            contentPadding = PaddingValues(vertical = 6.dp, horizontal = 8.dp)
+                            modifier = Modifier.height(height = 28.dp),
+                            contentPadding = PaddingValues(vertical = 0.dp, horizontal = 0.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                backgroundColor = Color(0xFFD7E6FF),
+                            )
                         ) {
                             Text(
                                 text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_cancel),
-                                style = MaterialTheme.typography.overline.copy(color = MaterialTheme.colors.onSurface)
+                                style = MaterialTheme.typography.button.copy(
+                                    fontSize = 10.sp,
+                                    color = MaterialTheme.colors.primary
+                                )
                             )
                         }
                     }
@@ -310,7 +310,7 @@ fun TransactionItem(
 }
 
 @Composable
-private fun TransactionData.title() = if (message.isNotEmpty()) message else {
+private fun TransactionData.title() = message.ifEmpty {
     when (type) {
         TransactionType.Swap -> "WETH Deposit"
         TransactionType.Receive -> "Received ${tokenData.symbol}"
