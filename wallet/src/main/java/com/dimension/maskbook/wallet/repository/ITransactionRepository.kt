@@ -40,7 +40,7 @@ class TransactionRepository(
             val tokenData = result.data?.tokenDict?.get(tokenId).let { token ->
                 TokenData(
                     address = token?.id ?: "",
-                    chainId = token?.chain?.name ?: "eth",
+                    chainType = token?.chain?.name?.toChainType() ?: ChainType.unknown,
                     name = token?.name ?: "",
                     symbol = token?.symbol ?: "",
                     decimals = token?.decimals ?: 0,

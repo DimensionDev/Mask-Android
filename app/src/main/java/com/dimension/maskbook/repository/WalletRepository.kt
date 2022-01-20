@@ -157,10 +157,12 @@ class WalletRepository(
                 }
 
             val tokens = token.map {
+                val chainId =
+                    kotlin.runCatching { it.chain?.let { it1 -> ChainID.valueOf(it1) } }.getOrNull()
                 DbToken(
                     id = it.id ?: "",
                     address = it.id ?: "",
-                    chainId = it.chain ?: "eth",
+                    chainType = chainId?.chainType ?: ChainType.unknown,
                     name = it.name ?: "",
                     symbol = it.symbol ?: "",
                     decimals = it.decimals ?: 0L,
@@ -475,21 +477,18 @@ class WalletRepository(
         onDone: (String?) -> Unit,
         onError: (Throwable) -> Unit,
     ) {
-        runCatching { ChainType.valueOf(tokenData.chainId) }.getOrNull()
-            ?.let { chainType ->
-                sendTokenWithCurrentWalletAndChainType(
-                    amount = amount,
-                    address = address,
-                    chainType = chainType,
-                    gasLimit = gasLimit,
-                    gasFee = gasFee,
-                    maxFee = maxFee,
-                    maxPriorityFee = maxPriorityFee,
-                    onDone = onDone,
-                    onError = onError,
-                    data = data,
-                )
-            }
+        sendTokenWithCurrentWalletAndChainType(
+            amount = amount,
+            address = address,
+            chainType = tokenData.chainType,
+            gasLimit = gasLimit,
+            gasFee = gasFee,
+            maxFee = maxFee,
+            maxPriorityFee = maxPriorityFee,
+            onDone = onDone,
+            onError = onError,
+            data = data,
+        )
     }
 
 
@@ -572,7 +571,8 @@ class WalletRepository(
         }
     }
 
-    override fun validatePrivateKey(privateKey: String) = WalletKey.validate(privateKey = privateKey)
+    override fun validatePrivateKey(privateKey: String) =
+        WalletKey.validate(privateKey = privateKey)
 
     override fun validateMnemonic(mnemonic: String) = WalletKey.validate(mnemonic = mnemonic)
 
@@ -591,13 +591,11 @@ class WalletRepository(
     ) {
         scope.launch {
             val realAddress = if (EnsResolver.isValidEnsName(address)) {
-                runCatching { ChainType.valueOf(tokenData.chainId) }.getOrNull()?.let {
-                    val web3 = Web3j.build(HttpService(it.endpoint, okHttpClient))
-                    val ensResolver = EnsResolver(web3)
-                    ensResolver.resolve(address).also {
-                        web3.shutdown()
-                    }
-                } ?: address
+                val web3 = Web3j.build(HttpService(tokenData.chainType.endpoint, okHttpClient))
+                val ensResolver = EnsResolver(web3)
+                ensResolver.resolve(address).also {
+                    web3.shutdown()
+                }
             } else {
                 address
             }
