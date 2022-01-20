@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.navOptions
 import coil.compose.rememberImagePainter
 import com.dimension.maskbook.wallet.R
+import com.dimension.maskbook.wallet.ext.copyText
 import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.repository.ChainType
 import com.dimension.maskbook.wallet.repository.WCWallet
@@ -71,7 +72,7 @@ fun WalletConnectModal() {
     val navController = rememberAnimatedNavController()
     val rootNavController = LocalRootNavController.current
     val scope = rememberCoroutineScope()
-    val onResult: (success: Boolean, needToSwitchNetwork:Boolean) -> Unit = { success, switch ->
+    val onResult: (success: Boolean, needToSwitchNetwork: Boolean) -> Unit = { success, switch ->
         scope.launch(Dispatchers.Main) {
             if (success) {
                 if (switch) rootNavController.navigate("WalletNetworkSwitchWarningDialog", navOptions {
@@ -87,10 +88,8 @@ fun WalletConnectModal() {
     val viewModel = getViewModel<WalletConnectViewModel> {
         parametersOf(onResult)
     }
-    val qrCode by viewModel.qrCode.observeAsState(initial = "")
     val wcUrl by viewModel.wcUrl.observeAsState(initial = "")
     val context = LocalContext.current
-    val clipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
     val currentSupportedWallets by viewModel.currentSupportedWallets.observeAsState(initial = emptyList())
     MaskModal {
         Column(
@@ -110,13 +109,10 @@ fun WalletConnectModal() {
             ) {
                 composable("WalletConnectTypeSelect") {
                     TypeSelectScene(
-                        qrCode = qrCode,
+                        qrCode = wcUrl,
                         onCopy = {
-                            clipboardManager.setPrimaryClip(
-                                ClipData.newPlainText(
-                                    "WalletConnect Uri",
-                                    it
-                                )
+                            context.copyText(
+                                text = it,
                             )
                         },
                         wallets = currentSupportedWallets,

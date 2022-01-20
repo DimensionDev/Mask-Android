@@ -115,6 +115,9 @@
             "backup_tips_no_backup_password": {
                 "title": " Set up backup password",
                 "description": "Please set up your %s before you back up."
+            },
+            "copied_to_clipboard": {
+                "title": "Copied to clipboard",
             }
         },
         "controls": {

@@ -17,7 +17,9 @@ import androidx.navigation.compose.dialog
 import androidx.navigation.navArgument
 import androidx.navigation.navOptions
 import com.dimension.maskbook.wallet.R
+import com.dimension.maskbook.wallet.ext.copyText
 import com.dimension.maskbook.wallet.ext.observeAsState
+import com.dimension.maskbook.wallet.ext.shareText
 import com.dimension.maskbook.wallet.repository.ChainType
 import com.dimension.maskbook.wallet.repository.ISettingsRepository
 import com.dimension.maskbook.wallet.repository.ITokenRepository
@@ -66,13 +68,14 @@ fun NavGraphBuilder.walletsRoute(
         val repository = get<IWalletRepository>()
         val currentWallet by repository.currentWallet.observeAsState(initial = null)
         val name = it.arguments?.getString("name") ?: ""
+        val context = LocalContext.current
         currentWallet?.let {
             WalletQrcodeScene(
                 address = it.address,
                 name = name,
-                onShare = { /*TODO*/ },
+                onShare = { context.shareText(it.address) },
                 onBack = { navController.popBackStack() },
-                onCopy = {},
+                onCopy = { context.copyText(it.address) }
             )
         }
 

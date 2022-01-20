@@ -64,6 +64,7 @@
     <string name="common_alert_wallet_derive_success_title">Perfect!</string>
     <string name="common_alert_setting_warning_backup_data_titile"> Set up password before backup</string>
     <string name="common_alert_setting_warning_backup_data_description">We have detected that you haven’t set up your backup password and/or payment password. Please set up your backup password and/or payment password before you back up.</string>
+    <string name="common_alert_copied_to_clipboard_title">Copied to clipboard</string>
     <string name="common_alert_change_password_description">You have successfully changed your payment password.</string>
     <string name="common_alert_change_password_title">Password changed successfully!</string>
     <string name="common_alert_disconnect_profile_title">Are you sure you want to disconnect the %s account of %s ? After disconnection, this account will no longer be able to decrypt and encrypt any information with Mask Network.</string>
