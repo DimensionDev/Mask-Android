@@ -61,11 +61,7 @@ import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletDeleteVi
 import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletRenameViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletSwitchViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletTransactionHistoryViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.send.AddContactViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.send.GasFeeViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.send.SearchAddressViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendConfirmViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendTokenViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.send.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asExecutor
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -215,24 +211,23 @@ val walletModules = module {
     viewModel { SearchAddressViewModel(get(), get(), get()) }
     viewModel { (id: String) -> TokenDetailViewModel(id, get(), get(), get()) }
     viewModel { (initialGasLimit: Double) -> GasFeeViewModel(initialGasLimit = initialGasLimit, get(), get()) }
-    viewModel { (tokenData: TokenData, toAddress: String) ->
+    viewModel { (toAddress: String) ->
         SendTokenViewModel(
-            tokenData = tokenData,
             toAddress = toAddress,
-            get(),
             get(),
             get(),
         )
     }
     viewModel { AddContactViewModel(get()) }
-    viewModel { (tokenData: TokenData, toAddress: String) ->
-        SendConfirmViewModel(tokenData, toAddress, get(), get())
+    viewModel { (toAddress: String) ->
+        SendConfirmViewModel(toAddress, get(), get())
     }
     viewModel { BiometricViewModel(get(), get()) }
     viewModel { WalletConnectManagementViewModel(get(), get()) }
     viewModel { (onResult:(success:Boolean, needToSwitchNetwork: Boolean)->Unit)-> WalletConnectViewModel(get(), get(), get(), onResult) }
     viewModel { UnlockWalletViewModel(get(), get()) }
     viewModel { BackUpPasswordViewModel(get(), get()) }
+    viewModel { (tokenData: TokenData) -> SendTokenDataViewModel(tokenData, get()) }
 }
 
 val servicesModule = module {

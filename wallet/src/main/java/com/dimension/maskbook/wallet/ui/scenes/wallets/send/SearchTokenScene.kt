@@ -2,45 +2,32 @@ package com.dimension.maskbook.wallet.ui.scenes.wallets.send
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.ContentAlpha
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import com.dimension.maskbook.wallet.R
+import com.dimension.maskbook.wallet.ext.humanizeDollar
+import com.dimension.maskbook.wallet.ext.humanizeToken
+import com.dimension.maskbook.wallet.repository.TokenData
+import com.dimension.maskbook.wallet.repository.WalletTokenData
 import com.dimension.maskbook.wallet.ui.MaskTheme
-import com.dimension.maskbook.wallet.ui.widget.MaskBackButton
-import com.dimension.maskbook.wallet.ui.widget.MaskInputField
-import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
-import com.dimension.maskbook.wallet.ui.widget.MaskSingleLineTopAppBar
-import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
+import com.dimension.maskbook.wallet.ui.widget.*
+import java.math.BigDecimal
 
 @Composable
 fun SearchTokenScene(
     onBack: () -> Unit,
     query: String,
     onQueryChanged: (String) -> Unit,
-    /*TODO LOGIC:
-    * results: List<?>
-    *  onAdded:(item) -> Unit
-    *  onSelected: (item) -> Unit
-    * */
+    tokens: List<WalletTokenData>,
+    onSelect: (WalletTokenData) -> Unit
 ) {
     MaskTheme {
         MaskScaffold(
@@ -56,12 +43,12 @@ fun SearchTokenScene(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(ScaffoldPadding),
             ) {
                 MaskInputField(
                     value = query,
                     onValueChange = onQueryChanged,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth()
+                        .padding(horizontal = 23.dp),
                     leadingIcon = {
                         Image(
                             painter = painterResource(id = R.drawable.ic_search),
@@ -76,15 +63,13 @@ fun SearchTokenScene(
                 Spacer(modifier = Modifier.height(20.dp))
 
                 LazyColumn {
-                    /*TODO replace this item to items*/
-                    item {
+                    items(tokens.filter { it.tokenData.name.contains(query, ignoreCase = true) }) {
                         SearchResultItem(
-                            logo = "https://downloads.coindesk.com/arc-hosted-images/eth.png",
-                            text = "ETH/Ethereum",
-                            isAdded = false,
-                            count = 1.001f,
-                            onAdded = { /*TODO*/ },
-                            onSelect = {/*TODO*/ }
+                            modifier = Modifier.clickable {
+                                onSelect.invoke(it)
+                            },
+                            count = it.count,
+                            tokenData = it.tokenData,
                         )
                     }
                 }
@@ -93,60 +78,29 @@ fun SearchTokenScene(
     }
 }
 
-/*TODO Logic:after confirm the result model, use this layout in lazy column*/
 @Composable
 private fun SearchResultItem(
-    logo: String,
-    text: String,
-    secondaryText: String? = null,
-    isAdded: Boolean,
-    count: Float,
-    onAdded: () -> Unit,
-    onSelect: () -> Unit
+    modifier: Modifier = Modifier,
+    tokenData: TokenData,
+    count: BigDecimal,
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(
-                enabled = isAdded,
-                onClick = {
-                    onSelect.invoke()
-                }
-            ),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Image(
-            painter = rememberImagePainter(logo),
-            contentDescription = null,
-            modifier = Modifier.size(38.dp),
-            alpha = if (!isAdded) ContentAlpha.disabled else 1f
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = text, color = MaterialTheme.colors.onSurface.copy(
-                    if (!isAdded) ContentAlpha.disabled else 1f
-                )
+    MaskListCardItem(
+        modifier = modifier,
+        icon = {
+            Image(
+                painter = rememberImagePainter(tokenData.logoURI),
+                contentDescription = null,
+                modifier = Modifier.size(38.dp),
             )
-            if (!secondaryText.isNullOrEmpty()) {
-                Text(
-                    text = secondaryText, color = MaterialTheme.colors.onSurface.copy(
-                        if (!isAdded) ContentAlpha.disabled else 1f
-                    ),
-                    style = MaterialTheme.typography.body2
-                )
-            }
+        },
+        text = {
+            Text(tokenData.name)
+        },
+        secondaryText = {
+            Text(count.humanizeToken())
+        },
+        trailing = {
+            Text((count * tokenData.price).humanizeDollar())
         }
-        if (isAdded) {
-            Text(text = count.toString())
-        } else {
-            IconButton(onClick = onAdded) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_plus),
-                    contentDescription = null,
-                    modifier = Modifier.size(24.dp)
-                )
-            }
-        }
-    }
+    )
 }
