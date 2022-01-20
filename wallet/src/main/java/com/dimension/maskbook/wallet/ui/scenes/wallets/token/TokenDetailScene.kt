@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
@@ -210,11 +211,11 @@ fun TransactionItem(
                     when (it.status) {
                         TransactionStatus.Pending -> {
                             Spacer(modifier = Modifier.width(6.dp))
-                            Text(text = "Pending...", color = Color(0xFFFFB915))
+                            Text(text = stringResource(R.string.scene_transaction_history_status_pending), color = Color(0xFFFFB915))
                         }
                         TransactionStatus.Failure -> {
                             Spacer(modifier = Modifier.width(6.dp))
-                            Text(text = "Failed", color = Color(0xFFFF5F5F))
+                            Text(text = stringResource(R.string.scene_transaction_history_status_fail), color = Color(0xFFFF5F5F))
                         }
                         else -> Unit
                     }
@@ -229,7 +230,7 @@ fun TransactionItem(
                             contentPadding = PaddingValues(vertical = 6.dp, horizontal = 8.dp)
                         ) {
                             Text(
-                                text = "Spend up",
+                                text = stringResource(R.string.scene_transaction_history_speed_up),
                                 style = MaterialTheme.typography.button.copy(fontSize = 10.sp)
                             )
                         }
@@ -309,13 +310,14 @@ fun TransactionItem(
     )
 }
 
+// TODO into app json
 @Composable
 private fun TransactionData.title() = message.ifEmpty {
     when (type) {
-        TransactionType.Swap -> "WETH Deposit"
-        TransactionType.Receive -> "Received ${tokenData.symbol}"
-        TransactionType.Send -> "Send ${tokenData.symbol}"
-        TransactionType.Approve -> "Approve ${tokenData.symbol}"
-        TransactionType.Cancel -> "Cancel ${tokenData.symbol}"
+        TransactionType.Swap -> stringResource(R.string.scene_transaction_history_type_swap)
+        TransactionType.Receive -> stringResource(R.string.scene_transaction_history_type_receive, tokenData.symbol)
+        TransactionType.Send ->  stringResource(R.string.scene_transaction_history_type_send, tokenData.symbol)
+        TransactionType.Approve ->  stringResource(R.string.scene_transaction_history_type_approve, tokenData.symbol)
+        TransactionType.Cancel ->  stringResource(R.string.scene_transaction_history_type_cancel, tokenData.symbol)
     }
 }
