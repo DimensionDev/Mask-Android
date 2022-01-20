@@ -33,9 +33,14 @@ fun DataSourceSettings(
             dataProviderMap.forEach {
                 MaskSelection(
                     selected = it.key == dataProvider,
-                    onClicked = { viewModel.setDataProvider(it.key); onBack.invoke() }) {
-                    Text(text = it.value, modifier = Modifier.weight(1f))
-                }
+                    onClicked = {
+                        viewModel.setDataProvider(it.key)
+                        onBack.invoke()
+                    },
+                    content = {
+                        Text(text = it.value)
+                    }
+                )
             }
         }
     }

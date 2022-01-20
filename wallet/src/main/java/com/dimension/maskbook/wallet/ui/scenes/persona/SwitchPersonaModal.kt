@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -57,13 +58,10 @@ fun SwitchPersonaModal(
                             Image(
                                 painter = painterResource(R.drawable.ic_default_persona_avatar),
                                 contentDescription = null,
+                                modifier = Modifier.size(32.dp),
                             )
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = item.name,
-                                modifier = Modifier.weight(1f),
-                                style = MaterialTheme.typography.subtitle1
-                            )
+                            Text(text = item.name)
                         }
                     )
                 }
@@ -76,13 +74,12 @@ fun SwitchPersonaModal(
                         content = {
                             Text(
                                 text = stringResource(R.string.scene_personas_add_persona),
-                                modifier = Modifier
-                                    .weight(1f),
-                                style = MaterialTheme.typography.subtitle1
                             )
+                            Spacer(Modifier.weight(1f))
                             Icon(
                                 imageVector = Icons.Rounded.Add,
                                 contentDescription = null,
+                                modifier = Modifier.size(32.dp),
                             )
                         }
                     )

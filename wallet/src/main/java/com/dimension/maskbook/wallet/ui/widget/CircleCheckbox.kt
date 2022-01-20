@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.CheckboxColors
 import androidx.compose.material.CheckboxDefaults
+import androidx.compose.material.ContentAlpha
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -40,10 +41,7 @@ import kotlin.math.max
 fun CircleCheckbox(
     checked: Boolean,
     modifier: Modifier = Modifier,
-    colors: CheckboxColors = CheckboxDefaults.colors(
-        checkedColor = CircleCheckboxDefaults.checkedColor,
-        checkmarkColor = MaterialTheme.colors.surface,
-    )
+    colors: CheckboxColors = CircleCheckboxDefaults.colors(),
 ) {
     val value = ToggleableState(checked)
 
@@ -54,7 +52,6 @@ fun CircleCheckbox(
 
     Canvas(
         modifier = modifier
-            // .then(toggleableModifier)
             .padding(CheckboxDefaultPadding)
             .wrapContentSize(Alignment.Center)
             .requiredSize(CheckboxSize)
@@ -159,8 +156,23 @@ private val CheckboxSize = 20.dp
 
 private val StrokeWidth = 2.dp
 
-private object CircleCheckboxDefaults {
-    val checkedColor = Color(0xFF1FB885)
+object CircleCheckboxDefaults {
+    val defaultCheckedColor = Color(0xFF1FB885)
+
+    @Composable
+    fun colors(
+        checkedColor: Color = defaultCheckedColor,
+        uncheckedColor: Color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f),
+        checkmarkColor: Color = MaterialTheme.colors.surface,
+        disabledColor: Color = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled),
+        disabledIndeterminateColor: Color = checkedColor.copy(alpha = ContentAlpha.disabled)
+    ) = CheckboxDefaults.colors(
+        checkedColor = checkedColor,
+        uncheckedColor = uncheckedColor,
+        checkmarkColor = checkmarkColor,
+        disabledColor = disabledColor,
+        disabledIndeterminateColor = disabledIndeterminateColor,
+    )
 }
 
 @Preview

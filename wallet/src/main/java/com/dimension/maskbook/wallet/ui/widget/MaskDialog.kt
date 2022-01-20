@@ -1,18 +1,12 @@
 package com.dimension.maskbook.wallet.ui.widget
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Card
 import androidx.compose.material.ContentAlpha
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.LocalContentAlpha
-import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ProvideTextStyle
 import androidx.compose.material.Surface
@@ -104,47 +98,6 @@ private fun MaskDialogContent(
                 Spacer(modifier = Modifier.height(12.dp))
             }
             buttons()
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterialApi::class)
-@Composable
-fun MaskSelection(
-    selected: Boolean,
-    onClicked: () -> Unit,
-    enabled: Boolean = true,
-    content: @Composable RowScope.() -> Unit,
-) {
-    Box(modifier = Modifier.padding(vertical = 8.dp)) {
-        val backgroundColor = if (selected) {
-            MaterialTheme.colors.surface
-        } else {
-            MaterialTheme.colors.background
-        }
-        Card(
-            elevation = 0.dp,
-            backgroundColor = backgroundColor,
-            onClick = {
-                onClicked.invoke()
-            },
-            enabled = enabled,
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            Row(
-                modifier = Modifier
-                    .padding(14.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                CompositionLocalProvider(
-                    LocalTextStyle provides MaterialTheme.typography.button
-                ) {
-                    content.invoke(this)
-                }
-                if (selected) {
-                    CircleCheckbox(checked = true)
-                }
-            }
         }
     }
 }
