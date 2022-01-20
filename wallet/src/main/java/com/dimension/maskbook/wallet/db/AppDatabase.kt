@@ -21,7 +21,8 @@ import java.math.BigDecimal
         DbWalletContact::class,
         DbStoredKey::class,
         DbWalletBalance::class,
-        DbWCWallet::class
+        DbCollectible::class,
+        DbWCWallet::class,
     ],
     version = 6,
 )
@@ -35,6 +36,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun walletContactDao(): WalletContactDao
     abstract fun storedKeyDao(): StoredKeyDao
     abstract fun walletBalanceDao(): WalletBalanceDao
+    abstract fun collectibleDao(): CollectibleDao
     abstract fun wcWalletDao(): WCWalletDao
 }
 

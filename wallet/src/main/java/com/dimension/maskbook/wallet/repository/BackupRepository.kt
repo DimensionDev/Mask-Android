@@ -2,19 +2,17 @@ package com.dimension.maskbook.wallet.repository
 
 import android.content.ContentResolver
 import android.net.Uri
-import androidx.core.net.toFile
 import androidx.core.net.toUri
 import com.dimension.maskbook.wallet.ext.await
-import com.dimension.maskbook.wallet.services.*
-import com.dimension.maskbook.wallet.services.Locale
+import com.dimension.maskbook.wallet.services.WalletServices
+import com.dimension.maskbook.wallet.services.model.*
+import com.dimension.maskbook.wallet.services.model.Locale
 import kotlinx.coroutines.coroutineScope
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 import java.util.*
-import kotlin.math.abs
 
 class BackupRepository(
     private val walletServices: WalletServices,

@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.dimension.maskbook.wallet.repository.BackupRepository
 import com.dimension.maskbook.wallet.repository.IPersonaRepository
 import com.dimension.maskbook.wallet.repository.ISettingsRepository
-import com.dimension.maskbook.wallet.services.AccountType
+import com.dimension.maskbook.wallet.services.model.AccountType
 import kotlinx.coroutines.flow.firstOrNull
 
 class BackupCloudExecuteViewModel(

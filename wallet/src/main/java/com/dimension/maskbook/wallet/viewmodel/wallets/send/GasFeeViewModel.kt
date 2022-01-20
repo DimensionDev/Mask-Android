@@ -8,10 +8,10 @@ import com.dimension.maskbook.wallet.ext.humanizeMinutes
 import com.dimension.maskbook.wallet.repository.ChainType
 import com.dimension.maskbook.wallet.repository.GasPriceEditMode
 import com.dimension.maskbook.wallet.repository.IWalletRepository
-import com.dimension.maskbook.wallet.services.EthGasFee
-import com.dimension.maskbook.wallet.services.EthGasFeeResponse
-import com.dimension.maskbook.wallet.services.MaticGasFeeResponse
 import com.dimension.maskbook.wallet.services.WalletServices
+import com.dimension.maskbook.wallet.services.model.EthGasFee
+import com.dimension.maskbook.wallet.services.model.EthGasFeeResponse
+import com.dimension.maskbook.wallet.services.model.MaticGasFeeResponse
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
 import java.math.BigDecimal
