@@ -10,12 +10,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavType
+import androidx.navigation.*
 import androidx.navigation.compose.dialog
-import androidx.navigation.navArgument
-import androidx.navigation.navOptions
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.repository.ChainType
@@ -39,11 +35,7 @@ import com.dimension.maskbook.wallet.ui.scenes.wallets.token.TokenDetailScene
 import com.dimension.maskbook.wallet.ui.widget.MaskDialog
 import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
 import com.dimension.maskbook.wallet.viewmodel.wallets.*
-import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletBackupViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletDeleteViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletRenameViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletSwitchViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletTransactionHistoryViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.management.*
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.bottomSheet
@@ -82,6 +74,7 @@ fun NavGraphBuilder.walletsRoute(
             val token by viewModel.tokenData.observeAsState(initial = null)
             val transaction by viewModel.transaction.observeAsState(initial = emptyList())
             val walletTokenData by viewModel.walletTokenData.observeAsState(initial = null)
+            val dWebData by viewModel.dWebData.observeAsState(initial = null)
             walletTokenData?.let { walletTokenData ->
                 token?.let { token ->
                     TokenDetailScene(
@@ -92,7 +85,11 @@ fun NavGraphBuilder.walletsRoute(
                         onSpeedUp = { },
                         onCancel = { },
                         onSend = {
-                            navController.navigate("SendTokenScene/${token.address}")
+                            if (token.chainType != dWebData?.chainType) {
+                                navController.navigate("WalletNetworkSwitch/${token.chainType}")
+                            } else {
+                                navController.navigate("SendTokenScene/${token.address}")
+                            }
                         }
                     )
                 }
@@ -111,6 +108,27 @@ fun NavGraphBuilder.walletsRoute(
     }
     bottomSheet("SwitchWalletAddWalletConnect") {
         WalletConnectModal()
+    }
+
+    dialog(
+        "WalletNetworkSwitch/{target}",
+        arguments = listOf(navArgument("target") { type = NavType.StringType })
+    ) {
+        it.arguments?.getString("target")?.let {
+            ChainType.valueOf(it)
+        }?.let { target ->
+            val viewModel = getViewModel<WalletSwitchViewModel>()
+            val currentNetwork by viewModel.network.observeAsState(initial = ChainType.eth)
+            WalletNetworkSwitchWarningDialog(
+                currentNetwork = currentNetwork.name,
+                connectingNetwork = target.name,
+                onCancel = { navController.popBackStack() },
+                onSwitch = {
+                    viewModel.setChainType(target)
+                    navController.popBackStack()
+                }
+            
+        }
     }
 
     dialog("WalletNetworkSwitchWarningDialog") {
