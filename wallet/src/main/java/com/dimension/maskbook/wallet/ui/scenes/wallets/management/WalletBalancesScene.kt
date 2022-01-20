@@ -239,7 +239,7 @@ fun WalletBalancesScene(
                                                 .fillMaxHeight()
                                                 .background(
                                                     color = MaterialTheme.colors.primary,
-                                                    shape = RoundedCornerShape(99.dp)
+                                                    shape = CircleShape,
                                                 )
                                         )
                                     }

@@ -8,9 +8,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
@@ -127,7 +127,7 @@ private fun BackupContent(
                         Card(
                             modifier = Modifier.fillMaxWidth(),
                             elevation = 0.dp,
-                            shape = RoundedCornerShape(8.dp)
+                            shape = MaterialTheme.shapes.small,
                         ) {
                             Text(
                                 modifier = Modifier.padding(12.dp),

@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
@@ -80,7 +79,7 @@ fun TokenDetailScene(
                 Surface(
                     contentColor = contentColorFor(backgroundColor = Color(0XFF212E59)),
                     color = Color(0XFF212E59),
-                    shape = RoundedCornerShape(12.dp),
+                    shape = MaterialTheme.shapes.medium,
                     modifier = Modifier.padding(horizontal = 23.dp)
                 ) {
                     Row(

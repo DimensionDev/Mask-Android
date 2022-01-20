@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.LocalContentAlpha
@@ -141,10 +140,10 @@ private fun TipDialog(
     Row(
         modifier = modifier
             .padding(horizontal = 22.dp, vertical = 44.dp)
-            .shadow(12.dp, RoundedCornerShape(12.dp))
+            .shadow(12.dp, MaterialTheme.shapes.medium)
             .background(
                 brush = PersonaEmptySceneDefaults.tipDialogBackGround,
-                shape = RoundedCornerShape(12.dp)
+                shape = MaterialTheme.shapes.medium
             )
             .padding(start = 16.dp, end = 0.dp, top = 10.dp, bottom = 10.dp)
             .fillMaxWidth(),

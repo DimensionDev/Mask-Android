@@ -95,8 +95,8 @@ fun provideTypography(isDarkTheme: Boolean): Typography {
 fun provideShapes(): Shapes {
     return Shapes(
         small = RoundedCornerShape(8.dp),
-        medium = RoundedCornerShape(20.dp),
-        large = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
+        medium = RoundedCornerShape(12.dp),
+        large = RoundedCornerShape(20.dp),
     )
 }
 
