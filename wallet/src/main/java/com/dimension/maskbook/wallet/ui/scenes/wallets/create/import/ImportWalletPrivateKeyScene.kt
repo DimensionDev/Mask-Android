@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -25,7 +24,7 @@ import com.dimension.maskbook.wallet.ui.scenes.wallets.common.Dialog
 import com.dimension.maskbook.wallet.ui.widget.MaskBackButton
 import com.dimension.maskbook.wallet.ui.widget.MaskInputField
 import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
-import com.dimension.maskbook.wallet.ui.widget.MaskSingleLineTopAppBar
+import com.dimension.maskbook.wallet.ui.widget.MaskTopAppBar
 import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
 import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.wallet.viewmodel.wallets.import.ImportWalletPrivateKeyViewModel
@@ -41,10 +40,13 @@ fun ImportWalletPrivateKeyScene(
     MaskTheme {
         MaskScaffold(
             topBar = {
-                MaskSingleLineTopAppBar(
+                MaskTopAppBar(
                     navigationIcon = {
                         MaskBackButton(onBack = onBack)
                     },
+                    title = {
+                        Text(text = stringResource(R.string.scene_wallet_private_key_title))
+                    }
                 )
             }
         ) {
@@ -65,8 +67,6 @@ fun ImportWalletPrivateKeyScene(
                         .fillMaxSize()
                         .padding(ScaffoldPadding),
                 ) {
-                    Text(text = stringResource(R.string.scene_wallet_private_key_title), style = MaterialTheme.typography.h4)
-                    Spacer(modifier = Modifier.height(24.dp))
                     MaskInputField(
                         value = privateKey,
                         onValueChange = { viewModel.setPrivateKey(it) },
