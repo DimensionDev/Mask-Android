@@ -38,7 +38,7 @@ fun BigDecimal.humanizeToken(): String {
 fun BigDecimal.humanizeDollar(): String {
     return "$" + when {
         this > BigDecimal.ONE -> {
-            this.format(2)
+            this.format(2, trimTrailingZero = false)
         }
         this > BigDecimal.valueOf(0.000001) -> {
             this.format(6)
@@ -50,14 +50,26 @@ fun BigDecimal.humanizeDollar(): String {
     }
 }
 
-fun Double.format(digits: Int) = "%.${digits}f".format(this)
+fun Double.format(digits: Int, trimTrailingZero: Boolean = true) =
+    "%.${digits}f".format(this).let { if (trimTrailingZero) it.trimTrailingZero() else it }
 
-fun Float.format(digits: Int) = "%.${digits}f".format(this)
+fun Float.format(digits: Int, trimTrailingZero: Boolean = true) =
+    "%.${digits}f".format(this).let { if (trimTrailingZero) it.trimTrailingZero() else it }
 
-fun BigDecimal.format(digits: Int) = "%.${digits}f".format(this)
+fun BigDecimal.format(digits: Int, trimTrailingZero: Boolean = true) =
+    "%.${digits}f".format(this).let { if (trimTrailingZero) it.trimTrailingZero() else it }
 
 fun String.fromHexString(): BigDecimal {
     return substringAfter("0x").toLong(16).toBigDecimal()
+}
+
+private fun String.trimTrailingZero(): String {
+    return if (indexOf(".") < 0) {
+        this
+    } else {
+        replace("0*$".toRegex(), "")// remove continuous from end of the string
+            .replace("\\.$".toRegex(), "")// remove . if it is the last char
+    }
 }
 
 @OptIn(ExperimentalTime::class)
