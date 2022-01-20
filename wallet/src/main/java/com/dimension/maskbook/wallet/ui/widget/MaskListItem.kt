@@ -23,7 +23,6 @@ fun MaskListItem(
     modifier: Modifier = Modifier,
     icon: @Composable (() -> Unit)? = null,
     secondaryText: @Composable (() -> Unit)? = null,
-    singleLineSecondaryText: Boolean = true,
     overlineText: @Composable (() -> Unit)? = null,
     trailing: @Composable (() -> Unit)? = null,
     text: @Composable () -> Unit

@@ -59,6 +59,13 @@ fun provideTypography(isDarkTheme: Boolean): Typography {
             fontWeight = FontWeight.W700,
             color = if (isDarkTheme) Color.White.copy(0.8f) else Color(0xFF1D2238),
         ),
+        h5 = TextStyle(
+            fontSize = 16.sp,
+            lineHeight = 24.sp,
+            fontStyle = FontStyle.Normal,
+            fontWeight = FontWeight.W700,
+            color = if (isDarkTheme) Color.White.copy(0.8f) else Color(0xFF1D2238),
+        ),
         subtitle1 = TextStyle(
             fontSize = 18.sp,
             lineHeight = 21.6.sp,
@@ -72,13 +79,6 @@ fun provideTypography(isDarkTheme: Boolean): Typography {
             fontStyle = FontStyle.Normal,
             fontWeight = FontWeight(510),
             color = if (isDarkTheme) Color.White.copy(0.4f) else Color(0xFF6B738D),
-        ),
-        h5 = TextStyle(
-            fontSize = 16.sp,
-            lineHeight = 24.sp,
-            fontStyle = FontStyle.Normal,
-            fontWeight = FontWeight.W700,
-            color = if (isDarkTheme) Color.White.copy(0.8f) else Color(0xFF1D2238),
         ),
         body1 = TextStyle(
             fontSize = 16.sp,
@@ -132,7 +132,9 @@ fun provideColor(isDarkTheme: Boolean): Colors {
     return if (isDarkTheme) {
         darkColors(
             primary = primary,
+            onPrimary = Color.White.copy(0.8f),
             secondary = primary,
+            onSecondary = Color.White.copy(0.8f),
             background = Color(0XFF050919),
             onBackground = Color.White.copy(0.8f),
             secondaryVariant = primary,
@@ -142,7 +144,9 @@ fun provideColor(isDarkTheme: Boolean): Colors {
     } else {
         lightColors(
             primary = primary,
+            onPrimary = Color.White,
             secondary = primary,
+            onSecondary = Color.White,
             background = Color(0XFFF6F8FB),
             onBackground = Color(0xFF1D2238),
             secondaryVariant = primary,

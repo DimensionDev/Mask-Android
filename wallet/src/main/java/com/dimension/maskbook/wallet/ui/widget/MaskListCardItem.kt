@@ -1,38 +1,28 @@
 package com.dimension.maskbook.wallet.ui.widget
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.ListItem
+import androidx.compose.foundation.background
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.draw.clip
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun MaskListCardItem(
     modifier: Modifier = Modifier,
     icon: @Composable (() -> Unit)? = null,
     secondaryText: @Composable (() -> Unit)? = null,
-    singleLineSecondaryText: Boolean = true,
     overlineText: @Composable (() -> Unit)? = null,
     trailing: @Composable (() -> Unit)? = null,
     text: @Composable () -> Unit
 ) {
-    Box(
-        modifier = Modifier
-            .padding(horizontal = 22.dp, vertical = 8.dp)
-            .then(modifier),
-    ) {
-        MaskCard {
-            ListItem(
-                icon = icon,
-                secondaryText = secondaryText,
-                singleLineSecondaryText = singleLineSecondaryText,
-                overlineText = overlineText,
-                trailing = trailing,
-                text = text,
-            )
-        }
-    }
+    MaskListItem(
+        modifier = modifier
+            .background(MaterialTheme.colors.surface, shape = MaterialTheme.shapes.medium)
+            .clip(shape = MaterialTheme.shapes.medium),
+        icon = icon,
+        secondaryText = secondaryText,
+        overlineText = overlineText,
+        trailing = trailing,
+        text = text,
+    )
 }
