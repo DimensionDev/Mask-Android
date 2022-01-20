@@ -21,7 +21,6 @@ import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
@@ -46,6 +45,7 @@ import com.dimension.maskbook.wallet.repository.UnlockType
 import com.dimension.maskbook.wallet.repository.WalletTokenData
 import com.dimension.maskbook.wallet.ui.MaskTheme
 import com.dimension.maskbook.wallet.ui.widget.MaskBackButton
+import com.dimension.maskbook.wallet.ui.widget.MaskIconButton
 import com.dimension.maskbook.wallet.ui.widget.MaskInputField
 import com.dimension.maskbook.wallet.ui.widget.MaskPasswordInputField
 import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
@@ -167,7 +167,7 @@ private fun AddressContent(
             modifier = Modifier.weight(1f)
         )
         if (!isContact) {
-            IconButton(onClick = onAddContact) {
+            MaskIconButton(onClick = onAddContact) {
                 Image(
                     painter = painterResource(id = R.drawable.ic_add_user),
                     contentDescription = null,

@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -35,6 +34,7 @@ import androidx.compose.ui.unit.sp
 import com.dimension.maskbook.wallet.ui.widget.IosSwitch
 import com.dimension.maskbook.wallet.ui.widget.MaskBackButton
 import com.dimension.maskbook.wallet.ui.widget.MaskButton
+import com.dimension.maskbook.wallet.ui.widget.MaskIconButton
 import com.dimension.maskbook.wallet.ui.widget.MaskListItem
 import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
 import com.dimension.maskbook.wallet.ui.widget.MaskSingleLineTopAppBar
@@ -143,7 +143,7 @@ private fun TipDialog(
             lineHeight = 21.sp,
             modifier = Modifier.weight(1f),
         )
-        IconButton(onClick = onClose) {
+        MaskIconButton(onClick = onClose) {
             Icon(
                 imageVector = Icons.Filled.Close,
                 contentDescription = null,

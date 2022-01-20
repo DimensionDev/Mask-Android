@@ -21,10 +21,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.IconButton
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,6 +42,7 @@ import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.repository.ChainType
 import com.dimension.maskbook.wallet.repository.WalletData
 import com.dimension.maskbook.wallet.ui.widget.CircleCheckbox
+import com.dimension.maskbook.wallet.ui.widget.MaskIconButton
 import com.dimension.maskbook.wallet.ui.widget.MaskListCardItem
 import com.dimension.maskbook.wallet.ui.widget.MaskListItem
 import com.dimension.maskbook.wallet.ui.widget.MaskModal
@@ -165,14 +168,11 @@ fun WalletSwitchScene(
                             Text(text = stringResource(R.string.scene_wallet_list_wallets_items_add))
                         },
                         trailing = {
-                            IconButton(
-                                onClick = {
-                                    onAddWalletClicked.invoke()
-                                },
-                            ) {
-                                Image(
-                                    painter = painterResource(id = R.drawable.ic_plus),
+                            MaskIconButton(onClick = onAddWalletClicked) {
+                                Icon(
+                                    imageVector = Icons.Rounded.Add,
                                     contentDescription = null,
+                                    modifier = Modifier.size(24.dp),
                                 )
                             }
                         }
@@ -223,12 +223,12 @@ fun WalletSwitchScene(
                         trailing = when {
                             editMode -> {
                                 {
-                                    IconButton(
+                                    MaskIconButton(
                                         onClick = {
                                             onEditMenuClicked.invoke(it)
                                         },
                                     ) {
-                                        Image(
+                                        Icon(
                                             painter = painterResource(id = R.drawable.ic_more_square),
                                             contentDescription = null
                                         )

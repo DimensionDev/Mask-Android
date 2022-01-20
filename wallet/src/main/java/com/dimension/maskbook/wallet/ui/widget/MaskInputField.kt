@@ -126,7 +126,7 @@ fun MaskPasswordInputField(
         leadingIcon = leadingIcon,
         trailingIcon = {
             if (enableVisibilitySwitch) {
-                IconButton(onClick = { visibility = !visibility }) {
+                MaskIconButton(onClick = { visibility = !visibility }) {
                     Image(
                         painter = painterResource(id = if (visibility) R.drawable.ic_eye_show else R.drawable.ic_eye_hide),
                         contentDescription = null

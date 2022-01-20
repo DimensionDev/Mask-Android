@@ -11,7 +11,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.ListItem
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -27,6 +26,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ext.observeAsState
+import com.dimension.maskbook.wallet.ui.widget.MaskIconButton
 import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
 import com.dimension.maskbook.wallet.viewmodel.persona.contacts.ContactsViewModel
 import org.koin.androidx.compose.getViewModel
@@ -49,7 +49,7 @@ fun ContactsScene() {
                         Text(text = it.name)
                     },
                     trailing = {
-                        IconButton(onClick = { /*TODO*/ }) {
+                        MaskIconButton(onClick = { /*TODO*/ }) {
                             Icon(Icons.Default.MoreHoriz, contentDescription = null)
                         }
                     }

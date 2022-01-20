@@ -20,7 +20,6 @@ import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -45,7 +44,7 @@ import com.dimension.maskbook.wallet.repository.Language
 import com.dimension.maskbook.wallet.ui.LocalRootNavController
 import com.dimension.maskbook.wallet.ui.widget.IosSwitch
 import com.dimension.maskbook.wallet.ui.widget.MaskButton
-import com.dimension.maskbook.wallet.ui.widget.MaskCard
+import com.dimension.maskbook.wallet.ui.widget.MaskIconCardButton
 import com.dimension.maskbook.wallet.ui.widget.MaskListItem
 import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
 import com.dimension.maskbook.wallet.ui.widget.MaskTopAppBar
@@ -73,15 +72,11 @@ fun SettingsScene(
         topBar = {
             MaskTopAppBar(
                 actions = {
-                    MaskCard(
-                        modifier = Modifier.aspectRatio(1f)
-                    ) {
-                        IconButton(onClick = { onBack.invoke() }) {
-                            Image(
-                                painter = painterResource(id = R.drawable.twitter_1),
-                                contentDescription = null,
-                            )
-                        }
+                    MaskIconCardButton(onClick = onBack) {
+                        Image(
+                            painter = painterResource(id = R.drawable.twitter_1),
+                            contentDescription = null,
+                        )
                     }
                 }
             )

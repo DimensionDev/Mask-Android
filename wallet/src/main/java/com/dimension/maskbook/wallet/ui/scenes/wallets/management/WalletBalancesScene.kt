@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -26,7 +25,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ScrollableTabRow
@@ -65,6 +63,8 @@ import com.dimension.maskbook.wallet.repository.WalletData
 import com.dimension.maskbook.wallet.repository.dbank
 import com.dimension.maskbook.wallet.ui.MaskTheme
 import com.dimension.maskbook.wallet.ui.widget.MaskCard
+import com.dimension.maskbook.wallet.ui.widget.MaskIconButton
+import com.dimension.maskbook.wallet.ui.widget.MaskIconCardButton
 import com.dimension.maskbook.wallet.ui.widget.MaskListCardItem
 import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
 import com.dimension.maskbook.wallet.ui.widget.MaskSingleLineTopAppBar
@@ -104,45 +104,21 @@ fun WalletBalancesScene(
             topBar = {
                 MaskSingleLineTopAppBar(
                     navigationIcon = {
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            MaskCard(
-                                modifier = Modifier.aspectRatio(1f)
-                            ) {
-                                IconButton(onClick = { /*TODO*/ }) {
-                                    Image(
-                                        painter = painterResource(id = R.drawable.scan),
-                                        contentDescription = null,
-                                        modifier = Modifier.size(32.dp),
-                                    )
-                                }
-                            }
-                            MaskCard(
-                                modifier = Modifier.aspectRatio(1f)
-                            ) {
-                                IconButton(onClick = onWalletSwitchClicked) {
-                                    Image(
-                                        painter = painterResource(id = R.drawable.wallet),
-                                        contentDescription = null,
-                                        modifier = Modifier.size(32.dp),
-                                    )
-                                }
-                            }
+                        MaskIconCardButton(onClick = { /*TODO*/ }) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.scan),
+                                contentDescription = null,
+                                modifier = Modifier.size(22.dp),
+                            )
                         }
                     },
                     actions = {
-                        MaskCard(
-                            modifier = Modifier.aspectRatio(1f)
-                        ) {
-                            IconButton(onClick = {
-                                onBack.invoke()
-                            }) {
-                                Image(
-                                    painter = painterResource(id = R.drawable.twitter_1),
-                                    contentDescription = null,
-                                )
-                            }
+                        MaskIconCardButton(onClick = onWalletSwitchClicked) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.wallet),
+                                contentDescription = null,
+                                modifier = Modifier.size(22.dp),
+                            )
                         }
                     }
                 )
@@ -499,7 +475,7 @@ fun WalletCardItem(
                     }
                 }
             }
-            IconButton(
+            MaskIconButton(
                 onClick = {
                     onMoreClicked.invoke()
                 },

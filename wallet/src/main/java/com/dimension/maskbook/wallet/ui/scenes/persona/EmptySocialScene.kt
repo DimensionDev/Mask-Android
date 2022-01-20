@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
@@ -36,6 +35,7 @@ import com.dimension.maskbook.wallet.repository.Network
 import com.dimension.maskbook.wallet.repository.icon
 import com.dimension.maskbook.wallet.repository.title
 import com.dimension.maskbook.wallet.ui.widget.MaskGridButton
+import com.dimension.maskbook.wallet.ui.widget.MaskIconButton
 import com.dimension.maskbook.wallet.ui.widget.itemsGridIndexed
 
 private class ConnectData(
@@ -154,7 +154,7 @@ private fun TipDialog(
             color = Color.White,
             modifier = Modifier.weight(1f),
         )
-        IconButton(onClick = onClose) {
+        MaskIconButton(onClick = onClose) {
             Icon(
                 imageVector = Icons.Filled.Close,
                 contentDescription = null,

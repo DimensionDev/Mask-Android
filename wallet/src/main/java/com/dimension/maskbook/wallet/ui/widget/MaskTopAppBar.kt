@@ -8,10 +8,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.dimension.maskbook.wallet.R
 
 @Composable
 fun MaskTopAppBar(
@@ -171,16 +169,3 @@ private val TitleIconModifier = Modifier
     .height(40.dp)
     .padding(start = 22.dp)
 //    .width(72.dp - AppBarHorizontalPadding)
-
-@Composable
-fun MaskBackButton(
-    onBack: () -> Unit,
-) {
-    MaskCard(
-        modifier = Modifier.aspectRatio(1f),
-    ) {
-        IconButton(onClick = { onBack.invoke() }) {
-            Icon(painterResource(id = R.drawable.ic_arrow_left), contentDescription = null)
-        }
-    }
-}

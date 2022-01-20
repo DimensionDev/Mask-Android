@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.IconButton
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -29,6 +29,7 @@ import com.dimension.maskbook.wallet.ui.LocalRootNavController
 import com.dimension.maskbook.wallet.ui.MaskTheme
 import com.dimension.maskbook.wallet.ui.widget.MaskBackButton
 import com.dimension.maskbook.wallet.ui.widget.MaskDialog
+import com.dimension.maskbook.wallet.ui.widget.MaskIconButton
 import com.dimension.maskbook.wallet.ui.widget.MaskInputField
 import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
 import com.dimension.maskbook.wallet.ui.widget.MaskSingleLineTopAppBar
@@ -78,12 +79,15 @@ fun CreateOrImportWalletScene(
                         style = MaterialTheme.typography.body1.copy(fontWeight = FontWeight.Bold),
                         modifier = Modifier.weight(1F)
                     )
-                    IconButton(onClick = {
-                        rootNavController.navigate("MultiChainWalletDialog")
-                    }) {
+                    MaskIconButton(
+                        onClick = {
+                            rootNavController.navigate("MultiChainWalletDialog")
+                        }
+                    ) {
                         Image(
                             painter = painterResource(id = R.drawable.ic_doubt),
-                            contentDescription = null
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp),
                         )
                     }
                 }
