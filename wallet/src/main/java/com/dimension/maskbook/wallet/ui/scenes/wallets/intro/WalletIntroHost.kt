@@ -3,6 +3,7 @@ package com.dimension.maskbook.wallet.ui.scenes.wallets.intro
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.ui.LocalRootNavController
 import com.dimension.maskbook.wallet.ui.scenes.wallets.create.CreateType
@@ -21,6 +22,7 @@ fun WalletIntroHost(
 ) {
     val rootNavController = LocalRootNavController.current
     val viewModel = getViewModel<WalletBalancesViewModel>()
+    val collectible = viewModel.collectible.collectAsLazyPagingItems()
     val dWebData by viewModel.dWebData.observeAsState(initial = null)
     val sceneType by viewModel.sceneType.observeAsState(initial = BalancesSceneType.Token)
     val currentWallet by viewModel.currentWallet.observeAsState(initial = null)
@@ -67,11 +69,15 @@ fun WalletIntroHost(
                         viewModel.setSceneType(it)
                     },
                     chainType = dWebData.chainType,
+                    onCollectibleDetailClicked = {
+                        rootNavController.navigate("CollectibleDetail/${it.id}")
+                    },
                     onBack = onBack,
                     displayAmountType = displayAmountType,
                     onDisplayAmountTypeChanged = {
                         viewModel.setCurrentDisplayAmountType(it)
-                    }
+                    },
+                    collectible = collectible,
                 )
             }
         }
