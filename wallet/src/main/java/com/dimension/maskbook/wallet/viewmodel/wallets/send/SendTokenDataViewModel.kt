@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.mapNotNull
 class SendTokenDataViewModel(
     initialTokenData: TokenData,
     private val walletRepository: IWalletRepository,
-): ViewModel() {
+) : ViewModel() {
     private val _tokenData = MutableStateFlow(initialTokenData)
     val tokenData = _tokenData.asStateIn(viewModelScope, initialTokenData)
     fun setTokenData(value: TokenData) {
@@ -26,7 +26,15 @@ class SendTokenDataViewModel(
 
     val walletTokenData by lazy {
         combine(walletRepository.currentWallet.mapNotNull { it }, tokenData) { wallet, token ->
-            wallet.tokens.firstOrNull { it.tokenAddress == token.address }
+            with(wallet.tokens) {
+                firstOrNull { it.tokenAddress == token.address }.apply {
+                    if (this == null) {
+                        firstOrNull()?.tokenData?.let { first ->
+                            setTokenData(first)
+                        }
+                    }
+                }
+            }
         }.asStateIn(viewModelScope, null)
             .mapNotNull { it }
     }
