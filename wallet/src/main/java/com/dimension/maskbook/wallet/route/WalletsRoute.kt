@@ -127,7 +127,7 @@ fun NavGraphBuilder.walletsRoute(
                     viewModel.setChainType(target)
                     navController.popBackStack()
                 }
-            
+            )
         }
     }
 
