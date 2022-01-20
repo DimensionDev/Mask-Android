@@ -8,7 +8,11 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -94,8 +98,8 @@ fun CreateWalletHost(
                     onWordDeselected = {
                         viewModel.deselectWord(it)
                     },
-                    title = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_mnemonic_verify_title),
-                    subTitle = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.scene_identify_verify_description)
+                    title = stringResource(R.string.scene_mnemonic_verify_title),
+                    subTitle = stringResource(R.string.scene_identify_verify_description)
                 )
                 result?.let {
                     if (it.type == WalletCreateOrImportResult.Type.SUCCESS) {
@@ -121,7 +125,7 @@ fun CreateWalletHost(
                     )
                 },
                 title = {
-                    Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_alert_wallet_create_success_title))
+                    Text(text = stringResource(R.string.common_alert_wallet_create_success_title))
                 },
                 text = {
                     Text(text = stringResource(R.string.common_alert_wallet_create_success_description))
@@ -133,7 +137,7 @@ fun CreateWalletHost(
                             onDone.invoke()
                         },
                     ) {
-                        Text(text = androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.common_controls_done))
+                        Text(text = stringResource(R.string.common_controls_done))
                     }
                 },
             )

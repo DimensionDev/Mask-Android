@@ -6,6 +6,7 @@ import androidx.core.content.edit
 private val NAME = "MaskBook"
 fun <T> Context.getSettings(name: String, defaultValue: T): T {
     return this.getSharedPreferences(NAME, Context.MODE_PRIVATE).let {
+        @Suppress("UNCHECKED_CAST")
         when (defaultValue) {
             is String -> it.getString(name, defaultValue) as T
             is Float -> it.getFloat(name, defaultValue) as T
