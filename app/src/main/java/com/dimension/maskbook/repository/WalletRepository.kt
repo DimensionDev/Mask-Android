@@ -31,6 +31,7 @@ import org.web3j.abi.datatypes.generated.Uint256
 import org.web3j.crypto.Credentials
 import org.web3j.ens.EnsResolver
 import org.web3j.protocol.Web3j
+import org.web3j.protocol.http.HttpService
 import org.web3j.tx.RawTransactionManager
 import java.math.BigDecimal
 import java.util.*
