@@ -63,7 +63,7 @@ val ChainType.offDrawableRes: Int
         ChainType.eth -> R.drawable.ethereum_o1_1
         ChainType.bsc -> R.drawable.binance_1
         ChainType.polygon -> R.drawable.polygon1
-        ChainType.optimism -> R.drawable.logos_and_symbols_1
+        ChainType.arbitrum -> R.drawable.logos_and_symbols_1
         ChainType.xdai -> R.drawable._5
         else -> -1
     }
@@ -73,7 +73,7 @@ val supportedChainType = buildList {
     add(ChainType.eth)
     add(ChainType.bsc)
     add(ChainType.polygon)
-    add(ChainType.optimism)
+    add(ChainType.arbitrum)
     add(ChainType.xdai)
 }
 
