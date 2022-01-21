@@ -128,7 +128,7 @@ tasks.create("generateTranslation") {
                 File(projectDir, "src/main/res/values/strings.xml")
             } else {
                 File(projectDir,
-                    "src/main/res/values-${name.split("_").first()}-r${name.split("-").last()}/strings.xml")
+                    "src/main/res/values-${name.split("_").first()}-r${name.split("_").last()}/strings.xml")
             }.apply {
                 ensureParentDirsCreated()
                 if (!exists()) {
