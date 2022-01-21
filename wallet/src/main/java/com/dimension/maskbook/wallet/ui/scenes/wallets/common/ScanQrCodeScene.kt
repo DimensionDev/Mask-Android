@@ -1,13 +1,13 @@
 package com.dimension.maskbook.wallet.ui.scenes.wallets.common
 
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
-import androidx.compose.material.MaterialTheme
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -19,10 +19,12 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ui.MaskTheme
 import com.dimension.maskbook.wallet.ui.widget.MaskBackButton
 import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
@@ -97,11 +99,32 @@ fun ScannerMask(
                 drawRect(color = maskColor)
             }
         }
-        Image(
-            painter = painterResource(com.dimension.maskbook.wallet.R.drawable.ic_scanner),
-            modifier = Modifier.size(scannerSize).align(Alignment.Center),
-            contentDescription = "Scanner",
-            contentScale = ContentScale.FillBounds
-        )
+        Box(modifier = Modifier.size(scannerSize).align(Alignment.Center)) {
+            Image(
+                painter = painterResource(R.drawable.ic_scanner),
+                modifier = Modifier.fillMaxSize(),
+                contentDescription = "Scanner",
+                contentScale = ContentScale.FillBounds
+            )
+            with(LocalDensity.current) {
+                val offset = remember { Animatable(10.dp.toPx()) }
+
+                LaunchedEffect(offset) {
+                    offset.animateTo(
+                        targetValue = scannerSize.toPx() - 10.dp.toPx(),
+                        animationSpec = infiniteRepeatable(
+                            animation = tween(2000, easing = LinearEasing),
+                        )
+                    )
+                }
+                Image(
+                    painter = painterResource(R.drawable.ic_scanner_line),
+                    modifier = Modifier.width(scannerSize).align(Alignment.TopCenter)
+                        .offset(x = 0.dp, y = offset.value.toDp()),
+                    contentDescription = "Scanner line",
+                    contentScale = ContentScale.FillBounds
+                )
+            }
+        }
     }
 }
