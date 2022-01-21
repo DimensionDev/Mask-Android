@@ -13,7 +13,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Checkbox
-import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -28,6 +27,7 @@ import com.dimension.maskbook.wallet.ui.MaskTheme
 import com.dimension.maskbook.wallet.ui.scenes.settings.MetaItem
 import com.dimension.maskbook.wallet.ui.widget.BackMetaDisplay
 import com.dimension.maskbook.wallet.ui.widget.MaskBackButton
+import com.dimension.maskbook.wallet.ui.widget.MaskInputField
 import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
 import com.dimension.maskbook.wallet.ui.widget.MaskTopAppBar
 import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
@@ -91,7 +91,7 @@ fun BackupCloudScene(
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(text = stringResource(R.string.scene_setting_backup_recovery_back_up_password))
                 Spacer(modifier = Modifier.height(8.dp))
-                OutlinedTextField(
+                MaskInputField(
                     value = backupPassword,
                     onValueChange = {
                         viewModel.setBackupPassword(it)
@@ -103,7 +103,7 @@ fun BackupCloudScene(
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(text = stringResource(R.string.scene_setting_general_setup_payment_password))
                     Spacer(modifier = Modifier.height(8.dp))
-                    OutlinedTextField(
+                    MaskInputField(
                         value = paymentPassword,
                         onValueChange = {
                             viewModel.setPaymentPassword(it)

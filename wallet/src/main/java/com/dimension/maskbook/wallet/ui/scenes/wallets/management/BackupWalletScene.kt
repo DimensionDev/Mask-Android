@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Tab
 import androidx.compose.material.TabRow
 import androidx.compose.material.TabRowDefaults
@@ -33,6 +32,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ui.MaskTheme
+import com.dimension.maskbook.wallet.ui.widget.MaskInputField
 import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
 import com.dimension.maskbook.wallet.ui.widget.MaskSingleLineTopAppBar
 import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
@@ -115,7 +115,7 @@ fun BackupWalletScene(
                             BackupType.PrivateKey -> privateKey
                         }
                     }
-                    OutlinedTextField(
+                    MaskInputField(
                         value = content,
                         onValueChange = {},
                         readOnly = true,

@@ -24,7 +24,6 @@ import androidx.compose.material.Checkbox
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -211,7 +210,7 @@ fun BackupLocalScene(
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(text = stringResource(R.string.scene_setting_general_setup_payment_password))
                 Spacer(modifier = Modifier.height(8.dp))
-                OutlinedTextField(
+                MaskInputField(
                     value = paymentPassword,
                     onValueChange = {
                         viewModel.setPaymentPassword(it)

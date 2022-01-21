@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -14,6 +13,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
+import com.dimension.maskbook.wallet.ui.widget.MaskInputField
 import com.dimension.maskbook.wallet.ui.widget.MaskModal
 import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
 import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
@@ -32,7 +32,7 @@ fun BackupPasswordInputModal(
         ) {
             Text(text = stringResource(R.string.scene_set_backup_password_backup_password))
             Spacer(modifier = Modifier.height(8.dp))
-            OutlinedTextField(
+            MaskInputField(
                 value = password,
                 onValueChange = onPasswordChanged,
                 modifier = Modifier.fillMaxWidth(),

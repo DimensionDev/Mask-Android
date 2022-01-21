@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -17,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ui.MaskTheme
 import com.dimension.maskbook.wallet.ui.widget.MaskBackButton
+import com.dimension.maskbook.wallet.ui.widget.MaskInputField
 import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
 import com.dimension.maskbook.wallet.ui.widget.MaskTopAppBar
 import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
@@ -51,7 +51,7 @@ fun PrivateKeyScene(
                     .padding(ScaffoldPadding),
             ) {
                 Spacer(modifier = Modifier.height(12.dp))
-                OutlinedTextField(
+                MaskInputField(
                     value = privateKey,
                     onValueChange = onPrivateKeyChanged,
                     modifier = Modifier

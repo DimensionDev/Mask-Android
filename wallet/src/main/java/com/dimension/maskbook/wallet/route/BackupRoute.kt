@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.LaunchedEffect
@@ -28,7 +27,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -48,6 +46,7 @@ import com.dimension.maskbook.wallet.ui.scenes.settings.backup.BackupCloudScene
 import com.dimension.maskbook.wallet.ui.scenes.settings.backup.BackupSelectionModal
 import com.dimension.maskbook.wallet.ui.widget.EmailCodeInputModal
 import com.dimension.maskbook.wallet.ui.widget.MaskDialog
+import com.dimension.maskbook.wallet.ui.widget.MaskInputField
 import com.dimension.maskbook.wallet.ui.widget.MaskModal
 import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
 import com.dimension.maskbook.wallet.ui.widget.PhoneCodeInputModal
@@ -301,17 +300,14 @@ fun NavGraphBuilder.backupRoute(
             val loading by viewModel.loading.observeAsState(initial = false)
             val password by viewModel.backupPassword.observeAsState(initial = "")
 
-            MaskModal {
+            MaskModal(
+                title = {
+                    Text(text = stringResource(R.string.scene_backup_merge_to_local_title))
+                }
+            ) {
                 Column(
                     modifier = Modifier.padding(ScaffoldPadding)
                 ) {
-                    Text(
-                        text = stringResource(R.string.scene_backup_merge_to_local_title),
-                        style = MaterialTheme.typography.h6,
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center,
-                    )
-                    Spacer(modifier = Modifier.height(21.dp))
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -333,7 +329,7 @@ fun NavGraphBuilder.backupRoute(
                     }
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(text = stringResource(R.string.scene_set_backup_password_backup_password))
-                    OutlinedTextField(
+                    MaskInputField(
                         value = password,
                         onValueChange = { viewModel.setBackupPassword(it) },
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
