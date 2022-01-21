@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ProvideTextStyle
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -16,13 +18,15 @@ import com.dimension.maskbook.wallet.ui.isDarkTheme
 
 @Composable
 fun MaskModal(
+    title: @Composable (() -> Unit)? = null,
+    subTitle: @Composable (() -> Unit)? = null,
     content: @Composable () -> Unit,
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(Modifier.height(20.dp))
         Spacer(
             modifier = Modifier
                 .size(40.dp, 4.dp)
@@ -34,7 +38,15 @@ fun MaskModal(
                     }, shape = CircleShape
                 )
         )
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(Modifier.height(20.dp))
+        if (title != null) {
+            ProvideTextStyle(MaterialTheme.typography.h4, title)
+            Spacer(Modifier.height(12.dp))
+        }
+        if (subTitle != null) {
+            ProvideTextStyle(MaterialTheme.typography.subtitle2, subTitle)
+            Spacer(Modifier.height(20.dp))
+        }
         content.invoke()
     }
 }

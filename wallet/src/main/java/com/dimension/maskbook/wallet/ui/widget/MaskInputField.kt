@@ -9,8 +9,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.ContentAlpha
-import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ProvideTextStyle
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldColors
 import androidx.compose.material.TextFieldDefaults
@@ -74,10 +74,7 @@ fun MaskInputField(
         label = label,
         placeholder = placeholder?.let {
             {
-                CompositionLocalProvider(
-                    LocalTextStyle provides MaterialTheme.typography.subtitle2,
-                    content = placeholder
-                )
+                ProvideTextStyle(MaterialTheme.typography.subtitle2, placeholder)
             }
         },
         leadingIcon = leadingIcon,
@@ -134,10 +131,7 @@ fun MaskPasswordInputField(
         label = label,
         placeholder = placeholder?.let {
             {
-                CompositionLocalProvider(
-                    LocalTextStyle provides MaterialTheme.typography.subtitle2,
-                    content = placeholder
-                )
+                ProvideTextStyle(MaterialTheme.typography.subtitle2, placeholder)
             }
         },
         leadingIcon = leadingIcon,
