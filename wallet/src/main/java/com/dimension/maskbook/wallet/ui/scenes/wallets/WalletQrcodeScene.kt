@@ -4,6 +4,7 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -87,7 +88,7 @@ fun WalletQrcodeScene(
                         Box(
                             modifier = Modifier
                                 .padding(horizontal = 16.dp, vertical = 24.dp)
-                                .background(Color(0xFFF6F8FB), shape = RoundedCornerShape(12.dp))
+                                .background(MaterialTheme.colors.surface, shape = RoundedCornerShape(12.dp))
                                 .clip(RoundedCornerShape(12.dp))
                                 .padding(horizontal = 16.dp, vertical = 10.dp)
                                 .clickable {
