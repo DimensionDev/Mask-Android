@@ -72,6 +72,12 @@
     <string name="common_alert_recovery_key_title">Keep Recovery Key Carefully</string>
     <string name="common_alert_persona_logout_description">After logging out, your associated social accounts can no longer decrypt past encrypted messages.</string>
     <string name="common_alert_persona_logout_title">Confirm to log out?</string>
+    <string name="common_alert_permissions_open_settings">Please, grant us access on the Settings screen.</string>
+    <string name="common_alert_permissions_description">We need your permission to %s</string>
+    <string name="common_alert_permissions_title">Allow %s access</string>
+    <string name="common_alert_permissions_btn_cancel">Cancel</string>
+    <string name="common_alert_permissions_btn_settings">Open Settings</string>
+    <string name="common_alert_permissions_btn_ok">OK</string>
     <string name="common_alert_recovery_key_warning_description">Simply taking a screenshot of recovery phrase is not safe.</string>
     <string name="common_alert_recovery_key_warning_title">Warning</string>
     <string name="common_alert_persona_name_duplicated_title">The username has already been created.</string>
@@ -196,6 +202,7 @@
     <string name="scene_persona_export_private_key_title">Export Private Key</string>
     <string name="scene_persona_export_private_key_backup_recovery">Backup and Recovery</string>
     <string name="scene_persona_export_private_key_tips">This export is only for exporting private key. We do not export any other data. If you need more data, please go to Settings: </string>
+    <string name="scene_scan_qr_code_title">Scan QR Code</string>
     <string name="scene_identity_privatekey_import_description">The private key of your identity code can only recover your persona.</string>
     <string name="scene_identity_privatekey_import_placeholder">Input your private key</string>
     <string name="scene_identity_privatekey_import_title">Private Key</string>

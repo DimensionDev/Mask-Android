@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalPermissionsApi::class)
+
 package com.dimension.maskbook.wallet.ui.scenes.wallets.common
 
 import androidx.compose.animation.core.*
@@ -21,14 +23,18 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ui.MaskTheme
 import com.dimension.maskbook.wallet.ui.widget.MaskBackButton
+import com.dimension.maskbook.wallet.ui.widget.MaskPermissionsRequired
 import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
 import com.dimension.maskbook.wallet.ui.widget.MaskSingleLineTopAppBar
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberPermissionState
 import com.journeyapps.barcodescanner.BarcodeView
 
 @Composable
@@ -36,7 +42,6 @@ fun ScanQrcodeScene(
     onBack: () -> Unit,
     onResult: (result: String) -> Unit,
 ) {
-    // TODO request camera permission
     MaskTheme {
         MaskScaffold(
             topBar = {
@@ -47,27 +52,35 @@ fun ScanQrcodeScene(
                         )
                     },
                     title = {
-                        //TODO LOCALIZE
-                        Text(text = "Scan the QR Code")
+                        Text(text = stringResource(R.string.scene_scan_qr_code_title))
                     }
                 )
             }
         ) {
             val context = LocalContext.current
             Box {
-                AndroidView(
-                    modifier = Modifier.fillMaxSize(),
-                    factory = {
-                        BarcodeView(context).apply {
-                            this.decodeSingle { result ->
-                                result.text?.let { barCodeOrQr ->
-                                    onResult(barCodeOrQr)
+                MaskPermissionsRequired(
+                    permissions = listOf(android.Manifest.permission.CAMERA),
+                    onPermissionDenied = {
+                        onBack.invoke()
+                    },
+                    feature = stringResource(R.string.scene_scan_qr_code_title),
+                ) {
+                    AndroidView(
+                        modifier = Modifier.fillMaxSize(),
+                        factory = {
+                            BarcodeView(context).apply {
+                                this.decodeSingle { result ->
+                                    result.text?.let { barCodeOrQr ->
+                                        onResult(barCodeOrQr)
+                                    }
                                 }
+                                this.resume()
                             }
-                            this.resume()
                         }
-                    }
-                )
+                    )
+                }
+
                 ScannerMask(
                     modifier = Modifier.fillMaxSize(),
                 )
