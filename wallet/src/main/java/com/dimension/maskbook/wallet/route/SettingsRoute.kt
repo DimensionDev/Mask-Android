@@ -578,8 +578,5 @@ fun NavGraphBuilder.settingsRoute(
                 }
             )
         }
-
     }
-
-    backupRoute(navController = navController)
 }
