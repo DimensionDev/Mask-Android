@@ -1,25 +1,33 @@
 package com.dimension.maskbook.wallet.ui.scenes.wallets.common
 
-import android.app.Activity
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Canvas
+import androidx.compose.ui.graphics.ClipOp
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.clipPath
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.dimension.maskbook.wallet.ui.MaskTheme
 import com.dimension.maskbook.wallet.ui.widget.MaskBackButton
 import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
 import com.dimension.maskbook.wallet.ui.widget.MaskSingleLineTopAppBar
 import com.journeyapps.barcodescanner.BarcodeView
-import com.journeyapps.barcodescanner.CaptureManager
-import com.journeyapps.barcodescanner.CompoundBarcodeView
 
 @Composable
 fun ScanQrcodeScene(
@@ -58,6 +66,9 @@ fun ScanQrcodeScene(
                         }
                     }
                 )
+                ScannerMask(
+                    modifier = Modifier.fillMaxSize(),
+                )
             }
         }
     }
@@ -66,18 +77,31 @@ fun ScanQrcodeScene(
 @Composable
 fun ScannerMask(
     modifier: Modifier = Modifier,
-    maskColor: Color = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
-    scannerSize: Size = Size(width = 300.0f, height = 300.0f),
+    maskColor: Color = Color.Black.copy(alpha = 0.5f),
+    scannerSize: Dp = 284.dp,
 ) {
-    val offset = scannerSize.width
-    Canvas(modifier = modifier) {
-        drawRect(
-            color = maskColor,
-        )
-        //TODO calculate position of rect
-        drawRect(
-            color = Color.Transparent,
-            size = scannerSize,
+    Box(modifier = modifier) {
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            val size = this.size
+            val scannerPath = Path().apply {
+                addRect(
+                    Rect(
+                        offset = Offset(
+                            x = (size.width - scannerSize.toPx()) / 2,
+                            y = (size.height - scannerSize.toPx()) / 2
+                        ), size = Size(scannerSize.toPx(), scannerSize.toPx())
+                    )
+                )
+            }
+            clipPath(scannerPath, clipOp = ClipOp.Difference) {
+                drawRect(color = maskColor)
+            }
+        }
+        Image(
+            painter = painterResource(com.dimension.maskbook.wallet.R.drawable.ic_scanner),
+            modifier = Modifier.size(scannerSize).align(Alignment.Center),
+            contentDescription = "Scanner",
+            contentScale = ContentScale.FillBounds
         )
     }
 }
