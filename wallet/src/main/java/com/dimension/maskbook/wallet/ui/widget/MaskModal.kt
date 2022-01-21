@@ -18,12 +18,13 @@ import com.dimension.maskbook.wallet.ui.isDarkTheme
 
 @Composable
 fun MaskModal(
+    modifier: Modifier = Modifier,
     title: @Composable (() -> Unit)? = null,
     subTitle: @Composable (() -> Unit)? = null,
     content: @Composable () -> Unit,
 ) {
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Spacer(Modifier.height(20.dp))
