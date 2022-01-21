@@ -27,16 +27,17 @@ import com.dimension.maskbook.wallet.ui.widget.MaskModal
 import com.dimension.maskbook.wallet.ui.widget.MaskPasswordInputField
 import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
 import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
-import com.dimension.maskbook.wallet.viewmodel.settings.PaymentPasswordSettingsViewModel
+import com.dimension.maskbook.wallet.viewmodel.settings.BackupPasswordSettingsViewModel
 import org.koin.androidx.compose.getViewModel
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun ChangePaymentPasswordModal(
+fun BackupPasswordSettings(
     onConfirm: () -> Unit,
 ) {
-    val viewModel: PaymentPasswordSettingsViewModel = getViewModel()
+    val viewModel: BackupPasswordSettingsViewModel = getViewModel()
 
+    val currentPassword by viewModel.currentPassword.observeAsState("")
     val isNext by viewModel.isNext.observeAsState(false)
     val password by viewModel.password.observeAsState(initial = "")
     val newPassword by viewModel.newPassword.observeAsState(initial = "")
@@ -46,7 +47,11 @@ fun ChangePaymentPasswordModal(
 
     MaskModal(
         title = {
-            Text(stringResource(R.string.scene_setting_general_change_payment_password))
+            if (currentPassword.isEmpty()) {
+                Text(text = stringResource(R.string.scene_set_backup_password_title))
+            } else {
+                Text(text = stringResource(R.string.scene_setting_backup_recovery_change_backup_password))
+            }
         }
     ) {
         AnimatedContent(
@@ -63,14 +68,14 @@ fun ChangePaymentPasswordModal(
             modifier = Modifier.padding(ScaffoldPadding),
         ) { next ->
             if (!next) {
-                CheckPaymentPassword(
+                CheckBackupPassword(
                     password = password,
                     onPasswordChange = { viewModel.setPassword(it) },
                     confirmPassword = confirmPassword,
                     onNext = { viewModel.goToNext() }
                 )
             } else {
-                ChangePaymentPassword(
+                ChangeBackupPassword(
                     newPassword = newPassword,
                     onNewPasswordChange = { viewModel.setNewPassword(it) },
                     newPasswordConfirm = newPasswordConfirm,
@@ -86,17 +91,18 @@ fun ChangePaymentPasswordModal(
     }
 }
 
+
 @Composable
-private fun CheckPaymentPassword(
+private fun CheckBackupPassword(
     password: String,
     onPasswordChange: (String) -> Unit,
     confirmPassword: Boolean,
     onNext: () -> Unit,
 ) {
     Column {
-        Text(text = "Please verify current Payment Password")
+        Text(text = "Please verify your current Backup Password")
         Spacer(Modifier.height(20.dp))
-        Text(text = stringResource(R.string.scene_setting_general_setup_payment_password))
+        Text(text = stringResource(R.string.scene_setting_backup_recovery_back_up_password))
         Spacer(Modifier.height(8.dp))
         MaskPasswordInputField(
             value = password,
@@ -115,7 +121,7 @@ private fun CheckPaymentPassword(
 }
 
 @Composable
-private fun ChangePaymentPassword(
+private fun ChangeBackupPassword(
     newPassword: String,
     onNewPasswordChange: (String) -> Unit,
     newPasswordConfirm: String,
@@ -124,7 +130,7 @@ private fun ChangePaymentPassword(
     onConfirm: () -> Unit,
 ) {
     Column(Modifier.verticalScroll(rememberScrollState())) {
-        Text(text = stringResource(R.string.scene_change_password_new_password))
+        Text(text = stringResource(R.string.scene_change_backup_password_new_backup_password))
         Spacer(modifier = Modifier.height(8.dp))
         MaskPasswordInputField(
             value = newPassword,
@@ -132,7 +138,7 @@ private fun ChangePaymentPassword(
             modifier = Modifier.fillMaxWidth(),
         )
         Spacer(modifier = Modifier.height(20.dp))
-        Text(text = stringResource(R.string.scene_set_password_confirm_payment_password))
+        Text(text = stringResource(R.string.scene_set_backup_password_confirm_backup_password))
         Spacer(modifier = Modifier.height(8.dp))
         MaskPasswordInputField(
             value = newPasswordConfirm,
@@ -141,7 +147,7 @@ private fun ChangePaymentPassword(
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = stringResource(R.string.scene_change_password_password_demand),
+            text = stringResource(R.string.scene_set_backup_password_tips),
             color = MaterialTheme.colors.primary,
         )
         Spacer(modifier = Modifier.height(20.dp))

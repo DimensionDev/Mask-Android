@@ -130,9 +130,6 @@ fun NavGraphBuilder.settingsRoute(
     }
     bottomSheet("ChangeBackUpPassword") {
         BackupPasswordSettings(
-            onBack = {
-                navController.popBackStack()
-            },
             onConfirm = {
                 navController.navigate("ChangeBackUpPasswordSuccess") {
                     popUpTo("ChangeBackUpPassword") {
