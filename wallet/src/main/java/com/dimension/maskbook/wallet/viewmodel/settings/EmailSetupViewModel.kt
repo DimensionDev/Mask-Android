@@ -18,7 +18,7 @@ class EmailSetupViewModel(
 ) : RemoteBackupRecoveryViewModelBase(
     requestNavigate
 ) {
-    override fun verifyCode(code: String, value: String): Job = viewModelScope.launch {
+    override fun verifyCode(code: String, value: String, skipValidate:Boolean): Job = viewModelScope.launch {
         _loading.value = true
         try {
             backupRepository.validateEmailCode(email = value, code = code)
@@ -60,7 +60,7 @@ class PhoneSetupViewModel(
         _regionCode.value = value
     }
 
-    override fun verifyCode(code: String, value: String): Job = viewModelScope.launch {
+    override fun verifyCode(code: String, value: String, skipValidate:Boolean): Job = viewModelScope.launch {
         _loading.value = true
         try {
             backupRepository.validatePhoneCode(phone = value, code = code)
