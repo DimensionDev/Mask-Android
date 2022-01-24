@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -241,20 +242,16 @@ private fun WalletDisplayAmount(
                         interactionSource = remember { MutableInteractionSource() },
                     ),
             ) {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(4.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Spacer(Modifier.height(13.dp))
-                    Icon(
-                        painter = painterResource(item.icon),
-                        contentDescription = null,
-                        modifier = Modifier.size(28.dp),
-                        tint = Color.White,
-                    )
-                    if (isSelected) {
-                        Spacer(Modifier.size(4.dp).background(Color.White))
-                    }
+                Spacer(Modifier.height(13.dp))
+                Icon(
+                    painter = painterResource(item.icon),
+                    contentDescription = null,
+                    modifier = Modifier.size(28.dp),
+                    tint = Color.White,
+                )
+                if (isSelected) {
+                    Spacer(Modifier.height(4.dp))
+                    Spacer(Modifier.size(4.dp).background(Color.White, shape = CircleShape))
                 }
             }
         }
