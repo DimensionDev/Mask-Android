@@ -275,7 +275,11 @@ fun WalletBalancesScene(
                                 icon = {
                                     Box {
                                         Image(
-                                            painter = rememberImagePainter(data = tokenData.logoURI),
+                                            painter = rememberImagePainter(data = tokenData.logoURI) {
+                                                placeholder(R.drawable.mask)
+                                                error(R.drawable.mask)
+                                                fallback(R.drawable.mask)
+                                            },
                                             contentDescription = null,
                                             modifier = Modifier.size(38.dp)
                                         )
