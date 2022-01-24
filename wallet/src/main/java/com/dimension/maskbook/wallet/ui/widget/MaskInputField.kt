@@ -23,12 +23,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.input.*
 import androidx.compose.ui.tooling.preview.Preview
 import com.dimension.maskbook.wallet.R
 
@@ -97,18 +95,25 @@ fun MaskPasswordInputField(
     placeholder: @Composable (() -> Unit)? = null,
     leadingIcon: @Composable (() -> Unit)? = null,
     isError: Boolean = false,
-    keyboardActions: KeyboardActions = KeyboardActions(),
+    keyboardActions: KeyboardActions? = null,
     singleLine: Boolean = false,
     maxLines: Int = Int.MAX_VALUE,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     shape: Shape = MaterialTheme.shapes.small,
-    colors: TextFieldColors = maskInputColors()
+    colors: TextFieldColors = maskInputColors(),
+    imeAction: ImeAction = ImeAction.Done
 ) {
     var visibility by remember {
         mutableStateOf(false)
     }
     var textFieldValueState by remember { mutableStateOf(TextFieldValue(text = value)) }
     val textFieldValue = textFieldValueState.copy(text = value)
+    val focusManager = LocalFocusManager.current
+    val realKeyboardActions = keyboardActions ?: KeyboardActions(
+        onDone = {
+            focusManager.clearFocus()
+        },
+    )
     TextField(
         value = textFieldValue,
         onValueChange = {
@@ -136,8 +141,8 @@ fun MaskPasswordInputField(
         },
         isError = isError,
         visualTransformation = if (visibility || !enableVisibilitySwitch) VisualTransformation.None else PasswordVisualTransformation(),
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-        keyboardActions = keyboardActions,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = imeAction),
+        keyboardActions = realKeyboardActions,
         singleLine = singleLine,
         maxLines = maxLines,
         interactionSource = interactionSource,
