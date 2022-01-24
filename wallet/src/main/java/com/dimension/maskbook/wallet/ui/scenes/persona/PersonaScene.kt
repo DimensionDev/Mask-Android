@@ -63,11 +63,13 @@ fun PersonaScene(
                     MaterialTheme.colors.surface
                 },
                 actions = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.Filled.Close,
-                            contentDescription = null,
-                        )
+                    if (!socialList.isNullOrEmpty()) {
+                        IconButton(onClick = onBack) {
+                            Icon(
+                                imageVector = Icons.Filled.Close,
+                                contentDescription = null,
+                            )
+                        }
                     }
                 },
                 title = {
