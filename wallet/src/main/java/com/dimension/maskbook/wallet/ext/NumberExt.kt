@@ -40,13 +40,10 @@ fun BigDecimal.humanizeDollar(): String {
         this > BigDecimal.ONE -> {
             this.format(2, trimTrailingZero = false)
         }
-        this > BigDecimal.valueOf(0.000001) -> {
-            this.format(6)
+        this > BigDecimal.valueOf(0.01) -> {
+            this.format(2, trimTrailingZero = false)
         }
-        this == BigDecimal.ZERO -> "0"
-        else -> {
-            return "<0.000001"
-        }
+        else -> "0"
     }
 }
 
