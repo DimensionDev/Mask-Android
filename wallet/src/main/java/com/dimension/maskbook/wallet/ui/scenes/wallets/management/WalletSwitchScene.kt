@@ -129,17 +129,23 @@ fun WalletSwitchScene(
                                 } else {
                                     it.offDrawableRes
                                 }
-                                Image(
-                                    modifier = Modifier
-                                        .size(46.dp)
-                                        .clickable {
-                                            if (selectedChainType != it) {
-                                                onChainTypeSelected(it)
-                                            }
-                                        },
-                                    painter = painterResource(id = res),
-                                    contentDescription = null
-                                )
+                                if (res != -1) {
+                                    Image(
+                                        modifier = Modifier
+                                            .size(46.dp)
+                                            .clickable {
+                                                if (selectedChainType != it) {
+                                                    onChainTypeSelected(it)
+                                                }
+                                            },
+                                        painter = painterResource(id = res),
+                                        contentDescription = null
+                                    )
+                                } else {
+                                    Spacer(
+                                        modifier = Modifier.size(46.dp),
+                                    )
+                                }
                                 if (selectedChainType == it) {
                                     Box(
                                         modifier = Modifier
