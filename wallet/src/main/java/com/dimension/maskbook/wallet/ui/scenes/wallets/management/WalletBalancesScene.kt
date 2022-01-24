@@ -1,17 +1,18 @@
 package com.dimension.maskbook.wallet.ui.scenes.wallets.management
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -52,9 +53,9 @@ import com.dimension.maskbook.wallet.repository.WalletCollectibleItemData
 import com.dimension.maskbook.wallet.repository.WalletData
 import com.dimension.maskbook.wallet.ui.MaskTheme
 import com.dimension.maskbook.wallet.ui.widget.CollectibleCard
-import com.dimension.maskbook.wallet.ui.widget.MaskCard
+import com.dimension.maskbook.wallet.ui.widget.MaskButton
 import com.dimension.maskbook.wallet.ui.widget.MaskIconCardButton
-import com.dimension.maskbook.wallet.ui.widget.MaskListCardItem
+import com.dimension.maskbook.wallet.ui.widget.MaskListItem
 import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
 import com.dimension.maskbook.wallet.ui.widget.MaskSingleLineTopAppBar
 import com.dimension.maskbook.wallet.ui.widget.WalletCard
@@ -66,7 +67,8 @@ enum class BalancesSceneType {
     Collectible
 }
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalCoilApi::class, ExperimentalFoundationApi::class,
+@OptIn(
+    ExperimentalMaterialApi::class, ExperimentalCoilApi::class, ExperimentalFoundationApi::class,
     ExperimentalPagerApi::class
 )
 @Composable
@@ -127,7 +129,10 @@ fun WalletBalancesScene(
                 )
             }
         ) {
-            LazyColumn {
+            LazyColumn(
+                contentPadding = PaddingValues(horizontal = 22.dp, vertical = 24.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+            ) {
                 item {
                     WalletCard(
                         wallets = wallets,
@@ -137,71 +142,41 @@ fun WalletBalancesScene(
                         onDisplayChainTypeClick = onDisplayChainTypeClicked,
                         onMoreClick = onWalletMenuClicked,
                         pagerState = pagerState,
-                        modifier = Modifier.fillMaxWidth(0.9f),
+                        modifier = Modifier.fillMaxWidth(),
                     )
-                    Spacer(modifier = Modifier.height(24.dp))
                 }
                 item {
                     Row(
-                        modifier = Modifier.padding(horizontal = 22.dp),
-                        horizontalArrangement = Arrangement.spacedBy(24.dp)
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center,
                     ) {
-                        MaskCard(
-                            modifier = Modifier
-                                .weight(1f)
-                                .clickable { onSendClicked.invoke() }
-                                .padding(12.dp),
-                        ) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center,
-                            ) {
-                                Image(
-                                    painter = painterResource(id = R.drawable.transaction_1),
-                                    contentDescription = null,
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(
-                                    text = stringResource(R.string.scene_wallet_balance_btn_Send),
-                                    style = MaterialTheme.typography.subtitle1
-                                )
-                            }
-                        }
-
-                        MaskCard(
-                            modifier = Modifier
-                                .weight(1f)
-                                .clickable { onReceiveClicked.invoke() }
-                                .padding(12.dp),
-                        ) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.Center,
-                            ) {
-                                Image(
-                                    painter = painterResource(id = R.drawable.transaction_2),
-                                    contentDescription = null,
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(
-                                    text = stringResource(R.string.scene_wallet_balance_btn_receive),
-                                    style = MaterialTheme.typography.subtitle1
-                                )
-                            }
-                        }
+                        WalletButton(
+                            text = stringResource(R.string.scene_wallet_balance_btn_Send),
+                            icon = R.drawable.transaction_1,
+                            onClick = onSendClicked,
+                        )
+                        Spacer(Modifier.width(12.dp))
+                        WalletButton(
+                            text = stringResource(R.string.scene_wallet_balance_btn_receive),
+                            icon = R.drawable.transaction_2,
+                            onClick = onReceiveClicked,
+                        )
                     }
                 }
                 stickyHeader {
-                    Box {
+                    Row(
+                        modifier = Modifier
+                            .background(MaterialTheme.colors.background)
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
                         CompositionLocalProvider(
                             LocalTextStyle provides LocalTextStyle.current.copy(color = Color.Unspecified)
                         ) {
                             ScrollableTabRow(
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = Modifier.weight(1f),
                                 selectedTabIndex = BalancesSceneType.values().indexOf(sceneType),
-                                backgroundColor = MaterialTheme.colors.background,
+                                backgroundColor = Color.Transparent,
                                 divider = { },
                                 edgePadding = 0.dp,
                                 indicator = { tabPositions ->
@@ -217,7 +192,7 @@ fun WalletBalancesScene(
                                         Box(
                                             modifier = Modifier
                                                 .align(Alignment.BottomCenter)
-                                                .fillMaxWidth(0.4f)
+                                                .fillMaxWidth(0.2f)
                                                 .fillMaxHeight()
                                                 .background(
                                                     color = MaterialTheme.colors.primary,
@@ -234,7 +209,7 @@ fun WalletBalancesScene(
                                         onClick = {
                                             onSceneTypeChanged(type)
                                         },
-                                        selectedContentColor = MaterialTheme.colors.primary,
+                                        selectedContentColor = MaterialTheme.colors.onBackground,
                                         unselectedContentColor = MaterialTheme.colors.onBackground.copy(
                                             alpha = ContentAlpha.medium
                                         ),
@@ -242,68 +217,65 @@ fun WalletBalancesScene(
                                 }
                             }
                         }
-                        Row(
-                            modifier = Modifier.align(Alignment.CenterEnd),
-                        ) {
-                            TextButton(onClick = { /*TODO*/ }) {
-                                Text(text = stringResource(R.string.scene_wallet_derivation_path_operation_add))
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Icon(Icons.Default.Add, contentDescription = null)
-                            }
-                            Spacer(modifier = Modifier.width(22.dp))
+                        TextButton(onClick = { /*TODO*/ }) {
+                            Text(text = stringResource(R.string.scene_wallet_derivation_path_operation_add))
+                            Spacer(Modifier.width(4.dp))
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                contentDescription = null,
+                                tint = LocalTextStyle.current.color,
+                            )
                         }
                     }
                 }
                 when (sceneType) {
                     BalancesSceneType.Token -> {
-                        items(
-                            if (displayChainType == null) {
-                                currentWallet.tokens
-                            } else {
-                                currentWallet.tokens.filter {
-                                    it.tokenData.chainType === displayChainType
-                                }
-                            }.sortedByDescending {
-                                it.tokenData.price * it.count
+                        items(if (displayChainType == null) {
+                            currentWallet.tokens
+                        } else {
+                            currentWallet.tokens.filter {
+                                it.tokenData.chainType === displayChainType
                             }
-                        ) {
+                        }.sortedByDescending {
+                            it.tokenData.price * it.count
+                        }) {
                             val tokenData = it.tokenData
-                            MaskListCardItem(
-                                modifier = Modifier
-                                    .clickable {
-                                        onTokenDetailClicked.invoke(tokenData)
+                            MaskButton(onClick = { onTokenDetailClicked(it.tokenData) }) {
+                                MaskListItem(
+                                    text = {
+                                        Text(text = tokenData.name)
                                     },
-                                text = {
-                                    Text(text = tokenData.name)
-                                },
-                                secondaryText = {
-                                    Text(text = it.count.humanizeToken() + " ${tokenData.symbol}")
-                                },
-                                trailing = {
-                                    Text(text = (it.count * tokenData.price).humanizeDollar())
-                                },
-                                icon = {
-                                    Box {
-                                        Image(
-                                            painter = rememberImagePainter(data = tokenData.logoURI),
-                                            contentDescription = null,
-                                            modifier = Modifier.size(38.dp)
-                                        )
-                                        Image(
-                                            painter = rememberImagePainter(data = tokenData.chainType.onDrawableRes),
-                                            contentDescription = null,
-                                            modifier = Modifier.size(16.dp).align(Alignment.BottomEnd)
-                                        )
+                                    secondaryText = {
+                                        Text(text = it.count.humanizeToken() + " ${tokenData.symbol}")
+                                    },
+                                    trailing = {
+                                        Column {
+                                            Text(text = (it.count * tokenData.price).humanizeDollar())
+                                        }
+                                    },
+                                    icon = {
+                                        Box {
+                                            Image(
+                                                painter = rememberImagePainter(data = tokenData.logoURI),
+                                                contentDescription = null,
+                                                modifier = Modifier.size(38.dp)
+                                            )
+                                            Image(
+                                                painter = rememberImagePainter(data = tokenData.chainType.onDrawableRes),
+                                                contentDescription = null,
+                                                modifier = Modifier.size(16.dp).align(Alignment.BottomEnd)
+                                            )
+                                        }
                                     }
-                                }
-                            )
+                                )
+                            }
                         }
                     }
                     BalancesSceneType.Collectible -> {
-                        items(collectible) {
-                            if (it != null) {
+                        items(collectible) { item ->
+                            if (item != null) {
                                 CollectibleCard(
-                                    data = it,
+                                    data = item,
                                     onItemClicked = {
                                         onCollectibleDetailClicked.invoke(it)
                                     },
@@ -314,5 +286,27 @@ fun WalletBalancesScene(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun WalletButton(
+    text: String,
+    @DrawableRes icon: Int,
+    onClick: () -> Unit,
+) {
+    MaskButton(
+        onClick = onClick,
+        modifier = Modifier.size(140.dp, 48.dp),
+    ) {
+        Image(
+            painter = painterResource(id = icon),
+            contentDescription = null,
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(
+            text = text,
+            style = MaterialTheme.typography.button
+        )
     }
 }
