@@ -1,5 +1,6 @@
 package com.dimension.maskbook.wallet.ui.widget
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,6 +16,7 @@ fun MaskModal(
 ) {
     Column(
         modifier = Modifier.fillMaxWidth()
+            .animateContentSize()
     ) {
         Spacer(modifier = Modifier.height(18.dp))
         Box(

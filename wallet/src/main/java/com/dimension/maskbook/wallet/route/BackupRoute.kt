@@ -480,7 +480,7 @@ fun NavGraphBuilder.backupRoute(
                                     }
                                 },
                             ) {
-                                Text(text = stringResource(R.string.scene_backup_with_email))
+                                Text(text = stringResource(R.string.scene_backup_with_phone))
                             }
                         }
                     }
