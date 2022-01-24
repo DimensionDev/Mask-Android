@@ -3,12 +3,13 @@ package com.dimension.maskbook.wallet.ui.scenes.wallets.intro
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.ui.LocalRootNavController
 import com.dimension.maskbook.wallet.ui.scenes.wallets.create.CreateType
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.BalancesSceneType
-import com.dimension.maskbook.wallet.ui.scenes.wallets.management.DisplayAmountType
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletBalancesScene
 import com.dimension.maskbook.wallet.viewmodel.wallets.WalletBalancesViewModel
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
@@ -20,6 +21,7 @@ import org.koin.androidx.compose.getViewModel
 fun WalletIntroHost(
     onBack: () -> Unit,
 ) {
+    val clipboardManager = LocalClipboardManager.current
     val rootNavController = LocalRootNavController.current
     val viewModel = getViewModel<WalletBalancesViewModel>()
     val collectible = viewModel.collectible.collectAsLazyPagingItems()
@@ -27,7 +29,7 @@ fun WalletIntroHost(
     val sceneType by viewModel.sceneType.observeAsState(initial = BalancesSceneType.Token)
     val currentWallet by viewModel.currentWallet.observeAsState(initial = null)
     val wallets by viewModel.wallets.observeAsState(initial = emptyList())
-    val displayAmountType by viewModel.displayAmountType.observeAsState(initial = DisplayAmountType.All)
+    val displayChainType by viewModel.displayChainType.observeAsState(initial = null)
     if (currentWallet == null) {
         WalletIntroScene(
             onCreate = {
@@ -68,14 +70,19 @@ fun WalletIntroHost(
                     onSceneTypeChanged = {
                         viewModel.setSceneType(it)
                     },
-                    chainType = dWebData.chainType,
+                    walletChainType = dWebData.chainType,
                     onCollectibleDetailClicked = {
                         rootNavController.navigate("CollectibleDetail/${it.id}")
                     },
                     onBack = onBack,
-                    displayAmountType = displayAmountType,
-                    onDisplayAmountTypeChanged = {
-                        viewModel.setCurrentDisplayAmountType(it)
+                    displayChainType = displayChainType,
+                    onDisplayChainTypeClicked = {
+                        viewModel.setCurrentDisplayChainType(it)
+                    },
+                    onWalletAddressClicked = {
+                        clipboardManager.setText(buildAnnotatedString {
+                            append(wallet.address)
+                        })
                     },
                     collectible = collectible,
                 )

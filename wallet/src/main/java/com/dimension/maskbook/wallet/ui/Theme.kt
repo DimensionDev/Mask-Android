@@ -101,6 +101,13 @@ fun provideTypography(isDarkTheme: Boolean): Typography {
             fontWeight = FontWeight.W700,
             color = Color.Unspecified,
             textAlign = TextAlign.Center,
+        ),
+        caption = TextStyle(
+            fontSize = 14.sp,
+            lineHeight = 21.sp,
+            fontStyle = FontStyle.Normal,
+            fontWeight = FontWeight.W400,
+            color = Color.Unspecified,
         )
     )
 }
