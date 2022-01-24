@@ -37,9 +37,6 @@ fun BigDecimal.humanizeToken(): String {
 
 fun BigDecimal.humanizeDollar(): String {
     return "$" + when {
-        this > BigDecimal.ONE -> {
-            this.format(2, trimTrailingZero = false)
-        }
         this > BigDecimal.valueOf(0.01) -> {
             this.format(2, trimTrailingZero = false)
         }
