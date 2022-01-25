@@ -461,7 +461,7 @@ fun NavGraphBuilder.backupRoute(
                     code = code,
                     onCodeChange = { viewModel.setCode(it) },
                     onSendCode = { viewModel.sendCode(email) },
-                    onVerify = { viewModel.verifyCode(code, email) },
+                    onVerify = { viewModel.verifyCode(code, email, skipValidate = true) },
                     subTitle = {
                         Text(text = stringResource(R.string.scene_backup_backup_verify_field_email))
                         Spacer(modifier = Modifier.height(8.dp))
@@ -480,7 +480,7 @@ fun NavGraphBuilder.backupRoute(
                                     }
                                 },
                             ) {
-                                Text(text = stringResource(R.string.scene_backup_with_email))
+                                Text(text = stringResource(R.string.scene_backup_with_phone))
                             }
                         }
                     }
@@ -523,7 +523,7 @@ fun NavGraphBuilder.backupRoute(
                     countDown = countDown,
                     buttonEnabled = loading,
                     onSendCode = { viewModel.sendCode(phone) },
-                    onVerify = { viewModel.verifyCode(code = code, value = phone) },
+                    onVerify = { viewModel.verifyCode(code = code, value = phone, skipValidate = true) },
                     title = stringResource(R.string.scene_backup_backup_verify_title_phone),
                     subTitle = {
                         Text(text = stringResource(R.string.scene_backup_backup_verify_field_phone))

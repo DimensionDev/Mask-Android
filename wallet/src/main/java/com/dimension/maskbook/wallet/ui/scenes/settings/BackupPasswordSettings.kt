@@ -19,14 +19,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ext.observeAsState
-import com.dimension.maskbook.wallet.ui.widget.MaskModal
-import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
-import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
-import com.dimension.maskbook.wallet.ui.widget.SecondaryButton
+import com.dimension.maskbook.wallet.ui.widget.*
 import com.dimension.maskbook.wallet.viewmodel.settings.BackupPasswordSettingsViewModel
 import org.koin.androidx.compose.getViewModel
 
@@ -65,36 +63,35 @@ fun BackupPasswordSettings(
             if (currentPassword.isNotEmpty()) {
                 Text(text = stringResource(R.string.scene_setting_backup_recovery_back_up_password))
                 Spacer(modifier = Modifier.height(8.dp))
-                OutlinedTextField(
+                MaskPasswordInputField(
                     value = password,
                     onValueChange = {
                         viewModel.setPassword(it)
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                    imeAction = ImeAction.Next
                 )
                 Spacer(modifier = Modifier.height(20.dp))
             }
             Text(text = stringResource(R.string.scene_change_backup_password_new_backup_password))
             Spacer(modifier = Modifier.height(8.dp))
-            OutlinedTextField(
+            MaskPasswordInputField(
                 value = newPassword,
                 onValueChange = {
                     viewModel.setNewPassword(it)
                 },
                 modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                imeAction = ImeAction.Next
             )
             Spacer(modifier = Modifier.height(20.dp))
             Text(text = stringResource(R.string.scene_set_backup_password_confirm_backup_password))
             Spacer(modifier = Modifier.height(8.dp))
-            OutlinedTextField(
+            MaskPasswordInputField(
                 value = newPasswordConfirm,
                 onValueChange = {
                     viewModel.setNewPasswordConfirm(it)
                 },
                 modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(

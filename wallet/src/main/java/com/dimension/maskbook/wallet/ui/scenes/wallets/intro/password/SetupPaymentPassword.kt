@@ -14,6 +14,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ext.observeAsState
@@ -52,6 +53,7 @@ fun SetUpPaymentPassword(
                     viewModel.setNewPassword(it)
                 },
                 modifier = Modifier.fillMaxWidth(),
+                imeAction = ImeAction.Next
             )
             Spacer(modifier = Modifier.height(20.dp))
             Text(text = stringResource(R.string.scene_set_password_repeat_payment_password))
