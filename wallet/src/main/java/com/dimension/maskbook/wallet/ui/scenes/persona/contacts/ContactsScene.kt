@@ -4,9 +4,12 @@ import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.ExperimentalMaterialApi
@@ -26,8 +29,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ext.observeAsState
+import com.dimension.maskbook.wallet.ui.widget.MaskButton
 import com.dimension.maskbook.wallet.ui.widget.MaskIconButton
+import com.dimension.maskbook.wallet.ui.widget.MaskListItem
+import com.dimension.maskbook.wallet.ui.widget.NameImage
 import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
+import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.wallet.viewmodel.persona.contacts.ContactsViewModel
 import org.koin.androidx.compose.getViewModel
 
@@ -39,21 +46,27 @@ fun ContactsScene() {
     if (!items.any()) {
         EmptyContactsScene()
     } else {
-        LazyColumn {
-            items(items) {
-                ListItem(
-                    icon = {
-                        Icon(Icons.Default.AccountCircle, contentDescription = null)
-                    },
-                    text = {
-                        Text(text = it.name)
-                    },
-                    trailing = {
-                        MaskIconButton(onClick = { /*TODO*/ }) {
-                            Icon(Icons.Default.MoreHoriz, contentDescription = null)
-                        }
-                    }
-                )
+        LazyColumn(
+            modifier = Modifier.padding(ScaffoldPadding),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            items(items) { item ->
+                MaskButton(onClick = {}) {
+                    MaskListItem(
+                        icon = {
+                            NameImage(
+                                name = item.name,
+                                modifier = Modifier.size(38.dp),
+                            )
+                        },
+                        text = {
+                            Text(text = item.name)
+                        },
+                        secondaryText = {
+                            Text(text = '@' + item.id.substringAfter('/'))
+                        },
+                    )
+                }
             }
         }
     }
