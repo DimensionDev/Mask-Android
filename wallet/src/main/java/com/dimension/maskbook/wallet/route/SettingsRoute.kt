@@ -18,7 +18,7 @@ import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ext.encodeUrl
 import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.ui.scenes.settings.AppearanceSettings
-import com.dimension.maskbook.wallet.ui.scenes.settings.BackupPasswordSettings
+import com.dimension.maskbook.wallet.ui.scenes.settings.ChangeBackUpPasswordModal
 import com.dimension.maskbook.wallet.ui.scenes.settings.DataSourceSettings
 import com.dimension.maskbook.wallet.ui.scenes.settings.LanguageSettings
 import com.dimension.maskbook.wallet.ui.scenes.settings.ChangePaymentPasswordModal
@@ -129,7 +129,7 @@ fun NavGraphBuilder.settingsRoute(
         )
     }
     bottomSheet("ChangeBackUpPassword") {
-        BackupPasswordSettings(
+        ChangeBackUpPasswordModal(
             onConfirm = {
                 navController.navigate("ChangeBackUpPasswordSuccess") {
                     popUpTo("ChangeBackUpPassword") {

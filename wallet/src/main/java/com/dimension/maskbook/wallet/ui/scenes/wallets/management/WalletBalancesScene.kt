@@ -234,39 +234,6 @@ fun WalletBalancesScene(
                     BalancesSceneType.Token -> {
                         items(showTokens) {
                             val tokenData = it.tokenData
-                            MaskListCardItem(
-                                modifier = Modifier
-                                    .clickable {
-                                        onTokenDetailClicked.invoke(tokenData)
-                                    },
-                                text = {
-                                    Text(text = tokenData.name)
-                                },
-                                secondaryText = {
-                                    Text(text = it.count.humanizeToken() + " ${tokenData.symbol}")
-                                },
-                                trailing = {
-                                    Text(text = (it.count * tokenData.price).humanizeDollar())
-                                },
-                                icon = {
-                                    Box {
-                                        Image(
-                                            painter = rememberImagePainter(data = tokenData.logoURI) {
-                                                placeholder(R.drawable.mask)
-                                                error(R.drawable.mask)
-                                                fallback(R.drawable.mask)
-                                            },
-                                            contentDescription = null,
-                                            modifier = Modifier.size(38.dp)
-                                        )
-                                        Image(
-                                            painter = rememberImagePainter(data = tokenData.chainType.onDrawableRes),
-                                            contentDescription = null,
-                                            modifier = Modifier.size(16.dp).align(Alignment.BottomEnd)
-                                        )
-                                    }
-                                }
-                            )
                             MaskButton(onClick = { onTokenDetailClicked(it.tokenData) }) {
                                 MaskListItem(
                                     text = {
@@ -283,7 +250,11 @@ fun WalletBalancesScene(
                                     icon = {
                                         Box {
                                             Image(
-                                                painter = rememberImagePainter(data = tokenData.logoURI),
+                                                painter = rememberImagePainter(data = tokenData.logoURI) {
+                                                    placeholder(R.drawable.mask)
+                                                    error(R.drawable.mask)
+                                                    fallback(R.drawable.mask)
+                                                },
                                                 contentDescription = null,
                                                 modifier = Modifier.size(38.dp)
                                             )
