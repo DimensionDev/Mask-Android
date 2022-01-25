@@ -8,17 +8,11 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
-import androidx.compose.material.ListItem
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -30,11 +24,9 @@ import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.ui.widget.MaskButton
-import com.dimension.maskbook.wallet.ui.widget.MaskIconButton
 import com.dimension.maskbook.wallet.ui.widget.MaskListItem
 import com.dimension.maskbook.wallet.ui.widget.NameImage
 import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
-import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.wallet.viewmodel.persona.contacts.ContactsViewModel
 import org.koin.androidx.compose.getViewModel
 
@@ -47,8 +39,9 @@ fun ContactsScene() {
         EmptyContactsScene()
     } else {
         LazyColumn(
-            modifier = Modifier.padding(ScaffoldPadding),
+            modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(16.dp),
+            contentPadding = PaddingValues(horizontal = 23.dp, vertical = 24.dp),
         ) {
             items(items) { item ->
                 MaskButton(onClick = {}) {
@@ -91,7 +84,10 @@ fun EmptyContactsScene() {
             context.startActivity(
                 Intent().apply {
                     action = Intent.ACTION_SEND
-                    putExtra(Intent.EXTRA_TEXT, "${context.resources.getText(R.string.scene_share_shareLink)}\nhttps://mask.io/download-links/")
+                    putExtra(
+                        Intent.EXTRA_TEXT,
+                        "${context.resources.getText(R.string.scene_share_shareLink)}\nhttps://mask.io/download-links/"
+                    )
                     type = "text/plain"
                 }
             )
