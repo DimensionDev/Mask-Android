@@ -20,6 +20,7 @@ data class AppDisplayData(
     @StringRes val name: Int,
     val description: String,
     val enabled: Boolean = true,
+    val canExplore: Boolean = false,
 )
 
 private val displayDataList = listOf(
@@ -28,6 +29,7 @@ private val displayDataList = listOf(
         name = R.string.scene_app_plugins_transaction,
         description = "Buy crypto in 60+ countries with Transak support.",
         onIcon = R.drawable.ic_labs_transak,
+        canExplore = true,
     ),
     AppDisplayData(
         key = AppKey.ITO,
@@ -69,7 +71,7 @@ class LabsViewModel(
             .map { apps ->
                 displayDataList.map { item ->
                     item.copy(
-                        enabled = apps.find { it.key === item.key }?.enabled ?: true
+                        enabled = item.canExplore && apps.find { it.key === item.key }?.enabled ?: true
                     )
                 }.sortedByDescending { it.enabled }
             }

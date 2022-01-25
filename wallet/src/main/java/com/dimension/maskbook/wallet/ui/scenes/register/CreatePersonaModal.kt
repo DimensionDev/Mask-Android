@@ -40,7 +40,9 @@ fun CreatePersonaModal(
             PrimaryButton(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {
-                    onDone.invoke(name)
+                    if (name.isNotBlank()) {
+                        onDone.invoke(name)
+                    }
                 },
             ) {
                 Text(text = stringResource(R.string.common_controls_next))

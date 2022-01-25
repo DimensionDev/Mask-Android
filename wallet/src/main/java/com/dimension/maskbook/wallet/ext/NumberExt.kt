@@ -37,16 +37,10 @@ fun BigDecimal.humanizeToken(): String {
 
 fun BigDecimal.humanizeDollar(): String {
     return "$" + when {
-        this > BigDecimal.ONE -> {
+        this > BigDecimal.valueOf(0.01) -> {
             this.format(2, trimTrailingZero = false)
         }
-        this > BigDecimal.valueOf(0.000001) -> {
-            this.format(6)
-        }
-        this == BigDecimal.ZERO -> "0"
-        else -> {
-            return "<0.000001"
-        }
+        else -> "0"
     }
 }
 

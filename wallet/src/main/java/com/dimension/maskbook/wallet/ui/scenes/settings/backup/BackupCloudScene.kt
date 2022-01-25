@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Checkbox
 import androidx.compose.material.Text
@@ -19,7 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ext.observeAsState
@@ -27,7 +26,7 @@ import com.dimension.maskbook.wallet.ui.MaskTheme
 import com.dimension.maskbook.wallet.ui.scenes.settings.MetaItem
 import com.dimension.maskbook.wallet.ui.widget.BackMetaDisplay
 import com.dimension.maskbook.wallet.ui.widget.MaskBackButton
-import com.dimension.maskbook.wallet.ui.widget.MaskInputField
+import com.dimension.maskbook.wallet.ui.widget.MaskPasswordInputField
 import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
 import com.dimension.maskbook.wallet.ui.widget.MaskTopAppBar
 import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
@@ -91,24 +90,23 @@ fun BackupCloudScene(
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(text = stringResource(R.string.scene_setting_backup_recovery_back_up_password))
                 Spacer(modifier = Modifier.height(8.dp))
-                MaskInputField(
+                MaskPasswordInputField(
                     value = backupPassword,
                     onValueChange = {
                         viewModel.setBackupPassword(it)
                     },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                     modifier = Modifier.fillMaxWidth(),
+                    imeAction = if (withWallet) ImeAction.Next else ImeAction.Done,
                 )
                 if (withWallet) {
                     Spacer(modifier = Modifier.height(16.dp))
                     Text(text = stringResource(R.string.scene_setting_general_setup_payment_password))
                     Spacer(modifier = Modifier.height(8.dp))
-                    MaskInputField(
+                    MaskPasswordInputField(
                         value = paymentPassword,
                         onValueChange = {
                             viewModel.setPaymentPassword(it)
                         },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                         modifier = Modifier.fillMaxWidth(),
                     )
                 }
@@ -119,7 +117,7 @@ fun BackupCloudScene(
                         onConfirm.invoke(withWallet)
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    enabled = backupPasswordValid && (withWallet && paymentPasswordValid)
+                    enabled = backupPasswordValid && (if (withWallet) paymentPasswordValid else true)
                 ) {
                     Text(text = stringResource(R.string.scene_personas_action_backup))
                 }

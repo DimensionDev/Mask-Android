@@ -7,7 +7,9 @@ import com.dimension.maskbook.wallet.ext.await
 import com.dimension.maskbook.wallet.services.WalletServices
 import com.dimension.maskbook.wallet.services.model.*
 import com.dimension.maskbook.wallet.services.model.Locale
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -132,7 +134,7 @@ class BackupRepository(
         account: String,
         abstract: String,
         content: String,
-    ) {
+    ) = withContext(Dispatchers.IO) {
         val response = walletServices.backupServices.upload(
             UploadBody(
                 code = code,
@@ -147,9 +149,9 @@ class BackupRepository(
             .newCall(
                 Request.Builder()
                     .url(response.upload_url)
-                    .post(content.toRequestBody())
+                    .put(content.toRequestBody())
                     .build()
-            )
+            ).execute()
     }
 
     suspend fun saveLocality(it: Uri, json: String) = coroutineScope {

@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.wallet.ext.Validator
 import com.dimension.maskbook.wallet.ext.asStateIn
 import com.dimension.maskbook.wallet.repository.BackupRepository
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
@@ -114,10 +113,11 @@ abstract class RemoteBackupRecoveryViewModelBase(
         _code.value = value
     }
 
-    open fun verifyCode(code: String, value: String) = viewModelScope.launch {
+    // if skipValidate is true then verifyCodeInternal will not be called
+    open fun verifyCode(code: String, value: String, skipValidate:Boolean = false) = viewModelScope.launch {
         _loading.value = true
         try {
-            verifyCodeInternal(value, code)
+            if (!skipValidate) verifyCodeInternal(value, code)
         } catch (e: Throwable) {
             _codeValid.value = false
             _loading.value = false

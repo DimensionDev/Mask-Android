@@ -10,11 +10,10 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
-import com.dimension.maskbook.wallet.ui.widget.MaskInputField
 import com.dimension.maskbook.wallet.ui.widget.MaskModal
+import com.dimension.maskbook.wallet.ui.widget.MaskPasswordInputField
 import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
 import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
 
@@ -32,11 +31,10 @@ fun BackupPasswordInputModal(
         ) {
             Text(text = stringResource(R.string.scene_set_backup_password_backup_password))
             Spacer(modifier = Modifier.height(8.dp))
-            MaskInputField(
+            MaskPasswordInputField(
                 value = password,
                 onValueChange = onPasswordChanged,
                 modifier = Modifier.fillMaxWidth(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
             )
             Spacer(modifier = Modifier.height(16.dp))
             PrimaryButton(

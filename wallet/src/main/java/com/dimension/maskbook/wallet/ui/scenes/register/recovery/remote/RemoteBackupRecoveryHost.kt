@@ -89,7 +89,7 @@ fun NavGraphBuilder.remoteBackupRecovery(
                 countDown = countDown,
                 buttonEnabled = loading,
                 onSendCode = { viewModel.sendCode(email) },
-                onVerify = { viewModel.verifyCode(code, email) },
+                onVerify = { viewModel.verifyCode(code, email, skipValidate = true) },
                 title = stringResource(R.string.scene_restore_titles_recovery_with_email)
             )
         } ?: run {
@@ -229,7 +229,7 @@ fun NavGraphBuilder.remoteBackupRecovery(
                     PrimaryButton(
                         modifier = Modifier.fillMaxWidth(),
                         onClick = {
-                            viewModel.verifyCode(code, phone)
+                            viewModel.verifyCode(code, phone, skipValidate = true)
                         },
                         enabled = code.isNotEmpty() && !loading,
                     ) {
