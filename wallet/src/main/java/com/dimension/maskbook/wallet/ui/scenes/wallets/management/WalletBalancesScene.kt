@@ -51,6 +51,7 @@ import com.dimension.maskbook.wallet.repository.TokenData
 import com.dimension.maskbook.wallet.repository.WalletCollectibleData
 import com.dimension.maskbook.wallet.repository.WalletCollectibleItemData
 import com.dimension.maskbook.wallet.repository.WalletData
+import com.dimension.maskbook.wallet.repository.WalletTokenData
 import com.dimension.maskbook.wallet.ui.MaskTheme
 import com.dimension.maskbook.wallet.ui.widget.CollectibleCard
 import com.dimension.maskbook.wallet.ui.widget.MaskButton
@@ -75,6 +76,7 @@ enum class BalancesSceneType {
 fun WalletBalancesScene(
     wallets: List<WalletData>,
     currentWallet: WalletData,
+    showTokens: List<WalletTokenData>,
     onWalletChanged: (WalletData) -> Unit,
     onWalletMenuClicked: () -> Unit,
     onWalletSwitchClicked: () -> Unit,
@@ -230,15 +232,7 @@ fun WalletBalancesScene(
                 }
                 when (sceneType) {
                     BalancesSceneType.Token -> {
-                        items(if (displayChainType == null) {
-                            currentWallet.tokens
-                        } else {
-                            currentWallet.tokens.filter {
-                                it.tokenData.chainType === displayChainType
-                            }
-                        }.sortedByDescending {
-                            it.tokenData.price * it.count
-                        }) {
+                        items(showTokens) {
                             val tokenData = it.tokenData
                             MaskButton(onClick = { onTokenDetailClicked(it.tokenData) }) {
                                 MaskListItem(

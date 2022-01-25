@@ -8,8 +8,11 @@ import com.dimension.maskbook.wallet.repository.ICollectibleRepository
 import com.dimension.maskbook.wallet.repository.IWalletRepository
 import com.dimension.maskbook.wallet.repository.WalletData
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.BalancesSceneType
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.mapNotNull
 
 class WalletBalancesViewModel(
@@ -39,8 +42,22 @@ class WalletBalancesViewModel(
 
     private val _displayChainType = MutableStateFlow<ChainType?>(null)
     val displayChainType = _displayChainType.asStateIn(viewModelScope, null)
+
     fun setCurrentDisplayChainType(displayChainType: ChainType?) {
         _displayChainType.value = displayChainType
     }
 
+    val showTokens by lazy {
+        combine(_displayChainType, currentWallet) { chainType, wallet ->
+            when {
+                wallet == null -> emptyList()
+                chainType == null -> wallet.tokens
+                else -> wallet.tokens.filter {
+                    it.tokenData.chainType === chainType
+                }
+            }.sortedByDescending {
+                it.tokenData.price * it.count
+            }
+        }.flowOn(Dispatchers.IO).asStateIn(viewModelScope, emptyList())
+    }
 }

@@ -30,6 +30,7 @@ fun WalletIntroHost(
     val currentWallet by viewModel.currentWallet.observeAsState(initial = null)
     val wallets by viewModel.wallets.observeAsState(initial = emptyList())
     val displayChainType by viewModel.displayChainType.observeAsState(initial = null)
+    val showTokens by viewModel.showTokens.observeAsState(initial = emptyList())
     if (currentWallet == null) {
         WalletIntroScene(
             onCreate = {
@@ -48,6 +49,7 @@ fun WalletIntroHost(
                 WalletBalancesScene(
                     wallets = wallets,
                     currentWallet = wallet,
+                    showTokens = showTokens,
                     onWalletChanged = {
                         viewModel.setCurrentWallet(it)
                     },

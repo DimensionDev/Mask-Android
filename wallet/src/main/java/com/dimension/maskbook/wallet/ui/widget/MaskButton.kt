@@ -33,7 +33,7 @@ fun MaskButton(
 ) {
     Button(
         onClick = onClick,
-        modifier = Modifier.then(modifier),
+        modifier = modifier,
         enabled = enabled,
         interactionSource = interactionSource,
         elevation = elevation,
