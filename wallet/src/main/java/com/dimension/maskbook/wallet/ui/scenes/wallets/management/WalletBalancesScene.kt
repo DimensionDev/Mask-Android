@@ -429,11 +429,18 @@ fun WalletCardItem(
                         horizontalArrangement = Arrangement.spacedBy(4.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Image(
-                            painter = painterResource(id = chainType.onDrawableRes),
-                            contentDescription = null,
-                            modifier = Modifier.size(12.dp),
-                        )
+                        val res = chainType.onDrawableRes
+                        if (res != -1) {
+                            Image(
+                                painter = painterResource(id = chainType.onDrawableRes),
+                                contentDescription = null,
+                                modifier = Modifier.size(12.dp),
+                            )
+                        } else {
+                            Spacer(
+                                modifier = Modifier.size(12.dp)
+                            )
+                        }
                         Text(
                             text = chainType.name,
                             style = MaterialTheme.typography.caption.copy(color = Color.White),

@@ -63,7 +63,7 @@ val ChainType.offDrawableRes: Int
         ChainType.eth -> R.drawable.ethereum_o1_1
         ChainType.bsc -> R.drawable.binance_1
         ChainType.polygon -> R.drawable.polygon1
-        ChainType.optimism -> R.drawable.logos_and_symbols_1
+        ChainType.arbitrum -> R.drawable.logos_and_symbols_1
         ChainType.xdai -> R.drawable._5
         else -> -1
     }
@@ -73,7 +73,7 @@ val supportedChainType = buildList {
     add(ChainType.eth)
     add(ChainType.bsc)
     add(ChainType.polygon)
-    add(ChainType.optimism)
+    add(ChainType.arbitrum)
     add(ChainType.xdai)
 }
 
@@ -129,17 +129,23 @@ fun WalletSwitchScene(
                                 } else {
                                     it.offDrawableRes
                                 }
-                                Image(
-                                    modifier = Modifier
-                                        .size(46.dp)
-                                        .clickable {
-                                            if (selectedChainType != it) {
-                                                onChainTypeSelected(it)
-                                            }
-                                        },
-                                    painter = painterResource(id = res),
-                                    contentDescription = null
-                                )
+                                if (res != -1) {
+                                    Image(
+                                        modifier = Modifier
+                                            .size(46.dp)
+                                            .clickable {
+                                                if (selectedChainType != it) {
+                                                    onChainTypeSelected(it)
+                                                }
+                                            },
+                                        painter = painterResource(id = res),
+                                        contentDescription = null
+                                    )
+                                } else {
+                                    Spacer(
+                                        modifier = Modifier.size(46.dp),
+                                    )
+                                }
                                 if (selectedChainType == it) {
                                     Box(
                                         modifier = Modifier
