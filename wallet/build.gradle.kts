@@ -62,6 +62,7 @@ dependencies {
     implementation("com.google.accompanist:accompanist-swiperefresh:$accompanist")
     implementation("com.google.accompanist:accompanist-navigation-animation:$accompanist")
     implementation("com.google.accompanist:accompanist-navigation-material:$accompanist")
+    implementation("com.google.accompanist:accompanist-permissions:$accompanist")
     val nav_version = "2.4.0-rc01"
     implementation("androidx.navigation:navigation-ui-ktx:$nav_version")
     implementation("androidx.navigation:navigation-compose:$nav_version")

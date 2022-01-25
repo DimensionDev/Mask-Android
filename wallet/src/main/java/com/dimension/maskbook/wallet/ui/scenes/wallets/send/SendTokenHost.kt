@@ -2,6 +2,7 @@ package com.dimension.maskbook.wallet.ui.scenes.wallets.send
 
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
@@ -20,6 +21,7 @@ import com.dimension.maskbook.wallet.repository.GasPriceEditMode
 import com.dimension.maskbook.wallet.repository.TokenData
 import com.dimension.maskbook.wallet.repository.UnlockType
 import com.dimension.maskbook.wallet.ui.LocalRootNavController
+import com.dimension.maskbook.wallet.ui.scenes.wallets.common.ScanQrcodeScene
 import com.dimension.maskbook.wallet.viewmodel.wallets.BiometricViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.*
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
@@ -58,6 +60,7 @@ fun SendTokenHost(
     }
     val tokenData by tokenDataViewModel.tokenData.observeAsState(initial = initialTokenData)
 
+    val searchAddressViewModel = getViewModel<SearchAddressViewModel>()
     ModalBottomSheetLayout(
         bottomSheetNavigator,
         sheetBackgroundColor = MaterialTheme.colors.background,
@@ -70,28 +73,39 @@ fun SendTokenHost(
             composable(
                 "SearchAddress"
             ) {
-                val viewModel = getViewModel<SearchAddressViewModel>()
-                val input by viewModel.input.observeAsState(initial = "")
-                val contacts by viewModel.contacts.observeAsState(initial = emptyList())
-                val recent by viewModel.recent.observeAsState(initial = emptyList())
-                val noTokenFound by viewModel.noTokenFound.observeAsState(initial = false)
+                val input by searchAddressViewModel.input.observeAsState(initial = "")
+                val contacts by searchAddressViewModel.contacts.observeAsState(initial = emptyList())
+                val recent by searchAddressViewModel.recent.observeAsState(initial = emptyList())
+                val noTokenFound by searchAddressViewModel.noTokenFound.observeAsState(initial = false)
 //                val searchResult by viewModel.searchResult.observeAsState(initial = null)
 //                val loading by viewModel.loading.observeAsState(initial = false)
                 SearchAddressScene(
                     onBack = { rootNavController.popBackStack() },
                     tokenData = tokenData,
                     query = input,
-                    onQueryChanged = { viewModel.onInputChanged(it) },
+                    onQueryChanged = { searchAddressViewModel.onInputChanged(it) },
 //                    searchResult = searchResult,
                     contacts = contacts,
                     recent = recent,
 //                    showLoading = loading,
                     noTokenFound = noTokenFound,
                     onBuyToken = { /*TODO Logic: buy token*/ },
-                    onScanQrCode = { /*TODO Logic: scan qr code*/ },
+                    onScanQrCode = {
+                        navController.navigate("ScanQrCode")
+                    },
                     onNext = {
-                        viewModel.addSendHistory(it)
+                        searchAddressViewModel.addSendHistory(it)
                         navController.navigate("Send/${it}")
+                    }
+                )
+            }
+            composable("ScanQrCode") {
+                ScanQrcodeScene(
+                    onBack = { navController.popBackStack() },
+                    onResult = {
+                        Log.d("SendTokenHost", "onResult: $it")
+                        navController.popBackStack()
+                        searchAddressViewModel.onInputChanged(it)
                     }
                 )
             }
