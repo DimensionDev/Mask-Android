@@ -93,7 +93,8 @@ fun NavGraphBuilder.mainRoute(
                         else -> null // TODO support other network
                     }
                     if (platform != null) {
-                        navController.navigate("DisconnectSocial/${persona.id.encodeUrl()}/${platform}/${social.id.encodeUrl()}")
+                        navController.navigate("DisconnectSocial/${persona.id.encodeUrl()}/${platform}/${social.id.encodeUrl()}" +
+                            "?personaName=${persona.name.encodeUrl()}&socialName=${social.name.encodeUrl()}")
                     }
                 },
                 onLabsSettingClick = {
@@ -279,20 +280,23 @@ fun NavGraphBuilder.mainRoute(
             }
         }
         dialog(
-            "DisconnectSocial/{personaId}/{platform}/{id}",
+            "DisconnectSocial/{personaId}/{platform}/{socialId}?personaName={personaName}&socialName={socialName}",
             arguments = listOf(
                 navArgument("personaId") { type = NavType.StringType },
                 navArgument("platform") { type = NavType.StringType },
-                navArgument("id") { type = NavType.StringType },
+                navArgument("socialId") { type = NavType.StringType },
             )
         ) {
             val personaId = it.arguments?.getString("personaId")
-            val platform =
-                it.arguments?.getString("platform")?.let { PlatformType.valueOf(it) }
-            val id = it.arguments?.getString("id")
+            val personaName = it.arguments?.getString("personaName").orEmpty()
+            val platform = it.arguments?.getString("platform")?.let { PlatformType.valueOf(it) }
+            val socialId = it.arguments?.getString("socialId")
+            val socialName = it.arguments?.getString("socialName").orEmpty()
             val viewModel = getViewModel<DisconnectSocialViewModel>()
-            if (personaId != null && platform != null && id != null) {
+            if (personaId != null && platform != null && socialId != null) {
                 DisconnectSocialDialog(
+                    personaName = personaName,
+                    socialName = socialName,
                     onBack = {
                         navController.popBackStack()
                     },
@@ -301,12 +305,12 @@ fun NavGraphBuilder.mainRoute(
                             PlatformType.Twitter ->
                                 viewModel.disconnectTwitter(
                                     personaId = personaId,
-                                    socialId = id
+                                    socialId = socialId
                                 )
                             PlatformType.Facebook ->
                                 viewModel.disconnectFacebook(
                                     personaId = personaId,
-                                    socialId = id
+                                    socialId = socialId
                                 )
                         }
                         navController.popBackStack()

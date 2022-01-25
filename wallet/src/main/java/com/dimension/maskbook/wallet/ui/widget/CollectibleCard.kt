@@ -27,6 +27,7 @@ import coil.compose.rememberImagePainter
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.repository.WalletCollectibleData
 import com.dimension.maskbook.wallet.repository.WalletCollectibleItemData
+import com.dimension.maskbook.wallet.ui.scenes.wallets.management.onDrawableRes
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -52,10 +53,20 @@ fun CollectibleCard(
             Column {
                 ListItem(
                     icon = {
-                        if (data.icon != null) {
+                        Box {
                             Image(
-                                painter = rememberImagePainter(data.icon),
-                                contentDescription = null
+                                painter = rememberImagePainter(data.icon) {
+                                    placeholder(R.drawable.mask)
+                                    fallback(R.drawable.mask)
+                                    error(R.drawable.mask)
+                                },
+                                contentDescription = null,
+                                modifier = Modifier.size(38.dp),
+                            )
+                            Image(
+                                painter = rememberImagePainter(data = data.chainType.onDrawableRes),
+                                contentDescription = null,
+                                modifier = Modifier.size(16.dp).align(Alignment.BottomEnd)
                             )
                         }
                     },
@@ -82,13 +93,12 @@ fun CollectibleCard(
                         contentPadding = PaddingValues(12.dp),
                     ) {
                         items(data.items) {
-                            val painter = if (!it.previewUrl.isNullOrEmpty()) {
-                                rememberImagePainter(it.previewUrl)
-                            } else {
-                                painterResource(R.drawable.mask)
-                            }
                             Image(
-                                painter = painter,
+                                painter = rememberImagePainter(it.previewUrl) {
+                                    placeholder(R.drawable.mask)
+                                    fallback(R.drawable.mask)
+                                    error(R.drawable.mask)
+                                },
                                 modifier = Modifier
                                     .size(145.dp)
                                     .clip(RoundedCornerShape(12.dp))

@@ -17,6 +17,8 @@ import com.dimension.maskbook.wallet.ui.widget.SecondaryButton
 
 @Composable
 fun DisconnectSocialDialog(
+    socialName: String,
+    personaName: String,
     onBack: () -> Unit,
     onConfirm: () -> Unit,
 ) {
@@ -29,7 +31,7 @@ fun DisconnectSocialDialog(
             )
         },
         text = {
-            Text(text = stringResource(R.string.common_alert_disconnect_profile_title))
+            Text(text = stringResource(R.string.common_alert_disconnect_profile_title, socialName, personaName))
         },
         buttons = {
             Row {
