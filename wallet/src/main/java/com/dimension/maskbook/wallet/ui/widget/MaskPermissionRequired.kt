@@ -1,4 +1,3 @@
-@file:OptIn(ExperimentalPermissionsApi::class)
 
 package com.dimension.maskbook.wallet.ui.widget
 
@@ -6,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
-import android.util.Log
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
@@ -19,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
 import com.google.accompanist.permissions.*
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun MaskPermissionsRequired(
     permissions: List<String>,

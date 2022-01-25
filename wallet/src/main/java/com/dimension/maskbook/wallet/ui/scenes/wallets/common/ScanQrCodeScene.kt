@@ -1,13 +1,15 @@
-@file:OptIn(ExperimentalPermissionsApi::class)
-
 package com.dimension.maskbook.wallet.ui.scenes.wallets.common
 
-import androidx.compose.animation.core.*
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -33,8 +35,6 @@ import com.dimension.maskbook.wallet.ui.widget.MaskBackButton
 import com.dimension.maskbook.wallet.ui.widget.MaskPermissionsRequired
 import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
 import com.dimension.maskbook.wallet.ui.widget.MaskSingleLineTopAppBar
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.rememberPermissionState
 import com.journeyapps.barcodescanner.BarcodeView
 
 @Composable
@@ -58,6 +58,23 @@ fun ScanQrcodeScene(
             }
         ) {
             val context = LocalContext.current
+            val barcodeView = remember {
+                BarcodeView(context).apply {
+                    this.decodeSingle { result ->
+                        result.text?.let { barCodeOrQr ->
+                            onResult(barCodeOrQr)
+                        }
+                    }
+                }
+            }
+            DisposableEffect(Unit) {
+                onDispose {
+                    barcodeView.apply {
+                        stopDecoding()
+                        pause()
+                    }
+                }
+            }
             Box {
                 MaskPermissionsRequired(
                     permissions = listOf(android.Manifest.permission.CAMERA),
@@ -69,13 +86,8 @@ fun ScanQrcodeScene(
                     AndroidView(
                         modifier = Modifier.fillMaxSize(),
                         factory = {
-                            BarcodeView(context).apply {
-                                this.decodeSingle { result ->
-                                    result.text?.let { barCodeOrQr ->
-                                        onResult(barCodeOrQr)
-                                    }
-                                }
-                                this.resume()
+                            barcodeView.apply {
+                                resume()
                             }
                         }
                     )
