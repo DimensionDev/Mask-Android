@@ -79,17 +79,18 @@ fun WalletBalancesScene(
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            MaskCard(
-                                modifier = Modifier.aspectRatio(1f)
-                            ) {
-                                IconButton(onClick = { /*TODO*/ }) {
-                                    Image(
-                                        painter = painterResource(id = R.drawable.scan),
-                                        contentDescription = null,
-                                        modifier = Modifier.size(32.dp),
-                                    )
-                                }
-                            }
+                            // TODO haven't implement yet
+//                            MaskCard(
+//                                modifier = Modifier.aspectRatio(1f)
+//                            ) {
+//                                IconButton(onClick = { /*TODO*/ }) {
+//                                    Image(
+//                                        painter = painterResource(id = R.drawable.scan),
+//                                        contentDescription = null,
+//                                        modifier = Modifier.size(32.dp),
+//                                    )
+//                                }
+//                            }
                             MaskCard(
                                 modifier = Modifier.aspectRatio(1f)
                             ) {

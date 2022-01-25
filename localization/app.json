@@ -118,6 +118,16 @@
             },
             "copied_to_clipboard": {
                 "title": "Copied to clipboard"
+            },
+            "permissions": {
+                "title": "Allow %s access",
+                "description": "We need your permission to %s",
+                "open_settings": "Please, grant us access on the Settings screen.",
+                "btn": {
+                    "ok": "OK",
+                    "cancel": "Cancel",
+                    "settings": "Open Settings"
+                }
             }
         },
         "controls": {
@@ -747,6 +757,9 @@
             "restored_files": "Files",
             "restored_contacts": "Contacts",
             "restored_relations": "Relations"
+        },
+        "scan_qr_code": {
+            "title": "Scan QR Code"
         }
     },
     "chain": {
