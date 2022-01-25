@@ -19,10 +19,11 @@ fun NameImage(
     name: String,
     modifier: Modifier = Modifier,
     style: TextStyle? = null,
+    alpha: Float = LocalContentAlpha.current,
 ) {
     BoxWithConstraints(
         modifier = modifier
-            .alpha(LocalContentAlpha.current)
+            .alpha(alpha)
             .background(MaterialTheme.colors.primary, shape = CircleShape),
         contentAlignment = Alignment.Center,
     ) {

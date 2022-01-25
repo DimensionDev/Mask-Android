@@ -19,9 +19,9 @@ import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.repository.WalletData
 import com.dimension.maskbook.wallet.ui.widget.MaskDialog
 import com.dimension.maskbook.wallet.ui.widget.MaskPasswordInputField
+import com.dimension.maskbook.wallet.ui.widget.NameImage
 import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
 import com.dimension.maskbook.wallet.ui.widget.SecondaryButton
-import com.dimension.maskbook.wallet.ui.widget.WalletAvatar
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -40,9 +40,9 @@ fun WalletDeleteDialog(
         modifier = Modifier.padding(horizontal = 23.dp),
         onDismissRequest = onBack,
         icon = {
-            WalletAvatar(
+            NameImage(
+                name = walletData.name,
                 modifier = Modifier.size(36.dp),
-                walletData = walletData
             )
         },
         title = {

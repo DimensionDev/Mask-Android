@@ -199,8 +199,7 @@ fun NavGraphBuilder.walletsRoute(
         val wallets by viewModel.wallets.observeAsState(initial = emptyList())
         val chainType by viewModel.network.observeAsState(initial = ChainType.eth)
         wallet?.let { it1 ->
-            WalletSwitchScene(
-                onBack = { navController.popBackStack() },
+            WalletSwitchSceneModal(
                 selectedWallet = it1,
                 wallets = wallets,
                 onWalletSelected = {
