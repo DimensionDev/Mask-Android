@@ -359,7 +359,7 @@ fun WalletSwitchModal(
                     modifier = Modifier.padding(12.dp),
                 ) {
                     Image(
-                        painterResource(id = R.drawable.edit),
+                        painterResource(id = R.drawable.ic_rename_wallet),
                         contentDescription = null,
                         modifier = Modifier.size(32.dp),
                     )
@@ -385,7 +385,7 @@ fun WalletSwitchModal(
                         modifier = Modifier.padding(12.dp),
                     ) {
                         Image(
-                            painterResource(id = R.drawable.delete),
+                            painterResource(id = R.drawable.ic_delete_wallet),
                             contentDescription = null,
                             modifier = Modifier.size(32.dp),
                         )
@@ -408,7 +408,7 @@ fun WalletSwitchModal(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Image(
-                            painterResource(id = R.drawable.disconnect),
+                            painterResource(id = R.drawable.ic_disconnect),
                             contentDescription = null,
                             modifier = Modifier.size(32.dp),
                         )

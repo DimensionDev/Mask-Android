@@ -7,14 +7,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
+import com.dimension.maskbook.wallet.ext.applyTextStyle
 
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -60,15 +58,5 @@ fun MaskListItem(
             Spacer(Modifier.width(8.dp))
             styledTrailing()
         }
-    }
-}
-
-private fun applyTextStyle(
-    textStyle: TextStyle,
-    content: @Composable (() -> Unit)?
-): @Composable (() -> Unit)? {
-    if (content == null) return null
-    return {
-        CompositionLocalProvider(LocalTextStyle provides textStyle, content = content)
     }
 }
