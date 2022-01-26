@@ -3,9 +3,9 @@ import org.jetbrains.kotlin.gradle.internal.ensureParentDirsCreated
 
 plugins {
     id("com.android.library")
-    id("kotlin-android")
-    id("org.jetbrains.kotlin.plugin.serialization").version("1.6.10")
-    id("com.google.devtools.ksp").version("1.6.10-1.0.2")
+    kotlin("android")
+    kotlin("plugin.serialization") version Versions.Kotlin.lang
+    id("com.google.devtools.ksp") version Versions.ksp
 }
 
 android {
@@ -29,8 +29,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = Versions.Java.java
+        targetCompatibility = Versions.Java.java
     }
     buildFeatures {
         compose = true
