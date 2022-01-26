@@ -328,20 +328,26 @@ private fun WalletSwitchBottomBar(
     onClick: () -> Unit
 ) {
     Column(Modifier.padding(horizontal = 23.dp, vertical = 20.dp)) {
-        MaskListItem(
-            text = {
-                Text(text = stringResource(R.string.scene_wallet_list_wallets_items_add))
-            },
-            trailing = {
-                MaskIconButton(onClick = onClick) {
+        MaskButton(
+            onClick = onClick,
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = Color.Transparent,
+                disabledBackgroundColor = Color.Transparent,
+            )
+        ) {
+            MaskListItem(
+                text = {
+                    Text(text = stringResource(R.string.scene_wallet_list_wallets_items_add))
+                },
+                trailing = {
                     Icon(
                         imageVector = Icons.Rounded.Add,
                         contentDescription = null,
                         modifier = Modifier.size(24.dp),
                     )
                 }
-            }
-        )
+            )
+        }
         Spacer(Modifier.height(35.dp))
     }
 }
