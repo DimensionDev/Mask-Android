@@ -216,13 +216,13 @@ fun NavGraphBuilder.walletsRoute(
                     navController.navigate("SwitchWalletAddWalletConnect")
                 },
                 onEditMenuClicked = {
-                    navController.navigate("WalletSwitchModal/${it.id}")
+                    navController.navigate("WalletSwitchEditModal/${it.id}")
                 }
             )
         }
     }
     bottomSheet(
-        "WalletSwitchModal/{id}",
+        "WalletSwitchEditModal/{id}",
         arguments = listOf(navArgument("id") { type = NavType.StringType })
     ) {
         it.arguments?.getString("id")?.let { id ->
@@ -230,7 +230,7 @@ fun NavGraphBuilder.walletsRoute(
             val wallets by repository.wallets.observeAsState(initial = emptyList())
             val viewModel = getViewModel<WalletConnectManagementViewModel>()
             wallets.firstOrNull { it.id == id }?.let { wallet ->
-                WalletSwitchModal(
+                WalletSwitchEditModal(
                     walletData = wallet,
                     onRename = { navController.navigate("WalletManagementRename/${wallet.id}") },
                     onDelete = {
