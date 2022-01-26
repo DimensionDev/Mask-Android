@@ -403,10 +403,28 @@ class WalletRepository(
     override suspend fun getKeyStore(
         walletData: WalletData,
         platformType: CoinPlatformType,
+        paymentPassword: String,
     ): String {
         return database.walletDao().getById(walletData.id)?.let {
-            WalletKey.load(it.storedKey.data).firstOrNull()
-        }?.exportKeyStoreJsonOfAddress(platformType.coinType, walletData.address, "", "") ?: ""
+            val walletKey = WalletKey.load(it.storedKey.data).firstOrNull() ?: return@let ""
+            when (it.storedKey.source) {
+                WalletSource.ImportedKeyStore, WalletSource.ImportedPrivateKey -> walletKey.exportKeyStoreJsonOfAddress(
+                    platformType.coinType,
+                    it.wallet.address,
+                    "",
+                    paymentPassword
+                )
+                WalletSource.Created, WalletSource.ImportedMnemonic -> {
+                    walletKey.exportKeyStoreJsonOfPath(
+                        platformType.coinType,
+                        platformType.derivationPath.toString(),
+                        "",
+                        paymentPassword
+                    )
+                }
+                WalletSource.WalletConnect -> ""
+            }
+        } ?: ""
     }
 
     override suspend fun getPrivateKey(
