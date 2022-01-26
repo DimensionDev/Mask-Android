@@ -118,6 +118,16 @@
             },
             "copied_to_clipboard": {
                 "title": "crwdns12959:0crwdne12959:0"
+            },
+            "permissions": {
+                "title": "crwdns13059:0%scrwdne13059:0",
+                "description": "crwdns13061:0%scrwdne13061:0",
+                "open_settings": "crwdns13063:0crwdne13063:0",
+                "btn": {
+                    "ok": "crwdns13065:0crwdne13065:0",
+                    "cancel": "crwdns13067:0crwdne13067:0",
+                    "settings": "crwdns13069:0crwdne13069:0"
+                }
             }
         },
         "controls": {
@@ -746,6 +756,9 @@
             "restored_files": "crwdns12883:0crwdne12883:0",
             "restored_contacts": "crwdns12885:0crwdne12885:0",
             "restored_relations": "crwdns12887:0crwdne12887:0"
+        },
+        "scan_qr_code": {
+            "title": "crwdns13071:0crwdne13071:0"
         }
     },
     "chain": {
