@@ -118,6 +118,16 @@
             },
             "copied_to_clipboard": {
                 "title": ""
+            },
+            "permissions": {
+                "title": "",
+                "description": "",
+                "open_settings": "",
+                "btn": {
+                    "ok": "",
+                    "cancel": "",
+                    "settings": ""
+                }
             }
         },
         "controls": {
@@ -746,6 +756,9 @@
             "restored_files": "",
             "restored_contacts": "",
             "restored_relations": ""
+        },
+        "scan_qr_code": {
+            "title": ""
         }
     },
     "chain": {
