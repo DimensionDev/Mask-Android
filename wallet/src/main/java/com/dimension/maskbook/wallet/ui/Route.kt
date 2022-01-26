@@ -12,8 +12,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.plusAssign
 import com.dimension.maskbook.wallet.navHostAnimationDurationMillis
 import com.dimension.maskbook.wallet.route.backupRoute
-import com.dimension.maskbook.wallet.route.mainRoute
-import com.dimension.maskbook.wallet.route.registerRoute
+import com.dimension.maskbook.wallet.route.generatedRoute
 import com.dimension.maskbook.wallet.route.settingsRoute
 import com.dimension.maskbook.wallet.route.walletsRoute
 import com.google.accompanist.navigation.animation.AnimatedNavHost
@@ -24,6 +23,22 @@ import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 
 val LocalRootNavController =
     staticCompositionLocalOf<NavHostController> { error("No NavHostController") }
+
+object RouteType {
+    object Composable {
+        const val PackageName = "com.dimension.maskbook.wallet.ext"
+        const val FunctionName = "animatedComposable"
+    }
+    object Dialog {
+        const val PackageName = "androidx.navigation.compose"
+        const val FunctionName = "dialog"
+    }
+    object Modal {
+        const val PackageName = "com.dimension.maskbook.wallet.ext"
+        const val FunctionName = "modal"
+    }
+}
+
 
 @OptIn(ExperimentalMaterialNavigationApi::class, ExperimentalAnimationApi::class)
 @Composable
@@ -55,17 +70,10 @@ fun Route(
                     slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween(navHostAnimationDurationMillis))
                 },
             ) {
-                registerRoute(
-                    navController = navController,
-                )
-                mainRoute(
-                    navController = navController,
-                    onBack = onBack,
-                ) {
-                    walletsRoute(navController = navController)
-                    settingsRoute(navController = navController)
-                    backupRoute(navController = navController)
-                }
+                walletsRoute(navController = navController)
+                settingsRoute(navController = navController)
+                backupRoute(navController = navController)
+                generatedRoute(navController)
             }
         }
     }

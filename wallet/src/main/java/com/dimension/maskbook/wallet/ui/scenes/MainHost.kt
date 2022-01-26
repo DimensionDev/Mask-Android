@@ -50,7 +50,11 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
 
-private enum class HomeScreen(val route: String, @StringRes val title: Int, @DrawableRes val icon: Int) {
+private enum class HomeScreen(
+    val route: String,
+    @StringRes val title: Int,
+    @DrawableRes val icon: Int
+) {
     Personas("Personas", R.string.tab_personas, R.drawable.ic_persona),
     Wallets("Wallets", R.string.tab_wallet, R.drawable.ic_wallet),
     Labs("Labs", R.string.tab_labs, R.drawable.ic_labs),
@@ -59,8 +63,11 @@ private enum class HomeScreen(val route: String, @StringRes val title: Int, @Dra
 
 private val items = HomeScreen.values()
 
-@ExperimentalMaterialNavigationApi
-@OptIn(ExperimentalAnimationApi::class, ExperimentalPagerApi::class)
+@OptIn(
+    ExperimentalAnimationApi::class,
+    ExperimentalPagerApi::class,
+    ExperimentalMaterialNavigationApi::class,
+)
 @Composable
 fun MainHost(
     initialTab: String,

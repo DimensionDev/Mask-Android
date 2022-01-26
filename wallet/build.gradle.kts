@@ -116,6 +116,9 @@ dependencies {
     implementation("com.github.WalletConnect:kotlin-walletconnect-lib:0.9.7")
     implementation("com.squareup.moshi:moshi:1.8.0")
     implementation("com.github.komputing.khex:extensions:1.1.2")
+
+    ksp("com.github.Tlaster:KRoute:1.0.4")
+    implementation("com.github.Tlaster:KRoute:1.0.4")
 }
 
 

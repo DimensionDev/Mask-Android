@@ -22,14 +22,22 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.dimension.maskbook.wallet.route.Root
 import com.dimension.maskbook.wallet.ui.widget.*
 import com.dimension.maskbook.wallet.viewmodel.app.PluginDisplayData
 import com.dimension.maskbook.wallet.viewmodel.app.PluginSettingsViewModel
+import moe.tlaster.kroute.processor.Back
+import moe.tlaster.kroute.processor.RouteGraphDestination
 import org.koin.androidx.compose.viewModel
 
+@RouteGraphDestination(
+    route = Root.Main.PluginSettings,
+    packageName = RouteType.Composable.PackageName,
+    functionName = RouteType.Composable.FunctionName,
+)
 @Composable
 fun PluginSettingsScene(
-    onBack: () -> Unit
+    @Back onBack: () -> Unit
 ) {
     val viewModel by viewModel<PluginSettingsViewModel>()
     val apps by viewModel.apps.collectAsState()

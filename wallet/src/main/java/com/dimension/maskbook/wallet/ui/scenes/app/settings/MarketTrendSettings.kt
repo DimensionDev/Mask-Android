@@ -2,12 +2,7 @@ package com.dimension.maskbook.wallet.ui.scenes.app.settings
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
@@ -23,10 +18,12 @@ import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.repository.NetworkType
 import com.dimension.maskbook.wallet.repository.TradeProvider
+import com.dimension.maskbook.wallet.route.Root
 import com.dimension.maskbook.wallet.ui.widget.MaskModal
 import com.dimension.maskbook.wallet.ui.widget.MaskSelection
 import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.wallet.viewmodel.app.MarketTrendSettingsViewModel
+import moe.tlaster.kroute.processor.RouteGraphDestination
 import org.koin.androidx.compose.getViewModel
 
 private val tradeSources = mapOf(
@@ -79,6 +76,11 @@ private val TradeProvider.icon
         TradeProvider.UNISWAP_V3 -> painterResource(id = R.drawable.uniswap)
     }
 
+@RouteGraphDestination(
+    route = Root.Main.MarketTrendSettings,
+    packageName = RouteType.Modal.PackageName,
+    functionName = RouteType.Modal.FunctionName,
+)
 @Composable
 fun MarketTrendSettingsModal() {
     val viewModel = getViewModel<MarketTrendSettingsViewModel>()

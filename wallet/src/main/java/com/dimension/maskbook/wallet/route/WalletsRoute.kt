@@ -5,6 +5,7 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -20,6 +21,7 @@ import com.dimension.maskbook.wallet.repository.ChainType
 import com.dimension.maskbook.wallet.repository.ISettingsRepository
 import com.dimension.maskbook.wallet.repository.ITokenRepository
 import com.dimension.maskbook.wallet.repository.IWalletRepository
+import com.dimension.maskbook.wallet.ui.RouteType
 import com.dimension.maskbook.wallet.ui.scenes.wallets.UnlockWalletDialog
 import com.dimension.maskbook.wallet.ui.scenes.wallets.WalletQrcodeScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.collectible.CollectibleDetailScene
@@ -43,343 +45,445 @@ import com.dimension.maskbook.wallet.viewmodel.wallets.management.*
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.bottomSheet
+import moe.tlaster.kroute.processor.Back
+import moe.tlaster.kroute.processor.Path
+import moe.tlaster.kroute.processor.RouteGraphDestination
 import org.koin.androidx.compose.get
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 
+@RouteGraphDestination(
+    route = Root.Main.CollectibleDetail.path,
+    packageName = RouteType.Composable.PackageName,
+    functionName = RouteType.Composable.FunctionName,
+)
+@Composable
+fun CollectibleDetailRoute(
+    @Path("id") id: String?,
+    navController: NavController,
+    @Back onBack: () -> Unit,
+) {
+    if (id != null) {
+        val viewModel = getViewModel<CollectibleDetailViewModel> {
+            parametersOf(id)
+        }
+        val data by viewModel.data.observeAsState(initial = null)
+        data?.let {
+            CollectibleDetailScene(
+                data = it,
+                onBack = {
+                    onBack.invoke()
+                },
+                onSend = {
+
+                },
+                onReceive = {
+                    navController.navigate(Root.Main.WalletQrcode(it.chainType.name))
+                }
+            )
+        }
+    }
+}
+
+@RouteGraphDestination(
+    route = Root.Main.WalletQrcode.path,
+    packageName = RouteType.Composable.PackageName,
+    functionName = RouteType.Composable.FunctionName,
+)
+@Composable
+fun WalletQrcodeRoute(
+    @Path("name") name: String?,
+    navController: NavController,
+) {
+    val repository = get<IWalletRepository>()
+    val currentWallet by repository.currentWallet.observeAsState(initial = null)
+    val context = LocalContext.current
+    currentWallet?.let {
+        WalletQrcodeScene(
+            address = it.address,
+            name = name.orEmpty(),
+            onShare = { context.shareText(it.address) },
+            onBack = { navController.popBackStack() },
+            onCopy = { context.copyText(it.address) }
+        )
+    }
+}
+
+@RouteGraphDestination(
+    route = Root.Main.WalletQrcode.path,
+    packageName = RouteType.Composable.PackageName,
+    functionName = RouteType.Composable.FunctionName,
+)
+@Composable
+fun TokenDetailRoute(
+    @Path("id") id: String?,
+    navController: NavController,
+    @Back onBack: () -> Unit,
+) {
+    if (id != null) {
+        val viewModel = getViewModel<TokenDetailViewModel> {
+            parametersOf(id)
+        }
+        val token by viewModel.tokenData.observeAsState(initial = null)
+        val transaction by viewModel.transaction.observeAsState(initial = emptyList())
+        val walletTokenData by viewModel.walletTokenData.observeAsState(initial = null)
+        val dWebData by viewModel.dWebData.observeAsState(initial = null)
+        walletTokenData?.let { walletTokenData ->
+            token?.let { token ->
+                TokenDetailScene(
+                    onBack = { onBack.invoke() },
+                    tokenData = token,
+                    walletTokenData = walletTokenData,
+                    transactions = transaction,
+                    onSpeedUp = { },
+                    onCancel = { },
+                    onSend = {
+                        if (token.chainType != dWebData?.chainType) {
+                            navController.navigate(Root.Main.WalletNetworkSwitch(token.chainType.name))
+                        } else {
+                            navController.navigate(Root.Main.SendTokenScene(token.address))
+                        }
+                    },
+                    onReceive = {
+                        navController.navigate(Root.Main.WalletQrcode(token.symbol))
+                    },
+                )
+            }
+        }
+    }
+}
+
+@RouteGraphDestination(
+    route = Root.Main.SwitchWalletAdd,
+    packageName = RouteType.Modal.PackageName,
+    functionName = RouteType.Modal.FunctionName,
+)
+@Composable
+fun SwitchWalletAddRoute(
+    navController: NavController,
+) {
+    WalletSwitchAddModal(
+        onCreate = {
+            navController.navigate(Root.Main.WalletIntroHostLegal(CreateType.CREATE.name))
+        },
+        onImport = {
+            navController.navigate(Root.Main.WalletIntroHostLegal(CreateType.IMPORT.name))
+        },
+    )
+}
+
+
+@RouteGraphDestination(
+    route = Root.Main.WalletNetworkSwitch.path,
+    packageName = RouteType.Dialog.PackageName,
+    functionName = RouteType.Dialog.FunctionName,
+)
+@Composable
+fun WalletNetworkSwitchRoute(
+    @Path("target") targetName: String?,
+    @Back onBack: () -> Unit,
+) {
+    if (targetName != null) {
+        val target = ChainType.valueOf(targetName)
+        val viewModel = getViewModel<WalletSwitchViewModel>()
+        val currentNetwork by viewModel.network.observeAsState(initial = ChainType.eth)
+        WalletNetworkSwitchWarningDialog(
+            currentNetwork = currentNetwork.name,
+            connectingNetwork = target.name,
+            onCancel = { onBack.invoke() },
+            onSwitch = {
+                viewModel.setChainType(target)
+                onBack.invoke()
+            }
+        )
+    }
+}
+
+@RouteGraphDestination(
+    route = Root.Main.WalletNetworkSwitchWarningDialog,
+    packageName = RouteType.Dialog.PackageName,
+    functionName = RouteType.Dialog.FunctionName,
+)
+@Composable
+fun WalletNetworkSwitchWarningDialogRoute(
+    @Back onBack: () -> Unit,
+) {
+    val viewModel = getViewModel<WalletSwitchViewModel>()
+    val currentNetwork by viewModel.network.observeAsState(initial = ChainType.eth)
+    val wallet by viewModel.currentWallet.observeAsState(initial = null)
+    wallet?.let {
+        if (!it.fromWalletConnect || it.walletConnectChainType == currentNetwork || it.walletConnectChainType == null) {
+            onBack.invoke()
+        }
+        WalletNetworkSwitchWarningDialog(
+            currentNetwork = currentNetwork.name,
+            connectingNetwork = it.walletConnectChainType?.name ?: "",
+            onCancel = { onBack.invoke() },
+            onSwitch = {
+                it.walletConnectChainType?.let { type ->
+                    viewModel.setChainType(type)
+                }
+                onBack.invoke()
+            }
+        )
+    }
+}
+
+
+@RouteGraphDestination(
+    route = Root.Main.SwitchWallet,
+    packageName = RouteType.Modal.PackageName,
+    functionName = RouteType.Modal.FunctionName,
+)
+@Composable
+fun SwitchWalletRoute(
+    navController: NavController,
+    @Back onBack: () -> Unit,
+) {
+    val viewModel = getViewModel<WalletSwitchViewModel>()
+    val wallet by viewModel.currentWallet.observeAsState(initial = null)
+    val wallets by viewModel.wallets.observeAsState(initial = emptyList())
+    val chainType by viewModel.network.observeAsState(initial = ChainType.eth)
+    wallet?.let { it1 ->
+        WalletSwitchScene(
+            onBack = { onBack.invoke() },
+            selectedWallet = it1,
+            wallets = wallets,
+            onWalletSelected = {
+                viewModel.setCurrentWallet(it)
+            },
+            selectedChainType = chainType,
+            onChainTypeSelected = {
+                viewModel.setChainType(it)
+            },
+            onAddWalletClicked = {
+                navController.navigate(Root.Main.SwitchWalletAdd)
+            },
+            onWalletConnectClicked = {
+                navController.navigate(Root.Main.SwitchWalletAddWalletConnect)
+            },
+            onEditMenuClicked = {
+                navController.navigate(Root.Main.WalletSwitchModal(it.id))
+            }
+        )
+    }
+}
+
+@RouteGraphDestination(
+    route = Root.Main.WalletSwitchModal.path,
+    packageName = RouteType.Modal.PackageName,
+    functionName = RouteType.Modal.FunctionName,
+)
+@Composable
+fun WalletSwitchModalRoute(
+    @Path("id") id: String?,
+    @Back onBack: () -> Unit,
+    navController: NavController,
+) {
+    if (id != null) {
+        val repository = get<IWalletRepository>()
+        val wallets by repository.wallets.observeAsState(initial = emptyList())
+        val viewModel = getViewModel<WalletConnectManagementViewModel>()
+        wallets.firstOrNull { it.id == id }?.let { wallet ->
+            WalletSwitchModal(
+                walletData = wallet,
+                onRename = { navController.navigate(Root.Main.WalletManagementRename(wallet.id)) },
+                onDelete = {
+                    onBack.invoke()
+                    navController.navigate(Root.Main.WalletManagementDeleteDialog(wallet.id))
+                },
+                onDisconnect = {
+                    viewModel.disconnect(walletData = wallet)
+                    onBack.invoke()
+                }
+            )
+        }
+    }
+}
+
+@RouteGraphDestination(
+    route = Root.Main.WalletBalancesMenu,
+    packageName = RouteType.Modal.PackageName,
+    functionName = RouteType.Modal.FunctionName,
+)
+@Composable
+fun WalletBalancesMenuRoute(
+    navController: NavController,
+    @Back onBack: () -> Unit,
+) {
+    val viewModel = getViewModel<WalletManagementModalViewModel>()
+    val currentWallet by viewModel.currentWallet.observeAsState(initial = null)
+    val wcViewModel = getViewModel<WalletConnectManagementViewModel>()
+    currentWallet?.let { wallet ->
+        WalletManagementModal(
+            walletData = wallet,
+            onRename = { navController.navigate(Root.Main.WalletManagementRename(wallet.id)) },
+            onBackup = { navController.navigate(Root.Main.UnlockWalletDialog(Root.Main.WalletManagementBackup)) },
+            onTransactionHistory = { navController.navigate(Root.Main.WalletManagementTransactionHistory) },
+            onDelete = {
+                onBack.invoke()
+                navController.navigate(Root.Main.WalletManagementDeleteDialog(wallet.id))
+            },
+            onDisconnect = {
+                wcViewModel.disconnect(walletData = wallet)
+                onBack.invoke()
+            }
+        )
+    }
+}
+
+@RouteGraphDestination(
+    route = Root.Main.WalletManagementDeleteDialog.path,
+    packageName = RouteType.Dialog.PackageName,
+    functionName = RouteType.Dialog.FunctionName,
+)
+@Composable
+fun WalletManagementDeleteDialogRoute(
+    @Path("id") id: String?,
+    @Back onBack: () -> Unit
+) {
+    if (id != null) {
+        val viewModel = getViewModel<WalletDeleteViewModel> {
+            parametersOf(id)
+        }
+        val biometricViewModel = getViewModel<BiometricViewModel>()
+        val wallet by viewModel.wallet.observeAsState(initial = null)
+        val biometricEnabled by biometricViewModel.biometricEnabled.observeAsState(initial = false)
+        val context = LocalContext.current
+        wallet?.let { walletData ->
+            val password by viewModel.password.observeAsState(initial = "")
+            val canConfirm by viewModel.canConfirm.observeAsState(initial = false)
+            WalletDeleteDialog(
+                walletData = walletData,
+                password = password,
+                onPasswordChanged = { viewModel.setPassword(it) },
+                onBack = { onBack.invoke() },
+                onDelete = {
+                    if (biometricEnabled) {
+                        biometricViewModel.authenticate(
+                            context = context,
+                            onSuccess = {
+                                viewModel.confirm()
+                                onBack.invoke()
+                            }
+                        )
+                    } else {
+                        viewModel.confirm()
+                        onBack.invoke()
+                    }
+                },
+                passwordValid = canConfirm,
+                biometricEnabled = biometricEnabled
+            )
+        }
+    }
+}
+
+@RouteGraphDestination(
+    route = Root.Main.WalletManagementBackup,
+    packageName = RouteType.Composable.PackageName,
+    functionName = RouteType.Composable.FunctionName,
+)
+@Composable
+fun WalletManagementBackupRoute(
+    @Back onBack: () -> Unit,
+) {
+    val viewModel = getViewModel<WalletBackupViewModel>()
+    val keyStore by viewModel.keyStore.observeAsState(initial = "")
+    val privateKey by viewModel.privateKey.observeAsState(initial = "")
+    BackupWalletScene(
+        keyStore = keyStore,
+        privateKey = privateKey,
+        onBack = { onBack.invoke() },
+    )
+}
+
+@RouteGraphDestination(
+    route = Root.Main.WalletManagementTransactionHistory,
+    packageName = RouteType.Composable.PackageName,
+    functionName = RouteType.Composable.FunctionName,
+)
+@Composable
+fun WalletManagementTransactionHistoryRoute(
+    @Back onBack: () -> Unit
+) {
+    val viewModel = getViewModel<WalletTransactionHistoryViewModel>()
+    val transaction by viewModel.transactions.observeAsState(initial = emptyList())
+    WalletTransactionHistoryScene(
+        onBack = { onBack.invoke() },
+        transactions = transaction,
+        onSpeedUp = {
+            // TODO:
+        },
+        onCancel = {
+            // TODO:
+        }
+    )
+}
+
+@RouteGraphDestination(
+    route = Root.Main.WalletManagementRename.path,
+    packageName = RouteType.Modal.PackageName,
+    functionName = RouteType.Modal.FunctionName,
+)
+@Composable
+fun WalletManagementRenameRoute(
+    @Path("id") id: String?,
+    @Back onBack: () -> Unit
+) {
+    if (id != null) {
+        val viewModel = getViewModel<WalletRenameViewModel> {
+            parametersOf(id)
+        }
+        val name by viewModel.name.observeAsState(initial = "")
+        WalletRenameModal(
+            name = name,
+            onNameChanged = { viewModel.setName(it) },
+            onDone = {
+                viewModel.confirm()
+                onBack.invoke()
+            },
+        )
+    }
+}
+
+@RouteGraphDestination(
+    route = Root.Main.WalletIntroHostLegal.path,
+    packageName = RouteType.Composable.PackageName,
+    functionName = RouteType.Composable.FunctionName,
+)
+@Composable
+fun WalletIntroHostLegalRoute(
+    @Path("type") typeName: String?,
+    @Back onBack: () -> Unit,
+    navController: NavController
+) {
+    val type = typeName?.let { type ->
+        CreateType.valueOf(type)
+    } ?: CreateType.CREATE
+    val repo = get<ISettingsRepository>()
+    val password by repo.paymentPassword.observeAsState(initial = null)
+    val enableBiometric by repo.biometricEnabled.observeAsState(initial = false)
+    LegalScene(
+        onBack = { onBack.invoke() },
+        onAccept = {
+            if (password.isNullOrEmpty()) {
+                navController.navigate(Root.Main.WalletIntroHostPassword(type.name))
+            } else if (!enableBiometric) {
+                navController.navigate(Root.Main.WalletIntroHostFaceId(type.name))
+            } else {
+                navController.navigate(Root.Main.CreateOrImportWallet(type.name))
+            }
+        },
+        onBrowseAgreement = { TODO("Logic:browse service agreement") }
+    )
+}
 
 @ExperimentalAnimationApi
 @ExperimentalMaterialNavigationApi
 fun NavGraphBuilder.walletsRoute(
     navController: NavController
 ) {
-    composable(
-        "CollectibleDetail/{id}",
-        arguments = listOf(
-            navArgument("id") { type = NavType.StringType }
-        )
-    ) {
-        it.arguments?.getString("id")?.let { id ->
-            val viewModel = getViewModel<CollectibleDetailViewModel> {
-                parametersOf(id)
-            }
-            val data by viewModel.data.observeAsState(initial = null)
-            data?.let {
-                CollectibleDetailScene(
-                    data = it,
-                    onBack = {
-                        navController.popBackStack()
-                    },
-                    onSend = {
-
-                    },
-                    onReceive = {
-                        navController.navigate("WalletQrcode/${it.chainType.name}")
-                    }
-                )
-            }
-        }
-    }
-
-    composable(
-    "WalletQrcode/{name}",
-        arguments = listOf(navArgument("name"){ type = NavType.StringType })
-    ) {
-        val repository = get<IWalletRepository>()
-        val currentWallet by repository.currentWallet.observeAsState(initial = null)
-        val name = it.arguments?.getString("name") ?: ""
-        val context = LocalContext.current
-        currentWallet?.let {
-            WalletQrcodeScene(
-                address = it.address,
-                name = name,
-                onShare = { context.shareText(it.address) },
-                onBack = { navController.popBackStack() },
-                onCopy = { context.copyText(it.address) }
-            )
-        }
-
-    }
-    composable(
-        "TokenDetail/{id}",
-        arguments = listOf(
-            navArgument("id") { type = NavType.StringType }
-        )
-    ) {
-        it.arguments?.getString("id")?.let { id ->
-            val viewModel = getViewModel<TokenDetailViewModel> {
-                parametersOf(id)
-            }
-            val token by viewModel.tokenData.observeAsState(initial = null)
-            val transaction by viewModel.transaction.observeAsState(initial = emptyList())
-            val walletTokenData by viewModel.walletTokenData.observeAsState(initial = null)
-            val dWebData by viewModel.dWebData.observeAsState(initial = null)
-            walletTokenData?.let { walletTokenData ->
-                token?.let { token ->
-                    TokenDetailScene(
-                        onBack = { navController.popBackStack() },
-                        tokenData = token,
-                        walletTokenData = walletTokenData,
-                        transactions = transaction,
-                        onSpeedUp = { },
-                        onCancel = { },
-                        onSend = {
-                            if (token.chainType != dWebData?.chainType) {
-                                navController.navigate("WalletNetworkSwitch/${token.chainType}")
-                            } else {
-                                navController.navigate("SendTokenScene/${token.address}")
-                            }
-                        },
-                        onReceive = {
-                            navController.navigate("WalletQrcode/${token.symbol}")
-                        },
-                    )
-                }
-            }
-        }
-    }
-    bottomSheet("SwitchWalletAdd") {
-        WalletSwitchAddModal(
-            onCreate = {
-                navController.navigate("WalletIntroHostLegal/${CreateType.CREATE}")
-            },
-            onImport = {
-                navController.navigate("WalletIntroHostLegal/${CreateType.IMPORT}")
-            },
-        )
-    }
-    bottomSheet("SwitchWalletAddWalletConnect") {
-        WalletConnectModal()
-    }
-
-    dialog(
-        "WalletNetworkSwitch/{target}",
-        arguments = listOf(navArgument("target") { type = NavType.StringType })
-    ) {
-        it.arguments?.getString("target")?.let {
-            ChainType.valueOf(it)
-        }?.let { target ->
-            val viewModel = getViewModel<WalletSwitchViewModel>()
-            val currentNetwork by viewModel.network.observeAsState(initial = ChainType.eth)
-            WalletNetworkSwitchWarningDialog(
-                currentNetwork = currentNetwork.name,
-                connectingNetwork = target.name,
-                onCancel = { navController.popBackStack() },
-                onSwitch = {
-                    viewModel.setChainType(target)
-                    navController.popBackStack()
-                }
-            )
-        }
-    }
-
-    dialog("WalletNetworkSwitchWarningDialog") {
-        val viewModel = getViewModel<WalletSwitchViewModel>()
-        val currentNetwork by viewModel.network.observeAsState(initial = ChainType.eth)
-        val wallet by viewModel.currentWallet.observeAsState(initial = null)
-        wallet?.let {
-            if (!it.fromWalletConnect || it.walletConnectChainType == currentNetwork || it.walletConnectChainType == null) navController.popBackStack()
-            WalletNetworkSwitchWarningDialog(
-                currentNetwork = currentNetwork.name,
-                connectingNetwork = it.walletConnectChainType?.name ?: "",
-                onCancel = { navController.popBackStack() },
-                onSwitch = {
-                    it.walletConnectChainType?.let { type ->
-                        viewModel.setChainType(type)
-                    }
-                    navController.popBackStack()
-                }
-            )
-        }
-    }
-
-    bottomSheet("SwitchWallet") {
-        val viewModel = getViewModel<WalletSwitchViewModel>()
-        val wallet by viewModel.currentWallet.observeAsState(initial = null)
-        val wallets by viewModel.wallets.observeAsState(initial = emptyList())
-        val chainType by viewModel.network.observeAsState(initial = ChainType.eth)
-        wallet?.let { it1 ->
-            WalletSwitchScene(
-                onBack = { navController.popBackStack() },
-                selectedWallet = it1,
-                wallets = wallets,
-                onWalletSelected = {
-                    viewModel.setCurrentWallet(it)
-                },
-                selectedChainType = chainType,
-                onChainTypeSelected = {
-                    viewModel.setChainType(it)
-                },
-                onAddWalletClicked = {
-                    navController.navigate("SwitchWalletAdd")
-                },
-                onWalletConnectClicked = {
-                    navController.navigate("SwitchWalletAddWalletConnect")
-                },
-                onEditMenuClicked = {
-                    navController.navigate("WalletSwitchModal/${it.id}")
-                }
-            )
-        }
-    }
-    bottomSheet(
-        "WalletSwitchModal/{id}",
-        arguments = listOf(navArgument("id") { type = NavType.StringType })
-    ) {
-        it.arguments?.getString("id")?.let { id ->
-            val repository = get<IWalletRepository>()
-            val wallets by repository.wallets.observeAsState(initial = emptyList())
-            val viewModel = getViewModel<WalletConnectManagementViewModel>()
-            wallets.firstOrNull { it.id == id }?.let { wallet ->
-                WalletSwitchModal(
-                    walletData = wallet,
-                    onRename = { navController.navigate("WalletManagementRename/${wallet.id}") },
-                    onDelete = {
-                        navController.popBackStack()
-                        navController.navigate("WalletManagementDeleteDialog/${wallet.id}")
-                    },
-                    onDisconnect = {
-                        viewModel.disconnect(walletData = wallet)
-                        navController.popBackStack()
-                    }
-                )
-            }
-        }
-    }
-    bottomSheet("WalletBalancesMenu") {
-        val viewModel = getViewModel<WalletManagementModalViewModel>()
-        val currentWallet by viewModel.currentWallet.observeAsState(initial = null)
-        val wcViewModel = getViewModel<WalletConnectManagementViewModel>()
-        currentWallet?.let { wallet ->
-            WalletManagementModal(
-                walletData = wallet,
-                onRename = { navController.navigate("WalletManagementRename/${wallet.id}") },
-                onBackup = { navController.navigate("UnlockWalletDialog/WalletManagementBackup") },
-                onTransactionHistory = { navController.navigate("WalletManagementTransactionHistory") },
-                onDelete = {
-                    navController.popBackStack()
-                    navController.navigate("WalletManagementDeleteDialog/${wallet.id}")
-                },
-                onDisconnect = {
-                    wcViewModel.disconnect(walletData = wallet)
-                    navController.popBackStack()
-                }
-            )
-        }
-    }
-    dialog(
-        "WalletManagementDeleteDialog/{id}",
-        arguments = listOf(
-            navArgument("id") { type = NavType.StringType }
-        )
-    ) {
-        it.arguments?.getString("id")?.let { id ->
-            val viewModel = getViewModel<WalletDeleteViewModel> {
-                parametersOf(id)
-            }
-            val biometricViewModel = getViewModel<BiometricViewModel>()
-            val wallet by viewModel.wallet.observeAsState(initial = null)
-            val biometricEnabled by biometricViewModel.biometricEnabled.observeAsState(initial = false)
-            val context = LocalContext.current
-            wallet?.let { walletData ->
-                val password by viewModel.password.observeAsState(initial = "")
-                val canConfirm by viewModel.canConfirm.observeAsState(initial = false)
-                WalletDeleteDialog(
-                    walletData = walletData,
-                    password = password,
-                    onPasswordChanged = { viewModel.setPassword(it) },
-                    onBack = { navController.popBackStack() },
-                    onDelete = {
-                        if (biometricEnabled) {
-                            biometricViewModel.authenticate(
-                                context = context,
-                                onSuccess = {
-                                    viewModel.confirm()
-                                    navController.popBackStack()
-                                }
-                            )
-                        } else {
-                            viewModel.confirm()
-                            navController.popBackStack()
-                        }
-                    },
-                    passwordValid = canConfirm,
-                    biometricEnabled = biometricEnabled
-                )
-            }
-        }
-    }
-    composable("WalletManagementBackup") {
-        val viewModel = getViewModel<WalletBackupViewModel>()
-        val keyStore by viewModel.keyStore.observeAsState(initial = "")
-        val privateKey by viewModel.privateKey.observeAsState(initial = "")
-        BackupWalletScene(
-            keyStore = keyStore,
-            privateKey = privateKey,
-            onBack = { navController.popBackStack() },
-        )
-    }
-    composable("WalletManagementTransactionHistory") {
-        val viewModel = getViewModel<WalletTransactionHistoryViewModel>()
-        val transaction by viewModel.transactions.observeAsState(initial = emptyList())
-        WalletTransactionHistoryScene(
-            onBack = { navController.popBackStack() },
-            transactions = transaction,
-            onSpeedUp = {
-                // TODO:
-            },
-            onCancel = {
-                // TODO:
-            }
-        )
-    }
-    bottomSheet(
-        "WalletManagementRename/{id}",
-        arguments = listOf(
-            navArgument("id") { type = NavType.StringType }
-        )
-    ) {
-        it.arguments?.getString("id")?.let { id ->
-            val viewModel = getViewModel<WalletRenameViewModel> {
-                parametersOf(id)
-            }
-            val name by viewModel.name.observeAsState(initial = "")
-            WalletRenameModal(
-                name = name,
-                onNameChanged = { viewModel.setName(it) },
-                onDone = {
-                    viewModel.confirm()
-                    navController.popBackStack()
-                },
-            )
-        }
-    }
-    composable(
-        "WalletIntroHostLegal/{type}",
-        arguments = listOf(
-            navArgument("type") { type = NavType.StringType },
-        )
-    ) {
-        val type = it.arguments?.getString("type")?.let { type ->
-            CreateType.valueOf(type)
-        } ?: CreateType.CREATE
-        val repo = get<ISettingsRepository>()
-        val password by repo.paymentPassword.observeAsState(initial = null)
-        val enableBiometric by repo.biometricEnabled.observeAsState(initial = false)
-        LegalScene(
-            onBack = { navController.popBackStack() },
-            onAccept = {
-                if (password.isNullOrEmpty()) {
-                    navController.navigate("WalletIntroHostPassword/$type")
-                } else if (!enableBiometric) {
-                    navController.navigate("WalletIntroHostFaceId/$type")
-                } else {
-                    navController.navigate("CreateOrImportWallet/${type}")
-                }
-            },
-            onBrowseAgreement = { TODO("Logic:browse service agreement") }
-        )
-    }
 
     bottomSheet(
         "WalletIntroHostPassword/{type}",

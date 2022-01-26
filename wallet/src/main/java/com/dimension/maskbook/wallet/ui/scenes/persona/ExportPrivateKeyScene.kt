@@ -1,13 +1,6 @@
 package com.dimension.maskbook.wallet.ui.scenes.persona
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -22,19 +15,22 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ext.observeAsState
-import com.dimension.maskbook.wallet.ui.widget.MaskBackButton
-import com.dimension.maskbook.wallet.ui.widget.MaskInputField
-import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
-import com.dimension.maskbook.wallet.ui.widget.MaskSingleLineTopAppBar
-import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
-import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
-import com.dimension.maskbook.wallet.ui.widget.SecondaryButton
+import com.dimension.maskbook.wallet.route.Root
+import com.dimension.maskbook.wallet.ui.widget.*
 import com.dimension.maskbook.wallet.viewmodel.persona.ExportPrivateKeyViewModel
+import moe.tlaster.kroute.processor.Back
+import moe.tlaster.kroute.processor.RouteGraphDestination
 import org.koin.androidx.compose.getViewModel
 
+
+@RouteGraphDestination(
+    route = Root.Main.ExportPrivateKey,
+    packageName = RouteType.Composable.PackageName,
+    functionName = RouteType.Composable.FunctionName,
+)
 @Composable
 fun ExportPrivateKeyScene(
-    onBack: () -> Unit,
+    @Back onBack: () -> Unit,
 ) {
     val viewModel = getViewModel<ExportPrivateKeyViewModel>()
     val text by viewModel.privateKey.observeAsState(initial = "")
