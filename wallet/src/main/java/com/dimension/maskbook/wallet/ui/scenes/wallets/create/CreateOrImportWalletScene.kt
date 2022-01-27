@@ -2,12 +2,15 @@ package com.dimension.maskbook.wallet.ui.scenes.wallets.create
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -52,73 +55,75 @@ fun CreateOrImportWalletScene(
             var input by remember {
                 mutableStateOf("")
             }
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = ScaffoldPadding,
+            Column(
+                modifier = Modifier
+                    .padding(horizontal = 23.dp)
+                    .verticalScroll(rememberScrollState())
+                    .fillMaxSize(),
             ) {
-                item {
-                    Box(
-                        modifier = Modifier.fillMaxWidth().height(123.dp),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_create_wallet_logo),
-                            contentDescription = null,
-                        )
-                    }
-                    MaskListCardItem(
-                        modifier = Modifier.fillMaxWidth().height(96.dp),
-                        icon = {
-                            Image(
-                                painter = painterResource(id = R.drawable.ic_multi_chain_logo),
-                                contentDescription = null
-                            )
-                        },
-                        text = {
-                            Text(text = stringResource(R.string.scene_create_wallet_multichain_wallet_title))
-                        },
-                        trailing = {
-                            MaskIconButton(
-                                onClick = {
-                                    rootNavController.navigate("MultiChainWalletDialog")
-                                }
-                            ) {
-                                Image(
-                                    painter = painterResource(id = R.drawable.ic_doubt),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(20.dp),
-                                )
-                            }
-                        }
+                Spacer(Modifier.height(12.dp))
+                Box(
+                    modifier = Modifier.fillMaxWidth().height(123.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_create_wallet_logo),
+                        contentDescription = null,
                     )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(
-                        text = stringResource(R.string.scene_create_wallet_wallet_name),
-                        style = MaterialTheme.typography.subtitle2,
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    MaskInputField(
-                        value = input,
-                        onValueChange = { input = it },
-                        modifier = Modifier.fillMaxWidth(),
-                        placeholder = {
-                            Text(text = stringResource(R.string.scene_create_wallet_wallet_name_placeholder))
-                        }
-                    )
-                    Spacer(modifier = Modifier.height(24.dp))
-                    PrimaryButton(
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = {
-                            when (type) {
-                                CreateType.CREATE -> rootNavController.navigate("CreateWallet/${input}")
-                                CreateType.IMPORT -> rootNavController.navigate("ImportWallet/${input}")
-                            }
-                        },
-                        enabled = input.isNotEmpty()
-                    ) {
-                        Text(text = stringResource(R.string.common_controls_accept))
-                    }
                 }
+                MaskListCardItem(
+                    modifier = Modifier.fillMaxWidth().height(96.dp),
+                    icon = {
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_multi_chain_logo),
+                            contentDescription = null
+                        )
+                    },
+                    text = {
+                        Text(text = stringResource(R.string.scene_create_wallet_multichain_wallet_title))
+                    },
+                    trailing = {
+                        MaskIconButton(
+                            onClick = {
+                                rootNavController.navigate("MultiChainWalletDialog")
+                            }
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.ic_doubt),
+                                contentDescription = null,
+                                modifier = Modifier.size(20.dp),
+                            )
+                        }
+                    }
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = stringResource(R.string.scene_create_wallet_wallet_name),
+                    style = MaterialTheme.typography.subtitle2,
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                MaskInputField(
+                    value = input,
+                    onValueChange = { input = it },
+                    modifier = Modifier.fillMaxWidth(),
+                    placeholder = {
+                        Text(text = stringResource(R.string.scene_create_wallet_wallet_name_placeholder))
+                    }
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+                PrimaryButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+                        when (type) {
+                            CreateType.CREATE -> rootNavController.navigate("CreateWallet/${input}")
+                            CreateType.IMPORT -> rootNavController.navigate("ImportWallet/${input}")
+                        }
+                    },
+                    enabled = input.isNotEmpty()
+                ) {
+                    Text(text = stringResource(R.string.common_controls_accept))
+                }
+                Spacer(Modifier.height(58.dp))
             }
         }
     }
