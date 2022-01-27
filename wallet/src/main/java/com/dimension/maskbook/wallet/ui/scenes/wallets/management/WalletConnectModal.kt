@@ -356,6 +356,7 @@ fun WalletConnectManually(
                     selected = selected,
                     onClick = {
                         selectedTabIndex = index
+                        onChainSelected.invoke(type)
                     },
                     selectedContentColor = MaterialTheme.colors.primary,
                     unselectedContentColor = MaterialTheme.colors.onBackground.copy(
