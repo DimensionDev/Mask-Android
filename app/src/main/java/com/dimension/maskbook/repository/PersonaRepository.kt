@@ -162,7 +162,8 @@ class PersonaRepository(
     override fun init() {
         scope.launch {
             awaitAll(
-                async { refreshSocial() },
+                async { _twitter.value = JSMethod.Persona.queryMyProfile(Network.Twitter) },
+                async { _facebook.value = JSMethod.Persona.queryMyProfile(Network.Facebook) },
                 async {
                     refreshPersona()
                     _currentPersona.firstOrNull()?.let { current ->
@@ -203,8 +204,8 @@ class PersonaRepository(
     }
 
     private suspend fun refreshSocial() {
-        _twitter.value = JSMethod.Persona.queryProfiles(Network.Twitter)
-        _facebook.value = JSMethod.Persona.queryProfiles(Network.Facebook)
+        _twitter.value = JSMethod.Persona.queryMyProfile(Network.Twitter)
+        _facebook.value = JSMethod.Persona.queryMyProfile(Network.Facebook)
     }
 
     private suspend fun refreshPersona() {
