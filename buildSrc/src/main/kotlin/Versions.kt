@@ -21,7 +21,7 @@ object Versions {
     }
 
     const val ksp = "${Kotlin.lang}-1.0.2"
-    const val agp = "7.0.4"
+    const val agp = "7.1.0"
     const val compose = "1.1.0-rc03"
     const val accompanist = "0.22.1-rc"
     const val navigation = "2.4.0"
