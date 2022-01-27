@@ -97,7 +97,6 @@ private fun PluginSettingsItem(
 ) {
     MaskButton(onClick = onClick) {
         MaskListItem(
-            modifier = Modifier.height(56.dp),
             icon = {
                 Image(
                     painter = painterResource(id = item.onIcon),

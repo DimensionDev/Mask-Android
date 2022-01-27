@@ -245,7 +245,6 @@ private fun SupportChainTypeList(
     onChainTypeSelected: (ChainType) -> Unit
 ) {
     LazyRow(
-        modifier = Modifier.height(72.dp),
         contentPadding = PaddingValues(horizontal = 22.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
@@ -260,7 +259,7 @@ private fun SupportChainTypeList(
                 )
             ) {
                 Column(
-                    modifier = Modifier.width(46.dp).fillMaxHeight(),
+                    modifier = Modifier.width(46.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     if (!isSelected) {
@@ -281,11 +280,10 @@ private fun SupportChainTypeList(
                     }
                     if (isSelected) {
                         Spacer(Modifier.height(8.dp))
-                        Spacer(
-                            modifier = Modifier
-                                .size(6.dp)
-                                .background(item.primaryColor, shape = CircleShape)
-                        )
+                        Spacer(Modifier.size(6.dp).background(item.primaryColor, shape = CircleShape))
+                        Spacer(Modifier.height(12.dp))
+                    } else {
+                        Spacer(Modifier.height(26.dp))
                     }
                 }
             }

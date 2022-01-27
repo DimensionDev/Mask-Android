@@ -2,7 +2,7 @@ package com.dimension.maskbook.wallet.ui.scenes.app
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -79,11 +79,10 @@ private fun AppItem(
     MaskButton(
         onClick = onClick,
         enabled = item.enabled,
+        contentPadding = PaddingValues(vertical = 6.dp),
     ) {
         MaskListItem(
-            modifier = Modifier
-                .height(86.dp)
-                .alpha(if (item.enabled) 1f else 0.5f),
+            modifier = Modifier.alpha(if (item.enabled) 1f else 0.5f),
             icon = {
                 Image(
                     painter = painterResource(id = item.onIcon),

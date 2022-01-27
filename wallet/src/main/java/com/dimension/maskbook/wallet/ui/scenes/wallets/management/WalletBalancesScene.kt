@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -153,6 +154,7 @@ fun WalletBalancesScene(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.Center,
                     ) {
+                        Spacer(Modifier.width(24.dp))
                         WalletButton(
                             text = stringResource(R.string.scene_wallet_balance_btn_Send),
                             icon = R.drawable.transaction_1,
@@ -164,6 +166,7 @@ fun WalletBalancesScene(
                             icon = R.drawable.transaction_2,
                             onClick = onReceiveClicked,
                         )
+                        Spacer(Modifier.width(24.dp))
                     }
                 }
                 stickyHeader {
@@ -289,14 +292,15 @@ fun WalletBalancesScene(
 }
 
 @Composable
-private fun WalletButton(
+private fun RowScope.WalletButton(
     text: String,
     @DrawableRes icon: Int,
     onClick: () -> Unit,
 ) {
     MaskButton(
         onClick = onClick,
-        modifier = Modifier.size(140.dp, 48.dp),
+        modifier = Modifier.weight(1f),
+        contentPadding = PaddingValues(vertical = 12.dp),
     ) {
         Image(
             painter = painterResource(id = icon),

@@ -27,14 +27,14 @@ import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ui.LocalRootNavController
 import com.dimension.maskbook.wallet.ui.MaskTheme
 import com.dimension.maskbook.wallet.ui.widget.MaskBackButton
+import com.dimension.maskbook.wallet.ui.widget.MaskButton
 import com.dimension.maskbook.wallet.ui.widget.MaskDialog
 import com.dimension.maskbook.wallet.ui.widget.MaskIconButton
 import com.dimension.maskbook.wallet.ui.widget.MaskInputField
-import com.dimension.maskbook.wallet.ui.widget.MaskListCardItem
+import com.dimension.maskbook.wallet.ui.widget.MaskListItem
 import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
 import com.dimension.maskbook.wallet.ui.widget.MaskSingleLineTopAppBar
 import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
-import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
 
 @Composable
 fun CreateOrImportWalletScene(
@@ -71,31 +71,33 @@ fun CreateOrImportWalletScene(
                         contentDescription = null,
                     )
                 }
-                MaskListCardItem(
-                    modifier = Modifier.fillMaxWidth().height(96.dp),
-                    icon = {
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_multi_chain_logo),
-                            contentDescription = null
-                        )
-                    },
-                    text = {
-                        Text(text = stringResource(R.string.scene_create_wallet_multichain_wallet_title))
-                    },
-                    trailing = {
-                        MaskIconButton(
-                            onClick = {
-                                rootNavController.navigate("MultiChainWalletDialog")
-                            }
-                        ) {
+                MaskButton(onClick = {}) {
+                    MaskListItem(
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
+                        icon = {
                             Image(
-                                painter = painterResource(id = R.drawable.ic_doubt),
-                                contentDescription = null,
-                                modifier = Modifier.size(20.dp),
+                                painter = painterResource(id = R.drawable.ic_multi_chain_logo),
+                                contentDescription = null
                             )
+                        },
+                        text = {
+                            Text(text = stringResource(R.string.scene_create_wallet_multichain_wallet_title))
+                        },
+                        trailing = {
+                            MaskIconButton(
+                                onClick = {
+                                    rootNavController.navigate("MultiChainWalletDialog")
+                                }
+                            ) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.ic_doubt),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(20.dp),
+                                )
+                            }
                         }
-                    }
-                )
+                    )
+                }
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = stringResource(R.string.scene_create_wallet_wallet_name),

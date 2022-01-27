@@ -220,8 +220,7 @@ private fun WalletDisplayAmount(
             .background(
                 brush = WalletCardDefaults.displayAmountTypeBackground,
             )
-            .fillMaxWidth()
-            .height(60.dp),
+            .fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(WalletCardDefaults.contentPadding),
         contentPadding = PaddingValues(horizontal = WalletCardDefaults.contentPadding),
     ) {
@@ -252,6 +251,9 @@ private fun WalletDisplayAmount(
                 if (isSelected) {
                     Spacer(Modifier.height(4.dp))
                     Spacer(Modifier.size(4.dp).background(Color.White, shape = CircleShape))
+                    Spacer(Modifier.height(11.dp))
+                } else {
+                    Spacer(Modifier.height(19.dp))
                 }
             }
         }
