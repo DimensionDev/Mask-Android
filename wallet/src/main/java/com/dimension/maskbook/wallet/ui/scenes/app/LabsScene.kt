@@ -3,7 +3,6 @@ package com.dimension.maskbook.wallet.ui.scenes.app
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -33,7 +32,6 @@ import com.dimension.maskbook.wallet.viewmodel.app.AppDisplayData
 import com.dimension.maskbook.wallet.viewmodel.app.LabsViewModel
 import org.koin.androidx.compose.getViewModel
 
-
 @Composable
 fun LabsScene(
     onSettingClick: () -> Unit,
@@ -59,7 +57,7 @@ fun LabsScene(
         }
     ) {
         LazyColumn(
-            modifier = Modifier.padding(ScaffoldPadding),
+            contentPadding = ScaffoldPadding,
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             items(apps) { item ->

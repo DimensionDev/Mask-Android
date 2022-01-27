@@ -66,7 +66,7 @@ fun PluginSettingsScene(
             modifier = Modifier.padding(padding)
         ) {
             LazyColumn(
-                modifier = Modifier.padding(ScaffoldPadding),
+                contentPadding = ScaffoldPadding,
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 items(apps) { item ->
