@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.map
 private val PaymentPasswordKey = stringPreferencesKey("payment_password")
 private val BackupPasswordKey = stringPreferencesKey("backup_password")
 private val BiometricEnabledKey = booleanPreferencesKey("biometric_enabled")
+private val ShouldShowLegalSceneKey = booleanPreferencesKey("ShowLegalSceneKey")
 val Context.settingsDataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
 class SettingsRepository(
@@ -49,6 +50,9 @@ class SettingsRepository(
     )
     override val tradeProvider: Flow<Map<NetworkType, TradeProvider>>
         get() = _tradeProvider.asSharedFlow()
+
+    override val shouldShowLegalScene: Flow<Boolean>
+        get() = dataStore.data.map { it[ShouldShowLegalSceneKey] ?: true }
 
     override fun setBiometricEnabled(value: Boolean) {
         scope.launch {
@@ -98,6 +102,14 @@ class SettingsRepository(
         scope.launch {
             dataStore.edit {
                 it[BackupPasswordKey] = value
+            }
+        }
+    }
+
+    override fun setShouldShowLegalScene(value: Boolean) {
+        scope.launch {
+            dataStore.edit {
+                it[ShouldShowLegalSceneKey] = value
             }
         }
     }
