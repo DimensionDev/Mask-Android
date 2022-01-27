@@ -657,11 +657,13 @@ fun NavGraphBuilder.walletsRoute(
                     )
                 } else {
                     target?.let {
-                        navController.navigate(it, navOptions {
-                            popUpTo("UnlockWalletDialog") {
-                                inclusive = true
-                            }
-                        })
+                        if (passwordValid) {
+                            navController.navigate(it, navOptions {
+                                popUpTo("UnlockWalletDialog") {
+                                    inclusive = true
+                                }
+                            })
+                        }
                     } ?: navController.popBackStack()
                 }
             }
