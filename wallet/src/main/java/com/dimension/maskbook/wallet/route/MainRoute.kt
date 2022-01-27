@@ -29,12 +29,10 @@ import com.dimension.maskbook.wallet.ui.scenes.persona.SwitchPersonaModal
 import com.dimension.maskbook.wallet.ui.scenes.persona.social.ConnectSocialModal
 import com.dimension.maskbook.wallet.ui.scenes.persona.social.DisconnectSocialDialog
 import com.dimension.maskbook.wallet.ui.scenes.persona.social.SelectPlatformModal
-import com.dimension.maskbook.wallet.ui.scenes.wallets.collectible.CollectibleDetailScene
 import com.dimension.maskbook.wallet.viewmodel.persona.RenamePersonaViewModel
 import com.dimension.maskbook.wallet.viewmodel.persona.SwitchPersonaViewModel
 import com.dimension.maskbook.wallet.viewmodel.persona.social.DisconnectSocialViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.UnlockWalletViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.collectible.CollectibleDetailViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.BackUpPasswordViewModel
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.navigation
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
@@ -136,7 +134,7 @@ fun NavGraphBuilder.mainRoute(
             )
         ) { backStackEntry ->
             val target = backStackEntry.arguments?.getString("target")
-            val viewModel = getViewModel<UnlockWalletViewModel>()
+            val viewModel = getViewModel<BackUpPasswordViewModel>()
             val biometricEnable by viewModel.biometricEnabled.observeAsState(initial = false)
             val password by viewModel.password.observeAsState(initial = "")
             val passwordValid by viewModel.passwordValid.observeAsState(initial = false)

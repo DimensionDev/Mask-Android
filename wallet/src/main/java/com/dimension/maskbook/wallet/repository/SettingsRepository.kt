@@ -73,7 +73,6 @@ enum class TradeProvider(val value: Int) {
     UNISWAP_V3(8),
 }
 
-
 interface ISettingsRepository {
     val biometricEnabled: Flow<Boolean>
     val language: Flow<Language>
@@ -82,6 +81,7 @@ interface ISettingsRepository {
     val paymentPassword: Flow<String>
     val backupPassword: Flow<String>
     val tradeProvider: Flow<Map<NetworkType, TradeProvider>>
+    val shouldShowLegalScene: Flow<Boolean>
     fun setBiometricEnabled(value: Boolean)
     fun setTradeProvider(networkType: NetworkType, tradeProvider: TradeProvider)
     fun setLanguage(language: Language)
@@ -100,6 +100,7 @@ interface ISettingsRepository {
         hasPrivateKeyOnly: Boolean = false,
     ): String
     fun init()
+    fun setShouldShowLegalScene(value: Boolean)
 }
 
 //class FakeSettingsRepository : ISettingsRepository {
