@@ -378,9 +378,10 @@ fun NavGraphBuilder.walletsRoute(
                 "CreateOrImportWallet/${type}"
             }
             navController.navigate(route, navOptions {
-                popUpTo("WalletIntroHostLegal/$type") {
+                popUpTo(id = it.destination.id) {
                     inclusive = true
                 }
+                launchSingleTop = true
             })
         }
         if (!shouldShowLegalScene) {
