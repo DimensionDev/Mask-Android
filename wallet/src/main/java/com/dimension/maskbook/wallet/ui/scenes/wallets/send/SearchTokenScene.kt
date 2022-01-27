@@ -62,7 +62,10 @@ fun SearchTokenScene(
                 )
                 Spacer(modifier = Modifier.height(20.dp))
 
-                LazyColumn {
+                LazyColumn(
+                    contentPadding = ScaffoldPadding,
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                ) {
                     items(tokens.filter { it.tokenData.name.contains(query, ignoreCase = true) }) {
                         SearchResultItem(
                             modifier = Modifier.clickable {
@@ -84,23 +87,25 @@ private fun SearchResultItem(
     tokenData: TokenData,
     count: BigDecimal,
 ) {
-    MaskListCardItem(
-        modifier = modifier,
-        icon = {
-            Image(
-                painter = rememberImagePainter(tokenData.logoURI),
-                contentDescription = null,
-                modifier = Modifier.size(38.dp),
-            )
-        },
-        text = {
-            Text(tokenData.name)
-        },
-        secondaryText = {
-            Text(count.humanizeToken())
-        },
-        trailing = {
-            Text((count * tokenData.price).humanizeDollar())
-        }
-    )
+    MaskButton(onClick = {}) {
+        MaskListItem(
+            modifier = modifier,
+            icon = {
+                Image(
+                    painter = rememberImagePainter(tokenData.logoURI),
+                    contentDescription = null,
+                    modifier = Modifier.size(38.dp),
+                )
+            },
+            text = {
+                Text(tokenData.name)
+            },
+            secondaryText = {
+                Text(count.humanizeToken())
+            },
+            trailing = {
+                Text((count * tokenData.price).humanizeDollar())
+            }
+        )
+    }
 }
