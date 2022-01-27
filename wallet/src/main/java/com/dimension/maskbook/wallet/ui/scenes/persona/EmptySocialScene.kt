@@ -25,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -67,7 +68,7 @@ private val showList = listOf(
 fun EmptySocialScene(
     onItemClick: (Network) -> Unit
 ) {
-    var isShowTipDialog by remember { mutableStateOf(true) }
+    var isShowTipDialog by rememberSaveable { mutableStateOf(true) }
     Box(Modifier.fillMaxSize()) {
         LazyColumn(
             contentPadding = PaddingValues(

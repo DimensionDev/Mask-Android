@@ -18,7 +18,7 @@ class UnlockWalletViewModel(
     }
 
     val passwordValid by lazy {
-        combine(settingsRepository.backupPassword, _password) { current, input ->
+        combine(settingsRepository.paymentPassword, _password) { current, input ->
             current == input
         }
     }
