@@ -10,7 +10,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
@@ -87,7 +86,7 @@ fun WalletQrcodeScene(
                         Box(
                             modifier = Modifier
                                 .padding(horizontal = 16.dp, vertical = 24.dp)
-                                .background(Color(0xFFF6F8FB), shape = MaterialTheme.shapes.medium)
+                                .background(MaterialTheme.colors.surface, shape = MaterialTheme.shapes.medium)
                                 .clip(MaterialTheme.shapes.medium)
                                 .padding(horizontal = 16.dp, vertical = 10.dp)
                                 .clickable {

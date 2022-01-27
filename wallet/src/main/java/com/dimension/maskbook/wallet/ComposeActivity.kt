@@ -196,7 +196,7 @@ val walletModules = module {
     viewModel { (id: String) -> WalletRenameViewModel(id, get()) }
     viewModel { WalletBalancesViewModel(get(), get()) }
     viewModel { WalletManagementModalViewModel(get()) }
-    viewModel { WalletBackupViewModel(get()) }
+    viewModel { WalletBackupViewModel(get(), get()) }
     viewModel { (id: String) -> WalletDeleteViewModel(id, get(), get()) }
     viewModel { WalletSwitchViewModel(get()) }
     viewModel { SearchAddressViewModel(get(), get(), get()) }

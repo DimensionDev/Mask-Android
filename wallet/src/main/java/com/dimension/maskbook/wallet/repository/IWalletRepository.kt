@@ -271,7 +271,7 @@ interface IWalletRepository {
     suspend fun importWallet(mnemonicCode: List<String>, name: String, path: List<String>, platformType: CoinPlatformType)
     suspend fun importWallet(name: String, keyStore: String, password: String, platformType: CoinPlatformType)
     suspend fun importWallet(name: String, privateKey: String, platformType: CoinPlatformType)
-    suspend fun getKeyStore(walletData: WalletData, platformType: CoinPlatformType): String
+    suspend fun getKeyStore(walletData: WalletData, platformType: CoinPlatformType, paymentPassword: String): String
     suspend fun getPrivateKey(walletData: WalletData, platformType: CoinPlatformType): String
     suspend fun getTotalBalance(address: String): Double
     fun deleteCurrentWallet()
