@@ -11,11 +11,7 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.navigation.NavHostController
 import androidx.navigation.plusAssign
 import com.dimension.maskbook.wallet.navHostAnimationDurationMillis
-import com.dimension.maskbook.wallet.route.backupRoute
-import com.dimension.maskbook.wallet.route.mainRoute
-import com.dimension.maskbook.wallet.route.registerRoute
-import com.dimension.maskbook.wallet.route.settingsRoute
-import com.dimension.maskbook.wallet.route.walletsRoute
+import com.dimension.maskbook.wallet.route.*
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
@@ -42,16 +38,16 @@ fun Route(
             AnimatedNavHost(
                 navController = navController,
                 startDestination = startDestination,
-                enterTransition = { _, _ ->
+                enterTransition = {
                     slideInHorizontally(initialOffsetX = { it }, animationSpec = tween(navHostAnimationDurationMillis))
                 },
-                exitTransition = { _, _ ->
+                exitTransition = {
                     slideOutHorizontally(targetOffsetX = { -it }, animationSpec = tween(navHostAnimationDurationMillis))
                 },
-                popEnterTransition = { _, _ ->
+                popEnterTransition = {
                     slideInHorizontally(initialOffsetX = { -it }, animationSpec = tween(navHostAnimationDurationMillis))
                 },
-                popExitTransition = { _, _ ->
+                popExitTransition = {
                     slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween(navHostAnimationDurationMillis))
                 },
             ) {

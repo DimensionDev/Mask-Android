@@ -46,16 +46,16 @@ fun CreateWalletHost(
         navController = navController,
         startDestination = "Pharse",
         route = "CreateWalletHost",
-        enterTransition = { _, _ ->
+        enterTransition = {
             slideInHorizontally(initialOffsetX = { it }, animationSpec = tween(navHostAnimationDurationMillis))
         },
-        exitTransition = { _, _ ->
+        exitTransition = {
             slideOutHorizontally(targetOffsetX = { -it }, animationSpec = tween(navHostAnimationDurationMillis))
         },
-        popEnterTransition = { _, _ ->
+        popEnterTransition = {
             slideInHorizontally(initialOffsetX = { -it }, animationSpec = tween(navHostAnimationDurationMillis))
         },
-        popExitTransition = { _, _ ->
+        popExitTransition = {
             slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween(navHostAnimationDurationMillis))
         },
     ) {

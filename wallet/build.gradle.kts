@@ -4,16 +4,16 @@ import org.jetbrains.kotlin.gradle.internal.ensureParentDirsCreated
 plugins {
     id("com.android.library")
     id("kotlin-android")
-    id("org.jetbrains.kotlin.plugin.serialization").version("1.6.10")
-    id("com.google.devtools.ksp").version("1.6.10-1.0.2")
+    kotlin("plugin.serialization").version(Versions.Kotlin.lang)
+    id("com.google.devtools.ksp").version(Versions.ksp)
 }
 
 android {
-    compileSdk = 31
+    compileSdk = Versions.Android.compile
 
     defaultConfig {
-        minSdk = 21
-        targetSdk = 31
+        minSdk = Versions.Android.min
+        targetSdk = Versions.Android.target
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
@@ -29,56 +29,49 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = Versions.Java.java
+        targetCompatibility = Versions.Java.java
     }
     buildFeatures {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.1.0-rc02"
-    }
-    kotlinOptions {
-        jvmTarget = "11"
+        kotlinCompilerExtensionVersion = Versions.compose
     }
 }
 
 dependencies {
-    val compose = "1.1.0-rc01"
-    implementation("androidx.compose.ui:ui:$compose")
-    implementation("androidx.compose.ui:ui-tooling:$compose")
-    implementation("androidx.compose.ui:ui-util:$compose")
-    implementation("androidx.compose.foundation:foundation:$compose")
-    implementation("androidx.compose.material:material:$compose")
-    implementation("androidx.compose.material:material-icons-core:$compose")
-    implementation("androidx.compose.material:material-icons-extended:$compose")
+    implementation("androidx.compose.ui:ui:${Versions.compose}")
+    implementation("androidx.compose.ui:ui-tooling:${Versions.compose}")
+    implementation("androidx.compose.ui:ui-util:${Versions.compose}")
+    implementation("androidx.compose.foundation:foundation:${Versions.compose}")
+    implementation("androidx.compose.material:material:${Versions.compose}")
+    implementation("androidx.compose.material:material-icons-core:${Versions.compose}")
+    implementation("androidx.compose.material:material-icons-extended:${Versions.compose}")
     implementation("androidx.activity:activity-compose:1.4.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.4.0")
     implementation("androidx.compose.runtime:runtime-livedata:1.0.5")
     implementation("com.google.android.material:material:1.6.0-alpha01")
-    val accompanist = "0.21.0-beta"
-    implementation("com.google.accompanist:accompanist-pager:$accompanist")
-    implementation("com.google.accompanist:accompanist-pager-indicators:$accompanist")
-    implementation("com.google.accompanist:accompanist-swiperefresh:$accompanist")
-    implementation("com.google.accompanist:accompanist-navigation-animation:$accompanist")
-    implementation("com.google.accompanist:accompanist-navigation-material:$accompanist")
-    implementation("com.google.accompanist:accompanist-permissions:$accompanist")
-    val nav_version = "2.4.0-rc01"
-    implementation("androidx.navigation:navigation-ui-ktx:$nav_version")
-    implementation("androidx.navigation:navigation-compose:$nav_version")
+
+    implementation("com.google.accompanist:accompanist-pager:${Versions.accompanist}")
+    implementation("com.google.accompanist:accompanist-pager-indicators:${Versions.accompanist}")
+    implementation("com.google.accompanist:accompanist-swiperefresh:${Versions.accompanist}")
+    implementation("com.google.accompanist:accompanist-navigation-animation:${Versions.accompanist}")
+    implementation("com.google.accompanist:accompanist-navigation-material:${Versions.accompanist}")
+    implementation("com.google.accompanist:accompanist-permissions:${Versions.accompanist}")
+    implementation("androidx.navigation:navigation-ui-ktx:${Versions.navigation}")
+    implementation("androidx.navigation:navigation-compose:${Versions.navigation}")
     implementation("io.coil-kt:coil-compose:1.4.0")
     implementation("io.coil-kt:coil-svg:1.4.0")
 
-    val lifecycle_version = "2.4.0"
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-savedstate:$lifecycle_version")
-    implementation("androidx.lifecycle:lifecycle-common-java8:$lifecycle_version")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:$lifecycle_version")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:${Versions.lifecycle}")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-savedstate:${Versions.lifecycle}")
+    implementation("androidx.lifecycle:lifecycle-common-java8:${Versions.lifecycle}")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:${Versions.lifecycle}")
 
-    val koin_version = "3.1.4"
-    api("io.insert-koin:koin-android:$koin_version")
-//    implementation("io.insert-koin:koin-android-viewmodel:$koin_version")
-    implementation("io.insert-koin:koin-androidx-compose:$koin_version")
+    api("io.insert-koin:koin-android:${Versions.koin}")
+//    implementation("io.insert-koin:koin-android-viewmodel:${Versions.koin}")
+    implementation("io.insert-koin:koin-androidx-compose:${Versions.koin}")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.1")
 
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")
@@ -92,13 +85,12 @@ dependencies {
     implementation(("org.web3j:core:4.8.8-android"))
     implementation("io.github.dimensiondev:maskwalletcore:0.4.0")
 
-    implementation(project(":debankapi"))
+    implementation(projects.debankapi)
 
-    val roomVersion = "2.4.1"
-    api("androidx.room:room-runtime:$roomVersion")
-    api("androidx.room:room-ktx:$roomVersion")
-    ksp("androidx.room:room-compiler:$roomVersion")
-    implementation("androidx.room:room-paging:$roomVersion")
+    api("androidx.room:room-runtime:${Versions.room}")
+    api("androidx.room:room-ktx:${Versions.room}")
+    ksp("androidx.room:room-compiler:${Versions.room}")
+    implementation("androidx.room:room-paging:${Versions.room}")
 
     implementation("androidx.paging:paging-runtime-ktx:3.1.0")
     implementation("androidx.paging:paging-compose:1.0.0-alpha14")
