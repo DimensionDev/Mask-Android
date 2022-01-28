@@ -316,13 +316,5 @@ interface IWalletRepository {
     fun validatePrivateKey(privateKey: String): Boolean
     fun validateMnemonic(mnemonic: String): Boolean
     fun validateKeystore(keyStore: String): Boolean
+    suspend fun getEnsAddress(chainType: ChainType, name: String): String
 }
-
-//class FakeWalletRepository : IWalletRepository {
-//    override fun init() {
-//
-//    }
-//
-//    override val currentWallet: Flow<WalletData?> = MutableStateFlow(null)
-//}
-

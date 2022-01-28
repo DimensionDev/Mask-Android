@@ -20,4 +20,13 @@ interface SendHistoryDao {
     suspend fun deleteById(id: String)
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun add(data: List<DbSendHistory>)
+
+    @Query("SELECT count(1) FROM DbSendHistory WHERE address=:address LIMIT 0, 1")
+    suspend fun contains(address: String): Int
+
+    @Query("UPDATE DbSendHistory SET name=:name, lastSend=:lastSend WHERE address=:address")
+    suspend fun updateName(address: String, name: String, lastSend: Long): Int
+
+    @Query("UPDATE DbSendHistory SET lastSend=:lastSend WHERE address=:address")
+    suspend fun updateLastTime(address: String, lastSend: Long): Int
 }

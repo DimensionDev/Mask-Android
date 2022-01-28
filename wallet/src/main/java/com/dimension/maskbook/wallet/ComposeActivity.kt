@@ -12,7 +12,7 @@ import coil.ImageLoader
 import coil.compose.LocalImageLoader
 import coil.decode.SvgDecoder
 import com.dimension.maskbook.wallet.db.AppDatabase
-import com.dimension.maskbook.wallet.repository.TokenData
+import com.dimension.maskbook.wallet.db.RoomMigrations
 import com.dimension.maskbook.wallet.services.WalletServices
 import com.dimension.maskbook.wallet.services.model.DownloadResponse
 import com.dimension.maskbook.wallet.ui.MaskTheme
@@ -102,7 +102,9 @@ val walletModules = module {
         Room.databaseBuilder(get(), AppDatabase::class.java, "maskbook")
             .setQueryExecutor(Dispatchers.IO.asExecutor())
             .setTransactionExecutor(Dispatchers.IO.asExecutor())
-            .fallbackToDestructiveMigration()
+            .addMigrations(
+                RoomMigrations.MIGRATION_6_7,
+            )
             .build()
     }
     single {
@@ -219,7 +221,7 @@ val walletModules = module {
     viewModel { UnlockWalletViewModel(get(), get()) }
     viewModel { BackUpPasswordViewModel(get(), get()) }
     viewModel { (id: String) -> CollectibleDetailViewModel(id, get()) }
-    viewModel { (tokenData: TokenData) -> SendTokenDataViewModel(tokenData, get()) }
+    viewModel { (tokenAddress: String) -> SendTokenDataViewModel(tokenAddress, get(), get()) }
 }
 
 val servicesModule = module {

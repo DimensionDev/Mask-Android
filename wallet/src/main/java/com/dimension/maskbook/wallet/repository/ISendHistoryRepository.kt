@@ -12,7 +12,7 @@ import java.util.*
 
 interface ISendHistoryRepository {
     val recent: Flow<List<SearchAddressData>>
-    fun addOrUpdate(address: String)
+    fun addOrUpdate(address: String, name: String)
     fun getByAddress(address: String): Flow<SearchAddressData?>
     fun getOrCreateByAddress(address: String): Flow<SearchAddressData>
 }
@@ -22,19 +22,32 @@ class SendHistoryRepository(
 ) : ISendHistoryRepository {
     private val scope = CoroutineScope(Dispatchers.IO)
     override val recent: Flow<List<SearchAddressData>>
-        get() = database.sendHistoryDao().getAll().map { it.map { SearchAddressData.fromDb(it) } }
+        get() = database.sendHistoryDao().getAll().map { list ->
+            list.sortedByDescending { it.history.lastSend }
+                .map { SearchAddressData.fromDb(it) }
+        }
 
-    override fun addOrUpdate(address: String) {
+    override fun addOrUpdate(address: String, name: String) {
         scope.launch {
-            val item = database.sendHistoryDao()
-                .getByAddress(address)?.history?.copy(lastSend = System.currentTimeMillis())
-                ?: DbSendHistory(
-                    UUID.randomUUID().toString(),
-                    address,
-                    System.currentTimeMillis(),
-                    null
-                )
-            database.sendHistoryDao().add(listOf(item))
+            with(database.sendHistoryDao()) {
+                val currentTime = System.currentTimeMillis()
+                if (contains(address) > 0) {
+                    if (name.isEmpty()) {
+                        updateLastTime(address, currentTime)
+                    } else {
+                        updateName(address, name, currentTime)
+                    }
+                } else {
+                    val item = DbSendHistory(
+                        id = UUID.randomUUID().toString(),
+                        name = name,
+                        address = address,
+                        lastSend = currentTime,
+                        contactId = null,
+                    )
+                    database.sendHistoryDao().add(listOf(item))
+                }
+            }
         }
     }
 
@@ -49,9 +62,8 @@ class SendHistoryRepository(
     }
 
     override fun getOrCreateByAddress(address: String): Flow<SearchAddressData> {
-        addOrUpdate(address = address)
+        addOrUpdate(address = address, name = "")
         return database.sendHistoryDao().getByAddressFlow(address).mapNotNull { it }
             .map { SearchAddressData.fromDb(it) }
     }
-
 }
