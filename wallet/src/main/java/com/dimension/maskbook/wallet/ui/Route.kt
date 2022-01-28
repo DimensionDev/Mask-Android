@@ -61,6 +61,7 @@ fun Route(
                     walletsRoute(navController = navController)
                     settingsRoute(navController = navController)
                     backupRoute(navController = navController)
+                    labsRoute(navController = navController)
                 }
             }
         }

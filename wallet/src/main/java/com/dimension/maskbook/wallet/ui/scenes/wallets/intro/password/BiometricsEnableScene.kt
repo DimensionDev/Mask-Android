@@ -15,7 +15,7 @@ import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ui.MaskTheme
 import com.dimension.maskbook.wallet.ui.widget.*
 import com.dimension.maskbook.wallet.viewmodel.wallets.BiometricEnableViewModel
-import org.koin.androidx.compose.get
+import org.koin.androidx.compose.getViewModel
 
 @Composable
 fun BiometricsEnableScene(
@@ -37,8 +37,7 @@ fun BiometricsEnableScene(
         ) {
             // TODO Biometrics Replace UI
             val context = LocalContext.current
-            val viewModel: BiometricEnableViewModel = get()
-            if (!viewModel.isSupported(context)) onEnable(false)
+            val viewModel: BiometricEnableViewModel = getViewModel()
             Column(
                 modifier = Modifier
                     .fillMaxSize()
