@@ -131,7 +131,7 @@ private fun BackupContent(
                         ) {
                             Text(
                                 modifier = Modifier.padding(12.dp),
-                                text = "$index $it",
+                                text = "${index+1} $it",
                             )
                         }
                     }
