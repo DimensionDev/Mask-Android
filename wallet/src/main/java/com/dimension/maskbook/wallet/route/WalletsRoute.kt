@@ -1,5 +1,6 @@
 package com.dimension.maskbook.wallet.route
 
+import android.content.Intent
 import android.net.Uri
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
@@ -82,8 +83,8 @@ fun NavGraphBuilder.walletsRoute(
     }
 
     composable(
-    "WalletQrcode/{name}",
-        arguments = listOf(navArgument("name"){ type = NavType.StringType })
+        "WalletQrcode/{name}",
+        arguments = listOf(navArgument("name") { type = NavType.StringType })
     ) {
         val repository = get<IWalletRepository>()
         val currentWallet by repository.currentWallet.observeAsState(initial = null)
@@ -199,8 +200,7 @@ fun NavGraphBuilder.walletsRoute(
         val wallets by viewModel.wallets.observeAsState(initial = emptyList())
         val chainType by viewModel.network.observeAsState(initial = ChainType.eth)
         wallet?.let { it1 ->
-            WalletSwitchScene(
-                onBack = { navController.popBackStack() },
+            WalletSwitchSceneModal(
                 selectedWallet = it1,
                 wallets = wallets,
                 onWalletSelected = {
@@ -217,13 +217,13 @@ fun NavGraphBuilder.walletsRoute(
                     navController.navigate("SwitchWalletAddWalletConnect")
                 },
                 onEditMenuClicked = {
-                    navController.navigate("WalletSwitchModal/${it.id}")
+                    navController.navigate("WalletSwitchEditModal/${it.id}")
                 }
             )
         }
     }
     bottomSheet(
-        "WalletSwitchModal/{id}",
+        "WalletSwitchEditModal/{id}",
         arguments = listOf(navArgument("id") { type = NavType.StringType })
     ) {
         it.arguments?.getString("id")?.let { id ->
@@ -231,7 +231,7 @@ fun NavGraphBuilder.walletsRoute(
             val wallets by repository.wallets.observeAsState(initial = emptyList())
             val viewModel = getViewModel<WalletConnectManagementViewModel>()
             wallets.firstOrNull { it.id == id }?.let { wallet ->
-                WalletSwitchModal(
+                WalletSwitchEditModal(
                     walletData = wallet,
                     onRename = { navController.navigate("WalletManagementRename/${wallet.id}") },
                     onDelete = {
@@ -366,18 +366,39 @@ fun NavGraphBuilder.walletsRoute(
         val repo = get<ISettingsRepository>()
         val password by repo.paymentPassword.observeAsState(initial = null)
         val enableBiometric by repo.biometricEnabled.observeAsState(initial = false)
+        val shouldShowLegalScene by repo.shouldShowLegalScene.observeAsState(initial = true)
+        val context = LocalContext.current
+        val next: () -> Unit = {
+            val route = if (password.isNullOrEmpty()) {
+                "WalletIntroHostPassword/$type"
+            } else if (!enableBiometric) {
+                "WalletIntroHostFaceId/$type"
+            } else {
+                "CreateOrImportWallet/${type}"
+            }
+            navController.navigate(route, navOptions {
+                popUpTo(id = it.destination.id) {
+                    inclusive = true
+                }
+                launchSingleTop = true
+            })
+        }
+        if (!shouldShowLegalScene) {
+            next()
+        }
         LegalScene(
             onBack = { navController.popBackStack() },
             onAccept = {
-                if (password.isNullOrEmpty()) {
-                    navController.navigate("WalletIntroHostPassword/$type")
-                } else if (!enableBiometric) {
-                    navController.navigate("WalletIntroHostFaceId/$type")
-                } else {
-                    navController.navigate("CreateOrImportWallet/${type}")
-                }
+                repo.setShouldShowLegalScene(false)
             },
-            onBrowseAgreement = { TODO("Logic:browse service agreement") }
+            onBrowseAgreement = {
+                context.startActivity(
+                    Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse("https://legal.mask.io/maskbook/privacy-policy-ios.html")
+                    )
+                )
+            }
         )
     }
 

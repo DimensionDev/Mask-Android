@@ -10,14 +10,10 @@ import androidx.navigation.compose.dialog
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import androidx.navigation.navOptions
-import com.dimension.maskbook.wallet.BuildConfig
 import com.dimension.maskbook.wallet.ext.encodeUrl
 import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.repository.*
-import com.dimension.maskbook.wallet.repository.model.TransakConfig
 import com.dimension.maskbook.wallet.ui.scenes.MainHost
-import com.dimension.maskbook.wallet.ui.scenes.app.LabsTransakScene
-import com.dimension.maskbook.wallet.ui.scenes.app.PluginSettingsScene
 import com.dimension.maskbook.wallet.ui.scenes.app.settings.MarketTrendSettingsModal
 import com.dimension.maskbook.wallet.ui.scenes.persona.BackUpPasswordModal
 import com.dimension.maskbook.wallet.ui.scenes.persona.ExportPrivateKeyScene
@@ -31,7 +27,7 @@ import com.dimension.maskbook.wallet.ui.scenes.persona.social.SelectPlatformModa
 import com.dimension.maskbook.wallet.viewmodel.persona.RenamePersonaViewModel
 import com.dimension.maskbook.wallet.viewmodel.persona.SwitchPersonaViewModel
 import com.dimension.maskbook.wallet.viewmodel.persona.social.DisconnectSocialViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.UnlockWalletViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.BackUpPasswordViewModel
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.navigation
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
@@ -112,13 +108,7 @@ fun NavGraphBuilder.mainRoute(
                 }
             )
         }
-        composable("PluginSettings") {
-            PluginSettingsScene(
-                onBack = {
-                    navController.popBackStack()
-                }
-            )
-        }
+
         dialog("Logout") {
             val repository = get<IPersonaRepository>()
             LogoutDialog(
@@ -138,7 +128,7 @@ fun NavGraphBuilder.mainRoute(
             )
         ) { backStackEntry ->
             val target = backStackEntry.arguments?.getString("target")
-            val viewModel = getViewModel<UnlockWalletViewModel>()
+            val viewModel = getViewModel<BackUpPasswordViewModel>()
             val biometricEnable by viewModel.biometricEnabled.observeAsState(initial = false)
             val password by viewModel.password.observeAsState(initial = "")
             val passwordValid by viewModel.passwordValid.observeAsState(initial = false)
@@ -321,22 +311,5 @@ fun NavGraphBuilder.mainRoute(
             }
         }
         builder()
-    }
-
-    composable(
-        route = "LabsTransak"
-    ) {
-        val repo = get<IWalletRepository>()
-        val currentWallet by repo.currentWallet.observeAsState(null)
-        currentWallet?.let { wallet ->
-            LabsTransakScene(
-                onBack = { navController.popBackStack() },
-                transakConfig = TransakConfig(
-                    isStaging = BuildConfig.DEBUG,
-                    walletAddress = wallet.address,
-                    defaultCryptoCurrency = wallet.tokens.firstOrNull()?.tokenData?.symbol ?: "ETH",
-                )
-            )
-        }
     }
 }

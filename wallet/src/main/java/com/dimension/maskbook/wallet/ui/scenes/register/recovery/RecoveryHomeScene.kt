@@ -8,10 +8,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
-import androidx.compose.material.ListItem
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,8 +24,10 @@ import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ui.widget.MaskBackButton
 import com.dimension.maskbook.wallet.ui.widget.MaskButton
+import com.dimension.maskbook.wallet.ui.widget.MaskListItem
 import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
 import com.dimension.maskbook.wallet.ui.widget.MaskTopAppBar
+import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
 
 @Composable
 fun RecoveryHomeScene(
@@ -48,10 +52,9 @@ fun RecoveryHomeScene(
         }
     ) {
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().padding(ScaffoldPadding),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Spacer(Modifier.height(16.dp))
             ItemButton(
                 icon = R.drawable.ic_recovery_identity,
                 text = stringResource(R.string.scene_identity_mnemonic_import_title),
@@ -92,12 +95,12 @@ private fun ItemButton(
         modifier = Modifier.fillMaxWidth(),
         onClick = onClick,
     ) {
-        ListItem(
+        MaskListItem(
             icon = {
                 Image(
                     painter = painterResource(icon),
                     contentDescription = null,
-                    modifier = Modifier.padding(vertical = 12.dp),
+                    modifier = Modifier.size(38.dp),
                 )
             },
             text = {
@@ -110,14 +113,14 @@ private fun ItemButton(
                     overflow = TextOverflow.Ellipsis,
                 )
             },
-            singleLineSecondaryText = false,
             trailing = {
                 Icon(
-                    painter = painterResource(R.drawable.ic_arrow_right),
+                    imageVector = Icons.Filled.ArrowForwardIos,
                     contentDescription = null,
-                    modifier = Modifier.padding(vertical = 22.dp),
+                    modifier = Modifier.size(16.dp),
                 )
             }
         )
     }
+    Spacer(Modifier.height(16.dp))
 }

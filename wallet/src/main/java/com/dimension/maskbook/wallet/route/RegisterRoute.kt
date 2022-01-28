@@ -243,26 +243,5 @@ fun NavGraphBuilder.registerRoute(
             }
 
         }
-//                    composable("Welcome") {
-//                        val viewModel: WelcomeViewModel = getViewModel()
-//                        val persona by viewModel.persona.observeAsState(initial = "")
-//                        WelcomeScene(
-//                            persona = persona,
-//                            onPersonaChanged = {
-//                                viewModel.setPersona(it)
-//                            },
-//                            onNext = {
-//                                viewModel.onConfirm()
-//                                navController.navigate("Main") {
-//                                    popUpTo("Register") {
-//                                        inclusive = true
-//                                    }
-//                                }
-//                            },
-//                            onBack = {
-//                                navController.popBackStack()
-//                            }
-//                        )
-//                    }
     }
 }

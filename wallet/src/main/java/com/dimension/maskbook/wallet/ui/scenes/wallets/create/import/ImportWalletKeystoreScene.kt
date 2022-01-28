@@ -26,7 +26,7 @@ import com.dimension.maskbook.wallet.ui.widget.MaskBackButton
 import com.dimension.maskbook.wallet.ui.widget.MaskInputField
 import com.dimension.maskbook.wallet.ui.widget.MaskPasswordInputField
 import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
-import com.dimension.maskbook.wallet.ui.widget.MaskSingleLineTopAppBar
+import com.dimension.maskbook.wallet.ui.widget.MaskTopAppBar
 import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
 import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.wallet.viewmodel.wallets.import.ImportWalletKeystoreViewModel
@@ -42,10 +42,13 @@ fun ImportWalletKeyStoreScene(
     MaskTheme {
         MaskScaffold(
             topBar = {
-                MaskSingleLineTopAppBar(
+                MaskTopAppBar(
                     navigationIcon = {
                         MaskBackButton(onBack = onBack)
                     },
+                    title = {
+                        Text(text = stringResource(R.string.scene_wallet_import_item_keystore))
+                    }
                 )
             }
         ) {
@@ -67,8 +70,6 @@ fun ImportWalletKeyStoreScene(
                         .fillMaxSize()
                         .padding(ScaffoldPadding),
                 ) {
-                    Text(text = stringResource(R.string.scene_wallet_import_item_keystore), style = MaterialTheme.typography.h4)
-                    Spacer(modifier = Modifier.height(24.dp))
                     MaskInputField(
                         value = keystore,
                         onValueChange = { viewModel.setKeystore(it) },

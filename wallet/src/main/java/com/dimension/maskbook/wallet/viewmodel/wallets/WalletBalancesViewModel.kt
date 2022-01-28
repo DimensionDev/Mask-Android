@@ -3,13 +3,16 @@ package com.dimension.maskbook.wallet.viewmodel.wallets
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.wallet.ext.asStateIn
+import com.dimension.maskbook.wallet.repository.ChainType
 import com.dimension.maskbook.wallet.repository.ICollectibleRepository
 import com.dimension.maskbook.wallet.repository.IWalletRepository
 import com.dimension.maskbook.wallet.repository.WalletData
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.BalancesSceneType
-import com.dimension.maskbook.wallet.ui.scenes.wallets.management.DisplayAmountType
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.mapNotNull
 
 class WalletBalancesViewModel(
@@ -37,10 +40,24 @@ class WalletBalancesViewModel(
         repository.setCurrentWallet(walletData = walletData)
     }
 
-    private val _displayAmountType = MutableStateFlow(DisplayAmountType.All)
-    val displayAmountType = _displayAmountType.asStateIn(viewModelScope, DisplayAmountType.All)
-    fun setCurrentDisplayAmountType(displayAmountType: DisplayAmountType) {
-        _displayAmountType.value = displayAmountType
+    private val _displayChainType = MutableStateFlow<ChainType?>(null)
+    val displayChainType = _displayChainType.asStateIn(viewModelScope, null)
+
+    fun setCurrentDisplayChainType(displayChainType: ChainType?) {
+        _displayChainType.value = displayChainType
     }
 
+    val showTokens by lazy {
+        combine(_displayChainType, currentWallet) { chainType, wallet ->
+            when {
+                wallet == null -> emptyList()
+                chainType == null -> wallet.tokens
+                else -> wallet.tokens.filter {
+                    it.tokenData.chainType === chainType
+                }
+            }.sortedByDescending {
+                it.tokenData.price * it.count
+            }
+        }.flowOn(Dispatchers.IO).asStateIn(viewModelScope, emptyList())
+    }
 }

@@ -64,7 +64,7 @@ fun TokenDetailScene(
                 Surface(
                     contentColor = contentColorFor(backgroundColor = Color(0XFF212E59)),
                     color = Color(0XFF212E59),
-                    shape = RoundedCornerShape(12.dp),
+                    shape = MaterialTheme.shapes.medium,
                     modifier = Modifier.padding(horizontal = 23.dp)
                 ) {
                     Row(

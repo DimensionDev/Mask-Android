@@ -10,12 +10,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ui.LocalRootNavController
@@ -32,8 +34,11 @@ fun MultiChainWalletDialog() {
         },
         text = {
             Column {
-                Text(text = stringResource(R.string.scene_create_wallet_multichain_wallet_description))
-                Spacer(modifier = Modifier.height(20.dp))
+                Text(
+                    text = stringResource(R.string.scene_create_wallet_multichain_wallet_description),
+                    style = MaterialTheme.typography.subtitle2.copy(fontWeight = FontWeight.W400),
+                )
+                Spacer(Modifier.height(20.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
@@ -44,7 +49,7 @@ fun MultiChainWalletDialog() {
                     InfoItem(icon = R.drawable.ic_chain_arbitrum, name = stringResource(R.string.chain_name_arbitrum))
                     InfoItem(icon = R.drawable.ic_chain_optimism, name = stringResource(R.string.chain_name_optimism))
                 }
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(Modifier.height(12.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
@@ -55,6 +60,7 @@ fun MultiChainWalletDialog() {
                     InfoItem(icon = R.drawable.ic_chain_ropsten, name = "Ropsten")
                     InfoItem(icon = R.drawable.ic_chain_rinkeby, name = "Rinkeby")
                 }
+                Spacer(Modifier.height(8.dp))
             }
         },
         buttons = {
@@ -76,6 +82,9 @@ private fun InfoItem(@DrawableRes icon: Int, name: String) {
             painter = painterResource(id = icon),
             contentDescription = null
         )
-        Text(text = name, modifier = Modifier.padding(top = 10.dp))
+        Text(
+            text = name,
+            modifier = Modifier.padding(top = 10.dp)
+        )
     }
 }

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -23,6 +24,7 @@ import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.repository.NetworkType
 import com.dimension.maskbook.wallet.repository.TradeProvider
+import com.dimension.maskbook.wallet.ui.widget.CircleCheckboxDefaults
 import com.dimension.maskbook.wallet.ui.widget.MaskModal
 import com.dimension.maskbook.wallet.ui.widget.MaskSelection
 import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
@@ -103,12 +105,22 @@ fun MarketTrendSettingsModal() {
                 item.value.forEach { provider ->
                     MaskSelection(
                         selected = tradeProvider[item.key] == provider,
-                        onClicked = { viewModel.setTradeProvider(item.key, provider) }) {
-                        Image(provider.icon, contentDescription = null)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(text = provider.text, modifier = Modifier.weight(1f))
-
-                    }
+                        onClicked = {
+                            viewModel.setTradeProvider(item.key, provider)
+                        },
+                        checkboxColors = CircleCheckboxDefaults.colors(
+                            checkedColor = MaterialTheme.colors.primary,
+                        ),
+                        content = {
+                            Image(
+                                painter = provider.icon,
+                                contentDescription = null,
+                                Modifier.size(32.dp),
+                            )
+                            Spacer(Modifier.width(8.dp))
+                            Text(text = provider.text)
+                        }
+                    )
                 }
             }
         }
