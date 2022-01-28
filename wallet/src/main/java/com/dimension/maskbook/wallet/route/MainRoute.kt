@@ -10,13 +10,11 @@ import androidx.navigation.compose.dialog
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import androidx.navigation.navOptions
+import com.dimension.maskbook.wallet.BuildConfig
 import com.dimension.maskbook.wallet.ext.encodeUrl
 import com.dimension.maskbook.wallet.ext.observeAsState
-import com.dimension.maskbook.wallet.repository.AppKey
-import com.dimension.maskbook.wallet.repository.IPersonaRepository
-import com.dimension.maskbook.wallet.repository.ISettingsRepository
-import com.dimension.maskbook.wallet.repository.Network
-import com.dimension.maskbook.wallet.repository.PlatformType
+import com.dimension.maskbook.wallet.repository.*
+import com.dimension.maskbook.wallet.repository.model.TransakConfig
 import com.dimension.maskbook.wallet.ui.scenes.MainHost
 import com.dimension.maskbook.wallet.ui.scenes.app.LabsTransakScene
 import com.dimension.maskbook.wallet.ui.scenes.app.PluginSettingsScene
@@ -328,8 +326,17 @@ fun NavGraphBuilder.mainRoute(
     composable(
         route = "LabsTransak"
     ) {
-        LabsTransakScene(
-            onBack = { navController.popBackStack() }
-        )
+        val repo = get<IWalletRepository>()
+        val currentWallet by repo.currentWallet.observeAsState(null)
+        currentWallet?.let { wallet ->
+            LabsTransakScene(
+                onBack = { navController.popBackStack() },
+                transakConfig = TransakConfig(
+                    isStaging = BuildConfig.DEBUG,
+                    walletAddress = wallet.address,
+                    defaultCryptoCurrency = wallet.tokens.firstOrNull()?.tokenData?.symbol ?: "ETH",
+                )
+            )
+        }
     }
 }

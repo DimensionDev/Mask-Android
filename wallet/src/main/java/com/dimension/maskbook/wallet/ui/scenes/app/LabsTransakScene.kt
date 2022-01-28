@@ -1,16 +1,25 @@
 package com.dimension.maskbook.wallet.ui.scenes.app
 
 import android.annotation.SuppressLint
+import android.graphics.Bitmap
 import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.viewinterop.AndroidView
 import com.dimension.maskbook.wallet.R
+import com.dimension.maskbook.wallet.repository.model.TransakConfig
 import com.dimension.maskbook.wallet.ui.widget.*
 
 
@@ -18,8 +27,26 @@ import com.dimension.maskbook.wallet.ui.widget.*
 @Composable
 fun LabsTransakScene(
     onBack: () -> Unit,
+    transakConfig: TransakConfig
 ) {
     val context = LocalContext.current
+    var loading by remember { mutableStateOf(true) }
+    val webView = remember {
+        WebView(context).apply {
+            settings.javaScriptEnabled = true
+            webViewClient = object : WebViewClient() {
+                override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
+                    super.onPageStarted(view, url, favicon)
+                    loading = true
+                }
+
+                override fun onPageFinished(view: WebView?, url: String?) {
+                    super.onPageFinished(view, url)
+                    loading = false
+                }
+            }
+        }
+    }
     MaskScaffold(
         topBar = {
             MaskSingleLineTopAppBar(
@@ -38,13 +65,16 @@ fun LabsTransakScene(
             AndroidView(
                 modifier = Modifier.fillMaxSize(),
                 factory = {
-                    WebView(context).apply {
-                        settings.javaScriptEnabled = true
-                        // TODO pass token ,wallet address and other params
-                        loadUrl("https://staging-global.transak.com?defaultCryptoCurrency=ETH")
+                    webView.apply {
+                        loadUrl(transakConfig.url)
                     }
                 }
             )
+            if (loading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
         }
     }
 }
