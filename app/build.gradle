@@ -13,8 +13,8 @@ android {
         applicationId "com.dimension.maskbook"
         minSdkVersion 21
         targetSdkVersion 31
-        versionCode 44
-        versionName "2.0.0-dev03"
+        versionCode 45
+        versionName "2.0.0-dev04"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         
 //        ndk {
