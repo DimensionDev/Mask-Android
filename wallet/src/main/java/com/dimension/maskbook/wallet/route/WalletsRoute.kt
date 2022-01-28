@@ -367,11 +367,12 @@ fun NavGraphBuilder.walletsRoute(
         val password by repo.paymentPassword.observeAsState(initial = null)
         val enableBiometric by repo.biometricEnabled.observeAsState(initial = false)
         val shouldShowLegalScene by repo.shouldShowLegalScene.observeAsState(initial = true)
+        val biometricEnableViewModel: BiometricEnableViewModel = getViewModel()
         val context = LocalContext.current
         val next: () -> Unit = {
             val route = if (password.isNullOrEmpty()) {
                 "WalletIntroHostPassword/$type"
-            } else if (!enableBiometric) {
+            } else if (!enableBiometric && biometricEnableViewModel.isSupported(context)) {
                 "WalletIntroHostFaceId/$type"
             } else {
                 "CreateOrImportWallet/${type}"
@@ -412,9 +413,11 @@ fun NavGraphBuilder.walletsRoute(
             CreateType.valueOf(type)
         } ?: CreateType.CREATE
         val enableBiometric by get<ISettingsRepository>().biometricEnabled.observeAsState(initial = false)
+        val biometricEnableViewModel: BiometricEnableViewModel = getViewModel()
+        val context = LocalContext.current
         SetUpPaymentPassword(
             onNext = {
-                if (!enableBiometric) {
+                if (!enableBiometric && biometricEnableViewModel.isSupported(context)) {
                     navController.navigate("WalletIntroHostFaceId/$type")
                 } else {
                     navController.navigate("CreateOrImportWallet/${type}")
