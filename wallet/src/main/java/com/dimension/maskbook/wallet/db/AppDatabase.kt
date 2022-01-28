@@ -1,11 +1,49 @@
+/*
+ *  Mask-Android
+ *
+ *  Copyright (C) DimensionDev and Contributors
+ * 
+ *  This file is part of Mask-Android.
+ * 
+ *  Mask-Android is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ * 
+ *  Mask-Android is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ * 
+ *  You should have received a copy of the GNU General Public License
+ *  along with Mask-Android. If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.dimension.maskbook.wallet.db
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
-import com.dimension.maskbook.wallet.db.dao.*
-import com.dimension.maskbook.wallet.db.model.*
+import com.dimension.maskbook.wallet.db.dao.CollectibleDao
+import com.dimension.maskbook.wallet.db.dao.SendHistoryDao
+import com.dimension.maskbook.wallet.db.dao.StoredKeyDao
+import com.dimension.maskbook.wallet.db.dao.TokenDao
+import com.dimension.maskbook.wallet.db.dao.TransactionDao
+import com.dimension.maskbook.wallet.db.dao.WCWalletDao
+import com.dimension.maskbook.wallet.db.dao.WalletBalanceDao
+import com.dimension.maskbook.wallet.db.dao.WalletContactDao
+import com.dimension.maskbook.wallet.db.dao.WalletDao
+import com.dimension.maskbook.wallet.db.dao.WalletTokenDao
+import com.dimension.maskbook.wallet.db.model.DbCollectible
+import com.dimension.maskbook.wallet.db.model.DbSendHistory
+import com.dimension.maskbook.wallet.db.model.DbStoredKey
+import com.dimension.maskbook.wallet.db.model.DbToken
+import com.dimension.maskbook.wallet.db.model.DbTransactionData
+import com.dimension.maskbook.wallet.db.model.DbWCWallet
+import com.dimension.maskbook.wallet.db.model.DbWallet
+import com.dimension.maskbook.wallet.db.model.DbWalletBalance
+import com.dimension.maskbook.wallet.db.model.DbWalletContact
+import com.dimension.maskbook.wallet.db.model.DbWalletToken
 import com.dimension.maskbook.wallet.ext.JSON
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString

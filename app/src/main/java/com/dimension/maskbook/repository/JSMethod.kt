@@ -1,8 +1,35 @@
+/*
+ *  Mask-Android
+ *
+ *  Copyright (C) DimensionDev and Contributors
+ * 
+ *  This file is part of Mask-Android.
+ * 
+ *  Mask-Android is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ * 
+ *  Mask-Android is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ * 
+ *  You should have received a copy of the GNU General Public License
+ *  along with Mask-Android. If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.dimension.maskbook.repository
 
 import com.dimension.maskbook.util.MessageChannel
 import com.dimension.maskbook.wallet.ext.decodeJson
-import com.dimension.maskbook.wallet.repository.*
+import com.dimension.maskbook.wallet.repository.Appearance
+import com.dimension.maskbook.wallet.repository.BackupPreview
+import com.dimension.maskbook.wallet.repository.DataProvider
+import com.dimension.maskbook.wallet.repository.Language
+import com.dimension.maskbook.wallet.repository.Network
+import com.dimension.maskbook.wallet.repository.NetworkType
+import com.dimension.maskbook.wallet.repository.Profile
+import com.dimension.maskbook.wallet.repository.TradeProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.SerialName
@@ -217,7 +244,7 @@ object JSMethod {
             MessageChannel.executeMessage(
                 "persona_connectProfile",
                 mapOf(
-                    "profileIdentifier" to "person:${network.value}/${userName}",
+                    "profileIdentifier" to "person:${network.value}/$userName",
                     "personaIdentifier" to personaIdentifier,
                 )
             )

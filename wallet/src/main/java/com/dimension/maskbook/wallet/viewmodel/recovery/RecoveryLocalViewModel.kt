@@ -1,3 +1,23 @@
+/*
+ *  Mask-Android
+ *
+ *  Copyright (C) DimensionDev and Contributors
+ * 
+ *  This file is part of Mask-Android.
+ * 
+ *  Mask-Android is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ * 
+ *  Mask-Android is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ * 
+ *  You should have received a copy of the GNU General Public License
+ *  along with Mask-Android. If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.dimension.maskbook.wallet.viewmodel.recovery
 
 import android.content.ContentResolver
@@ -9,7 +29,6 @@ import com.dimension.maskbook.wallet.repository.BackupMeta
 import com.dimension.maskbook.wallet.repository.ISettingsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import android.provider.MediaStore
 
 class RecoveryLocalViewModel(
     private val repository: ISettingsRepository,
@@ -86,7 +105,7 @@ class RecoveryLocalViewModel(
     fun confirmPassword() = viewModelScope.launch {
         _passwordError.value = false
         try {
-            //TODO: decrypt bin file to json
+            // TODO: decrypt bin file to json
             _loadState.value = LoadState.Loading
         } catch (e: Throwable) {
             _loadState.value = LoadState.RequirePassword
@@ -99,10 +118,7 @@ class RecoveryLocalViewModel(
             try {
                 repository.restoreBackupFromJson(json)
             } catch (e: Throwable) {
-
             }
         }
     }
-
-
 }

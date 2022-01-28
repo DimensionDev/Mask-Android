@@ -1,3 +1,23 @@
+/*
+ *  Mask-Android
+ *
+ *  Copyright (C) DimensionDev and Contributors
+ * 
+ *  This file is part of Mask-Android.
+ * 
+ *  Mask-Android is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ * 
+ *  Mask-Android is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ * 
+ *  You should have received a copy of the GNU General Public License
+ *  along with Mask-Android. If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.dimension.maskbook.wallet.walletconnect
 
 import org.walletconnect.Session
@@ -6,7 +26,9 @@ import org.walletconnect.nullOnThrow
 import org.walletconnect.types.extractPeerData
 import org.walletconnect.types.intoMap
 import org.walletconnect.types.toStringList
-import java.util.*
+import java.util.Collections
+import java.util.Random
+import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
 // origin WCSession has some bugs parsing response, so we created a new one
@@ -116,7 +138,8 @@ class WCSessionV1(
                         storeSession()
                         propagateToCallbacks { onStatus(if (params.approved) Session.Status.Approved else Session.Status.Closed) }
                     }
-                })
+                }
+            )
             handshakeId = requestId
         }
     }
@@ -304,7 +327,6 @@ class WCSessionV1(
     }
 }
 
-
 fun Map<String, *>.correctExtractSessionParams(): Session.SessionParams {
     val approved =
         this["approved"] as? Boolean ?: throw IllegalArgumentException("approved missing")
@@ -319,5 +341,6 @@ fun Map<String, *>.correctExtractSessionParams(): Session.SessionParams {
         approved,
         chainId,
         accounts,
-        nullOnThrow { this.extractPeerData() })
+        nullOnThrow { this.extractPeerData() }
+    )
 }

@@ -1,9 +1,33 @@
+/*
+ *  Mask-Android
+ *
+ *  Copyright (C) DimensionDev and Contributors
+ * 
+ *  This file is part of Mask-Android.
+ * 
+ *  Mask-Android is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ * 
+ *  Mask-Android is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ * 
+ *  You should have received a copy of the GNU General Public License
+ *  along with Mask-Android. If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.dimension.maskbook.wallet.repository
 
 import android.net.Uri
 import com.dimension.maskbook.wallet.BuildConfig
 import com.dimension.maskbook.wallet.db.AppDatabase
-import com.dimension.maskbook.wallet.db.model.*
+import com.dimension.maskbook.wallet.db.model.CoinPlatformType
+import com.dimension.maskbook.wallet.db.model.DbStoredKey
+import com.dimension.maskbook.wallet.db.model.DbWCWallet
+import com.dimension.maskbook.wallet.db.model.DbWallet
+import com.dimension.maskbook.wallet.db.model.WalletSource
 import com.dimension.maskbook.wallet.services.WalletServices
 import com.dimension.maskbook.wallet.services.model.WCSupportedWallet
 import com.dimension.maskbook.wallet.walletconnect.WCResponder
@@ -11,11 +35,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import java.util.*
+import java.util.UUID
 
 data class WCWallet(
     val id: String,
@@ -32,8 +55,8 @@ data class WCWallet(
         get() = if (shortName.isNotEmpty()) shortName else name
 
     fun isSupported(chainType: ChainType): Boolean {
-        return chains.contains(chainType)
-                && (nativeDeeplink.isNotEmpty() || universalLink.isNotEmpty())
+        return chains.contains(chainType) &&
+            (nativeDeeplink.isNotEmpty() || universalLink.isNotEmpty())
     }
 
     fun wcDeeplink(wcUrl: String): String {
@@ -61,14 +84,13 @@ data class WCWallet(
             )
         }
     }
-
 }
 
 interface IWalletConnectRepository {
     val supportedWallets: Flow<List<WCWallet>>
     fun init()
     // returns id of first wallet
-    suspend fun saveAccounts(responder: WCResponder, platformType: CoinPlatformType):String?
+    suspend fun saveAccounts(responder: WCResponder, platformType: CoinPlatformType): String?
 }
 
 class WalletConnectRepository(
@@ -83,11 +105,10 @@ class WalletConnectRepository(
                 refreshSupportedWallets()
             } catch (e: Throwable) {
                 if (BuildConfig.DEBUG) e.printStackTrace()
-                //retry
+                // retry
                 delay(30000)
                 refreshSupportedWallets()
             }
-
         }
     }
 
@@ -134,7 +155,6 @@ class WalletConnectRepository(
         return wallets.firstOrNull()?.id
     }
 
-
     override val supportedWallets: Flow<List<WCWallet>>
         get() = database.wcWalletDao().getAll().map {
             it.map { wallet -> WCWallet.fromDb(wallet) }
@@ -151,8 +171,8 @@ class WalletConnectRepository(
     }
 
     private fun WCSupportedWallet.toDb(): DbWCWallet? {
-        if (id.isNullOrEmpty()
-            || app?.android.isNullOrEmpty()
+        if (id.isNullOrEmpty() ||
+            app?.android.isNullOrEmpty()
         ) return null
         return DbWCWallet(
             id = id,
@@ -161,7 +181,7 @@ class WalletConnectRepository(
             nativeDeeplink = mobile?.native ?: "",
             universalLink = mobile?.universal ?: "",
             shortName = metadata?.shortName ?: "",
-            logo = "https://registry.walletconnect.org/logo/sm/${id}.jpeg",
+            logo = "https://registry.walletconnect.org/logo/sm/$id.jpeg",
             packageName = app?.android?.let {
                 try {
                     Uri.parse(it).getQueryParameter("id")
@@ -176,7 +196,7 @@ class WalletConnectRepository(
     }
 
     private fun getChainType(chain: String): ChainType? {
-        //normally like eip155:1 eip155:56
+        // normally like eip155:1 eip155:56
         return when {
             chain.startsWith("eip155:") -> {
                 val chainId = chain.split(":").last()

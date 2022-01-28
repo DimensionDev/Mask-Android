@@ -1,3 +1,23 @@
+/*
+ *  Mask-Android
+ *
+ *  Copyright (C) DimensionDev and Contributors
+ * 
+ *  This file is part of Mask-Android.
+ * 
+ *  Mask-Android is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ * 
+ *  Mask-Android is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ * 
+ *  You should have received a copy of the GNU General Public License
+ *  along with Mask-Android. If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.dimension.maskbook.wallet.walletconnect
 
 import android.content.Context
@@ -8,17 +28,16 @@ import com.dimension.maskbook.wallet.repository.ChainType
 import com.squareup.moshi.Moshi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.onEach
 import okhttp3.OkHttpClient
 import org.komputing.khex.extensions.toNoPrefixHexString
 import org.walletconnect.Session
 import org.walletconnect.impls.FileWCSessionStore
 import org.walletconnect.impls.MoshiPayloadAdapter
 import org.walletconnect.impls.OkHttpTransport
-import org.walletconnect.impls.WCSession
 import java.io.File
 import java.math.BigDecimal
-import java.util.*
+import java.util.Random
+import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
 class WalletConnectClientManagerV1(private val context: Context) : WalletConnectClientManager {
@@ -35,9 +54,12 @@ class WalletConnectClientManagerV1(private val context: Context) : WalletConnect
     }
 
     private val storage by lazy {
-        FileWCSessionStore(File(context.cacheDir, "v1_session_store.json").apply {
-            if (!this.exists()) createNewFile()
-        }, moshi)
+        FileWCSessionStore(
+            File(context.cacheDir, "v1_session_store.json").apply {
+                if (!this.exists()) createNewFile()
+            },
+            moshi
+        )
     }
 
     private val _wcUrl = MutableStateFlow("")
@@ -82,7 +104,6 @@ class WalletConnectClientManagerV1(private val context: Context) : WalletConnect
                 )
             )
         }
-
     }
 
     private fun resetSession() {
@@ -98,7 +119,6 @@ class WalletConnectClientManagerV1(private val context: Context) : WalletConnect
             true
         } ?: false
     }
-
 
     override fun initSessions(onDisconnect: (address: String) -> Unit) {
         this.onDisconnect = onDisconnect
@@ -128,8 +148,8 @@ class WalletConnectClientManagerV1(private val context: Context) : WalletConnect
                     to = toAddress,
                     nonce = "",
                     // calculation of gas fee in wallet connect sdk was wrong
-                    gasPrice = null,// "0x${gasPrice.ether.wei.toBigInteger().toString(16)}",
-                    gasLimit = null,//"0x${gasLimit.toBigDecimal().toBigInteger().toString(16)}",
+                    gasPrice = null, // "0x${gasPrice.ether.wei.toBigInteger().toString(16)}",
+                    gasLimit = null, // "0x${gasLimit.toBigDecimal().toBigInteger().toString(16)}",
                     data = data,
                     value = "0x${amount.ether.wei.toLong().toBigInteger().toString(16)}"
                 ),
@@ -143,11 +163,13 @@ class WalletConnectClientManagerV1(private val context: Context) : WalletConnect
     private fun addToConnected(session: Session, handshakeTopic: String) {
         session.approvedAccounts()?.forEach {
             connectedSessions[it] = session.apply {
-                addCallback(ConnectedSessionCallback(this, it, onDisconnect = { address, _ ->
-                    // remove from connected sessions
-                    connectedSessions.remove(address)
-                    this@WalletConnectClientManagerV1.onDisconnect.invoke(address)
-                }))
+                addCallback(
+                    ConnectedSessionCallback(this, it, onDisconnect = { address, _ ->
+                        // remove from connected sessions
+                        connectedSessions.remove(address)
+                        this@WalletConnectClientManagerV1.onDisconnect.invoke(address)
+                    })
+                )
                 update(
                     approvedAccounts() ?: emptyList(),
                     chainId = storage.load(handshakeTopic)?.chainId ?: -1
@@ -168,7 +190,6 @@ class WalletConnectClientManagerV1(private val context: Context) : WalletConnect
         )
     )
 }
-
 
 private fun Session.responder(chainId: Long?) = peerMeta()?.let {
     chainId?.let { id ->
@@ -210,14 +231,14 @@ private class PairCallback(
     }
 
     override fun onStatus(status: Session.Status) {
-        //clear callbacks after approved or not
+        // clear callbacks after approved or not
         "Pair Status:$status".log()
         if (status is Session.Status.Error) {
             status.throwable.printStackTrace()
         }
         when (status) {
             Session.Status.Approved -> {
-                //wait for response,to get chainId
+                // wait for response,to get chainId
             }
             Session.Status.Closed, Session.Status.Disconnected, is Session.Status.Error -> {
                 dispatchResult(false)

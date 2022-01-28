@@ -18,13 +18,13 @@
  *  You should have received a copy of the GNU General Public License
  *  along with Mask-Android. If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.viewmodel.wallets
+package com.dimension.maskbook.wallet.platform
 
-import androidx.lifecycle.ViewModel
+import com.dimension.maskbook.wallet.repository.PlatformType
 
-class TouchIdEnableViewModel : ViewModel() {
-    fun enable(onEnable: () -> Unit) {
-        /*TODO Logic: enable touch id unlock*/
-        onEnable.invoke()
-    }
+interface IPlatformSwitcher {
+    fun switchTo(platformType: PlatformType)
+    fun showTooltips(visible: Boolean)
+    fun launchDeeplink(deeplink: String)
+    fun showModal(route: String, data: Any?)
 }

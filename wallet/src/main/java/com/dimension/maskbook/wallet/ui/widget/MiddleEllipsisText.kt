@@ -1,3 +1,23 @@
+/*
+ *  Mask-Android
+ *
+ *  Copyright (C) DimensionDev and Contributors
+ * 
+ *  This file is part of Mask-Android.
+ * 
+ *  Mask-Android is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ * 
+ *  Mask-Android is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ * 
+ *  You should have received a copy of the GNU General Public License
+ *  along with Mask-Android. If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.dimension.maskbook.wallet.ui.widget
 
 import androidx.compose.material.LocalTextStyle
@@ -95,8 +115,8 @@ fun MiddleEllipsisText(
                 while (availableWidth - startCounter.width - endCounter.width > 0) {
                     val possibleEndWidth = endCounter.widthWithNextChar()
                     if (
-                        startCounter.width >= possibleEndWidth
-                        && availableWidth - startCounter.width - possibleEndWidth >= 0
+                        startCounter.width >= possibleEndWidth &&
+                        availableWidth - startCounter.width - possibleEndWidth >= 0
                     ) {
                         endCounter.addNextChar()
                     } else if (availableWidth - startCounter.widthWithNextChar() - endCounter.width >= 0) {

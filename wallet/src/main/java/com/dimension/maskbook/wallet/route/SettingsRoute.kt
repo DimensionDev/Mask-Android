@@ -1,3 +1,23 @@
+/*
+ *  Mask-Android
+ *
+ *  Copyright (C) DimensionDev and Contributors
+ * 
+ *  This file is part of Mask-Android.
+ * 
+ *  Mask-Android is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ * 
+ *  Mask-Android is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ * 
+ *  You should have received a copy of the GNU General Public License
+ *  along with Mask-Android. If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.dimension.maskbook.wallet.route
 
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -19,9 +39,9 @@ import com.dimension.maskbook.wallet.ext.encodeUrl
 import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.ui.scenes.settings.AppearanceSettings
 import com.dimension.maskbook.wallet.ui.scenes.settings.ChangeBackUpPasswordModal
+import com.dimension.maskbook.wallet.ui.scenes.settings.ChangePaymentPasswordModal
 import com.dimension.maskbook.wallet.ui.scenes.settings.DataSourceSettings
 import com.dimension.maskbook.wallet.ui.scenes.settings.LanguageSettings
-import com.dimension.maskbook.wallet.ui.scenes.settings.ChangePaymentPasswordModal
 import com.dimension.maskbook.wallet.ui.widget.EmailCodeInputModal
 import com.dimension.maskbook.wallet.ui.widget.EmailInputModal
 import com.dimension.maskbook.wallet.ui.widget.MaskDialog
@@ -370,7 +390,6 @@ fun NavGraphBuilder.settingsRoute(
                 }
             )
         }
-
     }
 
     navigation("Settings_ChangePhone_Setup", "Settings_ChangePhone") {
@@ -455,7 +474,6 @@ fun NavGraphBuilder.settingsRoute(
                 }
             )
         }
-
 
         bottomSheet(
             "Settings_ChangePhone_Change_Code/{phone}",

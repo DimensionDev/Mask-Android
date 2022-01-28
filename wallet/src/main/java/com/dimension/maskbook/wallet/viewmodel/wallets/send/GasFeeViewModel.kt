@@ -1,3 +1,23 @@
+/*
+ *  Mask-Android
+ *
+ *  Copyright (C) DimensionDev and Contributors
+ * 
+ *  This file is part of Mask-Android.
+ * 
+ *  Mask-Android is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ * 
+ *  Mask-Android is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ * 
+ *  You should have received a copy of the GNU General Public License
+ *  along with Mask-Android. If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.dimension.maskbook.wallet.viewmodel.wallets.send
 
 import androidx.lifecycle.ViewModel
@@ -13,10 +33,14 @@ import com.dimension.maskbook.wallet.services.model.EthGasFee
 import com.dimension.maskbook.wallet.services.model.EthGasFeeResponse
 import com.dimension.maskbook.wallet.services.model.MaticGasFeeResponse
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.mapNotNull
 import java.math.BigDecimal
 import kotlin.time.ExperimentalTime
-
 
 data class GasFeeData(
     val maxPriorityFeePerGas: Double,
@@ -75,7 +99,6 @@ class GasFeeModel {
         baseFee = 0.0
     }
 }
-
 
 class GasFeeViewModel(
     initialGasLimit: Double = 21000.0,
@@ -188,7 +211,6 @@ class GasFeeViewModel(
             .map { it.tokens.firstOrNull { it.tokenData.address == "eth" } }
             .mapNotNull { it?.tokenData?.price }
     }
-
 
     @OptIn(ExperimentalTime::class)
     val arrives = combine(rawGasPrice, defaultGasFee.mapNotNull { it }) { gas, response ->
