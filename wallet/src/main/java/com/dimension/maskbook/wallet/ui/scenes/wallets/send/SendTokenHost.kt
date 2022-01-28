@@ -5,7 +5,6 @@ import android.net.Uri
 import android.util.Log
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -18,7 +17,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import androidx.navigation.plusAssign
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ext.copyText
 import com.dimension.maskbook.wallet.ext.humanizeDollar
@@ -51,11 +49,8 @@ fun SendTokenHost(
 ) {
     val context = LocalContext.current
 
-    val navController = rememberNavController()
     val bottomSheetNavigator = rememberBottomSheetNavigator()
-    SideEffect {
-        navController.navigatorProvider += bottomSheetNavigator
-    }
+    val navController = rememberNavController(bottomSheetNavigator)
 
     val gasFeeViewModel = getViewModel<GasFeeViewModel> {
         parametersOf(21000.0)
