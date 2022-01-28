@@ -135,7 +135,7 @@ private fun PhraseContent(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = "${index.plus(1)}",
+                    text = "$index",
                     textAlign = TextAlign.Center,
                     color = Color(0xFFB4B8C8),
                     style = MaterialTheme.typography.h5,
