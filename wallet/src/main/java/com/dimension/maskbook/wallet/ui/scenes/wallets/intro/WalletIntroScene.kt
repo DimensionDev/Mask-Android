@@ -32,17 +32,7 @@ fun WalletIntroScene(
 ) {
     MaskScaffold(
         topBar = {
-            MaskSingleLineTopAppBar(
-                navigationIcon = {
-                    MaskIconCardButton(onClick = { /* TODO */ }) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.scan),
-                            contentDescription = null,
-                            modifier = Modifier.size(22.dp),
-                        )
-                    }
-                }
-            )
+            MaskSingleLineTopAppBar()
         }
     ) {
         Column(
