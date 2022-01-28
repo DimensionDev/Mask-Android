@@ -24,6 +24,13 @@ jobs:
         SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
       run: ./.github/apply_signing.sh
 
+    - uses: pnpm/action-setup@v2
+      with:
+        version: '6.23.1'
+    - uses: actions/setup-node@v2
+      with:
+        node-version: '16'
+        cache: 'pnpm'
     - name: Fetch maskbook
       run: ./.github/build_maskbook.sh
 
