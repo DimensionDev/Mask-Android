@@ -219,7 +219,7 @@ val walletModules = module {
     viewModel { UnlockWalletViewModel(get(), get()) }
     viewModel { BackUpPasswordViewModel(get(), get()) }
     viewModel { (id: String) -> CollectibleDetailViewModel(id, get()) }
-    viewModel { (tokenData: TokenData) -> SendTokenDataViewModel(tokenData, get()) }
+    viewModel { (tokenAddress: String) -> SendTokenDataViewModel(tokenAddress, get(), get()) }
 }
 
 val servicesModule = module {

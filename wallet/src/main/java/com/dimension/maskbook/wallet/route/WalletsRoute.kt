@@ -13,13 +13,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.*
 import androidx.navigation.compose.dialog
+import androidx.navigation.navArgument
+import androidx.navigation.navOptions
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ext.copyText
 import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.ext.shareText
 import com.dimension.maskbook.wallet.repository.ChainType
 import com.dimension.maskbook.wallet.repository.ISettingsRepository
-import com.dimension.maskbook.wallet.repository.ITokenRepository
 import com.dimension.maskbook.wallet.repository.IWalletRepository
 import com.dimension.maskbook.wallet.ui.scenes.wallets.UnlockWalletDialog
 import com.dimension.maskbook.wallet.ui.scenes.wallets.WalletQrcodeScene
@@ -604,23 +605,20 @@ fun NavGraphBuilder.walletsRoute(
     }
 
     composable(
-        "SendTokenScene/{token}",
+        "SendTokenScene/{tokenAddress}",
         arguments = listOf(
-            navArgument("token") { type = NavType.StringType }
+            navArgument("tokenAddress") { type = NavType.StringType }
         )
     ) {
-        it.arguments?.getString("token")?.let { token ->
-            val tokenRepository = get<ITokenRepository>()
-            val tokenData by tokenRepository.getTokenByAddress(token).observeAsState(initial = null)
-            tokenData?.let { it1 ->
-                SendTokenHost(
-                    it1,
-                    onDone = {
-                        navController.popBackStack()
-                    }
-                )
+        SendTokenHost(
+            tokenAddress = it.arguments?.getString("tokenAddress").orEmpty(),
+            onBack = {
+                 navController.popBackStack()
+            },
+            onDone = {
+                navController.popBackStack()
             }
-        }
+        )
     }
 
     dialog(

@@ -1,6 +1,7 @@
 package com.dimension.maskbook.wallet.ext
 
 import com.dimension.maskbook.wallet.BuildConfig
+import org.web3j.crypto.WalletUtils
 
 object Validator {
     fun isPhone(value: String): Boolean {
@@ -25,5 +26,13 @@ object Validator {
         return value.split(" ").size.let {
             it == 12 || it == 18 || it == 24
         }
+    }
+
+    fun isEnsName(value: String): Boolean {
+        return value.endsWith(".eth")
+    }
+
+    fun isWalletAddress(address: String): Boolean {
+        return WalletUtils.isValidAddress(address)
     }
 }

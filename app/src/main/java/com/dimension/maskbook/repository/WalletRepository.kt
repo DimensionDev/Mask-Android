@@ -652,4 +652,12 @@ class WalletRepository(
         return WalletKey.create(password).mnemonic
     }
 
+    override suspend fun getEnsAddress(chainType: ChainType, name: String): String {
+        return withContext(Dispatchers.IO) {
+            val web3 = Web3j.build(chainType.httpService)
+            EnsResolver(web3).resolve(name).apply {
+                web3.shutdown()
+            }
+        }
+    }
 }

@@ -4,7 +4,13 @@ import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import androidx.compose.material.MaterialTheme
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavType
@@ -14,16 +20,19 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.navigation.plusAssign
 import com.dimension.maskbook.wallet.R
+import com.dimension.maskbook.wallet.ext.copyText
 import com.dimension.maskbook.wallet.ext.humanizeDollar
 import com.dimension.maskbook.wallet.ext.humanizeToken
 import com.dimension.maskbook.wallet.ext.observeAsState
-import com.dimension.maskbook.wallet.repository.GasPriceEditMode
-import com.dimension.maskbook.wallet.repository.TokenData
 import com.dimension.maskbook.wallet.repository.UnlockType
-import com.dimension.maskbook.wallet.ui.LocalRootNavController
 import com.dimension.maskbook.wallet.ui.scenes.wallets.common.ScanQrcodeScene
 import com.dimension.maskbook.wallet.viewmodel.wallets.BiometricViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.send.*
+import com.dimension.maskbook.wallet.viewmodel.wallets.send.AddContactViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.send.GasFeeViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.send.SearchAddressViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendConfirmViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendTokenDataViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendTokenViewModel
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 import com.google.accompanist.navigation.material.bottomSheet
@@ -36,17 +45,26 @@ import kotlin.time.ExperimentalTime
 @OptIn(ExperimentalMaterialNavigationApi::class, ExperimentalTime::class)
 @Composable
 fun SendTokenHost(
-    initialTokenData: TokenData,
+    tokenAddress: String,
+    onBack: () -> Unit,
     onDone: () -> Unit,
 ) {
-    val rootNavController = LocalRootNavController.current
     val context = LocalContext.current
+
     val navController = rememberNavController()
     val bottomSheetNavigator = rememberBottomSheetNavigator()
-    navController.navigatorProvider += bottomSheetNavigator
+    SideEffect {
+        navController.navigatorProvider += bottomSheetNavigator
+    }
+
     val gasFeeViewModel = getViewModel<GasFeeViewModel> {
         parametersOf(21000.0)
     }
+    val tokenDataViewModel = getViewModel<SendTokenDataViewModel> {
+        parametersOf(tokenAddress)
+    }
+    val searchAddressViewModel = getViewModel<SearchAddressViewModel>()
+
     val gasFee by gasFeeViewModel.gasPrice.observeAsState(initial = BigDecimal.ZERO)
     val gasLimit by gasFeeViewModel.gasLimit.observeAsState(initial = -1.0)
     val maxPriorityFee by gasFeeViewModel.maxPriorityFee.observeAsState(initial = -1.0)
@@ -54,13 +72,8 @@ fun SendTokenHost(
     val arrives by gasFeeViewModel.arrives.observeAsState(initial = "")
     val ethPrice by gasFeeViewModel.ethPrice.observeAsState(initial = BigDecimal.ZERO)
     val gasTotal by gasFeeViewModel.gasTotal.observeAsState(initial = BigDecimal.ZERO)
+    val tokenData by tokenDataViewModel.tokenData.collectAsState()
 
-    val tokenDataViewModel = getViewModel<SendTokenDataViewModel> {
-        parametersOf(initialTokenData)
-    }
-    val tokenData by tokenDataViewModel.tokenData.observeAsState(initial = initialTokenData)
-
-    val searchAddressViewModel = getViewModel<SearchAddressViewModel>()
     ModalBottomSheetLayout(
         bottomSheetNavigator,
         sheetBackgroundColor = MaterialTheme.colors.background,
@@ -77,25 +90,48 @@ fun SendTokenHost(
                 val contacts by searchAddressViewModel.contacts.observeAsState(initial = emptyList())
                 val recent by searchAddressViewModel.recent.observeAsState(initial = emptyList())
                 val noTokenFound by searchAddressViewModel.noTokenFound.observeAsState(initial = false)
-//                val searchResult by viewModel.searchResult.observeAsState(initial = null)
-//                val loading by viewModel.loading.observeAsState(initial = false)
+                val ensData by searchAddressViewModel.ensData.collectAsState()
+                val selectEnsData by searchAddressViewModel.selectEnsData.collectAsState()
+                val canConfirm by searchAddressViewModel.canConfirm.observeAsState(initial = false)
+
                 SearchAddressScene(
-                    onBack = { rootNavController.popBackStack() },
+                    onBack = onBack,
                     tokenData = tokenData,
                     query = input,
-                    onQueryChanged = { searchAddressViewModel.onInputChanged(it) },
-//                    searchResult = searchResult,
+                    canConfirm = canConfirm,
+                    ensData = ensData,
+                    selectEnsData = selectEnsData,
+                    onEnsDataClick = { ens ->
+                        searchAddressViewModel.onSelectEns(ens)
+                    },
+                    onQueryChanged = {
+                        searchAddressViewModel.onInputChanged(it)
+                    },
                     contacts = contacts,
                     recent = recent,
-//                    showLoading = loading,
                     noTokenFound = noTokenFound,
                     onBuyToken = { /*TODO Logic: buy token*/ },
                     onScanQrCode = {
                         navController.navigate("ScanQrCode")
                     },
+                    onSearch = {
+                        // nothing to do
+                    },
+                    onCopy = { address ->
+                         context.copyText(address)
+                    },
+                    onClear = {
+                        searchAddressViewModel.onInputChanged("")
+                    },
+                    onItemSelect = {
+                        val address = it.address
+                        searchAddressViewModel.addSendHistory(address)
+                        navController.navigate("Send/${address}")
+                    },
                     onNext = {
-                        searchAddressViewModel.addSendHistory(it)
-                        navController.navigate("Send/${it}")
+                        val address = selectEnsData?.address ?: input
+                        searchAddressViewModel.addSendHistory(address)
+                        navController.navigate("Send/${address}")
                     }
                 )
             }
@@ -111,9 +147,7 @@ fun SendTokenHost(
             }
             composable("SearchToken") {
                 val walletTokens by tokenDataViewModel.walletTokens.observeAsState(emptyList())
-                var query by remember {
-                    mutableStateOf("")
-                }
+                var query by remember { mutableStateOf("") }
                 SearchTokenScene(
                     onBack = {
                         navController.popBackStack()
@@ -135,59 +169,59 @@ fun SendTokenHost(
                     navArgument("address") { type = NavType.StringType },
                 ),
             ) {
-                it.arguments?.getString("address")?.let { address ->
-                    val viewModel = getViewModel<SendTokenViewModel> {
-                        parametersOf(address)
-                    }
-                    val addressData by viewModel.addressData.observeAsState(initial = null)
-                    val amount by viewModel.amount.observeAsState(initial = "0")
-                    val password by viewModel.password.observeAsState(initial = "")
-                    val canConfirm by viewModel.canConfirm.observeAsState(initial = false)
-                    val biometricViewModel = getViewModel<BiometricViewModel>()
-                    val biometricEnabled by biometricViewModel.biometricEnabled.observeAsState(
-                        initial = false
-                    )
-                    val context = LocalContext.current
+                val address = it.arguments?.getString("address") ?: return@composable
 
-                    addressData?.let { addressData ->
-                        val walletTokenData by tokenDataViewModel.walletTokenData.observeAsState(initial = null)
-                        walletTokenData?.let { walletTokenData ->
-                            SendTokenScene(
-                                onBack = { navController.popBackStack() },
-                                addressData = addressData,
-                                onAddContact = { navController.navigate("AddContactSheet/${address}") },
-                                tokenData = tokenData,
-                                walletTokenData = walletTokenData,
-                                onSelectToken = { navController.navigate("SearchToken") },
-                                amount = amount,
-                                maxAmount = walletTokenData.count,
-                                onAmountChanged = { viewModel.setAmount(it) },
-                                unlockType = if (biometricEnabled) UnlockType.BIOMETRIC else UnlockType.PASSWORD,
-                                gasFee = (gasTotal * ethPrice).humanizeDollar(),
-                                arrivesIn = arrives,
-                                onEditGasFee = { navController.navigate("EditGasFee") },
-                                onSend = { type ->
-                                    if (type == UnlockType.BIOMETRIC) {
-                                        biometricViewModel.authenticate(
-                                            context,
-                                            onSuccess = {
-                                                navController.navigate("SendConfirm/${address}/${amount}")
-                                            })
-                                    } else {
+                val viewModel = getViewModel<SendTokenViewModel> {
+                    parametersOf(address)
+                }
+                val addressData by viewModel.addressData.observeAsState(initial = null)
+                val amount by viewModel.amount.observeAsState(initial = "0")
+                val password by viewModel.password.observeAsState(initial = "")
+                val canConfirm by viewModel.canConfirm.observeAsState(initial = false)
+
+                val biometricViewModel = getViewModel<BiometricViewModel>()
+                val biometricEnabled by biometricViewModel.biometricEnabled.observeAsState(initial = false)
+
+                val walletTokenData by tokenDataViewModel.walletTokenData.observeAsState(initial = null)
+
+                val currentTokenData = tokenData
+                val currentAddressData = addressData
+                val currentWalletTokenData = walletTokenData
+                if (currentTokenData != null && currentAddressData != null && currentWalletTokenData != null) {
+                    SendTokenScene(
+                        onBack = { navController.popBackStack() },
+                        addressData = currentAddressData,
+                        onAddContact = { navController.navigate("AddContactSheet/${address}") },
+                        tokenData = currentTokenData,
+                        walletTokenData = currentWalletTokenData,
+                        onSelectToken = { navController.navigate("SearchToken") },
+                        amount = amount,
+                        maxAmount = currentWalletTokenData.count,
+                        onAmountChanged = { viewModel.setAmount(it) },
+                        unlockType = if (biometricEnabled) UnlockType.BIOMETRIC else UnlockType.PASSWORD,
+                        gasFee = (gasTotal * ethPrice).humanizeDollar(),
+                        arrivesIn = arrives,
+                        onEditGasFee = { navController.navigate("EditGasFee") },
+                        onSend = { type ->
+                            if (type == UnlockType.BIOMETRIC) {
+                                biometricViewModel.authenticate(
+                                    context,
+                                    onSuccess = {
                                         navController.navigate("SendConfirm/${address}/${amount}")
-                                    }
-                                },
-                                sendError = "",
-                                paymentPassword = password,
-                                onPaymentPasswordChanged = { viewModel.setPassword(it) },
-                                canConfirm = canConfirm,
-                            )
-                        }
-                    }
+                                    })
+                            } else {
+                                navController.navigate("SendConfirm/${address}/${amount}")
+                            }
+                        },
+                        sendError = "",
+                        paymentPassword = password,
+                        onPaymentPasswordChanged = { viewModel.setPassword(it) },
+                        canConfirm = canConfirm,
+                    )
                 }
             }
             bottomSheet("EditGasFee") {
-                val mode by gasFeeViewModel.gasPriceEditMode.observeAsState(initial = GasPriceEditMode.MEDIUM)
+                val mode by gasFeeViewModel.gasPriceEditMode.collectAsState()
                 EditGasPriceSheet(
                     price = (gasTotal * ethPrice).humanizeDollar(),
                     costFee = gasTotal.humanizeToken(),
@@ -230,21 +264,21 @@ fun SendTokenHost(
                     navArgument("address") { type = NavType.StringType },
                 ),
             ) {
-                it.arguments?.getString("address")?.let { address ->
-                    val viewModel = getViewModel<AddContactViewModel>()
-                    val name by viewModel.name.observeAsState(initial = "")
-                    AddContactSheet(
-                        avatarLabel = name,
-                        address = address,
-                        canConfirm = name.isNotEmpty(),
-                        nameInput = name,
-                        onNameChanged = { viewModel.setName(it) },
-                        onAddContact = {
-                            viewModel.confirm(name, address)
-                            navController.popBackStack()
-                        }
-                    )
-                }
+                val address = it.arguments?.getString("address") ?: return@bottomSheet
+
+                val viewModel = getViewModel<AddContactViewModel>()
+                val name by viewModel.name.observeAsState(initial = "")
+                AddContactSheet(
+                    avatarLabel = name,
+                    address = address,
+                    canConfirm = name.isNotEmpty(),
+                    nameInput = name,
+                    onNameChanged = { viewModel.setName(it) },
+                    onAddContact = {
+                        viewModel.confirm(name, address)
+                        navController.popBackStack()
+                    }
+                )
             }
             bottomSheet(
                 "SendConfirm/{address}/{amount}",
@@ -253,39 +287,42 @@ fun SendTokenHost(
                     navArgument("amount") { type = NavType.StringType },
                 ),
             ) {
-                it.arguments?.getString("amount")?.let { BigDecimal(it) }?.let { amount ->
-                    it.arguments?.getString("address")?.let { address ->
-                        val viewModel = getViewModel<SendConfirmViewModel> {
-                            parametersOf(address)
-                        }
-                        val deeplink by viewModel.deepLink.observeAsState(initial = "")
-                        val addressData by viewModel.addressData.observeAsState(initial = null)
-                        addressData?.let { addressData ->
-                            SendConfirmSheet(
-                                addressData = addressData,
-                                tokenData = tokenData,
-                                sendPrice = amount.humanizeToken(),
-                                gasFee = (gasTotal * ethPrice).humanizeDollar(),
-                                total = (amount * tokenData.price + gasTotal * ethPrice).humanizeDollar(),
-                                onConfirm = {
-                                    viewModel.send(tokenData, amount, gasLimit, gasFee, maxFee, maxPriorityFee)
-                                    onDone.invoke()
-                                    // open Wallet App if it is connected
-                                    if (deeplink.isNotEmpty()) {
-                                        try {
-                                            context.startActivity(Intent().apply {
-                                                data = Uri.parse(deeplink)
-                                            })
-                                        } catch (e: Throwable) {
-                                            //ignore
-                                        }
-                                    }
-                                },
-                                onCancel = { navController.popBackStack() },
-                                onEditGasFee = { navController.navigate("EditGasFee") },
-                            )
-                        }
-                    }
+                val address = it.arguments?.getString("address") ?: return@bottomSheet
+                val amountString = it.arguments?.getString("amount") ?: return@bottomSheet
+                val amount = remember(amountString) { BigDecimal(amountString) }
+
+                val viewModel = getViewModel<SendConfirmViewModel> {
+                    parametersOf(address)
+                }
+                val deeplink by viewModel.deepLink.observeAsState(initial = "")
+                val addressData by viewModel.addressData.observeAsState(initial = null)
+
+                val currentTokenData = tokenData
+                val currentAddressData = addressData
+                if (currentTokenData != null && currentAddressData != null) {
+                    SendConfirmSheet(
+                        addressData = currentAddressData,
+                        tokenData = currentTokenData,
+                        sendPrice = amount.humanizeToken(),
+                        gasFee = (gasTotal * ethPrice).humanizeDollar(),
+                        total = (amount * currentTokenData.price + gasTotal * ethPrice).humanizeDollar(),
+                        onConfirm = {
+                            viewModel.send(currentTokenData, amount, gasLimit, gasFee, maxFee, maxPriorityFee)
+                            onDone.invoke()
+                            // open Wallet App if it is connected
+                            if (deeplink.isNotEmpty()) {
+                                try {
+                                    context.startActivity(Intent().apply {
+                                        data = Uri.parse(deeplink)
+                                    })
+                                } catch (e: Throwable) {
+                                    //ignore
+                                }
+                            }
+                        },
+                        onCancel = { navController.popBackStack() },
+                        onEditGasFee = { navController.navigate("EditGasFee") },
+                    )
                 }
             }
         }
