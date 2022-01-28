@@ -12,13 +12,8 @@ import androidx.navigation.navDeepLink
 import androidx.navigation.navOptions
 import com.dimension.maskbook.wallet.ext.encodeUrl
 import com.dimension.maskbook.wallet.ext.observeAsState
-import com.dimension.maskbook.wallet.repository.AppKey
-import com.dimension.maskbook.wallet.repository.IPersonaRepository
-import com.dimension.maskbook.wallet.repository.ISettingsRepository
-import com.dimension.maskbook.wallet.repository.Network
-import com.dimension.maskbook.wallet.repository.PlatformType
+import com.dimension.maskbook.wallet.repository.*
 import com.dimension.maskbook.wallet.ui.scenes.MainHost
-import com.dimension.maskbook.wallet.ui.scenes.app.PluginSettingsScene
 import com.dimension.maskbook.wallet.ui.scenes.app.settings.MarketTrendSettingsModal
 import com.dimension.maskbook.wallet.ui.scenes.persona.BackUpPasswordModal
 import com.dimension.maskbook.wallet.ui.scenes.persona.ExportPrivateKeyScene
@@ -91,8 +86,10 @@ fun NavGraphBuilder.mainRoute(
                         else -> null // TODO support other network
                     }
                     if (platform != null) {
-                        navController.navigate("DisconnectSocial/${persona.id.encodeUrl()}/${platform}/${social.id.encodeUrl()}" +
-                            "?personaName=${persona.name.encodeUrl()}&socialName=${social.name.encodeUrl()}")
+                        navController.navigate(
+                            "DisconnectSocial/${persona.id.encodeUrl()}/${platform}/${social.id.encodeUrl()}" +
+                                    "?personaName=${persona.name.encodeUrl()}&socialName=${social.name.encodeUrl()}"
+                        )
                     }
                 },
                 onLabsSettingClick = {
@@ -103,18 +100,15 @@ fun NavGraphBuilder.mainRoute(
                         AppKey.Swap -> {
                             navController.navigate("MarketTrendSettings")
                         }
+                        AppKey.Transak -> {
+                            navController.navigate("LabsTransak")
+                        }
                         else -> Unit
                     }
                 }
             )
         }
-        composable("PluginSettings") {
-            PluginSettingsScene(
-                onBack = {
-                    navController.popBackStack()
-                }
-            )
-        }
+
         dialog("Logout") {
             val repository = get<IPersonaRepository>()
             LogoutDialog(

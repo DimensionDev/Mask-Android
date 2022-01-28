@@ -11,11 +11,7 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.navigation.NavHostController
 import androidx.navigation.plusAssign
 import com.dimension.maskbook.wallet.navHostAnimationDurationMillis
-import com.dimension.maskbook.wallet.route.backupRoute
-import com.dimension.maskbook.wallet.route.mainRoute
-import com.dimension.maskbook.wallet.route.registerRoute
-import com.dimension.maskbook.wallet.route.settingsRoute
-import com.dimension.maskbook.wallet.route.walletsRoute
+import com.dimension.maskbook.wallet.route.*
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
@@ -65,6 +61,7 @@ fun Route(
                     walletsRoute(navController = navController)
                     settingsRoute(navController = navController)
                     backupRoute(navController = navController)
+                    labsRoute(navController = navController)
                 }
             }
         }
