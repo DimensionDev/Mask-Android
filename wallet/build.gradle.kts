@@ -9,49 +9,19 @@ plugins {
 }
 
 android {
-    compileSdk = Versions.Android.compile
-
+    setup()
+    withCompose()
     defaultConfig {
-        minSdk = Versions.Android.min
-        targetSdk = Versions.Android.target
-
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
-    }
-
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
-    }
-    compileOptions {
-        sourceCompatibility = Versions.Java.java
-        targetCompatibility = Versions.Java.java
-    }
-    buildFeatures {
-        compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = Versions.compose
     }
 }
 
 dependencies {
-    implementation("androidx.compose.ui:ui:${Versions.compose}")
-    implementation("androidx.compose.ui:ui-tooling:${Versions.compose}")
-    implementation("androidx.compose.ui:ui-util:${Versions.compose}")
-    implementation("androidx.compose.foundation:foundation:${Versions.compose}")
-    implementation("androidx.compose.material:material:${Versions.compose}")
-    implementation("androidx.compose.material:material-icons-core:${Versions.compose}")
-    implementation("androidx.compose.material:material-icons-extended:${Versions.compose}")
     implementation("androidx.activity:activity-compose:1.4.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.4.0")
     implementation("androidx.compose.runtime:runtime-livedata:1.0.5")
-    implementation("com.google.android.material:material:1.6.0-alpha01")
+    // implementation("com.google.android.material:material:1.6.0-alpha02")
 
     implementation("com.google.accompanist:accompanist-pager:${Versions.accompanist}")
     implementation("com.google.accompanist:accompanist-pager-indicators:${Versions.accompanist}")
@@ -86,6 +56,7 @@ dependencies {
     implementation("io.github.dimensiondev:maskwalletcore:0.4.0")
 
     implementation(projects.debankapi)
+    implementation(projects.common)
 
     api("androidx.room:room-runtime:${Versions.room}")
     api("androidx.room:room-ktx:${Versions.room}")

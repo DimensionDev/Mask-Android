@@ -1,7 +1,6 @@
 import org.gradle.api.JavaVersion
 
 object Versions {
-    
     object Android {
         const val min = 21
         const val compile = 31

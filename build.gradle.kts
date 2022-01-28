@@ -13,6 +13,8 @@ buildscript {
     }
 }
 
+group = Package.group
+version = Package.versionName
 
 allprojects {
     configRepository()

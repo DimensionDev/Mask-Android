@@ -1,4 +1,4 @@
-import java.util.Properties
+import java.util.*
 
 plugins {
     id("com.android.application")
@@ -7,18 +7,10 @@ plugins {
 }
 
 android {
-    compileSdk = Versions.Android.compile
-    buildToolsVersion = Versions.Android.buildTools
+    setup()
     defaultConfig {
-        applicationId = Package.id
-        minSdk = Versions.Android.min
-        targetSdk = Versions.Android.target
-        versionCode = Package.versionCode
-        versionName = Package.versionName
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
-
-
     val file = rootProject.file("signing.properties")
     val hasSigningProps = file.exists()
 
@@ -51,11 +43,6 @@ android {
                 "proguard-rules.pro"
             )
         }
-    }
-
-    compileOptions {
-        sourceCompatibility = Versions.Java.java
-        targetCompatibility = Versions.Java.java
     }
 }
 
