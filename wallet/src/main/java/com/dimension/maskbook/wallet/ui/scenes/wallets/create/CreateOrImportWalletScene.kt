@@ -16,7 +16,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,7 +52,7 @@ fun CreateOrImportWalletScene(
             }
         ) {
             val rootNavController = LocalRootNavController.current
-            var input by remember {
+            var input by rememberSaveable {
                 mutableStateOf("")
             }
             Column(
