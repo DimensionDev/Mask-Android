@@ -14,10 +14,10 @@ data class TransakConfig(
 
     fun queryString(): String {
         //TODO add apiKey in order to integrate all other parameters
-        return "?walletAddress=${walletAddress}" +
-                "&defaultCryptoCurrency=${defaultCryptoCurrency}" +
+        return "?defaultCryptoCurrency=${defaultCryptoCurrency}" +
                 "&hideMenu=${hideMenu}" +
-                if (isStaging) "apiKey=4fcd6904-706b-4aff-bd9d-77422813bbb7&environment=STAGING" else ""
+                if (walletAddress.isEmpty()) "" else "&walletAddress=${walletAddress}" +
+                        if (isStaging) "apiKey=4fcd6904-706b-4aff-bd9d-77422813bbb7&environment=STAGING" else ""
     }
 
     companion object {
