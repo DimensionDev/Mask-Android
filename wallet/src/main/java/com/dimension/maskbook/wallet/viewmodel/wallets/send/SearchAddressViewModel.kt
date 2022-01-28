@@ -8,11 +8,13 @@ import com.dimension.maskbook.wallet.repository.ChainType
 import com.dimension.maskbook.wallet.repository.ISendHistoryRepository
 import com.dimension.maskbook.wallet.repository.IWalletContactRepository
 import com.dimension.maskbook.wallet.repository.IWalletRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import java.math.BigDecimal
@@ -44,7 +46,7 @@ class SearchAddressViewModel(
                         it.address.contains(input, ignoreCase = true)
                 }
             }
-        }
+        }.flowOn(Dispatchers.IO)
     }
 
     val recent by lazy {
@@ -57,7 +59,7 @@ class SearchAddressViewModel(
                         it.address.contains(input, ignoreCase = true)
                 }
             }
-        }
+        }.flowOn(Dispatchers.IO)
     }
 
     val noTokenFound by lazy {
@@ -117,7 +119,7 @@ class SearchAddressViewModel(
         _selectEnsData.value = null
     }
 
-    fun addSendHistory(address: String) {
-        sendHistoryRepository.addOrUpdate(address)
+    fun addSendHistory(address: String, name: String) {
+        sendHistoryRepository.addOrUpdate(address, name)
     }
 }

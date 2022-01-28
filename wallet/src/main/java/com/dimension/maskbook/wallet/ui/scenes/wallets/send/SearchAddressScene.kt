@@ -362,7 +362,7 @@ private fun SearchAddressItem(
         if (!item.name.isNullOrEmpty() || !item.ens.isNullOrEmpty()) {
             Text(
                 text = item.name ?: item.ens ?: "",
-                style = MaterialTheme.typography.subtitle2,
+                style = MaterialTheme.typography.h5,
             )
             Spacer(modifier = Modifier.height(2.dp))
         }
@@ -372,6 +372,7 @@ private fun SearchAddressItem(
             } else item.address,
             style = MaterialTheme.typography.body2,
         )
+        Spacer(Modifier.height(16.dp))
     }
 }
 

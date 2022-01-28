@@ -7,6 +7,7 @@ import androidx.room.*
 )
 data class DbSendHistory(
     @PrimaryKey val id: String,
+    val name: String,
     val address: String,
     val lastSend: Long,
     val contactId: String?,

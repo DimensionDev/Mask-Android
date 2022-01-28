@@ -125,12 +125,13 @@ fun SendTokenHost(
                     },
                     onItemSelect = {
                         val address = it.address
-                        searchAddressViewModel.addSendHistory(address)
+                        searchAddressViewModel.addSendHistory(it.address, "")
                         navController.navigate("Send/${address}")
                     },
                     onNext = {
                         val address = selectEnsData?.address ?: input
-                        searchAddressViewModel.addSendHistory(address)
+                        val name = selectEnsData?.name ?: ""
+                        searchAddressViewModel.addSendHistory(address, name)
                         navController.navigate("Send/${address}")
                     }
                 )

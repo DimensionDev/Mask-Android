@@ -27,7 +27,7 @@ data class SearchAddressData(
         }
         fun fromDb(data: DbSendHistoryWithContact) = with(data) {
             SearchAddressData(
-                name = contact?.name ?: history.address,
+                name = contact?.name ?: history.name,
                 ens = null,
                 address = history.address,
                 isContact = contact != null,
