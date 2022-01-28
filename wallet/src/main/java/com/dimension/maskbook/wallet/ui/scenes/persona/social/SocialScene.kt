@@ -44,6 +44,7 @@ import com.dimension.maskbook.wallet.repository.Network
 import com.dimension.maskbook.wallet.repository.SocialData
 import com.dimension.maskbook.wallet.repository.icon
 import com.dimension.maskbook.wallet.ui.widget.MaskGridButton
+import com.dimension.maskbook.wallet.ui.widget.NameImage
 import com.dimension.maskbook.wallet.ui.widget.itemsGridIndexed
 
 private val addIcon = SocialData(
@@ -211,19 +212,11 @@ private fun AvatarImage(avatar: String, name: String) {
             alpha = LocalContentAlpha.current,
         )
     } else {
-        Box(
-            modifier = Modifier
-                .alpha(LocalContentAlpha.current)
-                .size(SocialScreenDefaults.itemIconSize)
-                .background(MaterialTheme.colors.primary, shape = CircleShape),
-            contentAlignment = Alignment.Center,
-        ) {
-            Text(
-                text = name.firstOrNull()?.toString() ?: "N",
-                style = MaterialTheme.typography.h4,
-                color = MaterialTheme.colors.onPrimary,
-            )
-        }
+        NameImage(
+            name = name,
+            style = MaterialTheme.typography.h4,
+            modifier = Modifier.size(SocialScreenDefaults.itemIconSize),
+        )
     }
 }
 

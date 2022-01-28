@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -47,7 +46,7 @@ fun IdentityScene(
                     .padding(ScaffoldPadding),
             ) {
                 Spacer(modifier = Modifier.height(12.dp))
-                OutlinedTextField(
+                MaskInputField(
                     value = identity,
                     onValueChange = onIdentityChanged,
                     modifier = Modifier

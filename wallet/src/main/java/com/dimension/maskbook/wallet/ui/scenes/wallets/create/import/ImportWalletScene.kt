@@ -2,29 +2,27 @@ package com.dimension.maskbook.wallet.ui.scenes.wallets.create.import
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ListItem
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowRight
+import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ui.MaskTheme
 import com.dimension.maskbook.wallet.ui.widget.MaskBackButton
-import com.dimension.maskbook.wallet.ui.widget.MaskCard
+import com.dimension.maskbook.wallet.ui.widget.MaskButton
+import com.dimension.maskbook.wallet.ui.widget.MaskListItem
 import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
 import com.dimension.maskbook.wallet.ui.widget.MaskTopAppBar
 import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
@@ -49,12 +47,7 @@ fun ImportWalletScene(
                 )
             }
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(ScaffoldPadding),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
+            Column(Modifier.padding(ScaffoldPadding)) {
                 ImportItem(
                     icon = R.drawable.ic_wallet_mnemonic,
                     title = stringResource(R.string.scene_wallet_import_item_mnemonic_words),
@@ -84,6 +77,7 @@ fun ImportWalletScene(
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun ImportItem(
     @DrawableRes icon: Int,
@@ -91,28 +85,29 @@ private fun ImportItem(
     subtitle: String,
     onClick: () -> Unit
 ) {
-    MaskCard(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick.invoke() }
-            .padding(vertical = 8.dp, horizontal = 12.dp),
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Image(painter = painterResource(id = icon), contentDescription = null)
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = 8.dp)
-            ) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.body1.copy(fontWeight = FontWeight.Bold)
+    MaskButton(onClick = onClick) {
+        MaskListItem(
+            icon = {
+                Image(
+                    painter = painterResource(icon),
+                    contentDescription = null,
+                    modifier = Modifier.size(36.dp),
                 )
-                Text(text = subtitle)
+            },
+            text = {
+                Text(title)
+            },
+            secondaryText = {
+                Text(subtitle)
+            },
+            trailing = {
+                Icon(
+                    imageVector = Icons.Default.ArrowForwardIos,
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp),
+                )
             }
-            Icon(imageVector = Icons.Default.ArrowRight, contentDescription = null)
-        }
+        )
     }
+    Spacer(Modifier.height(16.dp))
 }

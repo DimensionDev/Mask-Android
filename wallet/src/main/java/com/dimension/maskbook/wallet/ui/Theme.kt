@@ -11,7 +11,12 @@ import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.repository.Appearance
 import com.dimension.maskbook.wallet.repository.ISettingsRepository
@@ -32,111 +37,87 @@ fun MaskTheme(
 
 @Composable
 fun provideTypography(isDarkTheme: Boolean): Typography {
-    return Typography().let {
-        it.copy(
-            body1 = it.body1.copy(
-                color = if (isDarkTheme) {
-                    Color(0XCCFFFFFF)
-                } else {
-                    Color(0XFF6B738D)
-                },
-            ),
-            body2 = it.body2.copy(
-                color = if (isDarkTheme) {
-                    Color(0XCCFFFFFF)
-                } else {
-                    Color(0XFF6B738D)
-                },
-            ),
-            h1 = it.h1.copy(
-                color = if (isDarkTheme) {
-                    Color(0XCCFFFFFF)
-                } else {
-                    Color(0XFF1D2238)
-                }
-            ),
-            h2 = it.h2.copy(
-                color = if (isDarkTheme) {
-                    Color(0XCCFFFFFF)
-                } else {
-                    Color(0XFF1D2238)
-                }
-            ),
-            h3 = it.h3.copy(
-                color = if (isDarkTheme) {
-                    Color(0XCCFFFFFF)
-                } else {
-                    Color(0XFF1D2238)
-                }
-            ),
-            h4 = it.h4.copy(
-                color = if (isDarkTheme) {
-                    Color(0XCCFFFFFF)
-                } else {
-                    Color(0XFF1D2238)
-                }
-            ),
-            h5 = it.h5.copy(
-                color = if (isDarkTheme) {
-                    Color(0XCCFFFFFF)
-                } else {
-                    Color(0XFF1D2238)
-                }
-            ),
-            h6 = it.h6.copy(
-                color = if (isDarkTheme) {
-                    Color(0XCCFFFFFF)
-                } else {
-                    Color(0XFF1D2238)
-                }
-            ),
-            subtitle1 = it.subtitle1.copy(
-                color = if (isDarkTheme) {
-                    Color(0XCCFFFFFF)
-                } else {
-                    Color(0XFF1D2238)
-                }
-            ),
-            subtitle2 = it.subtitle2.copy(
-                color = if (isDarkTheme) {
-                    Color(0XCCFFFFFF)
-                } else {
-                    Color(0XFF1D2238)
-                }
-            ),
-            button = it.button.copy(
-                color = if (isDarkTheme) {
-                    Color.Unspecified
-//                    Color(0XCCFFFFFF)
-                } else {
-                    Color.Unspecified
-//                    Color(0XFF1D2238)
-                }
-            ),
-            caption = it.caption.copy(
-                color = if (isDarkTheme) {
-                    Color(0XCCFFFFFF)
-                } else {
-                    Color(0XFF1D2238)
-                }
-            ),
-            overline = it.overline.copy(
-                color = if (isDarkTheme) {
-                    Color(0XCCFFFFFF)
-                } else {
-                    Color(0XFF1D2238)
-                }
-            ),
+    return Typography(
+        h1 = TextStyle(
+            fontSize = 32.sp,
+            lineHeight = 38.4.sp,
+            fontStyle = FontStyle.Normal,
+            fontWeight = FontWeight.W700,
+            color = if (isDarkTheme) Color.White.copy(0.8f) else Color(0xFF1D2238)
+        ),
+        h3 = TextStyle(
+            fontSize = 20.sp,
+            lineHeight = 30.sp,
+            fontStyle = FontStyle.Normal,
+            fontWeight = FontWeight.W700,
+            color = if (isDarkTheme) Color.White.copy(0.8f) else Color(0xFF1D2238)
+        ),
+        h4 = TextStyle(
+            fontSize = 18.sp,
+            lineHeight = 26.sp,
+            fontStyle = FontStyle.Normal,
+            fontWeight = FontWeight.W700,
+            color = if (isDarkTheme) Color.White.copy(0.8f) else Color(0xFF1D2238),
+        ),
+        h5 = TextStyle(
+            fontSize = 16.sp,
+            lineHeight = 24.sp,
+            fontStyle = FontStyle.Normal,
+            fontWeight = FontWeight.W700,
+            color = if (isDarkTheme) Color.White.copy(0.8f) else Color(0xFF1D2238),
+        ),
+        subtitle1 = TextStyle(
+            fontSize = 18.sp,
+            lineHeight = 21.6.sp,
+            fontStyle = FontStyle.Normal,
+            fontWeight = FontWeight.W400,
+            color = if (isDarkTheme) Color.White.copy(0.4f) else Color(0xFF6B738D),
+        ),
+        subtitle2 = TextStyle(
+            fontSize = 16.sp,
+            lineHeight = 24.sp,
+            fontStyle = FontStyle.Normal,
+            fontWeight = FontWeight(510),
+            color = if (isDarkTheme) Color.White.copy(0.4f) else Color(0xFF6B738D),
+        ),
+        body1 = TextStyle(
+            fontSize = 16.sp,
+            lineHeight = 21.sp,
+            fontStyle = FontStyle.Normal,
+            fontWeight = FontWeight(510),
+            color = if (isDarkTheme) Color.White.copy(0.4f) else Color(0xFF6B738D),
+        ),
+        body2 = TextStyle(
+            fontSize = 13.sp,
+            lineHeight = 19.5.sp,
+            fontStyle = FontStyle.Normal,
+            fontWeight = FontWeight.W400,
+            color = if (isDarkTheme) Color.White.copy(0.4f) else Color(0xFF6B738D),
+        ),
+        button = TextStyle(
+            fontSize = 16.sp,
+            lineHeight = 24.sp,
+            fontStyle = FontStyle.Normal,
+            fontWeight = FontWeight.W700,
+            color = Color.Unspecified,
+            textAlign = TextAlign.Center,
+        ),
+        caption = TextStyle(
+            fontSize = 14.sp,
+            lineHeight = 21.sp,
+            fontStyle = FontStyle.Normal,
+            fontWeight = FontWeight.W400,
+            color = Color.Unspecified,
         )
-    }
+    )
 }
 
 @Composable
 fun provideShapes(): Shapes {
     return Shapes(
         small = RoundedCornerShape(8.dp),
-        medium = RoundedCornerShape(20.dp),
-        large = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
+        medium = RoundedCornerShape(12.dp),
+        large = RoundedCornerShape(20.dp),
     )
 }
 
@@ -158,18 +139,25 @@ fun provideColor(isDarkTheme: Boolean): Colors {
     return if (isDarkTheme) {
         darkColors(
             primary = primary,
+            onPrimary = Color.White.copy(0.8f),
             secondary = primary,
+            onSecondary = Color.White.copy(0.8f),
             background = Color(0XFF050919),
-            surface = Color(0XFF171C31),
+            onBackground = Color.White.copy(0.8f),
             secondaryVariant = primary,
+            surface = Color(0XFF171C31),
             onSurface = Color.White.copy(alpha = 0.4f),
         )
     } else {
         lightColors(
             primary = primary,
+            onPrimary = Color.White,
             secondary = primary,
+            onSecondary = Color.White,
             background = Color(0XFFF6F8FB),
+            onBackground = Color(0xFF1D2238),
             secondaryVariant = primary,
+            surface = Color.White,
             onSurface = Color(0xFF6B738D),
         )
     }

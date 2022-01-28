@@ -35,9 +35,13 @@ fun AppearanceSettings(
             appearanceMap.forEach {
                 MaskSelection(
                     selected = it.key == appearance,
-                    onClicked = { viewModel.setAppearance(it.key); onBack.invoke() }) {
-                    Text(text = stringResource(it.value), modifier = Modifier.weight(1f))
-                }
+                    onClicked = {
+                        viewModel.setAppearance(it.key); onBack.invoke()
+                    },
+                    content = {
+                        Text(text = stringResource(it.value))
+                    }
+                )
             }
         }
     }

@@ -8,10 +8,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.dimension.maskbook.wallet.R
 
 @Composable
 fun MaskTopAppBar(
@@ -70,20 +68,17 @@ fun MaskTopAppBar(
             if (title != null) {
                 Row {
                     Spacer(TitleInsetWithoutIcon)
-                    ProvideTextStyle(value = MaterialTheme.typography.h4) {
-                        CompositionLocalProvider(
-                            LocalContentAlpha provides ContentAlpha.high,
-                            content = title
-                        )
+                    ProvideTextStyle(MaterialTheme.typography.h1) {
+                        title()
                     }
                 }
             }
             if (subTitle != null) {
                 Spacer(modifier = Modifier.height(12.dp))
-                Row(
-                    modifier = Modifier.padding(horizontal = 23.dp)
-                ) {
-                    subTitle.invoke()
+                Row(Modifier.padding(horizontal = 23.dp)) {
+                    ProvideTextStyle(MaterialTheme.typography.subtitle1) {
+                        subTitle()
+                    }
                 }
             }
         }
@@ -156,11 +151,8 @@ fun MaskSingleLineTopAppBar(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    ProvideTextStyle(value = MaterialTheme.typography.h6) {
-                        CompositionLocalProvider(
-                            LocalContentAlpha provides ContentAlpha.high,
-                            content = title
-                        )
+                    ProvideTextStyle(value = MaterialTheme.typography.h4) {
+                        title()
                     }
                 }
             }
@@ -170,23 +162,7 @@ fun MaskSingleLineTopAppBar(
 
 
 private val AppBarHeight = 56.dp
-private val AppBarHorizontalPadding = 4.dp
-private val TitleInsetWithoutIcon = Modifier.width(23.dp)
+private val TitleInsetWithoutIcon = Modifier.width(24.dp)
 private val TitleIconModifier = Modifier
-//    .fillMaxHeight()
     .height(40.dp)
     .padding(start = 22.dp)
-//    .width(72.dp - AppBarHorizontalPadding)
-
-@Composable
-fun MaskBackButton(
-    onBack: () -> Unit,
-) {
-    MaskCard(
-        modifier = Modifier.aspectRatio(1f),
-    ) {
-        IconButton(onClick = { onBack.invoke() }) {
-            Icon(painterResource(id = R.drawable.ic_arrow_left), contentDescription = null)
-        }
-    }
-}

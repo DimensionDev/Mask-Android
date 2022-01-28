@@ -4,8 +4,6 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonColors
 import androidx.compose.material.ButtonDefaults
@@ -24,18 +22,18 @@ fun MaskButton(
     enabled: Boolean = true,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     elevation: ButtonElevation? = null,
-    shape: Shape = RoundedCornerShape(12.dp),
+    shape: Shape = MaterialTheme.shapes.medium,
     border: BorderStroke? = null,
     colors: ButtonColors = ButtonDefaults.buttonColors(
         backgroundColor = MaterialTheme.colors.surface,
         disabledBackgroundColor = MaterialTheme.colors.surface.copy(alpha = 0.5f),
     ),
-    contentPadding: PaddingValues = PaddingValues(0.dp),
+    contentPadding: PaddingValues = MaskButtonDefaults.defaultPaddingValues,
     content: @Composable RowScope.() -> Unit
 ) {
     Button(
         onClick = onClick,
-        modifier = Modifier.padding(horizontal = 22.dp, vertical = 8.dp).then(modifier),
+        modifier = modifier,
         enabled = enabled,
         interactionSource = interactionSource,
         elevation = elevation,
@@ -43,6 +41,10 @@ fun MaskButton(
         border = border,
         colors = colors,
         contentPadding = contentPadding,
-        content = content
+        content = content,
     )
+}
+
+private object MaskButtonDefaults {
+    val defaultPaddingValues = PaddingValues(0.dp)
 }

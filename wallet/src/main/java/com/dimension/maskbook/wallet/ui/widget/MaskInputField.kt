@@ -3,14 +3,14 @@ package com.dimension.maskbook.wallet.ui.widget
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.ContentAlpha
-import androidx.compose.material.IconButton
-import androidx.compose.material.LocalContentAlpha
-import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ProvideTextStyle
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldColors
 import androidx.compose.material.TextFieldDefaults
@@ -28,7 +28,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.*
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
+import com.dimension.maskbook.wallet.ui.MaskTheme
+import com.dimension.maskbook.wallet.ui.isDarkTheme
 
 @Composable
 fun MaskInputField(
@@ -37,7 +40,7 @@ fun MaskInputField(
     onValueChange: (String) -> Unit,
     enabled: Boolean = true,
     readOnly: Boolean = false,
-    textStyle: TextStyle = LocalTextStyle.current,
+    textStyle: TextStyle = MaterialTheme.typography.h5,
     label: @Composable (() -> Unit)? = null,
     placeholder: @Composable (() -> Unit)? = null,
     leadingIcon: @Composable (() -> Unit)? = null,
@@ -67,7 +70,11 @@ fun MaskInputField(
         readOnly = readOnly,
         textStyle = textStyle,
         label = label,
-        placeholder = placeholder,
+        placeholder = placeholder?.let {
+            {
+                ProvideTextStyle(MaterialTheme.typography.subtitle2, placeholder)
+            }
+        },
         leadingIcon = leadingIcon,
         trailingIcon = trailingIcon,
         isError = isError,
@@ -90,7 +97,7 @@ fun MaskPasswordInputField(
     enableVisibilitySwitch: Boolean = true,
     enabled: Boolean = true,
     readOnly: Boolean = false,
-    textStyle: TextStyle = LocalTextStyle.current,
+    textStyle: TextStyle = MaterialTheme.typography.h5,
     label: @Composable (() -> Unit)? = null,
     placeholder: @Composable (() -> Unit)? = null,
     leadingIcon: @Composable (() -> Unit)? = null,
@@ -127,11 +134,15 @@ fun MaskPasswordInputField(
         readOnly = readOnly,
         textStyle = textStyle,
         label = label,
-        placeholder = placeholder,
+        placeholder = placeholder?.let {
+            {
+                ProvideTextStyle(MaterialTheme.typography.subtitle2, placeholder)
+            }
+        },
         leadingIcon = leadingIcon,
         trailingIcon = {
             if (enableVisibilitySwitch) {
-                IconButton(onClick = { visibility = !visibility }) {
+                MaskIconButton(onClick = { visibility = !visibility }) {
                     Image(
                         painter = painterResource(id = if (visibility) R.drawable.ic_eye_show else R.drawable.ic_eye_hide),
                         contentDescription = null
@@ -155,7 +166,6 @@ fun MaskPasswordInputField(
 private fun maskInputColors() = TextFieldDefaults.textFieldColors(
     backgroundColor = MaterialTheme.colors.surface,
     cursorColor = MaterialTheme.colors.primary,
-    placeholderColor = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled),
     disabledPlaceholderColor = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.disabled),
     disabledIndicatorColor = Color.Transparent,
     errorIndicatorColor = Color.Transparent,
@@ -166,16 +176,19 @@ private fun maskInputColors() = TextFieldDefaults.textFieldColors(
 @Composable
 @Preview
 private fun Test() {
-    Column {
-        MaskInputField(
-            modifier = Modifier.fillMaxWidth(),
-            value = "test",
-            onValueChange = {}
-        )
-        MaskPasswordInputField(
-            modifier = Modifier.fillMaxWidth(),
-            value = "test",
-            onValueChange = {}
-        )
+    MaskTheme {
+        Column {
+            MaskInputField(
+                modifier = Modifier.fillMaxWidth(),
+                value = "test",
+                onValueChange = {}
+            )
+            Spacer(Modifier.height(6.dp))
+            MaskPasswordInputField(
+                modifier = Modifier.fillMaxWidth(),
+                value = "test",
+                onValueChange = {}
+            )
+        }
     }
 }

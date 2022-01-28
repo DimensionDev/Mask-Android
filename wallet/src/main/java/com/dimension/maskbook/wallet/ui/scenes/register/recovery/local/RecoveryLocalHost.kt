@@ -19,7 +19,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -40,6 +39,7 @@ import com.dimension.maskbook.wallet.ui.MaskTheme
 import com.dimension.maskbook.wallet.ui.widget.BackMetaDisplay
 import com.dimension.maskbook.wallet.ui.widget.MaskBackButton
 import com.dimension.maskbook.wallet.ui.widget.MaskDialog
+import com.dimension.maskbook.wallet.ui.widget.MaskInputField
 import com.dimension.maskbook.wallet.ui.widget.MaskModal
 import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
 import com.dimension.maskbook.wallet.ui.widget.MaskTopAppBar
@@ -142,7 +142,7 @@ fun RecoveryLocalHost(
                     ) {
                         Text(text = stringResource(R.string.scene_set_backup_password_backup_password))
                         Spacer(modifier = Modifier.height(8.dp))
-                        OutlinedTextField(
+                        MaskInputField(
                             modifier = Modifier.fillMaxWidth(),
                             value = password,
                             onValueChange = {
