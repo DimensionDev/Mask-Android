@@ -1,20 +1,19 @@
 package com.dimension.maskbook.wallet.ui.scenes.wallets.intro
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowRight
+import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -25,7 +24,8 @@ import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ui.MaskTheme
 import com.dimension.maskbook.wallet.ui.widget.MaskBackButton
 import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
-import com.dimension.maskbook.wallet.ui.widget.MaskSingleLineTopAppBar
+import com.dimension.maskbook.wallet.ui.widget.MaskTextButton
+import com.dimension.maskbook.wallet.ui.widget.MaskTopAppBar
 import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
 import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
 
@@ -38,51 +38,47 @@ fun LegalScene(
     MaskTheme {
         MaskScaffold(
             topBar = {
-                MaskSingleLineTopAppBar(
+                MaskTopAppBar(
                     navigationIcon = {
                         MaskBackButton(onBack = onBack)
                     },
+                    title = {
+                        Text(text = stringResource(R.string.scene_terms_of_service_title))
+                    }
                 )
             }
         ) {
             Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(ScaffoldPadding),
-            ) {
-                Text(text = stringResource(R.string.scene_terms_of_service_title), style = MaterialTheme.typography.h4)
-                Spacer(modifier = Modifier.height(12.dp))
-                Text(text = stringResource(R.string.scene_terms_of_service_description))
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
+                modifier = Modifier.fillMaxSize().padding(ScaffoldPadding)) {
+                Text(
+                    text = stringResource(R.string.scene_terms_of_service_description),
+                    style = MaterialTheme.typography.subtitle1,
+                )
+                Box(
+                    modifier = Modifier.weight(1f).fillMaxSize(),
+                    contentAlignment = Alignment.Center,
                 ) {
                     Image(
                         painterResource(id = R.drawable.ic_legal),
                         contentDescription = null
                     )
                 }
-                TextButton(onClick = onBrowseAgreement) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(text = stringResource(R.string.scene_terms_of_service_service_agreement), modifier = Modifier.weight(1F))
-                        Icon(
-                            imageVector = Icons.Default.ArrowRight,
-                            contentDescription = stringResource(R.string.scene_terms_of_service_service_agreement)
-                        )
-                    }
+                MaskTextButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = onBrowseAgreement,
+                ) {
+                    Text(text = stringResource(R.string.scene_terms_of_service_service_agreement))
+                    Spacer(Modifier.weight(1f))
+                    Icon(
+                        imageVector = Icons.Filled.ArrowForwardIos,
+                        contentDescription = stringResource(R.string.scene_terms_of_service_service_agreement),
+                        modifier = Modifier.size(16.dp),
+                    )
                 }
-                Spacer(modifier = Modifier.height(40.dp))
+                Spacer(modifier = Modifier.height(64.dp))
                 PrimaryButton(
                     modifier = Modifier.fillMaxWidth(),
-                    onClick = {
-                        onAccept()
-                    },
+                    onClick = onAccept,
                 ) {
                     Text(text = stringResource(R.string.common_controls_accept))
                 }

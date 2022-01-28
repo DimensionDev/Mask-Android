@@ -4,8 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -24,6 +25,7 @@ import com.dimension.maskbook.wallet.ui.MaskTheme
 import com.dimension.maskbook.wallet.ui.scenes.wallets.send.AddContactSheet
 import com.dimension.maskbook.wallet.ui.scenes.wallets.send.EditGasPriceSheet
 import com.dimension.maskbook.wallet.ui.scenes.wallets.send.SendConfirmSheet
+import com.dimension.maskbook.wallet.ui.widget.MaskInputField
 import com.dimension.maskbook.wallet.ui.widget.MaskModal
 import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
 import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
@@ -225,13 +227,15 @@ private fun UserNameModal(
 ) {
     val viewModel = getViewModel<UserNameModalViewModel>()
     val name by viewModel.userName.observeAsState(initial = "")
-    MaskModal {
+    MaskModal(
+        modifier = Modifier.background(MaterialTheme.colors.background, shape = MaterialTheme.shapes.medium)
+    ) {
         Column(
             modifier = Modifier.padding(ScaffoldPadding)
         ) {
             Text(text = "User Name")
             Spacer(modifier = Modifier.height(8.dp))
-            OutlinedTextField(
+            MaskInputField(
                 modifier = Modifier.fillMaxWidth(),
                 value = name,
                 onValueChange = { viewModel.setUserName(it) },

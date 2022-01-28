@@ -31,9 +31,14 @@ fun LanguageSettings(
             languageMap.forEach {
                 MaskSelection(
                     selected = it.key == language,
-                    onClicked = { viewModel.setLanguage(it.key); onBack.invoke() }) {
-                    Text(text = it.value, modifier = Modifier.weight(1f))
-                }
+                    onClicked = {
+                        viewModel.setLanguage(it.key);
+                        onBack.invoke()
+                    },
+                    content = {
+                        Text(text = it.value)
+                    }
+                )
             }
         }
     }

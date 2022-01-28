@@ -1,18 +1,23 @@
 package com.dimension.maskbook.wallet.ui.widget
 
-import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
-import androidx.compose.material.ListItem
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowRight
+import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,75 +44,74 @@ fun CollectibleCard(
     var expanded by rememberSaveable {
         mutableStateOf(false)
     }
-    Box(
-        modifier = Modifier
-            .padding(horizontal = 22.dp, vertical = 8.dp)
-            .animateContentSize()
-            .then(modifier),
+    MaskButton(
+        onClick = { expanded = !expanded },
+        modifier = modifier
     ) {
-        MaskCard(
-            modifier = Modifier.clickable {
-                expanded = !expanded
-            },
-        ) {
-            Column {
-                ListItem(
-                    icon = {
-                        Box {
-                            Image(
-                                painter = rememberImagePainter(data.icon) {
-                                    placeholder(R.drawable.mask)
-                                    fallback(R.drawable.mask)
-                                    error(R.drawable.mask)
-                                },
-                                contentDescription = null,
-                                modifier = Modifier.size(38.dp),
-                            )
-                            Image(
-                                painter = rememberImagePainter(data = data.chainType.onDrawableRes),
-                                contentDescription = null,
-                                modifier = Modifier.size(16.dp).align(Alignment.BottomEnd)
-                            )
-                        }
-                    },
-                    text = {
-                        Text(
-                            text = data.name,
+        Column {
+            MaskListItem(
+                icon = {
+                    Box {
+                        Image(
+                            painter = rememberImagePainter(data.icon) {
+                                placeholder(R.drawable.mask)
+                                fallback(R.drawable.mask)
+                                error(R.drawable.mask)
+                            },
+                            contentDescription = null,
+                            modifier = Modifier.size(38.dp),
                         )
-                    },
-                    trailing = {
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Text(
-                                text = data.items.size.toString()
-                            )
-                            Icon(Icons.Default.ArrowRight, contentDescription = null)
-                        }
+                        Image(
+                            painter = rememberImagePainter(data = data.chainType.onDrawableRes),
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp).align(Alignment.BottomEnd)
+                        )
                     }
-                )
-                if (expanded) {
-                    LazyRow(
-                        horizontalArrangement = Arrangement.spacedBy(16.dp),
-                        contentPadding = PaddingValues(12.dp),
+                },
+                text = {
+                    Text(
+                        text = data.name,
+                    )
+                },
+                trailing = {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        items(data.items) {
-                            Image(
-                                painter = rememberImagePainter(it.previewUrl) {
-                                    placeholder(R.drawable.mask)
-                                    fallback(R.drawable.mask)
-                                    error(R.drawable.mask)
+                        Text(
+                            text = data.items.size.toString()
+                        )
+                        Icon(
+                            imageVector = if (expanded) {
+                                Icons.Default.ExpandMore
+                            } else {
+                                Icons.Default.ChevronRight
+                            },
+                            contentDescription = null
+                        )
+                    }
+                }
+            )
+            AnimatedVisibility(expanded) {
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    contentPadding = PaddingValues(12.dp),
+                ) {
+                    items(data.items) {
+                        Image(
+                            painter = rememberImagePainter(it.previewUrl) {
+                                placeholder(R.drawable.mask)
+                                fallback(R.drawable.mask)
+                                error(R.drawable.mask)
+                            },
+                            modifier = Modifier
+                                .size(145.dp)
+                                .clip(RoundedCornerShape(12.dp))
+                                .clickable {
+                                    onItemClicked.invoke(it)
                                 },
-                                modifier = Modifier
-                                    .size(145.dp)
-                                    .clip(RoundedCornerShape(12.dp))
-                                    .clickable {
-                                        onItemClicked.invoke(it)
-                                    },
-                                contentDescription = null
-                            )
-                        }
+                            contentDescription = null
+                        )
                     }
                 }
             }

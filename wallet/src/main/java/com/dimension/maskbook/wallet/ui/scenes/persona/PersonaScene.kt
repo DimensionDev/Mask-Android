@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -25,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.repository.Network
 import com.dimension.maskbook.wallet.repository.PersonaData
 import com.dimension.maskbook.wallet.repository.SocialData
+import com.dimension.maskbook.wallet.ui.widget.MaskIconButton
 import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
 import com.dimension.maskbook.wallet.ui.widget.MaskSingleLineTopAppBar
 import com.dimension.maskbook.wallet.viewmodel.persona.PersonaViewModel
@@ -64,7 +64,7 @@ fun PersonaScene(
                 },
                 actions = {
                     if (!socialList.isNullOrEmpty()) {
-                        IconButton(onClick = onBack) {
+                        MaskIconButton(onClick = onBack) {
                             Icon(
                                 imageVector = Icons.Filled.Close,
                                 contentDescription = null,

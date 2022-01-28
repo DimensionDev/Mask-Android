@@ -25,10 +25,13 @@ fun BiometricsEnableScene(
     MaskTheme {
         MaskScaffold(
             topBar = {
-                MaskSingleLineTopAppBar(
+                MaskTopAppBar(
                     navigationIcon = {
                         MaskBackButton(onBack = onBack)
                     },
+                    title = {
+                        Text(text = stringResource(FaceIdEnableSceneObjects.Title))
+                    }
                 )
             }
         ) {
@@ -41,15 +44,13 @@ fun BiometricsEnableScene(
                     .fillMaxSize()
                     .padding(ScaffoldPadding),
             ) {
-                Text(text = stringResource(FaceIdEnableSceneObjects.Title), style = MaterialTheme.typography.h4)
-                Spacer(modifier = Modifier.height(12.dp))
-                Text(text = stringResource(FaceIdEnableSceneObjects.Subtitle))
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
+                Text(
+                    text = stringResource(FaceIdEnableSceneObjects.Subtitle),
+                    style = MaterialTheme.typography.subtitle1,
+                )
+                Box(
+                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                    contentAlignment = Alignment.Center,
                 ) {
                     Image(
                         painterResource(id = R.drawable.ic_face_id_enable),
@@ -75,7 +76,8 @@ fun BiometricsEnableScene(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
                         onEnable.invoke(false)
-                    }) {
+                    }
+                ) {
                     Text(text = stringResource(FaceIdEnableSceneObjects.CancelButton))
                 }
             }

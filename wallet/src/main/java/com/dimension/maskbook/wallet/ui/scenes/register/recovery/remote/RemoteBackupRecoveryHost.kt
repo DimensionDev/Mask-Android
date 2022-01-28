@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.LaunchedEffect
@@ -31,6 +29,7 @@ import com.dimension.maskbook.wallet.ext.encodeUrl
 import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.ui.widget.EmailCodeInputModal
 import com.dimension.maskbook.wallet.ui.widget.MaskDialog
+import com.dimension.maskbook.wallet.ui.widget.MaskInputField
 import com.dimension.maskbook.wallet.ui.widget.MaskModal
 import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
 import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
@@ -107,20 +106,15 @@ fun NavGraphBuilder.remoteBackupRecovery(
         val email by viewModel.value.observeAsState(initial = "")
         val emailValid by viewModel.valueValid.observeAsState(initial = true)
         val loading by viewModel.loading.observeAsState(initial = false)
-        MaskModal {
-            Column(
-                modifier = Modifier.padding(ScaffoldPadding)
-            ) {
-                Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = stringResource(R.string.scene_restore_titles_recovery_with_email),
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.h6,
-                )
-                Spacer(modifier = Modifier.height(21.dp))
+        MaskModal(
+            title = {
+                Text(text = stringResource(R.string.scene_restore_titles_recovery_with_email))
+            }
+        ) {
+            Column(Modifier.padding(ScaffoldPadding)) {
                 Text(text = stringResource(R.string.scene_backup_backup_verify_field_email))
                 Spacer(modifier = Modifier.height(8.dp))
-                OutlinedTextField(
+                MaskInputField(
                     modifier = Modifier.fillMaxWidth(),
                     value = email,
                     onValueChange = {
@@ -186,23 +180,18 @@ fun NavGraphBuilder.remoteBackupRecovery(
             val loading by viewModel.loading.observeAsState(initial = false)
             val code by viewModel.code.observeAsState(initial = "")
             val codeValid by viewModel.codeValid.observeAsState(initial = true)
-            MaskModal {
-                Column(
-                    modifier = Modifier.padding(ScaffoldPadding)
-                ) {
-                    Text(
-                        modifier = Modifier.fillMaxWidth(),
-                        text = stringResource(R.string.scene_restore_titles_recovery_with_mobile),
-                        textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.h6,
-                    )
-                    Spacer(modifier = Modifier.height(21.dp))
+            MaskModal(
+                title = {
+                    Text(text = stringResource(R.string.scene_restore_titles_recovery_with_mobile))
+                }
+            ) {
+                Column(Modifier.padding(ScaffoldPadding)) {
                     Text(text = stringResource(R.string.scene_backup_validation_code))
                     Spacer(modifier = Modifier.height(8.dp))
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        OutlinedTextField(
+                        MaskInputField(
                             modifier = Modifier.weight(1f),
                             value = code,
                             onValueChange = {
@@ -264,23 +253,18 @@ fun NavGraphBuilder.remoteBackupRecovery(
         val phone by viewModel.value.observeAsState(initial = "")
         val phoneValid by viewModel.valueValid.observeAsState(initial = true)
         val loading by viewModel.loading.observeAsState(initial = false)
-        MaskModal {
-            Column(
-                modifier = Modifier.padding(ScaffoldPadding)
-            ) {
-                Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = stringResource(R.string.scene_restore_titles_recovery_with_mobile),
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.h6,
-                )
-                Spacer(modifier = Modifier.height(21.dp))
+        MaskModal(
+            title = {
+                Text(text = stringResource(R.string.scene_restore_titles_recovery_with_mobile))
+            }
+        ) {
+            Column(Modifier.padding(ScaffoldPadding)) {
                 Text(text = stringResource(R.string.scene_backup_backup_verify_field_phone))
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    OutlinedTextField(
+                    MaskInputField(
                         modifier = Modifier.weight(1f),
                         value = regionCode,
                         onValueChange = { viewModel.setRegionCode(it) },
@@ -288,7 +272,7 @@ fun NavGraphBuilder.remoteBackupRecovery(
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    OutlinedTextField(
+                    MaskInputField(
                         modifier = Modifier.weight(4f),
                         value = phone,
                         onValueChange = {

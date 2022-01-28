@@ -54,7 +54,7 @@ fun MaskScaffold(
 }
 
 val ScaffoldPadding = PaddingValues(
-    top = 12.dp,
+    top = 24.dp,
     start = 23.dp,
     end = 23.dp,
     bottom = 58.dp,

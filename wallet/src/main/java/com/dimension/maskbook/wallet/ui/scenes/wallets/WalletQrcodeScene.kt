@@ -2,7 +2,6 @@ package com.dimension.maskbook.wallet.ui.scenes.wallets
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -87,8 +86,8 @@ fun WalletQrcodeScene(
                         Box(
                             modifier = Modifier
                                 .padding(horizontal = 16.dp, vertical = 24.dp)
-                                .background(MaterialTheme.colors.surface, shape = RoundedCornerShape(12.dp))
-                                .clip(RoundedCornerShape(12.dp))
+                                .background(MaterialTheme.colors.surface, shape = MaterialTheme.shapes.medium)
+                                .clip(MaterialTheme.shapes.medium)
                                 .padding(horizontal = 16.dp, vertical = 10.dp)
                                 .clickable {
                                     onCopy.invoke()

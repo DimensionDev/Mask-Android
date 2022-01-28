@@ -21,7 +21,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.IconButton
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
@@ -45,6 +45,7 @@ import com.dimension.maskbook.wallet.repository.SearchAddressData
 import com.dimension.maskbook.wallet.repository.TokenData
 import com.dimension.maskbook.wallet.ui.MaskTheme
 import com.dimension.maskbook.wallet.ui.widget.MaskBackButton
+import com.dimension.maskbook.wallet.ui.widget.MaskIconButton
 import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
 import com.dimension.maskbook.wallet.ui.widget.MaskSingleLineTopAppBar
 import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
@@ -256,11 +257,11 @@ private fun SearchInput(
         )
 //        }
         Spacer(modifier = Modifier.width(8.dp))
-        IconButton(onClick = {
+        MaskIconButton(onClick = {
             if (value.isEmpty()) onScan.invoke() else onValueChanged.invoke("")
         }) {
             if (value.isEmpty()) {
-                Image(
+                Icon(
                     painter = painterResource(id = R.drawable.ic_scan),
                     contentDescription = null,
                     modifier = Modifier.size(24.dp)

@@ -10,15 +10,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.wallet.R
 
@@ -31,20 +33,15 @@ fun EmailInputModal(
     buttonEnabled: Boolean,
     title: String,
 ) {
-    MaskModal {
-        Column(
-            modifier = Modifier.padding(ScaffoldPadding)
-        ) {
-            Text(
-                modifier = Modifier.fillMaxWidth(),
-                text = title,
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.h6,
-            )
-            Spacer(modifier = Modifier.height(21.dp))
+    MaskModal(
+        title = {
+            Text(text = title)
+        }
+    ) {
+        Column(Modifier.padding(ScaffoldPadding)) {
             Text(text = stringResource(R.string.scene_backup_backup_verify_field_email))
             Spacer(modifier = Modifier.height(8.dp))
-            OutlinedTextField(
+            MaskInputField(
                 modifier = Modifier.fillMaxWidth(),
                 value = email,
                 onValueChange = {
@@ -86,16 +83,12 @@ fun EmailCodeInputModal(
     subTitle: @Composable ((ColumnScope) -> Unit)? = null,
     footer: @Composable (ColumnScope) -> Unit = {},
 ) {
-    MaskModal {
-        Column(
-            modifier = Modifier.padding(ScaffoldPadding)
-        ) {
-            Text(
-                modifier = Modifier.fillMaxWidth(),
-                text = title,
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.h6,
-            )
+    MaskModal(
+        title = {
+            Text(text = title)
+        },
+    ) {
+        Column(Modifier.padding(ScaffoldPadding)) {
             subTitle?.let {
                 Spacer(modifier = Modifier.height(13.dp))
                 subTitle.invoke(this)
@@ -106,7 +99,7 @@ fun EmailCodeInputModal(
             Row(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                OutlinedTextField(
+                MaskInputField(
                     modifier = Modifier.weight(1f),
                     value = code,
                     onValueChange = {
@@ -135,7 +128,13 @@ fun EmailCodeInputModal(
             }
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "${stringResource(R.string.scene_backup_tips_email)} $email"
+                text = buildAnnotatedString {
+                    append(stringResource(R.string.scene_backup_tips_email))
+                    append('\n')
+                    withStyle(style = SpanStyle(color = MaterialTheme.colors.primary, fontWeight = FontWeight.Bold)) {
+                        append(email)
+                    }
+                }
             )
             Spacer(modifier = Modifier.height(16.dp))
             PrimaryButton(
