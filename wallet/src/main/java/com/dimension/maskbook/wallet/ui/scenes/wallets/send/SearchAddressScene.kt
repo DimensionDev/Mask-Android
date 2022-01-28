@@ -134,7 +134,6 @@ fun SearchAddressScene(
                     EmptyInputContent(
                         contacts = contacts,
                         recent = recent,
-                        selectItemEnable = !noTokenFound,
                         onItemSelect = onItemSelect,
                     )
                 }
@@ -294,7 +293,6 @@ private fun EnsCard(
 private fun EmptyInputContent(
     contacts: List<SearchAddressData>,
     recent: List<SearchAddressData>,
-    selectItemEnable: Boolean,
     onItemSelect: (SearchAddressData) -> Unit
 ) {
     LazyColumn {
@@ -307,7 +305,7 @@ private fun EmptyInputContent(
         items(contacts.size) { index ->
             SearchAddressItem(
                 item = contacts[index],
-                onClick = { if (selectItemEnable) onItemSelect.invoke(it) }
+                onClick = { onItemSelect.invoke(it) }
             )
         }
         item {
@@ -319,7 +317,7 @@ private fun EmptyInputContent(
         items(recent.size) { index ->
             SearchAddressItem(
                 recent[index],
-                onClick = { if (selectItemEnable) onItemSelect.invoke(it) }
+                onClick = { onItemSelect.invoke(it) }
             )
         }
     }
