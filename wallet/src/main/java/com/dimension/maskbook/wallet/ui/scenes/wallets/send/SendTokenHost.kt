@@ -89,14 +89,14 @@ fun SendTokenHost(
                 val input by searchAddressViewModel.input.observeAsState(initial = "")
                 val contacts by searchAddressViewModel.contacts.observeAsState(initial = emptyList())
                 val recent by searchAddressViewModel.recent.observeAsState(initial = emptyList())
-                val noTokenFound by searchAddressViewModel.noTokenFound.observeAsState(initial = false)
                 val ensData by searchAddressViewModel.ensData.collectAsState()
                 val selectEnsData by searchAddressViewModel.selectEnsData.collectAsState()
                 val canConfirm by searchAddressViewModel.canConfirm.observeAsState(initial = false)
+                val noTokenFound by tokenDataViewModel.noTokenFound.collectAsState()
 
                 SearchAddressScene(
                     onBack = onBack,
-                    tokenData = tokenData,
+                    tokenAddress = tokenAddress,
                     query = input,
                     canConfirm = canConfirm,
                     ensData = ensData,

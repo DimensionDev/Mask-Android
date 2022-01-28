@@ -57,7 +57,7 @@ import com.dimension.maskbook.wallet.viewmodel.wallets.send.EnsData
 @Composable
 fun SearchAddressScene(
     onBack: () -> Unit,
-    tokenData: TokenData?,
+    tokenAddress: String,
     query: String,
     canConfirm: Boolean,
     ensData: EnsData?,
@@ -86,7 +86,11 @@ fun SearchAddressScene(
                 )
             }
         ) {
-            if (tokenData == null) {
+            if (noTokenFound) {
+                EmptyTokenWarning(
+                    tokenName = tokenAddress,
+                    onBuy = onBuyToken
+                )
                 return@MaskScaffold
             }
 
@@ -126,11 +130,6 @@ fun SearchAddressScene(
                     }
                 }
                 Spacer(modifier = Modifier.height(10.dp))
-                EmptyTokenWarning(
-                    visible = noTokenFound,
-                    tokenName = tokenData.symbol,
-                    onBuy = onBuyToken
-                )
                 Box(modifier = Modifier.weight(1f)) {
                     EmptyInputContent(
                         contacts = contacts,
@@ -416,37 +415,34 @@ private fun ErrorContent(
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 private fun EmptyTokenWarning(
-    visible: Boolean,
     tokenName: String,
     onBuy: () -> Unit
 ) {
-    AnimatedVisibility(visible = visible) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(color = Color(255, 185, 21, 38), shape = MaterialTheme.shapes.small)
-                .padding(vertical = 10.dp, horizontal = 18.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_property_1_note),
-                contentDescription = null,
-                modifier = Modifier.size(24.dp)
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(color = Color(255, 185, 21, 38), shape = MaterialTheme.shapes.small)
+            .padding(vertical = 10.dp, horizontal = 18.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.ic_property_1_note),
+            contentDescription = null,
+            modifier = Modifier.size(24.dp)
+        )
+        Spacer(modifier = Modifier.width(12.dp))
+        Column {
+            Text(
+                text = "You have 0 $tokenName in your account to pay for transaction fees. Buy some $tokenName or deposit from another account. ",
+                color = Color(255, 185, 21, 255)
             )
-            Spacer(modifier = Modifier.width(12.dp))
-            Column {
+            Spacer(modifier = Modifier.height(2.dp))
+            TextButton(onClick = onBuy) {
                 Text(
-                    text = "You have 0 $tokenName in your account to pay for transaction fees. Buy some $tokenName or deposit from another account. ",
-                    color = Color(255, 185, 21, 255)
+                    text = "Buy $tokenName",
+                    color = MaterialTheme.colors.primary,
+                    style = MaterialTheme.typography.subtitle1.copy(fontWeight = FontWeight.Bold)
                 )
-                Spacer(modifier = Modifier.height(2.dp))
-                TextButton(onClick = onBuy) {
-                    Text(
-                        text = "Buy $tokenName",
-                        color = MaterialTheme.colors.primary,
-                        style = MaterialTheme.typography.subtitle1.copy(fontWeight = FontWeight.Bold)
-                    )
-                }
             }
         }
     }

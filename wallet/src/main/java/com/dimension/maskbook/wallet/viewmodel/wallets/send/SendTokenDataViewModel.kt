@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.merge
+import java.math.BigDecimal
 
 class SendTokenDataViewModel(
     tokenAddress: String,
@@ -20,10 +21,21 @@ class SendTokenDataViewModel(
 ): ViewModel() {
 
     private val _tokenData = MutableStateFlow<TokenData?>(null)
+
     val tokenData = merge(
         tokenRepository.getTokenByAddress(tokenAddress),
         _tokenData,
     ).asStateIn(viewModelScope, null)
+
+    val noTokenFound by lazy {
+        walletRepository.currentWallet
+            .map { wallet ->
+                if (wallet == null) return@map true
+                val token = wallet.tokens.find { it.tokenData.address == tokenAddress } ?: return@map true
+                token.count == BigDecimal.ZERO
+            }
+            .asStateIn(viewModelScope, false)
+    }
 
     fun setTokenData(value: TokenData) {
         _tokenData.value = value

@@ -15,9 +15,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
-import java.math.BigDecimal
 
 sealed class EnsData {
     object Loading : EnsData()
@@ -60,13 +57,6 @@ class SearchAddressViewModel(
                 }
             }
         }.flowOn(Dispatchers.IO)
-    }
-
-    val noTokenFound by lazy {
-        walletRepository.currentWallet.mapNotNull { it }
-            .map { it.tokens.firstOrNull { it.tokenData.address == "eth" } }
-            .mapNotNull { it }
-            .map { it.count == BigDecimal.ZERO }
     }
 
     private val _input = MutableStateFlow("")
