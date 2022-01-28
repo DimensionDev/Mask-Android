@@ -28,11 +28,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavType
+import androidx.navigation.*
 import androidx.navigation.compose.dialog
-import androidx.navigation.navArgument
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ext.encodeUrl
 import com.dimension.maskbook.wallet.ext.observeAsState
@@ -139,7 +136,11 @@ fun NavGraphBuilder.backupRoute(
                     navController.popBackStack()
                 },
                 onConfirm = {
-                    navController.navigate("BackupData_BackupCloud_Execute/${it}/${type}/${value}/${code}")
+                    navController.navigate("BackupData_BackupCloud_Execute/${it}/${type}/${value}/${code}", navOptions = navOptions {
+                        popUpTo(backStackEntry.destination.id){
+                            inclusive = true
+                        }
+                    })
                 }
             )
         }
@@ -166,13 +167,13 @@ fun NavGraphBuilder.backupRoute(
                     )
                     if (result) {
                         navController.navigate("BackupData_Cloud_Success") {
-                            popUpTo("BackupSelection") {
+                            popUpTo(backStackEntry.destination.id){
                                 inclusive = true
                             }
                         }
                     } else {
                         navController.navigate("BackupData_Cloud_Failed") {
-                            popUpTo("BackupSelection") {
+                            popUpTo(backStackEntry.destination.id){
                                 inclusive = true
                             }
                         }
