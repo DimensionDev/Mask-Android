@@ -2,6 +2,7 @@ package com.dimension.maskbook.wallet.ext
 
 import com.dimension.maskbook.wallet.BuildConfig
 import org.web3j.crypto.WalletUtils
+import org.web3j.ens.EnsResolver
 
 object Validator {
     fun isPhone(value: String): Boolean {
@@ -29,7 +30,7 @@ object Validator {
     }
 
     fun isEnsName(value: String): Boolean {
-        return value.endsWith(".eth")
+        return value.isNotEmpty() && EnsResolver.isValidEnsName(value)
     }
 
     fun isWalletAddress(address: String): Boolean {

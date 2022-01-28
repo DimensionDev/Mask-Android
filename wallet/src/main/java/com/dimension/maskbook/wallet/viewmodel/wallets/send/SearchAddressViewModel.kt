@@ -10,8 +10,10 @@ import com.dimension.maskbook.wallet.repository.IWalletContactRepository
 import com.dimension.maskbook.wallet.repository.IWalletRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
@@ -62,8 +64,8 @@ class SearchAddressViewModel(
     private val _input = MutableStateFlow("")
     val input = _input.asStateIn(viewModelScope, "")
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val ensData = _input.flatMapLatest { name ->
+    @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
+    val ensData = _input.debounce(400).flatMapLatest { name ->
         flow {
             if (!Validator.isEnsName(name)) {
                 emit(null)
