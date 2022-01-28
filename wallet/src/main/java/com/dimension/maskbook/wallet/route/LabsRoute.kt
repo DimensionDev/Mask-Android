@@ -32,15 +32,13 @@ fun NavGraphBuilder.labsRoute(
     ) {
         val repo = get<IWalletRepository>()
         val currentWallet by repo.currentWallet.observeAsState(null)
-        currentWallet?.let { wallet ->
-            LabsTransakScene(
-                onBack = { navController.popBackStack() },
-                transakConfig = TransakConfig(
-                    isStaging = BuildConfig.DEBUG,
-                    walletAddress = wallet.address,
-                    defaultCryptoCurrency = wallet.tokens.firstOrNull()?.tokenData?.symbol ?: "ETH",
-                )
+        LabsTransakScene(
+            onBack = { navController.popBackStack() },
+            transakConfig = TransakConfig(
+                isStaging = BuildConfig.DEBUG,
+                walletAddress = currentWallet?.address ?: "",
+                defaultCryptoCurrency = currentWallet?.tokens?.firstOrNull()?.tokenData?.symbol ?: "ETH",
             )
-        }
+        )
     }
 }
