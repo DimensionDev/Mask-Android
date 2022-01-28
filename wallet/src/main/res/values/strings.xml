@@ -209,6 +209,10 @@
     <string name="scene_persona_welcome_persona">Persona</string>
     <string name="scene_persona_welcome_description">Create personas and connect social accounts</string>
     <string name="scene_persona_welcome_title">Welcome to Mask Network</string>
+    <string name="scene_wallet_send_address_search_address">Name, Ens or Address(0x...)</string>
+    <string name="scene_wallet_send_address_by_token">Buy %s</string>
+    <string name="scene_wallet_send_address_recent">Recent</string>
+    <string name="scene_wallet_send_address_empty_token_warn">You have 0 %s in your account to pay for transaction fees. Buy some %s or deposit from another account. </string>
     <string name="scene_wallets_list_add_wallets_items_add">Create a New Wallet</string>
     <string name="scene_wallets_list_add_wallets_list_import">Import Wallet</string>
     <string name="scene_Identity_restore_signin_success_title">Restore &amp; Sign In completed!</string>

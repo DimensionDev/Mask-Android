@@ -184,7 +184,7 @@ private fun SearchInput(
             ),
             placeholder = {
                 Text(
-                    text = "Name, Ens or Address(0x...)",
+                    text = stringResource(R.string.scene_wallet_send_address_search_address),
                     modifier = Modifier.fillMaxWidth(),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -313,7 +313,7 @@ private fun EmptyInputContent(
         item {
             ItemHeader(
                 icon = R.drawable.ic_time_circle,
-                title = "Recent",
+                title = stringResource(R.string.scene_wallet_send_address_recent),
             )
         }
         items(recent.size) { index ->
@@ -433,13 +433,13 @@ private fun EmptyTokenWarning(
         Spacer(modifier = Modifier.width(12.dp))
         Column {
             Text(
-                text = "You have 0 $tokenName in your account to pay for transaction fees. Buy some $tokenName or deposit from another account. ",
+                text = stringResource(R.string.scene_wallet_send_address_empty_token_warn, tokenName, tokenName),
                 color = Color(255, 185, 21, 255)
             )
             Spacer(modifier = Modifier.height(2.dp))
             TextButton(onClick = onBuy) {
                 Text(
-                    text = "Buy $tokenName",
+                    text = stringResource(R.string.scene_wallet_send_address_by_token, tokenName),
                     color = MaterialTheme.colors.primary,
                     style = MaterialTheme.typography.subtitle1.copy(fontWeight = FontWeight.Bold)
                 )
