@@ -25,7 +25,7 @@ jobs:
       run: ./.github/apply_signing.sh
 
     - name: Fetch maskbook
-      run: ./.github/fetch_maskbook.sh
+      run: ./.github/build_maskbook.sh
 
     - name: Build with Gradle
       run: ./gradlew assemble --stacktrace
