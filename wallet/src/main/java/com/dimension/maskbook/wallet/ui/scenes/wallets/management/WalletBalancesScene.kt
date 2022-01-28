@@ -98,7 +98,7 @@ fun WalletBalancesScene(
 
     LaunchedEffect(wallets, currentWallet, pagerState.pageCount) {
         if (pagerState.pageCount > 0) {
-            pagerState.scrollToPage(maxOf(wallets.indexOf(currentWallet), 0))
+            pagerState.scrollToPage(minOf(pagerState.pageCount -1, maxOf(wallets.indexOf(currentWallet), 0)))
         }
     }
     LaunchedEffect(pagerState.currentPage) {
