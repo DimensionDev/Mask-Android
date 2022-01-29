@@ -14,8 +14,8 @@ android {
         applicationId = "com.dimension.maskbook"
         minSdk = 21
         targetSdk = 31
-        versionCode = 44
-        versionName = "2.0.0-dev03"
+        versionCode = 46
+        versionName = "2.0.0-dev05"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
