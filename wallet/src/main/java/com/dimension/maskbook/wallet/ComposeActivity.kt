@@ -1,3 +1,23 @@
+/*
+ *  Mask-Android
+ *
+ *  Copyright (C) 2022  DimensionDev and Contributors
+ *
+ *  This file is part of Mask-Android.
+ *
+ *  Mask-Android is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Affero General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Mask-Android is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License
+ *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.dimension.maskbook.wallet
 
 import android.content.Context
@@ -12,7 +32,7 @@ import coil.ImageLoader
 import coil.compose.LocalImageLoader
 import coil.decode.SvgDecoder
 import com.dimension.maskbook.wallet.db.AppDatabase
-import com.dimension.maskbook.wallet.repository.TokenData
+import com.dimension.maskbook.wallet.db.RoomMigrations
 import com.dimension.maskbook.wallet.services.WalletServices
 import com.dimension.maskbook.wallet.services.model.DownloadResponse
 import com.dimension.maskbook.wallet.ui.MaskTheme
@@ -36,17 +56,52 @@ import com.dimension.maskbook.wallet.viewmodel.persona.social.TwitterSocialViewM
 import com.dimension.maskbook.wallet.viewmodel.recovery.IdentityViewModel
 import com.dimension.maskbook.wallet.viewmodel.recovery.PrivateKeyViewModel
 import com.dimension.maskbook.wallet.viewmodel.recovery.RecoveryLocalViewModel
-import com.dimension.maskbook.wallet.viewmodel.register.*
-import com.dimension.maskbook.wallet.viewmodel.settings.*
-import com.dimension.maskbook.wallet.viewmodel.wallets.*
+import com.dimension.maskbook.wallet.viewmodel.register.CreateIdentityViewModel
+import com.dimension.maskbook.wallet.viewmodel.register.EmailRemoteBackupRecoveryViewModel
+import com.dimension.maskbook.wallet.viewmodel.register.PhoneRemoteBackupRecoveryViewModel
+import com.dimension.maskbook.wallet.viewmodel.register.RemoteBackupRecoveryViewModelBase
+import com.dimension.maskbook.wallet.viewmodel.register.UserNameModalViewModel
+import com.dimension.maskbook.wallet.viewmodel.settings.AppearanceSettingsViewModel
+import com.dimension.maskbook.wallet.viewmodel.settings.BackupCloudExecuteViewModel
+import com.dimension.maskbook.wallet.viewmodel.settings.BackupCloudViewModel
+import com.dimension.maskbook.wallet.viewmodel.settings.BackupLocalViewModel
+import com.dimension.maskbook.wallet.viewmodel.settings.BackupMergeConfirmViewModel
+import com.dimension.maskbook.wallet.viewmodel.settings.BackupPasswordSettingsViewModel
+import com.dimension.maskbook.wallet.viewmodel.settings.DataSourceSettingsViewModel
+import com.dimension.maskbook.wallet.viewmodel.settings.EmailBackupViewModel
+import com.dimension.maskbook.wallet.viewmodel.settings.EmailSetupViewModel
+import com.dimension.maskbook.wallet.viewmodel.settings.LanguageSettingsViewModel
+import com.dimension.maskbook.wallet.viewmodel.settings.PaymentPasswordSettingsViewModel
+import com.dimension.maskbook.wallet.viewmodel.settings.PhoneBackupViewModel
+import com.dimension.maskbook.wallet.viewmodel.settings.PhoneSetupViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.BackUpPasswordViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.BiometricEnableViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.BiometricViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.SetUpPaymentPasswordViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.TokenDetailViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.TouchIdEnableViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.UnlockWalletViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.WalletBalancesViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.WalletConnectManagementViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.WalletConnectViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.WalletManagementModalViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.collectible.CollectibleDetailViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.create.CreateWalletRecoveryKeyViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.import.ImportWalletDerivationPathViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.import.ImportWalletKeystoreViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.import.ImportWalletMnemonicViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.import.ImportWalletPrivateKeyViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.management.*
-import com.dimension.maskbook.wallet.viewmodel.wallets.send.*
+import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletBackupViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletDeleteViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletRenameViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletSwitchViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletTransactionHistoryViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.send.AddContactViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.send.GasFeeViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.send.SearchAddressViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendConfirmViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendTokenDataViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendTokenViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asExecutor
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -102,13 +157,15 @@ val walletModules = module {
         Room.databaseBuilder(get(), AppDatabase::class.java, "maskbook")
             .setQueryExecutor(Dispatchers.IO.asExecutor())
             .setTransactionExecutor(Dispatchers.IO.asExecutor())
-            .fallbackToDestructiveMigration()
+            .addMigrations(
+                RoomMigrations.MIGRATION_6_7,
+            )
             .build()
     }
     single {
         BiometricAuthenticator()
     }
-    
+
     viewModel { (uri: Uri) -> RecoveryLocalViewModel(get(), uri, get<Context>().contentResolver) }
     viewModel { IdentityViewModel(get()) }
     viewModel { PrivateKeyViewModel(get()) }
@@ -161,15 +218,15 @@ val walletModules = module {
         )
     }
     viewModel { (
-                    requestMerge: (target: DownloadResponse, email: String, code: String) -> Unit,
-                    next: (email: String, code: String) -> Unit,
-                ) ->
+        requestMerge: (target: DownloadResponse, email: String, code: String) -> Unit,
+        next: (email: String, code: String) -> Unit,
+    ) ->
         EmailBackupViewModel(get(), requestMerge, next)
     }
     viewModel { (
-                    requestMerge: (target: DownloadResponse, email: String, code: String) -> Unit,
-                    next: (email: String, code: String) -> Unit,
-                ) ->
+        requestMerge: (target: DownloadResponse, email: String, code: String) -> Unit,
+        next: (email: String, code: String) -> Unit,
+    ) ->
         PhoneBackupViewModel(get(), requestMerge, next)
     }
     viewModel { (onDone: () -> Unit) ->
@@ -215,11 +272,11 @@ val walletModules = module {
     }
     viewModel { BiometricViewModel(get(), get()) }
     viewModel { WalletConnectManagementViewModel(get(), get()) }
-    viewModel { (onResult:(success:Boolean, needToSwitchNetwork: Boolean)->Unit)-> WalletConnectViewModel(get(), get(), get(), onResult) }
+    viewModel { (onResult: (success: Boolean, needToSwitchNetwork: Boolean) -> Unit) -> WalletConnectViewModel(get(), get(), get(), onResult) }
     viewModel { UnlockWalletViewModel(get(), get()) }
     viewModel { BackUpPasswordViewModel(get(), get()) }
     viewModel { (id: String) -> CollectibleDetailViewModel(id, get()) }
-    viewModel { (tokenData: TokenData) -> SendTokenDataViewModel(tokenData, get()) }
+    viewModel { (tokenAddress: String) -> SendTokenDataViewModel(tokenAddress, get(), get()) }
 }
 
 val servicesModule = module {

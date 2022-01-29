@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.internal.ensureParentDirsCreated
 
 plugins {
     id("com.android.library")
-    id("kotlin-android")
+    kotlin("android")
     kotlin("plugin.serialization").version(Versions.Kotlin.lang)
     id("com.google.devtools.ksp").version(Versions.ksp)
 }
@@ -81,7 +81,6 @@ dependencies {
     implementation("com.github.komputing.khex:extensions:1.1.2")
 }
 
-
 tasks.create("generateTranslation") {
     doLast {
         val localizationFolder = File(rootDir, "localization")
@@ -90,8 +89,10 @@ tasks.create("generateTranslation") {
             val target = if (name.isEmpty()) {
                 File(projectDir, "src/main/res/values/strings.xml")
             } else {
-                File(projectDir,
-                    "src/main/res/values-${name.split("_").first()}-r${name.split("_").last()}/strings.xml")
+                File(
+                    projectDir,
+                    "src/main/res/values-${name.split("_").first()}-r${name.split("_").last()}/strings.xml"
+                )
             }.apply {
                 ensureParentDirsCreated()
                 if (!exists()) {
@@ -118,8 +119,10 @@ tasks.create("replaceText") {
                 if (file.isFile) {
                     var text = file.readText()
                     map.forEach { (key, value) ->
-                        text = text.replace(" \"${value}\"",
-                            " androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.${key})")
+                        text = text.replace(
+                            " \"${value}\"",
+                            " androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.$key)"
+                        )
                     }
                     file.writeText(text)
                 }
@@ -154,8 +157,8 @@ fun generateLocalization(appJson: File, target: File) {
             """<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">""" + System.lineSeparator() +
                 result.map {
                     "    <string name=\"${it.key}\">${
-                        it.value.escapeXml().replace(System.lineSeparator(), "\\n")
-                            .replace("%@", "%s")
+                    it.value.escapeXml().replace(System.lineSeparator(), "\\n")
+                        .replace("%@", "%s")
                     }</string>"
                 }.joinToString(System.lineSeparator()) + System.lineSeparator() +
                 "</resources>"

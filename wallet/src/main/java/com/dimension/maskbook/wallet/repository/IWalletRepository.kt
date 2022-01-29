@@ -1,7 +1,32 @@
+/*
+ *  Mask-Android
+ *
+ *  Copyright (C) 2022  DimensionDev and Contributors
+ *
+ *  This file is part of Mask-Android.
+ *
+ *  Mask-Android is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Affero General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Mask-Android is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License
+ *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.dimension.maskbook.wallet.repository
 
 import com.dimension.maskbook.debankapi.model.ChainID
-import com.dimension.maskbook.wallet.db.model.*
+import com.dimension.maskbook.wallet.db.model.CoinPlatformType
+import com.dimension.maskbook.wallet.db.model.DbCollectible
+import com.dimension.maskbook.wallet.db.model.DbWalletBalanceType
+import com.dimension.maskbook.wallet.db.model.DbWalletTokenTokenWithWallet
+import com.dimension.maskbook.wallet.db.model.DbWalletTokenWithToken
+import com.dimension.maskbook.wallet.db.model.WalletSource
 import com.dimension.maskbook.wallet.services.okHttpClient
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.Serializable
@@ -171,7 +196,7 @@ enum class ChainType(
     arbitrum(42_161, "https://arb1.arbitrum.io/rpc", false),
     xdai(100, "https://rpc.xdaichain.com", false),
     optimism(10, "https://mainnet.optimism.io", false),
-    polka(1, "", false),// TODO: json rpc endpoint
+    polka(1, "", false), // TODO: json rpc endpoint
     kovan(42, "https://kovan.infura.io/v3/d74bd8586b9e44449cef131d39ceeefb", true),
     goerli(5, "https://goerli.infura.io/v3/d74bd8586b9e44449cef131d39ceeefb", true),
     kusama(8, "https://kusama-rpc.polkadot.io/", false),
@@ -316,13 +341,5 @@ interface IWalletRepository {
     fun validatePrivateKey(privateKey: String): Boolean
     fun validateMnemonic(mnemonic: String): Boolean
     fun validateKeystore(keyStore: String): Boolean
+    suspend fun getEnsAddress(chainType: ChainType, name: String): String
 }
-
-//class FakeWalletRepository : IWalletRepository {
-//    override fun init() {
-//
-//    }
-//
-//    override val currentWallet: Flow<WalletData?> = MutableStateFlow(null)
-//}
-

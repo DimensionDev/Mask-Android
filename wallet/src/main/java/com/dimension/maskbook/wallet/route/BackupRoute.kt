@@ -1,3 +1,23 @@
+/*
+ *  Mask-Android
+ *
+ *  Copyright (C) 2022  DimensionDev and Contributors
+ *
+ *  This file is part of Mask-Android.
+ *
+ *  Mask-Android is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Affero General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Mask-Android is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License
+ *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.dimension.maskbook.wallet.route
 
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -28,8 +48,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.navigation.*
+import androidx.navigation.NavController
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavType
 import androidx.navigation.compose.dialog
+import androidx.navigation.navArgument
+import androidx.navigation.navOptions
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ext.encodeUrl
 import com.dimension.maskbook.wallet.ext.observeAsState
@@ -136,11 +160,14 @@ fun NavGraphBuilder.backupRoute(
                     navController.popBackStack()
                 },
                 onConfirm = {
-                    navController.navigate("BackupData_BackupCloud_Execute/${it}/${type}/${value}/${code}", navOptions = navOptions {
-                        popUpTo(backStackEntry.destination.id){
-                            inclusive = true
+                    navController.navigate(
+                        "BackupData_BackupCloud_Execute/$it/$type/$value/$code",
+                        navOptions = navOptions {
+                            popUpTo(backStackEntry.destination.id) {
+                                inclusive = true
+                            }
                         }
-                    })
+                    )
                 }
             )
         }
@@ -167,13 +194,13 @@ fun NavGraphBuilder.backupRoute(
                     )
                     if (result) {
                         navController.navigate("BackupData_Cloud_Success") {
-                            popUpTo(backStackEntry.destination.id){
+                            popUpTo(backStackEntry.destination.id) {
                                 inclusive = true
                             }
                         }
                     } else {
                         navController.navigate("BackupData_Cloud_Failed") {
-                            popUpTo(backStackEntry.destination.id){
+                            popUpTo(backStackEntry.destination.id) {
                                 inclusive = true
                             }
                         }
@@ -251,7 +278,7 @@ fun NavGraphBuilder.backupRoute(
                         PrimaryButton(
                             modifier = Modifier.weight(1f),
                             onClick = {
-                                navController.navigate("BackupData_BackupCloud/${type}/${value}/${code}") {
+                                navController.navigate("BackupData_BackupCloud/$type/$value/$code") {
                                     popUpTo("BackupSelection") {
                                         inclusive = true
                                     }
@@ -286,7 +313,7 @@ fun NavGraphBuilder.backupRoute(
             val abstract = backStackEntry.arguments?.getString("abstract") ?: return@bottomSheet
 
             val onDone: () -> Unit = {
-                navController.navigate("BackupData_BackupMerge_Confirm_Success/${type}/${value}/${code}") {
+                navController.navigate("BackupData_BackupMerge_Confirm_Success/$type/$value/$code") {
                     popUpTo("BackupData_BackupMerge/{type}/{value}/{code}?download_url={download_url}&size={size}&uploaded_at={uploaded_at}&abstract={abstract}") {
                         inclusive = true
                     }
@@ -404,14 +431,14 @@ fun NavGraphBuilder.backupRoute(
                     PrimaryButton(
                         modifier = Modifier.fillMaxWidth(),
                         onClick = {
-                            navController.navigate("BackupData_BackupMerge_Confirm/${type}/${value}/${code}?download_url=${download_url}&size=${size}&uploaded_at=${uploaded_at}&abstract=${abstract.encodeUrl()}")
+                            navController.navigate("BackupData_BackupMerge_Confirm/$type/$value/$code?download_url=$download_url&size=$size&uploaded_at=$uploaded_at&abstract=${abstract.encodeUrl()}")
                         },
                     ) {
                         Text(text = stringResource(R.string.common_controls_merge_and_back_up))
                     }
                     Spacer(modifier = Modifier.height(16.dp))
                     PrimaryButton(onClick = {
-                        navController.navigate("BackupData_BackupCloud/${type}/${value}/${code}")
+                        navController.navigate("BackupData_BackupCloud/$type/$value/$code")
                     }) {
                         Text(text = stringResource(R.string.common_controls_back_up))
                     }
@@ -426,10 +453,10 @@ fun NavGraphBuilder.backupRoute(
         ) { backStackEntry ->
             val requestMerge: (target: DownloadResponse, email: String, code: String) -> Unit =
                 { target, email, code ->
-                    navController.navigate("BackupData_BackupMerge/email/${email}/${code}?download_url=${target.download_url}&size=${target.size}&uploaded_at=${target.uploaded_at}&abstract=${target.abstract?.encodeUrl()}")
+                    navController.navigate("BackupData_BackupMerge/email/$email/$code?download_url=${target.download_url}&size=${target.size}&uploaded_at=${target.uploaded_at}&abstract=${target.abstract?.encodeUrl()}")
                 }
             val next: (email: String, code: String) -> Unit = { email, code ->
-                navController.navigate("BackupData_BackupCloud/email/${email}/${code}")
+                navController.navigate("BackupData_BackupCloud/email/$email/$code")
             }
             backStackEntry.arguments?.getString("email")?.let { email ->
                 val repository = get<IPersonaRepository>()
@@ -469,7 +496,7 @@ fun NavGraphBuilder.backupRoute(
                             TextButton(
                                 modifier = Modifier.fillMaxWidth(),
                                 onClick = {
-                                    navController.navigate("BackupSelection_Phone/${phone}") {
+                                    navController.navigate("BackupSelection_Phone/$phone") {
                                         popUpTo("BackupSelection_Email") {
                                             inclusive = true
                                         }
@@ -489,10 +516,10 @@ fun NavGraphBuilder.backupRoute(
         ) { backStackEntry ->
             val requestMerge: (target: DownloadResponse, phone: String, code: String) -> Unit =
                 { target, phone, code ->
-                    navController.navigate("BackupData_BackupMerge/phone/${phone}/${code}?download_url=${target.download_url}&size=${target.size}&uploaded_at=${target.uploaded_at}&abstract=${target.abstract?.encodeUrl()}")
+                    navController.navigate("BackupData_BackupMerge/phone/$phone/$code?download_url=${target.download_url}&size=${target.size}&uploaded_at=${target.uploaded_at}&abstract=${target.abstract?.encodeUrl()}")
                 }
             val next: (phone: String, code: String) -> Unit = { phone, code ->
-                navController.navigate("BackupData_BackupCloud/phone/${phone}/${code}")
+                navController.navigate("BackupData_BackupCloud/phone/$phone/$code")
             }
             backStackEntry.arguments?.getString("phone")?.let { phone ->
                 val repository = get<IPersonaRepository>()
@@ -532,7 +559,7 @@ fun NavGraphBuilder.backupRoute(
                             TextButton(
                                 modifier = Modifier.fillMaxWidth(),
                                 onClick = {
-                                    navController.navigate("BackupSelection_Email/${email}") {
+                                    navController.navigate("BackupSelection_Email/$email") {
                                         popUpTo("BackupSelection_Phone") {
                                             inclusive = true
                                         }
@@ -559,9 +586,9 @@ fun NavGraphBuilder.backupRoute(
                     if (email == null && phone == null) {
                         navController.navigate("BackupSelection_NoEmailAndPhone")
                     } else if (email != null) {
-                        navController.navigate("BackupSelection_Email/${email}")
+                        navController.navigate("BackupSelection_Email/$email")
                     } else if (phone != null) {
-                        navController.navigate("BackupSelection_Phone/${phone}")
+                        navController.navigate("BackupSelection_Phone/$phone")
                     }
                 }
             )

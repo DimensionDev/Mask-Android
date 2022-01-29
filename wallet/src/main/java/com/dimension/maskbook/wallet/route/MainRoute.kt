@@ -1,3 +1,23 @@
+/*
+ *  Mask-Android
+ *
+ *  Copyright (C) 2022  DimensionDev and Contributors
+ *
+ *  This file is part of Mask-Android.
+ *
+ *  Mask-Android is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Affero General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Mask-Android is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License
+ *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.dimension.maskbook.wallet.route
 
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -12,7 +32,11 @@ import androidx.navigation.navDeepLink
 import androidx.navigation.navOptions
 import com.dimension.maskbook.wallet.ext.encodeUrl
 import com.dimension.maskbook.wallet.ext.observeAsState
-import com.dimension.maskbook.wallet.repository.*
+import com.dimension.maskbook.wallet.repository.AppKey
+import com.dimension.maskbook.wallet.repository.IPersonaRepository
+import com.dimension.maskbook.wallet.repository.ISettingsRepository
+import com.dimension.maskbook.wallet.repository.Network
+import com.dimension.maskbook.wallet.repository.PlatformType
 import com.dimension.maskbook.wallet.ui.scenes.MainHost
 import com.dimension.maskbook.wallet.ui.scenes.app.settings.MarketTrendSettingsModal
 import com.dimension.maskbook.wallet.ui.scenes.persona.BackUpPasswordModal
@@ -76,7 +100,7 @@ fun NavGraphBuilder.mainRoute(
                     if (platform == null) {
                         navController.navigate("SelectPlatform/${persona.id.encodeUrl()}")
                     } else {
-                        navController.navigate("ConnectSocial/${persona.id.encodeUrl()}/${platform}")
+                        navController.navigate("ConnectSocial/${persona.id.encodeUrl()}/$platform")
                     }
                 },
                 onRemoveSocialClick = { persona, social ->
@@ -87,8 +111,8 @@ fun NavGraphBuilder.mainRoute(
                     }
                     if (platform != null) {
                         navController.navigate(
-                            "DisconnectSocial/${persona.id.encodeUrl()}/${platform}/${social.id.encodeUrl()}" +
-                                    "?personaName=${persona.name.encodeUrl()}&socialName=${social.name.encodeUrl()}"
+                            "DisconnectSocial/${persona.id.encodeUrl()}/$platform/${social.id.encodeUrl()}" +
+                                "?personaName=${persona.name.encodeUrl()}&socialName=${social.name.encodeUrl()}"
                         )
                     }
                 },
@@ -144,21 +168,27 @@ fun NavGraphBuilder.mainRoute(
                             context = context,
                             onSuccess = {
                                 target?.let {
-                                    navController.navigate(it, navOptions {
-                                        popUpTo("BackUpPassword") {
-                                            inclusive = true
+                                    navController.navigate(
+                                        it,
+                                        navOptions {
+                                            popUpTo("BackUpPassword") {
+                                                inclusive = true
+                                            }
                                         }
-                                    })
+                                    )
                                 } ?: navController.popBackStack()
                             }
                         )
                     } else {
                         target?.let {
-                            navController.navigate(it, navOptions {
-                                popUpTo("BackUpPassword") {
-                                    inclusive = true
+                            navController.navigate(
+                                it,
+                                navOptions {
+                                    popUpTo("BackUpPassword") {
+                                        inclusive = true
+                                    }
                                 }
-                            })
+                            )
                         } ?: navController.popBackStack()
                     }
                 }
@@ -240,7 +270,7 @@ fun NavGraphBuilder.mainRoute(
             val personaId = it.arguments?.getString("personaId").orEmpty()
             SelectPlatformModal(
                 onDone = { platform ->
-                    navController.navigate("ConnectSocial/${personaId.encodeUrl()}/${platform}")
+                    navController.navigate("ConnectSocial/${personaId.encodeUrl()}/$platform")
                 }
             )
         }

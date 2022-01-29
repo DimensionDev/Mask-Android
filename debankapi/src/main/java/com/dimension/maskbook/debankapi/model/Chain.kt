@@ -1,10 +1,30 @@
+/*
+ *  Mask-Android
+ *
+ *  Copyright (C) 2022  DimensionDev and Contributors
+ *
+ *  This file is part of Mask-Android.
+ *
+ *  Mask-Android is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Affero General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Mask-Android is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License
+ *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.dimension.maskbook.debankapi.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Chain (
+data class Chain(
     val id: String? = null,
 
     @SerialName("community_id")
@@ -24,9 +44,8 @@ data class Chain (
     val usdValue: Float? = null
 )
 
-
 @Serializable
-data class Transaction (
+data class Transaction(
     @SerialName("_cache_seconds")
     val cacheSeconds: Long? = null,
 
@@ -40,7 +59,7 @@ data class Transaction (
 )
 
 @Serializable
-data class Data (
+data class Data(
     @SerialName("cate_dict")
     val cateDict: CateDict? = null,
 
@@ -55,7 +74,7 @@ data class Data (
 )
 
 @Serializable
-data class CateDict (
+data class CateDict(
     val approve: Approve? = null,
     val cancel: Approve? = null,
     val receive: Approve? = null,
@@ -63,14 +82,14 @@ data class CateDict (
 )
 
 @Serializable
-data class Approve (
+data class Approve(
     val ch: String? = null,
     val en: String? = null,
     val id: String? = null
 )
 
 @Serializable
-data class HistoryList (
+data class HistoryList(
     @SerialName("cate_id")
     val cateID: String? = null,
 
@@ -98,7 +117,7 @@ data class HistoryList (
 )
 
 @Serializable
-data class Receive (
+data class Receive(
     val amount: Double? = null,
 
     @SerialName("from_addr")
@@ -109,7 +128,7 @@ data class Receive (
 )
 
 @Serializable
-data class Send (
+data class Send(
     val amount: Double? = null,
 
     @SerialName("to_addr")
@@ -120,7 +139,7 @@ data class Send (
 )
 
 @Serializable
-data class TokenApprove (
+data class TokenApprove(
     val spender: String? = null,
 
     @SerialName("token_id")
@@ -130,7 +149,7 @@ data class TokenApprove (
 )
 
 @Serializable
-data class Tx (
+data class Tx(
     @SerialName("eth_gas_fee")
     val ethGasFee: Double? = null,
 
@@ -150,7 +169,7 @@ data class Tx (
 )
 
 @Serializable
-data class ProjectDict (
+data class ProjectDict(
     val id: String? = null,
 
     @SerialName("logo_url")
@@ -160,13 +179,13 @@ data class ProjectDict (
 )
 
 @Serializable
-data class Name (
+data class Name(
     val ch: String? = null,
     val en: String? = null
 )
 
 @Serializable
-data class TokenDict (
+data class TokenDict(
     val chain: ChainID? = null,
     val decimals: Long? = null,
 

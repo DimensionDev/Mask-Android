@@ -1,4 +1,4 @@
-import java.util.*
+import java.util.Properties
 
 plugins {
     id("com.android.application")
@@ -26,7 +26,7 @@ android {
             }
         }
     }
-    
+
     buildTypes {
         debug {
             if (hasSigningProps) {

@@ -1,13 +1,36 @@
+/*
+ *  Mask-Android
+ *
+ *  Copyright (C) 2022  DimensionDev and Contributors
+ *
+ *  This file is part of Mask-Android.
+ *
+ *  Mask-Android is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Affero General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Mask-Android is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License
+ *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.dimension.maskbook.wallet.ui.scenes.wallets.send.preview
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.dimension.maskbook.wallet.R
-import com.dimension.maskbook.wallet.repository.*
+import com.dimension.maskbook.wallet.repository.ChainType
+import com.dimension.maskbook.wallet.repository.GasPriceEditMode
+import com.dimension.maskbook.wallet.repository.SearchAddressData
+import com.dimension.maskbook.wallet.repository.TokenData
+import com.dimension.maskbook.wallet.repository.WalletTokenData
 import com.dimension.maskbook.wallet.ui.scenes.wallets.send.AddContactSheet
 import com.dimension.maskbook.wallet.ui.scenes.wallets.send.ApproveConfirmSheet
 import com.dimension.maskbook.wallet.ui.scenes.wallets.send.EditGasPriceSheet
-import com.dimension.maskbook.wallet.ui.scenes.wallets.send.SearchTokenScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.send.SendConfirmSheet
 import com.dimension.maskbook.wallet.ui.scenes.wallets.send.SignatureRequestSignSheet
 import com.dimension.maskbook.wallet.ui.scenes.wallets.send.UnlockWalletDialog
@@ -38,8 +61,8 @@ private val walletData = WalletTokenData(
     tokenData = tokenData,
 )
 
-//@Composable
-//fun SendTokenScenePreview() {
+// @Composable
+// fun SendTokenScenePreview() {
 //    SendTokenScene(
 //        onBack = { /*TODO*/ },
 //        addressData = addressData,
@@ -57,7 +80,7 @@ private val walletData = WalletTokenData(
 //        onSend = {},
 //        sendError = "Password error"
 //    )
-//}
+// }
 
 @Composable
 fun SearchTokenScenePreview() {
@@ -73,8 +96,8 @@ fun SendConfirmSheetPreview() {
         gasFee = "0.0003",
         total = "300",
         onConfirm = { /*TODO*/ },
-        onCancel = { /*TODO*/ }) {
-
+        onCancel = { /*TODO*/ }
+    ) {
     }
 }
 
@@ -87,8 +110,8 @@ fun ApproveConfirmSheetPreview() {
         gasFee = "0.0003",
         total = "300",
         onConfirm = { /*TODO*/ },
-        onCancel = { /*TODO*/ }) {
-
+        onCancel = { /*TODO*/ }
+    ) {
     }
 }
 
@@ -112,7 +135,6 @@ fun UnlockWalletPreview() {
         unlockError = stringResource(R.string.scene_change_password_incorrect_password),
         onCancel = { /*TODO*/ }
     ) {
-
     }
 }
 
@@ -138,7 +160,6 @@ fun EditGasPriceSheetPreview() {
         maxPriorityFeeError = "max priority error",
         maxFeeError = "max fee error"
     ) {
-
     }
 }
 
@@ -151,6 +172,5 @@ fun AddContactSheetPreview() {
         nameInput = "",
         onNameChanged = {}
     ) {
-
     }
 }
