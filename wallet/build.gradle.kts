@@ -92,7 +92,6 @@ android {
     setupLibrary()
 }
 
-
 tasks.create("generateTranslation") {
     doLast {
         val localizationFolder = File(rootDir, "localization")

@@ -46,7 +46,6 @@ android {
     }
 }
 
-
 dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.1")
     implementation("androidx.annotation:annotation:1.3.0")
