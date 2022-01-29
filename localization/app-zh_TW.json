@@ -535,6 +535,12 @@
             "empty_token": "",
             "empty_collectibles": ""
         },
+        "wallet_send_address": {
+            "recent": "",
+            "search_address": "",
+            "empty_token_warn": "",
+            "by_token": ""
+        },
         "token_detail": {
             "switch_network": "",
             "walletconnect_switch_network_alert": ""
