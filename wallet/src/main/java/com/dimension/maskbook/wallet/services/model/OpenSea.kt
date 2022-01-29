@@ -1,15 +1,35 @@
+/*
+ *  Mask-Android
+ *
+ *  Copyright (C) 2022  DimensionDev and Contributors
+ *
+ *  This file is part of Mask-Android.
+ *
+ *  Mask-Android is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Affero General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Mask-Android is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License
+ *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.dimension.maskbook.wallet.services.model
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class OpenSeaAssetModel (
+data class OpenSeaAssetModel(
     val assets: List<AssetElement>? = null
 )
 
 @Serializable
-data class AssetElement (
+data class AssetElement(
     val id: Long? = null,
 
     @SerialName("token_id")
@@ -83,7 +103,7 @@ data class AssetElement (
 )
 
 @Serializable
-data class LastSale (
+data class LastSale(
     val asset: LastSaleAsset? = null,
 
 //    @SerialName("asset_bundle")
@@ -113,7 +133,7 @@ data class LastSale (
 )
 
 @Serializable
-data class LastSaleAsset (
+data class LastSaleAsset(
     @SerialName("token_id")
     val tokenID: String? = null,
 
@@ -121,7 +141,7 @@ data class LastSaleAsset (
 )
 
 @Serializable
-data class PaymentToken (
+data class PaymentToken(
     val id: Long? = null,
     val symbol: String? = null,
     val address: String? = null,
@@ -140,7 +160,7 @@ data class PaymentToken (
 )
 
 @Serializable
-data class TransactionClass (
+data class TransactionClass(
     @SerialName("block_hash")
     val blockHash: String? = null,
 
@@ -175,7 +195,7 @@ data class OpenSeaFungibleToken(
 )
 
 @Serializable
-data class AssetContract (
+data class AssetContract(
     val address: String? = null,
 
     @SerialName("asset_contract_type")
@@ -239,7 +259,7 @@ data class AssetContract (
 )
 
 @Serializable
-data class Collection (
+data class Collection(
     @SerialName("banner_image_url")
     val bannerImageURL: String? = null,
 
@@ -327,7 +347,7 @@ data class Collection (
 )
 
 @Serializable
-data class DisplayData (
+data class DisplayData(
     @SerialName("card_display_style")
     val cardDisplayStyle: String? = null,
 
@@ -335,7 +355,7 @@ data class DisplayData (
 )
 
 @Serializable
-data class Creator (
+data class Creator(
     val user: User? = null,
 
     @SerialName("profile_img_url")
@@ -346,12 +366,12 @@ data class Creator (
 )
 
 @Serializable
-data class User (
+data class User(
     val username: String? = null
 )
 
 @Serializable
-data class SellOrder (
+data class SellOrder(
     @SerialName("created_date")
     val createdDate: String? = null,
 
@@ -456,7 +476,7 @@ data class SellOrder (
 )
 
 @Serializable
-data class FeeRecipient (
+data class FeeRecipient(
     val user: Long? = null,
 
     @SerialName("profile_img_url")
@@ -467,20 +487,20 @@ data class FeeRecipient (
 )
 
 @Serializable
-data class OpenSeaMetadata (
+data class OpenSeaMetadata(
     val asset: MetadataAsset? = null,
     val schema: String? = null
 )
 
 @Serializable
-data class MetadataAsset (
+data class MetadataAsset(
     val id: String? = null,
     val address: String? = null,
     val quantity: String? = null
 )
 
 @Serializable
-data class PaymentTokenContract (
+data class PaymentTokenContract(
     val id: Long? = null,
     val symbol: String? = null,
     val address: String? = null,
@@ -499,7 +519,7 @@ data class PaymentTokenContract (
 )
 
 @Serializable
-data class Trait (
+data class Trait(
     @SerialName("trait_type")
     val traitType: String? = null,
 

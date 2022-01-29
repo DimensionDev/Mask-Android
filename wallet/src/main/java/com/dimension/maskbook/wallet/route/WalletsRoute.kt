@@ -1,3 +1,23 @@
+/*
+ *  Mask-Android
+ *
+ *  Copyright (C) 2022  DimensionDev and Contributors
+ *
+ *  This file is part of Mask-Android.
+ *
+ *  Mask-Android is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Affero General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Mask-Android is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License
+ *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.dimension.maskbook.wallet.route
 
 import android.content.Intent
@@ -11,7 +31,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.*
+import androidx.navigation.NavController
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavType
 import androidx.navigation.compose.dialog
 import androidx.navigation.navArgument
 import androidx.navigation.navOptions
@@ -34,21 +56,38 @@ import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.LegalScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.password.BiometricsEnableScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.password.SetUpPaymentPassword
 import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.password.TouchIdEnableScene
-import com.dimension.maskbook.wallet.ui.scenes.wallets.management.*
+import com.dimension.maskbook.wallet.ui.scenes.wallets.management.BackupWalletScene
+import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletConnectModal
+import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletDeleteDialog
+import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletManagementModal
+import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletNetworkSwitchWarningDialog
+import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletRenameModal
+import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletSwitchAddModal
+import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletSwitchEditModal
+import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletSwitchSceneModal
+import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletTransactionHistoryScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.send.SendTokenHost
 import com.dimension.maskbook.wallet.ui.scenes.wallets.token.TokenDetailScene
 import com.dimension.maskbook.wallet.ui.widget.MaskDialog
 import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
-import com.dimension.maskbook.wallet.viewmodel.wallets.*
+import com.dimension.maskbook.wallet.viewmodel.wallets.BiometricEnableViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.BiometricViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.TokenDetailViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.UnlockWalletViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.WalletConnectManagementViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.WalletManagementModalViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.collectible.CollectibleDetailViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.management.*
+import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletBackupViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletDeleteViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletRenameViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletSwitchViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletTransactionHistoryViewModel
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.bottomSheet
 import org.koin.androidx.compose.get
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
-
 
 @ExperimentalAnimationApi
 @ExperimentalMaterialNavigationApi
@@ -73,7 +112,6 @@ fun NavGraphBuilder.walletsRoute(
                         navController.popBackStack()
                     },
                     onSend = {
-
                     },
                     onReceive = {
                         navController.navigate("WalletQrcode/${it.chainType.name}")
@@ -100,7 +138,6 @@ fun NavGraphBuilder.walletsRoute(
                 onCopy = { context.copyText(it.address) }
             )
         }
-
     }
     composable(
         "TokenDetail/{id}",
@@ -376,14 +413,17 @@ fun NavGraphBuilder.walletsRoute(
             } else if (!enableBiometric && biometricEnableViewModel.isSupported(context)) {
                 "WalletIntroHostFaceId/$type"
             } else {
-                "CreateOrImportWallet/${type}"
+                "CreateOrImportWallet/$type"
             }
-            navController.navigate(route, navOptions {
-                popUpTo(id = it.destination.id) {
-                    inclusive = true
+            navController.navigate(
+                route,
+                navOptions {
+                    popUpTo(id = it.destination.id) {
+                        inclusive = true
+                    }
+                    launchSingleTop = true
                 }
-                launchSingleTop = true
-            })
+            )
         }
         if (!shouldShowLegalScene) {
             next()
@@ -421,7 +461,7 @@ fun NavGraphBuilder.walletsRoute(
                 if (!enableBiometric && biometricEnableViewModel.isSupported(context)) {
                     navController.navigate("WalletIntroHostFaceId/$type")
                 } else {
-                    navController.navigate("CreateOrImportWallet/${type}")
+                    navController.navigate("CreateOrImportWallet/$type")
                 }
             }
         )
@@ -442,7 +482,7 @@ fun NavGraphBuilder.walletsRoute(
                 if (enabled) {
                     navController.navigate("WalletIntroHostFaceIdEnableSuccess/$type")
                 } else {
-                    navController.navigate("CreateOrImportWallet/${type}")
+                    navController.navigate("CreateOrImportWallet/$type")
                 }
             }
         )
@@ -459,7 +499,7 @@ fun NavGraphBuilder.walletsRoute(
         } ?: CreateType.CREATE
         MaskDialog(
             onDismissRequest = {
-                navController.navigate("CreateOrImportWallet/${type}")
+                navController.navigate("CreateOrImportWallet/$type")
             },
             title = {
                 Text(text = stringResource(R.string.common_alert_biometry_id_activate_title))
@@ -477,7 +517,7 @@ fun NavGraphBuilder.walletsRoute(
                 PrimaryButton(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
-                        navController.navigate("CreateOrImportWallet/${type}")
+                        navController.navigate("CreateOrImportWallet/$type")
                     },
                 ) {
                     Text(text = stringResource(R.string.common_controls_done))
@@ -514,7 +554,7 @@ fun NavGraphBuilder.walletsRoute(
         } ?: CreateType.CREATE
         MaskDialog(
             onDismissRequest = {
-                navController.navigate("CreateOrImportWallet/${type}")
+                navController.navigate("CreateOrImportWallet/$type")
             },
             title = {
                 Text(text = stringResource(R.string.common_alert_biometry_id_activate_title))
@@ -532,7 +572,7 @@ fun NavGraphBuilder.walletsRoute(
                 PrimaryButton(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
-                        navController.navigate("CreateOrImportWallet/${type}")
+                        navController.navigate("CreateOrImportWallet/$type")
                     },
                 ) {
                     Text(text = stringResource(R.string.common_controls_done))
@@ -576,7 +616,8 @@ fun NavGraphBuilder.walletsRoute(
                             popUpTo("Home") {
                                 inclusive = false
                             }
-                        })
+                        }
+                    )
                 },
                 onBack = { navController.popBackStack() }
             )
@@ -600,7 +641,8 @@ fun NavGraphBuilder.walletsRoute(
                             popUpTo("Home") {
                                 inclusive = false
                             }
-                        })
+                        }
+                    )
                 },
                 onBack = { navController.popBackStack() }
             )
@@ -616,7 +658,7 @@ fun NavGraphBuilder.walletsRoute(
         SendTokenHost(
             tokenAddress = it.arguments?.getString("tokenAddress").orEmpty(),
             onBack = {
-                 navController.popBackStack()
+                navController.popBackStack()
             },
             onDone = {
                 navController.popBackStack()
@@ -648,22 +690,28 @@ fun NavGraphBuilder.walletsRoute(
                         context = context,
                         onSuccess = {
                             target?.let {
-                                navController.navigate(it, navOptions {
-                                    popUpTo("UnlockWalletDialog") {
-                                        inclusive = true
+                                navController.navigate(
+                                    it,
+                                    navOptions {
+                                        popUpTo("UnlockWalletDialog") {
+                                            inclusive = true
+                                        }
                                     }
-                                })
+                                )
                             } ?: navController.popBackStack()
                         }
                     )
                 } else {
                     target?.let {
                         if (passwordValid) {
-                            navController.navigate(it, navOptions {
-                                popUpTo("UnlockWalletDialog") {
-                                    inclusive = true
+                            navController.navigate(
+                                it,
+                                navOptions {
+                                    popUpTo("UnlockWalletDialog") {
+                                        inclusive = true
+                                    }
                                 }
-                            })
+                            )
                         }
                     } ?: navController.popBackStack()
                 }

@@ -1,3 +1,23 @@
+/*
+ *  Mask-Android
+ *
+ *  Copyright (C) 2022  DimensionDev and Contributors
+ *
+ *  This file is part of Mask-Android.
+ *
+ *  Mask-Android is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU Affero General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  Mask-Android is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Affero General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Affero General Public License
+ *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.dimension.maskbook.repository
 
 import android.content.Context
@@ -13,32 +33,48 @@ import androidx.paging.PagingState
 import androidx.room.withTransaction
 import com.dimension.maskbook.debankapi.model.ChainID
 import com.dimension.maskbook.wallet.db.AppDatabase
-import com.dimension.maskbook.wallet.db.model.*
+import com.dimension.maskbook.wallet.db.model.CoinPlatformType
+import com.dimension.maskbook.wallet.db.model.DbStoredKey
+import com.dimension.maskbook.wallet.db.model.DbToken
+import com.dimension.maskbook.wallet.db.model.DbWallet
+import com.dimension.maskbook.wallet.db.model.DbWalletBalance
+import com.dimension.maskbook.wallet.db.model.DbWalletBalanceType
+import com.dimension.maskbook.wallet.db.model.DbWalletToken
+import com.dimension.maskbook.wallet.db.model.WalletSource
 import com.dimension.maskbook.wallet.ext.ether
 import com.dimension.maskbook.wallet.ext.gwei
-import com.dimension.maskbook.wallet.repository.*
 import com.dimension.maskbook.wallet.paging.mediator.CollectibleMediator
+import com.dimension.maskbook.wallet.repository.ChainType
+import com.dimension.maskbook.wallet.repository.DWebData
+import com.dimension.maskbook.wallet.repository.IWalletRepository
+import com.dimension.maskbook.wallet.repository.TokenData
+import com.dimension.maskbook.wallet.repository.WalletData
+import com.dimension.maskbook.wallet.repository.chainType
+import com.dimension.maskbook.wallet.repository.httpService
 import com.dimension.maskbook.wallet.services.WalletServices
 import com.dimension.maskbook.wallet.services.okHttpClient
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager
 import com.dimension.maskwalletcore.WalletKey
-import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.*
-import org.web3j.abi.FunctionEncoder
-import org.web3j.abi.datatypes.Address
-import org.web3j.abi.datatypes.Function
-import org.web3j.abi.datatypes.generated.Uint256
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.web3j.crypto.Credentials
 import org.web3j.ens.EnsResolver
 import org.web3j.protocol.Web3j
 import org.web3j.protocol.http.HttpService
 import org.web3j.tx.RawTransactionManager
 import java.math.BigDecimal
-import java.util.*
-import kotlin.math.pow
+import java.util.UUID
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
-
 
 private val CurrentCoinPlatformTypeKey = stringPreferencesKey("coin_platform_type")
 private val CurrentWalletKey = stringPreferencesKey("current_wallet")
@@ -508,7 +544,6 @@ class WalletRepository(
             data = data,
         )
     }
-
 
     override fun sendTokenWithCurrentWalletAndChainType(
         amount: BigDecimal,
