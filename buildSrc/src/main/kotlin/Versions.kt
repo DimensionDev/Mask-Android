@@ -23,6 +23,7 @@ object Versions {
     const val agp = "7.1.0"
     const val spotless = "6.2.0"
     const val ktlint = "0.43.2"
+    const val compose_jb = "1.1.0-alpha02"
     const val compose = "1.1.0-rc03"
     const val accompanist = "0.22.1-rc"
     const val navigation = "2.4.0"

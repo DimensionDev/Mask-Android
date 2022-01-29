@@ -1,6 +1,7 @@
 plugins {
     kotlin("multiplatform")
     id("com.android.library")
+    id("org.jetbrains.compose").version(Versions.compose_jb)
 }
 
 group = Package.group
@@ -15,17 +16,13 @@ kotlin {
                 api(projects.labs.export)
                 api(projects.persona.export)
                 api(projects.setting.export)
-                api("androidx.compose.ui:ui:${Versions.compose}")
-                api("androidx.compose.ui:ui-util:${Versions.compose}")
-                api("androidx.compose.foundation:foundation:${Versions.compose}")
-                api("androidx.compose.material:material:${Versions.compose}")
-                api("androidx.compose.material:material-icons-core:${Versions.compose}")
-                api("androidx.compose.material:material-icons-extended:${Versions.compose}")
-            }
-        }
-        val androidDebug by getting {
-            dependencies {
-                api("androidx.compose.ui:ui-tooling:${Versions.compose}")
+                api("org.jetbrains.compose.ui:ui:${Versions.compose_jb}")
+                api("org.jetbrains.compose.ui:ui-util:${Versions.compose_jb}")
+                api("org.jetbrains.compose.foundation:foundation:${Versions.compose_jb}")
+                api("org.jetbrains.compose.material:material:${Versions.compose_jb}")
+                api("org.jetbrains.compose.material:material-icons-core:${Versions.compose_jb}")
+                api("org.jetbrains.compose.material:material-icons-extended:${Versions.compose_jb}")
+                api("org.jetbrains.compose.ui:ui-tooling:${Versions.compose_jb}")
             }
         }
         val androidTest by getting {
@@ -37,7 +34,5 @@ kotlin {
 }
 
 android {
-    setup()
-    withCompose()
-    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
+    setupLibrary()
 }

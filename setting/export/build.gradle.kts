@@ -9,14 +9,6 @@ version = Package.versionName
 kotlin {
     android()
     sourceSets {
-        val commonMain by getting {
-            
-        }
-        val commonTest by getting {
-            dependencies {
-                implementation(kotlin("test"))
-            }
-        }
         val androidMain by getting {
             dependencies {
             }
@@ -30,6 +22,5 @@ kotlin {
 }
 
 android {
-    setup()
-    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
+    setupLibrary()
 }

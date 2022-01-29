@@ -1,6 +1,7 @@
 plugins {
     kotlin("multiplatform")
     id("com.android.library")
+    id("org.jetbrains.compose").version(Versions.compose_jb)
 }
 
 group = Package.group
@@ -22,7 +23,5 @@ kotlin {
 }
 
 android {
-    setup()
-    withCompose()
-    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
+    setupLibrary()
 }
