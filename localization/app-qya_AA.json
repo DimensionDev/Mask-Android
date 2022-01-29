@@ -535,6 +535,12 @@
             "empty_token": "crwdns12577:0crwdne12577:0",
             "empty_collectibles": "crwdns12579:0crwdne12579:0"
         },
+        "wallet_send_address": {
+            "recent": "crwdns13177:0crwdne13177:0",
+            "search_address": "crwdns13179:0crwdne13179:0",
+            "empty_token_warn": "crwdns13181:0%scrwdnd13181:0%scrwdne13181:0",
+            "by_token": "crwdns13183:0%scrwdne13183:0"
+        },
         "token_detail": {
             "switch_network": "crwdns12581:0crwdne12581:0",
             "walletconnect_switch_network_alert": "crwdns12583:0%scrwdnd12583:0%scrwdne12583:0"
