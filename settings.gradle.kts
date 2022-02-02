@@ -7,14 +7,26 @@ pluginManagement {
     }
 }
 
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        maven("https://jitpack.io")
+        maven("https://maven.mozilla.org/maven2/")
+        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+    }
+}
+
 rootProject.name = "Mask"
 
 include(
     ":app",
+    ":common",
+    ":export",
     ":wallet",
     ":wallet:export",
     ":debankapi",
-    ":common",
     ":labs",
     ":labs:export",
     ":persona",

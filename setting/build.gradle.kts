@@ -4,8 +4,7 @@ plugins {
     id("org.jetbrains.compose").version(Versions.compose_jb)
 }
 
-group = Package.group
-version = Package.versionName
+
 
 kotlin {
     android()

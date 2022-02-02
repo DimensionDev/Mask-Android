@@ -1,18 +1,5 @@
 
-import org.gradle.api.Project
 import org.gradle.kotlin.dsl.get
-import org.gradle.kotlin.dsl.maven
-import org.gradle.kotlin.dsl.repositories
-
-fun Project.configRepository() {
-    repositories {
-        google()
-        mavenCentral()
-        maven("https://jitpack.io")
-        maven("https://maven.mozilla.org/maven2/")
-        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
-    }
-}
 
 fun com.android.build.gradle.internal.dsl.BaseAppModuleExtension.setup() {
     compileSdk = Versions.Android.compile

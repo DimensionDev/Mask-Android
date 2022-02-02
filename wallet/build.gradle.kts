@@ -1,7 +1,6 @@
 import groovy.util.Node
 import org.jetbrains.kotlin.gradle.internal.ensureParentDirsCreated
 
-
 plugins {
     kotlin("multiplatform")
     id("com.android.library")
@@ -10,8 +9,7 @@ plugins {
     id("org.jetbrains.compose").version(Versions.compose_jb)
 }
 
-group = Package.group
-version = Package.versionName
+
 
 kotlin {
     android()
@@ -19,7 +17,6 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 implementation("androidx.activity:activity-compose:1.4.0")
-                implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.4.0")
                 implementation("androidx.compose.runtime:runtime-livedata:1.0.5")
                 // implementation("com.google.android.material:material:1.6.0-alpha02")
 
@@ -31,17 +28,7 @@ kotlin {
                 implementation("com.google.accompanist:accompanist-permissions:${Versions.accompanist}")
                 implementation("androidx.navigation:navigation-ui-ktx:${Versions.navigation}")
                 implementation("androidx.navigation:navigation-compose:${Versions.navigation}")
-                implementation("io.coil-kt:coil-compose:1.4.0")
-                implementation("io.coil-kt:coil-svg:1.4.0")
 
-                implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:${Versions.lifecycle}")
-                implementation("androidx.lifecycle:lifecycle-viewmodel-savedstate:${Versions.lifecycle}")
-                implementation("androidx.lifecycle:lifecycle-common-java8:${Versions.lifecycle}")
-                implementation("androidx.lifecycle:lifecycle-runtime-ktx:${Versions.lifecycle}")
-
-                api("io.insert-koin:koin-android:${Versions.koin}")
-//    implementation("io.insert-koin:koin-android-viewmodel:${Versions.koin}")
-                implementation("io.insert-koin:koin-androidx-compose:${Versions.koin}")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.1")
 
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0")

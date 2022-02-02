@@ -257,21 +257,3 @@ fun BackupLocalScene(
         }
     }
 }
-
-@Composable
-fun MetaItem(
-    title: String,
-    value: String
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(text = title)
-        Spacer(modifier = Modifier.weight(1f))
-        CompositionLocalProvider(
-            LocalTextStyle provides MaterialTheme.typography.button
-        ) {
-            Text(text = value)
-        }
-    }
-}

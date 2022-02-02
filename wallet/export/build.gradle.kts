@@ -1,26 +1,25 @@
 plugins {
     kotlin("multiplatform")
-    id("com.android.library")
 }
 
-group = Package.group
-version = Package.versionName
+
 
 kotlin {
-    android()
+    jvm()
     sourceSets {
-        val androidMain by getting {
+        val commonMain by getting {
             dependencies {
             }
         }
-        val androidTest by getting {
+        val commonTest by getting {
             dependencies {
-                implementation("junit:junit:4.13.2")
+                implementation(kotlin("test"))
             }
         }
     }
 }
 
-android {
-    setupLibrary()
+java {
+    sourceCompatibility = Versions.Java.java
+    targetCompatibility = Versions.Java.java
 }

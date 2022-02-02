@@ -37,9 +37,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.dimension.maskbook.setting.export.SettingServices
 import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.repository.Appearance
-import com.dimension.maskbook.wallet.repository.ISettingsRepository
 import org.koin.androidx.compose.get
 
 @Composable
@@ -143,7 +143,7 @@ fun provideShapes(): Shapes {
 
 @Composable
 fun isDarkTheme(): Boolean {
-    val repo = get<ISettingsRepository>()
+    val repo = get<SettingServices>()
     val appearance by repo.appearance.observeAsState(initial = Appearance.default)
     return when (appearance) {
         Appearance.default -> isSystemInDarkTheme()

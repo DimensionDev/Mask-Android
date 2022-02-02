@@ -20,4 +20,9 @@
  */
 package com.dimension.maskbook.setting.export
 
-interface SettingServices
+import com.dimension.maskbook.wallet.repository.Appearance
+import kotlinx.coroutines.flow.Flow
+
+interface SettingServices {
+    val appearance: Flow<Appearance>
+}

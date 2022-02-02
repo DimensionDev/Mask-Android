@@ -23,17 +23,6 @@ package com.dimension.maskbook.wallet.repository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.Serializable
 
-data class BackupMeta(
-    val account: String,
-    val personas: Int,
-    val associatedAccount: Int,
-    val encryptedPost: Int,
-    val contacts: Int,
-    val file: Int,
-    val wallet: Int,
-    val json: String,
-)
-
 @Serializable
 data class BackupPreview(
     val personas: Int,
@@ -62,12 +51,6 @@ enum class Language(val value: String) {
     itIT("it-IT"),
     ruRU("ru-RU"),
     frFR("fr-FR"),
-}
-
-enum class Appearance {
-    default,
-    light,
-    dark,
 }
 
 enum class DataProvider(val value: Int) {

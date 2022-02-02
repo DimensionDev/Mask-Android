@@ -200,6 +200,8 @@ class WCSessionV1(
                     )
                 )
             }
+            Session.Transport.Status.Disconnected -> Unit
+            is Session.Transport.Status.Error -> Unit
         }
         propagateToCallbacks {
             onStatus(
@@ -250,6 +252,7 @@ class WCSessionV1(
                 val callback = requests[data.id] ?: return
                 callback(data)
             }
+            is Session.MethodCall.Custom -> Unit
         }
 
         if (accountToCheck?.let { accountCheck(data.id(), it) } != false) {

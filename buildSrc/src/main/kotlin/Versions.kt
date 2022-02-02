@@ -3,9 +3,9 @@ import org.gradle.api.JavaVersion
 object Versions {
     object Android {
         const val min = 21
-        const val compile = 31
+        const val compile = 32
         const val target = compile
-        const val buildTools = "31.0.0"
+        const val buildTools = "32.0.0"
     }
 
     object Kotlin {
@@ -30,4 +30,5 @@ object Versions {
     const val lifecycle = "2.4.0"
     const val koin = "3.1.4"
     const val room = "2.4.1"
+    const val coil = "1.4.0"
 }

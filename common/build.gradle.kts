@@ -4,9 +4,6 @@ plugins {
     id("org.jetbrains.compose").version(Versions.compose_jb)
 }
 
-group = Package.group
-version = Package.versionName
-
 kotlin {
     android()
     sourceSets {
@@ -23,6 +20,16 @@ kotlin {
                 api("org.jetbrains.compose.material:material-icons-core:${Versions.compose_jb}")
                 api("org.jetbrains.compose.material:material-icons-extended:${Versions.compose_jb}")
                 api("org.jetbrains.compose.ui:ui-tooling:${Versions.compose_jb}")
+                api("io.insert-koin:koin-android:${Versions.koin}")
+                // api("io.insert-koin:koin-android-viewmodel:${Versions.koin}")
+                api("io.insert-koin:koin-androidx-compose:${Versions.koin}")
+                api("androidx.lifecycle:lifecycle-viewmodel-compose:${Versions.lifecycle}")
+                api("androidx.lifecycle:lifecycle-viewmodel-ktx:${Versions.lifecycle}")
+                api("androidx.lifecycle:lifecycle-viewmodel-savedstate:${Versions.lifecycle}")
+                api("androidx.lifecycle:lifecycle-common-java8:${Versions.lifecycle}")
+                api("androidx.lifecycle:lifecycle-runtime-ktx:${Versions.lifecycle}")
+                implementation("io.coil-kt:coil-compose:${Versions.coil}")
+                implementation("io.coil-kt:coil-svg:${Versions.coil}")
             }
         }
         val androidTest by getting {
