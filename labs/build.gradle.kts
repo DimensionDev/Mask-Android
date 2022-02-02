@@ -4,8 +4,6 @@ plugins {
     id("org.jetbrains.compose").version(Versions.compose_jb)
 }
 
-
-
 kotlin {
     android()
     sourceSets {

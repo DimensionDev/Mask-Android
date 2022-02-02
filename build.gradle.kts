@@ -5,9 +5,6 @@ plugins {
     id("com.diffplug.spotless").version(Versions.spotless)
 }
 
-
-
-
 allprojects {
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
         kotlinOptions {
