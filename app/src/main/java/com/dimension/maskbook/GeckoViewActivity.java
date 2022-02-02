@@ -1730,7 +1730,17 @@ public class GeckoViewActivity
 
         @Override
         public void onCloseRequest(final GeckoSession session) {
-            if (session == mTabSessionManager.getCurrentSession()) {
+            if (mTabSessionManager.sessionCount() > 1) {
+                if (session instanceof TabSession) {
+                    mTabSessionManager.closeSession((TabSession) session);
+                    TabSession tabSession = mTabSessionManager.getCurrentSession();
+                    if (tabSession == null) {
+                        return;
+                    }
+                    setGeckoViewSession(tabSession);
+                    mToolbarView.updateTabCount();
+                }
+            } else if (session == mTabSessionManager.getCurrentSession()) {
                 finish();
             }
         }
