@@ -115,6 +115,19 @@
             "backup_tips_no_backup_password": {
                 "title": "",
                 "description": ""
+            },
+            "copied_to_clipboard": {
+                "title": ""
+            },
+            "permissions": {
+                "title": "",
+                "description": "",
+                "open_settings": "",
+                "btn": {
+                    "ok": "",
+                    "cancel": "",
+                    "settings": ""
+                }
             }
         },
         "controls": {
@@ -522,12 +535,30 @@
             "empty_token": "",
             "empty_collectibles": ""
         },
+        "wallet_send_address": {
+            "recent": "",
+            "search_address": "",
+            "empty_token_warn": "",
+            "by_token": ""
+        },
         "token_detail": {
             "switch_network": "",
             "walletconnect_switch_network_alert": ""
         },
         "transaction_history": {
-            "no_transaction": ""
+            "no_transaction": "",
+            "status": {
+                "pending": "",
+                "fail": ""
+            },
+            "speed_up": "",
+            "type": {
+                "send": "",
+                "receive": "",
+                "swap": "",
+                "cancel": "",
+                "approve": ""
+            }
         },
         "wallet_receive": {
             "btn_share": "",
@@ -731,6 +762,9 @@
             "restored_files": "",
             "restored_contacts": "",
             "restored_relations": ""
+        },
+        "scan_qr_code": {
+            "title": ""
         }
     },
     "chain": {

@@ -115,6 +115,19 @@
             "backup_tips_no_backup_password": {
                 "title": "crwdns11993:0crwdne11993:0",
                 "description": "crwdns11995:0%scrwdne11995:0"
+            },
+            "copied_to_clipboard": {
+                "title": "crwdns12959:0crwdne12959:0"
+            },
+            "permissions": {
+                "title": "crwdns13059:0%scrwdne13059:0",
+                "description": "crwdns13061:0%scrwdne13061:0",
+                "open_settings": "crwdns13063:0crwdne13063:0",
+                "btn": {
+                    "ok": "crwdns13065:0crwdne13065:0",
+                    "cancel": "crwdns13067:0crwdne13067:0",
+                    "settings": "crwdns13069:0crwdne13069:0"
+                }
             }
         },
         "controls": {
@@ -522,12 +535,30 @@
             "empty_token": "crwdns12577:0crwdne12577:0",
             "empty_collectibles": "crwdns12579:0crwdne12579:0"
         },
+        "wallet_send_address": {
+            "recent": "crwdns13177:0crwdne13177:0",
+            "search_address": "crwdns13179:0crwdne13179:0",
+            "empty_token_warn": "crwdns13181:0%scrwdnd13181:0%scrwdne13181:0",
+            "by_token": "crwdns13183:0%scrwdne13183:0"
+        },
         "token_detail": {
             "switch_network": "crwdns12581:0crwdne12581:0",
             "walletconnect_switch_network_alert": "crwdns12583:0%scrwdnd12583:0%scrwdne12583:0"
         },
         "transaction_history": {
-            "no_transaction": "crwdns12585:0crwdne12585:0"
+            "no_transaction": "crwdns12585:0crwdne12585:0",
+            "status": {
+                "pending": "crwdns12961:0crwdne12961:0",
+                "fail": "crwdns12963:0crwdne12963:0"
+            },
+            "speed_up": "crwdns12965:0crwdne12965:0",
+            "type": {
+                "send": "crwdns12967:0%scrwdne12967:0",
+                "receive": "crwdns12969:0%scrwdne12969:0",
+                "swap": "crwdns12971:0crwdne12971:0",
+                "cancel": "crwdns12973:0%scrwdne12973:0",
+                "approve": "crwdns12975:0%scrwdne12975:0"
+            }
         },
         "wallet_receive": {
             "btn_share": "crwdns12587:0crwdne12587:0",
@@ -731,6 +762,9 @@
             "restored_files": "crwdns12883:0crwdne12883:0",
             "restored_contacts": "crwdns12885:0crwdne12885:0",
             "restored_relations": "crwdns12887:0crwdne12887:0"
+        },
+        "scan_qr_code": {
+            "title": "crwdns13071:0crwdne13071:0"
         }
     },
     "chain": {
