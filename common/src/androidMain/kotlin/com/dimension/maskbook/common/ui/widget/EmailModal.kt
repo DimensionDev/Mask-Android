@@ -42,7 +42,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import com.dimension.maskbook.wallet.R
+import com.dimension.maskbook.localization.R
 
 @Composable
 fun EmailInputModal(

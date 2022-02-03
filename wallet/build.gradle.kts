@@ -1,6 +1,3 @@
-import groovy.util.Node
-import org.jetbrains.kotlin.gradle.internal.ensureParentDirsCreated
-
 plugins {
     kotlin("multiplatform")
     id("com.android.library")
@@ -18,12 +15,6 @@ kotlin {
                 implementation("androidx.compose.runtime:runtime-livedata:1.0.5")
                 // implementation("com.google.android.material:material:1.6.0-alpha02")
 
-                implementation("com.google.accompanist:accompanist-pager:${Versions.accompanist}")
-                implementation("com.google.accompanist:accompanist-pager-indicators:${Versions.accompanist}")
-                implementation("com.google.accompanist:accompanist-swiperefresh:${Versions.accompanist}")
-                implementation("com.google.accompanist:accompanist-navigation-animation:${Versions.accompanist}")
-                implementation("com.google.accompanist:accompanist-navigation-material:${Versions.accompanist}")
-                implementation("com.google.accompanist:accompanist-permissions:${Versions.accompanist}")
                 implementation("androidx.navigation:navigation-ui-ktx:${Versions.navigation}")
                 implementation("androidx.navigation:navigation-compose:${Versions.navigation}")
 
@@ -41,7 +32,7 @@ kotlin {
                 implementation("io.github.dimensiondev:maskwalletcore:0.4.0")
 
                 implementation(projects.debankapi)
-                implementation(projects.common)
+                api(projects.common)
 
                 api("androidx.room:room-runtime:${Versions.room}")
                 api("androidx.room:room-ktx:${Versions.room}")
@@ -75,113 +66,4 @@ kotlin {
 
 android {
     setupLibrary()
-}
-
-tasks.create("generateTranslation") {
-    doLast {
-        val localizationFolder = File(rootDir, "localization")
-        localizationFolder.listFiles()?.forEach { file ->
-            val name = file.name.substringAfter("app").trimStart('-').substringBefore(".json")
-            val target = if (name.isEmpty()) {
-                File(projectDir, "src/main/res/values/strings.xml")
-            } else {
-                File(
-                    projectDir,
-                    "src/main/res/values-${name.split("_").first()}-r${name.split("_").last()}/strings.xml"
-                )
-            }.apply {
-                ensureParentDirsCreated()
-                if (!exists()) {
-                    createNewFile()
-                }
-            }
-            generateLocalization(file, target)
-        }
-    }
-}
-
-tasks.create("replaceText") {
-    doLast {
-        val xml = File(projectDir, "src/main/res/values/strings.xml").let {
-            groovy.xml.XmlParser().parse(it).children()
-        }?.let {
-            it.map {
-                it as Node
-            }.associate {
-                it.attribute("name").toString() to it.value().toString().trimStart('[').trimEnd(']')
-            }
-        }?.let { map ->
-            File(projectDir, "src/main/java").walk().forEach { file ->
-                if (file.isFile) {
-                    var text = file.readText()
-                    map.forEach { (key, value) ->
-                        text = text.replace(
-                            " \"${value}\"",
-                            " androidx.compose.ui.res.stringResource(com.dimension.maskbook.wallet.R.string.$key)"
-                        )
-                    }
-                    file.writeText(text)
-                }
-            }
-        }
-    }
-}
-
-fun String.escapeXml(): String {
-    return this
-        .replace("&", "&amp;")
-        .replace("<", "&lt;")
-        .replace(">", "&gt;")
-        .replace("\"", "&quot;")
-        .replace("'", "&apos;")
-}
-
-fun generateLocalization(appJson: File, target: File) {
-    val json = appJson.readText(Charsets.UTF_8)
-    val obj = org.json.JSONObject(json)
-    val result = flattenJson(obj).filter {
-        it.value.isNotEmpty() && it.value.isNotBlank()
-    }
-    if (result.isNotEmpty()) {
-        target.apply {
-            ensureParentDirsCreated()
-            if (!exists()) {
-                createNewFile()
-            }
-        }
-        val xml =
-            """<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">""" + System.lineSeparator() +
-                result.map {
-                    "    <string name=\"${it.key}\">${
-                    it.value.escapeXml().replace(System.lineSeparator(), "\\n")
-                        .replace("%@", "%s")
-                    }</string>"
-                }.joinToString(System.lineSeparator()) + System.lineSeparator() +
-                "</resources>"
-        target.writeText(xml)
-    }
-}
-
-fun flattenJson(obj: org.json.JSONObject): Map<String, String> {
-    return obj.toMap().toList().flatMap { it ->
-        val (key, value) = it
-        when (value) {
-            is org.json.JSONObject -> {
-                flattenJson(value).map {
-                    "${key}_${it.key}" to it.value
-                }.toList()
-            }
-            is Map<*, *> -> {
-                flattenJson(org.json.JSONObject(value)).map {
-                    "${key}_${it.key}" to it.value
-                }.toList()
-            }
-            is String -> {
-                listOf(key to value)
-            }
-            else -> {
-                listOf(key to value.toString())
-            }
-        }
-    }.toMap()
 }

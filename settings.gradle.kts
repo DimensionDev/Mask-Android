@@ -23,7 +23,7 @@ rootProject.name = "Mask"
 include(
     ":app",
     ":common",
-    ":export",
+    ":localization",
     ":wallet",
     ":wallet:export",
     ":debankapi",

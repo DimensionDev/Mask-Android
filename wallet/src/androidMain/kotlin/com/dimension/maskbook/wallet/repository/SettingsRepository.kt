@@ -20,6 +20,7 @@
  */
 package com.dimension.maskbook.wallet.repository
 
+import com.dimension.maskbook.wallet.ui.widget.BackupMeta
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.Serializable
 

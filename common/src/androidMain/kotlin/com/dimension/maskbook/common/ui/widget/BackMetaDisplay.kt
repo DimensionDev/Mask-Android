@@ -36,9 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.dimension.maskbook.wallet.R
-import com.dimension.maskbook.wallet.repository.BackupMeta
-import com.dimension.maskbook.wallet.ui.scenes.settings.MetaItem
+import com.dimension.maskbook.localization.R
 
 @Composable
 fun BackMetaDisplay(

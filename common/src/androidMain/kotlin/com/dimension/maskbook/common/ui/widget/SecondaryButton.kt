@@ -49,11 +49,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.get
-import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavController
 
 @Composable
 fun SecondaryButton(
@@ -167,13 +162,4 @@ fun PrimaryCompatButton(
             }
         }
     }
-}
-
-@Composable
-inline fun <reified VM : ViewModel> NavBackStackEntry.parentViewModel(
-    navController: NavController
-): VM {
-    val parentId = destination.parent!!.id
-    val parentBackStackEntry = navController.getBackStackEntry(parentId)
-    return ViewModelProvider(parentBackStackEntry).get()
 }

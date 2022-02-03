@@ -13,6 +13,7 @@ kotlin {
                 api(projects.labs.export)
                 api(projects.persona.export)
                 api(projects.setting.export)
+                api(projects.localization)
                 api("org.jetbrains.compose.ui:ui:${Versions.compose_jb}")
                 api("org.jetbrains.compose.ui:ui-util:${Versions.compose_jb}")
                 api("org.jetbrains.compose.foundation:foundation:${Versions.compose_jb}")
@@ -28,8 +29,14 @@ kotlin {
                 api("androidx.lifecycle:lifecycle-viewmodel-savedstate:${Versions.lifecycle}")
                 api("androidx.lifecycle:lifecycle-common-java8:${Versions.lifecycle}")
                 api("androidx.lifecycle:lifecycle-runtime-ktx:${Versions.lifecycle}")
-                implementation("io.coil-kt:coil-compose:${Versions.coil}")
-                implementation("io.coil-kt:coil-svg:${Versions.coil}")
+                api("io.coil-kt:coil-compose:${Versions.coil}")
+                api("io.coil-kt:coil-svg:${Versions.coil}")
+                api("com.google.accompanist:accompanist-pager:${Versions.accompanist}")
+                api("com.google.accompanist:accompanist-pager-indicators:${Versions.accompanist}")
+                api("com.google.accompanist:accompanist-swiperefresh:${Versions.accompanist}")
+                api("com.google.accompanist:accompanist-navigation-animation:${Versions.accompanist}")
+                api("com.google.accompanist:accompanist-navigation-material:${Versions.accompanist}")
+                api("com.google.accompanist:accompanist-permissions:${Versions.accompanist}")
             }
         }
         val androidTest by getting {

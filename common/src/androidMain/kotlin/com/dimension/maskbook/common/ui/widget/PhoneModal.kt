@@ -43,7 +43,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import com.dimension.maskbook.wallet.R
+import com.dimension.maskbook.localization.R
 
 @Composable
 fun PhoneInputModal(
@@ -168,7 +168,7 @@ fun PhoneCodeInputModal(
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = buildAnnotatedString {
-                    append(stringResource(com.dimension.maskbook.wallet.R.string.scene_backup_tips_phone))
+                    append(stringResource(R.string.scene_backup_tips_phone))
                     append('\n')
                     withStyle(SpanStyle(color = MaterialTheme.colors.primary, fontWeight = FontWeight.Bold)) {
                         append(phone)

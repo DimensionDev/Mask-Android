@@ -45,7 +45,7 @@ fun MaskListItem(
     text: @Composable () -> Unit
 ) {
     val typography = MaterialTheme.typography
-    val styleText = applyTextStyle(typography.h5, text)!!
+    val styledText = applyTextStyle(typography.h5, text) ?: text
     val styledSecondaryText = applyTextStyle(typography.body2, secondaryText)
     val styledOverlineText = applyTextStyle(typography.overline, overlineText)
     val styledTrailing = applyTextStyle(typography.body2, trailing)
@@ -58,19 +58,23 @@ fun MaskListItem(
             icon()
             Spacer(Modifier.width(8.dp))
         }
-        if (styledSecondaryText != null) {
-            Column(Modifier.weight(1f)) {
-                styleText()
-                styledSecondaryText()
+        when {
+            styledSecondaryText != null -> {
+                Column(Modifier.weight(1f)) {
+                    styledText.invoke()
+                    styledSecondaryText()
+                }
             }
-        } else if (styledOverlineText != null) {
-            Column(Modifier.weight(1f)) {
-                styledOverlineText()
-                styleText()
+            styledOverlineText != null -> {
+                Column(Modifier.weight(1f)) {
+                    styledOverlineText()
+                    styledText.invoke()
+                }
             }
-        } else {
-            Box(Modifier.weight(1f)) {
-                styleText()
+            else -> {
+                Box(Modifier.weight(1f)) {
+                    styledText.invoke()
+                }
             }
         }
         if (styledTrailing != null) {

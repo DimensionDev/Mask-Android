@@ -29,12 +29,12 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.dimension.maskbook.initRepository
 import com.dimension.maskbook.wallet.repository.Appearance
-import com.dimension.maskbook.wallet.repository.BackupMeta
 import com.dimension.maskbook.wallet.repository.DataProvider
 import com.dimension.maskbook.wallet.repository.ISettingsRepository
 import com.dimension.maskbook.wallet.repository.Language
 import com.dimension.maskbook.wallet.repository.NetworkType
 import com.dimension.maskbook.wallet.repository.TradeProvider
+import com.dimension.maskbook.wallet.ui.widget.BackupMeta
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async

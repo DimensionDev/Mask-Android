@@ -52,7 +52,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.dimension.maskbook.wallet.R
+import com.dimension.maskbook.common.R
 import com.dimension.maskbook.wallet.ui.MaskTheme
 
 @Composable
