@@ -57,7 +57,6 @@ dependencies {
     implementation("androidx.preference:preference-ktx:1.1.1")
     implementation("com.google.code.gson:gson:2.8.6")
     implementation(projects.wallet)
-    implementation("androidx.datastore:datastore-preferences:1.0.0")
     implementation("io.github.dimensiondev:maskwalletcore:0.4.0")
     implementation("androidx.biometric:biometric-ktx:1.2.0-alpha04")
     implementation("org.web3j:core:4.8.8-android")

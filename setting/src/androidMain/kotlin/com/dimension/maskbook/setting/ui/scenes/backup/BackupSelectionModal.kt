@@ -35,7 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.dimension.maskbook.wallet.R
+import com.dimension.maskbook.setting.R
 import com.dimension.maskbook.wallet.ui.widget.MaskModal
 import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
 import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
@@ -47,19 +47,19 @@ fun BackupSelectionModal(
 ) {
     MaskModal(
         title = {
-            Text(text = stringResource(R.string.scene_setting_backup_data_title))
+            Text(text = stringResource(com.dimension.maskbook.localization.R.string.scene_setting_backup_data_title))
         }
     ) {
         Column(Modifier.padding(ScaffoldPadding)) {
             IconButton(
                 icon = R.drawable.ic_icloud,
-                text = stringResource(R.string.common_controls_back_up_to_cloud),
+                text = stringResource(com.dimension.maskbook.localization.R.string.common_controls_back_up_to_cloud),
                 onClick = onRemote,
             )
             Spacer(modifier = Modifier.height(16.dp))
             IconButton(
                 icon = R.drawable.ic_iphone,
-                text = stringResource(R.string.common_controls_back_up_locally),
+                text = stringResource(com.dimension.maskbook.localization.R.string.common_controls_back_up_locally),
                 onClick = onLocal,
             )
         }

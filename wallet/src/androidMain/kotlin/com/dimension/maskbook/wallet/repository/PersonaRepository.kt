@@ -34,13 +34,6 @@ data class SocialData(
     val network: Network,
 )
 
-data class PersonaData(
-    val id: String,
-    val name: String,
-    val email: String? = null,
-    val phone: String? = null,
-)
-
 @Serializable
 data class Persona(
     val identifier: String,

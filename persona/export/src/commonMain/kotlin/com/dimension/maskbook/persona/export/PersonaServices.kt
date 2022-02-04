@@ -20,4 +20,9 @@
  */
 package com.dimension.maskbook.persona.export
 
-interface PersonaServices
+import com.dimension.maskbook.wallet.repository.PersonaData
+import kotlinx.coroutines.flow.Flow
+
+interface PersonaServices {
+    val currentPersona: Flow<PersonaData>
+}

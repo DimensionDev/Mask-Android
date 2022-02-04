@@ -31,4 +31,8 @@ object Versions {
     const val koin = "3.1.4"
     const val room = "2.4.1"
     const val coil = "1.4.0"
+    const val datastore = "1.0.0"
+    const val biometric = "1.2.0-alpha04"
+    const val retrofit = "2.9.0"
+    const val okhttp = "4.9.2"
 }

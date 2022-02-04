@@ -32,9 +32,6 @@ import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
 
 class WalletServices {
-    val backupServices by lazy {
-        retrofit<BackupServices>("https://vaalh28dbi.execute-api.ap-east-1.amazonaws.com")
-    }
     val debankServices by lazy {
         retrofit<DebankResources>("https://openapi.debank.com")
     }
@@ -50,38 +47,5 @@ class WalletServices {
 
     val walletConnectServices by lazy {
         retrofit<WalletConnectServices>("https://registry.walletconnect.org")
-    }
-}
-
-private inline fun <reified T> retrofit(
-    baseUrl: String,
-): T {
-    return Retrofit
-        .Builder()
-        .baseUrl(baseUrl)
-        .client(okHttpClient)
-        .addConverterFactory(ScalarsConverterFactory.create())
-        .addConverterFactory(JSON.asConverterFactory("application/json".toMediaType()))
-        .build()
-        .create(T::class.java)
-}
-
-val okHttpClient by lazy {
-    OkHttpClient.Builder()
-        .apply {
-            if (BuildConfig.DEBUG) {
-                addInterceptor(
-                    HttpLoggingInterceptor(HttpLogger()).apply {
-                        setLevel(HttpLoggingInterceptor.Level.BODY)
-                    }
-                )
-            }
-        }
-        .build()
-}
-
-class HttpLogger : HttpLoggingInterceptor.Logger {
-    override fun log(message: String) {
-        Log.i("HttpLogger", message)
     }
 }

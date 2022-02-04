@@ -14,6 +14,8 @@ kotlin {
                 api(projects.persona.export)
                 api(projects.setting.export)
                 api(projects.localization)
+
+                // Compose
                 api("org.jetbrains.compose.ui:ui:${Versions.compose_jb}")
                 api("org.jetbrains.compose.ui:ui-util:${Versions.compose_jb}")
                 api("org.jetbrains.compose.foundation:foundation:${Versions.compose_jb}")
@@ -21,16 +23,23 @@ kotlin {
                 api("org.jetbrains.compose.material:material-icons-core:${Versions.compose_jb}")
                 api("org.jetbrains.compose.material:material-icons-extended:${Versions.compose_jb}")
                 api("org.jetbrains.compose.ui:ui-tooling:${Versions.compose_jb}")
+
+                // Koin
                 api("io.insert-koin:koin-android:${Versions.koin}")
-                // api("io.insert-koin:koin-android-viewmodel:${Versions.koin}")
                 api("io.insert-koin:koin-androidx-compose:${Versions.koin}")
+
+                // Lifecycle
                 api("androidx.lifecycle:lifecycle-viewmodel-compose:${Versions.lifecycle}")
                 api("androidx.lifecycle:lifecycle-viewmodel-ktx:${Versions.lifecycle}")
                 api("androidx.lifecycle:lifecycle-viewmodel-savedstate:${Versions.lifecycle}")
                 api("androidx.lifecycle:lifecycle-common-java8:${Versions.lifecycle}")
                 api("androidx.lifecycle:lifecycle-runtime-ktx:${Versions.lifecycle}")
+
+                // Coil
                 api("io.coil-kt:coil-compose:${Versions.coil}")
                 api("io.coil-kt:coil-svg:${Versions.coil}")
+
+                // Accompanist
                 api("com.google.accompanist:accompanist-pager:${Versions.accompanist}")
                 api("com.google.accompanist:accompanist-pager-indicators:${Versions.accompanist}")
                 api("com.google.accompanist:accompanist-swiperefresh:${Versions.accompanist}")

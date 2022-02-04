@@ -23,6 +23,8 @@ rootProject.name = "Mask"
 include(
     ":app",
     ":common",
+    ":common:okhttp",
+    ":common:retrofit",
     ":localization",
     ":wallet",
     ":wallet:export",

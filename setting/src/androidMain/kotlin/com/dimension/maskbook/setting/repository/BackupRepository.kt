@@ -23,8 +23,8 @@ package com.dimension.maskbook.wallet.repository
 import android.content.ContentResolver
 import android.net.Uri
 import androidx.core.net.toUri
-import com.dimension.maskbook.wallet.ext.await
-import com.dimension.maskbook.wallet.services.WalletServices
+import com.dimension.maskbook.common.okhttp.await
+import com.dimension.maskbook.wallet.services.BackupServices
 import com.dimension.maskbook.wallet.services.model.AccountType
 import com.dimension.maskbook.wallet.services.model.DownloadResponse
 import com.dimension.maskbook.wallet.services.model.Locale
@@ -42,12 +42,12 @@ import java.io.File
 import java.util.UUID
 
 class BackupRepository(
-    private val walletServices: WalletServices,
+    private val backupServices: BackupServices,
     private val cacheDir: File,
     private val contentResolver: ContentResolver,
 ) {
     suspend fun sendPhoneCode(phone: String) {
-        walletServices.backupServices.sendCode(
+        backupServices.sendCode(
             SendCodeBody(
                 account_type = AccountType.phone,
                 account = phone,
@@ -58,7 +58,7 @@ class BackupRepository(
     }
 
     suspend fun sendEmailCode(email: String) {
-        walletServices.backupServices.sendCode(
+        backupServices.sendCode(
             SendCodeBody(
                 account_type = AccountType.email,
                 account = email,
@@ -69,7 +69,7 @@ class BackupRepository(
     }
 
     suspend fun validatePhoneCode(phone: String, code: String) {
-        walletServices.backupServices.validateCode(
+        backupServices.validateCode(
             ValidateCodeBody(
                 code = code,
                 account = phone,
@@ -79,7 +79,7 @@ class BackupRepository(
     }
 
     suspend fun validateEmailCode(email: String, code: String) {
-        walletServices.backupServices.validateCode(
+        backupServices.validateCode(
             ValidateCodeBody(
                 code = code,
                 account = email,
@@ -89,7 +89,7 @@ class BackupRepository(
     }
 
     suspend fun getBackupInformationByEmail(email: String, code: String): DownloadResponse {
-        return walletServices.backupServices.download(
+        return backupServices.download(
             ValidateCodeBody(
                 code = code,
                 account = email,
@@ -99,7 +99,7 @@ class BackupRepository(
     }
 
     suspend fun getBackupInformationByPhone(phone: String, code: String): DownloadResponse {
-        return walletServices.backupServices.download(
+        return backupServices.download(
             ValidateCodeBody(
                 code = code,
                 account = phone,
@@ -109,7 +109,7 @@ class BackupRepository(
     }
 
     suspend fun downloadBackupWithEmail(email: String, code: String): Uri {
-        val response = walletServices.backupServices.download(
+        val response = backupServices.download(
             ValidateCodeBody(
                 code = code,
                 account = email,
@@ -121,7 +121,7 @@ class BackupRepository(
     }
 
     suspend fun downloadBackupWithPhone(phone: String, code: String): Uri {
-        val response = walletServices.backupServices.download(
+        val response = backupServices.download(
             ValidateCodeBody(
                 code = code,
                 account = phone,
@@ -160,7 +160,7 @@ class BackupRepository(
         abstract: String,
         content: String,
     ) = withContext(Dispatchers.IO) {
-        val response = walletServices.backupServices.upload(
+        val response = backupServices.upload(
             UploadBody(
                 code = code,
                 account_type = account_type,

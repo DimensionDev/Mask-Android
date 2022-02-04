@@ -26,7 +26,7 @@ import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
 import androidx.biometric.BiometricPrompt
 import androidx.fragment.app.FragmentActivity
-import com.dimension.maskbook.wallet.R
+import com.dimension.maskbook.localization.R
 
 class BiometricAuthenticator {
     fun canAuthenticate(context: Context): Boolean {

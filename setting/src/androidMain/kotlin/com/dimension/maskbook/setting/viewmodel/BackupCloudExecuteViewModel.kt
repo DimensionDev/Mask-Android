@@ -21,8 +21,8 @@
 package com.dimension.maskbook.wallet.viewmodel.settings
 
 import androidx.lifecycle.ViewModel
+import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.wallet.repository.BackupRepository
-import com.dimension.maskbook.wallet.repository.IPersonaRepository
 import com.dimension.maskbook.wallet.repository.ISettingsRepository
 import com.dimension.maskbook.wallet.services.model.AccountType
 import kotlinx.coroutines.flow.firstOrNull
@@ -30,7 +30,7 @@ import kotlinx.coroutines.flow.firstOrNull
 class BackupCloudExecuteViewModel(
     private val settingsRepository: ISettingsRepository,
     private val backupRepository: BackupRepository,
-    private val personaRepository: IPersonaRepository,
+    private val personaServices: PersonaServices,
 ) : ViewModel() {
     suspend fun execute(
         withWallet: Boolean,
@@ -40,7 +40,7 @@ class BackupCloudExecuteViewModel(
     ): Boolean {
         try {
             val json = settingsRepository.createBackupJson(noWallets = !withWallet)
-            val abs = personaRepository.persona.firstOrNull()?.joinToString(",") { it.name } ?: return false
+            val abs = personaServices.currentPersona.firstOrNull()?.name ?: return false
             backupRepository.uploadBackup(
                 code = code,
                 content = json,
@@ -56,5 +56,6 @@ class BackupCloudExecuteViewModel(
         } catch (e: Throwable) {
             return false
         }
+
     }
 }

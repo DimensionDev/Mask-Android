@@ -48,7 +48,6 @@ kotlin {
                 implementation("androidx.appcompat:appcompat:1.4.1")
                 implementation("com.google.android.material:material:1.5.0")
 
-                implementation("androidx.biometric:biometric-ktx:1.2.0-alpha04")
                 implementation("com.github.WalletConnect:kotlin-walletconnect-lib:0.9.7")
                 implementation("com.squareup.moshi:moshi:1.8.0")
                 implementation("com.github.komputing.khex:extensions:1.1.2")
