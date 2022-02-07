@@ -1,6 +1,7 @@
 package com.dimension.maskbook.setting
 
 import androidx.navigation.NavController
+import androidx.navigation.NavGraphBuilder
 import com.dimension.maskbook.common.ModuleSetup
 import com.dimension.maskbook.common.retrofit.retrofit
 import com.dimension.maskbook.setting.export.SettingServices
@@ -8,7 +9,7 @@ import com.dimension.maskbook.wallet.services.BackupServices
 import org.koin.dsl.module
 
 class SettingSetup : ModuleSetup {
-    override fun route(navController: NavController) {
+    override fun NavGraphBuilder.route(navController: NavController) {
 
     }
 
