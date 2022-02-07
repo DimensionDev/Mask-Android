@@ -81,6 +81,7 @@ class EmailRemoteBackupRecoveryViewModel(
     }
 }
 
+// FIXME: 2022/2/7 Remove this class
 abstract class RemoteBackupRecoveryViewModelBase(
     private val requestNavigate: (NavigateArgs) -> Unit,
 ) : ViewModel() {

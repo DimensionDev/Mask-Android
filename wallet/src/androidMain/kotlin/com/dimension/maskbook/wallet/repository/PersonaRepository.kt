@@ -104,8 +104,6 @@ interface IPersonaRepository {
     fun updateCurrentPersona(value: String)
     suspend fun backupPrivateKey(id: String): String
     fun init()
-    fun saveEmailForCurrentPersona(value: String)
-    fun savePhoneForCurrentPersona(value: String)
 }
 
 val Network.icon: Int

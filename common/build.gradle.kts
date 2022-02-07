@@ -46,6 +46,8 @@ kotlin {
                 api("com.google.accompanist:accompanist-navigation-animation:${Versions.accompanist}")
                 api("com.google.accompanist:accompanist-navigation-material:${Versions.accompanist}")
                 api("com.google.accompanist:accompanist-permissions:${Versions.accompanist}")
+
+                api("org.web3j:core:${Versions.web3j}")
             }
         }
         val androidTest by getting {

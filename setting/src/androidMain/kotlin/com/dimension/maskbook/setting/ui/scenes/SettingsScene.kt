@@ -53,11 +53,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.localization.R
+import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.wallet.ext.encodeUrl
 import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.repository.Appearance
 import com.dimension.maskbook.wallet.repository.DataProvider
-import com.dimension.maskbook.wallet.repository.IPersonaRepository
 import com.dimension.maskbook.wallet.repository.ISettingsRepository
 import com.dimension.maskbook.wallet.repository.Language
 import com.dimension.maskbook.wallet.ui.LocalRootNavController
@@ -83,7 +83,7 @@ fun SettingsScene(
     val backupPassword by repository.backupPassword.observeAsState(initial = "")
     val paymentPassword by repository.paymentPassword.observeAsState(initial = "")
     val biometricEnabled by repository.biometricEnabled.observeAsState(initial = false)
-    val personaRepository = get<IPersonaRepository>()
+    val personaRepository = get<PersonaServices>()
     val persona by personaRepository.currentPersona.observeAsState(initial = null)
     val biometricEnableViewModel = getViewModel<BiometricEnableViewModel>()
     val context = LocalContext.current

@@ -54,10 +54,10 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.dialog
 import androidx.navigation.navArgument
 import androidx.navigation.navOptions
-import com.dimension.maskbook.wallet.R
+import com.dimension.maskbook.localization.R
+import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.wallet.ext.encodeUrl
 import com.dimension.maskbook.wallet.ext.observeAsState
-import com.dimension.maskbook.wallet.repository.IPersonaRepository
 import com.dimension.maskbook.wallet.repository.ISettingsRepository
 import com.dimension.maskbook.wallet.services.model.DownloadResponse
 import com.dimension.maskbook.wallet.ui.MaskTheme
@@ -459,7 +459,7 @@ fun NavGraphBuilder.backupRoute(
                 navController.navigate("BackupData_BackupCloud/email/$email/$code")
             }
             backStackEntry.arguments?.getString("email")?.let { email ->
-                val repository = get<IPersonaRepository>()
+                val repository = get<PersonaServices>()
                 val persona by repository.currentPersona.observeAsState(initial = null)
                 val phone = persona?.phone
                 val viewModel = getViewModel<EmailBackupViewModel> {
@@ -522,7 +522,7 @@ fun NavGraphBuilder.backupRoute(
                 navController.navigate("BackupData_BackupCloud/phone/$phone/$code")
             }
             backStackEntry.arguments?.getString("phone")?.let { phone ->
-                val repository = get<IPersonaRepository>()
+                val repository = get<PersonaServices>()
                 val persona by repository.currentPersona.observeAsState(initial = null)
                 val email = persona?.email
                 val viewModel = getViewModel<PhoneBackupViewModel> {
@@ -574,7 +574,7 @@ fun NavGraphBuilder.backupRoute(
             }
         }
         bottomSheet("BackupSelection") {
-            val repository = get<IPersonaRepository>()
+            val repository = get<PersonaServices>()
             val persona by repository.currentPersona.observeAsState(initial = null)
             BackupSelectionModal(
                 onLocal = {

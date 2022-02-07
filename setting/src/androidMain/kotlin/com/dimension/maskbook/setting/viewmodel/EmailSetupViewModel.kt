@@ -24,14 +24,13 @@ import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.wallet.ext.Validator
 import com.dimension.maskbook.wallet.ext.asStateIn
 import com.dimension.maskbook.wallet.repository.BackupRepository
-import com.dimension.maskbook.wallet.repository.IPersonaRepository
-import com.dimension.maskbook.wallet.viewmodel.register.RemoteBackupRecoveryViewModelBase
+import com.dimension.maskbook.wallet.repository.SettingsRepository
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 class EmailSetupViewModel(
-    private val personaRepository: IPersonaRepository,
+    private val settingsRepository: SettingsRepository,
     private val backupRepository: BackupRepository,
     private val requestNavigate: (NavigateArgs) -> Unit,
 ) : RemoteBackupRecoveryViewModelBase(
@@ -41,7 +40,7 @@ class EmailSetupViewModel(
         _loading.value = true
         try {
             backupRepository.validateEmailCode(email = value, code = code)
-            personaRepository.saveEmailForCurrentPersona(value)
+            settingsRepository.saveEmailForCurrentPersona(value)
             requestNavigate.invoke(NavigateArgs(value, NavigateTarget.Next))
         } catch (e: Throwable) {
             _codeValid.value = false
@@ -67,7 +66,7 @@ class EmailSetupViewModel(
 }
 
 class PhoneSetupViewModel(
-    private val personaRepository: IPersonaRepository,
+    private val settingsRepository: SettingsRepository,
     private val requestNavigate: (NavigateArgs) -> Unit,
     private val backupRepository: BackupRepository,
 ) : RemoteBackupRecoveryViewModelBase(
@@ -83,7 +82,7 @@ class PhoneSetupViewModel(
         _loading.value = true
         try {
             backupRepository.validatePhoneCode(phone = value, code = code)
-            personaRepository.savePhoneForCurrentPersona(value)
+            settingsRepository.savePhoneForCurrentPersona(value)
             requestNavigate.invoke(NavigateArgs(value, NavigateTarget.Next))
         } catch (e: Throwable) {
             _codeValid.value = false

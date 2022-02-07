@@ -199,28 +199,6 @@ class PersonaRepository(
         }
     }
 
-    override fun saveEmailForCurrentPersona(value: String) {
-        scope.launch {
-            currentPersona.firstOrNull()?.let {
-                val emailKey = stringPreferencesKey("${it.id}_email")
-                dataStore.edit {
-                    it[emailKey] = value
-                }
-            }
-        }
-    }
-
-    override fun savePhoneForCurrentPersona(value: String) {
-        scope.launch {
-            currentPersona.firstOrNull()?.let {
-                val phoneKey = stringPreferencesKey("${it.id}_phone")
-                dataStore.edit {
-                    it[phoneKey] = value
-                }
-            }
-        }
-    }
-
     private suspend fun refreshSocial() {
         _twitter.value = JSMethod.Persona.queryProfiles(Network.Twitter)
         _facebook.value = JSMethod.Persona.queryProfiles(Network.Facebook)

@@ -20,7 +20,7 @@
  */
 package com.dimension.maskbook.wallet.ext
 
-import com.dimension.maskbook.wallet.BuildConfig
+import com.dimension.maskbook.common.BuildConfig
 import org.web3j.crypto.WalletUtils
 import org.web3j.ens.EnsResolver
 

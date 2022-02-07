@@ -22,9 +22,9 @@ package com.dimension.maskbook.wallet.viewmodel.wallets.send
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dimension.maskbook.setting.export.SettingServices
 import com.dimension.maskbook.wallet.ext.asStateIn
 import com.dimension.maskbook.wallet.repository.ISendHistoryRepository
-import com.dimension.maskbook.wallet.repository.ISettingsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.mapNotNull
@@ -32,7 +32,7 @@ import kotlinx.coroutines.flow.mapNotNull
 class SendTokenViewModel(
     private val toAddress: String,
     private val sendHistoryRepository: ISendHistoryRepository,
-    private val settingsRepository: ISettingsRepository,
+    private val settingServices: SettingServices,
 ) : ViewModel() {
     private val _password = MutableStateFlow("")
     val password = _password.asStateIn(viewModelScope, "")
@@ -41,7 +41,7 @@ class SendTokenViewModel(
     }
 
     val canConfirm by lazy {
-        combine(settingsRepository.paymentPassword, _password) { current, input ->
+        combine(settingServices.paymentPassword, _password) { current, input ->
             current == input
         }
     }

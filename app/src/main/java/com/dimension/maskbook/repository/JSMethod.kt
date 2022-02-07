@@ -37,8 +37,6 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonPrimitive
 
-typealias PersonaIdentifier_string = String
-
 @Serializable
 data class SwitchBlockChainData(
     val coinId: Int? = null,

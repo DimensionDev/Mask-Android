@@ -30,7 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.dimension.maskbook.wallet.R
+import com.dimension.maskbook.localization.R
 import com.dimension.maskbook.wallet.ui.widget.MaskModal
 import com.dimension.maskbook.wallet.ui.widget.MaskPasswordInputField
 import com.dimension.maskbook.wallet.ui.widget.PrimaryButton

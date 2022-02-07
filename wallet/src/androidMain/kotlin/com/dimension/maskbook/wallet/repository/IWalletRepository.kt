@@ -20,6 +20,7 @@
  */
 package com.dimension.maskbook.wallet.repository
 
+import com.dimension.maskbook.common.okhttp.okHttpClient
 import com.dimension.maskbook.debankapi.model.ChainID
 import com.dimension.maskbook.wallet.db.model.CoinPlatformType
 import com.dimension.maskbook.wallet.db.model.DbCollectible
@@ -27,7 +28,6 @@ import com.dimension.maskbook.wallet.db.model.DbWalletBalanceType
 import com.dimension.maskbook.wallet.db.model.DbWalletTokenTokenWithWallet
 import com.dimension.maskbook.wallet.db.model.DbWalletTokenWithToken
 import com.dimension.maskbook.wallet.db.model.WalletSource
-import com.dimension.maskbook.wallet.services.okHttpClient
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.Serializable
 import org.web3j.protocol.http.HttpService

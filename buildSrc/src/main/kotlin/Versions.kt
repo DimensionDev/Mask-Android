@@ -35,4 +35,5 @@ object Versions {
     const val biometric = "1.2.0-alpha04"
     const val retrofit = "2.9.0"
     const val okhttp = "4.9.2"
+    const val web3j = "4.8.8-android"
 }

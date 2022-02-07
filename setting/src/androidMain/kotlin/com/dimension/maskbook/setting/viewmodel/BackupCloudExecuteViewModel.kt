@@ -56,6 +56,5 @@ class BackupCloudExecuteViewModel(
         } catch (e: Throwable) {
             return false
         }
-
     }
 }

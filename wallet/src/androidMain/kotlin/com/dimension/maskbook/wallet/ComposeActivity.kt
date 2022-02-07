@@ -34,10 +34,8 @@ import coil.decode.SvgDecoder
 import com.dimension.maskbook.wallet.db.AppDatabase
 import com.dimension.maskbook.wallet.db.RoomMigrations
 import com.dimension.maskbook.wallet.services.WalletServices
-import com.dimension.maskbook.wallet.services.model.DownloadResponse
 import com.dimension.maskbook.wallet.ui.MaskTheme
 import com.dimension.maskbook.wallet.ui.Route
-import com.dimension.maskbook.wallet.utils.BiometricAuthenticator
 import com.dimension.maskbook.wallet.viewmodel.WelcomeViewModel
 import com.dimension.maskbook.wallet.viewmodel.app.LabsViewModel
 import com.dimension.maskbook.wallet.viewmodel.app.MarketTrendSettingsViewModel
@@ -61,21 +59,7 @@ import com.dimension.maskbook.wallet.viewmodel.register.EmailRemoteBackupRecover
 import com.dimension.maskbook.wallet.viewmodel.register.PhoneRemoteBackupRecoveryViewModel
 import com.dimension.maskbook.wallet.viewmodel.register.RemoteBackupRecoveryViewModelBase
 import com.dimension.maskbook.wallet.viewmodel.register.UserNameModalViewModel
-import com.dimension.maskbook.wallet.viewmodel.settings.AppearanceSettingsViewModel
-import com.dimension.maskbook.wallet.viewmodel.settings.BackupCloudExecuteViewModel
-import com.dimension.maskbook.wallet.viewmodel.settings.BackupCloudViewModel
-import com.dimension.maskbook.wallet.viewmodel.settings.BackupLocalViewModel
-import com.dimension.maskbook.wallet.viewmodel.settings.BackupMergeConfirmViewModel
-import com.dimension.maskbook.wallet.viewmodel.settings.BackupPasswordSettingsViewModel
-import com.dimension.maskbook.wallet.viewmodel.settings.DataSourceSettingsViewModel
-import com.dimension.maskbook.wallet.viewmodel.settings.EmailBackupViewModel
-import com.dimension.maskbook.wallet.viewmodel.settings.EmailSetupViewModel
-import com.dimension.maskbook.wallet.viewmodel.settings.LanguageSettingsViewModel
-import com.dimension.maskbook.wallet.viewmodel.settings.PaymentPasswordSettingsViewModel
-import com.dimension.maskbook.wallet.viewmodel.settings.PhoneBackupViewModel
-import com.dimension.maskbook.wallet.viewmodel.settings.PhoneSetupViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.BackUpPasswordViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.BiometricEnableViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.BiometricViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.SetUpPaymentPasswordViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.TokenDetailViewModel
@@ -162,9 +146,6 @@ val walletModules = module {
             )
             .build()
     }
-    single {
-        BiometricAuthenticator()
-    }
 
     viewModel { (uri: Uri) -> RecoveryLocalViewModel(get(), uri, get<Context>().contentResolver) }
     viewModel { IdentityViewModel(get()) }
@@ -184,12 +165,6 @@ val walletModules = module {
     viewModel { ContactsViewModel(get(), get()) }
     viewModel { LabsViewModel(get(), get()) }
     viewModel { PluginSettingsViewModel(get(), get()) }
-    viewModel { LanguageSettingsViewModel(get()) }
-    viewModel { AppearanceSettingsViewModel(get()) }
-    viewModel { DataSourceSettingsViewModel(get()) }
-    viewModel { PaymentPasswordSettingsViewModel(get()) }
-    viewModel { BackupPasswordSettingsViewModel(get()) }
-    viewModel { BackupLocalViewModel(get(), get()) }
     viewModel { MarketTrendSettingsViewModel(get()) }
     viewModel { (requestNavigate: (RemoteBackupRecoveryViewModelBase.NavigateArgs) -> Unit) ->
         EmailRemoteBackupRecoveryViewModel(
@@ -203,41 +178,9 @@ val walletModules = module {
             get()
         )
     }
-    viewModel { (requestNavigate: (RemoteBackupRecoveryViewModelBase.NavigateArgs) -> Unit) ->
-        EmailSetupViewModel(
-            requestNavigate = requestNavigate,
-            backupRepository = get(),
-            personaRepository = get(),
-        )
-    }
-    viewModel { (requestNavigate: (RemoteBackupRecoveryViewModelBase.NavigateArgs) -> Unit) ->
-        PhoneSetupViewModel(
-            requestNavigate = requestNavigate,
-            backupRepository = get(),
-            personaRepository = get()
-        )
-    }
-    viewModel { (
-        requestMerge: (target: DownloadResponse, email: String, code: String) -> Unit,
-        next: (email: String, code: String) -> Unit,
-    ) ->
-        EmailBackupViewModel(get(), requestMerge, next)
-    }
-    viewModel { (
-        requestMerge: (target: DownloadResponse, email: String, code: String) -> Unit,
-        next: (email: String, code: String) -> Unit,
-    ) ->
-        PhoneBackupViewModel(get(), requestMerge, next)
-    }
-    viewModel { (onDone: () -> Unit) ->
-        BackupMergeConfirmViewModel(get(), get(), onDone)
-    }
     viewModel { UserNameModalViewModel(get()) }
-    viewModel { BackupCloudViewModel(get()) }
-    viewModel { BackupCloudExecuteViewModel(get(), get(), get()) }
     viewModel { CreateWalletRecoveryKeyViewModel(get()) }
     viewModel { SetUpPaymentPasswordViewModel(get()) }
-    viewModel { BiometricEnableViewModel(get(), get()) }
     viewModel { TouchIdEnableViewModel() }
     viewModel { (wallet: String) -> ImportWalletKeystoreViewModel(wallet, get()) }
     viewModel { (wallet: String) -> ImportWalletPrivateKeyViewModel(wallet, get()) }

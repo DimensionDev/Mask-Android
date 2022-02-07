@@ -28,11 +28,12 @@ kotlin {
                 implementation("com.squareup.okhttp3:logging-interceptor:4.9.2")
                 implementation("com.squareup.okhttp3:okhttp:4.9.2")
                 implementation("joda-time:joda-time:2.10.13")
-                implementation(("org.web3j:core:4.8.8-android"))
                 implementation("io.github.dimensiondev:maskwalletcore:0.4.0")
 
                 implementation(projects.debankapi)
                 api(projects.common)
+                implementation(projects.common.retrofit)
+                implementation(projects.common.okhttp)
 
                 api("androidx.room:room-runtime:${Versions.room}")
                 api("androidx.room:room-ktx:${Versions.room}")

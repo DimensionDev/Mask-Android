@@ -28,8 +28,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.dimension.maskbook.initRepository
-import com.dimension.maskbook.wallet.repository.Appearance
-import com.dimension.maskbook.wallet.repository.ISettingsRepository
+import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.wallet.ui.widget.BackupMeta
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -38,6 +37,7 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
@@ -58,11 +58,6 @@ data class BackupPreview(
     val wallets: Int,
     val createdAt: Long,
 )
-
-enum class PlatformType {
-    Twitter,
-    Facebook
-}
 
 enum class Language(val value: String) {
     auto("auto"),
@@ -102,7 +97,8 @@ enum class TradeProvider(val value: Int) {
 }
 
 class SettingsRepository(
-    private val dataStore: DataStore<Preferences>
+    private val dataStore: DataStore<Preferences>,
+    private val personaServices: PersonaServices,
 ) : ISettingsRepository {
     private val scope = CoroutineScope(Dispatchers.IO)
     private val _language = MutableStateFlow(Language.auto)
@@ -260,5 +256,27 @@ class SettingsRepository(
             NetworkType.Polygon to JSMethod.Setting.getNetworkTraderProvider(NetworkType.Polygon),
             NetworkType.Binance to JSMethod.Setting.getNetworkTraderProvider(NetworkType.Binance),
         )
+    }
+
+    override fun saveEmailForCurrentPersona(value: String) {
+        scope.launch {
+            personaServices.currentPersona.firstOrNull()?.let {
+                val emailKey = stringPreferencesKey("${it.id}_email")
+                dataStore.edit {
+                    it[emailKey] = value
+                }
+            }
+        }
+    }
+
+    override fun savePhoneForCurrentPersona(value: String) {
+        scope.launch {
+            personaServices.currentPersona.firstOrNull()?.let {
+                val phoneKey = stringPreferencesKey("${it.id}_phone")
+                dataStore.edit {
+                    it[phoneKey] = value
+                }
+            }
+        }
     }
 }

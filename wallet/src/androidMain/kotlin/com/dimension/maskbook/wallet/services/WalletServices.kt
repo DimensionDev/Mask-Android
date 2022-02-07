@@ -20,16 +20,8 @@
  */
 package com.dimension.maskbook.wallet.services
 
-import android.util.Log
+import com.dimension.maskbook.common.retrofit.retrofit
 import com.dimension.maskbook.debankapi.api.DebankResources
-import com.dimension.maskbook.wallet.BuildConfig
-import com.dimension.maskbook.wallet.ext.JSON
-import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Retrofit
-import retrofit2.converter.scalars.ScalarsConverterFactory
 
 class WalletServices {
     val debankServices by lazy {

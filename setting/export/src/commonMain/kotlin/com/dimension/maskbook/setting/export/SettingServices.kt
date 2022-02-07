@@ -25,4 +25,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface SettingServices {
     val appearance: Flow<Appearance>
+    val paymentPassword: Flow<String>
+    val backupPassword: Flow<String>
 }

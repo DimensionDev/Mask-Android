@@ -34,7 +34,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.dialog
 import androidx.navigation.navArgument
-import com.dimension.maskbook.wallet.R
+import com.dimension.maskbook.localization.R
 import com.dimension.maskbook.wallet.ext.encodeUrl
 import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.ui.scenes.settings.AppearanceSettings
@@ -48,9 +48,9 @@ import com.dimension.maskbook.wallet.ui.widget.MaskDialog
 import com.dimension.maskbook.wallet.ui.widget.PhoneCodeInputModal
 import com.dimension.maskbook.wallet.ui.widget.PhoneInputModal
 import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
-import com.dimension.maskbook.wallet.viewmodel.register.RemoteBackupRecoveryViewModelBase
 import com.dimension.maskbook.wallet.viewmodel.settings.EmailSetupViewModel
 import com.dimension.maskbook.wallet.viewmodel.settings.PhoneSetupViewModel
+import com.dimension.maskbook.wallet.viewmodel.settings.RemoteBackupRecoveryViewModelBase
 import com.google.accompanist.navigation.animation.navigation
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.bottomSheet
