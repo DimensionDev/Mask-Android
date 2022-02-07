@@ -27,8 +27,8 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import com.dimension.maskbook.initRepository
 import com.dimension.maskbook.persona.export.PersonaServices
+import com.dimension.maskbook.repository.JSMethod
 import com.dimension.maskbook.wallet.ui.widget.BackupMeta
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -40,61 +40,12 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import kotlinx.serialization.Serializable
 
 private val PaymentPasswordKey = stringPreferencesKey("payment_password")
 private val BackupPasswordKey = stringPreferencesKey("backup_password")
 private val BiometricEnabledKey = booleanPreferencesKey("biometric_enabled")
 private val ShouldShowLegalSceneKey = booleanPreferencesKey("ShowLegalSceneKey")
 val Context.settingsDataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
-
-@Serializable
-data class BackupPreview(
-    val personas: Int,
-    val accounts: Int,
-    val posts: Int,
-    val contacts: Int,
-    val files: Int,
-    val wallets: Int,
-    val createdAt: Long,
-)
-
-enum class Language(val value: String) {
-    auto("auto"),
-    enUS("en-US"),
-    zhCN("zh-CN"),
-    zhTW("zh-TW"),
-    koKR("ko-KR"),
-    jaJP("ja-JP"),
-    esES("es-ES"),
-    faIR("fa-IR"),
-    itIT("it-IT"),
-    ruRU("ru-RU"),
-    frFR("fr-FR"),
-}
-
-enum class DataProvider(val value: Int) {
-    COIN_GECKO(0), COIN_MARKET_CAP(1), UNISWAP_INFO(2)
-}
-
-enum class NetworkType {
-    Ethereum,
-    Binance,
-    Polygon,
-    Arbitrum,
-}
-
-enum class TradeProvider(val value: Int) {
-    UNISWAP_V2(0),
-    ZRX(1),
-    SUSHISWAP(2),
-    SASHIMISWAP(3),
-    BALANCER(4),
-    QUICKSWAP(5),
-    PANCAKESWAP(6),
-    DODO(7),
-    UNISWAP_V3(8),
-}
 
 class SettingsRepository(
     private val dataStore: DataStore<Preferences>,
@@ -224,7 +175,7 @@ class SettingsRepository(
 
     override suspend fun restoreBackupFromJson(value: String) {
         JSMethod.Setting.restoreBackup(value)
-        initRepository()
+        init()
     }
 
     override suspend fun createBackupJson(

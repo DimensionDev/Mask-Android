@@ -23,8 +23,6 @@ package com.dimension.maskbook.wallet.repository
 import androidx.lifecycle.LiveData
 import com.dimension.maskbook.wallet.R
 import kotlinx.coroutines.flow.Flow
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
 
 data class SocialData(
     val id: String,
@@ -33,41 +31,6 @@ data class SocialData(
     val personaId: String? = null,
     val network: Network,
 )
-
-@Serializable
-data class Persona(
-    val identifier: String,
-    val nickname: String?,
-    val linkedProfiles: Map<String, ProfileState>,
-    val hasPrivateKey: Boolean,
-    val createdAt: Long,
-    val updatedAt: Long,
-)
-
-@Serializable
-enum class ProfileState {
-    @SerialName("pending")
-    pending,
-
-    @SerialName("confirmed")
-    confirmed,
-}
-
-@Serializable
-data class Profile(
-    val identifier: String,
-    val nickname: String?,
-    val linkedPersona: Boolean,
-    val createdAt: Long,
-    val updatedAt: Long,
-)
-
-enum class Network(val value: String) {
-    Twitter("twitter.com"),
-    Facebook("facebook.com"),
-    Instagram("instagram.com"),
-    Minds("minds.com"),
-}
 
 enum class RedirectTarget {
     Gecko,

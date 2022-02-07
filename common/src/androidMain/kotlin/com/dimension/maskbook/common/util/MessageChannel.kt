@@ -20,7 +20,7 @@
  */
 package com.dimension.maskbook.util
 
-import com.dimension.maskbook.component.WebExtensionManager
+import com.dimension.maskbook.common.component.IWebExtensionManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
@@ -37,7 +37,7 @@ object MessageChannel {
     private val queue = linkedMapOf<String, Channel<String?>>()
     private val subscription = arrayListOf<Pair<String, MutableStateFlow<ExtensionMessage?>>>()
     val lock = ReentrantLock()
-    var manager: WebExtensionManager? = null
+    var manager: IWebExtensionManager? = null
 
     fun sendResponseMessage(message: ExtensionResponseMessage) {
         manager?.sendRawMessage(JSONObject(message.toMap()))

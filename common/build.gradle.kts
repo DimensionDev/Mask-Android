@@ -48,6 +48,8 @@ kotlin {
                 api("com.google.accompanist:accompanist-permissions:${Versions.accompanist}")
 
                 api("org.web3j:core:${Versions.web3j}")
+
+                api("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.Kotlin.serialization}")
             }
         }
         val androidTest by getting {
