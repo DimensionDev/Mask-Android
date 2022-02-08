@@ -25,6 +25,7 @@ include(
     ":common",
     ":common:okhttp",
     ":common:retrofit",
+    ":common:routeProcessor",
     ":localization",
     ":wallet",
     ":wallet:export",

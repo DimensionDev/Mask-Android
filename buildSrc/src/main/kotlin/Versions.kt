@@ -36,4 +36,5 @@ object Versions {
     const val retrofit = "2.9.0"
     const val okhttp = "4.9.2"
     const val web3j = "4.8.8-android"
+    const val kotlinpoet = "1.10.2"
 }
