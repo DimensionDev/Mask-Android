@@ -20,6 +20,7 @@
  */
 package com.dimension.maskbook.setting
 
+import com.dimension.maskbook.setting.export.BackupServices
 import com.dimension.maskbook.setting.export.SettingServices
 import com.dimension.maskbook.setting.export.model.BackupMeta
 import com.dimension.maskbook.wallet.repository.Appearance
@@ -32,7 +33,7 @@ import kotlinx.coroutines.flow.Flow
 class SettingServicesImpl(
     private val settingsRepository: ISettingsRepository,
     private val backupRepository: BackupRepository,
-) : SettingServices {
+) : SettingServices, BackupServices {
 
     override val biometricEnabled: Flow<Boolean>
         get() = settingsRepository.biometricEnabled

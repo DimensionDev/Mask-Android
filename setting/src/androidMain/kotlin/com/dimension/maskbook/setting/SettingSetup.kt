@@ -62,7 +62,7 @@ object SettingSetup : ModuleSetup {
         single<ISettingsRepository> {
             SettingsRepository(get<Context>().settingsDataStore, get())
         }
-        single<SettingServices> { SettingServicesImpl(get(), get()) }
+        single<SettingServices> { SettingServicesImpl(get(), get()) } bind com.dimension.maskbook.setting.export.BackupServices::class
         single { SettingsTabScreen() } bind TabScreen::class
 
         viewModel { LanguageSettingsViewModel(get()) }

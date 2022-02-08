@@ -23,7 +23,7 @@ package com.dimension.maskbook.wallet.viewmodel.register
 import android.os.CountDownTimer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dimension.maskbook.setting.export.SettingServices
+import com.dimension.maskbook.setting.export.BackupServices
 import com.dimension.maskbook.wallet.ext.Validator
 import com.dimension.maskbook.wallet.ext.asStateIn
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -31,7 +31,7 @@ import kotlinx.coroutines.launch
 
 class PhoneRemoteBackupRecoveryViewModel(
     requestNavigate: (NavigateArgs) -> Unit,
-    private val backupRepository: SettingServices,
+    private val backupServices: BackupServices,
 ) : RemoteBackupRecoveryViewModelBase(
     requestNavigate
 ) {
@@ -42,11 +42,11 @@ class PhoneRemoteBackupRecoveryViewModel(
     }
 
     override suspend fun downloadBackupInternal(code: String, value: String): String {
-        return backupRepository.downloadBackupWithPhone(value, code)
+        return backupServices.downloadBackupWithPhone(value, code)
     }
 
     override suspend fun verifyCodeInternal(value: String, code: String) {
-        backupRepository.validatePhoneCode(phone = value, code = code)
+        backupServices.validatePhoneCode(phone = value, code = code)
     }
 
     override fun validate(value: String): Boolean {
@@ -54,22 +54,22 @@ class PhoneRemoteBackupRecoveryViewModel(
     }
 
     override suspend fun sendCodeInternal(value: String) {
-        backupRepository.sendPhoneCode(value)
+        backupServices.sendPhoneCode(value)
     }
 }
 
 class EmailRemoteBackupRecoveryViewModel(
     requestNavigate: (NavigateArgs) -> Unit,
-    private val backupRepository: SettingServices,
+    private val backupServices: BackupServices,
 ) : RemoteBackupRecoveryViewModelBase(
     requestNavigate
 ) {
     override suspend fun downloadBackupInternal(code: String, value: String): String {
-        return backupRepository.downloadBackupWithEmail(value, code).toString()
+        return backupServices.downloadBackupWithEmail(value, code).toString()
     }
 
     override suspend fun verifyCodeInternal(value: String, code: String) {
-        backupRepository.validateEmailCode(email = value, code = code)
+        backupServices.validateEmailCode(email = value, code = code)
     }
 
     override fun validate(value: String): Boolean {
@@ -77,7 +77,7 @@ class EmailRemoteBackupRecoveryViewModel(
     }
 
     override suspend fun sendCodeInternal(value: String) {
-        backupRepository.sendEmailCode(value)
+        backupServices.sendEmailCode(value)
     }
 }
 

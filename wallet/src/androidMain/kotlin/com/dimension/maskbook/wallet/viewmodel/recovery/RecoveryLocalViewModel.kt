@@ -24,14 +24,14 @@ import android.content.ContentResolver
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dimension.maskbook.setting.export.SettingServices
+import com.dimension.maskbook.setting.export.BackupServices
 import com.dimension.maskbook.setting.export.model.BackupMeta
 import com.dimension.maskbook.wallet.ext.asStateIn
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 class RecoveryLocalViewModel(
-    private val repository: SettingServices,
+    private val backupServices: BackupServices,
     private val uri: Uri,
     private val contentResolver: ContentResolver,
 ) : ViewModel() {
@@ -73,7 +73,7 @@ class RecoveryLocalViewModel(
 
             contentResolver.openInputStream(uri)?.use {
                 json = it.bufferedReader().use { it.readText() }
-                _meta.value = repository.provideBackupMetaFromJson(json)
+                _meta.value = backupServices.provideBackupMetaFromJson(json)
                 _loadState.value = LoadState.Success
             } ?: run {
                 _loadState.value = LoadState.Failed
@@ -116,7 +116,7 @@ class RecoveryLocalViewModel(
     fun restore() = viewModelScope.launch {
         if (json.isNotEmpty()) {
             try {
-                repository.restoreBackupFromJson(json)
+                backupServices.restoreBackupFromJson(json)
             } catch (e: Throwable) {
             }
         }

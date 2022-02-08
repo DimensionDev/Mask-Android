@@ -20,20 +20,15 @@
  */
 package com.dimension.maskbook.setting.export
 
-import com.dimension.maskbook.wallet.repository.Appearance
-import com.dimension.maskbook.wallet.repository.NetworkType
-import com.dimension.maskbook.wallet.repository.TradeProvider
-import kotlinx.coroutines.flow.Flow
+import com.dimension.maskbook.setting.export.model.BackupMeta
 
-interface SettingServices {
-    val biometricEnabled: Flow<Boolean>
-    val appearance: Flow<Appearance>
-    val paymentPassword: Flow<String>
-    val backupPassword: Flow<String>
-    val tradeProvider: Flow<Map<NetworkType, TradeProvider>>
-    val shouldShowLegalScene: Flow<Boolean>
-    fun setBiometricEnabled(value: Boolean)
-    fun setTradeProvider(networkType: NetworkType, tradeProvider: TradeProvider)
-    fun setPaymentPassword(value: String)
-    fun setShouldShowLegalScene(value: Boolean)
+interface BackupServices {
+    suspend fun restoreBackupFromJson(value: String)
+    suspend fun provideBackupMetaFromJson(value: String): BackupMeta?
+    suspend fun downloadBackupWithPhone(phone: String, code: String): String
+    suspend fun downloadBackupWithEmail(email: String, code: String): String
+    suspend fun validatePhoneCode(phone: String, code: String)
+    suspend fun validateEmailCode(email: String, code: String)
+    suspend fun sendPhoneCode(phone: String)
+    suspend fun sendEmailCode(email: String)
 }
