@@ -33,9 +33,7 @@ import androidx.navigation.navOptions
 import com.dimension.maskbook.setting.export.SettingServices
 import com.dimension.maskbook.wallet.ext.encodeUrl
 import com.dimension.maskbook.wallet.ext.observeAsState
-import com.dimension.maskbook.wallet.repository.AppKey
 import com.dimension.maskbook.wallet.repository.IPersonaRepository
-import com.dimension.maskbook.wallet.repository.Network
 import com.dimension.maskbook.wallet.repository.PlatformType
 import com.dimension.maskbook.wallet.ui.scenes.MainHost
 import com.dimension.maskbook.wallet.ui.scenes.app.settings.MarketTrendSettingsModal
@@ -82,54 +80,6 @@ fun NavGraphBuilder.mainRoute(
             MainHost(
                 initialTab = it.arguments?.getString("tab").orEmpty(),
                 onBack = onBack,
-                onPersonaCreateClick = {
-                    navController.navigate("WelcomeCreatePersona")
-                },
-                onPersonaRecoveryClick = {
-                    navController.navigate("Recovery")
-                },
-                onPersonaNameClick = {
-                    navController.navigate("PersonaMenu")
-                },
-                onAddSocialClick = { persona, network ->
-                    val platform = when (network) {
-                        Network.Twitter -> PlatformType.Twitter
-                        Network.Facebook -> PlatformType.Facebook
-                        else -> null // TODO support other network
-                    }
-                    if (platform == null) {
-                        navController.navigate("SelectPlatform/${persona.id.encodeUrl()}")
-                    } else {
-                        navController.navigate("ConnectSocial/${persona.id.encodeUrl()}/$platform")
-                    }
-                },
-                onRemoveSocialClick = { persona, social ->
-                    val platform = when (social.network) {
-                        Network.Twitter -> PlatformType.Twitter
-                        Network.Facebook -> PlatformType.Facebook
-                        else -> null // TODO support other network
-                    }
-                    if (platform != null) {
-                        navController.navigate(
-                            "DisconnectSocial/${persona.id.encodeUrl()}/$platform/${social.id.encodeUrl()}" +
-                                "?personaName=${persona.name.encodeUrl()}&socialName=${social.name.encodeUrl()}"
-                        )
-                    }
-                },
-                onLabsSettingClick = {
-                    navController.navigate("PluginSettings")
-                },
-                onLabsItemClick = { appKey ->
-                    when (appKey) {
-                        AppKey.Swap -> {
-                            navController.navigate("MarketTrendSettings")
-                        }
-                        AppKey.Transak -> {
-                            navController.navigate("LabsTransak")
-                        }
-                        else -> Unit
-                    }
-                }
             )
         }
 

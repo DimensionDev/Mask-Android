@@ -18,25 +18,10 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.common
+package com.dimension.maskbook.wallet.ui
 
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
-import com.dimension.maskbook.common.util.BiometricAuthenticator
-import com.dimension.maskbook.wallet.viewmodel.wallets.BiometricEnableViewModel
-import org.koin.androidx.viewmodel.dsl.viewModel
-import org.koin.dsl.module
+import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.navigation.NavHostController
 
-object CommonSetup : ModuleSetup {
-
-    override fun NavGraphBuilder.route(navController: NavController) {
-    }
-
-    override fun dependencyInject() = module {
-        single {
-            BiometricAuthenticator()
-        }
-
-        viewModel { BiometricEnableViewModel(get(), get()) }
-    }
-}
+val LocalRootNavController =
+    staticCompositionLocalOf<NavHostController> { error("No NavHostController") }

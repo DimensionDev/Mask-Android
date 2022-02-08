@@ -18,25 +18,26 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.common
+package com.dimension.maskbook.wallet
 
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import com.dimension.maskbook.common.util.BiometricAuthenticator
-import com.dimension.maskbook.wallet.viewmodel.wallets.BiometricEnableViewModel
-import org.koin.androidx.viewmodel.dsl.viewModel
+import com.dimension.maskbook.common.ModuleSetup
+import com.dimension.maskbook.common.ui.tab.TabScreen
+import com.dimension.maskbook.wallet.ui.tab.LabsTabScreen
+import com.dimension.maskbook.wallet.ui.tab.PersonasTabScreen
+import com.dimension.maskbook.wallet.ui.tab.WalletTabScreen
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
-object CommonSetup : ModuleSetup {
+object WalletSetup : ModuleSetup {
 
     override fun NavGraphBuilder.route(navController: NavController) {
     }
 
     override fun dependencyInject() = module {
-        single {
-            BiometricAuthenticator()
-        }
-
-        viewModel { BiometricEnableViewModel(get(), get()) }
+        single { LabsTabScreen() } bind TabScreen::class
+        single { PersonasTabScreen() } bind TabScreen::class
+        single { WalletTabScreen() } bind TabScreen::class
     }
 }

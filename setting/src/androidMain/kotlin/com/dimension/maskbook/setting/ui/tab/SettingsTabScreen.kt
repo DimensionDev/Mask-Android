@@ -18,25 +18,20 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.common
+package com.dimension.maskbook.setting.ui.tab
 
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
-import com.dimension.maskbook.common.util.BiometricAuthenticator
-import com.dimension.maskbook.wallet.viewmodel.wallets.BiometricEnableViewModel
-import org.koin.androidx.viewmodel.dsl.viewModel
-import org.koin.dsl.module
+import androidx.compose.runtime.Composable
+import com.dimension.maskbook.common.ui.tab.TabScreen
+import com.dimension.maskbook.setting.R
+import com.dimension.maskbook.wallet.ui.scenes.settings.SettingsScene
 
-object CommonSetup : ModuleSetup {
+class SettingsTabScreen : TabScreen {
+    override val route = "Settings"
+    override val title: Int = R.string.tab_setting
+    override val icon: Int = R.drawable.ic_settings
 
-    override fun NavGraphBuilder.route(navController: NavController) {
-    }
-
-    override fun dependencyInject() = module {
-        single {
-            BiometricAuthenticator()
-        }
-
-        viewModel { BiometricEnableViewModel(get(), get()) }
+    @Composable
+    override fun Content(onBack: () -> Unit) {
+        SettingsScene(onBack = onBack)
     }
 }

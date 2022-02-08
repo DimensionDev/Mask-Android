@@ -20,8 +20,6 @@
  */
 package com.dimension.maskbook.wallet.ui.scenes
 
-import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -53,31 +51,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
-import com.dimension.maskbook.wallet.R
-import com.dimension.maskbook.wallet.repository.AppKey
-import com.dimension.maskbook.wallet.repository.Network
-import com.dimension.maskbook.wallet.repository.PersonaData
-import com.dimension.maskbook.wallet.repository.SocialData
+import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.wallet.ui.MaskTheme
-import com.dimension.maskbook.wallet.ui.scenes.app.LabsScene
-import com.dimension.maskbook.wallet.ui.scenes.persona.PersonaScene
-import com.dimension.maskbook.wallet.ui.scenes.settings.SettingsScene
-import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.WalletIntroHost
 import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
-
-private enum class HomeScreen(val route: String, @StringRes val title: Int, @DrawableRes val icon: Int) {
-    Personas("Personas", R.string.tab_personas, R.drawable.ic_persona),
-    Wallets("Wallets", R.string.tab_wallet, R.drawable.ic_wallet),
-    Labs("Labs", R.string.tab_labs, R.drawable.ic_labs),
-    Settings("Settings", R.string.tab_setting, R.drawable.ic_settings),
-}
-
-private val items = HomeScreen.values()
+import org.koin.androidx.compose.get
 
 @ExperimentalMaterialNavigationApi
 @OptIn(ExperimentalAnimationApi::class, ExperimentalPagerApi::class)
@@ -85,25 +67,17 @@ private val items = HomeScreen.values()
 fun MainHost(
     initialTab: String,
     onBack: () -> Unit,
-    onPersonaCreateClick: () -> Unit,
-    onPersonaRecoveryClick: () -> Unit,
-    onPersonaNameClick: () -> Unit,
-    onAddSocialClick: (PersonaData, Network?) -> Unit,
-    onRemoveSocialClick: (PersonaData, SocialData) -> Unit,
-    onLabsSettingClick: () -> Unit,
-    onLabsItemClick: (AppKey) -> Unit,
 ) {
+    val tabs = get<Set<TabScreen>>()
+
     val initialPage = remember(initialTab) {
         if (initialTab.isEmpty()) return@remember 0
-        when (HomeScreen.valueOf(initialTab)) {
-            HomeScreen.Personas -> 0
-            HomeScreen.Wallets -> 1
-            HomeScreen.Labs -> 2
-            HomeScreen.Settings -> 3
-        }
+        val index = tabs.indexOfFirst { it.route == initialTab }
+        if (index != -1) index else 0
     }
     val pagerState = rememberPagerState(initialPage = initialPage)
     val scope = rememberCoroutineScope()
+
     MaskTheme {
         MaskScaffold(
             bottomBar = {
@@ -112,7 +86,7 @@ fun MainHost(
                         .background(MaterialTheme.colors.surface)
                         .height(56.dp)
                 ) {
-                    items.forEachIndexed { index, screen ->
+                    tabs.forEachIndexed { index, screen ->
                         BottomNavigationItem(
                             selected = pagerState.currentPage == index,
                             onClick = {
@@ -138,25 +112,10 @@ fun MainHost(
         ) { innerPadding ->
             HorizontalPager(
                 contentPadding = innerPadding,
-                count = items.size,
+                count = tabs.size,
                 state = pagerState,
             ) {
-                when (items[it]) {
-                    HomeScreen.Labs -> LabsScene(
-                        onSettingClick = onLabsSettingClick,
-                        onItemClick = onLabsItemClick,
-                    )
-                    HomeScreen.Personas -> PersonaScene(
-                        onBack = onBack,
-                        onPersonaCreateClick = onPersonaCreateClick,
-                        onPersonaRecoveryClick = onPersonaRecoveryClick,
-                        onPersonaNameClick = onPersonaNameClick,
-                        onAddSocialClick = onAddSocialClick,
-                        onRemoveSocialClick = onRemoveSocialClick,
-                    )
-                    HomeScreen.Settings -> SettingsScene(onBack = onBack)
-                    HomeScreen.Wallets -> WalletIntroHost(onBack = onBack)
-                }
+                tabs.elementAt(it).Content(onBack)
             }
         }
     }

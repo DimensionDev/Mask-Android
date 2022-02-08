@@ -27,24 +27,17 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.staticCompositionLocalOf
-import androidx.navigation.NavHostController
 import androidx.navigation.plusAssign
 import com.dimension.maskbook.wallet.navHostAnimationDurationMillis
-import com.dimension.maskbook.wallet.route.backupRoute
 import com.dimension.maskbook.wallet.route.labsRoute
 import com.dimension.maskbook.wallet.route.mainRoute
 import com.dimension.maskbook.wallet.route.registerRoute
-import com.dimension.maskbook.wallet.route.settingsRoute
 import com.dimension.maskbook.wallet.route.walletsRoute
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
-
-val LocalRootNavController =
-    staticCompositionLocalOf<NavHostController> { error("No NavHostController") }
 
 @OptIn(ExperimentalMaterialNavigationApi::class, ExperimentalAnimationApi::class)
 @Composable
@@ -84,8 +77,8 @@ fun Route(
                     onBack = onBack,
                 ) {
                     walletsRoute(navController = navController)
-                    settingsRoute(navController = navController)
-                    backupRoute(navController = navController)
+                    // settingsRoute(navController = navController)
+                    // backupRoute(navController = navController)
                     labsRoute(navController = navController)
                 }
             }

@@ -22,17 +22,18 @@ package com.dimension.maskbook
 
 import android.app.Application
 import android.content.Context
+import com.dimension.maskbook.common.CommonSetup
 import com.dimension.maskbook.handler.Web3MessageHandler
 import com.dimension.maskbook.platform.PlatformSwitcher
 import com.dimension.maskbook.repository.AppRepository
 import com.dimension.maskbook.repository.CollectibleRepository
 import com.dimension.maskbook.repository.JSMethod
 import com.dimension.maskbook.repository.PersonaRepository
-import com.dimension.maskbook.repository.SettingsRepository
 import com.dimension.maskbook.repository.WalletRepository
 import com.dimension.maskbook.repository.personaDataStore
-import com.dimension.maskbook.repository.settingsDataStore
 import com.dimension.maskbook.repository.walletDataStore
+import com.dimension.maskbook.setting.SettingSetup
+import com.dimension.maskbook.wallet.WalletSetup
 import com.dimension.maskbook.wallet.db.model.CoinPlatformType
 import com.dimension.maskbook.wallet.platform.IPlatformSwitcher
 import com.dimension.maskbook.wallet.repository.BackupRepository
@@ -77,7 +78,15 @@ class MaskbookApp : Application() {
         startKoin {
             androidLogger(if (BuildConfig.DEBUG) Level.ERROR else Level.NONE)
             androidContext(this@MaskbookApp)
-            modules(repositoryModules, walletModules, platformModules, servicesModule)
+            modules(
+                CommonSetup.dependencyInject(),
+                WalletSetup.dependencyInject(),
+                SettingSetup.dependencyInject(),
+                repositoryModules,
+                walletModules,
+                platformModules,
+                servicesModule,
+            )
         }
     }
 }
@@ -157,7 +166,7 @@ val repositoryModules = module {
 //    single<IPostRepository> { PostRepository() }
     single<IAppRepository> { AppRepository() }
 //    single<IWalletRepository> { FakeWalletRepository() }
-    single<ISettingsRepository> { SettingsRepository(get<Context>().settingsDataStore) }
+//     single<ISettingsRepository> { SettingsRepository(get<Context>().settingsDataStore) }
     single<IWalletRepository> { WalletRepository(get<Context>().walletDataStore, get(), get(), get()) }
     single<ICollectibleRepository> { CollectibleRepository(get(), get()) }
     single<ITransactionRepository> { TransactionRepository(get(), get()) }

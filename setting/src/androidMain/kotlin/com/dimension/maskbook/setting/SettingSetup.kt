@@ -45,7 +45,7 @@ import com.dimension.maskbook.wallet.viewmodel.settings.RemoteBackupRecoveryView
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
-class SettingSetup : ModuleSetup {
+object SettingSetup : ModuleSetup {
     override fun NavGraphBuilder.route(navController: NavController) {
     }
 
@@ -54,6 +54,7 @@ class SettingSetup : ModuleSetup {
             retrofit("https://vaalh28dbi.execute-api.ap-east-1.amazonaws.com")
         }
         single<SettingServices> { SettingServicesImpl() }
+        single {  }
 
         viewModel { LanguageSettingsViewModel(get()) }
         viewModel { AppearanceSettingsViewModel(get()) }
