@@ -32,7 +32,9 @@ interface SettingServices {
     val backupPassword: Flow<String>
     val tradeProvider: Flow<Map<NetworkType, TradeProvider>>
     val shouldShowLegalScene: Flow<Boolean>
+    fun setBiometricEnabled(value: Boolean)
     fun setTradeProvider(networkType: NetworkType, tradeProvider: TradeProvider)
     fun setPaymentPassword(value: String)
     fun setShouldShowLegalScene(value: Boolean)
+    suspend fun restoreBackupFromJson(value: String)
 }

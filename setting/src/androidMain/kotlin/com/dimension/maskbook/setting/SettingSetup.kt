@@ -41,7 +41,7 @@ import com.dimension.maskbook.wallet.viewmodel.settings.PaymentPasswordSettingsV
 import com.dimension.maskbook.wallet.viewmodel.settings.PhoneBackupViewModel
 import com.dimension.maskbook.wallet.viewmodel.settings.PhoneSetupViewModel
 import com.dimension.maskbook.wallet.viewmodel.settings.RemoteBackupRecoveryViewModelBase
-import com.dimension.maskbook.wallet.viewmodel.wallets.BiometricEnableViewModel
+// import com.dimension.maskbook.common.viewmodel.BiometricEnableViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -92,6 +92,6 @@ class SettingSetup : ModuleSetup {
         }
         viewModel { BackupCloudViewModel(get()) }
         viewModel { BackupCloudExecuteViewModel(get(), get(), get()) }
-        viewModel { BiometricEnableViewModel(get(), get()) }
+        // viewModel { BiometricEnableViewModel(get(), get()) }
     }
 }

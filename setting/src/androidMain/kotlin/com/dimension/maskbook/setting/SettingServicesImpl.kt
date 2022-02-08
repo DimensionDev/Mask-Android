@@ -40,6 +40,10 @@ class SettingServicesImpl : SettingServices {
     override val shouldShowLegalScene: Flow<Boolean>
         get() = TODO("Not yet implemented")
 
+    override fun setBiometricEnabled(value: Boolean) {
+        TODO("Not yet implemented")
+    }
+
     override fun setTradeProvider(networkType: NetworkType, tradeProvider: TradeProvider) {
         TODO("Not yet implemented")
     }
@@ -49,6 +53,10 @@ class SettingServicesImpl : SettingServices {
     }
 
     override fun setShouldShowLegalScene(value: Boolean) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun restoreBackupFromJson(value: String) {
         TODO("Not yet implemented")
     }
 }
