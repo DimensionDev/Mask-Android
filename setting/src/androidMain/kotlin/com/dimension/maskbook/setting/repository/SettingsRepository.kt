@@ -20,125 +20,70 @@
  */
 package com.dimension.maskbook.wallet.repository
 
-import android.content.Context
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
 import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.repository.JSMethod
+import com.dimension.maskbook.setting.data.JSDataSource
+import com.dimension.maskbook.setting.data.PreferenceDataSource
 import com.dimension.maskbook.setting.export.model.BackupMeta
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
-private val PaymentPasswordKey = stringPreferencesKey("payment_password")
-private val BackupPasswordKey = stringPreferencesKey("backup_password")
-private val BiometricEnabledKey = booleanPreferencesKey("biometric_enabled")
-private val ShouldShowLegalSceneKey = booleanPreferencesKey("ShowLegalSceneKey")
-val Context.settingsDataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
-
 class SettingsRepository(
-    private val dataStore: DataStore<Preferences>,
     private val personaServices: PersonaServices,
+    private val preferenceDataSource: PreferenceDataSource,
+    private val jsDataSource: JSDataSource,
 ) : ISettingsRepository {
     private val scope = CoroutineScope(Dispatchers.IO)
-    private val _language = MutableStateFlow(Language.auto)
     override val biometricEnabled: Flow<Boolean>
-        get() = dataStore.data.map {
-            it[BiometricEnabledKey] ?: false
-        }
-    override val language = _language.asSharedFlow()
-    private val _appearance = MutableStateFlow(Appearance.default)
-    override val appearance = _appearance.asSharedFlow()
-    private val _dataProvider = MutableStateFlow(DataProvider.COIN_GECKO)
-    override val dataProvider = _dataProvider.asSharedFlow()
-    override val paymentPassword = dataStore.data.map {
-        it[PaymentPasswordKey] ?: ""
-    }
-    override val backupPassword = dataStore.data.map {
-        it[BackupPasswordKey] ?: ""
-    }
-    private val _tradeProvider = MutableStateFlow(
-        mapOf(
-            NetworkType.Ethereum to TradeProvider.UNISWAP_V3,
-            NetworkType.Polygon to TradeProvider.QUICKSWAP,
-            NetworkType.Binance to TradeProvider.PANCAKESWAP,
-        )
-    )
+        get() = preferenceDataSource.biometricEnabled
+    override val language: Flow<Language>
+        get() = jsDataSource.language
+    override val appearance: Flow<Appearance>
+        get() = jsDataSource.appearance
+    override val dataProvider: Flow<DataProvider>
+        get() = jsDataSource.dataProvider
     override val tradeProvider: Flow<Map<NetworkType, TradeProvider>>
-        get() = _tradeProvider.asSharedFlow()
-
+        get() = jsDataSource.tradeProvider
+    override val paymentPassword: Flow<String>
+        get() = preferenceDataSource.paymentPassword
+    override val backupPassword: Flow<String>
+        get() = preferenceDataSource.backupPassword
     override val shouldShowLegalScene: Flow<Boolean>
-        get() = dataStore.data.map { it[ShouldShowLegalSceneKey] ?: true }
+        get() = preferenceDataSource.shouldShowLegalScene
 
     override fun setBiometricEnabled(value: Boolean) {
-        scope.launch {
-            dataStore.edit {
-                it[BiometricEnabledKey] = value
-            }
-        }
+        preferenceDataSource.setBiometricEnabled(value)
     }
 
     override fun setTradeProvider(networkType: NetworkType, tradeProvider: TradeProvider) {
-        scope.launch {
-            JSMethod.Setting.setNetworkTraderProvider(networkType, tradeProvider)
-            updateTradeProvider()
-        }
+        jsDataSource.setTradeProvider(networkType, tradeProvider)
     }
 
     override fun setLanguage(language: Language) {
-        scope.launch {
-            JSMethod.Setting.setLanguage(language)
-            _language.value = JSMethod.Setting.getLanguage()
-        }
+        jsDataSource.setLanguage(language)
     }
 
     override fun setAppearance(appearance: Appearance) {
-        scope.launch {
-            JSMethod.Setting.setTheme(appearance)
-            _appearance.value = JSMethod.Setting.getTheme()
-        }
+        jsDataSource.setAppearance(appearance)
     }
 
     override fun setDataProvider(dataProvider: DataProvider) {
-        scope.launch {
-            JSMethod.Setting.setTrendingDataSource(dataProvider)
-            _dataProvider.value = JSMethod.Setting.getTrendingDataSource()
-        }
+        jsDataSource.setDataProvider(dataProvider)
     }
 
     override fun setPaymentPassword(value: String) {
-        scope.launch {
-            dataStore.edit {
-                it[PaymentPasswordKey] = value
-            }
-        }
+        preferenceDataSource.setPaymentPassword(value)
     }
 
     override fun setBackupPassword(value: String) {
-        scope.launch {
-            dataStore.edit {
-                it[BackupPasswordKey] = value
-            }
-        }
+        preferenceDataSource.setBackupPassword(value)
     }
 
     override fun setShouldShowLegalScene(value: Boolean) {
-        scope.launch {
-            dataStore.edit {
-                it[ShouldShowLegalSceneKey] = value
-            }
-        }
+        preferenceDataSource.setShouldShowLegalScene(value)
     }
 
     override suspend fun provideBackupMeta(): BackupMeta? {
@@ -175,7 +120,7 @@ class SettingsRepository(
 
     override suspend fun restoreBackupFromJson(value: String) {
         JSMethod.Setting.restoreBackup(value)
-        init()
+        jsDataSource.initData()
     }
 
     override suspend fun createBackupJson(
@@ -190,32 +135,10 @@ class SettingsRepository(
         )
     }
 
-    override fun init() {
-        scope.launch {
-            awaitAll(
-                async { _language.value = JSMethod.Setting.getLanguage() },
-                async { _appearance.value = JSMethod.Setting.getTheme() },
-                async { _dataProvider.value = JSMethod.Setting.getTrendingDataSource() },
-                async { updateTradeProvider() }
-            )
-        }
-    }
-
-    private suspend fun updateTradeProvider() {
-        _tradeProvider.value = mapOf(
-            NetworkType.Ethereum to JSMethod.Setting.getNetworkTraderProvider(NetworkType.Ethereum),
-            NetworkType.Polygon to JSMethod.Setting.getNetworkTraderProvider(NetworkType.Polygon),
-            NetworkType.Binance to JSMethod.Setting.getNetworkTraderProvider(NetworkType.Binance),
-        )
-    }
-
     override fun saveEmailForCurrentPersona(value: String) {
         scope.launch {
             personaServices.currentPersona.firstOrNull()?.let {
-                val emailKey = stringPreferencesKey("${it.id}_email")
-                dataStore.edit {
-                    it[emailKey] = value
-                }
+                preferenceDataSource.saveEmailForPersona(it, value)
             }
         }
     }
@@ -223,10 +146,7 @@ class SettingsRepository(
     override fun savePhoneForCurrentPersona(value: String) {
         scope.launch {
             personaServices.currentPersona.firstOrNull()?.let {
-                val phoneKey = stringPreferencesKey("${it.id}_phone")
-                dataStore.edit {
-                    it[phoneKey] = value
-                }
+                preferenceDataSource.savePhoneForPersona(it, value)
             }
         }
     }

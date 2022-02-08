@@ -49,7 +49,6 @@ interface ISettingsRepository {
         noProfiles: Boolean = false,
         hasPrivateKeyOnly: Boolean = false,
     ): String
-    fun init()
     fun setShouldShowLegalScene(value: Boolean)
     fun saveEmailForCurrentPersona(value: String)
     fun savePhoneForCurrentPersona(value: String)

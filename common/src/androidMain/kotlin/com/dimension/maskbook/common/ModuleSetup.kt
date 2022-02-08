@@ -27,6 +27,7 @@ import org.koin.core.module.Module
 interface ModuleSetup {
     fun NavGraphBuilder.route(navController: NavController)
     fun dependencyInject(): Module
+    fun onExtensionReady() {}
 }
 
 fun ModuleSetup.route(builder: NavGraphBuilder, navController: NavController) =

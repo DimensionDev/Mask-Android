@@ -43,7 +43,6 @@ import com.dimension.maskbook.wallet.repository.ICollectibleRepository
 import com.dimension.maskbook.wallet.repository.IContactsRepository
 import com.dimension.maskbook.wallet.repository.IPersonaRepository
 import com.dimension.maskbook.wallet.repository.ISendHistoryRepository
-import com.dimension.maskbook.wallet.repository.ISettingsRepository
 import com.dimension.maskbook.wallet.repository.ITokenRepository
 import com.dimension.maskbook.wallet.repository.ITransactionRepository
 import com.dimension.maskbook.wallet.repository.IWalletConnectRepository
@@ -87,11 +86,16 @@ class MaskbookApp : Application() {
     }
 }
 
+fun initModule() {
+    CommonSetup.onExtensionReady()
+    WalletSetup.onExtensionReady()
+    SettingSetup.onExtensionReady()
+}
+
 fun initRepository() {
     KoinPlatformTools.defaultContext().get().get<IPersonaRepository>().init()
     KoinPlatformTools.defaultContext().get().get<IAppRepository>().init()
     KoinPlatformTools.defaultContext().get().get<IWalletRepository>().init()
-    KoinPlatformTools.defaultContext().get().get<ISettingsRepository>().init()
     KoinPlatformTools.defaultContext().get().get<IWalletConnectRepository>().init()
 }
 

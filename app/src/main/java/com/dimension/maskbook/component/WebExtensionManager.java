@@ -340,6 +340,7 @@ public class WebExtensionManager implements IWebExtensionManager,
 
         mPort.setDelegate(this);
         sendSetupPortMessages();
+        MaskbookAppKt.initModule();
         MaskbookAppKt.initRepository();
         MaskbookAppKt.initEvent();
         MaskbookAppKt.initWalletConnect();

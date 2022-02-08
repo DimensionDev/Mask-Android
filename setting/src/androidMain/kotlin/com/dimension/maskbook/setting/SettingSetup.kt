@@ -26,11 +26,13 @@ import androidx.navigation.NavGraphBuilder
 import com.dimension.maskbook.common.ModuleSetup
 import com.dimension.maskbook.common.retrofit.retrofit
 import com.dimension.maskbook.common.ui.tab.TabScreen
+import com.dimension.maskbook.setting.data.JSDataSource
+import com.dimension.maskbook.setting.data.PreferenceDataSource
+import com.dimension.maskbook.setting.data.settingsDataStore
 import com.dimension.maskbook.setting.export.SettingServices
 import com.dimension.maskbook.setting.ui.tab.SettingsTabScreen
 import com.dimension.maskbook.wallet.repository.ISettingsRepository
 import com.dimension.maskbook.wallet.repository.SettingsRepository
-import com.dimension.maskbook.wallet.repository.settingsDataStore
 import com.dimension.maskbook.wallet.services.BackupServices
 import com.dimension.maskbook.wallet.services.model.DownloadResponse
 import com.dimension.maskbook.wallet.viewmodel.settings.AppearanceSettingsViewModel
@@ -50,6 +52,7 @@ import com.dimension.maskbook.wallet.viewmodel.settings.RemoteBackupRecoveryView
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import org.koin.mp.KoinPlatformTools
 
 object SettingSetup : ModuleSetup {
     override fun NavGraphBuilder.route(navController: NavController) {
@@ -60,10 +63,12 @@ object SettingSetup : ModuleSetup {
             retrofit("https://vaalh28dbi.execute-api.ap-east-1.amazonaws.com")
         }
         single<ISettingsRepository> {
-            SettingsRepository(get<Context>().settingsDataStore, get())
+            SettingsRepository(get(), get(), get())
         }
         single<SettingServices> { SettingServicesImpl(get(), get()) } bind com.dimension.maskbook.setting.export.BackupServices::class
         single { SettingsTabScreen() } bind TabScreen::class
+        single { JSDataSource() }
+        single { PreferenceDataSource(get<Context>().settingsDataStore) }
 
         viewModel { LanguageSettingsViewModel(get()) }
         viewModel { AppearanceSettingsViewModel(get()) }
@@ -103,5 +108,9 @@ object SettingSetup : ModuleSetup {
         viewModel { BackupCloudViewModel(get()) }
         viewModel { BackupCloudExecuteViewModel(get(), get(), get()) }
         // viewModel { BiometricEnableViewModel(get(), get()) }
+    }
+
+    override fun onExtensionReady() {
+        KoinPlatformTools.defaultContext().get().get<JSDataSource>().initData()
     }
 }
