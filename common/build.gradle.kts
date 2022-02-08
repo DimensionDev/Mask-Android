@@ -50,6 +50,8 @@ kotlin {
                 api("org.web3j:core:${Versions.web3j}")
 
                 api("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.Kotlin.serialization}")
+
+                implementation("androidx.biometric:biometric-ktx:${Versions.biometric}")
             }
         }
         val androidTest by getting {

@@ -27,7 +27,6 @@ import com.dimension.maskbook.common.retrofit.retrofit
 import com.dimension.maskbook.setting.export.SettingServices
 import com.dimension.maskbook.wallet.services.BackupServices
 import com.dimension.maskbook.wallet.services.model.DownloadResponse
-import com.dimension.maskbook.wallet.utils.BiometricAuthenticator
 import com.dimension.maskbook.wallet.viewmodel.settings.AppearanceSettingsViewModel
 import com.dimension.maskbook.wallet.viewmodel.settings.BackupCloudExecuteViewModel
 import com.dimension.maskbook.wallet.viewmodel.settings.BackupCloudViewModel
@@ -55,10 +54,6 @@ class SettingSetup : ModuleSetup {
             retrofit("https://vaalh28dbi.execute-api.ap-east-1.amazonaws.com")
         }
         single<SettingServices> { SettingServicesImpl() }
-
-        single {
-            BiometricAuthenticator()
-        }
 
         viewModel { LanguageSettingsViewModel(get()) }
         viewModel { AppearanceSettingsViewModel(get()) }

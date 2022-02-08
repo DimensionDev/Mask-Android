@@ -18,7 +18,7 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.utils
+package com.dimension.maskbook.common.util
 
 import android.content.Context
 import android.content.ContextWrapper

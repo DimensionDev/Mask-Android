@@ -22,8 +22,8 @@ package com.dimension.maskbook.wallet.viewmodel.wallets
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
+import com.dimension.maskbook.common.util.BiometricAuthenticator
 import com.dimension.maskbook.wallet.repository.ISettingsRepository
-import com.dimension.maskbook.wallet.utils.BiometricAuthenticator
 
 class BiometricEnableViewModel(
     private val biometricAuthenticator: BiometricAuthenticator,
