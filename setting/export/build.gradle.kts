@@ -9,7 +9,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.Kotlin.coroutines}")
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:${Versions.Kotlin.serialization}")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.Kotlin.serialization}")
             }
         }
         val commonTest by getting {
