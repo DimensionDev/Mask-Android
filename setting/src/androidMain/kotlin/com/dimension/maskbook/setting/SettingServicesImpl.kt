@@ -24,13 +24,13 @@ import com.dimension.maskbook.setting.export.SettingServices
 import com.dimension.maskbook.setting.export.model.BackupMeta
 import com.dimension.maskbook.wallet.repository.Appearance
 import com.dimension.maskbook.wallet.repository.BackupRepository
+import com.dimension.maskbook.wallet.repository.ISettingsRepository
 import com.dimension.maskbook.wallet.repository.NetworkType
-import com.dimension.maskbook.wallet.repository.SettingsRepository
 import com.dimension.maskbook.wallet.repository.TradeProvider
 import kotlinx.coroutines.flow.Flow
 
 class SettingServicesImpl(
-    private val settingsRepository: SettingsRepository,
+    private val settingsRepository: ISettingsRepository,
     private val backupRepository: BackupRepository,
 ) : SettingServices {
 

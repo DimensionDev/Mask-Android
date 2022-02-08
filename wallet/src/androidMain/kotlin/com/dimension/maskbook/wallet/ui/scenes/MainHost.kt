@@ -51,6 +51,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
+import com.dimension.maskbook.common.ext.getAll
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.wallet.ui.MaskTheme
 import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
@@ -68,7 +69,7 @@ fun MainHost(
     initialTab: String,
     onBack: () -> Unit,
 ) {
-    val tabs = get<Set<TabScreen>>()
+    val tabs: Set<TabScreen> = getAll()
 
     val initialPage = remember(initialTab) {
         if (initialTab.isEmpty()) return@remember 0

@@ -18,11 +18,18 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.persona.export
+package com.dimension.maskbook.common.ext
 
-import com.dimension.maskbook.wallet.repository.PersonaData
-import kotlinx.coroutines.flow.Flow
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import org.koin.core.annotation.KoinInternalApi
+import org.koin.core.context.GlobalContext
+import org.koin.core.scope.Scope
 
-interface PersonaServices {
-    val currentPersona: Flow<PersonaData?>
+@OptIn(KoinInternalApi::class)
+@Composable
+inline fun <reified T> getAll(
+    scope: Scope = GlobalContext.get().scopeRegistry.rootScope,
+): Set<T> = remember {
+    scope.getAll<T>(T::class).toHashSet()
 }

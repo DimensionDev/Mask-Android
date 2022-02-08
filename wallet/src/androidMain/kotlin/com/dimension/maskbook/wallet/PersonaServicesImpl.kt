@@ -18,11 +18,16 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.persona.export
+package com.dimension.maskbook.wallet
 
+import com.dimension.maskbook.persona.export.PersonaServices
+import com.dimension.maskbook.wallet.repository.IPersonaRepository
 import com.dimension.maskbook.wallet.repository.PersonaData
 import kotlinx.coroutines.flow.Flow
 
-interface PersonaServices {
-    val currentPersona: Flow<PersonaData?>
+class PersonaServicesImpl(
+    private val personaRepository: IPersonaRepository
+) : PersonaServices {
+    override val currentPersona: Flow<PersonaData?>
+        get() = personaRepository.currentPersona
 }

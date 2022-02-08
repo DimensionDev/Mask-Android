@@ -27,6 +27,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.room.Room
 import com.dimension.maskbook.common.ModuleSetup
 import com.dimension.maskbook.common.ui.tab.TabScreen
+import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.wallet.db.AppDatabase
 import com.dimension.maskbook.wallet.db.RoomMigrations
 import com.dimension.maskbook.wallet.services.WalletServices
@@ -112,6 +113,8 @@ object WalletSetup : ModuleSetup {
 
         provideViewModel()
         provideServices()
+
+        provideOtherModule()
     }
 }
 
@@ -193,4 +196,8 @@ private fun Module.provideViewModel() {
 
 private fun Module.provideServices() {
     single { WalletServices() }
+}
+
+private fun Module.provideOtherModule() {
+    single<PersonaServices> { PersonaServicesImpl(get()) }
 }
