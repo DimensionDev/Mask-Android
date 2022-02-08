@@ -28,3 +28,6 @@ interface ModuleSetup {
     fun NavGraphBuilder.route(navController: NavController)
     fun dependencyInject(): Module
 }
+
+fun ModuleSetup.route(builder: NavGraphBuilder, navController: NavController) =
+    builder.route(navController)

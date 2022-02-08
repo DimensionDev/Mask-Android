@@ -54,8 +54,6 @@ import com.dimension.maskbook.wallet.repository.TokenRepository
 import com.dimension.maskbook.wallet.repository.TransactionRepository
 import com.dimension.maskbook.wallet.repository.WalletConnectRepository
 import com.dimension.maskbook.wallet.repository.WalletContactRepository
-import com.dimension.maskbook.wallet.servicesModule
-import com.dimension.maskbook.wallet.walletModules
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManagerV1
 import kotlinx.coroutines.CoroutineScope
@@ -83,9 +81,7 @@ class MaskbookApp : Application() {
                 WalletSetup.dependencyInject(),
                 SettingSetup.dependencyInject(),
                 repositoryModules,
-                walletModules,
                 platformModules,
-                servicesModule,
             )
         }
     }
