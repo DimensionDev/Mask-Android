@@ -11,7 +11,6 @@ kotlin {
     sourceSets {
         val androidMain by getting {
             dependencies {
-                implementation("androidx.activity:activity-compose:1.4.0")
                 implementation("androidx.compose.runtime:runtime-livedata:1.0.5")
                 // implementation("com.google.android.material:material:1.6.0-alpha02")
 
