@@ -22,13 +22,33 @@ package com.dimension.maskbook.setting
 
 import com.dimension.maskbook.setting.export.SettingServices
 import com.dimension.maskbook.wallet.repository.Appearance
+import com.dimension.maskbook.wallet.repository.NetworkType
+import com.dimension.maskbook.wallet.repository.TradeProvider
 import kotlinx.coroutines.flow.Flow
 
 class SettingServicesImpl : SettingServices {
+    override val biometricEnabled: Flow<Boolean>
+        get() = TODO("Not yet implemented")
     override val appearance: Flow<Appearance>
         get() = TODO("Not yet implemented")
     override val paymentPassword: Flow<String>
         get() = TODO("Not yet implemented")
     override val backupPassword: Flow<String>
         get() = TODO("Not yet implemented")
+    override val tradeProvider: Flow<Map<NetworkType, TradeProvider>>
+        get() = TODO("Not yet implemented")
+    override val shouldShowLegalScene: Flow<Boolean>
+        get() = TODO("Not yet implemented")
+
+    override fun setTradeProvider(networkType: NetworkType, tradeProvider: TradeProvider) {
+        TODO("Not yet implemented")
+    }
+
+    override fun setPaymentPassword(value: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun setShouldShowLegalScene(value: Boolean) {
+        TODO("Not yet implemented")
+    }
 }

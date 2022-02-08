@@ -30,11 +30,11 @@ import androidx.navigation.compose.dialog
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import androidx.navigation.navOptions
+import com.dimension.maskbook.setting.export.SettingServices
 import com.dimension.maskbook.wallet.ext.encodeUrl
 import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.repository.AppKey
 import com.dimension.maskbook.wallet.repository.IPersonaRepository
-import com.dimension.maskbook.wallet.repository.ISettingsRepository
 import com.dimension.maskbook.wallet.repository.Network
 import com.dimension.maskbook.wallet.repository.PlatformType
 import com.dimension.maskbook.wallet.ui.scenes.MainHost
@@ -200,7 +200,7 @@ fun NavGraphBuilder.mainRoute(
         }
         composable("PersonaMenu") {
             val persona by get<IPersonaRepository>().currentPersona.observeAsState(initial = null)
-            val repository = get<ISettingsRepository>()
+            val repository = get<SettingServices>()
             val backupPassword by repository.backupPassword.observeAsState(initial = "")
             val paymentPassword by repository.paymentPassword.observeAsState(initial = "")
             persona?.let {

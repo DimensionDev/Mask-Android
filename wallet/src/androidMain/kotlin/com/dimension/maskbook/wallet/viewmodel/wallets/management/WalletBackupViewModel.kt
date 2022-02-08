@@ -21,14 +21,14 @@
 package com.dimension.maskbook.wallet.viewmodel.wallets.management
 
 import androidx.lifecycle.ViewModel
-import com.dimension.maskbook.wallet.repository.ISettingsRepository
+import com.dimension.maskbook.setting.export.SettingServices
 import com.dimension.maskbook.wallet.repository.IWalletRepository
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.mapNotNull
 
 class WalletBackupViewModel(
     private val repository: IWalletRepository,
-    private val settingsRepository: ISettingsRepository
+    private val settingsRepository: SettingServices
 ) : ViewModel() {
     val keyStore by lazy {
         combine(

@@ -23,8 +23,8 @@ package com.dimension.maskbook.wallet.viewmodel.wallets
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dimension.maskbook.setting.export.SettingServices
 import com.dimension.maskbook.wallet.R
-import com.dimension.maskbook.wallet.repository.ISettingsRepository
 import com.dimension.maskbook.wallet.utils.BiometricAuthenticator
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -33,7 +33,7 @@ import kotlinx.coroutines.launch
 
 open class BiometricViewModel(
     private val biometricAuthenticator: BiometricAuthenticator,
-    protected val settingsRepository: ISettingsRepository
+    protected val settingsRepository: SettingServices
 ) : ViewModel() {
     private var _enterPassword = MutableStateFlow(false)
     val biometricEnabled by lazy {

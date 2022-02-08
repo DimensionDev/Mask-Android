@@ -22,14 +22,14 @@ package com.dimension.maskbook.wallet.viewmodel.wallets
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dimension.maskbook.setting.export.SettingServices
 import com.dimension.maskbook.wallet.ext.Validator
 import com.dimension.maskbook.wallet.ext.asStateIn
-import com.dimension.maskbook.wallet.repository.ISettingsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 
 class SetUpPaymentPasswordViewModel(
-    private val repository: ISettingsRepository,
+    private val repository: SettingServices,
 ) : ViewModel() {
     private val _newPassword = MutableStateFlow("")
     val newPassword = _newPassword.asStateIn(viewModelScope, "")

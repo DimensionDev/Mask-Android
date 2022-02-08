@@ -21,14 +21,14 @@
 package com.dimension.maskbook.wallet.viewmodel.wallets
 
 import androidx.lifecycle.viewModelScope
+import com.dimension.maskbook.setting.export.SettingServices
 import com.dimension.maskbook.wallet.ext.asStateIn
-import com.dimension.maskbook.wallet.repository.ISettingsRepository
 import com.dimension.maskbook.wallet.utils.BiometricAuthenticator
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 
 class UnlockWalletViewModel(
-    settingsRepository: ISettingsRepository,
+    settingsRepository: SettingServices,
     biometricAuthenticator: BiometricAuthenticator
 ) : BiometricViewModel(biometricAuthenticator, settingsRepository) {
     private val _password = MutableStateFlow("")

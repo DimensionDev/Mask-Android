@@ -22,13 +22,13 @@ package com.dimension.maskbook.wallet.viewmodel.app
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dimension.maskbook.setting.export.SettingServices
 import com.dimension.maskbook.wallet.ext.asStateIn
-import com.dimension.maskbook.wallet.repository.ISettingsRepository
 import com.dimension.maskbook.wallet.repository.NetworkType
 import com.dimension.maskbook.wallet.repository.TradeProvider
 
 class MarketTrendSettingsViewModel(
-    private val repository: ISettingsRepository
+    private val repository: SettingServices
 ) : ViewModel() {
     val tradeProvider by lazy {
         repository.tradeProvider.asStateIn(viewModelScope, emptyMap())
