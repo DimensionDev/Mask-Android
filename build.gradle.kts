@@ -9,6 +9,9 @@ allprojects {
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
         kotlinOptions {
             jvmTarget = Versions.Java.jvmTarget
+            freeCompilerArgs = listOf(
+                "-opt-in=kotlin.RequiresOptIn",
+            )
         }
     }
 
