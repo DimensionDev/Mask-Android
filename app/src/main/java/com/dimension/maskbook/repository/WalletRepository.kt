@@ -31,6 +31,7 @@ import androidx.paging.LoadType
 import androidx.paging.PagingConfig
 import androidx.paging.PagingState
 import androidx.room.withTransaction
+import com.dimension.maskbook.common.okhttp.okHttpClient
 import com.dimension.maskbook.debankapi.model.ChainID
 import com.dimension.maskbook.wallet.db.AppDatabase
 import com.dimension.maskbook.wallet.db.model.CoinPlatformType
@@ -52,7 +53,6 @@ import com.dimension.maskbook.wallet.repository.WalletData
 import com.dimension.maskbook.wallet.repository.chainType
 import com.dimension.maskbook.wallet.repository.httpService
 import com.dimension.maskbook.wallet.services.WalletServices
-import com.dimension.maskbook.wallet.services.okHttpClient
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager
 import com.dimension.maskwalletcore.WalletKey
 import kotlinx.coroutines.CoroutineScope

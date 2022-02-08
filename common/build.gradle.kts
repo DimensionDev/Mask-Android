@@ -47,6 +47,12 @@ kotlin {
                 api("com.google.accompanist:accompanist-navigation-material:${Versions.accompanist}")
                 api("com.google.accompanist:accompanist-permissions:${Versions.accompanist}")
 
+                // coroutines
+                api("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.Kotlin.coroutines}")
+                api("org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.Kotlin.coroutines}")
+
+                api("androidx.datastore:datastore-preferences:${Versions.datastore}")
+
                 api("org.web3j:core:${Versions.web3j}")
 
                 api("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.Kotlin.serialization}")

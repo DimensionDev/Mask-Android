@@ -28,6 +28,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.navigation.plusAssign
+import com.dimension.maskbook.common.ui.LocalRootNavController
 import com.dimension.maskbook.wallet.navHostAnimationDurationMillis
 import com.dimension.maskbook.wallet.route.labsRoute
 import com.dimension.maskbook.wallet.route.mainRoute

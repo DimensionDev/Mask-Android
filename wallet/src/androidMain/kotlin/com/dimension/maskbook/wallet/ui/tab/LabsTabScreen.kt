@@ -21,10 +21,10 @@
 package com.dimension.maskbook.wallet.ui.tab
 
 import androidx.compose.runtime.Composable
+import com.dimension.maskbook.common.ui.LocalRootNavController
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.repository.AppKey
-import com.dimension.maskbook.wallet.ui.LocalRootNavController
 import com.dimension.maskbook.wallet.ui.scenes.app.LabsScene
 
 class LabsTabScreen : TabScreen {

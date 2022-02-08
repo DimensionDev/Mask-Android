@@ -47,7 +47,6 @@ android {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.1")
     implementation("androidx.annotation:annotation:1.3.0")
     implementation("androidx.appcompat:appcompat:1.4.0")
     implementation("androidx.core:core-ktx:1.7.0")
@@ -66,6 +65,9 @@ dependencies {
     implementation("androidx.paging:paging-runtime-ktx:3.1.0")
 
     implementation(projects.debankapi)
+
+    implementation(projects.common)
+    implementation(projects.common.okhttp)
 
     implementation("org.mozilla.geckoview:geckoview:95.+")
     testImplementation("junit:junit:4.13.2")

@@ -24,7 +24,9 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import com.dimension.maskbook.common.ModuleSetup
 import com.dimension.maskbook.common.retrofit.retrofit
+import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.setting.export.SettingServices
+import com.dimension.maskbook.setting.ui.tab.SettingsTabScreen
 import com.dimension.maskbook.wallet.services.BackupServices
 import com.dimension.maskbook.wallet.services.model.DownloadResponse
 import com.dimension.maskbook.wallet.viewmodel.settings.AppearanceSettingsViewModel
@@ -41,8 +43,8 @@ import com.dimension.maskbook.wallet.viewmodel.settings.PaymentPasswordSettingsV
 import com.dimension.maskbook.wallet.viewmodel.settings.PhoneBackupViewModel
 import com.dimension.maskbook.wallet.viewmodel.settings.PhoneSetupViewModel
 import com.dimension.maskbook.wallet.viewmodel.settings.RemoteBackupRecoveryViewModelBase
-// import com.dimension.maskbook.common.viewmodel.BiometricEnableViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 object SettingSetup : ModuleSetup {
@@ -53,8 +55,8 @@ object SettingSetup : ModuleSetup {
         single<BackupServices> {
             retrofit("https://vaalh28dbi.execute-api.ap-east-1.amazonaws.com")
         }
-        single<SettingServices> { SettingServicesImpl() }
-        single {  }
+        single<SettingServices> { SettingServicesImpl(get(), get()) }
+        single { SettingsTabScreen() } bind TabScreen::class
 
         viewModel { LanguageSettingsViewModel(get()) }
         viewModel { AppearanceSettingsViewModel(get()) }

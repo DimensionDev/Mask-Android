@@ -23,15 +23,15 @@ package com.dimension.maskbook.wallet.viewmodel.register
 import android.os.CountDownTimer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dimension.maskbook.setting.export.SettingServices
 import com.dimension.maskbook.wallet.ext.Validator
 import com.dimension.maskbook.wallet.ext.asStateIn
-import com.dimension.maskbook.wallet.repository.BackupRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 class PhoneRemoteBackupRecoveryViewModel(
     requestNavigate: (NavigateArgs) -> Unit,
-    private val backupRepository: BackupRepository,
+    private val backupRepository: SettingServices,
 ) : RemoteBackupRecoveryViewModelBase(
     requestNavigate
 ) {
@@ -42,7 +42,7 @@ class PhoneRemoteBackupRecoveryViewModel(
     }
 
     override suspend fun downloadBackupInternal(code: String, value: String): String {
-        return backupRepository.downloadBackupWithPhone(value, code).toString()
+        return backupRepository.downloadBackupWithPhone(value, code)
     }
 
     override suspend fun verifyCodeInternal(value: String, code: String) {
@@ -60,7 +60,7 @@ class PhoneRemoteBackupRecoveryViewModel(
 
 class EmailRemoteBackupRecoveryViewModel(
     requestNavigate: (NavigateArgs) -> Unit,
-    private val backupRepository: BackupRepository,
+    private val backupRepository: SettingServices,
 ) : RemoteBackupRecoveryViewModelBase(
     requestNavigate
 ) {

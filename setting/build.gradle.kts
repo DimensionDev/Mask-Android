@@ -12,7 +12,6 @@ kotlin {
             dependencies {
                 implementation(projects.common)
                 implementation(projects.common.retrofit)
-                implementation("androidx.datastore:datastore-preferences:${Versions.datastore}")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.Kotlin.serialization}")
             }
         }

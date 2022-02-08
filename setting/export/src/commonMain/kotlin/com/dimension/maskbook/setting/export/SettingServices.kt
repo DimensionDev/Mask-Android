@@ -39,4 +39,11 @@ interface SettingServices {
     fun setShouldShowLegalScene(value: Boolean)
     suspend fun restoreBackupFromJson(value: String)
     suspend fun provideBackupMetaFromJson(value: String): BackupMeta?
+
+    suspend fun downloadBackupWithPhone(phone: String, code: String): String
+    suspend fun downloadBackupWithEmail(email: String, code: String): String
+    suspend fun validatePhoneCode(phone: String, code: String)
+    suspend fun validateEmailCode(email: String, code: String)
+    suspend fun sendPhoneCode(phone: String)
+    suspend fun sendEmailCode(email: String)
 }

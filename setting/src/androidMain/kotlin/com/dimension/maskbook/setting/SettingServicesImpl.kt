@@ -23,45 +23,79 @@ package com.dimension.maskbook.setting
 import com.dimension.maskbook.setting.export.SettingServices
 import com.dimension.maskbook.setting.export.model.BackupMeta
 import com.dimension.maskbook.wallet.repository.Appearance
+import com.dimension.maskbook.wallet.repository.BackupRepository
 import com.dimension.maskbook.wallet.repository.NetworkType
+import com.dimension.maskbook.wallet.repository.SettingsRepository
 import com.dimension.maskbook.wallet.repository.TradeProvider
 import kotlinx.coroutines.flow.Flow
 
-class SettingServicesImpl : SettingServices {
+class SettingServicesImpl(
+    private val settingsRepository: SettingsRepository,
+    private val backupRepository: BackupRepository,
+) : SettingServices {
+
     override val biometricEnabled: Flow<Boolean>
-        get() = TODO("Not yet implemented")
+        get() = settingsRepository.biometricEnabled
+
     override val appearance: Flow<Appearance>
-        get() = TODO("Not yet implemented")
+        get() = settingsRepository.appearance
+
     override val paymentPassword: Flow<String>
-        get() = TODO("Not yet implemented")
+        get() = settingsRepository.paymentPassword
     override val backupPassword: Flow<String>
-        get() = TODO("Not yet implemented")
+        get() = settingsRepository.backupPassword
+
     override val tradeProvider: Flow<Map<NetworkType, TradeProvider>>
-        get() = TODO("Not yet implemented")
+        get() = settingsRepository.tradeProvider
+
     override val shouldShowLegalScene: Flow<Boolean>
-        get() = TODO("Not yet implemented")
+        get() = settingsRepository.shouldShowLegalScene
 
     override fun setBiometricEnabled(value: Boolean) {
-        TODO("Not yet implemented")
+        settingsRepository.setBiometricEnabled(value)
     }
 
     override fun setTradeProvider(networkType: NetworkType, tradeProvider: TradeProvider) {
-        TODO("Not yet implemented")
+        settingsRepository.setTradeProvider(networkType, tradeProvider)
     }
 
     override fun setPaymentPassword(value: String) {
-        TODO("Not yet implemented")
+        settingsRepository.setPaymentPassword(value)
     }
 
     override fun setShouldShowLegalScene(value: Boolean) {
-        TODO("Not yet implemented")
+        settingsRepository.setShouldShowLegalScene(value)
     }
 
     override suspend fun restoreBackupFromJson(value: String) {
-        TODO("Not yet implemented")
+        settingsRepository.restoreBackupFromJson(value)
     }
 
     override suspend fun provideBackupMetaFromJson(value: String): BackupMeta? {
-        TODO("Not yet implemented")
+        return settingsRepository.provideBackupMetaFromJson(value)
+    }
+
+    override suspend fun downloadBackupWithPhone(phone: String, code: String): String {
+        return backupRepository.downloadBackupWithPhone(phone, code).toString()
+    }
+
+    override suspend fun downloadBackupWithEmail(email: String, code: String): String {
+        return backupRepository.downloadBackupWithEmail(email, code).toString()
+    }
+
+    override suspend fun validatePhoneCode(phone: String, code: String) {
+        backupRepository.validatePhoneCode(phone, code)
+    }
+
+    override suspend fun validateEmailCode(email: String, code: String) {
+        backupRepository.validateEmailCode(email, code)
+    }
+
+    override suspend fun sendPhoneCode(phone: String) {
+        backupRepository.sendPhoneCode(phone)
+    }
+
+    override suspend fun sendEmailCode(email: String) {
+        backupRepository.sendEmailCode(email)
     }
 }
