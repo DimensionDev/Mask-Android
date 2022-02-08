@@ -23,5 +23,6 @@ package com.dimension.maskbook.common.ui
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.navigation.NavHostController
 
+// FIXME: 2022/2/8 Remove LocalRootNavController
 val LocalRootNavController =
     staticCompositionLocalOf<NavHostController> { error("No NavHostController") }
