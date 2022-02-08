@@ -18,11 +18,8 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.export
+package com.dimension.maskbook.labs
 
-import com.dimension.maskbook.wallet.repository.WalletData
-import kotlinx.coroutines.flow.Flow
+import com.dimension.maskbook.labs.export.LabsServices
 
-interface WalletServices {
-    val currentWallet: Flow<WalletData?>
-}
+class LabsServicesImpl : LabsServices

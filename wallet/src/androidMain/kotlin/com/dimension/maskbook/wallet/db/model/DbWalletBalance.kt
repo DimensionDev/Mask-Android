@@ -34,15 +34,3 @@ data class DbWalletBalance(
     val type: DbWalletBalanceType,
     val value: BigDecimal,
 )
-
-enum class DbWalletBalanceType {
-    all,
-    eth,
-    rinkeby,
-    bsc,
-    polygon,
-    arbitrum,
-    xdai,
-    optimism,
-    polka,
-}

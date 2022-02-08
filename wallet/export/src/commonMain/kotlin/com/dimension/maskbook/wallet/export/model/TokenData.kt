@@ -18,22 +18,36 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.viewmodel.app
+package com.dimension.maskbook.wallet.repository
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.dimension.maskbook.setting.export.SettingServices
-import com.dimension.maskbook.wallet.ext.asStateIn
-import com.dimension.maskbook.wallet.repository.NetworkType
-import com.dimension.maskbook.wallet.repository.TradeProvider
+import java.math.BigDecimal
 
-class MarketTrendSettingsViewModel(
-    private val repository: SettingServices
-) : ViewModel() {
-    val tradeProvider by lazy {
-        repository.tradeProvider.asStateIn(viewModelScope, emptyMap())
+class TokenData(
+    val address: String,
+    val chainType: ChainType,
+    val name: String,
+    val symbol: String,
+    val decimals: Long,
+    val logoURI: String?,
+    val price: BigDecimal,
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as TokenData
+
+        if (address != other.address) return false
+        if (chainType != other.chainType) return false
+
+        return true
     }
-    fun setTradeProvider(networkType: NetworkType, provider: TradeProvider) {
-        repository.setTradeProvider(networkType = networkType, tradeProvider = provider)
+
+    override fun hashCode(): Int {
+        var result = address.hashCode()
+        result = 31 * result + chainType.hashCode()
+        return result
     }
+
+    companion object
 }

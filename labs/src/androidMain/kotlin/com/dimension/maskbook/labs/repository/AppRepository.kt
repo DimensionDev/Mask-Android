@@ -18,11 +18,11 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.repository
+package com.dimension.maskbook.labs.repository
 
-import com.dimension.maskbook.wallet.repository.AppData
-import com.dimension.maskbook.wallet.repository.AppKey
-import com.dimension.maskbook.wallet.repository.IAppRepository
+import com.dimension.maskbook.labs.export.model.AppData
+import com.dimension.maskbook.labs.export.model.AppKey
+import com.dimension.maskbook.repository.JSMethod
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

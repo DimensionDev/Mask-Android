@@ -9,6 +9,7 @@ kotlin {
     sourceSets {
         val androidMain by getting {
             dependencies {
+                implementation(projects.common)
             }
         }
         val androidTest by getting {

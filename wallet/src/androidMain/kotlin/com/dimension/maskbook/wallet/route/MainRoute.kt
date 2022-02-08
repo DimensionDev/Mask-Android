@@ -36,7 +36,6 @@ import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.repository.IPersonaRepository
 import com.dimension.maskbook.wallet.repository.PlatformType
 import com.dimension.maskbook.wallet.ui.scenes.MainHost
-import com.dimension.maskbook.wallet.ui.scenes.app.settings.MarketTrendSettingsModal
 import com.dimension.maskbook.wallet.ui.scenes.persona.BackUpPasswordModal
 import com.dimension.maskbook.wallet.ui.scenes.persona.ExportPrivateKeyScene
 import com.dimension.maskbook.wallet.ui.scenes.persona.LogoutDialog
@@ -143,10 +142,6 @@ fun NavGraphBuilder.mainRoute(
                     }
                 }
             )
-        }
-
-        bottomSheet("MarketTrendSettings") {
-            MarketTrendSettingsModal()
         }
         composable("PersonaMenu") {
             val persona by get<IPersonaRepository>().currentPersona.observeAsState(initial = null)

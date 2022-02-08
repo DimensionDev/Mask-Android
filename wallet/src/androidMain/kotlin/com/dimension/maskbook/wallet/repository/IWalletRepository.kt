@@ -24,7 +24,6 @@ import com.dimension.maskbook.common.okhttp.okHttpClient
 import com.dimension.maskbook.debankapi.model.ChainID
 import com.dimension.maskbook.wallet.db.model.CoinPlatformType
 import com.dimension.maskbook.wallet.db.model.DbCollectible
-import com.dimension.maskbook.wallet.db.model.DbWalletBalanceType
 import com.dimension.maskbook.wallet.db.model.DbWalletTokenTokenWithWallet
 import com.dimension.maskbook.wallet.db.model.DbWalletTokenWithToken
 import com.dimension.maskbook.wallet.db.model.WalletSource
@@ -46,50 +45,28 @@ data class WalletCreateOrImportResult(
     }
 }
 
-data class WalletData(
-    val id: String,
-    val name: String,
-    val address: String,
-    val imported: Boolean,
-    val fromWalletConnect: Boolean,
-    val walletConnectChainType: ChainType? = ChainType.eth,
-    val walletConnectDeepLink: String? = null,
-    val tokens: List<WalletTokenData>,
-    val balance: Map<DbWalletBalanceType, BigDecimal>,
-) {
-    companion object {
-        fun fromDb(data: DbWalletTokenTokenWithWallet) = with(data) {
-            WalletData(
-                id = wallet.id,
-                name = wallet.name,
-                address = wallet.address,
-                imported = storedKey.source == WalletSource.ImportedKeyStore || storedKey.source == WalletSource.ImportedMnemonic || storedKey.source == WalletSource.ImportedPrivateKey,
-                fromWalletConnect = storedKey.source == WalletSource.WalletConnect,
-                tokens = items.map {
-                    WalletTokenData.fromDb(it)
-                },
-                balance = balance.associate { it.type to it.value },
-                walletConnectChainType = wallet.walletConnectChainType,
-                walletConnectDeepLink = wallet.walletConnectDeepLink
-            )
-        }
-    }
+fun WalletData.Companion.fromDb(data: DbWalletTokenTokenWithWallet) = with(data) {
+    WalletData(
+        id = wallet.id,
+        name = wallet.name,
+        address = wallet.address,
+        imported = storedKey.source == WalletSource.ImportedKeyStore || storedKey.source == WalletSource.ImportedMnemonic || storedKey.source == WalletSource.ImportedPrivateKey,
+        fromWalletConnect = storedKey.source == WalletSource.WalletConnect,
+        tokens = items.map {
+            WalletTokenData.fromDb(it)
+        },
+        balance = balance.associate { it.type to it.value },
+        walletConnectChainType = wallet.walletConnectChainType,
+        walletConnectDeepLink = wallet.walletConnectDeepLink
+    )
 }
 
-data class WalletTokenData(
-    val count: BigDecimal,
-    val tokenAddress: String,
-    val tokenData: TokenData,
-) {
-    companion object {
-        fun fromDb(data: DbWalletTokenWithToken) = with(data) {
-            WalletTokenData(
-                count = reference.count,
-                tokenAddress = token.address,
-                tokenData = TokenData.fromDb(token)
-            )
-        }
-    }
+fun WalletTokenData.Companion.fromDb(data: DbWalletTokenWithToken) = with(data) {
+    WalletTokenData(
+        count = reference.count,
+        tokenAddress = token.address,
+        tokenData = TokenData.fromDb(token)
+    )
 }
 
 data class WalletCollectibleData(
@@ -181,31 +158,6 @@ enum class GasPriceEditMode {
 enum class UnlockType {
     PASSWORD,
     BIOMETRIC
-}
-
-@Serializable
-enum class ChainType(
-    val chainId: Long,
-    val endpoint: String,
-    val supportEip25519: Boolean,
-) {
-    eth(1, "https://mainnet.infura.io/v3/d74bd8586b9e44449cef131d39ceeefb", true),
-    rinkeby(4, "https://rinkeby.infura.io/v3/d74bd8586b9e44449cef131d39ceeefb", true),
-    bsc(56, "https://bsc-dataseed.binance.org", false),
-    polygon(137, "https://polygon-mainnet.infura.io/v3/d74bd8586b9e44449cef131d39ceeefb", false),
-    arbitrum(42_161, "https://arb1.arbitrum.io/rpc", false),
-    xdai(100, "https://rpc.xdaichain.com", false),
-    optimism(10, "https://mainnet.optimism.io", false),
-    polka(1, "", false), // TODO: json rpc endpoint
-    kovan(42, "https://kovan.infura.io/v3/d74bd8586b9e44449cef131d39ceeefb", true),
-    goerli(5, "https://goerli.infura.io/v3/d74bd8586b9e44449cef131d39ceeefb", true),
-    kusama(8, "https://kusama-rpc.polkadot.io/", false),
-    westend(9, "https://westend-rpc.polkadot.io/", false),
-    edgeware(10, "https://edgeware-node.edgewa.re/", false),
-    polkadot(17, "https://polkadot-rpc.polkadot.io/", false),
-    node(0, "", false),
-    custom(0, "", false),
-    unknown(0, "", false),
 }
 
 fun String.toChainType(): ChainType {

@@ -18,14 +18,14 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.ui.tab
+package com.dimension.maskbook.labs.ui.tab
 
 import androidx.compose.runtime.Composable
 import com.dimension.maskbook.common.ui.LocalRootNavController
 import com.dimension.maskbook.common.ui.tab.TabScreen
-import com.dimension.maskbook.wallet.R
-import com.dimension.maskbook.wallet.repository.AppKey
-import com.dimension.maskbook.wallet.ui.scenes.app.LabsScene
+import com.dimension.maskbook.labs.R
+import com.dimension.maskbook.labs.export.model.AppKey
+import com.dimension.maskbook.labs.ui.scenes.LabsScene
 
 class LabsTabScreen : TabScreen {
     override val route = "Labs"

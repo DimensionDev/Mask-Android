@@ -31,13 +31,9 @@ import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.wallet.db.AppDatabase
 import com.dimension.maskbook.wallet.db.RoomMigrations
 import com.dimension.maskbook.wallet.services.WalletServices
-import com.dimension.maskbook.wallet.ui.tab.LabsTabScreen
 import com.dimension.maskbook.wallet.ui.tab.PersonasTabScreen
 import com.dimension.maskbook.wallet.ui.tab.WalletTabScreen
 import com.dimension.maskbook.wallet.viewmodel.WelcomeViewModel
-import com.dimension.maskbook.wallet.viewmodel.app.LabsViewModel
-import com.dimension.maskbook.wallet.viewmodel.app.MarketTrendSettingsViewModel
-import com.dimension.maskbook.wallet.viewmodel.app.PluginSettingsViewModel
 import com.dimension.maskbook.wallet.viewmodel.persona.ExportPrivateKeyViewModel
 import com.dimension.maskbook.wallet.viewmodel.persona.PersonaViewModel
 import com.dimension.maskbook.wallet.viewmodel.persona.RenamePersonaViewModel
@@ -90,6 +86,7 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.module.Module
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import com.dimension.maskbook.wallet.export.WalletServices as ExportWalletServices
 
 object WalletSetup : ModuleSetup {
 
@@ -107,7 +104,8 @@ object WalletSetup : ModuleSetup {
                 .build()
         }
 
-        single { LabsTabScreen() } bind TabScreen::class
+        single<ExportWalletServices> { WalletServicesImpl(get()) }
+
         single { PersonasTabScreen() } bind TabScreen::class
         single { WalletTabScreen() } bind TabScreen::class
 
@@ -135,9 +133,6 @@ private fun Module.provideViewModel() {
     viewModel { ExportPrivateKeyViewModel(get()) }
     viewModel { PostViewModel(get(), get()) }
     viewModel { ContactsViewModel(get(), get()) }
-    viewModel { LabsViewModel(get(), get()) }
-    viewModel { PluginSettingsViewModel(get(), get()) }
-    viewModel { MarketTrendSettingsViewModel(get()) }
     viewModel { (requestNavigate: (RemoteBackupRecoveryViewModelBase.NavigateArgs) -> Unit) ->
         EmailRemoteBackupRecoveryViewModel(
             requestNavigate,
@@ -173,7 +168,13 @@ private fun Module.provideViewModel() {
     viewModel { WalletSwitchViewModel(get()) }
     viewModel { SearchAddressViewModel(get(), get(), get()) }
     viewModel { (id: String) -> TokenDetailViewModel(id, get(), get(), get()) }
-    viewModel { (initialGasLimit: Double) -> GasFeeViewModel(initialGasLimit = initialGasLimit, get(), get()) }
+    viewModel { (initialGasLimit: Double) ->
+        GasFeeViewModel(
+            initialGasLimit = initialGasLimit,
+            get(),
+            get()
+        )
+    }
     viewModel { (toAddress: String) ->
         SendTokenViewModel(
             toAddress = toAddress,
@@ -187,7 +188,14 @@ private fun Module.provideViewModel() {
     }
     viewModel { BiometricViewModel(get(), get()) }
     viewModel { WalletConnectManagementViewModel(get(), get()) }
-    viewModel { (onResult: (success: Boolean, needToSwitchNetwork: Boolean) -> Unit) -> WalletConnectViewModel(get(), get(), get(), onResult) }
+    viewModel { (onResult: (success: Boolean, needToSwitchNetwork: Boolean) -> Unit) ->
+        WalletConnectViewModel(
+            get(),
+            get(),
+            get(),
+            onResult
+        )
+    }
     viewModel { UnlockWalletViewModel(get(), get()) }
     viewModel { BackUpPasswordViewModel(get(), get()) }
     viewModel { (id: String) -> CollectibleDetailViewModel(id, get()) }

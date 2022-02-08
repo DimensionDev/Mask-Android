@@ -24,8 +24,8 @@ import android.app.Application
 import android.content.Context
 import com.dimension.maskbook.common.CommonSetup
 import com.dimension.maskbook.handler.Web3MessageHandler
+import com.dimension.maskbook.labs.LabsSetup
 import com.dimension.maskbook.platform.PlatformSwitcher
-import com.dimension.maskbook.repository.AppRepository
 import com.dimension.maskbook.repository.CollectibleRepository
 import com.dimension.maskbook.repository.JSMethod
 import com.dimension.maskbook.repository.PersonaRepository
@@ -38,7 +38,6 @@ import com.dimension.maskbook.wallet.db.model.CoinPlatformType
 import com.dimension.maskbook.wallet.platform.IPlatformSwitcher
 import com.dimension.maskbook.wallet.repository.BackupRepository
 import com.dimension.maskbook.wallet.repository.ChainType
-import com.dimension.maskbook.wallet.repository.IAppRepository
 import com.dimension.maskbook.wallet.repository.ICollectibleRepository
 import com.dimension.maskbook.wallet.repository.IContactsRepository
 import com.dimension.maskbook.wallet.repository.IPersonaRepository
@@ -79,6 +78,7 @@ class MaskbookApp : Application() {
                 CommonSetup.dependencyInject(),
                 WalletSetup.dependencyInject(),
                 SettingSetup.dependencyInject(),
+                LabsSetup.dependencyInject(),
                 repositoryModules,
                 platformModules,
             )
@@ -90,11 +90,11 @@ fun initModule() {
     CommonSetup.onExtensionReady()
     WalletSetup.onExtensionReady()
     SettingSetup.onExtensionReady()
+    LabsSetup.onExtensionReady()
 }
 
 fun initRepository() {
     KoinPlatformTools.defaultContext().get().get<IPersonaRepository>().init()
-    KoinPlatformTools.defaultContext().get().get<IAppRepository>().init()
     KoinPlatformTools.defaultContext().get().get<IWalletRepository>().init()
     KoinPlatformTools.defaultContext().get().get<IWalletConnectRepository>().init()
 }
@@ -164,7 +164,7 @@ val repositoryModules = module {
     )
     single { BackupRepository(get(), get<Context>().cacheDir, get<Context>().contentResolver) }
 //    single<IPostRepository> { PostRepository() }
-    single<IAppRepository> { AppRepository() }
+//     single<IAppRepository> { AppRepository() }
 //    single<IWalletRepository> { FakeWalletRepository() }
 //     single<ISettingsRepository> { SettingsRepository(get<Context>().settingsDataStore) }
     single<IWalletRepository> { WalletRepository(get<Context>().walletDataStore, get(), get(), get()) }

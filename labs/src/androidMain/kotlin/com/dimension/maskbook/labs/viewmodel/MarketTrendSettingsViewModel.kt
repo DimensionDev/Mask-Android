@@ -18,11 +18,22 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.export
+package com.dimension.maskbook.labs.viewmodel
 
-import com.dimension.maskbook.wallet.repository.WalletData
-import kotlinx.coroutines.flow.Flow
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.dimension.maskbook.setting.export.SettingServices
+import com.dimension.maskbook.wallet.ext.asStateIn
+import com.dimension.maskbook.wallet.repository.NetworkType
+import com.dimension.maskbook.wallet.repository.TradeProvider
 
-interface WalletServices {
-    val currentWallet: Flow<WalletData?>
+class MarketTrendSettingsViewModel(
+    private val repository: SettingServices
+) : ViewModel() {
+    val tradeProvider by lazy {
+        repository.tradeProvider.asStateIn(viewModelScope, emptyMap())
+    }
+    fun setTradeProvider(networkType: NetworkType, provider: TradeProvider) {
+        repository.setTradeProvider(networkType = networkType, tradeProvider = provider)
+    }
 }

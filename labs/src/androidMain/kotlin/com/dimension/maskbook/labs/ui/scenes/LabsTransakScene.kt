@@ -18,7 +18,7 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.ui.scenes.app
+package com.dimension.maskbook.labs.ui.scenes
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
@@ -39,8 +39,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.viewinterop.AndroidView
-import com.dimension.maskbook.wallet.R
-import com.dimension.maskbook.wallet.repository.model.TransakConfig
+import com.dimension.maskbook.labs.R
+import com.dimension.maskbook.labs.export.model.TransakConfig
 import com.dimension.maskbook.wallet.ui.widget.MaskBackButton
 import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
 import com.dimension.maskbook.wallet.ui.widget.MaskSingleLineTopAppBar

@@ -51,6 +51,7 @@ import com.dimension.maskbook.wallet.repository.IWalletRepository
 import com.dimension.maskbook.wallet.repository.TokenData
 import com.dimension.maskbook.wallet.repository.WalletData
 import com.dimension.maskbook.wallet.repository.chainType
+import com.dimension.maskbook.wallet.repository.fromDb
 import com.dimension.maskbook.wallet.repository.httpService
 import com.dimension.maskbook.wallet.services.WalletServices
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager

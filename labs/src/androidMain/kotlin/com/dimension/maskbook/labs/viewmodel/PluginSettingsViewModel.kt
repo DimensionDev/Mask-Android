@@ -18,17 +18,17 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.viewmodel.app
+package com.dimension.maskbook.labs.viewmodel
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dimension.maskbook.wallet.R
+import com.dimension.maskbook.labs.R
+import com.dimension.maskbook.labs.export.model.AppKey
+import com.dimension.maskbook.labs.repository.IAppRepository
+import com.dimension.maskbook.wallet.export.WalletServices
 import com.dimension.maskbook.wallet.ext.asStateIn
-import com.dimension.maskbook.wallet.repository.AppKey
-import com.dimension.maskbook.wallet.repository.IAppRepository
-import com.dimension.maskbook.wallet.repository.IWalletRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -95,7 +95,7 @@ private val displayDataList = listOf(
 
 class PluginSettingsViewModel(
     private val repository: IAppRepository,
-    private val walletRepository: IWalletRepository,
+    private val walletRepository: WalletServices,
 ) : ViewModel() {
 
     val apps by lazy {

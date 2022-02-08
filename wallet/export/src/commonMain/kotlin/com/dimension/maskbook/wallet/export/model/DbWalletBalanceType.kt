@@ -18,11 +18,16 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.export
+package com.dimension.maskbook.wallet.db.model
 
-import com.dimension.maskbook.wallet.repository.WalletData
-import kotlinx.coroutines.flow.Flow
-
-interface WalletServices {
-    val currentWallet: Flow<WalletData?>
+enum class DbWalletBalanceType {
+    all,
+    eth,
+    rinkeby,
+    bsc,
+    polygon,
+    arbitrum,
+    xdai,
+    optimism,
+    polka,
 }

@@ -18,7 +18,7 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.repository.model
+package com.dimension.maskbook.labs.export.model
 
 data class TransakConfig(
     val isStaging: Boolean,

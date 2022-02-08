@@ -18,11 +18,7 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.repository
-
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
+package com.dimension.maskbook.labs.export.model
 
 enum class AppKey(val id: String) {
     FileService("com.maskbook.fileservice"),
@@ -35,35 +31,4 @@ enum class AppKey(val id: String) {
     Swap("com.maskbook.trader"),
     Collectibles("com.maskbook.collectibles"),
     Valuables("com.maskbook.tweet"),
-}
-
-data class AppData(
-    val key: AppKey,
-    val enabled: Boolean,
-)
-
-interface IAppRepository {
-    val apps: Flow<List<AppData>>
-    fun setEnabled(appKey: AppKey, enabled: Boolean)
-    fun init()
-}
-
-class FakeAppRepository : IAppRepository {
-
-    private val _apps = MutableStateFlow(
-        AppKey.values().map { AppData(it, true) }
-    )
-    override val apps = _apps.asSharedFlow()
-
-    override fun setEnabled(appKey: AppKey, enabled: Boolean) {
-        _apps.value = _apps.value.toMutableList().also { apps ->
-            val index = apps.indexOfFirst { it.key == appKey }
-            if (index != -1) {
-                apps[index] = apps[index].copy(enabled = enabled)
-            }
-        }
-    }
-
-    override fun init() {
-    }
 }

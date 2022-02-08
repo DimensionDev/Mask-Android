@@ -18,7 +18,7 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.ui.scenes.app
+package com.dimension.maskbook.labs.ui.scenes
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -39,17 +39,17 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.dimension.maskbook.wallet.R
+import com.dimension.maskbook.labs.R
+import com.dimension.maskbook.labs.export.model.AppKey
+import com.dimension.maskbook.labs.viewmodel.AppDisplayData
+import com.dimension.maskbook.labs.viewmodel.LabsViewModel
 import com.dimension.maskbook.wallet.ext.observeAsState
-import com.dimension.maskbook.wallet.repository.AppKey
 import com.dimension.maskbook.wallet.ui.widget.MaskButton
 import com.dimension.maskbook.wallet.ui.widget.MaskIconButton
 import com.dimension.maskbook.wallet.ui.widget.MaskListItem
 import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
 import com.dimension.maskbook.wallet.ui.widget.MaskSingleLineTopAppBar
 import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
-import com.dimension.maskbook.wallet.viewmodel.app.AppDisplayData
-import com.dimension.maskbook.wallet.viewmodel.app.LabsViewModel
 import org.koin.androidx.compose.getViewModel
 
 @Composable
