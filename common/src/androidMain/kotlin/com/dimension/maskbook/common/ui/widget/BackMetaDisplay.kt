@@ -18,7 +18,7 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.ui.widget
+package com.dimension.maskbook.common.ui.widget
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -37,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.localization.R
+import com.dimension.maskbook.setting.export.model.BackupMeta
 
 @Composable
 fun BackMetaDisplay(
@@ -69,17 +70,6 @@ fun BackMetaDisplay(
         }
     }
 }
-
-data class BackupMeta(
-    val account: String,
-    val personas: Int,
-    val associatedAccount: Int,
-    val encryptedPost: Int,
-    val contacts: Int,
-    val file: Int,
-    val wallet: Int,
-    val json: String,
-)
 
 @Composable
 fun MetaItem(

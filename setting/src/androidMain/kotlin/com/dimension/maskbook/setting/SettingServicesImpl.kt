@@ -21,6 +21,7 @@
 package com.dimension.maskbook.setting
 
 import com.dimension.maskbook.setting.export.SettingServices
+import com.dimension.maskbook.setting.export.model.BackupMeta
 import com.dimension.maskbook.wallet.repository.Appearance
 import com.dimension.maskbook.wallet.repository.NetworkType
 import com.dimension.maskbook.wallet.repository.TradeProvider
@@ -57,6 +58,10 @@ class SettingServicesImpl : SettingServices {
     }
 
     override suspend fun restoreBackupFromJson(value: String) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun provideBackupMetaFromJson(value: String): BackupMeta? {
         TODO("Not yet implemented")
     }
 }

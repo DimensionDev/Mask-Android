@@ -25,8 +25,8 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.setting.export.SettingServices
+import com.dimension.maskbook.setting.export.model.BackupMeta
 import com.dimension.maskbook.wallet.ext.asStateIn
-import com.dimension.maskbook.wallet.ui.widget.BackupMeta
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 

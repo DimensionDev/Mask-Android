@@ -20,6 +20,7 @@
  */
 package com.dimension.maskbook.setting.export
 
+import com.dimension.maskbook.setting.export.model.BackupMeta
 import com.dimension.maskbook.wallet.repository.Appearance
 import com.dimension.maskbook.wallet.repository.NetworkType
 import com.dimension.maskbook.wallet.repository.TradeProvider
@@ -37,4 +38,5 @@ interface SettingServices {
     fun setPaymentPassword(value: String)
     fun setShouldShowLegalScene(value: Boolean)
     suspend fun restoreBackupFromJson(value: String)
+    suspend fun provideBackupMetaFromJson(value: String): BackupMeta?
 }

@@ -20,7 +20,7 @@
  */
 package com.dimension.maskbook.wallet.repository
 
-import com.dimension.maskbook.wallet.ui.widget.BackupMeta
+import com.dimension.maskbook.setting.export.model.BackupMeta
 import kotlinx.coroutines.flow.Flow
 
 interface ISettingsRepository {

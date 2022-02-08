@@ -29,7 +29,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.repository.JSMethod
-import com.dimension.maskbook.wallet.ui.widget.BackupMeta
+import com.dimension.maskbook.setting.export.model.BackupMeta
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async

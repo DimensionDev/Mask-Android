@@ -52,11 +52,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.dialog
 import androidx.navigation.plusAssign
+import com.dimension.maskbook.common.ui.widget.BackMetaDisplay
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.navHostAnimationDurationMillis
 import com.dimension.maskbook.wallet.ui.MaskTheme
-import com.dimension.maskbook.wallet.ui.widget.BackMetaDisplay
 import com.dimension.maskbook.wallet.ui.widget.MaskBackButton
 import com.dimension.maskbook.wallet.ui.widget.MaskDialog
 import com.dimension.maskbook.wallet.ui.widget.MaskInputField
