@@ -47,7 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.persona.R
-import com.dimension.maskbook.wallet.ext.encodeUrl
+import com.dimension.maskbook.persona.route.PersonaRoute
 import com.dimension.maskbook.wallet.repository.PersonaData
 import com.dimension.maskbook.wallet.ui.widget.MaskBackButton
 import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
@@ -88,7 +88,7 @@ fun PersonaMenuScene(
                     modifier = Modifier.fillMaxWidth(),
                     elevation = 0.dp,
                     onClick = {
-                        navController.navigate("SwitchPersona")
+                        navController.navigate(PersonaRoute.SwitchPersona)
                     }
                 ) {
                     Row(
@@ -108,7 +108,7 @@ fun PersonaMenuScene(
                     modifier = Modifier.fillMaxWidth(),
                     elevation = 0.dp,
                     onClick = {
-                        navController.navigate("RenamePersona/${personaData.id.encodeUrl()}")
+                        navController.navigate(PersonaRoute.RenamePersona(personaData.id))
                     }
                 ) {
                     Row(
@@ -175,7 +175,7 @@ fun PersonaMenuScene(
                     modifier = Modifier.fillMaxWidth(),
                     elevation = 0.dp,
                     onClick = {
-                        navController.navigate("Logout")
+                        navController.navigate(PersonaRoute.Logout)
                     }
                 ) {
                     Row(

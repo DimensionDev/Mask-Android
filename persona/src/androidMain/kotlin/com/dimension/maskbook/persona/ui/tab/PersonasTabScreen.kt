@@ -25,7 +25,7 @@ import androidx.compose.runtime.Composable
 import com.dimension.maskbook.common.ui.LocalRootNavController
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.persona.R
-import com.dimension.maskbook.wallet.ext.encodeUrl
+import com.dimension.maskbook.persona.route.PersonaRoute
 import com.dimension.maskbook.wallet.repository.Network
 import com.dimension.maskbook.wallet.repository.PlatformType
 import com.dimension.maskbook.wallet.ui.scenes.persona.PersonaScene
@@ -48,7 +48,7 @@ class PersonasTabScreen : TabScreen {
                 rootNavController.navigate("Recovery")
             },
             onPersonaNameClick = {
-                rootNavController.navigate("PersonaMenu")
+                rootNavController.navigate(PersonaRoute.PersonaMenu)
             },
             onAddSocialClick = { persona, network ->
                 val platform = when (network) {
@@ -57,9 +57,9 @@ class PersonasTabScreen : TabScreen {
                     else -> null // TODO support other network
                 }
                 if (platform == null) {
-                    rootNavController.navigate("SelectPlatform/${persona.id.encodeUrl()}")
+                    rootNavController.navigate(PersonaRoute.SelectPlatform(persona.id))
                 } else {
-                    rootNavController.navigate("ConnectSocial/${persona.id.encodeUrl()}/$platform")
+                    rootNavController.navigate(PersonaRoute.ConnectSocial(persona.id, platform.name))
                 }
             },
             onRemoveSocialClick = { persona, social ->
@@ -70,8 +70,13 @@ class PersonasTabScreen : TabScreen {
                 }
                 if (platform != null) {
                     rootNavController.navigate(
-                        "DisconnectSocial/${persona.id.encodeUrl()}/$platform/${social.id.encodeUrl()}" +
-                            "?personaName=${persona.name.encodeUrl()}&socialName=${social.name.encodeUrl()}"
+                        PersonaRoute.DisconnectSocial(
+                            personaId = persona.id,
+                            platform = platform.name,
+                            socialId = social.id,
+                            personaName = persona.name,
+                            socialName = social.name,
+                        )
                     )
                 }
             },

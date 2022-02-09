@@ -36,6 +36,7 @@ import com.dimension.maskbook.persona.repository.IContactsRepository
 import com.dimension.maskbook.persona.repository.IPersonaRepository
 import com.dimension.maskbook.persona.repository.PersonaRepository
 import com.dimension.maskbook.persona.repository.personaDataStore
+import com.dimension.maskbook.persona.route.PersonaRoute
 import com.dimension.maskbook.persona.ui.tab.PersonasTabScreen
 import com.dimension.maskbook.persona.viewmodel.ExportPrivateKeyViewModel
 import com.dimension.maskbook.persona.viewmodel.PersonaViewModel
@@ -49,7 +50,6 @@ import com.dimension.maskbook.persona.viewmodel.social.FacebookSocialViewModel
 import com.dimension.maskbook.persona.viewmodel.social.TwitterConnectSocialViewModel
 import com.dimension.maskbook.persona.viewmodel.social.TwitterSocialViewModel
 import com.dimension.maskbook.setting.export.SettingServices
-import com.dimension.maskbook.wallet.ext.encodeUrl
 import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.repository.PlatformType
 import com.dimension.maskbook.wallet.ui.scenes.persona.ExportPrivateKeyScene
@@ -79,7 +79,7 @@ object PersonaSetup : ModuleSetup {
         ExperimentalAnimationApi::class
     )
     override fun NavGraphBuilder.route(navController: NavController, onBack: () -> Unit) {
-        dialog("Logout") {
+        dialog(PersonaRoute.Logout) {
             val repository = get<IPersonaRepository>()
             LogoutDialog(
                 onBack = {
@@ -91,7 +91,7 @@ object PersonaSetup : ModuleSetup {
                 }
             )
         }
-        composable("PersonaMenu") {
+        composable(PersonaRoute.PersonaMenu) {
             val persona by get<IPersonaRepository>().currentPersona.observeAsState(initial = null)
             val repository = get<SettingServices>()
             val backupPassword by repository.backupPassword.observeAsState(initial = "")
@@ -108,7 +108,7 @@ object PersonaSetup : ModuleSetup {
                 )
             }
         }
-        bottomSheet("SwitchPersona") {
+        bottomSheet(PersonaRoute.SwitchPersona) {
             val viewModel = getViewModel<SwitchPersonaViewModel>()
             val current by viewModel.current.observeAsState(initial = null)
             val items by viewModel.items.observeAsState(initial = emptyList())
@@ -124,7 +124,7 @@ object PersonaSetup : ModuleSetup {
             )
         }
         bottomSheet(
-            "RenamePersona/{personaId}",
+            PersonaRoute.RenamePersona.path,
             arguments = listOf(
                 navArgument("personaId") { type = NavType.StringType },
             )
@@ -147,7 +147,7 @@ object PersonaSetup : ModuleSetup {
                 )
             }
         }
-        composable("ExportPrivateKey") {
+        composable(PersonaRoute.ExportPrivateKey) {
             ExportPrivateKeyScene(
                 onBack = {
                     navController.popBackStack()
@@ -155,7 +155,7 @@ object PersonaSetup : ModuleSetup {
             )
         }
         bottomSheet(
-            route = "SelectPlatform/{personaId}",
+            route = PersonaRoute.SelectPlatform.path,
             arguments = listOf(
                 navArgument("personaId") { type = NavType.StringType },
             ),
@@ -163,12 +163,12 @@ object PersonaSetup : ModuleSetup {
             val personaId = it.arguments?.getString("personaId").orEmpty()
             SelectPlatformModal(
                 onDone = { platform ->
-                    navController.navigate("ConnectSocial/${personaId.encodeUrl()}/$platform")
+                    navController.navigate(PersonaRoute.ConnectSocial(personaId, platform.name))
                 }
             )
         }
         bottomSheet(
-            route = "ConnectSocial/{personaId}/{platform}",
+            route = PersonaRoute.ConnectSocial.path,
             arguments = listOf(
                 navArgument("personaId") { type = NavType.StringType },
                 navArgument("platform") { type = NavType.StringType },
@@ -195,7 +195,7 @@ object PersonaSetup : ModuleSetup {
             }
         }
         dialog(
-            "DisconnectSocial/{personaId}/{platform}/{socialId}?personaName={personaName}&socialName={socialName}",
+            PersonaRoute.DisconnectSocial.path,
             arguments = listOf(
                 navArgument("personaId") { type = NavType.StringType },
                 navArgument("platform") { type = NavType.StringType },
