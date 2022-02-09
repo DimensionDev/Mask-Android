@@ -20,14 +20,49 @@
  */
 package com.dimension.maskbook.wallet.walletconnect
 
+import kotlinx.coroutines.flow.Flow
+
 interface WalletConnectServerManager {
-    fun pairClient(wcUri: String, onRequest:(clientMeta: WCClientMeta) -> Unit)
-    fun approvePairing(wcUri: String, accounts: List<String>, chainId: Long)
+    val connectedClients: Flow<List<WCClientMeta>>
+    fun connectClient(wcUri: String, onRequest: (clientMeta: WCClientMeta) -> Unit)
+    fun approveConnect(clientMeta: WCClientMeta, accounts: List<String>, chainId: Long)
+    fun rejectConnect(clientMeta: WCClientMeta)
+    fun addOnRequestListener(listener: OnWalletConnectRequestListener)
+    fun removeOnRequestListener(listener: OnWalletConnectRequestListener)
+    fun approveRequest(clientMeta: WCClientMeta, requestId: String, response: Any)
+    fun rejectRequest(clientMeta: WCClientMeta, requestId: String, errorCode: Long, errorMessage: String)
+}
+
+interface OnWalletConnectRequestListener {
+    fun onRequest(clientMeta: WCClientMeta, request: WCRequest)
 }
 
 data class WCClientMeta(
+    val id: String,
     val name: String,
     val url: String,
     val description: String,
     val icons: List<String>
 )
+
+data class WCRequest(
+    val id: String,
+    val params: WCRequestParams
+)
+
+sealed class WCRequestParams {
+    data class WCTransaction(
+        val from: String,
+        val to: String?,
+        val nonce: String?,
+        val gasPrice: String?,
+        val gasLimit: String?,
+        val value: String,
+        val data: String
+    ) : WCRequestParams()
+
+    data class WCSign(
+        val address: String,
+        val message: String,
+    ) : WCRequestParams()
+}

@@ -27,36 +27,26 @@ import com.dimension.maskbook.wallet.ext.ether
 import com.dimension.maskbook.wallet.repository.ChainType
 import com.dimension.maskbook.wallet.walletconnect.WCResponder
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager
-import com.dimension.maskbook.wallet.walletconnect.v1.WCSessionV1
-import com.squareup.moshi.Moshi
+import com.dimension.maskbook.wallet.walletconnect.v1.BaseWalletConnectManager
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import okhttp3.OkHttpClient
 import org.komputing.khex.extensions.toNoPrefixHexString
 import org.walletconnect.Session
 import org.walletconnect.impls.FileWCSessionStore
-import org.walletconnect.impls.MoshiPayloadAdapter
-import org.walletconnect.impls.OkHttpTransport
 import java.io.File
 import java.math.BigDecimal
 import java.util.Random
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
-class WalletConnectClientManagerV1(private val context: Context) : WalletConnectClientManager {
+class WalletConnectClientManagerV1(private val context: Context) : BaseWalletConnectManager(), WalletConnectClientManager {
     private var config: Session.Config? = null
     private var session: Session? = null
     private val bridgeServer = "https://safe-walletconnect.gnosis.io"
     private var onDisconnect: (address: String) -> Unit = {}
     private val connectedSessions = ConcurrentHashMap<String, Session>()
-    private val moshi by lazy {
-        Moshi.Builder().build()
-    }
-    private val client by lazy {
-        OkHttpClient.Builder().build()
-    }
 
-    private val storage by lazy {
+    override val storage by lazy {
         FileWCSessionStore(
             File(context.cacheDir, "v1_session_store.json").apply {
                 if (!this.exists()) createNewFile()
@@ -180,18 +170,6 @@ class WalletConnectClientManagerV1(private val context: Context) : WalletConnect
             }
         }
     }
-
-    private fun Session.FullyQualifiedConfig.session() = WCSessionV1(
-        config = this,
-        payloadAdapter = MoshiPayloadAdapter(moshi),
-        sessionStore = storage,
-        transportBuilder = OkHttpTransport.Builder(client = client, moshi = moshi),
-        clientMeta = Session.PeerMeta(
-            name = "Mask Network",
-            url = "https://mask.io",
-            description = "Mask Network"
-        )
-    )
 }
 
 private fun Session.responder(chainId: Long?) = peerMeta()?.let {
@@ -283,6 +261,6 @@ private class ConnectedSessionCallback(
 
 private fun String.log() {
     if (BuildConfig.DEBUG) {
-        Log.d("WalletConnect", this)
+        Log.d("WalletConnectClient", this)
     }
 }

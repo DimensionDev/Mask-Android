@@ -40,6 +40,7 @@ class WCSessionV1(
     clientMeta: Session.PeerMeta,
     clientId: String? = null
 ) : Session {
+    val id = config.handshakeTopic
     private val keyLock = Any()
 
     // Persisted state
@@ -69,7 +70,7 @@ class WCSessionV1(
 
     init {
         currentKey = config.key
-        clientData = sessionStore.load(config.handshakeTopic)?.let {
+        clientData = sessionStore.load(id)?.let {
             currentKey = it.currentKey
             approvedAccounts = it.approvedAccounts
             chainId = it.chainId
@@ -276,7 +277,7 @@ class WCSessionV1(
     }
 
     private fun endSession() {
-        sessionStore.remove(config.handshakeTopic)
+        sessionStore.remove(id)
         approvedAccounts = null
         chainId = null
         internalClose()
@@ -285,7 +286,7 @@ class WCSessionV1(
 
     private fun storeSession() {
         sessionStore.store(
-            config.handshakeTopic,
+            id,
             WCSessionStore.State(
                 config,
                 clientData,
