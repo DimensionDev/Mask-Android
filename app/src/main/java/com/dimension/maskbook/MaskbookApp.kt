@@ -26,34 +26,17 @@ import com.dimension.maskbook.common.CommonSetup
 import com.dimension.maskbook.handler.Web3MessageHandler
 import com.dimension.maskbook.labs.LabsSetup
 import com.dimension.maskbook.platform.PlatformSwitcher
-import com.dimension.maskbook.repository.CollectibleRepository
 import com.dimension.maskbook.repository.JSMethod
 import com.dimension.maskbook.repository.PersonaRepository
-import com.dimension.maskbook.repository.WalletRepository
 import com.dimension.maskbook.repository.personaDataStore
-import com.dimension.maskbook.repository.walletDataStore
 import com.dimension.maskbook.setting.SettingSetup
 import com.dimension.maskbook.wallet.WalletSetup
 import com.dimension.maskbook.wallet.db.model.CoinPlatformType
 import com.dimension.maskbook.wallet.platform.IPlatformSwitcher
-import com.dimension.maskbook.wallet.repository.BackupRepository
 import com.dimension.maskbook.wallet.repository.ChainType
-import com.dimension.maskbook.wallet.repository.ICollectibleRepository
 import com.dimension.maskbook.wallet.repository.IContactsRepository
 import com.dimension.maskbook.wallet.repository.IPersonaRepository
-import com.dimension.maskbook.wallet.repository.ISendHistoryRepository
-import com.dimension.maskbook.wallet.repository.ITokenRepository
-import com.dimension.maskbook.wallet.repository.ITransactionRepository
-import com.dimension.maskbook.wallet.repository.IWalletConnectRepository
-import com.dimension.maskbook.wallet.repository.IWalletContactRepository
 import com.dimension.maskbook.wallet.repository.IWalletRepository
-import com.dimension.maskbook.wallet.repository.SendHistoryRepository
-import com.dimension.maskbook.wallet.repository.TokenRepository
-import com.dimension.maskbook.wallet.repository.TransactionRepository
-import com.dimension.maskbook.wallet.repository.WalletConnectRepository
-import com.dimension.maskbook.wallet.repository.WalletContactRepository
-import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager
-import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManagerV1
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.filter
@@ -135,35 +118,11 @@ fun initEvent() {
     }
 }
 
-fun initWalletConnect() {
-    val walletRepository = KoinPlatformTools.defaultContext().get().get<IWalletRepository>()
-    KoinPlatformTools.defaultContext().get().get<WalletConnectClientManager>()
-        .initSessions { address ->
-            CoroutineScope(Dispatchers.IO).launch {
-                walletRepository.findWalletByAddress(address)?.let { wallet ->
-                    walletRepository.deleteWallet(wallet.id)
-                }
-            }
-        }
-}
-
 val repositoryModules = module {
-    single<WalletConnectClientManager> {
-        // V2 SDK support only provides the Responder implementation at the Beta stage
-        WalletConnectClientManagerV1(get())
-    }
     single { PersonaRepository(get<Context>().personaDataStore, get(), get()) } binds arrayOf(
         IPersonaRepository::class,
         IContactsRepository::class
     )
-    single { BackupRepository(get(), get<Context>().cacheDir, get<Context>().contentResolver) }
-//    single<IPostRepository> { PostRepository() }
-//     single<IAppRepository> { AppRepository() }
-//    single<IWalletRepository> { FakeWalletRepository() }
-//     single<ISettingsRepository> { SettingsRepository(get<Context>().settingsDataStore) }
-    // TODO : remove this
-    single<IWalletRepository> { WalletRepository(get<Context>().walletDataStore, get(), get(), get()) }
-    single<ICollectibleRepository> { CollectibleRepository(get(), get()) }
 }
 
 val platformModules = module {

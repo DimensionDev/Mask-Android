@@ -30,6 +30,7 @@ import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.wallet.db.AppDatabase
 import com.dimension.maskbook.wallet.db.RoomMigrations
+import com.dimension.maskbook.wallet.repository.CollectibleRepository
 import com.dimension.maskbook.wallet.repository.ICollectibleRepository
 import com.dimension.maskbook.wallet.repository.IPersonaRepository
 import com.dimension.maskbook.wallet.repository.ISendHistoryRepository
@@ -43,6 +44,8 @@ import com.dimension.maskbook.wallet.repository.TokenRepository
 import com.dimension.maskbook.wallet.repository.TransactionRepository
 import com.dimension.maskbook.wallet.repository.WalletConnectRepository
 import com.dimension.maskbook.wallet.repository.WalletContactRepository
+import com.dimension.maskbook.wallet.repository.WalletRepository
+import com.dimension.maskbook.wallet.repository.walletDataStore
 import com.dimension.maskbook.wallet.services.WalletServices
 import com.dimension.maskbook.wallet.ui.tab.PersonasTabScreen
 import com.dimension.maskbook.wallet.ui.tab.WalletTabScreen
@@ -93,8 +96,12 @@ import com.dimension.maskbook.wallet.viewmodel.wallets.send.SearchAddressViewMod
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendConfirmViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendTokenDataViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendTokenViewModel
+import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager
+import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManagerV1
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asExecutor
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.module.Module
 import org.koin.dsl.bind
@@ -123,15 +130,18 @@ object WalletSetup : ModuleSetup {
         single { PersonasTabScreen() } bind TabScreen::class
         single { WalletTabScreen() } bind TabScreen::class
 
+        provideRepository()
         provideViewModel()
         provideServices()
-
+        // TODO remove to persona module
         provideOtherModule()
     }
 
     override fun onExtensionReady() {
+        // TODO move to persona module
         initOtherRepository()
         initRepository()
+        initWalletConnect()
     }
 }
 
@@ -140,12 +150,30 @@ private fun initRepository() {
     KoinPlatformTools.defaultContext().get().get<IWalletConnectRepository>().init()
 }
 
+// TODO move to persona module
 private fun initOtherRepository() {
     KoinPlatformTools.defaultContext().get().get<IPersonaRepository>().init()
 }
 
-private fun Module.provideRepository() {
+private fun initWalletConnect() {
+    val walletRepository = KoinPlatformTools.defaultContext().get().get<IWalletRepository>()
+    KoinPlatformTools.defaultContext().get().get<WalletConnectClientManager>()
+        .initSessions { address ->
+            CoroutineScope(Dispatchers.IO).launch {
+                walletRepository.findWalletByAddress(address)?.let { wallet ->
+                    walletRepository.deleteWallet(wallet.id)
+                }
+            }
+        }
+}
 
+private fun Module.provideRepository() {
+    single<WalletConnectClientManager> {
+        // V2 SDK support only provides the Responder implementation at the Beta stage
+        WalletConnectClientManagerV1(get())
+    }
+    single<IWalletRepository> { WalletRepository(get<Context>().walletDataStore, get(), get(), get()) }
+    single<ICollectibleRepository> { CollectibleRepository(get(), get()) }
     single<ITransactionRepository> { TransactionRepository(get(), get()) }
     single<ITokenRepository> { TokenRepository(get()) }
     single<ISendHistoryRepository> { SendHistoryRepository(get()) }
@@ -243,6 +271,7 @@ private fun Module.provideServices() {
     single { WalletServices() }
 }
 
+// TODO move to persona module
 private fun Module.provideOtherModule() {
     single<PersonaServices> { PersonaServicesImpl(get()) }
 }

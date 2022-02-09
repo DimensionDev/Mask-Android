@@ -18,7 +18,7 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.repository
+package com.dimension.maskbook.wallet.repository
 
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
@@ -27,9 +27,6 @@ import androidx.paging.PagingData
 import androidx.paging.map
 import com.dimension.maskbook.wallet.db.AppDatabase
 import com.dimension.maskbook.wallet.paging.mediator.CollectibleMediator
-import com.dimension.maskbook.wallet.repository.ICollectibleRepository
-import com.dimension.maskbook.wallet.repository.WalletCollectibleData
-import com.dimension.maskbook.wallet.repository.WalletData
 import com.dimension.maskbook.wallet.services.WalletServices
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

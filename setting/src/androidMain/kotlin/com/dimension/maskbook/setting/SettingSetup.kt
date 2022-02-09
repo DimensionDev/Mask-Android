@@ -31,6 +31,7 @@ import com.dimension.maskbook.setting.data.PreferenceDataSource
 import com.dimension.maskbook.setting.data.settingsDataStore
 import com.dimension.maskbook.setting.export.SettingServices
 import com.dimension.maskbook.setting.ui.tab.SettingsTabScreen
+import com.dimension.maskbook.wallet.repository.BackupRepository
 import com.dimension.maskbook.wallet.repository.ISettingsRepository
 import com.dimension.maskbook.wallet.repository.SettingsRepository
 import com.dimension.maskbook.wallet.services.BackupServices
@@ -65,6 +66,7 @@ object SettingSetup : ModuleSetup {
         single<ISettingsRepository> {
             SettingsRepository(get(), get(), get())
         }
+        single { BackupRepository(get(), get<Context>().cacheDir, get<Context>().contentResolver) }
         single<SettingServices> { SettingServicesImpl(get(), get()) } bind com.dimension.maskbook.setting.export.BackupServices::class
         single { SettingsTabScreen() } bind TabScreen::class
         single { JSDataSource() }
