@@ -25,4 +25,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface PersonaServices {
     val currentPersona: Flow<PersonaData?>
+    fun updateCurrentPersona(value: String)
+    fun createPersonaFromMnemonic(value: List<String>, name: String)
+    fun createPersonaFromPrivateKey(value: String)
 }

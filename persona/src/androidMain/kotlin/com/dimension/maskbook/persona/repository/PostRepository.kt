@@ -18,25 +18,12 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.viewmodel
+package com.dimension.maskbook.persona.repository
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.dimension.maskbook.persona.export.PersonaServices
-import com.dimension.maskbook.wallet.ext.asStateIn
-import kotlinx.coroutines.flow.MutableStateFlow
+import com.dimension.maskbook.persona.model.PostData
+import kotlinx.coroutines.flow.Flow
 
-class WelcomeViewModel(
-    private val personaServices: PersonaServices,
-) : ViewModel() {
-    private val _persona = MutableStateFlow("")
-    val persona = _persona.asStateIn(viewModelScope, "")
-
-    fun setPersona(text: String) {
-        _persona.value = text
-    }
-
-    fun onConfirm() {
-        personaServices.updateCurrentPersona(_persona.value)
-    }
+class PostRepository : IPostRepository {
+    override val posts: Flow<List<PostData>>
+        get() = TODO("Not yet implemented")
 }

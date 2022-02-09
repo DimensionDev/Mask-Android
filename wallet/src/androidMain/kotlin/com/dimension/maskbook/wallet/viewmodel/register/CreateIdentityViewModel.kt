@@ -20,12 +20,14 @@
  */
 package com.dimension.maskbook.wallet.viewmodel.register
 
-import com.dimension.maskbook.wallet.repository.IPersonaRepository
+import com.dimension.maskbook.persona.export.PersonaServices
+import com.dimension.maskbook.wallet.repository.IWalletRepository
 import com.dimension.maskbook.wallet.viewmodel.base.BaseMnemonicPhraseViewModel
 
 class CreateIdentityViewModel(
     private val personaName: String,
-    private val repository: IPersonaRepository
+    private val repository: IWalletRepository,
+    private val personaServices: PersonaServices,
 ) : BaseMnemonicPhraseViewModel() {
 
     override fun generateWords(): List<String> {
@@ -33,6 +35,6 @@ class CreateIdentityViewModel(
     }
 
     override fun confirm() {
-        repository.createPersonaFromMnemonic(_words.value, personaName)
+        personaServices.createPersonaFromMnemonic(_words.value, personaName)
     }
 }

@@ -18,25 +18,28 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.viewmodel
+package com.dimension.maskbook.persona
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.persona.export.PersonaServices
-import com.dimension.maskbook.wallet.ext.asStateIn
-import kotlinx.coroutines.flow.MutableStateFlow
+import com.dimension.maskbook.persona.repository.IPersonaRepository
+import com.dimension.maskbook.wallet.repository.PersonaData
+import kotlinx.coroutines.flow.Flow
 
-class WelcomeViewModel(
-    private val personaServices: PersonaServices,
-) : ViewModel() {
-    private val _persona = MutableStateFlow("")
-    val persona = _persona.asStateIn(viewModelScope, "")
+class PersonaServicesImpl(
+    private val personaRepository: IPersonaRepository
+) : PersonaServices {
+    override val currentPersona: Flow<PersonaData?>
+        get() = personaRepository.currentPersona
 
-    fun setPersona(text: String) {
-        _persona.value = text
+    override fun updateCurrentPersona(value: String) {
+        personaRepository.updateCurrentPersona(value)
     }
 
-    fun onConfirm() {
-        personaServices.updateCurrentPersona(_persona.value)
+    override fun createPersonaFromMnemonic(value: List<String>, name: String) {
+        personaRepository.createPersonaFromMnemonic(value, name)
+    }
+
+    override fun createPersonaFromPrivateKey(value: String) {
+        personaRepository.createPersonaFromPrivateKey(value)
     }
 }

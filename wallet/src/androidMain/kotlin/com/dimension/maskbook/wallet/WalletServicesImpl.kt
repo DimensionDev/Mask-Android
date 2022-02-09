@@ -30,4 +30,8 @@ class WalletServicesImpl(
 ) : WalletServices {
     override val currentWallet: Flow<WalletData?>
         get() = walletRepository.currentWallet
+
+    override fun generateNewMnemonic(): List<String> {
+        return walletRepository.generateNewMnemonic()
+    }
 }
