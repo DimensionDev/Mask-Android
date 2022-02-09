@@ -22,13 +22,13 @@ package com.dimension.maskbook.wallet.viewmodel.register
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.wallet.ext.asStateIn
-import com.dimension.maskbook.wallet.repository.IPersonaRepository
 import com.dimension.maskbook.wallet.repository.PlatformType
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class UserNameModalViewModel(
-    private val personaRepository: IPersonaRepository
+    private val personaServices: PersonaServices
 ) : ViewModel() {
     private val _userName = MutableStateFlow("")
     val userName = _userName.asStateIn(viewModelScope, "")
@@ -36,6 +36,6 @@ class UserNameModalViewModel(
         _userName.value = value
     }
     fun done(name: String) {
-        personaRepository.finishConnectingProcess(name, PlatformType.Twitter)
+        personaServices.finishConnectingProcess(name, PlatformType.Twitter)
     }
 }

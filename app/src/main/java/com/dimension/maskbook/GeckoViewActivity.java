@@ -20,6 +20,7 @@
  */
 package com.dimension.maskbook;
 
+import com.dimension.maskbook.persona.repository.IPersonaRepository;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -103,7 +104,6 @@ import com.dimension.maskbook.site.Site;
 import com.dimension.maskbook.site.SiteConfig;
 import com.dimension.maskbook.util.MessageChannel;
 import com.dimension.maskbook.wallet.platform.IPlatformSwitcher;
-import com.dimension.maskbook.wallet.repository.IPersonaRepository;
 import com.dimension.maskbook.wallet.repository.PlatformType;
 import com.dimension.maskbook.widget.BasicGeckoViewPrompt;
 import com.dimension.maskbook.widget.LocationView;

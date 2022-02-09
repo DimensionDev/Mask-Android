@@ -214,7 +214,6 @@ class PersonaRepository(
         }
     }
 
-
     override fun logout() {
         scope.launch {
             val deletePersona = currentPersona.firstOrNull() ?: return@launch

@@ -23,6 +23,7 @@ package com.dimension.maskbook.persona
 import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.persona.repository.IPersonaRepository
 import com.dimension.maskbook.wallet.repository.PersonaData
+import com.dimension.maskbook.wallet.repository.PlatformType
 import kotlinx.coroutines.flow.Flow
 
 class PersonaServicesImpl(
@@ -41,5 +42,13 @@ class PersonaServicesImpl(
 
     override fun createPersonaFromPrivateKey(value: String) {
         personaRepository.createPersonaFromPrivateKey(value)
+    }
+
+    override fun finishConnectingProcess(userName: String, platformType: PlatformType) {
+        personaRepository.finishConnectingProcess(userName, platformType)
+    }
+
+    override fun cancelConnectingProcess() {
+        personaRepository.cancelConnectingProcess()
     }
 }
