@@ -97,7 +97,7 @@ import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendConfirmViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendTokenDataViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendTokenViewModel
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager
-import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManagerV1
+import com.dimension.maskbook.wallet.walletconnect.v1.client.WalletConnectClientManagerV1
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asExecutor

@@ -18,13 +18,16 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.walletconnect
+package com.dimension.maskbook.wallet.walletconnect.v1.client
 
 import android.content.Context
 import android.util.Log
 import com.dimension.maskbook.wallet.BuildConfig
 import com.dimension.maskbook.wallet.ext.ether
 import com.dimension.maskbook.wallet.repository.ChainType
+import com.dimension.maskbook.wallet.walletconnect.WCResponder
+import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager
+import com.dimension.maskbook.wallet.walletconnect.v1.WCSessionV1
 import com.squareup.moshi.Moshi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
