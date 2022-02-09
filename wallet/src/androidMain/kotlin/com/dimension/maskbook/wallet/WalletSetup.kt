@@ -30,6 +30,19 @@ import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.wallet.db.AppDatabase
 import com.dimension.maskbook.wallet.db.RoomMigrations
+import com.dimension.maskbook.wallet.repository.ICollectibleRepository
+import com.dimension.maskbook.wallet.repository.IPersonaRepository
+import com.dimension.maskbook.wallet.repository.ISendHistoryRepository
+import com.dimension.maskbook.wallet.repository.ITokenRepository
+import com.dimension.maskbook.wallet.repository.ITransactionRepository
+import com.dimension.maskbook.wallet.repository.IWalletConnectRepository
+import com.dimension.maskbook.wallet.repository.IWalletContactRepository
+import com.dimension.maskbook.wallet.repository.IWalletRepository
+import com.dimension.maskbook.wallet.repository.SendHistoryRepository
+import com.dimension.maskbook.wallet.repository.TokenRepository
+import com.dimension.maskbook.wallet.repository.TransactionRepository
+import com.dimension.maskbook.wallet.repository.WalletConnectRepository
+import com.dimension.maskbook.wallet.repository.WalletContactRepository
 import com.dimension.maskbook.wallet.services.WalletServices
 import com.dimension.maskbook.wallet.ui.tab.PersonasTabScreen
 import com.dimension.maskbook.wallet.ui.tab.WalletTabScreen
@@ -86,6 +99,7 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.module.Module
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import org.koin.mp.KoinPlatformTools
 import com.dimension.maskbook.wallet.export.WalletServices as ExportWalletServices
 
 object WalletSetup : ModuleSetup {
@@ -114,6 +128,29 @@ object WalletSetup : ModuleSetup {
 
         provideOtherModule()
     }
+
+    override fun onExtensionReady() {
+        initOtherRepository()
+        initRepository()
+    }
+}
+
+private fun initRepository() {
+    KoinPlatformTools.defaultContext().get().get<IWalletRepository>().init()
+    KoinPlatformTools.defaultContext().get().get<IWalletConnectRepository>().init()
+}
+
+private fun initOtherRepository() {
+    KoinPlatformTools.defaultContext().get().get<IPersonaRepository>().init()
+}
+
+private fun Module.provideRepository() {
+
+    single<ITransactionRepository> { TransactionRepository(get(), get()) }
+    single<ITokenRepository> { TokenRepository(get()) }
+    single<ISendHistoryRepository> { SendHistoryRepository(get()) }
+    single<IWalletContactRepository> { WalletContactRepository(get()) }
+    single<IWalletConnectRepository> { WalletConnectRepository(get(), get()) }
 }
 
 private fun Module.provideViewModel() {

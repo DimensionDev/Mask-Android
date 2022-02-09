@@ -93,12 +93,6 @@ fun initModule() {
     LabsSetup.onExtensionReady()
 }
 
-fun initRepository() {
-    KoinPlatformTools.defaultContext().get().get<IPersonaRepository>().init()
-    KoinPlatformTools.defaultContext().get().get<IWalletRepository>().init()
-    KoinPlatformTools.defaultContext().get().get<IWalletConnectRepository>().init()
-}
-
 fun initEvent() {
     CoroutineScope(Dispatchers.IO).launch {
         launch {
@@ -167,13 +161,9 @@ val repositoryModules = module {
 //     single<IAppRepository> { AppRepository() }
 //    single<IWalletRepository> { FakeWalletRepository() }
 //     single<ISettingsRepository> { SettingsRepository(get<Context>().settingsDataStore) }
+    // TODO : remove this
     single<IWalletRepository> { WalletRepository(get<Context>().walletDataStore, get(), get(), get()) }
     single<ICollectibleRepository> { CollectibleRepository(get(), get()) }
-    single<ITransactionRepository> { TransactionRepository(get(), get()) }
-    single<ITokenRepository> { TokenRepository(get()) }
-    single<ISendHistoryRepository> { SendHistoryRepository(get()) }
-    single<IWalletContactRepository> { WalletContactRepository(get()) }
-    single<IWalletConnectRepository> { WalletConnectRepository(get(), get()) }
 }
 
 val platformModules = module {
