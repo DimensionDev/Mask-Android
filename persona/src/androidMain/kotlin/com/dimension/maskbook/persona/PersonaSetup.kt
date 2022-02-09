@@ -78,7 +78,7 @@ object PersonaSetup : ModuleSetup {
         ExperimentalMaterialNavigationApi::class,
         ExperimentalAnimationApi::class
     )
-    override fun NavGraphBuilder.route(navController: NavController) {
+    override fun NavGraphBuilder.route(navController: NavController, onBack: () -> Unit) {
         dialog("Logout") {
             val repository = get<IPersonaRepository>()
             LogoutDialog(

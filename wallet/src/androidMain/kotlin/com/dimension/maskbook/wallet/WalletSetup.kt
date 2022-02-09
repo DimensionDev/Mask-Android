@@ -37,7 +37,6 @@ import com.dimension.maskbook.wallet.db.RoomMigrations
 import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.repository.CollectibleRepository
 import com.dimension.maskbook.wallet.repository.ICollectibleRepository
-import com.dimension.maskbook.wallet.repository.IPersonaRepository
 import com.dimension.maskbook.wallet.repository.ISendHistoryRepository
 import com.dimension.maskbook.wallet.repository.ITokenRepository
 import com.dimension.maskbook.wallet.repository.ITransactionRepository
@@ -109,7 +108,7 @@ import com.dimension.maskbook.wallet.export.WalletServices as ExportWalletServic
 object WalletSetup : ModuleSetup {
 
     @OptIn(ExperimentalMaterialNavigationApi::class)
-    override fun NavGraphBuilder.route(navController: NavController) {
+    override fun NavGraphBuilder.route(navController: NavController, onBack: () -> Unit) {
         bottomSheet(
             "BackUpPassword/{target}",
             arguments = listOf(
@@ -182,8 +181,6 @@ object WalletSetup : ModuleSetup {
     }
 
     override fun onExtensionReady() {
-        // TODO move to persona module
-        initOtherRepository()
         initRepository()
         initWalletConnect()
     }
@@ -192,11 +189,6 @@ object WalletSetup : ModuleSetup {
 private fun initRepository() {
     KoinPlatformTools.defaultContext().get().get<IWalletRepository>().init()
     KoinPlatformTools.defaultContext().get().get<IWalletConnectRepository>().init()
-}
-
-// TODO move to persona module
-private fun initOtherRepository() {
-    KoinPlatformTools.defaultContext().get().get<IPersonaRepository>().init()
 }
 
 private fun initWalletConnect() {

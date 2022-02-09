@@ -138,10 +138,10 @@ fun App(
                 ) {
                     walletsRoute(navController = navController)
 
-                    SettingSetup.route(this, navController = navController)
-                    WalletSetup.route(this, navController = navController)
-                    LabsSetup.route(this, navController = navController)
-                    PersonaSetup.route(this, navController = navController)
+                    SettingSetup.route(this, navController = navController, onBack = onBack)
+                    WalletSetup.route(this, navController = navController, onBack = onBack)
+                    LabsSetup.route(this, navController = navController, onBack = onBack)
+                    PersonaSetup.route(this, navController = navController, onBack = onBack)
                 }
             }
         }
