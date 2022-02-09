@@ -55,7 +55,7 @@ import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.common.ui.LocalRootNavController
 import com.dimension.maskbook.localization.R
 import com.dimension.maskbook.persona.export.PersonaServices
-import com.dimension.maskbook.wallet.ext.encodeUrl
+import com.dimension.maskbook.setting.route.SettingRoute
 import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.repository.Appearance
 import com.dimension.maskbook.wallet.repository.DataProvider
@@ -111,35 +111,35 @@ fun SettingsScene(
             )
             SettingsCard {
                 SettingsItem(
-                    targetRoute = "LanguageSettings",
+                    targetRoute = SettingRoute.LanguageSettings,
                     title = stringResource(R.string.scene_setting_general_language),
                     icon = R.drawable.ic_settings_language,
                     trailingText = languageMap[language],
                 )
                 SettingsDivider()
                 SettingsItem(
-                    targetRoute = "AppearanceSettings",
+                    targetRoute = SettingRoute.AppearanceSettings,
                     title = stringResource(R.string.scene_setting_general_appearance),
                     icon = R.drawable.ic_settings_appearance,
                     trailingText = appearanceMap[appearance]?.let { it1 -> stringResource(it1) },
                 )
                 SettingsDivider()
                 SettingsItem(
-                    targetRoute = "DataSourceSettings",
-                    title = "DataSource",
+                    targetRoute = SettingRoute.DataSourceSettings,
+                    title = stringResource(R.string.scene_setting_general_data_source),
                     icon = R.drawable.ic_settings_datasource,
                     trailingText = dataProviderMap[dataProvider],
                 )
                 SettingsDivider()
                 if (paymentPassword.isEmpty()) {
                     SettingsItem(
-                        targetRoute = "PaymentPasswordSettings",
+                        targetRoute = SettingRoute.PaymentPasswordSettings,
                         title = stringResource(R.string.scene_setting_general_setup_payment_password),
                         icon = R.drawable.ic_settings_change_payment_password,
                     )
                 } else {
                     SettingsItem(
-                        targetRoute = "PaymentPasswordSettings",
+                        targetRoute = SettingRoute.PaymentPasswordSettings,
                         title = stringResource(R.string.scene_setting_general_change_payment_password),
                         icon = R.drawable.ic_settings_change_payment_password,
                     )
@@ -178,27 +178,27 @@ fun SettingsScene(
                 SettingsItem(
                     title = stringResource(R.string.scene_setting_backup_recovery_restore_data),
                     icon = R.drawable.ic_settings_restore_data,
-                    targetRoute = stringResource(R.string.scene_personas_action_recovery)
+                    targetRoute = "Recovery",
                 )
                 SettingsDivider()
                 SettingsItem(
                     title = stringResource(R.string.scene_setting_backup_recovery_back_up_data),
                     icon = R.drawable.ic_settings_backup_data,
-                    targetRoute = if (backupPassword.isEmpty() || paymentPassword.isEmpty()) "SetupPasswordDialog" else "BackupData"
+                    targetRoute = if (backupPassword.isEmpty() || paymentPassword.isEmpty()) SettingRoute.SetupPasswordDialog else SettingRoute.BackupData.BackupSelection
                 )
                 SettingsDivider()
                 if (backupPassword.isEmpty()) {
                     SettingsItem(
                         title = stringResource(R.string.scene_setting_backup_recovery_back_up_password),
                         icon = R.drawable.ic_settings_backup_password,
-                        targetRoute = "ChangeBackUpPassword",
+                        targetRoute = SettingRoute.ChangeBackUpPassword,
                         secondaryText = stringResource(R.string.scene_setting_backup_recovery_back_up_password_empty)
                     )
                 } else {
                     SettingsItem(
                         title = stringResource(R.string.scene_setting_backup_recovery_change_backup_password),
                         icon = R.drawable.ic_settings_backup_password,
-                        targetRoute = "ChangeBackUpPassword"
+                        targetRoute = SettingRoute.ChangeBackUpPassword,
                     )
                 }
                 SettingsDivider()
@@ -208,14 +208,14 @@ fun SettingsScene(
                         title = stringResource(R.string.scene_backup_backup_verify_field_email),
                         icon = R.drawable.ic_settings_email,
                         secondaryText = stringResource(R.string.scene_setting_profile_email_empty),
-                        targetRoute = "Settings_ChangeEmail_Setup"
+                        targetRoute = SettingRoute.Settings_ChangeEmail.Settings_ChangeEmail_Setup
                     )
                 } else {
                     SettingsItem(
                         title = stringResource(R.string.scene_backup_backup_verify_field_email),
                         icon = R.drawable.ic_settings_email,
                         secondaryText = email,
-                        targetRoute = "Settings_ChangeEmail_Change_Code/${email.encodeUrl()}"
+                        targetRoute = SettingRoute.Settings_ChangeEmail.Settings_ChangeEmail_Change_Code(email)
                     )
                 }
                 SettingsDivider()
@@ -225,14 +225,14 @@ fun SettingsScene(
                         title = stringResource(R.string.scene_setting_profile_phone_number),
                         icon = R.drawable.ic_settings_phone_number,
                         secondaryText = stringResource(R.string.scene_setting_profile_phone_number_empty),
-                        targetRoute = "Settings_ChangePhone_Setup"
+                        targetRoute = SettingRoute.Settings_ChangePhone.Settings_ChangePhone_Setup,
                     )
                 } else {
                     SettingsItem(
                         title = stringResource(R.string.scene_setting_profile_phone_number),
                         icon = R.drawable.ic_settings_phone_number,
                         secondaryText = phone,
-                        targetRoute = "Settings_ChangePhone_Change_Code/${phone.encodeUrl()}"
+                        targetRoute = SettingRoute.Settings_ChangePhone.Settings_ChangePhone_Change_Code(phone)
                     )
                 }
             }

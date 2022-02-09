@@ -137,12 +137,12 @@ fun App(
                     onBack = onBack,
                 ) {
                     walletsRoute(navController = navController)
-
-                    SettingSetup.route(this, navController = navController, onBack = onBack)
                     WalletSetup.route(this, navController = navController, onBack = onBack)
                     LabsSetup.route(this, navController = navController, onBack = onBack)
                     PersonaSetup.route(this, navController = navController, onBack = onBack)
                 }
+
+                SettingSetup.route(this, navController = navController, onBack = onBack)
             }
         }
     }

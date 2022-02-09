@@ -32,7 +32,7 @@ kotlin {
 
                 api("androidx.room:room-runtime:${Versions.room}")
                 api("androidx.room:room-ktx:${Versions.room}")
-                project.dependencies.add("kspAndroid", "androidx.room:room-compiler:${Versions.room}")
+                kspAndroid("androidx.room:room-compiler:${Versions.room}")
                 implementation("androidx.room:room-paging:${Versions.room}")
 
                 implementation("androidx.paging:paging-runtime-ktx:3.1.0")

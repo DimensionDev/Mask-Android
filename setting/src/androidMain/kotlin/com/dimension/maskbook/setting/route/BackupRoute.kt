@@ -53,10 +53,12 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.dialog
 import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 import androidx.navigation.navOptions
+import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.localization.R
 import com.dimension.maskbook.persona.export.PersonaServices
-import com.dimension.maskbook.wallet.ext.encodeUrl
+import com.dimension.maskbook.setting.route.SettingRoute
 import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.repository.ISettingsRepository
 import com.dimension.maskbook.wallet.services.model.DownloadResponse
@@ -79,588 +81,632 @@ import com.dimension.maskbook.wallet.viewmodel.settings.BackupMergeConfirmViewMo
 import com.dimension.maskbook.wallet.viewmodel.settings.EmailBackupViewModel
 import com.dimension.maskbook.wallet.viewmodel.settings.PhoneBackupViewModel
 import com.google.accompanist.navigation.animation.composable
-import com.google.accompanist.navigation.animation.navigation
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.bottomSheet
 import org.koin.androidx.compose.get
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 
-@ExperimentalAnimationApi
-@ExperimentalMaterialNavigationApi
+@OptIn(ExperimentalAnimationApi::class, ExperimentalMaterialNavigationApi::class)
 fun NavGraphBuilder.backupRoute(
     navController: NavController,
 ) {
-    navigation("BackupSelection", "BackupData") {
-        dialog("BackupData_Cloud_Success") {
-            MaskDialog(
-                onDismissRequest = {
-                    navController.popBackStack()
-                },
-                title = {
-                    Text(text = stringResource(R.string.common_alert_local_backup_backup_completed))
-                },
-                buttons = {
-                    PrimaryButton(
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = {
-                            navController.popBackStack()
-                        },
-                    ) {
-                        Text(text = stringResource(R.string.common_controls_done))
-                    }
-                },
-                icon = {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_property_1_snccess),
-                        contentDescription = null
-                    )
+    dialog(SettingRoute.BackupData.BackupData_Cloud_Success) {
+        MaskDialog(
+            onDismissRequest = {
+                navController.popBackStack()
+            },
+            title = {
+                Text(text = stringResource(R.string.common_alert_local_backup_backup_completed))
+            },
+            buttons = {
+                PrimaryButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+                        navController.popBackStack()
+                    },
+                ) {
+                    Text(text = stringResource(R.string.common_controls_done))
                 }
-            )
-        }
-        dialog("BackupData_Cloud_Failed") {
-            MaskDialog(
-                onDismissRequest = {
-                    navController.popBackStack()
-                },
-                title = {
-                    Text(text = stringResource(R.string.common_alert_local_backup_backup_failed))
-                },
-                buttons = {
-                    PrimaryButton(
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = {
-                            navController.popBackStack()
-                        },
-                    ) {
-                        Text(text = "OK")
-                    }
-                },
-                icon = {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_property_1_failed),
-                        contentDescription = null
-                    )
+            },
+            icon = {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_property_1_snccess),
+                    contentDescription = null
+                )
+            }
+        )
+    }
+    dialog(SettingRoute.BackupData.BackupData_Cloud_Failed) {
+        MaskDialog(
+            onDismissRequest = {
+                navController.popBackStack()
+            },
+            title = {
+                Text(text = stringResource(R.string.common_alert_local_backup_backup_failed))
+            },
+            buttons = {
+                PrimaryButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+                        navController.popBackStack()
+                    },
+                ) {
+                    Text(text = "OK")
                 }
-            )
-        }
-        composable(
-            "BackupData_BackupCloud/{type}/{value}/{code}",
-            arguments = listOf(
-                navArgument("type") { type = NavType.StringType },
-                navArgument("value") { type = NavType.StringType },
-                navArgument("code") { type = NavType.StringType },
-            )
-        ) { backStackEntry ->
-            val type = backStackEntry.arguments?.getString("type") ?: return@composable
-            val value = backStackEntry.arguments?.getString("value") ?: return@composable
-            val code = backStackEntry.arguments?.getString("code") ?: return@composable
-            BackupCloudScene(
-                onBack = {
-                    navController.popBackStack()
-                },
-                onConfirm = {
-                    navController.navigate(
-                        "BackupData_BackupCloud_Execute/$it/$type/$value/$code",
-                        navOptions = navOptions {
-                            popUpTo(backStackEntry.destination.id) {
-                                inclusive = true
-                            }
-                        }
-                    )
-                }
-            )
-        }
-        composable(
-            "BackupData_BackupCloud_Execute/{withWallet}/{type}/{value}/{code}",
-            arguments = listOf(
-                navArgument("withWallet") { type = NavType.BoolType },
-                navArgument("type") { type = NavType.StringType },
-                navArgument("value") { type = NavType.StringType },
-                navArgument("code") { type = NavType.StringType },
-            )
-        ) { backStackEntry ->
-            val type = backStackEntry.arguments?.getString("type") ?: return@composable
-            val value = backStackEntry.arguments?.getString("value") ?: return@composable
-            val code = backStackEntry.arguments?.getString("code") ?: return@composable
-            backStackEntry.arguments?.getBoolean("withWallet")?.let { withWallet ->
-                val viewModel = getViewModel<BackupCloudExecuteViewModel>()
-                LaunchedEffect(Unit) {
-                    val result = viewModel.execute(
-                        code = code,
-                        type = type,
-                        account = value,
-                        withWallet = withWallet,
-                    )
-                    if (result) {
-                        navController.navigate("BackupData_Cloud_Success") {
-                            popUpTo(backStackEntry.destination.id) {
-                                inclusive = true
-                            }
-                        }
-                    } else {
-                        navController.navigate("BackupData_Cloud_Failed") {
-                            popUpTo(backStackEntry.destination.id) {
-                                inclusive = true
-                            }
+            },
+            icon = {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_property_1_failed),
+                    contentDescription = null
+                )
+            }
+        )
+    }
+    composable(
+        SettingRoute.BackupData.BackupData_BackupCloud.path,
+        arguments = listOf(
+            navArgument("type") { type = NavType.StringType },
+            navArgument("value") { type = NavType.StringType },
+            navArgument("code") { type = NavType.StringType },
+        )
+    ) { backStackEntry ->
+        val type = backStackEntry.arguments?.getString("type") ?: return@composable
+        val value = backStackEntry.arguments?.getString("value") ?: return@composable
+        val code = backStackEntry.arguments?.getString("code") ?: return@composable
+        BackupCloudScene(
+            onBack = {
+                navController.popBackStack()
+            },
+            onConfirm = {
+                navController.navigate(
+                    SettingRoute.BackupData.BackupData_BackupCloud_Execute(
+                        it,
+                        type,
+                        value,
+                        code,
+                    ),
+                    navOptions = navOptions {
+                        popUpTo(backStackEntry.destination.id) {
+                            inclusive = true
                         }
                     }
-                }
-                MaskTheme {
-                    MaskScaffold {
-                        Column(
-                            modifier = Modifier.fillMaxSize(),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                        ) {
-                            CircularProgressIndicator()
-                            Spacer(modifier = Modifier.height(20.dp))
-                            Text(text = stringResource(R.string.scene_setting_local_backup_loading_text))
+                )
+            }
+        )
+    }
+    composable(
+        SettingRoute.BackupData.BackupData_BackupCloud_Execute.path,
+        arguments = listOf(
+            navArgument("withWallet") { type = NavType.BoolType },
+            navArgument("type") { type = NavType.StringType },
+            navArgument("value") { type = NavType.StringType },
+            navArgument("code") { type = NavType.StringType },
+        )
+    ) { backStackEntry ->
+        val type = backStackEntry.arguments?.getString("type") ?: return@composable
+        val value = backStackEntry.arguments?.getString("value") ?: return@composable
+        val code = backStackEntry.arguments?.getString("code") ?: return@composable
+        backStackEntry.arguments?.getBoolean("withWallet")?.let { withWallet ->
+            val viewModel = getViewModel<BackupCloudExecuteViewModel>()
+            LaunchedEffect(Unit) {
+                val result = viewModel.execute(
+                    code = code,
+                    type = type,
+                    account = value,
+                    withWallet = withWallet,
+                )
+                if (result) {
+                    navController.navigate(SettingRoute.BackupData.BackupData_Cloud_Success) {
+                        popUpTo(backStackEntry.destination.id) {
+                            inclusive = true
+                        }
+                    }
+                } else {
+                    navController.navigate(SettingRoute.BackupData.BackupData_Cloud_Failed) {
+                        popUpTo(backStackEntry.destination.id) {
+                            inclusive = true
                         }
                     }
                 }
             }
-        }
-        dialog("BackupSelection_NoEmailAndPhone") {
-            MaskDialog(
-                onDismissRequest = { navController.popBackStack() },
-                icon = {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_property_1_note),
-                        contentDescription = null
-                    )
-                },
-                title = { Text(text = "Bind your email or phone") },
-                text = { Text(text = "Please bind your email or phone number before you back up to cloud. ") },
-                buttons = {
-                    PrimaryButton(
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = { navController.popBackStack() },
+            MaskTheme {
+                MaskScaffold {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
-                        Text(text = "OK")
+                        CircularProgressIndicator()
+                        Spacer(modifier = Modifier.height(20.dp))
+                        Text(text = stringResource(R.string.scene_setting_local_backup_loading_text))
                     }
                 }
-            )
+            }
         }
-        dialog(
-            "BackupData_BackupMerge_Confirm_Success/{type}/{value}/{code}",
-            arguments = listOf(
-                navArgument("type") { type = NavType.StringType },
-                navArgument("value") { type = NavType.StringType },
-                navArgument("code") { type = NavType.StringType },
-            )
-        ) { backStackEntry ->
-            val type = backStackEntry.arguments?.getString("type") ?: return@dialog
-            val value = backStackEntry.arguments?.getString("value") ?: return@dialog
-            val code = backStackEntry.arguments?.getString("code") ?: return@dialog
-            MaskDialog(
-                onDismissRequest = { },
-                text = {
-                    Text(text = "You have successfully merged your cloud backup to the local data. You can now proceed to back up.")
-                },
-                icon = {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_property_1_snccess),
-                        contentDescription = null
-                    )
-                },
-                buttons = {
-                    Row {
-                        SecondaryButton(
-                            modifier = Modifier.weight(1f),
-                            onClick = {
-                                navController.popBackStack("BackupSelection", inclusive = true)
-                            }
-                        ) {
-                            Text(text = stringResource(R.string.common_controls_cancel))
+    }
+    dialog(SettingRoute.BackupData.BackupSelection_NoEmailAndPhone) {
+        MaskDialog(
+            onDismissRequest = { navController.popBackStack() },
+            icon = {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_property_1_note),
+                    contentDescription = null
+                )
+            },
+            title = { Text(text = "Bind your email or phone") },
+            text = { Text(text = "Please bind your email or phone number before you back up to cloud. ") },
+            buttons = {
+                PrimaryButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = { navController.popBackStack() },
+                ) {
+                    Text(text = "OK")
+                }
+            }
+        )
+    }
+    dialog(
+        SettingRoute.BackupData.BackupData_BackupMerge_Confirm_Success.path,
+        arguments = listOf(
+            navArgument("type") { type = NavType.StringType },
+            navArgument("value") { type = NavType.StringType },
+            navArgument("code") { type = NavType.StringType },
+        )
+    ) { backStackEntry ->
+        val type = backStackEntry.arguments?.getString("type") ?: return@dialog
+        val value = backStackEntry.arguments?.getString("value") ?: return@dialog
+        val code = backStackEntry.arguments?.getString("code") ?: return@dialog
+        MaskDialog(
+            onDismissRequest = { },
+            text = {
+                Text(text = "You have successfully merged your cloud backup to the local data. You can now proceed to back up.")
+            },
+            icon = {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_property_1_snccess),
+                    contentDescription = null
+                )
+            },
+            buttons = {
+                Row {
+                    SecondaryButton(
+                        modifier = Modifier.weight(1f),
+                        onClick = {
+                            navController.popBackStack(SettingRoute.BackupData.BackupSelection, inclusive = true)
                         }
-                        Spacer(modifier = Modifier.width(20.dp))
-                        PrimaryButton(
-                            modifier = Modifier.weight(1f),
+                    ) {
+                        Text(text = stringResource(R.string.common_controls_cancel))
+                    }
+                    Spacer(modifier = Modifier.width(20.dp))
+                    PrimaryButton(
+                        modifier = Modifier.weight(1f),
+                        onClick = {
+                            navController.navigate(
+                                SettingRoute.BackupData.BackupData_BackupCloud(type, value, code),
+                            ) {
+                                popUpTo(SettingRoute.BackupData.BackupSelection) {
+                                    inclusive = true
+                                }
+                            }
+                        },
+                    ) {
+                        Text(text = "To back up")
+                    }
+                }
+            }
+        )
+    }
+    bottomSheet(
+        SettingRoute.BackupData.BackupData_BackupMerge_Confirm.path,
+        arguments = listOf(
+            navArgument("type") { type = NavType.StringType },
+            navArgument("value") { type = NavType.StringType },
+            navArgument("code") { type = NavType.StringType },
+            navArgument("download_url") { type = NavType.StringType; nullable = true },
+            navArgument("size") { type = NavType.LongType; defaultValue = 0L },
+            navArgument("uploaded_at") { type = NavType.LongType; defaultValue = 0L },
+            navArgument("abstract") { type = NavType.StringType; nullable = true },
+        )
+    ) { backStackEntry ->
+        val type = backStackEntry.arguments?.getString("type") ?: return@bottomSheet
+        val value = backStackEntry.arguments?.getString("value") ?: return@bottomSheet
+        val code = backStackEntry.arguments?.getString("code") ?: return@bottomSheet
+        val download_url =
+            backStackEntry.arguments?.getString("download_url") ?: return@bottomSheet
+        val size = backStackEntry.arguments?.getLong("size") ?: return@bottomSheet
+        val uploaded_at = backStackEntry.arguments?.getLong("uploaded_at") ?: return@bottomSheet
+        val abstract = backStackEntry.arguments?.getString("abstract") ?: return@bottomSheet
+
+        val onDone: () -> Unit = {
+            navController.navigate(
+                SettingRoute.BackupData.BackupData_BackupMerge_Confirm_Success(
+                    type,
+                    value,
+                    code
+                )
+            ) {
+                popUpTo(SettingRoute.BackupData.BackupData_BackupMerge.path) {
+                    inclusive = true
+                }
+            }
+        }
+
+        val viewModel = getViewModel<BackupMergeConfirmViewModel> {
+            parametersOf(onDone)
+        }
+
+        val passwordValid by viewModel.passwordValid.observeAsState(initial = false)
+        val loading by viewModel.loading.observeAsState(initial = false)
+        val password by viewModel.backupPassword.observeAsState(initial = "")
+
+        MaskModal(
+            title = {
+                Text(text = stringResource(R.string.scene_backup_merge_to_local_title))
+            }
+        ) {
+            Column(
+                modifier = Modifier.padding(ScaffoldPadding)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            MaterialTheme.colors.surface,
+                            shape = MaterialTheme.shapes.small,
+                        )
+                        .padding(vertical = 8.dp, horizontal = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Column(
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(text = abstract)
+                        Text(text = uploaded_at.toString())
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(text = size.toString())
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(text = stringResource(R.string.scene_set_backup_password_backup_password))
+                MaskInputField(
+                    value = password,
+                    onValueChange = { viewModel.setBackupPassword(it) },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+                )
+                Spacer(modifier = Modifier.height(20.dp))
+                PrimaryButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+                        viewModel.confirm(type, download_url)
+                    },
+                    enabled = passwordValid && !loading
+                ) {
+                    Text(text = stringResource(R.string.common_controls_merge_to_local_data))
+                }
+            }
+        }
+    }
+    bottomSheet(
+        SettingRoute.BackupData.BackupData_BackupMerge.path,
+        arguments = listOf(
+            navArgument("type") { type = NavType.StringType },
+            navArgument("value") { type = NavType.StringType },
+            navArgument("code") { type = NavType.StringType },
+            navArgument("download_url") { type = NavType.StringType; nullable = true },
+            navArgument("size") { type = NavType.LongType; defaultValue = 0L },
+            navArgument("uploaded_at") { type = NavType.LongType; defaultValue = 0L },
+            navArgument("abstract") { type = NavType.StringType; nullable = true },
+        )
+    ) { backStackEntry ->
+        val type = backStackEntry.arguments?.getString("type") ?: return@bottomSheet
+        val value = backStackEntry.arguments?.getString("value") ?: return@bottomSheet
+        val code = backStackEntry.arguments?.getString("code") ?: return@bottomSheet
+        val download_url =
+            backStackEntry.arguments?.getString("download_url") ?: return@bottomSheet
+        val size = backStackEntry.arguments?.getLong("size") ?: return@bottomSheet
+        val uploaded_at = backStackEntry.arguments?.getLong("uploaded_at") ?: return@bottomSheet
+        val abstract = backStackEntry.arguments?.getString("abstract") ?: return@bottomSheet
+        MaskModal {
+            Column(
+                modifier = Modifier.padding(ScaffoldPadding)
+            ) {
+                Image(
+                    modifier = Modifier.fillMaxWidth(),
+                    painter = painterResource(id = R.drawable.ic_property_1_note),
+                    contentDescription = null,
+                    alignment = Alignment.Center,
+                )
+                Spacer(modifier = Modifier.height(20.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(
+                            MaterialTheme.colors.surface,
+                            shape = MaterialTheme.shapes.small,
+                        )
+                        .padding(vertical = 8.dp, horizontal = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Column(
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(text = abstract)
+                        Text(text = uploaded_at.toString())
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(text = size.toString())
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(text = stringResource(R.string.scene_backup_remote_backup_actions_view_tips))
+                Spacer(modifier = Modifier.height(20.dp))
+                PrimaryButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+                        navController.navigate(
+                            SettingRoute.BackupData.BackupData_BackupMerge_Confirm(
+                                type,
+                                value,
+                                code,
+                                download_url = download_url,
+                                size = size,
+                                uploaded_at = uploaded_at,
+                                abstract = abstract
+                            ),
+                        )
+                    },
+                ) {
+                    Text(text = stringResource(R.string.common_controls_merge_and_back_up))
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                PrimaryButton(onClick = {
+                    navController.navigate(SettingRoute.BackupData.BackupData_BackupCloud(type, value, code))
+                }) {
+                    Text(text = stringResource(R.string.common_controls_back_up))
+                }
+            }
+        }
+    }
+    bottomSheet(
+        SettingRoute.BackupData.BackupSelection_Email.path,
+        arguments = listOf(
+            navArgument("email") { type = NavType.StringType }
+        )
+    ) { backStackEntry ->
+        val requestMerge: (target: DownloadResponse, email: String, code: String) -> Unit =
+            { target, email, code ->
+                navController.navigate(
+                    SettingRoute.BackupData.BackupData_BackupMerge(
+                        "email",
+                        email,
+                        code,
+                        download_url = target.download_url,
+                        size = target.size,
+                        uploaded_at = target.uploaded_at,
+                        abstract = target.abstract,
+                    ),
+                )
+            }
+        val next: (email: String, code: String) -> Unit = { email, code ->
+            navController.navigate(SettingRoute.BackupData.BackupData_BackupCloud("email", email, code))
+        }
+        backStackEntry.arguments?.getString("email")?.let { email ->
+            val repository = get<PersonaServices>()
+            val persona by repository.currentPersona.observeAsState(initial = null)
+            val phone = persona?.phone
+            val viewModel = getViewModel<EmailBackupViewModel> {
+                parametersOf(requestMerge, next)
+            }
+            val code by viewModel.code.observeAsState(initial = "")
+            val valid by viewModel.codeValid.observeAsState(initial = true)
+            val loading by viewModel.loading.observeAsState(initial = false)
+            val canSend by viewModel.canSend.observeAsState(initial = false)
+            val countDown by viewModel.countdown.observeAsState(initial = 60)
+            LaunchedEffect(Unit) {
+                viewModel.startCountDown()
+                viewModel.sendCode(email)
+            }
+            EmailCodeInputModal(
+                email = email,
+                buttonEnabled = loading,
+                title = stringResource(R.string.scene_backup_backup_verify_title_email),
+                countDown = countDown,
+                canSend = canSend,
+                codeValid = valid,
+                code = code,
+                onCodeChange = { viewModel.setCode(it) },
+                onSendCode = { viewModel.sendCode(email) },
+                onVerify = { viewModel.verifyCode(code, email, skipValidate = true) },
+                subTitle = {
+                    Text(text = stringResource(R.string.scene_backup_backup_verify_field_email))
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(text = email, color = MaterialTheme.colors.primary)
+                },
+                footer = {
+                    if (phone != null) {
+                        Spacer(modifier = Modifier.height(20.dp))
+                        TextButton(
+                            modifier = Modifier.fillMaxWidth(),
                             onClick = {
-                                navController.navigate("BackupData_BackupCloud/$type/$value/$code") {
-                                    popUpTo("BackupSelection") {
+                                navController.navigate(SettingRoute.BackupData.BackupSelection_Phone(phone)) {
+                                    popUpTo(SettingRoute.BackupData.BackupSelection_Email.path) {
                                         inclusive = true
                                     }
                                 }
                             },
                         ) {
-                            Text(text = "To back up")
+                            Text(text = stringResource(R.string.scene_backup_with_phone))
                         }
                     }
                 }
             )
         }
-        bottomSheet(
-            "BackupData_BackupMerge_Confirm/{type}/{value}/{code}?download_url={download_url}&size={size}&uploaded_at={uploaded_at}&abstract={abstract}",
-            arguments = listOf(
-                navArgument("type") { type = NavType.StringType },
-                navArgument("value") { type = NavType.StringType },
-                navArgument("code") { type = NavType.StringType },
-                navArgument("download_url") { type = NavType.StringType; nullable = true },
-                navArgument("size") { type = NavType.LongType; defaultValue = 0L },
-                navArgument("uploaded_at") { type = NavType.LongType; defaultValue = 0L },
-                navArgument("abstract") { type = NavType.StringType; nullable = true },
+    }
+    bottomSheet(
+        SettingRoute.BackupData.BackupSelection_Phone.path,
+        arguments = listOf(navArgument("phone") { type = NavType.StringType })
+    ) { backStackEntry ->
+        val requestMerge: (target: DownloadResponse, phone: String, code: String) -> Unit =
+            { target, phone, code ->
+                navController.navigate(
+                    SettingRoute.BackupData.BackupData_BackupMerge(
+                        "phone",
+                        phone,
+                        code,
+                        download_url = target.download_url,
+                        size = target.size,
+                        uploaded_at = target.uploaded_at,
+                        abstract = target.abstract
+                    ),
+                )
+            }
+        val next: (phone: String, code: String) -> Unit = { phone, code ->
+            navController.navigate(SettingRoute.BackupData.BackupData_BackupCloud("phone", phone, code))
+        }
+        backStackEntry.arguments?.getString("phone")?.let { phone ->
+            val repository = get<PersonaServices>()
+            val persona by repository.currentPersona.observeAsState(initial = null)
+            val email = persona?.email
+            val viewModel = getViewModel<PhoneBackupViewModel> {
+                parametersOf(requestMerge, next)
+            }
+            val code by viewModel.code.observeAsState(initial = "")
+            val canSend by viewModel.canSend.observeAsState(initial = false)
+            val valid by viewModel.codeValid.observeAsState(initial = true)
+            val countDown by viewModel.countdown.observeAsState(initial = 60)
+            val loading by viewModel.loading.observeAsState(initial = false)
+            LaunchedEffect(Unit) {
+                viewModel.startCountDown()
+                viewModel.sendCode(phone)
+            }
+            PhoneCodeInputModal(
+                phone = phone,
+                code = code,
+                onCodeChange = { viewModel.setCode(it) },
+                canSend = canSend,
+                codeValid = valid,
+                countDown = countDown,
+                buttonEnabled = loading,
+                onSendCode = { viewModel.sendCode(phone) },
+                onVerify = { viewModel.verifyCode(code = code, value = phone, skipValidate = true) },
+                title = stringResource(R.string.scene_backup_backup_verify_title_phone),
+                subTitle = {
+                    Text(text = stringResource(R.string.scene_backup_backup_verify_field_phone))
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(text = phone, color = MaterialTheme.colors.primary)
+                },
+                footer = {
+                    if (email != null) {
+                        Spacer(modifier = Modifier.height(20.dp))
+                        TextButton(
+                            modifier = Modifier.fillMaxWidth(),
+                            onClick = {
+                                navController.navigate(SettingRoute.BackupData.BackupSelection_Email(email)) {
+                                    popUpTo(SettingRoute.BackupData.BackupSelection_Phone.path) {
+                                        inclusive = true
+                                    }
+                                }
+                            },
+                        ) {
+                            Text(text = stringResource(R.string.scene_backup_with_email))
+                        }
+                    }
+                }
             )
-        ) { backStackEntry ->
-            val type = backStackEntry.arguments?.getString("type") ?: return@bottomSheet
-            val value = backStackEntry.arguments?.getString("value") ?: return@bottomSheet
-            val code = backStackEntry.arguments?.getString("code") ?: return@bottomSheet
-            val download_url =
-                backStackEntry.arguments?.getString("download_url") ?: return@bottomSheet
-            val size = backStackEntry.arguments?.getLong("size") ?: return@bottomSheet
-            val uploaded_at = backStackEntry.arguments?.getLong("uploaded_at") ?: return@bottomSheet
-            val abstract = backStackEntry.arguments?.getString("abstract") ?: return@bottomSheet
+        }
+    }
+    bottomSheet(
+        SettingRoute.BackupData.BackupSelection,
+        deepLinks = listOf(
+            navDeepLink { uriPattern = Deeplinks.Setting.BackupData.BackupSelection }
+        )
+    ) {
+        val repository = get<PersonaServices>()
+        val persona by repository.currentPersona.observeAsState(initial = null)
+        BackupSelectionModal(
+            onLocal = {
+                navController.navigate(SettingRoute.BackupData.BackupLocalHost)
+            },
+            onRemote = {
+                val email = persona?.email
+                val phone = persona?.phone
+                if (email == null && phone == null) {
+                    navController.navigate(SettingRoute.BackupData.BackupSelection_NoEmailAndPhone)
+                } else if (email != null) {
+                    navController.navigate(SettingRoute.BackupData.BackupSelection_Email(email))
+                } else if (phone != null) {
+                    navController.navigate(SettingRoute.BackupData.BackupSelection_Phone(phone))
+                }
+            }
+        )
+    }
+    bottomSheet(SettingRoute.BackupData.Password) {
+        val repository = get<ISettingsRepository>()
+        val currentPassword by repository.backupPassword.observeAsState(
+            initial = ""
+        )
+        var password by remember {
+            mutableStateOf("")
+        }
 
-            val onDone: () -> Unit = {
-                navController.navigate("BackupData_BackupMerge_Confirm_Success/$type/$value/$code") {
-                    popUpTo("BackupData_BackupMerge/{type}/{value}/{code}?download_url={download_url}&size={size}&uploaded_at={uploaded_at}&abstract={abstract}") {
+        BackupPasswordInputModal(
+            password = password,
+            onPasswordChanged = {
+                password = it
+            },
+            onNext = {
+                navController.navigate(SettingRoute.BackupData.BackupLocalHost) {
+                    popUpTo(SettingRoute.BackupData.Password) {
+                        inclusive = true
+                    }
+                }
+            },
+            enabled = currentPassword == password
+        )
+    }
+    composable(SettingRoute.BackupData.BackupLocalHost) {
+        BackupLocalHost(
+            onBack = {
+                navController.popBackStack()
+            },
+            onFailure = {
+                navController.navigate(SettingRoute.BackupData.BackupLocalFailure) {
+                    popUpTo(SettingRoute.BackupData.BackupLocalHost) {
+                        inclusive = true
+                    }
+                }
+            },
+            onSuccess = {
+                navController.navigate(SettingRoute.BackupData.BackupLocalSuccess) {
+                    popUpTo(SettingRoute.BackupData.BackupLocalHost) {
                         inclusive = true
                     }
                 }
             }
-
-            val viewModel = getViewModel<BackupMergeConfirmViewModel> {
-                parametersOf(onDone)
-            }
-
-            val passwordValid by viewModel.passwordValid.observeAsState(initial = false)
-            val loading by viewModel.loading.observeAsState(initial = false)
-            val password by viewModel.backupPassword.observeAsState(initial = "")
-
-            MaskModal(
-                title = {
-                    Text(text = stringResource(R.string.scene_backup_merge_to_local_title))
-                }
-            ) {
-                Column(
-                    modifier = Modifier.padding(ScaffoldPadding)
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(
-                                MaterialTheme.colors.surface,
-                                shape = MaterialTheme.shapes.small,
-                            )
-                            .padding(vertical = 8.dp, horizontal = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Column(
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Text(text = abstract)
-                            Text(text = uploaded_at.toString())
-                        }
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(text = size.toString())
-                    }
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Text(text = stringResource(R.string.scene_set_backup_password_backup_password))
-                    MaskInputField(
-                        value = password,
-                        onValueChange = { viewModel.setBackupPassword(it) },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
-                    )
-                    Spacer(modifier = Modifier.height(20.dp))
-                    PrimaryButton(
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = {
-                            viewModel.confirm(type, download_url)
-                        },
-                        enabled = passwordValid && !loading
-                    ) {
-                        Text(text = stringResource(R.string.common_controls_merge_to_local_data))
-                    }
-                }
-            }
-        }
-        bottomSheet(
-            "BackupData_BackupMerge/{type}/{value}/{code}?download_url={download_url}&size={size}&uploaded_at={uploaded_at}&abstract={abstract}",
-            arguments = listOf(
-                navArgument("type") { type = NavType.StringType },
-                navArgument("value") { type = NavType.StringType },
-                navArgument("code") { type = NavType.StringType },
-                navArgument("download_url") { type = NavType.StringType; nullable = true },
-                navArgument("size") { type = NavType.LongType; defaultValue = 0L },
-                navArgument("uploaded_at") { type = NavType.LongType; defaultValue = 0L },
-                navArgument("abstract") { type = NavType.StringType; nullable = true },
-            )
-        ) { backStackEntry ->
-            val type = backStackEntry.arguments?.getString("type") ?: return@bottomSheet
-            val value = backStackEntry.arguments?.getString("value") ?: return@bottomSheet
-            val code = backStackEntry.arguments?.getString("code") ?: return@bottomSheet
-            val download_url =
-                backStackEntry.arguments?.getString("download_url") ?: return@bottomSheet
-            val size = backStackEntry.arguments?.getLong("size") ?: return@bottomSheet
-            val uploaded_at = backStackEntry.arguments?.getLong("uploaded_at") ?: return@bottomSheet
-            val abstract = backStackEntry.arguments?.getString("abstract") ?: return@bottomSheet
-            MaskModal {
-                Column(
-                    modifier = Modifier.padding(ScaffoldPadding)
-                ) {
-                    Image(
-                        modifier = Modifier.fillMaxWidth(),
-                        painter = painterResource(id = R.drawable.ic_property_1_note),
-                        contentDescription = null,
-                        alignment = Alignment.Center,
-                    )
-                    Spacer(modifier = Modifier.height(20.dp))
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(
-                                MaterialTheme.colors.surface,
-                                shape = MaterialTheme.shapes.small,
-                            )
-                            .padding(vertical = 8.dp, horizontal = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Column(
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Text(text = abstract)
-                            Text(text = uploaded_at.toString())
-                        }
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(text = size.toString())
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(text = stringResource(R.string.scene_backup_remote_backup_actions_view_tips))
-                    Spacer(modifier = Modifier.height(20.dp))
-                    PrimaryButton(
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = {
-                            navController.navigate("BackupData_BackupMerge_Confirm/$type/$value/$code?download_url=$download_url&size=$size&uploaded_at=$uploaded_at&abstract=${abstract.encodeUrl()}")
-                        },
-                    ) {
-                        Text(text = stringResource(R.string.common_controls_merge_and_back_up))
-                    }
-                    Spacer(modifier = Modifier.height(16.dp))
-                    PrimaryButton(onClick = {
-                        navController.navigate("BackupData_BackupCloud/$type/$value/$code")
-                    }) {
-                        Text(text = stringResource(R.string.common_controls_back_up))
-                    }
-                }
-            }
-        }
-        bottomSheet(
-            "BackupSelection_Email/{email}",
-            arguments = listOf(
-                navArgument("email") { type = NavType.StringType }
-            )
-        ) { backStackEntry ->
-            val requestMerge: (target: DownloadResponse, email: String, code: String) -> Unit =
-                { target, email, code ->
-                    navController.navigate("BackupData_BackupMerge/email/$email/$code?download_url=${target.download_url}&size=${target.size}&uploaded_at=${target.uploaded_at}&abstract=${target.abstract?.encodeUrl()}")
-                }
-            val next: (email: String, code: String) -> Unit = { email, code ->
-                navController.navigate("BackupData_BackupCloud/email/$email/$code")
-            }
-            backStackEntry.arguments?.getString("email")?.let { email ->
-                val repository = get<PersonaServices>()
-                val persona by repository.currentPersona.observeAsState(initial = null)
-                val phone = persona?.phone
-                val viewModel = getViewModel<EmailBackupViewModel> {
-                    parametersOf(requestMerge, next)
-                }
-                val code by viewModel.code.observeAsState(initial = "")
-                val valid by viewModel.codeValid.observeAsState(initial = true)
-                val loading by viewModel.loading.observeAsState(initial = false)
-                val canSend by viewModel.canSend.observeAsState(initial = false)
-                val countDown by viewModel.countdown.observeAsState(initial = 60)
-                LaunchedEffect(Unit) {
-                    viewModel.startCountDown()
-                    viewModel.sendCode(email)
-                }
-                EmailCodeInputModal(
-                    email = email,
-                    buttonEnabled = loading,
-                    title = stringResource(R.string.scene_backup_backup_verify_title_email),
-                    countDown = countDown,
-                    canSend = canSend,
-                    codeValid = valid,
-                    code = code,
-                    onCodeChange = { viewModel.setCode(it) },
-                    onSendCode = { viewModel.sendCode(email) },
-                    onVerify = { viewModel.verifyCode(code, email, skipValidate = true) },
-                    subTitle = {
-                        Text(text = stringResource(R.string.scene_backup_backup_verify_field_email))
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(text = email, color = MaterialTheme.colors.primary)
-                    },
-                    footer = {
-                        if (phone != null) {
-                            Spacer(modifier = Modifier.height(20.dp))
-                            TextButton(
-                                modifier = Modifier.fillMaxWidth(),
-                                onClick = {
-                                    navController.navigate("BackupSelection_Phone/$phone") {
-                                        popUpTo("BackupSelection_Email") {
-                                            inclusive = true
-                                        }
-                                    }
-                                },
-                            ) {
-                                Text(text = stringResource(R.string.scene_backup_with_phone))
-                            }
-                        }
-                    }
+        )
+    }
+    dialog(SettingRoute.BackupData.BackupLocalFailure) {
+        MaskDialog(
+            onDismissRequest = { navController.popBackStack() },
+            icon = {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_property_1_failed),
+                    contentDescription = null
                 )
-            }
-        }
-        bottomSheet(
-            "BackupSelection_Phone/{phone}",
-            arguments = listOf(navArgument("phone") { type = NavType.StringType })
-        ) { backStackEntry ->
-            val requestMerge: (target: DownloadResponse, phone: String, code: String) -> Unit =
-                { target, phone, code ->
-                    navController.navigate("BackupData_BackupMerge/phone/$phone/$code?download_url=${target.download_url}&size=${target.size}&uploaded_at=${target.uploaded_at}&abstract=${target.abstract?.encodeUrl()}")
-                }
-            val next: (phone: String, code: String) -> Unit = { phone, code ->
-                navController.navigate("BackupData_BackupCloud/phone/$phone/$code")
-            }
-            backStackEntry.arguments?.getString("phone")?.let { phone ->
-                val repository = get<PersonaServices>()
-                val persona by repository.currentPersona.observeAsState(initial = null)
-                val email = persona?.email
-                val viewModel = getViewModel<PhoneBackupViewModel> {
-                    parametersOf(requestMerge, next)
-                }
-                val code by viewModel.code.observeAsState(initial = "")
-                val canSend by viewModel.canSend.observeAsState(initial = false)
-                val valid by viewModel.codeValid.observeAsState(initial = true)
-                val countDown by viewModel.countdown.observeAsState(initial = 60)
-                val loading by viewModel.loading.observeAsState(initial = false)
-                LaunchedEffect(Unit) {
-                    viewModel.startCountDown()
-                    viewModel.sendCode(phone)
-                }
-                PhoneCodeInputModal(
-                    phone = phone,
-                    code = code,
-                    onCodeChange = { viewModel.setCode(it) },
-                    canSend = canSend,
-                    codeValid = valid,
-                    countDown = countDown,
-                    buttonEnabled = loading,
-                    onSendCode = { viewModel.sendCode(phone) },
-                    onVerify = { viewModel.verifyCode(code = code, value = phone, skipValidate = true) },
-                    title = stringResource(R.string.scene_backup_backup_verify_title_phone),
-                    subTitle = {
-                        Text(text = stringResource(R.string.scene_backup_backup_verify_field_phone))
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(text = phone, color = MaterialTheme.colors.primary)
-                    },
-                    footer = {
-                        if (email != null) {
-                            Spacer(modifier = Modifier.height(20.dp))
-                            TextButton(
-                                modifier = Modifier.fillMaxWidth(),
-                                onClick = {
-                                    navController.navigate("BackupSelection_Email/$email") {
-                                        popUpTo("BackupSelection_Phone") {
-                                            inclusive = true
-                                        }
-                                    }
-                                },
-                            ) {
-                                Text(text = stringResource(R.string.scene_backup_with_email))
-                            }
-                        }
-                    }
+            },
+            title = { Text(text = stringResource(R.string.common_alert_local_backup_backup_failed)) },
+        )
+    }
+    dialog(SettingRoute.BackupData.BackupLocalSuccess) {
+        MaskDialog(
+            onDismissRequest = { navController.popBackStack() },
+            icon = {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_property_1_snccess),
+                    contentDescription = null
                 )
-            }
-        }
-        bottomSheet("BackupSelection") {
-            val repository = get<PersonaServices>()
-            val persona by repository.currentPersona.observeAsState(initial = null)
-            BackupSelectionModal(
-                onLocal = {
-                    navController.navigate("BackupLocalHost")
-                },
-                onRemote = {
-                    val email = persona?.email
-                    val phone = persona?.phone
-                    if (email == null && phone == null) {
-                        navController.navigate("BackupSelection_NoEmailAndPhone")
-                    } else if (email != null) {
-                        navController.navigate("BackupSelection_Email/$email")
-                    } else if (phone != null) {
-                        navController.navigate("BackupSelection_Phone/$phone")
-                    }
-                }
-            )
-        }
-        bottomSheet("Password") {
-            val repository = get<ISettingsRepository>()
-            val currentPassword by repository.backupPassword.observeAsState(
-                initial = ""
-            )
-            var password by remember {
-                mutableStateOf("")
-            }
-
-            BackupPasswordInputModal(
-                password = password,
-                onPasswordChanged = {
-                    password = it
-                },
-                onNext = {
-                    navController.navigate("BackupLocalHost") {
-                        popUpTo("Password") {
-                            inclusive = true
-                        }
-                    }
-                },
-                enabled = currentPassword == password
-            )
-        }
-        composable("BackupLocalHost") {
-            BackupLocalHost(
-                onBack = {
-                    navController.popBackStack()
-                },
-                onFailure = {
-                    navController.navigate("BackupLocalFailure") {
-                        popUpTo("BackupLocalHost") {
-                            inclusive = true
-                        }
-                    }
-                },
-                onSuccess = {
-                    navController.navigate("BackupLocalSuccess") {
-                        popUpTo("BackupLocalHost") {
-                            inclusive = true
-                        }
-                    }
-                }
-            )
-        }
-        dialog("BackupLocalFailure") {
-            MaskDialog(
-                onDismissRequest = { navController.popBackStack() },
-                icon = {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_property_1_failed),
-                        contentDescription = null
-                    )
-                },
-                title = { Text(text = stringResource(R.string.common_alert_local_backup_backup_failed)) },
-            )
-        }
-        dialog("BackupLocalSuccess") {
-            MaskDialog(
-                onDismissRequest = { navController.popBackStack() },
-                icon = {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_property_1_snccess),
-                        contentDescription = null
-                    )
-                },
-                title = { Text(text = stringResource(R.string.common_alert_local_backup_backup_completed)) },
-            )
-        }
+            },
+            title = { Text(text = stringResource(R.string.common_alert_local_backup_backup_completed)) },
+        )
     }
 }

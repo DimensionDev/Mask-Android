@@ -25,16 +25,16 @@ package com.dimension.maskbook.common.routeProcessor
 annotation class Route(
     val schema: String = "",
     val packageName: String = "",
-    val className: String = "",
 )
 
 @Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.FUNCTION)
-annotation class RouteGraphDestination(
+annotation class NavGraphDestination(
     val route: String,
     val deeplink: Array<String> = [],
     val packageName: String = "androidx.navigation.compose",
-    val functionName: String = "composable"
+    val functionName: String = "composable",
+    val generatedFunctionName: String = "generatedRoute",
 )
 
 @Retention(AnnotationRetention.SOURCE)
