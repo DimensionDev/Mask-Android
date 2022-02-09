@@ -25,6 +25,7 @@ import com.dimension.maskbook.common.ui.LocalRootNavController
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.labs.R
 import com.dimension.maskbook.labs.export.model.AppKey
+import com.dimension.maskbook.labs.route.LabsRoute
 import com.dimension.maskbook.labs.ui.scenes.LabsScene
 
 class LabsTabScreen : TabScreen {
@@ -37,15 +38,15 @@ class LabsTabScreen : TabScreen {
         val rootNavController = LocalRootNavController.current
         LabsScene(
             onSettingClick = {
-                rootNavController.navigate("PluginSettings")
+                rootNavController.navigate(LabsRoute.PluginSettings)
             },
             onItemClick = { appKey ->
                 when (appKey) {
                     AppKey.Swap -> {
-                        rootNavController.navigate("MarketTrendSettings")
+                        rootNavController.navigate(LabsRoute.MarketTrendSettings)
                     }
                     AppKey.Transak -> {
-                        rootNavController.navigate("LabsTransak")
+                        rootNavController.navigate(LabsRoute.LabsTransak)
                     }
                     else -> Unit
                 }

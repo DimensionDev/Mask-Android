@@ -29,6 +29,7 @@ import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.labs.export.model.TransakConfig
 import com.dimension.maskbook.labs.repository.AppRepository
 import com.dimension.maskbook.labs.repository.IAppRepository
+import com.dimension.maskbook.labs.route.LabsRoute
 import com.dimension.maskbook.labs.ui.scenes.LabsTransakScene
 import com.dimension.maskbook.labs.ui.scenes.MarketTrendSettingsModal
 import com.dimension.maskbook.labs.ui.scenes.PluginSettingsScene
@@ -54,7 +55,7 @@ object LabsSetup : ModuleSetup {
         ExperimentalMaterialNavigationApi::class
     )
     override fun NavGraphBuilder.route(navController: NavController, onBack: () -> Unit) {
-        composable("PluginSettings") {
+        composable(LabsRoute.PluginSettings) {
             PluginSettingsScene(
                 onBack = {
                     navController.popBackStack()
@@ -62,7 +63,7 @@ object LabsSetup : ModuleSetup {
             )
         }
         composable(
-            route = "LabsTransak"
+            route = LabsRoute.LabsTransak
         ) {
             val repo = get<WalletServices>()
             val currentWallet by repo.currentWallet.observeAsState(null)
@@ -76,7 +77,7 @@ object LabsSetup : ModuleSetup {
                 )
             )
         }
-        bottomSheet("MarketTrendSettings") {
+        bottomSheet(LabsRoute.MarketTrendSettings) {
             MarketTrendSettingsModal()
         }
     }
