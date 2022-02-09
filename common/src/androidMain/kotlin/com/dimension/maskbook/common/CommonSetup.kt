@@ -29,7 +29,7 @@ import org.koin.dsl.module
 
 object CommonSetup : ModuleSetup {
 
-    override fun NavGraphBuilder.route(navController: NavController) {
+    override fun NavGraphBuilder.route(navController: NavController, onBack: () -> Unit) {
     }
 
     override fun dependencyInject() = module {

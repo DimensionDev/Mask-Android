@@ -22,17 +22,21 @@ package com.dimension.maskbook.wallet
 
 import android.content.Context
 import android.net.Uri
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
+import androidx.navigation.navOptions
 import androidx.room.Room
 import com.dimension.maskbook.common.ModuleSetup
 import com.dimension.maskbook.common.ui.tab.TabScreen
-import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.wallet.db.AppDatabase
 import com.dimension.maskbook.wallet.db.RoomMigrations
+import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.repository.CollectibleRepository
 import com.dimension.maskbook.wallet.repository.ICollectibleRepository
-import com.dimension.maskbook.wallet.repository.IPersonaRepository
 import com.dimension.maskbook.wallet.repository.ISendHistoryRepository
 import com.dimension.maskbook.wallet.repository.ITokenRepository
 import com.dimension.maskbook.wallet.repository.ITransactionRepository
@@ -47,20 +51,9 @@ import com.dimension.maskbook.wallet.repository.WalletContactRepository
 import com.dimension.maskbook.wallet.repository.WalletRepository
 import com.dimension.maskbook.wallet.repository.walletDataStore
 import com.dimension.maskbook.wallet.services.WalletServices
-import com.dimension.maskbook.wallet.ui.tab.PersonasTabScreen
+import com.dimension.maskbook.wallet.ui.scenes.persona.BackUpPasswordModal
 import com.dimension.maskbook.wallet.ui.tab.WalletTabScreen
 import com.dimension.maskbook.wallet.viewmodel.WelcomeViewModel
-import com.dimension.maskbook.wallet.viewmodel.persona.ExportPrivateKeyViewModel
-import com.dimension.maskbook.wallet.viewmodel.persona.PersonaViewModel
-import com.dimension.maskbook.wallet.viewmodel.persona.RenamePersonaViewModel
-import com.dimension.maskbook.wallet.viewmodel.persona.SwitchPersonaViewModel
-import com.dimension.maskbook.wallet.viewmodel.persona.contacts.ContactsViewModel
-import com.dimension.maskbook.wallet.viewmodel.persona.post.PostViewModel
-import com.dimension.maskbook.wallet.viewmodel.persona.social.DisconnectSocialViewModel
-import com.dimension.maskbook.wallet.viewmodel.persona.social.FaceBookConnectSocialViewModel
-import com.dimension.maskbook.wallet.viewmodel.persona.social.FacebookSocialViewModel
-import com.dimension.maskbook.wallet.viewmodel.persona.social.TwitterConnectSocialViewModel
-import com.dimension.maskbook.wallet.viewmodel.persona.social.TwitterSocialViewModel
 import com.dimension.maskbook.wallet.viewmodel.recovery.IdentityViewModel
 import com.dimension.maskbook.wallet.viewmodel.recovery.PrivateKeyViewModel
 import com.dimension.maskbook.wallet.viewmodel.recovery.RecoveryLocalViewModel
@@ -98,10 +91,13 @@ import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendTokenDataViewMod
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendTokenViewModel
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManagerV1
+import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
+import com.google.accompanist.navigation.material.bottomSheet
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asExecutor
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.getViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.module.Module
 import org.koin.dsl.bind
@@ -111,7 +107,57 @@ import com.dimension.maskbook.wallet.export.WalletServices as ExportWalletServic
 
 object WalletSetup : ModuleSetup {
 
-    override fun NavGraphBuilder.route(navController: NavController) {
+    @OptIn(ExperimentalMaterialNavigationApi::class)
+    override fun NavGraphBuilder.route(navController: NavController, onBack: () -> Unit) {
+        bottomSheet(
+            "BackUpPassword/{target}",
+            arguments = listOf(
+                navArgument("target") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val target = backStackEntry.arguments?.getString("target")
+            val viewModel = getViewModel<BackUpPasswordViewModel>()
+            val biometricEnable by viewModel.biometricEnabled.observeAsState(initial = false)
+            val password by viewModel.password.observeAsState(initial = "")
+            val passwordValid by viewModel.passwordValid.observeAsState(initial = false)
+            val context = LocalContext.current
+            BackUpPasswordModal(
+                biometricEnabled = biometricEnable,
+                password = password,
+                onPasswordChanged = { viewModel.setPassword(it) },
+                passwordValid = passwordValid,
+                onConfirm = {
+                    if (biometricEnable) {
+                        viewModel.authenticate(
+                            context = context,
+                            onSuccess = {
+                                target?.let {
+                                    navController.navigate(
+                                        it,
+                                        navOptions {
+                                            popUpTo("BackUpPassword") {
+                                                inclusive = true
+                                            }
+                                        }
+                                    )
+                                } ?: navController.popBackStack()
+                            }
+                        )
+                    } else {
+                        target?.let {
+                            navController.navigate(
+                                it,
+                                navOptions {
+                                    popUpTo("BackUpPassword") {
+                                        inclusive = true
+                                    }
+                                }
+                            )
+                        } ?: navController.popBackStack()
+                    }
+                }
+            )
+        }
     }
 
     override fun dependencyInject() = module {
@@ -127,19 +173,14 @@ object WalletSetup : ModuleSetup {
 
         single<ExportWalletServices> { WalletServicesImpl(get()) }
 
-        single { PersonasTabScreen() } bind TabScreen::class
         single { WalletTabScreen() } bind TabScreen::class
 
         provideRepository()
         provideViewModel()
         provideServices()
-        // TODO remove to persona module
-        provideOtherModule()
     }
 
     override fun onExtensionReady() {
-        // TODO move to persona module
-        initOtherRepository()
         initRepository()
         initWalletConnect()
     }
@@ -148,11 +189,6 @@ object WalletSetup : ModuleSetup {
 private fun initRepository() {
     KoinPlatformTools.defaultContext().get().get<IWalletRepository>().init()
     KoinPlatformTools.defaultContext().get().get<IWalletConnectRepository>().init()
-}
-
-// TODO move to persona module
-private fun initOtherRepository() {
-    KoinPlatformTools.defaultContext().get().get<IPersonaRepository>().init()
 }
 
 private fun initWalletConnect() {
@@ -185,19 +221,8 @@ private fun Module.provideViewModel() {
     viewModel { (uri: Uri) -> RecoveryLocalViewModel(get(), uri, get<Context>().contentResolver) }
     viewModel { IdentityViewModel(get()) }
     viewModel { PrivateKeyViewModel(get()) }
-    viewModel { (personaName: String) -> CreateIdentityViewModel(personaName, get()) }
-    viewModel { PersonaViewModel(get()) }
-    viewModel { TwitterSocialViewModel(get()) }
-    viewModel { FacebookSocialViewModel(get()) }
+    viewModel { (personaName: String) -> CreateIdentityViewModel(personaName, get(), get()) }
     viewModel { WelcomeViewModel(get()) }
-    viewModel { TwitterConnectSocialViewModel(get()) }
-    viewModel { FaceBookConnectSocialViewModel(get()) }
-    viewModel { DisconnectSocialViewModel(get()) }
-    viewModel { SwitchPersonaViewModel(get()) }
-    viewModel { (personaId: String) -> RenamePersonaViewModel(get(), personaId) }
-    viewModel { ExportPrivateKeyViewModel(get()) }
-    viewModel { PostViewModel(get(), get()) }
-    viewModel { ContactsViewModel(get(), get()) }
     viewModel { (requestNavigate: (RemoteBackupRecoveryViewModelBase.NavigateArgs) -> Unit) ->
         EmailRemoteBackupRecoveryViewModel(
             requestNavigate,
@@ -269,9 +294,4 @@ private fun Module.provideViewModel() {
 
 private fun Module.provideServices() {
     single { WalletServices() }
-}
-
-// TODO move to persona module
-private fun Module.provideOtherModule() {
-    single<PersonaServices> { PersonaServicesImpl(get()) }
 }

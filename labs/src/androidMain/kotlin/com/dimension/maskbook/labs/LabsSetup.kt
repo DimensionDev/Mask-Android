@@ -53,7 +53,7 @@ object LabsSetup : ModuleSetup {
         ExperimentalAnimationApi::class,
         ExperimentalMaterialNavigationApi::class
     )
-    override fun NavGraphBuilder.route(navController: NavController) {
+    override fun NavGraphBuilder.route(navController: NavController, onBack: () -> Unit) {
         composable("PluginSettings") {
             PluginSettingsScene(
                 onBack = {

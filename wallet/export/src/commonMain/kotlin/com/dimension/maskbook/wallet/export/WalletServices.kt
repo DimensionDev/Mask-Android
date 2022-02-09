@@ -25,4 +25,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface WalletServices {
     val currentWallet: Flow<WalletData?>
+    fun generateNewMnemonic(): List<String>
 }

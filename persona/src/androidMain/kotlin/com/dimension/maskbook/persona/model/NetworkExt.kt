@@ -18,24 +18,32 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.viewmodel.register
+package com.dimension.maskbook.persona.model
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.dimension.maskbook.persona.export.PersonaServices
-import com.dimension.maskbook.wallet.ext.asStateIn
+import com.dimension.maskbook.persona.R
+import com.dimension.maskbook.wallet.repository.Network
 import com.dimension.maskbook.wallet.repository.PlatformType
-import kotlinx.coroutines.flow.MutableStateFlow
 
-class UserNameModalViewModel(
-    private val personaServices: PersonaServices
-) : ViewModel() {
-    private val _userName = MutableStateFlow("")
-    val userName = _userName.asStateIn(viewModelScope, "")
-    fun setUserName(value: String) {
-        _userName.value = value
+val Network.icon: Int
+    get() = when (this) {
+        Network.Twitter -> R.drawable.twitter
+        Network.Facebook -> R.drawable.facebook
+        Network.Instagram -> R.drawable.instagram
+        Network.Minds -> R.drawable.ic_persona_empty_mind
     }
-    fun done(name: String) {
-        personaServices.finishConnectingProcess(name, PlatformType.Twitter)
+
+val Network.title: String
+    get() = when (this) {
+        Network.Twitter -> "Twitter"
+        Network.Facebook -> "Facebook"
+        Network.Instagram -> "Instagram"
+        Network.Minds -> "Minds"
     }
-}
+
+val Network.platform: PlatformType?
+    get() = when (this) {
+        Network.Twitter -> PlatformType.Twitter
+        Network.Facebook -> PlatformType.Facebook
+        Network.Instagram -> null
+        Network.Minds -> null
+    }

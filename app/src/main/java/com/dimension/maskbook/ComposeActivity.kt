@@ -37,6 +37,7 @@ import coil.decode.SvgDecoder
 import com.dimension.maskbook.common.route
 import com.dimension.maskbook.common.ui.LocalRootNavController
 import com.dimension.maskbook.labs.LabsSetup
+import com.dimension.maskbook.persona.PersonaSetup
 import com.dimension.maskbook.setting.SettingSetup
 import com.dimension.maskbook.wallet.WalletSetup
 import com.dimension.maskbook.wallet.navHostAnimationDurationMillis
@@ -137,9 +138,10 @@ fun App(
                 ) {
                     walletsRoute(navController = navController)
 
-                    SettingSetup.route(this, navController = navController)
-                    WalletSetup.route(this, navController = navController)
-                    LabsSetup.route(this, navController = navController)
+                    SettingSetup.route(this, navController = navController, onBack = onBack)
+                    WalletSetup.route(this, navController = navController, onBack = onBack)
+                    LabsSetup.route(this, navController = navController, onBack = onBack)
+                    PersonaSetup.route(this, navController = navController, onBack = onBack)
                 }
             }
         }
