@@ -18,7 +18,7 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.ui.scenes.persona
+package com.dimension.maskbook.persona.ui.scenes
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

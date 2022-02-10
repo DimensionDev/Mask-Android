@@ -18,7 +18,7 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.ui.scenes.persona
+package com.dimension.maskbook.persona.ui.scenes
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.clickable
@@ -47,7 +47,6 @@ import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
 import com.dimension.maskbook.persona.export.model.Network
 import com.dimension.maskbook.persona.export.model.PersonaData
 import com.dimension.maskbook.persona.export.model.SocialData
-import com.dimension.maskbook.persona.ui.scenes.PersonaInfoScene
 import com.dimension.maskbook.persona.viewmodel.PersonaViewModel
 import org.koin.androidx.compose.getViewModel
 

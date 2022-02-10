@@ -28,7 +28,7 @@ import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.export.model.Network
 import com.dimension.maskbook.persona.export.model.PlatformType
-import com.dimension.maskbook.wallet.ui.scenes.persona.PersonaScene
+import com.dimension.maskbook.persona.ui.scenes.PersonaScene
 
 class PersonasTabScreen : TabScreen {
     override val route = "Personas"

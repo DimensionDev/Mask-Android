@@ -42,10 +42,9 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.persona.export.model.Network
 import com.dimension.maskbook.persona.export.model.SocialData
-import com.dimension.maskbook.wallet.ui.scenes.persona.EmptySocialScene
-import com.dimension.maskbook.wallet.ui.scenes.persona.contacts.ContactsScene
-import com.dimension.maskbook.wallet.ui.scenes.persona.post.PostScene
-import com.dimension.maskbook.wallet.ui.scenes.persona.social.SocialScene
+import com.dimension.maskbook.persona.ui.scenes.contacts.ContactsScene
+import com.dimension.maskbook.persona.ui.scenes.post.PostScene
+import com.dimension.maskbook.persona.ui.scenes.social.SocialScene
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState

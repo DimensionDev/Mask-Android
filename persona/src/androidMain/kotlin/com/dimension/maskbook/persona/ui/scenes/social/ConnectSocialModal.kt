@@ -18,7 +18,7 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.ui.scenes.persona.social
+package com.dimension.maskbook.persona.ui.scenes.social
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
