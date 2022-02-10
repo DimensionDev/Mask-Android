@@ -23,8 +23,8 @@ package com.dimension.maskbook.persona.viewmodel.social
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
+import com.dimension.maskbook.persona.export.model.SocialData
 import com.dimension.maskbook.persona.repository.IPersonaRepository
-import com.dimension.maskbook.wallet.repository.SocialData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 

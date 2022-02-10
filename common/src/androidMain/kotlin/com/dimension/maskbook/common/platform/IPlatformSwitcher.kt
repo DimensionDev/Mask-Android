@@ -20,7 +20,7 @@
  */
 package com.dimension.maskbook.common.platform
 
-import com.dimension.maskbook.wallet.repository.PlatformType
+import com.dimension.maskbook.persona.export.model.PlatformType
 
 interface IPlatformSwitcher {
     fun switchTo(platformType: PlatformType)

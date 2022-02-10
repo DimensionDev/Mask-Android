@@ -26,8 +26,8 @@ import com.dimension.maskbook.common.ext.encodeUrl
 import com.dimension.maskbook.common.ui.LocalRootNavController
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.persona.R
-import com.dimension.maskbook.wallet.repository.Network
-import com.dimension.maskbook.wallet.repository.PlatformType
+import com.dimension.maskbook.persona.export.model.Network
+import com.dimension.maskbook.persona.export.model.PlatformType
 import com.dimension.maskbook.wallet.ui.scenes.persona.PersonaScene
 
 class PersonasTabScreen : TabScreen {

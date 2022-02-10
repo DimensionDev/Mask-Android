@@ -40,8 +40,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
-import com.dimension.maskbook.wallet.repository.Network
-import com.dimension.maskbook.wallet.repository.SocialData
+import com.dimension.maskbook.persona.export.model.Network
+import com.dimension.maskbook.persona.export.model.SocialData
 import com.dimension.maskbook.wallet.ui.scenes.persona.EmptySocialScene
 import com.dimension.maskbook.wallet.ui.scenes.persona.contacts.ContactsScene
 import com.dimension.maskbook.wallet.ui.scenes.persona.post.PostScene

@@ -22,13 +22,13 @@ package com.dimension.maskbook.common.repository
 
 import com.dimension.maskbook.common.ext.decodeJson
 import com.dimension.maskbook.common.util.MessageChannel
+import com.dimension.maskbook.persona.export.model.Network
+import com.dimension.maskbook.persona.export.model.Profile
 import com.dimension.maskbook.wallet.repository.Appearance
 import com.dimension.maskbook.wallet.repository.BackupPreview
 import com.dimension.maskbook.wallet.repository.DataProvider
 import com.dimension.maskbook.wallet.repository.Language
-import com.dimension.maskbook.wallet.repository.Network
 import com.dimension.maskbook.wallet.repository.NetworkType
-import com.dimension.maskbook.wallet.repository.Profile
 import com.dimension.maskbook.wallet.repository.TradeProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -36,6 +36,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonPrimitive
+import com.dimension.maskbook.persona.export.model.Persona as ExportPersona
 
 @Serializable
 data class SwitchBlockChainData(
@@ -151,7 +152,7 @@ object JSMethod {
             mnemonic: String,
             nickname: String,
             password: String,
-        ): com.dimension.maskbook.wallet.repository.Persona? {
+        ): ExportPersona? {
             return MessageChannel.executeMessage(
                 "persona_createPersonaByMnemonic",
                 mapOf(
@@ -159,13 +160,13 @@ object JSMethod {
                     "nickname" to nickname,
                     "password" to password,
                 )
-            )?.decodeJson<com.dimension.maskbook.wallet.repository.Persona>()
+            )?.decodeJson<ExportPersona>()
         }
 
         suspend fun queryPersonas(
             identifier: String?,
             hasPrivateKey: Boolean
-        ): List<com.dimension.maskbook.wallet.repository.Persona> {
+        ): List<ExportPersona> {
             return MessageChannel.executeMessage(
                 "persona_queryPersonas",
                 listOfNotNull(
@@ -174,12 +175,12 @@ object JSMethod {
                     },
                     "hasPrivateKey" to hasPrivateKey,
                 ).toMap()
-            )?.decodeJson<List<com.dimension.maskbook.wallet.repository.Persona>>() ?: emptyList()
+            )?.decodeJson<List<ExportPersona>>() ?: emptyList()
         }
 
         suspend fun queryMyPersonas(
             network: Network?,
-        ): List<com.dimension.maskbook.wallet.repository.Persona> {
+        ): List<ExportPersona> {
             return MessageChannel.executeMessage(
                 "persona_queryMyPersonas",
                 listOfNotNull(
@@ -187,7 +188,7 @@ object JSMethod {
                         "network" to network.value
                     },
                 ).toMap()
-            )?.decodeJson<List<com.dimension.maskbook.wallet.repository.Persona>>() ?: emptyList()
+            )?.decodeJson<List<ExportPersona>>() ?: emptyList()
         }
 
         suspend fun updatePersonaInfo(

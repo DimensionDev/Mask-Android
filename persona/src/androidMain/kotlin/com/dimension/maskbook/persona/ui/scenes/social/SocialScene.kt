@@ -62,9 +62,9 @@ import coil.compose.rememberImagePainter
 import com.dimension.maskbook.common.ui.widget.MaskGridButton
 import com.dimension.maskbook.common.ui.widget.NameImage
 import com.dimension.maskbook.common.ui.widget.itemsGridIndexed
+import com.dimension.maskbook.persona.export.model.Network
+import com.dimension.maskbook.persona.export.model.SocialData
 import com.dimension.maskbook.persona.model.icon
-import com.dimension.maskbook.wallet.repository.Network
-import com.dimension.maskbook.wallet.repository.SocialData
 
 private val addIcon = SocialData(
     id = "",

@@ -51,7 +51,7 @@ import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.persona.R
-import com.dimension.maskbook.wallet.repository.PersonaData
+import com.dimension.maskbook.persona.export.model.PersonaData
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable

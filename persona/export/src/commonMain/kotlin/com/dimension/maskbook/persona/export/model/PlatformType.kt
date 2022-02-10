@@ -20,14 +20,7 @@
  */
 package com.dimension.maskbook.persona.export.model
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
-
-@Serializable
-enum class ProfileState {
-    @SerialName("pending")
-    pending,
-
-    @SerialName("confirmed")
-    confirmed,
+enum class PlatformType {
+    Twitter,
+    Facebook
 }
