@@ -18,7 +18,7 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.repository
+package com.dimension.maskbook.setting.repository
 
 import com.dimension.maskbook.common.repository.JSMethod
 import com.dimension.maskbook.persona.export.PersonaServices

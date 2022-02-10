@@ -18,20 +18,20 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.repository
+package com.dimension.maskbook.setting.repository
 
 import android.content.ContentResolver
 import android.net.Uri
 import androidx.core.net.toUri
 import com.dimension.maskbook.common.okhttp.await
-import com.dimension.maskbook.wallet.services.BackupServices
-import com.dimension.maskbook.wallet.services.model.AccountType
-import com.dimension.maskbook.wallet.services.model.DownloadResponse
-import com.dimension.maskbook.wallet.services.model.Locale
-import com.dimension.maskbook.wallet.services.model.Scenario
-import com.dimension.maskbook.wallet.services.model.SendCodeBody
-import com.dimension.maskbook.wallet.services.model.UploadBody
-import com.dimension.maskbook.wallet.services.model.ValidateCodeBody
+import com.dimension.maskbook.setting.services.BackupServices
+import com.dimension.maskbook.setting.services.model.AccountType
+import com.dimension.maskbook.setting.services.model.DownloadResponse
+import com.dimension.maskbook.setting.services.model.Locale
+import com.dimension.maskbook.setting.services.model.Scenario
+import com.dimension.maskbook.setting.services.model.SendCodeBody
+import com.dimension.maskbook.setting.services.model.UploadBody
+import com.dimension.maskbook.setting.services.model.ValidateCodeBody
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext

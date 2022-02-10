@@ -18,13 +18,13 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.services
+package com.dimension.maskbook.setting.services
 
-import com.dimension.maskbook.wallet.services.model.DownloadResponse
-import com.dimension.maskbook.wallet.services.model.SendCodeBody
-import com.dimension.maskbook.wallet.services.model.UploadBody
-import com.dimension.maskbook.wallet.services.model.UploadResponse
-import com.dimension.maskbook.wallet.services.model.ValidateCodeBody
+import com.dimension.maskbook.setting.services.model.DownloadResponse
+import com.dimension.maskbook.setting.services.model.SendCodeBody
+import com.dimension.maskbook.setting.services.model.UploadBody
+import com.dimension.maskbook.setting.services.model.UploadResponse
+import com.dimension.maskbook.setting.services.model.ValidateCodeBody
 import retrofit2.http.Body
 import retrofit2.http.POST
 

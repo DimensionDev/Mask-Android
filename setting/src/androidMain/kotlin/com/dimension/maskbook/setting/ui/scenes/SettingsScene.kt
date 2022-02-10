@@ -18,7 +18,7 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.ui.scenes.settings
+package com.dimension.maskbook.setting.ui.scenes
 
 import android.content.Context
 import androidx.annotation.DrawableRes
@@ -67,7 +67,7 @@ import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.setting.export.model.Appearance
 import com.dimension.maskbook.setting.export.model.DataProvider
 import com.dimension.maskbook.setting.export.model.Language
-import com.dimension.maskbook.wallet.repository.ISettingsRepository
+import com.dimension.maskbook.setting.repository.ISettingsRepository
 import org.koin.androidx.compose.get
 import org.koin.androidx.compose.getViewModel
 

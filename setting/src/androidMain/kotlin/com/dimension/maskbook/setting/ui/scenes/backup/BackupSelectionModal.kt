@@ -18,7 +18,7 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.ui.scenes.settings.backup
+package com.dimension.maskbook.setting.ui.scenes.backup
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.layout.Column
