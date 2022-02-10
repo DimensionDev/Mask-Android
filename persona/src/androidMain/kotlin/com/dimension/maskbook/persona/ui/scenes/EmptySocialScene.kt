@@ -18,7 +18,7 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.ui.scenes.persona
+package com.dimension.maskbook.persona.ui.scenes
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -51,12 +51,12 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.dimension.maskbook.common.ui.widget.MaskGridButton
+import com.dimension.maskbook.common.ui.widget.MaskIconButton
+import com.dimension.maskbook.common.ui.widget.itemsGridIndexed
+import com.dimension.maskbook.persona.export.model.Network
 import com.dimension.maskbook.persona.model.icon
 import com.dimension.maskbook.persona.model.title
-import com.dimension.maskbook.wallet.repository.Network
-import com.dimension.maskbook.wallet.ui.widget.MaskGridButton
-import com.dimension.maskbook.wallet.ui.widget.MaskIconButton
-import com.dimension.maskbook.wallet.ui.widget.itemsGridIndexed
 
 private class ConnectData(
     val enable: Boolean,

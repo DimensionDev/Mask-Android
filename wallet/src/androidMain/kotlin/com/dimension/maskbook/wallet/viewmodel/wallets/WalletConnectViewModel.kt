@@ -23,9 +23,9 @@ package com.dimension.maskbook.wallet.viewmodel.wallets
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.wallet.db.model.CoinPlatformType
-import com.dimension.maskbook.wallet.ext.asStateIn
-import com.dimension.maskbook.wallet.repository.ChainType
+import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.repository.IWalletConnectRepository
 import com.dimension.maskbook.wallet.repository.IWalletRepository
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager

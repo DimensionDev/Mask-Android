@@ -18,9 +18,14 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.repository
+package com.dimension.maskbook.setting.repository
 
+import com.dimension.maskbook.setting.export.model.Appearance
 import com.dimension.maskbook.setting.export.model.BackupMeta
+import com.dimension.maskbook.setting.export.model.DataProvider
+import com.dimension.maskbook.setting.export.model.Language
+import com.dimension.maskbook.setting.export.model.NetworkType
+import com.dimension.maskbook.setting.export.model.TradeProvider
 import kotlinx.coroutines.flow.Flow
 
 interface ISettingsRepository {

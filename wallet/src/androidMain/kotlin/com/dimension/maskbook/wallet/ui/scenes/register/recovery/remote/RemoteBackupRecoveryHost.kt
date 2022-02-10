@@ -43,16 +43,15 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.dialog
 import androidx.navigation.navArgument
+import com.dimension.maskbook.common.ext.encodeUrl
+import com.dimension.maskbook.common.ext.observeAsState
+import com.dimension.maskbook.common.ui.widget.EmailCodeInputModal
+import com.dimension.maskbook.common.ui.widget.MaskDialog
+import com.dimension.maskbook.common.ui.widget.MaskInputField
+import com.dimension.maskbook.common.ui.widget.MaskModal
+import com.dimension.maskbook.common.ui.widget.PrimaryButton
+import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.wallet.R
-import com.dimension.maskbook.wallet.ext.encodeUrl
-import com.dimension.maskbook.wallet.ext.observeAsState
-import com.dimension.maskbook.wallet.route.WalletRoute
-import com.dimension.maskbook.wallet.ui.widget.EmailCodeInputModal
-import com.dimension.maskbook.wallet.ui.widget.MaskDialog
-import com.dimension.maskbook.wallet.ui.widget.MaskInputField
-import com.dimension.maskbook.wallet.ui.widget.MaskModal
-import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
-import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.wallet.viewmodel.register.EmailRemoteBackupRecoveryViewModel
 import com.dimension.maskbook.wallet.viewmodel.register.PhoneRemoteBackupRecoveryViewModel
 import com.dimension.maskbook.wallet.viewmodel.register.RemoteBackupRecoveryViewModelBase
@@ -60,6 +59,7 @@ import com.google.accompanist.navigation.material.ExperimentalMaterialNavigation
 import com.google.accompanist.navigation.material.bottomSheet
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
+import com.dimension.maskbook.wallet.route.WalletRoute
 
 @OptIn(ExperimentalMaterialNavigationApi::class)
 fun NavGraphBuilder.remoteBackupRecovery(

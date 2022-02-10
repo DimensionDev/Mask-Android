@@ -37,14 +37,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.dimension.maskbook.common.ext.applyTextStyle
+import com.dimension.maskbook.common.ui.widget.MaskButton
+import com.dimension.maskbook.common.ui.widget.MaskListItem
+import com.dimension.maskbook.common.ui.widget.MaskModal
+import com.dimension.maskbook.common.ui.widget.MiddleEllipsisText
+import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.wallet.R
-import com.dimension.maskbook.wallet.ext.applyTextStyle
-import com.dimension.maskbook.wallet.repository.WalletData
-import com.dimension.maskbook.wallet.ui.widget.MaskButton
-import com.dimension.maskbook.wallet.ui.widget.MaskListItem
-import com.dimension.maskbook.wallet.ui.widget.MaskModal
-import com.dimension.maskbook.wallet.ui.widget.MiddleEllipsisText
-import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
+import com.dimension.maskbook.wallet.export.model.WalletData
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable

@@ -18,7 +18,7 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.ui.scenes.persona.social
+package com.dimension.maskbook.persona.ui.scenes.social
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Row
@@ -30,10 +30,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.dimension.maskbook.common.ui.widget.MaskDialog
+import com.dimension.maskbook.common.ui.widget.PrimaryButton
+import com.dimension.maskbook.common.ui.widget.SecondaryButton
 import com.dimension.maskbook.persona.R
-import com.dimension.maskbook.wallet.ui.widget.MaskDialog
-import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
-import com.dimension.maskbook.wallet.ui.widget.SecondaryButton
 
 @Composable
 fun DisconnectSocialDialog(

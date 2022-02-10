@@ -27,6 +27,10 @@ import com.dimension.maskbook.wallet.db.model.DbCollectible
 import com.dimension.maskbook.wallet.db.model.DbWalletTokenTokenWithWallet
 import com.dimension.maskbook.wallet.db.model.DbWalletTokenWithToken
 import com.dimension.maskbook.wallet.db.model.WalletSource
+import com.dimension.maskbook.wallet.export.model.ChainType
+import com.dimension.maskbook.wallet.export.model.TokenData
+import com.dimension.maskbook.wallet.export.model.WalletData
+import com.dimension.maskbook.wallet.export.model.WalletTokenData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.Serializable
 import org.web3j.protocol.http.HttpService

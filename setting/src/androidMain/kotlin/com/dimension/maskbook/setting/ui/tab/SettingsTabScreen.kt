@@ -24,7 +24,7 @@ import androidx.compose.runtime.Composable
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.setting.R
-import com.dimension.maskbook.wallet.ui.scenes.settings.SettingsScene
+import com.dimension.maskbook.setting.ui.scenes.SettingsScene
 
 class SettingsTabScreen : TabScreen {
     override val route = CommonRoute.Main.Tabs.Setting

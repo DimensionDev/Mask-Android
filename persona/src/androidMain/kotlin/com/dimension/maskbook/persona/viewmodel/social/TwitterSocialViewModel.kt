@@ -22,8 +22,8 @@ package com.dimension.maskbook.persona.viewmodel.social
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.persona.repository.IPersonaRepository
-import com.dimension.maskbook.wallet.ext.asStateIn
 import kotlinx.coroutines.flow.combine
 
 class TwitterSocialViewModel(

@@ -20,12 +20,12 @@
  */
 package com.dimension.maskbook.setting.data
 
-import com.dimension.maskbook.repository.JSMethod
-import com.dimension.maskbook.wallet.repository.Appearance
-import com.dimension.maskbook.wallet.repository.DataProvider
-import com.dimension.maskbook.wallet.repository.Language
-import com.dimension.maskbook.wallet.repository.NetworkType
-import com.dimension.maskbook.wallet.repository.TradeProvider
+import com.dimension.maskbook.common.repository.JSMethod
+import com.dimension.maskbook.setting.export.model.Appearance
+import com.dimension.maskbook.setting.export.model.DataProvider
+import com.dimension.maskbook.setting.export.model.Language
+import com.dimension.maskbook.setting.export.model.NetworkType
+import com.dimension.maskbook.setting.export.model.TradeProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async

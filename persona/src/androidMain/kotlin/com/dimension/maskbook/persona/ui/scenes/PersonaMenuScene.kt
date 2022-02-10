@@ -18,7 +18,7 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.ui.scenes.persona
+package com.dimension.maskbook.persona.ui.scenes
 
 import android.net.Uri
 import androidx.compose.foundation.Image
@@ -47,13 +47,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.dimension.maskbook.common.route.Deeplinks
-import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.route.PersonaRoute
-import com.dimension.maskbook.wallet.repository.PersonaData
-import com.dimension.maskbook.wallet.ui.widget.MaskBackButton
-import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
-import com.dimension.maskbook.wallet.ui.widget.MaskSingleLineTopAppBar
-import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
+import com.dimension.maskbook.common.ext.encodeUrl
+import com.dimension.maskbook.common.ui.widget.MaskBackButton
+import com.dimension.maskbook.common.ui.widget.MaskScaffold
+import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
+import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
+import com.dimension.maskbook.persona.R
+import com.dimension.maskbook.persona.export.model.PersonaData
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable

@@ -53,12 +53,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import com.dimension.maskbook.common.ui.theme.MaskTheme
+import com.dimension.maskbook.common.ui.widget.MaskBackButton
+import com.dimension.maskbook.common.ui.widget.MaskPermissionsRequired
+import com.dimension.maskbook.common.ui.widget.MaskScaffold
+import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
 import com.dimension.maskbook.wallet.R
-import com.dimension.maskbook.wallet.ui.MaskTheme
-import com.dimension.maskbook.wallet.ui.widget.MaskBackButton
-import com.dimension.maskbook.wallet.ui.widget.MaskPermissionsRequired
-import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
-import com.dimension.maskbook.wallet.ui.widget.MaskSingleLineTopAppBar
 import com.journeyapps.barcodescanner.BarcodeView
 
 @Composable

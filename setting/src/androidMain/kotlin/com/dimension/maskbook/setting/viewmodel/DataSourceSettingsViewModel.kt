@@ -18,13 +18,13 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.viewmodel.settings
+package com.dimension.maskbook.setting.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dimension.maskbook.wallet.ext.asStateIn
-import com.dimension.maskbook.wallet.repository.DataProvider
-import com.dimension.maskbook.wallet.repository.ISettingsRepository
+import com.dimension.maskbook.common.ext.asStateIn
+import com.dimension.maskbook.setting.export.model.DataProvider
+import com.dimension.maskbook.setting.repository.ISettingsRepository
 
 class DataSourceSettingsViewModel(
     private val repository: ISettingsRepository,

@@ -21,8 +21,8 @@
 package com.dimension.maskbook.persona.model
 
 import com.dimension.maskbook.persona.R
-import com.dimension.maskbook.wallet.repository.Network
-import com.dimension.maskbook.wallet.repository.PlatformType
+import com.dimension.maskbook.persona.export.model.Network
+import com.dimension.maskbook.persona.export.model.PlatformType
 
 val Network.icon: Int
     get() = when (this) {

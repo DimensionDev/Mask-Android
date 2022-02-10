@@ -18,7 +18,7 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.route
+package com.dimension.maskbook.setting.route
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
@@ -56,30 +56,31 @@ import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import androidx.navigation.navOptions
 import com.dimension.maskbook.common.route.Deeplinks
+import com.dimension.maskbook.setting.route.SettingRoute
+import com.dimension.maskbook.common.ext.encodeUrl
+import com.dimension.maskbook.common.ext.observeAsState
+import com.dimension.maskbook.common.ui.theme.MaskTheme
+import com.dimension.maskbook.common.ui.widget.EmailCodeInputModal
+import com.dimension.maskbook.common.ui.widget.MaskDialog
+import com.dimension.maskbook.common.ui.widget.MaskInputField
+import com.dimension.maskbook.common.ui.widget.MaskModal
+import com.dimension.maskbook.common.ui.widget.MaskScaffold
+import com.dimension.maskbook.common.ui.widget.PhoneCodeInputModal
+import com.dimension.maskbook.common.ui.widget.PrimaryButton
+import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
+import com.dimension.maskbook.common.ui.widget.SecondaryButton
 import com.dimension.maskbook.localization.R
 import com.dimension.maskbook.persona.export.PersonaServices
-import com.dimension.maskbook.setting.route.SettingRoute
-import com.dimension.maskbook.wallet.ext.observeAsState
-import com.dimension.maskbook.wallet.repository.ISettingsRepository
-import com.dimension.maskbook.wallet.services.model.DownloadResponse
-import com.dimension.maskbook.wallet.ui.MaskTheme
-import com.dimension.maskbook.wallet.ui.scenes.register.recovery.local.BackupPasswordInputModal
-import com.dimension.maskbook.wallet.ui.scenes.settings.BackupLocalHost
-import com.dimension.maskbook.wallet.ui.scenes.settings.backup.BackupCloudScene
-import com.dimension.maskbook.wallet.ui.scenes.settings.backup.BackupSelectionModal
-import com.dimension.maskbook.wallet.ui.widget.EmailCodeInputModal
-import com.dimension.maskbook.wallet.ui.widget.MaskDialog
-import com.dimension.maskbook.wallet.ui.widget.MaskInputField
-import com.dimension.maskbook.wallet.ui.widget.MaskModal
-import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
-import com.dimension.maskbook.wallet.ui.widget.PhoneCodeInputModal
-import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
-import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
-import com.dimension.maskbook.wallet.ui.widget.SecondaryButton
-import com.dimension.maskbook.wallet.viewmodel.settings.BackupCloudExecuteViewModel
-import com.dimension.maskbook.wallet.viewmodel.settings.BackupMergeConfirmViewModel
-import com.dimension.maskbook.wallet.viewmodel.settings.EmailBackupViewModel
-import com.dimension.maskbook.wallet.viewmodel.settings.PhoneBackupViewModel
+import com.dimension.maskbook.setting.repository.ISettingsRepository
+import com.dimension.maskbook.setting.services.model.DownloadResponse
+import com.dimension.maskbook.setting.ui.scenes.backup.BackupCloudScene
+import com.dimension.maskbook.setting.ui.scenes.backup.BackupLocalHost
+import com.dimension.maskbook.setting.ui.scenes.backup.BackupPasswordInputModal
+import com.dimension.maskbook.setting.ui.scenes.backup.BackupSelectionModal
+import com.dimension.maskbook.setting.viewmodel.BackupCloudExecuteViewModel
+import com.dimension.maskbook.setting.viewmodel.BackupMergeConfirmViewModel
+import com.dimension.maskbook.setting.viewmodel.EmailBackupViewModel
+import com.dimension.maskbook.setting.viewmodel.PhoneBackupViewModel
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.bottomSheet

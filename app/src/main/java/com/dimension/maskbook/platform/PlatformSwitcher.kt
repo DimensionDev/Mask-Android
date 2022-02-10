@@ -20,8 +20,8 @@
  */
 package com.dimension.maskbook.platform
 
-import com.dimension.maskbook.wallet.platform.IPlatformSwitcher
-import com.dimension.maskbook.wallet.repository.PlatformType
+import com.dimension.maskbook.common.platform.IPlatformSwitcher
+import com.dimension.maskbook.persona.export.model.PlatformType
 
 class PlatformSwitcher : IPlatformSwitcher {
     var actualSwitcher: IPlatformSwitcher? = null

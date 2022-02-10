@@ -22,6 +22,7 @@ package com.dimension.maskbook.wallet.repository
 
 import com.dimension.maskbook.wallet.db.AppDatabase
 import com.dimension.maskbook.wallet.db.model.DbToken
+import com.dimension.maskbook.wallet.export.model.TokenData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapNotNull
 

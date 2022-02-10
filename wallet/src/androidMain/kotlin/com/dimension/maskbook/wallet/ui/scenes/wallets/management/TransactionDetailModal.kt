@@ -29,9 +29,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
+import com.dimension.maskbook.common.ui.widget.MaskModal
+import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.wallet.repository.TransactionData
-import com.dimension.maskbook.wallet.ui.widget.MaskModal
-import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
 
 @Composable
 fun TransactionDetailModal(

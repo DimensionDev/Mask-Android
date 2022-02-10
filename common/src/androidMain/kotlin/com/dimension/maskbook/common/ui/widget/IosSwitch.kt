@@ -18,7 +18,7 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.ui.widget
+package com.dimension.maskbook.common.ui.widget
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
@@ -43,7 +43,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.dimension.maskbook.wallet.ui.isDarkTheme
+import com.dimension.maskbook.common.ui.theme.isDarkTheme
 
 @Composable
 fun IosSwitch(

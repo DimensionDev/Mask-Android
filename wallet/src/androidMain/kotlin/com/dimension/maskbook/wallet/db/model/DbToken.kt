@@ -22,7 +22,7 @@ package com.dimension.maskbook.wallet.db.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.dimension.maskbook.wallet.repository.ChainType
+import com.dimension.maskbook.wallet.export.model.ChainType
 import java.math.BigDecimal
 
 @Entity

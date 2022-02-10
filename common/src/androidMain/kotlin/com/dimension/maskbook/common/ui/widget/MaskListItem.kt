@@ -18,7 +18,7 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.ui.widget
+package com.dimension.maskbook.common.ui.widget
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,7 +32,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.dimension.maskbook.wallet.ext.applyTextStyle
+import com.dimension.maskbook.common.ext.applyTextStyle
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
