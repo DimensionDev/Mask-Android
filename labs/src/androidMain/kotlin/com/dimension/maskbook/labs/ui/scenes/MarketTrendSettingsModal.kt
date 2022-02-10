@@ -40,15 +40,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.dimension.maskbook.common.ext.observeAsState
+import com.dimension.maskbook.common.ui.widget.CircleCheckboxDefaults
+import com.dimension.maskbook.common.ui.widget.MaskModal
+import com.dimension.maskbook.common.ui.widget.MaskSelection
+import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.labs.R
 import com.dimension.maskbook.labs.viewmodel.MarketTrendSettingsViewModel
-import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.repository.NetworkType
 import com.dimension.maskbook.wallet.repository.TradeProvider
-import com.dimension.maskbook.wallet.ui.widget.CircleCheckboxDefaults
-import com.dimension.maskbook.wallet.ui.widget.MaskModal
-import com.dimension.maskbook.wallet.ui.widget.MaskSelection
-import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
 import org.koin.androidx.compose.getViewModel
 
 private val tradeSources = mapOf(

@@ -35,10 +35,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.dimension.maskbook.common.ui.widget.MaskModal
+import com.dimension.maskbook.common.ui.widget.PrimaryButton
+import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.setting.R
-import com.dimension.maskbook.wallet.ui.widget.MaskModal
-import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
-import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
 
 @Composable
 fun BackupSelectionModal(

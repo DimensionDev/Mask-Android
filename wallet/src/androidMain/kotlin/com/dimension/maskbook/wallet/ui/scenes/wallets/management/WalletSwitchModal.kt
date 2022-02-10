@@ -57,19 +57,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.dimension.maskbook.common.ui.widget.CircleCheckbox
+import com.dimension.maskbook.common.ui.widget.MaskButton
+import com.dimension.maskbook.common.ui.widget.MaskIconButton
+import com.dimension.maskbook.common.ui.widget.MaskListItem
+import com.dimension.maskbook.common.ui.widget.MaskModal
+import com.dimension.maskbook.common.ui.widget.MaskScaffold
+import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
+import com.dimension.maskbook.common.ui.widget.MaskTextButton
+import com.dimension.maskbook.common.ui.widget.MiddleEllipsisText
+import com.dimension.maskbook.common.ui.widget.NameImage
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.repository.ChainType
 import com.dimension.maskbook.wallet.repository.WalletData
-import com.dimension.maskbook.wallet.ui.widget.CircleCheckbox
-import com.dimension.maskbook.wallet.ui.widget.MaskButton
-import com.dimension.maskbook.wallet.ui.widget.MaskIconButton
-import com.dimension.maskbook.wallet.ui.widget.MaskListItem
-import com.dimension.maskbook.wallet.ui.widget.MaskModal
-import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
-import com.dimension.maskbook.wallet.ui.widget.MaskSingleLineTopAppBar
-import com.dimension.maskbook.wallet.ui.widget.MaskTextButton
-import com.dimension.maskbook.wallet.ui.widget.MiddleEllipsisText
-import com.dimension.maskbook.wallet.ui.widget.NameImage
 
 val ChainType.onDrawableRes: Int
     get() = when (this) {

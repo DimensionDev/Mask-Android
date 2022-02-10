@@ -20,8 +20,8 @@
  */
 package com.dimension.maskbook.wallet.repository
 
+import com.dimension.maskbook.common.repository.JSMethod
 import com.dimension.maskbook.persona.export.PersonaServices
-import com.dimension.maskbook.repository.JSMethod
 import com.dimension.maskbook.setting.data.JSDataSource
 import com.dimension.maskbook.setting.data.PreferenceDataSource
 import com.dimension.maskbook.setting.export.model.BackupMeta

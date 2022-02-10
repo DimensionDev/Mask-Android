@@ -18,7 +18,7 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.ui.widget
+package com.dimension.maskbook.common.ui.widget
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -53,7 +53,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.common.R
-import com.dimension.maskbook.wallet.ui.MaskTheme
+import com.dimension.maskbook.common.ui.theme.MaskTheme
 
 @Composable
 fun MaskInputField(

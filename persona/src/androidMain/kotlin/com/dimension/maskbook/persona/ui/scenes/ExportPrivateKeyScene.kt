@@ -40,16 +40,16 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import com.dimension.maskbook.common.ext.observeAsState
+import com.dimension.maskbook.common.ui.widget.MaskBackButton
+import com.dimension.maskbook.common.ui.widget.MaskInputField
+import com.dimension.maskbook.common.ui.widget.MaskScaffold
+import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
+import com.dimension.maskbook.common.ui.widget.PrimaryButton
+import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
+import com.dimension.maskbook.common.ui.widget.SecondaryButton
 import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.viewmodel.ExportPrivateKeyViewModel
-import com.dimension.maskbook.wallet.ext.observeAsState
-import com.dimension.maskbook.wallet.ui.widget.MaskBackButton
-import com.dimension.maskbook.wallet.ui.widget.MaskInputField
-import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
-import com.dimension.maskbook.wallet.ui.widget.MaskSingleLineTopAppBar
-import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
-import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
-import com.dimension.maskbook.wallet.ui.widget.SecondaryButton
 import org.koin.androidx.compose.getViewModel
 
 @Composable

@@ -20,9 +20,9 @@
  */
 package com.dimension.maskbook.labs.repository
 
+import com.dimension.maskbook.common.repository.JSMethod
 import com.dimension.maskbook.labs.export.model.AppData
 import com.dimension.maskbook.labs.export.model.AppKey
-import com.dimension.maskbook.repository.JSMethod
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -37,14 +37,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.dimension.maskbook.common.ui.widget.MaskGridButton
+import com.dimension.maskbook.common.ui.widget.MaskModal
+import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.persona.model.icon
 import com.dimension.maskbook.persona.model.platform
 import com.dimension.maskbook.persona.model.title
 import com.dimension.maskbook.wallet.repository.Network
 import com.dimension.maskbook.wallet.repository.PlatformType
-import com.dimension.maskbook.wallet.ui.widget.MaskGridButton
-import com.dimension.maskbook.wallet.ui.widget.MaskModal
-import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
 
 private val items = listOf(
     Network.Twitter,

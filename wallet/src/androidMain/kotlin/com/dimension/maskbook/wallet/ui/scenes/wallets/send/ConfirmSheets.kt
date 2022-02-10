@@ -41,13 +41,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
+import com.dimension.maskbook.common.ui.widget.MaskModal
+import com.dimension.maskbook.common.ui.widget.PrimaryButton
+import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
+import com.dimension.maskbook.common.ui.widget.SecondaryButton
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.repository.SearchAddressData
 import com.dimension.maskbook.wallet.repository.TokenData
-import com.dimension.maskbook.wallet.ui.widget.MaskModal
-import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
-import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
-import com.dimension.maskbook.wallet.ui.widget.SecondaryButton
 
 @Composable
 fun ApproveConfirmSheet(

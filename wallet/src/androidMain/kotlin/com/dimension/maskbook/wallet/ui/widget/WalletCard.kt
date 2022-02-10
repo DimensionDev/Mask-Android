@@ -57,6 +57,9 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
+import com.dimension.maskbook.common.ui.widget.MaskIconButton
+import com.dimension.maskbook.common.ui.widget.MaskTextButton
+import com.dimension.maskbook.common.ui.widget.MiddleEllipsisText
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.db.model.DbWalletBalanceType
 import com.dimension.maskbook.wallet.ext.humanizeDollar

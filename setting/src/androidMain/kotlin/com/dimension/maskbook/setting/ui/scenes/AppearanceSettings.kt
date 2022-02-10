@@ -27,12 +27,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import com.dimension.maskbook.common.ext.observeAsState
+import com.dimension.maskbook.common.ui.widget.MaskModal
+import com.dimension.maskbook.common.ui.widget.MaskSelection
+import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.localization.R
-import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.repository.Appearance
-import com.dimension.maskbook.wallet.ui.widget.MaskModal
-import com.dimension.maskbook.wallet.ui.widget.MaskSelection
-import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.wallet.viewmodel.settings.AppearanceSettingsViewModel
 import org.koin.androidx.compose.getViewModel
 

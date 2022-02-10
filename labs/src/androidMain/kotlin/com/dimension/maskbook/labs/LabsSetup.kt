@@ -25,6 +25,7 @@ import androidx.compose.runtime.getValue
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import com.dimension.maskbook.common.ModuleSetup
+import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.labs.export.model.TransakConfig
 import com.dimension.maskbook.labs.repository.AppRepository
@@ -37,7 +38,6 @@ import com.dimension.maskbook.labs.viewmodel.LabsViewModel
 import com.dimension.maskbook.labs.viewmodel.MarketTrendSettingsViewModel
 import com.dimension.maskbook.labs.viewmodel.PluginSettingsViewModel
 import com.dimension.maskbook.wallet.export.WalletServices
-import com.dimension.maskbook.wallet.ext.observeAsState
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.bottomSheet

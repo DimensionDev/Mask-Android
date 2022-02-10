@@ -22,8 +22,8 @@ package com.dimension.maskbook.persona.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.persona.repository.IPersonaRepository
-import com.dimension.maskbook.wallet.ext.asStateIn
 import com.dimension.maskbook.wallet.repository.PersonaData
 
 class SwitchPersonaViewModel(

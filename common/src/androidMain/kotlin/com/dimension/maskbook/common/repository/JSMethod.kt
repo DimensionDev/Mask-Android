@@ -18,10 +18,10 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.repository
+package com.dimension.maskbook.common.repository
 
-import com.dimension.maskbook.util.MessageChannel
-import com.dimension.maskbook.wallet.ext.decodeJson
+import com.dimension.maskbook.common.ext.decodeJson
+import com.dimension.maskbook.common.util.MessageChannel
 import com.dimension.maskbook.wallet.repository.Appearance
 import com.dimension.maskbook.wallet.repository.BackupPreview
 import com.dimension.maskbook.wallet.repository.DataProvider

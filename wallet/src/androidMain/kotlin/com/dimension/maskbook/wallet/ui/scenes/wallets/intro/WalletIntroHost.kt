@@ -26,8 +26,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.ui.LocalRootNavController
-import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.ui.scenes.wallets.create.CreateType
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.BalancesSceneType
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletBalancesScene

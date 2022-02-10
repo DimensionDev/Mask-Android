@@ -20,7 +20,7 @@
  */
 package com.dimension.maskbook.setting.data
 
-import com.dimension.maskbook.repository.JSMethod
+import com.dimension.maskbook.common.repository.JSMethod
 import com.dimension.maskbook.wallet.repository.Appearance
 import com.dimension.maskbook.wallet.repository.DataProvider
 import com.dimension.maskbook.wallet.repository.Language

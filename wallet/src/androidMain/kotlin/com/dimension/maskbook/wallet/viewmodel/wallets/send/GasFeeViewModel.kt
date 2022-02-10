@@ -22,7 +22,7 @@ package com.dimension.maskbook.wallet.viewmodel.wallets.send
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dimension.maskbook.wallet.ext.asStateIn
+import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.wallet.ext.gwei
 import com.dimension.maskbook.wallet.ext.humanizeMinutes
 import com.dimension.maskbook.wallet.repository.ChainType

@@ -41,14 +41,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.unit.dp
+import com.dimension.maskbook.common.ui.widget.MaskIconButton
+import com.dimension.maskbook.common.ui.widget.MaskScaffold
+import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
 import com.dimension.maskbook.persona.ui.scenes.PersonaInfoScene
 import com.dimension.maskbook.persona.viewmodel.PersonaViewModel
 import com.dimension.maskbook.wallet.repository.Network
 import com.dimension.maskbook.wallet.repository.PersonaData
 import com.dimension.maskbook.wallet.repository.SocialData
-import com.dimension.maskbook.wallet.ui.widget.MaskIconButton
-import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
-import com.dimension.maskbook.wallet.ui.widget.MaskSingleLineTopAppBar
 import org.koin.androidx.compose.getViewModel
 
 @ExperimentalAnimationApi

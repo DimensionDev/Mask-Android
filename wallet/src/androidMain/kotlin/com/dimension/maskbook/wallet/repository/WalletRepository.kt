@@ -32,8 +32,8 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingState
 import androidx.room.withTransaction
 import com.dimension.maskbook.common.okhttp.okHttpClient
+import com.dimension.maskbook.common.repository.JSMethod
 import com.dimension.maskbook.debankapi.model.ChainID
-import com.dimension.maskbook.repository.JSMethod
 import com.dimension.maskbook.wallet.db.AppDatabase
 import com.dimension.maskbook.wallet.db.model.CoinPlatformType
 import com.dimension.maskbook.wallet.db.model.DbStoredKey

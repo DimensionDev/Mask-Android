@@ -48,6 +48,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
+import com.dimension.maskbook.common.ui.widget.MaskButton
+import com.dimension.maskbook.common.ui.widget.MaskListItem
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.repository.WalletCollectibleData
 import com.dimension.maskbook.wallet.repository.WalletCollectibleItemData

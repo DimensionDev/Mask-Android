@@ -27,10 +27,10 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.MutableLiveData
+import com.dimension.maskbook.common.platform.IPlatformSwitcher
+import com.dimension.maskbook.common.repository.JSMethod
 import com.dimension.maskbook.persona.model.ContactData
 import com.dimension.maskbook.persona.model.RedirectTarget
-import com.dimension.maskbook.repository.JSMethod
-import com.dimension.maskbook.wallet.platform.IPlatformSwitcher
 import com.dimension.maskbook.wallet.repository.Network
 import com.dimension.maskbook.wallet.repository.Persona
 import com.dimension.maskbook.wallet.repository.PersonaData

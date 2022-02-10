@@ -22,7 +22,7 @@ package com.dimension.maskbook.wallet.viewmodel.wallets.send
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dimension.maskbook.wallet.ext.asStateIn
+import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.wallet.repository.ISendHistoryRepository
 import com.dimension.maskbook.wallet.repository.IWalletRepository
 import com.dimension.maskbook.wallet.repository.TokenData

@@ -30,6 +30,8 @@ import androidx.navigation.compose.dialog
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import com.dimension.maskbook.common.ModuleSetup
+import com.dimension.maskbook.common.ext.encodeUrl
+import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.persona.repository.IContactsRepository
@@ -49,8 +51,6 @@ import com.dimension.maskbook.persona.viewmodel.social.FacebookSocialViewModel
 import com.dimension.maskbook.persona.viewmodel.social.TwitterConnectSocialViewModel
 import com.dimension.maskbook.persona.viewmodel.social.TwitterSocialViewModel
 import com.dimension.maskbook.setting.export.SettingServices
-import com.dimension.maskbook.wallet.ext.encodeUrl
-import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.repository.PlatformType
 import com.dimension.maskbook.wallet.ui.scenes.persona.ExportPrivateKeyScene
 import com.dimension.maskbook.wallet.ui.scenes.persona.LogoutDialog

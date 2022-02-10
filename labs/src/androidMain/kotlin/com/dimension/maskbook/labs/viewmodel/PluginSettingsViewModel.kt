@@ -24,11 +24,11 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.labs.R
 import com.dimension.maskbook.labs.export.model.AppKey
 import com.dimension.maskbook.labs.repository.IAppRepository
 import com.dimension.maskbook.wallet.export.WalletServices
-import com.dimension.maskbook.wallet.ext.asStateIn
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map

@@ -23,7 +23,7 @@ package com.dimension.maskbook.wallet.viewmodel.settings
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dimension.maskbook.wallet.ext.asStateIn
+import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.wallet.repository.BackupRepository
 import com.dimension.maskbook.wallet.repository.ISettingsRepository
 import kotlinx.coroutines.flow.MutableStateFlow

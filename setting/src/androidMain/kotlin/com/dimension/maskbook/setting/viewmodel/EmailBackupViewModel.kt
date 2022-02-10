@@ -23,8 +23,8 @@ package com.dimension.maskbook.wallet.viewmodel.settings
 import android.os.CountDownTimer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dimension.maskbook.wallet.ext.Validator
-import com.dimension.maskbook.wallet.ext.asStateIn
+import com.dimension.maskbook.common.ext.Validator
+import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.wallet.repository.BackupRepository
 import com.dimension.maskbook.wallet.services.model.DownloadResponse
 import kotlinx.coroutines.Job

@@ -31,10 +31,10 @@ import androidx.navigation.navArgument
 import androidx.navigation.navOptions
 import androidx.room.Room
 import com.dimension.maskbook.common.ModuleSetup
+import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.wallet.db.AppDatabase
 import com.dimension.maskbook.wallet.db.RoomMigrations
-import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.repository.CollectibleRepository
 import com.dimension.maskbook.wallet.repository.ICollectibleRepository
 import com.dimension.maskbook.wallet.repository.ISendHistoryRepository

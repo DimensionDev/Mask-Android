@@ -21,8 +21,8 @@
 package com.dimension.maskbook.wallet.viewmodel.settings
 
 import androidx.lifecycle.viewModelScope
-import com.dimension.maskbook.wallet.ext.Validator
-import com.dimension.maskbook.wallet.ext.asStateIn
+import com.dimension.maskbook.common.ext.Validator
+import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.wallet.repository.BackupRepository
 import com.dimension.maskbook.wallet.repository.SettingsRepository
 import kotlinx.coroutines.Job

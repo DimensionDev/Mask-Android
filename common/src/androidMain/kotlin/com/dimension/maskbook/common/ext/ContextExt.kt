@@ -18,13 +18,13 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.ext
+package com.dimension.maskbook.common.ext
 
 import android.content.ClipData
 import android.content.Context
 import android.content.Intent
 import android.widget.Toast
-import com.dimension.maskbook.wallet.R
+import com.dimension.maskbook.common.R
 
 fun Context.shareText(text: String) {
     startActivity(

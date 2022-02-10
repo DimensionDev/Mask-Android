@@ -45,13 +45,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.dimension.maskbook.common.ext.encodeUrl
+import com.dimension.maskbook.common.ui.widget.MaskBackButton
+import com.dimension.maskbook.common.ui.widget.MaskScaffold
+import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
+import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.persona.R
-import com.dimension.maskbook.wallet.ext.encodeUrl
 import com.dimension.maskbook.wallet.repository.PersonaData
-import com.dimension.maskbook.wallet.ui.widget.MaskBackButton
-import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
-import com.dimension.maskbook.wallet.ui.widget.MaskSingleLineTopAppBar
-import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable

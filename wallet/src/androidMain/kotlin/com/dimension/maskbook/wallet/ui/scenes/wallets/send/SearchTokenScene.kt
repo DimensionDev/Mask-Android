@@ -39,19 +39,19 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
+import com.dimension.maskbook.common.ui.theme.MaskTheme
+import com.dimension.maskbook.common.ui.widget.MaskBackButton
+import com.dimension.maskbook.common.ui.widget.MaskButton
+import com.dimension.maskbook.common.ui.widget.MaskInputField
+import com.dimension.maskbook.common.ui.widget.MaskListItem
+import com.dimension.maskbook.common.ui.widget.MaskScaffold
+import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
+import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ext.humanizeDollar
 import com.dimension.maskbook.wallet.ext.humanizeToken
 import com.dimension.maskbook.wallet.repository.TokenData
 import com.dimension.maskbook.wallet.repository.WalletTokenData
-import com.dimension.maskbook.wallet.ui.MaskTheme
-import com.dimension.maskbook.wallet.ui.widget.MaskBackButton
-import com.dimension.maskbook.wallet.ui.widget.MaskButton
-import com.dimension.maskbook.wallet.ui.widget.MaskInputField
-import com.dimension.maskbook.wallet.ui.widget.MaskListItem
-import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
-import com.dimension.maskbook.wallet.ui.widget.MaskSingleLineTopAppBar
-import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
 import java.math.BigDecimal
 
 @Composable
