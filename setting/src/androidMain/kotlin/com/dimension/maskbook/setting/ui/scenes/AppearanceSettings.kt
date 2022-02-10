@@ -32,7 +32,7 @@ import com.dimension.maskbook.common.ui.widget.MaskModal
 import com.dimension.maskbook.common.ui.widget.MaskSelection
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.localization.R
-import com.dimension.maskbook.wallet.repository.Appearance
+import com.dimension.maskbook.setting.export.model.Appearance
 import com.dimension.maskbook.wallet.viewmodel.settings.AppearanceSettingsViewModel
 import org.koin.androidx.compose.getViewModel
 

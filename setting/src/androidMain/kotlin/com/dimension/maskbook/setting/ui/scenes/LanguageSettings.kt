@@ -30,7 +30,7 @@ import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.ui.widget.MaskModal
 import com.dimension.maskbook.common.ui.widget.MaskSelection
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
-import com.dimension.maskbook.wallet.repository.Language
+import com.dimension.maskbook.setting.export.model.Language
 import com.dimension.maskbook.wallet.viewmodel.settings.LanguageSettingsViewModel
 import org.koin.androidx.compose.getViewModel
 

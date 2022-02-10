@@ -18,7 +18,7 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.repository
+package com.dimension.maskbook.setting.export.model
 
 enum class DataProvider(val value: Int) {
     COIN_GECKO(0), COIN_MARKET_CAP(1), UNISWAP_INFO(2)

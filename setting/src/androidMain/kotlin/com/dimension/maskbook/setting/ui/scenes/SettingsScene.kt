@@ -64,10 +64,10 @@ import com.dimension.maskbook.common.ui.widget.MaskTopAppBar
 import com.dimension.maskbook.common.viewmodel.BiometricEnableViewModel
 import com.dimension.maskbook.localization.R
 import com.dimension.maskbook.persona.export.PersonaServices
-import com.dimension.maskbook.wallet.repository.Appearance
-import com.dimension.maskbook.wallet.repository.DataProvider
+import com.dimension.maskbook.setting.export.model.Appearance
+import com.dimension.maskbook.setting.export.model.DataProvider
+import com.dimension.maskbook.setting.export.model.Language
 import com.dimension.maskbook.wallet.repository.ISettingsRepository
-import com.dimension.maskbook.wallet.repository.Language
 import org.koin.androidx.compose.get
 import org.koin.androidx.compose.getViewModel
 

@@ -24,8 +24,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.setting.export.SettingServices
-import com.dimension.maskbook.wallet.repository.NetworkType
-import com.dimension.maskbook.wallet.repository.TradeProvider
+import com.dimension.maskbook.setting.export.model.NetworkType
+import com.dimension.maskbook.setting.export.model.TradeProvider
 
 class MarketTrendSettingsViewModel(
     private val repository: SettingServices

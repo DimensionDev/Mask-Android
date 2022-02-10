@@ -23,7 +23,7 @@ package com.dimension.maskbook.wallet.viewmodel.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
-import com.dimension.maskbook.wallet.repository.DataProvider
+import com.dimension.maskbook.setting.export.model.DataProvider
 import com.dimension.maskbook.wallet.repository.ISettingsRepository
 
 class DataSourceSettingsViewModel(

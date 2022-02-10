@@ -47,8 +47,8 @@ import com.dimension.maskbook.common.ui.widget.MaskSelection
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.labs.R
 import com.dimension.maskbook.labs.viewmodel.MarketTrendSettingsViewModel
-import com.dimension.maskbook.wallet.repository.NetworkType
-import com.dimension.maskbook.wallet.repository.TradeProvider
+import com.dimension.maskbook.setting.export.model.NetworkType
+import com.dimension.maskbook.setting.export.model.TradeProvider
 import org.koin.androidx.compose.getViewModel
 
 private val tradeSources = mapOf(

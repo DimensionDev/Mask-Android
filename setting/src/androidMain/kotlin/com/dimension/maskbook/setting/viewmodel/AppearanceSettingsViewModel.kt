@@ -23,7 +23,7 @@ package com.dimension.maskbook.wallet.viewmodel.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
-import com.dimension.maskbook.wallet.repository.Appearance
+import com.dimension.maskbook.setting.export.model.Appearance
 import com.dimension.maskbook.wallet.repository.ISettingsRepository
 
 class AppearanceSettingsViewModel(

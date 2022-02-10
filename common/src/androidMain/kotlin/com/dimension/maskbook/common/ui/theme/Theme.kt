@@ -39,7 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.setting.export.SettingServices
-import com.dimension.maskbook.wallet.repository.Appearance
+import com.dimension.maskbook.setting.export.model.Appearance
 import org.koin.androidx.compose.get
 
 @Composable
