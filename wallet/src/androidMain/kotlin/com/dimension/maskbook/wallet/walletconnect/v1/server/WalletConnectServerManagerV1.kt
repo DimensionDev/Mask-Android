@@ -21,6 +21,7 @@
 package com.dimension.maskbook.wallet.walletconnect.v1.server
 
 import android.content.Context
+import android.util.Log
 import com.dimension.maskbook.wallet.BuildConfig
 import com.dimension.maskbook.wallet.walletconnect.OnWalletConnectRequestListener
 import com.dimension.maskbook.wallet.walletconnect.WCClientMeta
@@ -39,9 +40,8 @@ class WalletConnectServerManagerV1(private val context: Context) :
     BaseWalletConnectManager(),
     WalletConnectServerManager {
 
+    private val _pendingSessions = MutableStateFlow(emptyList<WCSessionV1>())
     private val _connectedSessions = MutableStateFlow(emptyList<WCSessionV1>())
-    // TODO combine an updater with the connectedSessions flow
-    // So it will be possible to update the connectedSessions flow without having to update the whole list
     override val connectedClients: Flow<List<WCClientMeta>>
         get() = _connectedSessions.map {
             it.mapNotNull { session ->
@@ -63,9 +63,62 @@ class WalletConnectServerManagerV1(private val context: Context) :
                 // end unapproved sessions
                 it.config.session().kill()
             } else {
-                it.config.session().addToConnected()
+                it.config.session().apply {
+                    addToConnected()
+                    init()
+                }
             }
         }
+    }
+
+    override fun connectClient(wcUri: String, onRequest: (clientMeta: WCClientMeta) -> Unit) {
+        Session.Config
+            .fromWCUri(wcUri)
+            .toFullyQualifiedConfig()
+            .session()
+            .apply {
+                _pendingSessions.value += this
+                addCallback(
+                    ConnectionCallback(
+                        session = this,
+                        onRequest = onRequest,
+                        onApprove = {
+                            it.addToConnected()
+                        },
+                        onDisConnected = {
+                            _pendingSessions.value -= it
+                        }
+                    )
+                )
+                init()
+            }
+    }
+
+    override fun approveConnect(clientMeta: WCClientMeta, accounts: List<String>, chainId: Long) {
+        getSessionById(clientMeta.id)?.approve(
+            accounts = accounts,
+            chainId = chainId
+        )
+    }
+
+    override fun rejectConnect(clientMeta: WCClientMeta) {
+        getSessionById(clientMeta.id)?.reject()
+    }
+
+    override fun addOnRequestListener(listener: OnWalletConnectRequestListener) {
+        TODO("Not yet implemented")
+    }
+
+    override fun removeOnRequestListener(listener: OnWalletConnectRequestListener) {
+        TODO("Not yet implemented")
+    }
+
+    override fun approveRequest(clientMeta: WCClientMeta, requestId: String, response: Any) {
+        getSessionById(clientMeta.id)?.approveRequest(id = requestId.toLong(), response = response)
+    }
+
+    override fun rejectRequest(clientMeta: WCClientMeta, requestId: String, errorCode: Long, errorMessage: String) {
+        getSessionById(clientMeta.id)?.rejectRequest(id = requestId.toLong(), errorCode = errorCode, errorMsg = errorMessage)
     }
 
     private fun WCSessionV1.addToConnected() {
@@ -73,12 +126,13 @@ class WalletConnectServerManagerV1(private val context: Context) :
             RequestCallback(
                 session = this,
                 onDisConnected = {
-                    _connectedSessions.value = _connectedSessions.value.minus(it)
+                    _connectedSessions.value -= it
                 },
                 onRequest = { call, session -> handleRequest(call, session) }
             )
         )
-        _connectedSessions.value = _connectedSessions.value.plus(this)
+        _pendingSessions.value -= this
+        _connectedSessions.value += this
     }
 
     private fun handleRequest(call: Session.MethodCall, session: WCSessionV1) {
@@ -100,63 +154,19 @@ class WalletConnectServerManagerV1(private val context: Context) :
         )
     }
 
-    override fun connectClient(wcUri: String, onRequest: (clientMeta: WCClientMeta) -> Unit) {
-        Session.Config
-            .fromWCUri(wcUri)
-            .toFullyQualifiedConfig()
-            .session()
-            .apply {
-                addCallback(
-                    ConnectionCallback(
-                        session = this,
-                        onRequest = onRequest,
-                        onApprove = {
-                            it.addToConnected()
-                        }
-                    )
-                )
-                init()
-            }
-    }
-
-    override fun approveConnect(clientMeta: WCClientMeta, accounts: List<String>, chainId: Long) {
-        getSessionById(clientMeta.id)?.approve(
-            accounts = accounts,
-            chainId = chainId
-        )
-    }
-
-    override fun rejectConnect(clientMeta: WCClientMeta) {
-        TODO("Not yet implemented")
-    }
-
-    override fun addOnRequestListener(listener: OnWalletConnectRequestListener) {
-        TODO("Not yet implemented")
-    }
-
-    override fun removeOnRequestListener(listener: OnWalletConnectRequestListener) {
-        TODO("Not yet implemented")
-    }
-
-    override fun approveRequest(clientMeta: WCClientMeta, requestId: String, response: Any) {
-        TODO("Not yet implemented")
-    }
-
-    override fun rejectRequest(clientMeta: WCClientMeta, requestId: String, errorCode: Long, errorMessage: String) {
-        TODO("Not yet implemented")
-    }
-
     private fun getSessionById(id: String): WCSessionV1? {
         return _connectedSessions.value.firstOrNull { it.id == id }
+            ?: _pendingSessions.value.firstOrNull { it.id == id }
     }
 
-    // TODO TO BE REMOVE
     private class ConnectionCallback(
         private val session: WCSessionV1,
         private val onRequest: (clientMeta: WCClientMeta) -> Unit,
         private val onApprove: (session: WCSessionV1) -> Unit,
+        private val onDisConnected: (session: WCSessionV1) -> Unit
     ) : Session.Callback {
         override fun onMethodCall(call: Session.MethodCall) {
+            "onMethodCall: $call".log()
             if (call is Session.MethodCall.SessionRequest) {
                 val clientMeta = session.peerMeta()?.toWcClientMeta(session.id)
                 onRequest(clientMeta!!)
@@ -164,30 +174,40 @@ class WalletConnectServerManagerV1(private val context: Context) :
         }
 
         override fun onStatus(status: Session.Status) {
-            if (status == Session.Status.Approved) {
-                onApprove(session)
-                session.clearCallbacks()
+            "status: $status".log()
+            when (status) {
+                Session.Status.Approved -> {
+                    session.clearCallbacks()
+                    onApprove(session)
+                }
+                Session.Status.Closed -> {
+                    session.clearCallbacks()
+                    onDisConnected(session)
+                }
+                else -> {}
             }
         }
     }
 
-    // TODO unit connection request
     private class RequestCallback(
         private val session: WCSessionV1,
         private val onDisConnected: (session: WCSessionV1) -> Unit,
-        private val onRequest: (call: Session.MethodCall, session: WCSessionV1) -> Unit
+        private val onRequest: (call: Session.MethodCall, session: WCSessionV1) -> Unit,
     ) : Session.Callback {
         override fun onMethodCall(call: Session.MethodCall) {
+            "onMethodCall: $call".log()
             onRequest(call, session)
         }
 
         override fun onStatus(status: Session.Status) {
-            if (status is Session.Status.Error && BuildConfig.DEBUG) {
-                status.throwable.printStackTrace()
-            }
-            if (status == Session.Status.Closed) {
-                session.clearCallbacks()
-                onDisConnected(session)
+            "status: $status".log()
+            when (status) {
+                Session.Status.Closed -> {
+                    session.clearCallbacks()
+                    onDisConnected(session)
+                }
+                is Session.Status.Error -> if (BuildConfig.DEBUG) status.throwable.printStackTrace()
+                else -> {}
             }
         }
     }
@@ -200,3 +220,9 @@ private fun Session.PeerMeta.toWcClientMeta(id: String) = WCClientMeta(
     description = description ?: "",
     icons = icons ?: emptyList()
 )
+
+private fun String.log() {
+    if (BuildConfig.DEBUG) {
+        Log.d("WalletConnectServer", this)
+    }
+}

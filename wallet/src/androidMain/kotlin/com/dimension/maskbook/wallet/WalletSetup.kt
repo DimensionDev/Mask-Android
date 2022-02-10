@@ -97,7 +97,9 @@ import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendConfirmViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendTokenDataViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendTokenViewModel
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager
+import com.dimension.maskbook.wallet.walletconnect.WalletConnectServerManager
 import com.dimension.maskbook.wallet.walletconnect.v1.client.WalletConnectClientManagerV1
+import com.dimension.maskbook.wallet.walletconnect.v1.server.WalletConnectServerManagerV1
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asExecutor
@@ -171,6 +173,9 @@ private fun Module.provideRepository() {
     single<WalletConnectClientManager> {
         // V2 SDK support only provides the Responder implementation at the Beta stage
         WalletConnectClientManagerV1(get())
+    }
+    single<WalletConnectServerManager> {
+        WalletConnectServerManagerV1(get())
     }
     single<IWalletRepository> { WalletRepository(get<Context>().walletDataStore, get(), get(), get()) }
     single<ICollectibleRepository> { CollectibleRepository(get(), get()) }
