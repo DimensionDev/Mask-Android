@@ -22,12 +22,13 @@ package com.dimension.maskbook.wallet.ui.tab
 
 import androidx.compose.runtime.Composable
 import com.dimension.maskbook.common.ui.tab.TabScreen
+import com.dimension.maskbook.common.ui.tab.TabScreenRoute
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.WalletIntroHost
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 
 class WalletTabScreen : TabScreen {
-    override val route = "Wallets"
+    override val route = TabScreenRoute.Wallet
     override val title: Int = R.string.tab_wallet
     override val icon: Int = R.drawable.ic_wallet
 

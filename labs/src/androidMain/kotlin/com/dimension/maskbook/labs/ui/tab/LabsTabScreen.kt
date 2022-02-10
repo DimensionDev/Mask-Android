@@ -23,12 +23,13 @@ package com.dimension.maskbook.labs.ui.tab
 import androidx.compose.runtime.Composable
 import com.dimension.maskbook.common.ui.LocalRootNavController
 import com.dimension.maskbook.common.ui.tab.TabScreen
+import com.dimension.maskbook.common.ui.tab.TabScreenRoute
 import com.dimension.maskbook.labs.R
 import com.dimension.maskbook.labs.export.model.AppKey
 import com.dimension.maskbook.labs.ui.scenes.LabsScene
 
 class LabsTabScreen : TabScreen {
-    override val route = "Labs"
+    override val route = TabScreenRoute.Labs
     override val title: Int = R.string.tab_labs
     override val icon: Int = R.drawable.ic_labs
 

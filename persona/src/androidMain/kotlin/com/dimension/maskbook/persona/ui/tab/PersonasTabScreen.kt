@@ -25,13 +25,14 @@ import androidx.compose.runtime.Composable
 import com.dimension.maskbook.common.ext.encodeUrl
 import com.dimension.maskbook.common.ui.LocalRootNavController
 import com.dimension.maskbook.common.ui.tab.TabScreen
+import com.dimension.maskbook.common.ui.tab.TabScreenRoute
 import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.export.model.Network
 import com.dimension.maskbook.persona.export.model.PlatformType
 import com.dimension.maskbook.persona.ui.scenes.PersonaScene
 
 class PersonasTabScreen : TabScreen {
-    override val route = "Personas"
+    override val route = TabScreenRoute.Personas
     override val title: Int = R.string.tab_personas
     override val icon: Int = R.drawable.ic_persona
 

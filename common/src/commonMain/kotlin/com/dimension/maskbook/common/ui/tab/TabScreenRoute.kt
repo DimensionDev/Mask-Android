@@ -18,21 +18,11 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.setting.ui.tab
+package com.dimension.maskbook.common.ui.tab
 
-import androidx.compose.runtime.Composable
-import com.dimension.maskbook.common.ui.tab.TabScreen
-import com.dimension.maskbook.common.ui.tab.TabScreenRoute
-import com.dimension.maskbook.setting.R
-import com.dimension.maskbook.setting.ui.scenes.SettingsScene
-
-class SettingsTabScreen : TabScreen {
-    override val route = TabScreenRoute.Settings
-    override val title: Int = R.string.tab_setting
-    override val icon: Int = R.drawable.ic_settings
-
-    @Composable
-    override fun Content(onBack: () -> Unit) {
-        SettingsScene(onBack = onBack)
-    }
+object TabScreenRoute {
+    const val Personas: String = "Personas"
+    const val Wallet: String = "Wallet"
+    const val Labs: String = "Labs"
+    const val Settings: String = "Settings"
 }
