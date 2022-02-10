@@ -25,6 +25,7 @@ import android.util.Log
 import com.dimension.maskbook.wallet.BuildConfig
 import com.dimension.maskbook.wallet.ext.ether
 import com.dimension.maskbook.wallet.repository.ChainType
+import com.dimension.maskbook.wallet.walletconnect.WCError
 import com.dimension.maskbook.wallet.walletconnect.WCResponder
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager
 import com.dimension.maskbook.wallet.walletconnect.v1.BaseWalletConnectManager
@@ -45,6 +46,7 @@ class WalletConnectClientManagerV1(private val context: Context) : BaseWalletCon
     private val bridgeServer = "https://safe-walletconnect.gnosis.io"
     private var onDisconnect: (address: String) -> Unit = {}
     private val connectedSessions = ConcurrentHashMap<String, Session>()
+    private val onResponseStore = ConcurrentHashMap<Long, (response:Any, error: Throwable?) -> Unit>()
 
     override val storage by lazy {
         FileWCSessionStore(
@@ -131,12 +133,15 @@ class WalletConnectClientManagerV1(private val context: Context) : BaseWalletCon
         toAddress: String,
         data: String,
         gasLimit: Double,
-        gasPrice: BigDecimal
+        gasPrice: BigDecimal,
+        onResponse: (response:Any, error: Throwable?) -> Unit
     ) {
         connectedSessions[fromAddress]?.let {
+            val id = System.currentTimeMillis()
+            onResponseStore[id] = onResponse
             it.performMethodCall(
                 Session.MethodCall.SendTransaction(
-                    id = System.currentTimeMillis(),
+                    id = id,
                     from = fromAddress,
                     to = toAddress,
                     nonce = "",
@@ -161,6 +166,11 @@ class WalletConnectClientManagerV1(private val context: Context) : BaseWalletCon
                         // remove from connected sessions
                         connectedSessions.remove(address)
                         this@WalletConnectClientManagerV1.onDisconnect.invoke(address)
+                    }, onResponse = { id, response, error ->
+                        onResponseStore.remove(id)?.invoke(
+                            response,
+                            error
+                        )
                     })
                 )
                 update(
@@ -242,9 +252,17 @@ private class ConnectedSessionCallback(
     private val session: Session,
     private val address: String,
     private val onDisconnect: (address: String, session: Session) -> Unit,
+    private val onResponse: (id: Long, response: Any, error: Throwable?) -> Unit
 ) : Session.Callback {
     override fun onMethodCall(call: Session.MethodCall) {
-        // do nothing
+        when(call) {
+            is Session.MethodCall.Response -> {
+                call.error?.let {
+                    onResponse.invoke(call.id,"failed",WCError(errorCode = it.code.toString(), message = it.message))
+                } ?: onResponse.invoke(call.id, call.result?:"", null)
+            }
+            else -> {}
+        }
     }
 
     override fun onStatus(status: Session.Status) {

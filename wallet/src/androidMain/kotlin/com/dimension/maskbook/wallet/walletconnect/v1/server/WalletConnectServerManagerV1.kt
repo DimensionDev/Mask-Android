@@ -41,7 +41,7 @@ class WalletConnectServerManagerV1(private val context: Context) :
     BaseWalletConnectManager(),
     WalletConnectServerManager {
 
-    private var onRequest:(clientMeta: WCClientMeta, request: WCRequest) -> Unit = { _, _ -> }
+    private var onRequest: (clientMeta: WCClientMeta, request: WCRequest) -> Unit = { _, _ -> }
     private val _pendingSessions = MutableStateFlow(emptyList<WCSessionV1>())
     private val _connectedSessions = MutableStateFlow(emptyList<WCSessionV1>())
     override val connectedClients: Flow<List<WCClientMeta>>
@@ -59,7 +59,6 @@ class WalletConnectServerManagerV1(private val context: Context) :
             moshi
         )
 
-
     override fun init(onRequest: (clientMeta: WCClientMeta, request: WCRequest) -> Unit) {
         this.onRequest = onRequest
         storage.list().forEach {
@@ -74,7 +73,6 @@ class WalletConnectServerManagerV1(private val context: Context) :
             }
         }
     }
-
 
     override fun connectClient(wcUri: String, onRequest: (clientMeta: WCClientMeta) -> Unit) {
         Session.Config
@@ -137,26 +135,29 @@ class WalletConnectServerManagerV1(private val context: Context) :
             is Session.MethodCall.SendTransaction -> {
                 dispatchRequest(
                     WCRequest(
-                    id = call.id.toString(),
-                    params = WCRequestParams.WCTransaction(
-                        from = call.from,
-                        to = call.to,
-                        value = call.value,
-                        data = call.data,
-                        gasLimit = call.gasLimit,
-                        gasPrice = call.gasPrice,
-                        nonce = call.nonce,
-                    )
-                ), session)
+                        id = call.id.toString(),
+                        params = WCRequestParams.WCTransaction(
+                            from = call.from,
+                            to = call.to,
+                            value = call.value,
+                            data = call.data,
+                            gasLimit = call.gasLimit,
+                            gasPrice = call.gasPrice,
+                            nonce = call.nonce,
+                        )
+                    ),
+                    session
+                )
             }
             is Session.MethodCall.SignMessage -> dispatchRequest(
                 WCRequest(
                     id = call.id.toString(),
                     params = WCRequestParams.WCSign(
-                       address = call.address,
-                       message = call.message
+                        address = call.address,
+                        message = call.message
                     )
-                ), session
+                ),
+                session
             )
             is Session.MethodCall.Custom -> rejectUnSupported(session, call.id)
             else -> {}

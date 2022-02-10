@@ -561,7 +561,10 @@ class WalletRepository(
                             toAddress = address,
                             data = data,
                             gasLimit = gasLimit,
-                            gasPrice = gasFee + maxPriorityFee.toBigDecimal().gwei.ether
+                            gasPrice = gasFee + maxPriorityFee.toBigDecimal().gwei.ether,
+                            onResponse = { response, error ->
+                                error?.let { onError(it) } ?: onDone(response.toString())
+                            }
                         )
                         return@launch
                     }
