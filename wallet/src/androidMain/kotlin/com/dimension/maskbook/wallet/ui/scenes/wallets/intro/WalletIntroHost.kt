@@ -28,6 +28,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.dimension.maskbook.common.ui.LocalRootNavController
 import com.dimension.maskbook.wallet.ext.observeAsState
+import com.dimension.maskbook.wallet.route.WalletRoute
 import com.dimension.maskbook.wallet.ui.scenes.wallets.create.CreateType
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.BalancesSceneType
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletBalancesScene
@@ -54,13 +55,13 @@ fun WalletIntroHost(
     if (currentWallet == null) {
         WalletIntroScene(
             onCreate = {
-                rootNavController.navigate("WalletIntroHostLegal/${CreateType.CREATE}")
+                rootNavController.navigate(WalletRoute.WalletIntroHostLegal(CreateType.CREATE.name))
             },
             onImport = {
-                rootNavController.navigate("WalletIntroHostLegal/${CreateType.IMPORT}")
+                rootNavController.navigate(WalletRoute.WalletIntroHostLegal(CreateType.IMPORT.name))
             },
             onConnect = {
-                rootNavController.navigate("SwitchWalletAddWalletConnect")
+                rootNavController.navigate(WalletRoute.SwitchWalletAddWalletConnect)
             }
         )
     } else {
@@ -74,19 +75,19 @@ fun WalletIntroHost(
                         viewModel.setCurrentWallet(it)
                     },
                     onWalletMenuClicked = {
-                        rootNavController.navigate("WalletBalancesMenu")
+                        rootNavController.navigate(WalletRoute.WalletBalancesMenu)
                     },
                     onWalletSwitchClicked = {
-                        rootNavController.navigate("SwitchWallet")
+                        rootNavController.navigate(WalletRoute.SwitchWallet)
                     },
                     onTokenDetailClicked = {
-                        rootNavController.navigate("TokenDetail/${it.address}")
+                        rootNavController.navigate(WalletRoute.TokenDetail(it.address))
                     },
                     onReceiveClicked = {
-                        rootNavController.navigate("WalletQrcode/${dWebData.chainType.name}")
+                        rootNavController.navigate(WalletRoute.WalletQrcode(dWebData.chainType.name))
                     },
                     onSendClicked = {
-                        rootNavController.navigate("SendTokenScene/eth")
+                        rootNavController.navigate(WalletRoute.SendTokenScene("eth"))
                     },
                     sceneType = sceneType,
                     onSceneTypeChanged = {
@@ -94,7 +95,7 @@ fun WalletIntroHost(
                     },
                     walletChainType = dWebData.chainType,
                     onCollectibleDetailClicked = {
-                        rootNavController.navigate("CollectibleDetail/${it.id}")
+                        rootNavController.navigate(WalletRoute.CollectibleDetail(it.id))
                     },
                     onBack = onBack,
                     displayChainType = displayChainType,

@@ -21,6 +21,7 @@
 package com.dimension.maskbook.wallet.ui.scenes.settings
 
 import android.content.Context
+import android.net.Uri
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
@@ -52,6 +53,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.ui.LocalRootNavController
 import com.dimension.maskbook.localization.R
 import com.dimension.maskbook.persona.export.PersonaServices
@@ -175,10 +177,13 @@ fun SettingsScene(
                 title = stringResource(R.string.scene_setting_backup_recovery_title)
             )
             SettingsCard {
+                val rootNavController = LocalRootNavController.current
                 SettingsItem(
                     title = stringResource(R.string.scene_setting_backup_recovery_restore_data),
                     icon = R.drawable.ic_settings_restore_data,
-                    targetRoute = "Recovery",
+                    onClicked = {
+                        rootNavController.navigate(Uri.parse(Deeplinks.Wallet.Recovery))
+                    }
                 )
                 SettingsDivider()
                 SettingsItem(

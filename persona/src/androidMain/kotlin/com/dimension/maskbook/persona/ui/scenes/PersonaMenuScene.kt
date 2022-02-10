@@ -20,6 +20,7 @@
  */
 package com.dimension.maskbook.wallet.ui.scenes.persona
 
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -130,9 +131,9 @@ fun PersonaMenuScene(
                     onClick = {
                         // first check if it has backup password
                         if (backupPassword.isEmpty()) {
-                            navController.navigate(Deeplinks.Setting.SetupPasswordDialog)
+                            navController.navigate(Uri.parse(Deeplinks.Setting.SetupPasswordDialog))
                         } else {
-                            navController.navigate("BackUpPassword/ExportPrivateKey")
+                            navController.navigate(Uri.parse(Deeplinks.Wallet.BackUpPassword(PersonaRoute.ExportPrivateKey)))
                         }
                     }
                 ) {
@@ -154,7 +155,7 @@ fun PersonaMenuScene(
                     elevation = 0.dp,
                     onClick = {
                         navController.navigate(
-                            if (backupPassword.isEmpty() || paymentPassword.isEmpty()) Deeplinks.Setting.SetupPasswordDialog else Deeplinks.Setting.BackupData.BackupSelection
+                            Uri.parse(if (backupPassword.isEmpty() || paymentPassword.isEmpty()) Deeplinks.Setting.SetupPasswordDialog else Deeplinks.Setting.BackupData.BackupSelection)
                         )
                     }
                 ) {

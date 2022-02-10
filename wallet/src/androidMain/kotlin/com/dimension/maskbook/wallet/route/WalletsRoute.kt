@@ -37,6 +37,8 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.dialog
 import androidx.navigation.navArgument
 import androidx.navigation.navOptions
+import com.dimension.maskbook.common.route.CommonRoute
+import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.setting.export.SettingServices
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ext.copyText
@@ -89,13 +91,12 @@ import org.koin.androidx.compose.get
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 
-@ExperimentalAnimationApi
-@ExperimentalMaterialNavigationApi
+@OptIn(ExperimentalMaterialNavigationApi::class, ExperimentalAnimationApi::class)
 fun NavGraphBuilder.walletsRoute(
     navController: NavController
 ) {
     composable(
-        "CollectibleDetail/{id}",
+        WalletRoute.CollectibleDetail.path,
         arguments = listOf(
             navArgument("id") { type = NavType.StringType }
         )
@@ -114,7 +115,7 @@ fun NavGraphBuilder.walletsRoute(
                     onSend = {
                     },
                     onReceive = {
-                        navController.navigate("WalletQrcode/${it.chainType.name}")
+                        navController.navigate(WalletRoute.WalletQrcode(it.chainType.name))
                     }
                 )
             }
@@ -122,7 +123,7 @@ fun NavGraphBuilder.walletsRoute(
     }
 
     composable(
-        "WalletQrcode/{name}",
+        WalletRoute.WalletQrcode.path,
         arguments = listOf(navArgument("name") { type = NavType.StringType })
     ) {
         val repository = get<IWalletRepository>()
@@ -140,7 +141,7 @@ fun NavGraphBuilder.walletsRoute(
         }
     }
     composable(
-        "TokenDetail/{id}",
+        WalletRoute.TokenDetail.path,
         arguments = listOf(
             navArgument("id") { type = NavType.StringType }
         )
@@ -164,35 +165,35 @@ fun NavGraphBuilder.walletsRoute(
                         onCancel = { },
                         onSend = {
                             if (token.chainType != dWebData?.chainType) {
-                                navController.navigate("WalletNetworkSwitch/${token.chainType}")
+                                navController.navigate(WalletRoute.WalletNetworkSwitch(token.chainType.name))
                             } else {
-                                navController.navigate("SendTokenScene/${token.address}")
+                                navController.navigate(WalletRoute.SendTokenScene(token.address))
                             }
                         },
                         onReceive = {
-                            navController.navigate("WalletQrcode/${token.symbol}")
+                            navController.navigate(WalletRoute.WalletQrcode(token.symbol))
                         },
                     )
                 }
             }
         }
     }
-    bottomSheet("SwitchWalletAdd") {
+    bottomSheet(WalletRoute.SwitchWalletAdd) {
         WalletSwitchAddModal(
             onCreate = {
-                navController.navigate("WalletIntroHostLegal/${CreateType.CREATE}")
+                navController.navigate(WalletRoute.WalletIntroHostLegal(CreateType.CREATE.name))
             },
             onImport = {
-                navController.navigate("WalletIntroHostLegal/${CreateType.IMPORT}")
+                navController.navigate(WalletRoute.WalletIntroHostLegal(CreateType.IMPORT.name))
             },
         )
     }
-    bottomSheet("SwitchWalletAddWalletConnect") {
+    bottomSheet(WalletRoute.SwitchWalletAddWalletConnect) {
         WalletConnectModal()
     }
 
     dialog(
-        "WalletNetworkSwitch/{target}",
+        WalletRoute.WalletNetworkSwitch.path,
         arguments = listOf(navArgument("target") { type = NavType.StringType })
     ) {
         it.arguments?.getString("target")?.let {
@@ -212,7 +213,7 @@ fun NavGraphBuilder.walletsRoute(
         }
     }
 
-    dialog("WalletNetworkSwitchWarningDialog") {
+    dialog(WalletRoute.WalletNetworkSwitchWarningDialog) {
         val viewModel = getViewModel<WalletSwitchViewModel>()
         val currentNetwork by viewModel.network.observeAsState(initial = ChainType.eth)
         val wallet by viewModel.currentWallet.observeAsState(initial = null)
@@ -232,7 +233,7 @@ fun NavGraphBuilder.walletsRoute(
         }
     }
 
-    bottomSheet("SwitchWallet") {
+    bottomSheet(WalletRoute.SwitchWallet) {
         val viewModel = getViewModel<WalletSwitchViewModel>()
         val wallet by viewModel.currentWallet.observeAsState(initial = null)
         val wallets by viewModel.wallets.observeAsState(initial = emptyList())
@@ -249,19 +250,19 @@ fun NavGraphBuilder.walletsRoute(
                     viewModel.setChainType(it)
                 },
                 onAddWalletClicked = {
-                    navController.navigate("SwitchWalletAdd")
+                    navController.navigate(WalletRoute.SwitchWalletAdd)
                 },
                 onWalletConnectClicked = {
-                    navController.navigate("SwitchWalletAddWalletConnect")
+                    navController.navigate(WalletRoute.SwitchWalletAddWalletConnect)
                 },
                 onEditMenuClicked = {
-                    navController.navigate("WalletSwitchEditModal/${it.id}")
+                    navController.navigate(WalletRoute.WalletSwitchEditModal(it.id))
                 }
             )
         }
     }
     bottomSheet(
-        "WalletSwitchEditModal/{id}",
+        WalletRoute.WalletSwitchEditModal.path,
         arguments = listOf(navArgument("id") { type = NavType.StringType })
     ) {
         it.arguments?.getString("id")?.let { id ->
@@ -271,10 +272,10 @@ fun NavGraphBuilder.walletsRoute(
             wallets.firstOrNull { it.id == id }?.let { wallet ->
                 WalletSwitchEditModal(
                     walletData = wallet,
-                    onRename = { navController.navigate("WalletManagementRename/${wallet.id}") },
+                    onRename = { navController.navigate(WalletRoute.WalletManagementRename(wallet.id)) },
                     onDelete = {
                         navController.popBackStack()
-                        navController.navigate("WalletManagementDeleteDialog/${wallet.id}")
+                        navController.navigate(WalletRoute.WalletManagementDeleteDialog(wallet.id))
                     },
                     onDisconnect = {
                         viewModel.disconnect(walletData = wallet)
@@ -284,19 +285,19 @@ fun NavGraphBuilder.walletsRoute(
             }
         }
     }
-    bottomSheet("WalletBalancesMenu") {
+    bottomSheet(WalletRoute.WalletBalancesMenu) {
         val viewModel = getViewModel<WalletManagementModalViewModel>()
         val currentWallet by viewModel.currentWallet.observeAsState(initial = null)
         val wcViewModel = getViewModel<WalletConnectManagementViewModel>()
         currentWallet?.let { wallet ->
             WalletManagementModal(
                 walletData = wallet,
-                onRename = { navController.navigate("WalletManagementRename/${wallet.id}") },
-                onBackup = { navController.navigate("UnlockWalletDialog/WalletManagementBackup") },
-                onTransactionHistory = { navController.navigate("WalletManagementTransactionHistory") },
+                onRename = { navController.navigate(WalletRoute.WalletManagementRename(wallet.id)) },
+                onBackup = { navController.navigate(WalletRoute.UnlockWalletDialog(WalletRoute.WalletManagementBackup)) },
+                onTransactionHistory = { navController.navigate(WalletRoute.WalletManagementTransactionHistory) },
                 onDelete = {
                     navController.popBackStack()
-                    navController.navigate("WalletManagementDeleteDialog/${wallet.id}")
+                    navController.navigate(WalletRoute.WalletManagementDeleteDialog(wallet.id))
                 },
                 onDisconnect = {
                     wcViewModel.disconnect(walletData = wallet)
@@ -306,7 +307,7 @@ fun NavGraphBuilder.walletsRoute(
         }
     }
     dialog(
-        "WalletManagementDeleteDialog/{id}",
+        WalletRoute.WalletManagementDeleteDialog.path,
         arguments = listOf(
             navArgument("id") { type = NavType.StringType }
         )
@@ -347,7 +348,7 @@ fun NavGraphBuilder.walletsRoute(
             }
         }
     }
-    composable("WalletManagementBackup") {
+    composable(WalletRoute.WalletManagementBackup) {
         val viewModel = getViewModel<WalletBackupViewModel>()
         val keyStore by viewModel.keyStore.observeAsState(initial = "")
         val privateKey by viewModel.privateKey.observeAsState(initial = "")
@@ -357,7 +358,7 @@ fun NavGraphBuilder.walletsRoute(
             onBack = { navController.popBackStack() },
         )
     }
-    composable("WalletManagementTransactionHistory") {
+    composable(WalletRoute.WalletManagementTransactionHistory) {
         val viewModel = getViewModel<WalletTransactionHistoryViewModel>()
         val transaction by viewModel.transactions.observeAsState(initial = emptyList())
         WalletTransactionHistoryScene(
@@ -372,7 +373,7 @@ fun NavGraphBuilder.walletsRoute(
         )
     }
     bottomSheet(
-        "WalletManagementRename/{id}",
+        WalletRoute.WalletManagementRename.path,
         arguments = listOf(
             navArgument("id") { type = NavType.StringType }
         )
@@ -393,7 +394,7 @@ fun NavGraphBuilder.walletsRoute(
         }
     }
     composable(
-        "WalletIntroHostLegal/{type}",
+        WalletRoute.WalletIntroHostLegal.path,
         arguments = listOf(
             navArgument("type") { type = NavType.StringType },
         )
@@ -409,11 +410,11 @@ fun NavGraphBuilder.walletsRoute(
         val context = LocalContext.current
         val next: () -> Unit = {
             val route = if (password.isNullOrEmpty()) {
-                "WalletIntroHostPassword/$type"
+                WalletRoute.WalletIntroHostPassword(type.name)
             } else if (!enableBiometric && biometricEnableViewModel.isSupported(context)) {
-                "WalletIntroHostFaceId/$type"
+                WalletRoute.WalletIntroHostFaceId(type.name)
             } else {
-                "CreateOrImportWallet/$type"
+                WalletRoute.CreateOrImportWallet(type.name)
             }
             navController.navigate(
                 route,
@@ -445,7 +446,7 @@ fun NavGraphBuilder.walletsRoute(
     }
 
     bottomSheet(
-        "WalletIntroHostPassword/{type}",
+        WalletRoute.WalletIntroHostPassword.path,
         arguments = listOf(
             navArgument("type") { type = NavType.StringType },
         )
@@ -459,16 +460,16 @@ fun NavGraphBuilder.walletsRoute(
         SetUpPaymentPassword(
             onNext = {
                 if (!enableBiometric && biometricEnableViewModel.isSupported(context)) {
-                    navController.navigate("WalletIntroHostFaceId/$type")
+                    navController.navigate(WalletRoute.WalletIntroHostFaceId(type.name))
                 } else {
-                    navController.navigate("CreateOrImportWallet/$type")
+                    navController.navigate(WalletRoute.CreateOrImportWallet(type.name))
                 }
             }
         )
     }
 
     composable(
-        "WalletIntroHostFaceId/{type}",
+        WalletRoute.WalletIntroHostFaceId.path,
         arguments = listOf(
             navArgument("type") { type = NavType.StringType },
         )
@@ -480,16 +481,16 @@ fun NavGraphBuilder.walletsRoute(
             onBack = { navController.popBackStack() },
             onEnable = { enabled ->
                 if (enabled) {
-                    navController.navigate("WalletIntroHostFaceIdEnableSuccess/$type")
+                    navController.navigate(WalletRoute.WalletIntroHostFaceIdEnableSuccess(type.name))
                 } else {
-                    navController.navigate("CreateOrImportWallet/$type")
+                    navController.navigate(WalletRoute.CreateOrImportWallet(type.name))
                 }
             }
         )
     }
 
     dialog(
-        "WalletIntroHostFaceIdEnableSuccess/{type}",
+        WalletRoute.WalletIntroHostFaceIdEnableSuccess.path,
         arguments = listOf(
             navArgument("type") { type = NavType.StringType },
         )
@@ -499,7 +500,7 @@ fun NavGraphBuilder.walletsRoute(
         } ?: CreateType.CREATE
         MaskDialog(
             onDismissRequest = {
-                navController.navigate("CreateOrImportWallet/$type")
+                navController.navigate(WalletRoute.CreateOrImportWallet(type.name))
             },
             title = {
                 Text(text = stringResource(R.string.common_alert_biometry_id_activate_title))
@@ -517,7 +518,7 @@ fun NavGraphBuilder.walletsRoute(
                 PrimaryButton(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
-                        navController.navigate("CreateOrImportWallet/$type")
+                        navController.navigate(WalletRoute.CreateOrImportWallet(type.name))
                     },
                 ) {
                     Text(text = stringResource(R.string.common_controls_done))
@@ -527,7 +528,7 @@ fun NavGraphBuilder.walletsRoute(
     }
 
     composable(
-        "WalletIntroHostTouchId/{type}",
+        WalletRoute.WalletIntroHostTouchId.path,
         arguments = listOf(
             navArgument("type") { type = NavType.StringType },
         )
@@ -538,13 +539,13 @@ fun NavGraphBuilder.walletsRoute(
         TouchIdEnableScene(
             onBack = { navController.popBackStack() },
             onEnable = {
-                navController.navigate("WalletIntroHostTouchIdEnableSuccess/$type")
+                navController.navigate(WalletRoute.WalletIntroHostTouchIdEnableSuccess(type.name))
             }
         )
     }
 
     dialog(
-        "WalletIntroHostTouchIdEnableSuccess/{type}",
+        WalletRoute.WalletIntroHostTouchIdEnableSuccess.path,
         arguments = listOf(
             navArgument("type") { type = NavType.StringType },
         )
@@ -554,7 +555,7 @@ fun NavGraphBuilder.walletsRoute(
         } ?: CreateType.CREATE
         MaskDialog(
             onDismissRequest = {
-                navController.navigate("CreateOrImportWallet/$type")
+                navController.navigate(WalletRoute.CreateOrImportWallet(type.name))
             },
             title = {
                 Text(text = stringResource(R.string.common_alert_biometry_id_activate_title))
@@ -572,7 +573,7 @@ fun NavGraphBuilder.walletsRoute(
                 PrimaryButton(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
-                        navController.navigate("CreateOrImportWallet/$type")
+                        navController.navigate(WalletRoute.CreateOrImportWallet(type.name))
                     },
                 ) {
                     Text(text = stringResource(R.string.common_controls_done))
@@ -582,7 +583,7 @@ fun NavGraphBuilder.walletsRoute(
     }
 
     composable(
-        "CreateOrImportWallet/{type}",
+        WalletRoute.CreateOrImportWallet.path,
         arguments = listOf(
             navArgument("type") { type = NavType.StringType },
         )
@@ -595,12 +596,12 @@ fun NavGraphBuilder.walletsRoute(
         )
     }
 
-    dialog("MultiChainWalletDialog") {
+    dialog(WalletRoute.MultiChainWalletDialog) {
         MultiChainWalletDialog()
     }
 
     composable(
-        "CreateWallet/{wallet}",
+        WalletRoute.CreateWallet.path,
         arguments = listOf(
             navArgument("wallet") { type = NavType.StringType },
         )
@@ -610,10 +611,10 @@ fun NavGraphBuilder.walletsRoute(
                 wallet = wallet,
                 onDone = {
                     navController.navigate(
-                        Uri.parse("maskwallet://Home/Wallets"),
+                        Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Wallet)),
                         navOptions = navOptions {
                             launchSingleTop = true
-                            popUpTo("Home") {
+                            popUpTo(CommonRoute.Main.Home) {
                                 inclusive = false
                             }
                         }
@@ -625,7 +626,7 @@ fun NavGraphBuilder.walletsRoute(
     }
 
     composable(
-        "ImportWallet/{wallet}",
+        WalletRoute.ImportWallet.path,
         arguments = listOf(
             navArgument("wallet") { type = NavType.StringType },
         )
@@ -635,10 +636,10 @@ fun NavGraphBuilder.walletsRoute(
                 wallet = wallet,
                 onDone = {
                     navController.navigate(
-                        Uri.parse("maskwallet://Home/Wallets"),
+                        Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Wallet)),
                         navOptions = navOptions {
                             launchSingleTop = true
-                            popUpTo("Home") {
+                            popUpTo(CommonRoute.Main.Home) {
                                 inclusive = false
                             }
                         }
@@ -650,7 +651,7 @@ fun NavGraphBuilder.walletsRoute(
     }
 
     composable(
-        "SendTokenScene/{tokenAddress}",
+        WalletRoute.SendTokenScene.path,
         arguments = listOf(
             navArgument("tokenAddress") { type = NavType.StringType }
         )
@@ -667,7 +668,7 @@ fun NavGraphBuilder.walletsRoute(
     }
 
     dialog(
-        "UnlockWalletDialog/{target}",
+        WalletRoute.UnlockWalletDialog.path,
         arguments = listOf(
             navArgument("target") { type = NavType.StringType }
         )
@@ -693,7 +694,7 @@ fun NavGraphBuilder.walletsRoute(
                                 navController.navigate(
                                     it,
                                     navOptions {
-                                        popUpTo("UnlockWalletDialog") {
+                                        popUpTo(WalletRoute.UnlockWalletDialog.path) {
                                             inclusive = true
                                         }
                                     }
@@ -707,7 +708,7 @@ fun NavGraphBuilder.walletsRoute(
                             navController.navigate(
                                 it,
                                 navOptions {
-                                    popUpTo("UnlockWalletDialog") {
+                                    popUpTo(WalletRoute.UnlockWalletDialog.path) {
                                         inclusive = true
                                     }
                                 }

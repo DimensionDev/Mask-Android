@@ -46,6 +46,7 @@ import androidx.navigation.navArgument
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ext.encodeUrl
 import com.dimension.maskbook.wallet.ext.observeAsState
+import com.dimension.maskbook.wallet.route.WalletRoute
 import com.dimension.maskbook.wallet.ui.widget.EmailCodeInputModal
 import com.dimension.maskbook.wallet.ui.widget.MaskDialog
 import com.dimension.maskbook.wallet.ui.widget.MaskInputField
@@ -64,24 +65,26 @@ import org.koin.core.parameter.parametersOf
 fun NavGraphBuilder.remoteBackupRecovery(
     navController: NavController
 ) {
-    dialog("RemoteBackupRecovery_NoBackup") {
+    dialog(
+        WalletRoute.Register.Recovery.RemoteBackupRecovery.RemoteBackupRecovery_NoBackup
+    ) {
         MaskDialog(
             onDismissRequest = { navController.popBackStack() },
             title = { Text(text = "No Backup data found!") }
         )
     }
     bottomSheet(
-        "RemoteBackupRecovery_Email_Code/{email}",
+        WalletRoute.Register.Recovery.RemoteBackupRecovery.RemoteBackupRecovery_Email_Code.path,
         arguments = listOf(navArgument("email") { type = NavType.StringType })
     ) { backStackEntry ->
         backStackEntry.arguments?.getString("email")?.let { email ->
             val requestNavigate: (RemoteBackupRecoveryViewModelBase.NavigateArgs) -> Unit = {
                 when (it.target) {
                     RemoteBackupRecoveryViewModelBase.NavigateTarget.NoBackup -> navController.navigate(
-                        "RemoteBackupRecovery_NoBackup"
+                        WalletRoute.Register.Recovery.RemoteBackupRecovery.RemoteBackupRecovery_NoBackup
                     )
                     RemoteBackupRecoveryViewModelBase.NavigateTarget.RestoreBackup -> navController.navigate(
-                        "RemoteBackupRecovery_RecoveryLocal/${it.value.encodeUrl()}"
+                        WalletRoute.Register.Recovery.LocalBackup.RemoteBackupRecovery_RecoveryLocal(it.value)
                     )
                     else -> Unit
                 }
@@ -115,9 +118,9 @@ fun NavGraphBuilder.remoteBackupRecovery(
             navController.popBackStack()
         }
     }
-    bottomSheet("RemoteBackupRecovery_Email") {
+    bottomSheet(WalletRoute.Register.Recovery.RemoteBackupRecovery.RemoteBackupRecovery_Email) {
         val requestNavigate: (RemoteBackupRecoveryViewModelBase.NavigateArgs) -> Unit = {
-            navController.navigate("RemoteBackupRecovery_Email_Code/${it.value.encodeUrl()}")
+            navController.navigate(WalletRoute.Register.Recovery.RemoteBackupRecovery.RemoteBackupRecovery_Email_Code(it.value))
         }
         val viewModel = getViewModel<EmailRemoteBackupRecoveryViewModel> {
             parametersOf(requestNavigate)
@@ -160,8 +163,8 @@ fun NavGraphBuilder.remoteBackupRecovery(
                 TextButton(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
-                        navController.navigate("RemoteBackupRecovery_Phone") {
-                            popUpTo("RemoteBackupRecovery_Email") {
+                        navController.navigate(WalletRoute.Register.Recovery.RemoteBackupRecovery.RemoteBackupRecovery_Phone) {
+                            popUpTo(WalletRoute.Register.Recovery.RemoteBackupRecovery.RemoteBackupRecovery_Email) {
                                 inclusive = true
                             }
                         }
@@ -173,17 +176,17 @@ fun NavGraphBuilder.remoteBackupRecovery(
         }
     }
     bottomSheet(
-        "RemoteBackupRecovery_Phone_Code/{phone}",
+        WalletRoute.Register.Recovery.RemoteBackupRecovery.RemoteBackupRecovery_Phone_Code.path,
         arguments = listOf(navArgument("phone") { type = NavType.StringType })
     ) { backStackEntry ->
         backStackEntry.arguments?.getString("phone")?.let { phone ->
             val requestNavigate: (RemoteBackupRecoveryViewModelBase.NavigateArgs) -> Unit = {
                 when (it.target) {
                     RemoteBackupRecoveryViewModelBase.NavigateTarget.NoBackup -> navController.navigate(
-                        "RemoteBackupRecovery_NoBackup"
+                        WalletRoute.Register.Recovery.RemoteBackupRecovery.RemoteBackupRecovery_NoBackup
                     )
                     RemoteBackupRecoveryViewModelBase.NavigateTarget.RestoreBackup -> navController.navigate(
-                        "RemoteBackupRecovery_RecoveryLocal/${it.value.encodeUrl()}"
+                        WalletRoute.Register.Recovery.LocalBackup.RemoteBackupRecovery_RecoveryLocal(it.value)
                     )
                     else -> Unit
                 }
@@ -260,10 +263,10 @@ fun NavGraphBuilder.remoteBackupRecovery(
             navController.popBackStack()
         }
     }
-    bottomSheet("RemoteBackupRecovery_Phone") {
+    bottomSheet(WalletRoute.Register.Recovery.RemoteBackupRecovery.RemoteBackupRecovery_Phone) {
         val requestNavigate: (RemoteBackupRecoveryViewModelBase.NavigateArgs) -> Unit = {
             val a = it.value.encodeUrl()
-            navController.navigate("RemoteBackupRecovery_Phone_Code/${it.value.encodeUrl()}")
+            navController.navigate(WalletRoute.Register.Recovery.RemoteBackupRecovery.RemoteBackupRecovery_Phone_Code(it.value))
         }
         val viewModel = getViewModel<PhoneRemoteBackupRecoveryViewModel> {
             parametersOf(requestNavigate)
@@ -319,8 +322,8 @@ fun NavGraphBuilder.remoteBackupRecovery(
                 TextButton(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
-                        navController.navigate("RemoteBackupRecovery_Email") {
-                            popUpTo("RemoteBackupRecovery_Phone") {
+                        navController.navigate(WalletRoute.Register.Recovery.RemoteBackupRecovery.RemoteBackupRecovery_Email) {
+                            popUpTo(WalletRoute.Register.Recovery.RemoteBackupRecovery.RemoteBackupRecovery_Phone) {
                                 inclusive = true
                             }
                         }

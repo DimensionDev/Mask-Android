@@ -20,6 +20,7 @@
  */
 package com.dimension.maskbook;
 
+import com.dimension.maskbook.common.route.CommonRoute;
 import com.dimension.maskbook.persona.repository.IPersonaRepository;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -617,7 +618,7 @@ public class GeckoViewActivity
                         );
             } else if (item.getItemId() == R.id.dashboard) {
                 var intent = new Intent(GeckoViewActivity.this, ComposeActivity.class);
-                intent.putExtra("startDestination", "Main");
+                intent.putExtra("startDestination", CommonRoute.Main.INSTANCE.getHome());
                 startActivity(intent);
             } else if (item.getItemId() == R.id.debug_menu) {
                 new ComposeBottomSheetDialogFragment().show(getSupportFragmentManager(), ComposeBottomSheetDialogFragment.TAG);

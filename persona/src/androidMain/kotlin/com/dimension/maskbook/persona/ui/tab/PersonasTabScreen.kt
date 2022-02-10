@@ -20,8 +20,11 @@
  */
 package com.dimension.maskbook.persona.ui.tab
 
+import android.net.Uri
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
+import com.dimension.maskbook.common.route.CommonRoute
+import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.ui.LocalRootNavController
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.persona.R
@@ -31,7 +34,7 @@ import com.dimension.maskbook.wallet.repository.PlatformType
 import com.dimension.maskbook.wallet.ui.scenes.persona.PersonaScene
 
 class PersonasTabScreen : TabScreen {
-    override val route = "Personas"
+    override val route = CommonRoute.Main.Tabs.Persona
     override val title: Int = R.string.tab_personas
     override val icon: Int = R.drawable.ic_persona
 
@@ -42,10 +45,10 @@ class PersonasTabScreen : TabScreen {
         PersonaScene(
             onBack = onBack,
             onPersonaCreateClick = {
-                rootNavController.navigate("WelcomeCreatePersona")
+                rootNavController.navigate(Uri.parse(Deeplinks.Wallet.Register.WelcomeCreatePersona))
             },
             onPersonaRecoveryClick = {
-                rootNavController.navigate("Recovery")
+                rootNavController.navigate(Uri.parse(Deeplinks.Wallet.Recovery))
             },
             onPersonaNameClick = {
                 rootNavController.navigate(PersonaRoute.PersonaMenu)

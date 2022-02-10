@@ -21,6 +21,7 @@
 package com.dimension.maskbook.persona
 
 import android.content.Context
+import android.net.Uri
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.getValue
 import androidx.navigation.NavController
@@ -30,6 +31,8 @@ import androidx.navigation.compose.dialog
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import com.dimension.maskbook.common.ModuleSetup
+import com.dimension.maskbook.common.route.CommonRoute
+import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.persona.repository.IContactsRepository
@@ -87,7 +90,7 @@ object PersonaSetup : ModuleSetup {
                 },
                 onDone = {
                     repository.logout()
-                    navController.popBackStack("Home", inclusive = false)
+                    navController.popBackStack(CommonRoute.Main.Home, inclusive = false)
                 }
             )
         }
@@ -116,7 +119,7 @@ object PersonaSetup : ModuleSetup {
                 currentPersonaData = current,
                 items = items,
                 onAdd = {
-                    navController.navigate("CreatePersona")
+                    navController.navigate(Uri.parse(Deeplinks.Wallet.Register.CreatePersona))
                 },
                 onItemClicked = {
                     viewModel.switch(it)

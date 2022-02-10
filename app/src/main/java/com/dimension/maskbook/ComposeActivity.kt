@@ -35,15 +35,15 @@ import coil.ImageLoader
 import coil.compose.LocalImageLoader
 import coil.decode.SvgDecoder
 import com.dimension.maskbook.common.route
+import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.ui.LocalRootNavController
 import com.dimension.maskbook.labs.LabsSetup
 import com.dimension.maskbook.persona.PersonaSetup
 import com.dimension.maskbook.setting.SettingSetup
 import com.dimension.maskbook.wallet.WalletSetup
 import com.dimension.maskbook.wallet.navHostAnimationDurationMillis
+import com.dimension.maskbook.wallet.route.WalletRoute
 import com.dimension.maskbook.wallet.route.mainRoute
-import com.dimension.maskbook.wallet.route.registerRoute
-import com.dimension.maskbook.wallet.route.walletsRoute
 import com.dimension.maskbook.wallet.ui.MaskTheme
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
@@ -54,8 +54,8 @@ import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 class ComposeActivity : AppCompatActivity() {
     companion object {
         object Destination {
-            val register = "Register"
-            val main = "Main"
+            val register = WalletRoute.Register.Init
+            val main = CommonRoute.Main.Home
         }
     }
 
@@ -82,7 +82,7 @@ class ComposeActivity : AppCompatActivity() {
 @OptIn(ExperimentalMaterialNavigationApi::class, ExperimentalAnimationApi::class)
 @Composable
 fun App(
-    startDestination: String = "Register",
+    startDestination: String = ComposeActivity.Companion.Destination.register,
     onBack: () -> Unit,
 ) {
     val navController = rememberAnimatedNavController()
@@ -129,19 +129,10 @@ fun App(
                     )
                 },
             ) {
-                registerRoute(
-                    navController = navController,
-                )
-                mainRoute(
-                    navController = navController,
-                    onBack = onBack,
-                ) {
-                    walletsRoute(navController = navController)
-                    WalletSetup.route(this, navController = navController, onBack = onBack)
-                    LabsSetup.route(this, navController = navController, onBack = onBack)
-                    PersonaSetup.route(this, navController = navController, onBack = onBack)
-                }
-
+                mainRoute(onBack = onBack)
+                WalletSetup.route(this, navController = navController, onBack = onBack)
+                LabsSetup.route(this, navController = navController, onBack = onBack)
+                PersonaSetup.route(this, navController = navController, onBack = onBack)
                 SettingSetup.route(this, navController = navController, onBack = onBack)
             }
         }

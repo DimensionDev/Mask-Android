@@ -28,9 +28,11 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 import androidx.navigation.navOptions
 import androidx.room.Room
 import com.dimension.maskbook.common.ModuleSetup
+import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.wallet.db.AppDatabase
 import com.dimension.maskbook.wallet.db.RoomMigrations
@@ -50,6 +52,9 @@ import com.dimension.maskbook.wallet.repository.WalletConnectRepository
 import com.dimension.maskbook.wallet.repository.WalletContactRepository
 import com.dimension.maskbook.wallet.repository.WalletRepository
 import com.dimension.maskbook.wallet.repository.walletDataStore
+import com.dimension.maskbook.wallet.route.WalletRoute
+import com.dimension.maskbook.wallet.route.registerRoute
+import com.dimension.maskbook.wallet.route.walletsRoute
 import com.dimension.maskbook.wallet.services.WalletServices
 import com.dimension.maskbook.wallet.ui.scenes.persona.BackUpPasswordModal
 import com.dimension.maskbook.wallet.ui.tab.WalletTabScreen
@@ -109,10 +114,17 @@ object WalletSetup : ModuleSetup {
 
     @OptIn(ExperimentalMaterialNavigationApi::class)
     override fun NavGraphBuilder.route(navController: NavController, onBack: () -> Unit) {
+        walletsRoute(navController)
+        registerRoute(navController)
         bottomSheet(
-            "BackUpPassword/{target}",
+            WalletRoute.BackUpPassword.path,
             arguments = listOf(
                 navArgument("target") { type = NavType.StringType }
+            ),
+            deepLinks = listOf(
+                navDeepLink {
+                    uriPattern = Deeplinks.Wallet.BackUpPassword.path
+                }
             )
         ) { backStackEntry ->
             val target = backStackEntry.arguments?.getString("target")
@@ -135,7 +147,7 @@ object WalletSetup : ModuleSetup {
                                     navController.navigate(
                                         it,
                                         navOptions {
-                                            popUpTo("BackUpPassword") {
+                                            popUpTo(WalletRoute.BackUpPassword.path) {
                                                 inclusive = true
                                             }
                                         }
@@ -148,7 +160,7 @@ object WalletSetup : ModuleSetup {
                             navController.navigate(
                                 it,
                                 navOptions {
-                                    popUpTo("BackUpPassword") {
+                                    popUpTo(WalletRoute.BackUpPassword.path) {
                                         inclusive = true
                                     }
                                 }

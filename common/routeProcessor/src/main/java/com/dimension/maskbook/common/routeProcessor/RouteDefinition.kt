@@ -82,20 +82,22 @@ internal data class ParameterRouteDefinition(
         return TypeSpec.objectBuilder(name)
             .addModifiers(KModifier.ACTUAL)
             .apply {
-                addProperty(
-                    (
-                        ConstRouteDefinition(
-                            "path",
-                            this@ParameterRouteDefinition,
-                        ).generateRoute() as PropertySpec
-                        ).toBuilder()
-                        .apply {
-                            modifiers.clear()
-                        }
-                        .build()
-                )
                 childRoute.forEach {
                     if (it is FunctionRouteDefinition) {
+                        val p = it.parameters.filter { !it.parameter.type.resolve().isMarkedNullable }
+                        addProperty(
+                            PropertySpec.builder("path", String::class)
+                                .addModifiers(KModifier.CONST)
+                                .initializer(
+                                    "%S + %S + %S + %S + %S",
+                                    parentPath,
+                                    RouteDivider,
+                                    name,
+                                    if (p.any()) RouteDivider else "",
+                                    p.joinToString(RouteDivider) { "{${it.name}}" }
+                                )
+                                .build()
+                        )
                         addFunction(
                             funSpec(
                                 name,

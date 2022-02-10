@@ -9,19 +9,19 @@ plugins {
 kotlin {
     android()
     sourceSets {
+        val commonMain by getting {
+            dependencies {
+                implementation(projects.common.routeProcessor)
+                kspAndroid(projects.common.routeProcessor)
+            }
+        }
         val androidMain by getting {
             dependencies {
                 implementation("androidx.compose.runtime:runtime-livedata:1.0.5")
-                // implementation("com.google.android.material:material:1.6.0-alpha02")
 
                 implementation("androidx.navigation:navigation-ui-ktx:${Versions.navigation}")
                 implementation("androidx.navigation:navigation-compose:${Versions.navigation}")
 
-                // implementation("com.squareup.retrofit2:retrofit:2.9.0")
-                // implementation("com.squareup.retrofit2:converter-scalars:2.9.0")
-                // implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0")
-                // implementation("com.squareup.okhttp3:logging-interceptor:4.9.2")
-                // implementation("com.squareup.okhttp3:okhttp:4.9.2")
                 implementation("joda-time:joda-time:2.10.13")
                 implementation("io.github.dimensiondev:maskwalletcore:0.4.0")
 

@@ -21,12 +21,13 @@
 package com.dimension.maskbook.setting.ui.tab
 
 import androidx.compose.runtime.Composable
+import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.setting.R
 import com.dimension.maskbook.wallet.ui.scenes.settings.SettingsScene
 
 class SettingsTabScreen : TabScreen {
-    override val route = "Settings"
+    override val route = CommonRoute.Main.Tabs.Setting
     override val title: Int = R.string.tab_setting
     override val icon: Int = R.drawable.ic_settings
 

@@ -26,10 +26,25 @@ import com.dimension.maskbook.common.routeProcessor.Route
     schema = "maskwallet",
 )
 expect object Deeplinks {
+    object Main {
+        object Home {
+            operator fun invoke(initialRoute: String?): String
+        }
+    }
     object Setting {
         val SetupPasswordDialog: String
         object BackupData {
             val BackupSelection: String
+        }
+    }
+    object Wallet {
+        val Recovery: String
+        object BackUpPassword {
+            operator fun invoke(target: String): String
+        }
+        object Register {
+            val WelcomeCreatePersona: String
+            val CreatePersona: String
         }
     }
 }
