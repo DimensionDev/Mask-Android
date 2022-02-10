@@ -20,7 +20,7 @@
  */
 package com.dimension.maskbook.persona.route
 
-import com.dimension.maskbook.common.routeProcessor.Route
+import com.dimension.maskbook.common.routeProcessor.annotations.Route
 
 @Route
 expect object PersonaRoute {

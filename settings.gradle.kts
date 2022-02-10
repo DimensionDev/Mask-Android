@@ -26,6 +26,8 @@ include(
     ":common:okhttp",
     ":common:retrofit",
     ":common:routeProcessor",
+    ":common:routeProcessor:annotations",
+    ":common:bigDecimal",
     ":localization",
     ":wallet",
     ":wallet:export",

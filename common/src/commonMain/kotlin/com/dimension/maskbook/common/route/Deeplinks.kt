@@ -20,7 +20,7 @@
  */
 package com.dimension.maskbook.common.route
 
-import com.dimension.maskbook.common.routeProcessor.Route
+import com.dimension.maskbook.common.routeProcessor.annotations.Route
 
 @Route(
     schema = "maskwallet",

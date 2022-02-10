@@ -20,7 +20,7 @@
  */
 package com.dimension.maskbook.wallet.route
 
-import com.dimension.maskbook.common.routeProcessor.Route
+import com.dimension.maskbook.common.routeProcessor.annotations.Route
 
 @Route
 expect object WalletRoute {

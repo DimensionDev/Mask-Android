@@ -10,7 +10,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(projects.common.routeProcessor)
+                implementation(projects.common.routeProcessor.annotations)
                 kspAndroid(projects.common.routeProcessor)
             }
         }

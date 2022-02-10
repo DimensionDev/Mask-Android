@@ -20,6 +20,7 @@
  */
 package com.dimension.maskbook.common.routeProcessor
 
+import com.dimension.maskbook.common.routeProcessor.annotations.Route
 import com.google.devtools.ksp.KspExperimental
 import com.google.devtools.ksp.getAnnotationsByType
 import com.google.devtools.ksp.processing.CodeGenerator
