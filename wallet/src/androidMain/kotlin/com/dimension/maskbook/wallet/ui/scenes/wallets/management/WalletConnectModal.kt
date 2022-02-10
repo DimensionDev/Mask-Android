@@ -84,7 +84,7 @@ import com.dimension.maskbook.common.ui.widget.PrimaryButton
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.common.ui.widget.itemsGridIndexed
 import com.dimension.maskbook.wallet.R
-import com.dimension.maskbook.wallet.repository.ChainType
+import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.repository.WCWallet
 import com.dimension.maskbook.wallet.viewmodel.wallets.WalletConnectViewModel
 import com.google.accompanist.navigation.animation.AnimatedNavHost

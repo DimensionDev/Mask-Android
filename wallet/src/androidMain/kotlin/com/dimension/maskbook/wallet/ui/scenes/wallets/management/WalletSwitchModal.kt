@@ -68,8 +68,8 @@ import com.dimension.maskbook.common.ui.widget.MaskTextButton
 import com.dimension.maskbook.common.ui.widget.MiddleEllipsisText
 import com.dimension.maskbook.common.ui.widget.NameImage
 import com.dimension.maskbook.wallet.R
-import com.dimension.maskbook.wallet.repository.ChainType
-import com.dimension.maskbook.wallet.repository.WalletData
+import com.dimension.maskbook.wallet.export.model.ChainType
+import com.dimension.maskbook.wallet.export.model.WalletData
 
 val ChainType.onDrawableRes: Int
     get() = when (this) {

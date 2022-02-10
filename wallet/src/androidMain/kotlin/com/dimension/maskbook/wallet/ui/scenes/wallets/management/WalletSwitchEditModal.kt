@@ -42,7 +42,7 @@ import com.dimension.maskbook.common.ui.widget.MaskListItem
 import com.dimension.maskbook.common.ui.widget.MaskModal
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.wallet.R
-import com.dimension.maskbook.wallet.repository.WalletData
+import com.dimension.maskbook.wallet.export.model.WalletData
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable

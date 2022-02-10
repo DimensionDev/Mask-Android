@@ -23,8 +23,8 @@ package com.dimension.maskbook.wallet.walletconnect
 import android.content.Context
 import android.util.Log
 import com.dimension.maskbook.wallet.BuildConfig
+import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.ext.ether
-import com.dimension.maskbook.wallet.repository.ChainType
 import com.squareup.moshi.Moshi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

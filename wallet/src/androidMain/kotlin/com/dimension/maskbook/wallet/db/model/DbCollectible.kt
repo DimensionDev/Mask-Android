@@ -24,7 +24,7 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import com.dimension.maskbook.wallet.repository.ChainType
+import com.dimension.maskbook.wallet.export.model.ChainType
 
 @Entity(
     indices = [Index(value = ["walletId", "tokenId", "id"], unique = true)],

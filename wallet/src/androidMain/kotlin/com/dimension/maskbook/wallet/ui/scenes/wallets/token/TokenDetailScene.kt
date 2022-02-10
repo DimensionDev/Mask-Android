@@ -64,13 +64,13 @@ import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskTopAppBar
 import com.dimension.maskbook.common.ui.widget.PrimaryButton
 import com.dimension.maskbook.wallet.R
+import com.dimension.maskbook.wallet.export.model.TokenData
+import com.dimension.maskbook.wallet.export.model.WalletTokenData
 import com.dimension.maskbook.wallet.ext.humanizeDollar
 import com.dimension.maskbook.wallet.ext.humanizeToken
-import com.dimension.maskbook.wallet.repository.TokenData
 import com.dimension.maskbook.wallet.repository.TransactionData
 import com.dimension.maskbook.wallet.repository.TransactionStatus
 import com.dimension.maskbook.wallet.repository.TransactionType
-import com.dimension.maskbook.wallet.repository.WalletTokenData
 import org.joda.time.DateTime
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)

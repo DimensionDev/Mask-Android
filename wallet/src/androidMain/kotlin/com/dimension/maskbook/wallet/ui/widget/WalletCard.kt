@@ -61,10 +61,10 @@ import com.dimension.maskbook.common.ui.widget.MaskIconButton
 import com.dimension.maskbook.common.ui.widget.MaskTextButton
 import com.dimension.maskbook.common.ui.widget.MiddleEllipsisText
 import com.dimension.maskbook.wallet.R
-import com.dimension.maskbook.wallet.db.model.DbWalletBalanceType
+import com.dimension.maskbook.wallet.export.model.ChainType
+import com.dimension.maskbook.wallet.export.model.DbWalletBalanceType
+import com.dimension.maskbook.wallet.export.model.WalletData
 import com.dimension.maskbook.wallet.ext.humanizeDollar
-import com.dimension.maskbook.wallet.repository.ChainType
-import com.dimension.maskbook.wallet.repository.WalletData
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.onDrawableRes
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager

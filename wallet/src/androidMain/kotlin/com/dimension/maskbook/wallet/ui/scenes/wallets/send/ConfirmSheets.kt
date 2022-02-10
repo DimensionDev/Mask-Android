@@ -46,8 +46,8 @@ import com.dimension.maskbook.common.ui.widget.PrimaryButton
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.common.ui.widget.SecondaryButton
 import com.dimension.maskbook.wallet.R
+import com.dimension.maskbook.wallet.export.model.TokenData
 import com.dimension.maskbook.wallet.repository.SearchAddressData
-import com.dimension.maskbook.wallet.repository.TokenData
 
 @Composable
 fun ApproveConfirmSheet(
