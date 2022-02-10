@@ -20,6 +20,9 @@
  */
 package com.dimension.maskbook.wallet.repository
 
+import com.dimension.maskbook.wallet.export.model.ChainType
+import com.dimension.maskbook.wallet.export.model.TokenData
+import com.dimension.maskbook.wallet.export.model.WalletData
 import com.dimension.maskbook.wallet.services.WalletServices
 import kotlinx.coroutines.flow.firstOrNull
 import kotlin.math.roundToLong

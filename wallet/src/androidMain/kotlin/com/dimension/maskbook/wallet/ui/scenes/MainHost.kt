@@ -53,8 +53,8 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.common.ext.getAll
 import com.dimension.maskbook.common.ui.tab.TabScreen
-import com.dimension.maskbook.wallet.ui.MaskTheme
-import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
+import com.dimension.maskbook.common.ui.theme.MaskTheme
+import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager

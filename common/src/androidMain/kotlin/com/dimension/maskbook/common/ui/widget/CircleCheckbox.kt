@@ -18,7 +18,7 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.ui.widget
+package com.dimension.maskbook.common.ui.widget
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -53,7 +53,7 @@ import androidx.compose.ui.state.ToggleableState
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
-import com.dimension.maskbook.wallet.ui.MaskTheme
+import com.dimension.maskbook.common.ui.theme.MaskTheme
 import kotlin.math.floor
 import kotlin.math.max
 

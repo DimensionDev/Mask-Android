@@ -58,19 +58,19 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
+import com.dimension.maskbook.common.ui.theme.MaskTheme
+import com.dimension.maskbook.common.ui.widget.MaskBackButton
+import com.dimension.maskbook.common.ui.widget.MaskScaffold
+import com.dimension.maskbook.common.ui.widget.MaskTopAppBar
+import com.dimension.maskbook.common.ui.widget.PrimaryButton
 import com.dimension.maskbook.wallet.R
+import com.dimension.maskbook.wallet.export.model.TokenData
+import com.dimension.maskbook.wallet.export.model.WalletTokenData
 import com.dimension.maskbook.wallet.ext.humanizeDollar
 import com.dimension.maskbook.wallet.ext.humanizeToken
-import com.dimension.maskbook.wallet.repository.TokenData
 import com.dimension.maskbook.wallet.repository.TransactionData
 import com.dimension.maskbook.wallet.repository.TransactionStatus
 import com.dimension.maskbook.wallet.repository.TransactionType
-import com.dimension.maskbook.wallet.repository.WalletTokenData
-import com.dimension.maskbook.wallet.ui.MaskTheme
-import com.dimension.maskbook.wallet.ui.widget.MaskBackButton
-import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
-import com.dimension.maskbook.wallet.ui.widget.MaskTopAppBar
-import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
 import org.joda.time.DateTime
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)

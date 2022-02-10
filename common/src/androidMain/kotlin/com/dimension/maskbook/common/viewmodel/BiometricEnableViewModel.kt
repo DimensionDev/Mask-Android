@@ -18,7 +18,7 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.viewmodel.wallets
+package com.dimension.maskbook.common.viewmodel
 
 import android.content.Context
 import androidx.lifecycle.ViewModel

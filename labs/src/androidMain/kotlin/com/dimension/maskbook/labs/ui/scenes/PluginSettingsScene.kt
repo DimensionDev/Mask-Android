@@ -50,16 +50,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.dimension.maskbook.common.ui.widget.IosSwitch
+import com.dimension.maskbook.common.ui.widget.MaskBackButton
+import com.dimension.maskbook.common.ui.widget.MaskButton
+import com.dimension.maskbook.common.ui.widget.MaskIconButton
+import com.dimension.maskbook.common.ui.widget.MaskListItem
+import com.dimension.maskbook.common.ui.widget.MaskScaffold
+import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
+import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.labs.viewmodel.PluginDisplayData
 import com.dimension.maskbook.labs.viewmodel.PluginSettingsViewModel
-import com.dimension.maskbook.wallet.ui.widget.IosSwitch
-import com.dimension.maskbook.wallet.ui.widget.MaskBackButton
-import com.dimension.maskbook.wallet.ui.widget.MaskButton
-import com.dimension.maskbook.wallet.ui.widget.MaskIconButton
-import com.dimension.maskbook.wallet.ui.widget.MaskListItem
-import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
-import com.dimension.maskbook.wallet.ui.widget.MaskSingleLineTopAppBar
-import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
 import org.koin.androidx.compose.viewModel
 
 @Composable

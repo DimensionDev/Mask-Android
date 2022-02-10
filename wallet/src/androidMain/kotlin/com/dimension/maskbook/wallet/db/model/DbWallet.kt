@@ -26,7 +26,7 @@ import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import androidx.room.Relation
-import com.dimension.maskbook.wallet.repository.ChainType
+import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.repository.model.DerivationPath
 import com.dimension.maskwalletcore.CoinType
 

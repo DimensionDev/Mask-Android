@@ -22,8 +22,8 @@ package com.dimension.maskbook.wallet.viewmodel.recovery
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.persona.export.PersonaServices
-import com.dimension.maskbook.wallet.ext.asStateIn
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class PrivateKeyViewModel(

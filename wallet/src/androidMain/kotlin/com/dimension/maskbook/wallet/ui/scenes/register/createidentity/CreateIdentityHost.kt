@@ -33,12 +33,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.dialog
+import com.dimension.maskbook.common.ext.observeAsState
+import com.dimension.maskbook.common.navHostAnimationDurationMillis
+import com.dimension.maskbook.common.ui.widget.MaskDialog
+import com.dimension.maskbook.common.ui.widget.PrimaryButton
 import com.dimension.maskbook.wallet.R
-import com.dimension.maskbook.wallet.ext.observeAsState
-import com.dimension.maskbook.wallet.navHostAnimationDurationMillis
 import com.dimension.maskbook.wallet.ui.scenes.register.BackupIdentityScene
-import com.dimension.maskbook.wallet.ui.widget.MaskDialog
-import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
 import com.dimension.maskbook.wallet.viewmodel.register.CreateIdentityViewModel
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable

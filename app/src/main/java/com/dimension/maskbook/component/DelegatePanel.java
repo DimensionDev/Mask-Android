@@ -26,12 +26,11 @@ import android.view.ViewGroup;
 import com.dimension.maskbook.GeckoViewActivity;
 import com.dimension.maskbook.common.WebExtensionDelegate;
 import com.dimension.maskbook.site.Site;
-import com.dimension.maskbook.util.MessageChannel;
+import com.dimension.maskbook.common.util.MessageChannel;
 import com.dimension.maskbook.widget.ActionButton;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.koin.java.KoinJavaComponent;
 import org.mozilla.geckoview.GeckoRuntime;
 import org.mozilla.geckoview.GeckoSession;
 import org.mozilla.geckoview.WebExtension;

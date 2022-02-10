@@ -23,11 +23,11 @@ package com.dimension.maskbook.wallet.ui.scenes.wallets.send.preview
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.dimension.maskbook.wallet.R
-import com.dimension.maskbook.wallet.repository.ChainType
+import com.dimension.maskbook.wallet.export.model.ChainType
+import com.dimension.maskbook.wallet.export.model.TokenData
+import com.dimension.maskbook.wallet.export.model.WalletTokenData
 import com.dimension.maskbook.wallet.repository.GasPriceEditMode
 import com.dimension.maskbook.wallet.repository.SearchAddressData
-import com.dimension.maskbook.wallet.repository.TokenData
-import com.dimension.maskbook.wallet.repository.WalletTokenData
 import com.dimension.maskbook.wallet.ui.scenes.wallets.send.AddContactSheet
 import com.dimension.maskbook.wallet.ui.scenes.wallets.send.ApproveConfirmSheet
 import com.dimension.maskbook.wallet.ui.scenes.wallets.send.EditGasPriceSheet

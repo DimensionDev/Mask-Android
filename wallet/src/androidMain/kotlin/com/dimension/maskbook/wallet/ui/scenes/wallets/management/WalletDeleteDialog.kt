@@ -35,13 +35,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import com.dimension.maskbook.common.ui.widget.MaskDialog
+import com.dimension.maskbook.common.ui.widget.MaskPasswordInputField
+import com.dimension.maskbook.common.ui.widget.NameImage
+import com.dimension.maskbook.common.ui.widget.PrimaryButton
+import com.dimension.maskbook.common.ui.widget.SecondaryButton
 import com.dimension.maskbook.wallet.R
-import com.dimension.maskbook.wallet.repository.WalletData
-import com.dimension.maskbook.wallet.ui.widget.MaskDialog
-import com.dimension.maskbook.wallet.ui.widget.MaskPasswordInputField
-import com.dimension.maskbook.wallet.ui.widget.NameImage
-import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
-import com.dimension.maskbook.wallet.ui.widget.SecondaryButton
+import com.dimension.maskbook.wallet.export.model.WalletData
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable

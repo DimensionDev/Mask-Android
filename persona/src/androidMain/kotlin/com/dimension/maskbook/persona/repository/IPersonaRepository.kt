@@ -21,10 +21,10 @@
 package com.dimension.maskbook.persona.repository
 
 import androidx.lifecycle.LiveData
+import com.dimension.maskbook.persona.export.model.PersonaData
+import com.dimension.maskbook.persona.export.model.PlatformType
+import com.dimension.maskbook.persona.export.model.SocialData
 import com.dimension.maskbook.persona.model.RedirectTarget
-import com.dimension.maskbook.wallet.repository.PersonaData
-import com.dimension.maskbook.wallet.repository.PlatformType
-import com.dimension.maskbook.wallet.repository.SocialData
 import kotlinx.coroutines.flow.Flow
 
 interface IPersonaRepository {

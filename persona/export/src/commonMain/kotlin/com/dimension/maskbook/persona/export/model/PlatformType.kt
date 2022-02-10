@@ -18,27 +18,9 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.ext
+package com.dimension.maskbook.persona.export.model
 
-//
-// internal suspend fun Call.await(): Response {
-//     return suspendCancellableCoroutine { continuation ->
-//         enqueue(object : Callback {
-//             override fun onResponse(call: Call, response: Response) {
-//                 continuation.resume(response)
-//             }
-//
-//             override fun onFailure(call: Call, e: IOException) {
-//                 if (continuation.isCancelled) return
-//                 continuation.resumeWithException(e)
-//             }
-//         })
-//
-//         continuation.invokeOnCancellation {
-//             try {
-//                 cancel()
-//             } catch (ex: Throwable) {
-//             }
-//         }
-//     }
-// }
+enum class PlatformType {
+    Twitter,
+    Facebook
+}

@@ -28,6 +28,7 @@ import com.dimension.maskbook.wallet.db.model.DbStoredKey
 import com.dimension.maskbook.wallet.db.model.DbWCWallet
 import com.dimension.maskbook.wallet.db.model.DbWallet
 import com.dimension.maskbook.wallet.db.model.WalletSource
+import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.services.WalletServices
 import com.dimension.maskbook.wallet.services.model.WCSupportedWallet
 import com.dimension.maskbook.wallet.walletconnect.WCResponder

@@ -20,9 +20,9 @@
  */
 package com.dimension.maskbook.setting.export
 
-import com.dimension.maskbook.wallet.repository.Appearance
-import com.dimension.maskbook.wallet.repository.NetworkType
-import com.dimension.maskbook.wallet.repository.TradeProvider
+import com.dimension.maskbook.setting.export.model.Appearance
+import com.dimension.maskbook.setting.export.model.NetworkType
+import com.dimension.maskbook.setting.export.model.TradeProvider
 import kotlinx.coroutines.flow.Flow
 
 interface SettingServices {

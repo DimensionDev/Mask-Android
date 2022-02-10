@@ -18,7 +18,7 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.ui.scenes.settings
+package com.dimension.maskbook.setting.ui.scenes
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -26,12 +26,12 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import com.dimension.maskbook.wallet.ext.observeAsState
-import com.dimension.maskbook.wallet.repository.Language
-import com.dimension.maskbook.wallet.ui.widget.MaskModal
-import com.dimension.maskbook.wallet.ui.widget.MaskSelection
-import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
-import com.dimension.maskbook.wallet.viewmodel.settings.LanguageSettingsViewModel
+import com.dimension.maskbook.common.ext.observeAsState
+import com.dimension.maskbook.common.ui.widget.MaskModal
+import com.dimension.maskbook.common.ui.widget.MaskSelection
+import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
+import com.dimension.maskbook.setting.export.model.Language
+import com.dimension.maskbook.setting.viewmodel.LanguageSettingsViewModel
 import org.koin.androidx.compose.getViewModel
 
 val languageMap = Language.values().map {

@@ -18,9 +18,9 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.platform
+package com.dimension.maskbook.common.platform
 
-import com.dimension.maskbook.wallet.repository.PlatformType
+import com.dimension.maskbook.persona.export.model.PlatformType
 
 interface IPlatformSwitcher {
     fun switchTo(platformType: PlatformType)

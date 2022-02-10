@@ -32,9 +32,9 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import androidx.navigation.navOptions
+import com.dimension.maskbook.common.ext.encodeUrl
+import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.persona.export.PersonaServices
-import com.dimension.maskbook.wallet.ext.encodeUrl
-import com.dimension.maskbook.wallet.ext.observeAsState
 import com.dimension.maskbook.wallet.ui.scenes.register.CreatePersonaModal
 import com.dimension.maskbook.wallet.ui.scenes.register.CreatePersonaScene
 import com.dimension.maskbook.wallet.ui.scenes.register.RegisterScene

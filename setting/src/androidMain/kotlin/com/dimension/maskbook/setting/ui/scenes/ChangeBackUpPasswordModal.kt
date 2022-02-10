@@ -18,7 +18,7 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.ui.scenes.settings
+package com.dimension.maskbook.setting.ui.scenes
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -41,14 +41,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import com.dimension.maskbook.common.ext.observeAsState
+import com.dimension.maskbook.common.navHostAnimationDurationMillis
+import com.dimension.maskbook.common.ui.widget.MaskModal
+import com.dimension.maskbook.common.ui.widget.MaskPasswordInputField
+import com.dimension.maskbook.common.ui.widget.PrimaryButton
+import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.localization.R
-import com.dimension.maskbook.wallet.ext.observeAsState
-import com.dimension.maskbook.wallet.navHostAnimationDurationMillis
-import com.dimension.maskbook.wallet.ui.widget.MaskModal
-import com.dimension.maskbook.wallet.ui.widget.MaskPasswordInputField
-import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
-import com.dimension.maskbook.wallet.ui.widget.ScaffoldPadding
-import com.dimension.maskbook.wallet.viewmodel.settings.BackupPasswordSettingsViewModel
+import com.dimension.maskbook.setting.viewmodel.BackupPasswordSettingsViewModel
 import org.koin.androidx.compose.getViewModel
 
 @OptIn(ExperimentalAnimationApi::class)

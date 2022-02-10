@@ -22,10 +22,10 @@ package com.dimension.maskbook.wallet.viewmodel.wallets.management
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dimension.maskbook.wallet.ext.asStateIn
-import com.dimension.maskbook.wallet.repository.ChainType
+import com.dimension.maskbook.common.ext.asStateIn
+import com.dimension.maskbook.wallet.export.model.ChainType
+import com.dimension.maskbook.wallet.export.model.WalletData
 import com.dimension.maskbook.wallet.repository.IWalletRepository
-import com.dimension.maskbook.wallet.repository.WalletData
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
