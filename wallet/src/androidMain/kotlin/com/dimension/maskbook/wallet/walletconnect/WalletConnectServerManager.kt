@@ -27,14 +27,9 @@ interface WalletConnectServerManager {
     fun connectClient(wcUri: String, onRequest: (clientMeta: WCClientMeta) -> Unit)
     fun approveConnect(clientMeta: WCClientMeta, accounts: List<String>, chainId: Long)
     fun rejectConnect(clientMeta: WCClientMeta)
-    fun addOnRequestListener(listener: OnWalletConnectRequestListener)
-    fun removeOnRequestListener(listener: OnWalletConnectRequestListener)
     fun approveRequest(clientMeta: WCClientMeta, requestId: String, response: Any)
     fun rejectRequest(clientMeta: WCClientMeta, requestId: String, errorCode: Long, errorMessage: String)
-}
-
-interface OnWalletConnectRequestListener {
-    fun onRequest(clientMeta: WCClientMeta, request: WCRequest)
+    fun init(onRequest: (clientMeta: WCClientMeta, request: WCRequest) -> Unit)
 }
 
 data class WCClientMeta(

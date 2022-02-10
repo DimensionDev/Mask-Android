@@ -22,6 +22,7 @@ package com.dimension.maskbook.wallet
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.room.Room
@@ -167,6 +168,10 @@ private fun initWalletConnect() {
                 }
             }
         }
+    KoinPlatformTools.defaultContext().get().get<WalletConnectServerManager>()
+        .init { clientMeta, request ->
+        TODO("navigate to wallet connect request handle scene")
+    }
 }
 
 private fun Module.provideRepository() {

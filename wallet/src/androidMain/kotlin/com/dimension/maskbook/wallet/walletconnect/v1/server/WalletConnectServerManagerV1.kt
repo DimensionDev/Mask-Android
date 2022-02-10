@@ -23,8 +23,9 @@ package com.dimension.maskbook.wallet.walletconnect.v1.server
 import android.content.Context
 import android.util.Log
 import com.dimension.maskbook.wallet.BuildConfig
-import com.dimension.maskbook.wallet.walletconnect.OnWalletConnectRequestListener
 import com.dimension.maskbook.wallet.walletconnect.WCClientMeta
+import com.dimension.maskbook.wallet.walletconnect.WCRequest
+import com.dimension.maskbook.wallet.walletconnect.WCRequestParams
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectServerManager
 import com.dimension.maskbook.wallet.walletconnect.v1.BaseWalletConnectManager
 import com.dimension.maskbook.wallet.walletconnect.v1.WCSessionV1
@@ -40,6 +41,7 @@ class WalletConnectServerManagerV1(private val context: Context) :
     BaseWalletConnectManager(),
     WalletConnectServerManager {
 
+    private var onRequest:(clientMeta: WCClientMeta, request: WCRequest) -> Unit = { _, _ -> }
     private val _pendingSessions = MutableStateFlow(emptyList<WCSessionV1>())
     private val _connectedSessions = MutableStateFlow(emptyList<WCSessionV1>())
     override val connectedClients: Flow<List<WCClientMeta>>
@@ -57,7 +59,9 @@ class WalletConnectServerManagerV1(private val context: Context) :
             moshi
         )
 
-    init {
+
+    override fun init(onRequest: (clientMeta: WCClientMeta, request: WCRequest) -> Unit) {
+        this.onRequest = onRequest
         storage.list().forEach {
             if (it.approvedAccounts.isNullOrEmpty()) {
                 // end unapproved sessions
@@ -70,6 +74,7 @@ class WalletConnectServerManagerV1(private val context: Context) :
             }
         }
     }
+
 
     override fun connectClient(wcUri: String, onRequest: (clientMeta: WCClientMeta) -> Unit) {
         Session.Config
@@ -105,14 +110,6 @@ class WalletConnectServerManagerV1(private val context: Context) :
         getSessionById(clientMeta.id)?.reject()
     }
 
-    override fun addOnRequestListener(listener: OnWalletConnectRequestListener) {
-        TODO("Not yet implemented")
-    }
-
-    override fun removeOnRequestListener(listener: OnWalletConnectRequestListener) {
-        TODO("Not yet implemented")
-    }
-
     override fun approveRequest(clientMeta: WCClientMeta, requestId: String, response: Any) {
         getSessionById(clientMeta.id)?.approveRequest(id = requestId.toLong(), response = response)
     }
@@ -138,11 +135,37 @@ class WalletConnectServerManagerV1(private val context: Context) :
     private fun handleRequest(call: Session.MethodCall, session: WCSessionV1) {
         when (call) {
             is Session.MethodCall.SendTransaction -> {
-                // TODO dispatch transaction call to listener
+                dispatchRequest(
+                    WCRequest(
+                    id = call.id.toString(),
+                    params = WCRequestParams.WCTransaction(
+                        from = call.from,
+                        to = call.to,
+                        value = call.value,
+                        data = call.data,
+                        gasLimit = call.gasLimit,
+                        gasPrice = call.gasPrice,
+                        nonce = call.nonce,
+                    )
+                ), session)
             }
-            is Session.MethodCall.SignMessage -> rejectUnSupported(session, call.id)
+            is Session.MethodCall.SignMessage -> dispatchRequest(
+                WCRequest(
+                    id = call.id.toString(),
+                    params = WCRequestParams.WCSign(
+                       address = call.address,
+                       message = call.message
+                    )
+                ), session
+            )
             is Session.MethodCall.Custom -> rejectUnSupported(session, call.id)
             else -> {}
+        }
+    }
+
+    private fun dispatchRequest(wcRequest: WCRequest, session: WCSessionV1) {
+        session.peerMeta()?.let {
+            onRequest.invoke(it.toWcClientMeta(session.id), wcRequest)
         }
     }
 
