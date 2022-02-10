@@ -46,7 +46,7 @@ class WalletConnectClientManagerV1(private val context: Context) : BaseWalletCon
     private val bridgeServer = "https://safe-walletconnect.gnosis.io"
     private var onDisconnect: (address: String) -> Unit = {}
     private val connectedSessions = ConcurrentHashMap<String, Session>()
-    private val onResponseStore = ConcurrentHashMap<Long, (response:Any, error: Throwable?) -> Unit>()
+    private val onResponseStore = ConcurrentHashMap<Long, (response: Any, error: Throwable?) -> Unit>()
 
     override val storage by lazy {
         FileWCSessionStore(
@@ -134,7 +134,7 @@ class WalletConnectClientManagerV1(private val context: Context) : BaseWalletCon
         data: String,
         gasLimit: Double,
         gasPrice: BigDecimal,
-        onResponse: (response:Any, error: Throwable?) -> Unit
+        onResponse: (response: Any, error: Throwable?) -> Unit
     ) {
         connectedSessions[fromAddress]?.let {
             val id = System.currentTimeMillis()
@@ -255,11 +255,11 @@ private class ConnectedSessionCallback(
     private val onResponse: (id: Long, response: Any, error: Throwable?) -> Unit
 ) : Session.Callback {
     override fun onMethodCall(call: Session.MethodCall) {
-        when(call) {
+        when (call) {
             is Session.MethodCall.Response -> {
                 call.error?.let {
-                    onResponse.invoke(call.id,"failed",WCError(errorCode = it.code.toString(), message = it.message))
-                } ?: onResponse.invoke(call.id, call.result?:"", null)
+                    onResponse.invoke(call.id, "failed", WCError(errorCode = it.code.toString(), message = it.message))
+                } ?: onResponse.invoke(call.id, call.result ?: "", null)
             }
             else -> {}
         }
