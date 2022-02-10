@@ -20,9 +20,10 @@
  */
 package com.dimension.maskbook.wallet.export
 
-import com.dimension.maskbook.wallet.repository.WalletData
+import com.dimension.maskbook.wallet.export.model.WalletData
 import kotlinx.coroutines.flow.Flow
 
 interface WalletServices {
     val currentWallet: Flow<WalletData?>
+    fun generateNewMnemonic(): List<String>
 }

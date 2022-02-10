@@ -24,6 +24,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
+import com.dimension.maskbook.common.ext.JSON
 import com.dimension.maskbook.wallet.db.dao.CollectibleDao
 import com.dimension.maskbook.wallet.db.dao.SendHistoryDao
 import com.dimension.maskbook.wallet.db.dao.StoredKeyDao
@@ -44,7 +45,6 @@ import com.dimension.maskbook.wallet.db.model.DbWallet
 import com.dimension.maskbook.wallet.db.model.DbWalletBalance
 import com.dimension.maskbook.wallet.db.model.DbWalletContact
 import com.dimension.maskbook.wallet.db.model.DbWalletToken
-import com.dimension.maskbook.wallet.ext.JSON
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import java.math.BigDecimal

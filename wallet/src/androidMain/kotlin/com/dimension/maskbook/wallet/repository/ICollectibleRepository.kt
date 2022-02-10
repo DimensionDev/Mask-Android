@@ -21,6 +21,7 @@
 package com.dimension.maskbook.wallet.repository
 
 import androidx.paging.PagingData
+import com.dimension.maskbook.wallet.export.model.WalletData
 import kotlinx.coroutines.flow.Flow
 
 interface ICollectibleRepository {

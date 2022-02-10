@@ -22,12 +22,12 @@ package com.dimension.maskbook.wallet.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dimension.maskbook.wallet.ext.asStateIn
-import com.dimension.maskbook.wallet.repository.IPersonaRepository
+import com.dimension.maskbook.common.ext.asStateIn
+import com.dimension.maskbook.persona.export.PersonaServices
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class WelcomeViewModel(
-    private val repository: IPersonaRepository,
+    private val personaServices: PersonaServices,
 ) : ViewModel() {
     private val _persona = MutableStateFlow("")
     val persona = _persona.asStateIn(viewModelScope, "")
@@ -37,6 +37,6 @@ class WelcomeViewModel(
     }
 
     fun onConfirm() {
-        repository.updateCurrentPersona(_persona.value)
+        personaServices.updateCurrentPersona(_persona.value)
     }
 }

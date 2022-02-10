@@ -31,7 +31,7 @@ import com.dimension.maskbook.wallet.db.model.DbCollectibleCollection
 import com.dimension.maskbook.wallet.db.model.DbCollectibleContract
 import com.dimension.maskbook.wallet.db.model.DbCollectibleCreator
 import com.dimension.maskbook.wallet.db.model.DbCollectibleUrl
-import com.dimension.maskbook.wallet.repository.ChainType
+import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.services.OpenSeaServices
 import com.dimension.maskbook.wallet.services.model.AssetElement
 

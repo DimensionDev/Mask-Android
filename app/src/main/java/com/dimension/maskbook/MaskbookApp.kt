@@ -21,21 +21,17 @@
 package com.dimension.maskbook
 
 import android.app.Application
-import android.content.Context
 import com.dimension.maskbook.common.CommonSetup
+import com.dimension.maskbook.common.platform.IPlatformSwitcher
+import com.dimension.maskbook.common.repository.JSMethod
 import com.dimension.maskbook.handler.Web3MessageHandler
 import com.dimension.maskbook.labs.LabsSetup
+import com.dimension.maskbook.persona.PersonaSetup
 import com.dimension.maskbook.platform.PlatformSwitcher
-import com.dimension.maskbook.repository.JSMethod
-import com.dimension.maskbook.repository.PersonaRepository
-import com.dimension.maskbook.repository.personaDataStore
 import com.dimension.maskbook.setting.SettingSetup
 import com.dimension.maskbook.wallet.WalletSetup
 import com.dimension.maskbook.wallet.db.model.CoinPlatformType
-import com.dimension.maskbook.wallet.platform.IPlatformSwitcher
-import com.dimension.maskbook.wallet.repository.ChainType
-import com.dimension.maskbook.wallet.repository.IContactsRepository
-import com.dimension.maskbook.wallet.repository.IPersonaRepository
+import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.repository.IWalletRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -62,7 +58,7 @@ class MaskbookApp : Application() {
                 WalletSetup.dependencyInject(),
                 SettingSetup.dependencyInject(),
                 LabsSetup.dependencyInject(),
-                repositoryModules,
+                PersonaSetup.dependencyInject(),
                 platformModules,
             )
         }
@@ -74,6 +70,7 @@ fun initModule() {
     WalletSetup.onExtensionReady()
     SettingSetup.onExtensionReady()
     LabsSetup.onExtensionReady()
+    PersonaSetup.onExtensionReady()
 }
 
 fun initEvent() {
@@ -116,13 +113,6 @@ fun initEvent() {
             }
         }
     }
-}
-
-val repositoryModules = module {
-    single { PersonaRepository(get<Context>().personaDataStore, get(), get()) } binds arrayOf(
-        IPersonaRepository::class,
-        IContactsRepository::class
-    )
 }
 
 val platformModules = module {

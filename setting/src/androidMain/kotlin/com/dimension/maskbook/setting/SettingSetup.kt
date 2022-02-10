@@ -30,33 +30,33 @@ import com.dimension.maskbook.setting.data.JSDataSource
 import com.dimension.maskbook.setting.data.PreferenceDataSource
 import com.dimension.maskbook.setting.data.settingsDataStore
 import com.dimension.maskbook.setting.export.SettingServices
+import com.dimension.maskbook.setting.repository.BackupRepository
+import com.dimension.maskbook.setting.repository.ISettingsRepository
+import com.dimension.maskbook.setting.repository.SettingsRepository
+import com.dimension.maskbook.setting.services.BackupServices
+import com.dimension.maskbook.setting.services.model.DownloadResponse
 import com.dimension.maskbook.setting.ui.tab.SettingsTabScreen
-import com.dimension.maskbook.wallet.repository.BackupRepository
-import com.dimension.maskbook.wallet.repository.ISettingsRepository
-import com.dimension.maskbook.wallet.repository.SettingsRepository
-import com.dimension.maskbook.wallet.services.BackupServices
-import com.dimension.maskbook.wallet.services.model.DownloadResponse
-import com.dimension.maskbook.wallet.viewmodel.settings.AppearanceSettingsViewModel
-import com.dimension.maskbook.wallet.viewmodel.settings.BackupCloudExecuteViewModel
-import com.dimension.maskbook.wallet.viewmodel.settings.BackupCloudViewModel
-import com.dimension.maskbook.wallet.viewmodel.settings.BackupLocalViewModel
-import com.dimension.maskbook.wallet.viewmodel.settings.BackupMergeConfirmViewModel
-import com.dimension.maskbook.wallet.viewmodel.settings.BackupPasswordSettingsViewModel
-import com.dimension.maskbook.wallet.viewmodel.settings.DataSourceSettingsViewModel
-import com.dimension.maskbook.wallet.viewmodel.settings.EmailBackupViewModel
-import com.dimension.maskbook.wallet.viewmodel.settings.EmailSetupViewModel
-import com.dimension.maskbook.wallet.viewmodel.settings.LanguageSettingsViewModel
-import com.dimension.maskbook.wallet.viewmodel.settings.PaymentPasswordSettingsViewModel
-import com.dimension.maskbook.wallet.viewmodel.settings.PhoneBackupViewModel
-import com.dimension.maskbook.wallet.viewmodel.settings.PhoneSetupViewModel
-import com.dimension.maskbook.wallet.viewmodel.settings.RemoteBackupRecoveryViewModelBase
+import com.dimension.maskbook.setting.viewmodel.AppearanceSettingsViewModel
+import com.dimension.maskbook.setting.viewmodel.BackupCloudExecuteViewModel
+import com.dimension.maskbook.setting.viewmodel.BackupCloudViewModel
+import com.dimension.maskbook.setting.viewmodel.BackupLocalViewModel
+import com.dimension.maskbook.setting.viewmodel.BackupMergeConfirmViewModel
+import com.dimension.maskbook.setting.viewmodel.BackupPasswordSettingsViewModel
+import com.dimension.maskbook.setting.viewmodel.DataSourceSettingsViewModel
+import com.dimension.maskbook.setting.viewmodel.EmailBackupViewModel
+import com.dimension.maskbook.setting.viewmodel.EmailSetupViewModel
+import com.dimension.maskbook.setting.viewmodel.LanguageSettingsViewModel
+import com.dimension.maskbook.setting.viewmodel.PaymentPasswordSettingsViewModel
+import com.dimension.maskbook.setting.viewmodel.PhoneBackupViewModel
+import com.dimension.maskbook.setting.viewmodel.PhoneSetupViewModel
+import com.dimension.maskbook.setting.viewmodel.RemoteBackupRecoveryViewModelBase
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.koin.mp.KoinPlatformTools
 
 object SettingSetup : ModuleSetup {
-    override fun NavGraphBuilder.route(navController: NavController) {
+    override fun NavGraphBuilder.route(navController: NavController, onBack: () -> Unit) {
     }
 
     override fun dependencyInject() = module {

@@ -18,7 +18,7 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.ext
+package com.dimension.maskbook.common.ext
 
 import com.dimension.maskbook.common.BuildConfig
 import org.web3j.crypto.WalletUtils

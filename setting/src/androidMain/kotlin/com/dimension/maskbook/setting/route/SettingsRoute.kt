@@ -18,7 +18,7 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.route
+package com.dimension.maskbook.setting.route
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
@@ -34,23 +34,23 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.dialog
 import androidx.navigation.navArgument
+import com.dimension.maskbook.common.ext.encodeUrl
+import com.dimension.maskbook.common.ext.observeAsState
+import com.dimension.maskbook.common.ui.widget.EmailCodeInputModal
+import com.dimension.maskbook.common.ui.widget.EmailInputModal
+import com.dimension.maskbook.common.ui.widget.MaskDialog
+import com.dimension.maskbook.common.ui.widget.PhoneCodeInputModal
+import com.dimension.maskbook.common.ui.widget.PhoneInputModal
+import com.dimension.maskbook.common.ui.widget.PrimaryButton
 import com.dimension.maskbook.localization.R
-import com.dimension.maskbook.wallet.ext.encodeUrl
-import com.dimension.maskbook.wallet.ext.observeAsState
-import com.dimension.maskbook.wallet.ui.scenes.settings.AppearanceSettings
-import com.dimension.maskbook.wallet.ui.scenes.settings.ChangeBackUpPasswordModal
-import com.dimension.maskbook.wallet.ui.scenes.settings.ChangePaymentPasswordModal
-import com.dimension.maskbook.wallet.ui.scenes.settings.DataSourceSettings
-import com.dimension.maskbook.wallet.ui.scenes.settings.LanguageSettings
-import com.dimension.maskbook.wallet.ui.widget.EmailCodeInputModal
-import com.dimension.maskbook.wallet.ui.widget.EmailInputModal
-import com.dimension.maskbook.wallet.ui.widget.MaskDialog
-import com.dimension.maskbook.wallet.ui.widget.PhoneCodeInputModal
-import com.dimension.maskbook.wallet.ui.widget.PhoneInputModal
-import com.dimension.maskbook.wallet.ui.widget.PrimaryButton
-import com.dimension.maskbook.wallet.viewmodel.settings.EmailSetupViewModel
-import com.dimension.maskbook.wallet.viewmodel.settings.PhoneSetupViewModel
-import com.dimension.maskbook.wallet.viewmodel.settings.RemoteBackupRecoveryViewModelBase
+import com.dimension.maskbook.setting.ui.scenes.AppearanceSettings
+import com.dimension.maskbook.setting.ui.scenes.ChangeBackUpPasswordModal
+import com.dimension.maskbook.setting.ui.scenes.ChangePaymentPasswordModal
+import com.dimension.maskbook.setting.ui.scenes.DataSourceSettings
+import com.dimension.maskbook.setting.ui.scenes.LanguageSettings
+import com.dimension.maskbook.setting.viewmodel.EmailSetupViewModel
+import com.dimension.maskbook.setting.viewmodel.PhoneSetupViewModel
+import com.dimension.maskbook.setting.viewmodel.RemoteBackupRecoveryViewModelBase
 import com.google.accompanist.navigation.animation.navigation
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.bottomSheet

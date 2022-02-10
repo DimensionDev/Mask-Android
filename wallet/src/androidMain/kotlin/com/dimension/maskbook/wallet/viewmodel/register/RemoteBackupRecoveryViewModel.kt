@@ -23,9 +23,9 @@ package com.dimension.maskbook.wallet.viewmodel.register
 import android.os.CountDownTimer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dimension.maskbook.common.ext.Validator
+import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.setting.export.BackupServices
-import com.dimension.maskbook.wallet.ext.Validator
-import com.dimension.maskbook.wallet.ext.asStateIn
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 

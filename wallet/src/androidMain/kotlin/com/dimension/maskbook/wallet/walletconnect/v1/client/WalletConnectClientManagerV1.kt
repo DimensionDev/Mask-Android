@@ -23,8 +23,8 @@ package com.dimension.maskbook.wallet.walletconnect.v1.client
 import android.content.Context
 import android.util.Log
 import com.dimension.maskbook.wallet.BuildConfig
+import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.ext.ether
-import com.dimension.maskbook.wallet.repository.ChainType
 import com.dimension.maskbook.wallet.walletconnect.WCError
 import com.dimension.maskbook.wallet.walletconnect.WCResponder
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager

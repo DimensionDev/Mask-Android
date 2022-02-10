@@ -22,12 +22,12 @@ package com.dimension.maskbook.setting
 
 import com.dimension.maskbook.setting.export.BackupServices
 import com.dimension.maskbook.setting.export.SettingServices
+import com.dimension.maskbook.setting.export.model.Appearance
 import com.dimension.maskbook.setting.export.model.BackupMeta
-import com.dimension.maskbook.wallet.repository.Appearance
-import com.dimension.maskbook.wallet.repository.BackupRepository
-import com.dimension.maskbook.wallet.repository.ISettingsRepository
-import com.dimension.maskbook.wallet.repository.NetworkType
-import com.dimension.maskbook.wallet.repository.TradeProvider
+import com.dimension.maskbook.setting.export.model.NetworkType
+import com.dimension.maskbook.setting.export.model.TradeProvider
+import com.dimension.maskbook.setting.repository.BackupRepository
+import com.dimension.maskbook.setting.repository.ISettingsRepository
 import kotlinx.coroutines.flow.Flow
 
 class SettingServicesImpl(

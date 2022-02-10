@@ -18,7 +18,7 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.ui.scenes.settings
+package com.dimension.maskbook.setting.ui.scenes
 
 import android.content.Context
 import androidx.annotation.DrawableRes
@@ -52,22 +52,22 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.dimension.maskbook.common.ext.encodeUrl
+import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.ui.LocalRootNavController
+import com.dimension.maskbook.common.ui.widget.IosSwitch
+import com.dimension.maskbook.common.ui.widget.MaskButton
+import com.dimension.maskbook.common.ui.widget.MaskIconCardButton
+import com.dimension.maskbook.common.ui.widget.MaskListItem
+import com.dimension.maskbook.common.ui.widget.MaskScaffold
+import com.dimension.maskbook.common.ui.widget.MaskTopAppBar
+import com.dimension.maskbook.common.viewmodel.BiometricEnableViewModel
 import com.dimension.maskbook.localization.R
 import com.dimension.maskbook.persona.export.PersonaServices
-import com.dimension.maskbook.wallet.ext.encodeUrl
-import com.dimension.maskbook.wallet.ext.observeAsState
-import com.dimension.maskbook.wallet.repository.Appearance
-import com.dimension.maskbook.wallet.repository.DataProvider
-import com.dimension.maskbook.wallet.repository.ISettingsRepository
-import com.dimension.maskbook.wallet.repository.Language
-import com.dimension.maskbook.wallet.ui.widget.IosSwitch
-import com.dimension.maskbook.wallet.ui.widget.MaskButton
-import com.dimension.maskbook.wallet.ui.widget.MaskIconCardButton
-import com.dimension.maskbook.wallet.ui.widget.MaskListItem
-import com.dimension.maskbook.wallet.ui.widget.MaskScaffold
-import com.dimension.maskbook.wallet.ui.widget.MaskTopAppBar
-import com.dimension.maskbook.wallet.viewmodel.wallets.BiometricEnableViewModel
+import com.dimension.maskbook.setting.export.model.Appearance
+import com.dimension.maskbook.setting.export.model.DataProvider
+import com.dimension.maskbook.setting.export.model.Language
+import com.dimension.maskbook.setting.repository.ISettingsRepository
 import org.koin.androidx.compose.get
 import org.koin.androidx.compose.getViewModel
 

@@ -22,12 +22,12 @@ package com.dimension.maskbook.wallet.viewmodel.recovery
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dimension.maskbook.wallet.ext.asStateIn
-import com.dimension.maskbook.wallet.repository.IPersonaRepository
+import com.dimension.maskbook.common.ext.asStateIn
+import com.dimension.maskbook.persona.export.PersonaServices
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class PrivateKeyViewModel(
-    private val repository: IPersonaRepository,
+    private val personaServices: PersonaServices,
 ) : ViewModel() {
     private val _privateKey = MutableStateFlow("")
     val privateKey = _privateKey.asStateIn(viewModelScope, "")
@@ -37,6 +37,6 @@ class PrivateKeyViewModel(
     }
 
     fun onConfirm() {
-        repository.createPersonaFromPrivateKey(_privateKey.value.trim())
+        personaServices.createPersonaFromPrivateKey(_privateKey.value.trim())
     }
 }

@@ -26,6 +26,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
 import com.dimension.maskbook.wallet.db.AppDatabase
+import com.dimension.maskbook.wallet.export.model.WalletData
 import com.dimension.maskbook.wallet.paging.mediator.CollectibleMediator
 import com.dimension.maskbook.wallet.services.WalletServices
 import kotlinx.coroutines.flow.Flow

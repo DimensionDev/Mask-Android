@@ -22,8 +22,8 @@ package com.dimension.maskbook.wallet.viewmodel.base
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.wallet.BuildConfig
-import com.dimension.maskbook.wallet.ext.asStateIn
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map

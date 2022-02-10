@@ -21,8 +21,8 @@
 package com.dimension.maskbook.wallet
 
 import com.dimension.maskbook.wallet.export.WalletServices
+import com.dimension.maskbook.wallet.export.model.WalletData
 import com.dimension.maskbook.wallet.repository.IWalletRepository
-import com.dimension.maskbook.wallet.repository.WalletData
 import kotlinx.coroutines.flow.Flow
 
 class WalletServicesImpl(
@@ -30,4 +30,8 @@ class WalletServicesImpl(
 ) : WalletServices {
     override val currentWallet: Flow<WalletData?>
         get() = walletRepository.currentWallet
+
+    override fun generateNewMnemonic(): List<String> {
+        return walletRepository.generateNewMnemonic()
+    }
 }

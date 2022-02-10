@@ -22,10 +22,10 @@ package com.dimension.maskbook.wallet.viewmodel.wallets.send
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dimension.maskbook.wallet.ext.asStateIn
+import com.dimension.maskbook.common.ext.asStateIn
+import com.dimension.maskbook.wallet.export.model.TokenData
 import com.dimension.maskbook.wallet.repository.ISendHistoryRepository
 import com.dimension.maskbook.wallet.repository.IWalletRepository
-import com.dimension.maskbook.wallet.repository.TokenData
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import java.math.BigDecimal

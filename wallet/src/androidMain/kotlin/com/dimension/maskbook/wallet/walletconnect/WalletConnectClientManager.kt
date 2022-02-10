@@ -20,7 +20,7 @@
  */
 package com.dimension.maskbook.wallet.walletconnect
 
-import com.dimension.maskbook.wallet.repository.ChainType
+import com.dimension.maskbook.wallet.export.model.ChainType
 import kotlinx.coroutines.flow.Flow
 import java.math.BigDecimal
 
