@@ -18,42 +18,37 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.walletconnect
+package com.dimension.maskbook.wallet.walletconnect.v1.client
 
 import android.content.Context
 import android.util.Log
 import com.dimension.maskbook.wallet.BuildConfig
 import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.ext.ether
-import com.squareup.moshi.Moshi
+import com.dimension.maskbook.wallet.walletconnect.WCError
+import com.dimension.maskbook.wallet.walletconnect.WCResponder
+import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager
+import com.dimension.maskbook.wallet.walletconnect.v1.BaseWalletConnectManager
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import okhttp3.OkHttpClient
 import org.komputing.khex.extensions.toNoPrefixHexString
 import org.walletconnect.Session
 import org.walletconnect.impls.FileWCSessionStore
-import org.walletconnect.impls.MoshiPayloadAdapter
-import org.walletconnect.impls.OkHttpTransport
 import java.io.File
 import java.math.BigDecimal
 import java.util.Random
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
-class WalletConnectClientManagerV1(private val context: Context) : WalletConnectClientManager {
+class WalletConnectClientManagerV1(private val context: Context) : BaseWalletConnectManager(), WalletConnectClientManager {
     private var config: Session.Config? = null
     private var session: Session? = null
     private val bridgeServer = "https://safe-walletconnect.gnosis.io"
     private var onDisconnect: (address: String) -> Unit = {}
     private val connectedSessions = ConcurrentHashMap<String, Session>()
-    private val moshi by lazy {
-        Moshi.Builder().build()
-    }
-    private val client by lazy {
-        OkHttpClient.Builder().build()
-    }
+    private val onResponseStore = ConcurrentHashMap<Long, (response: Any, error: Throwable?) -> Unit>()
 
-    private val storage by lazy {
+    override val storage by lazy {
         FileWCSessionStore(
             File(context.cacheDir, "v1_session_store.json").apply {
                 if (!this.exists()) createNewFile()
@@ -138,12 +133,15 @@ class WalletConnectClientManagerV1(private val context: Context) : WalletConnect
         toAddress: String,
         data: String,
         gasLimit: Double,
-        gasPrice: BigDecimal
+        gasPrice: BigDecimal,
+        onResponse: (response: Any, error: Throwable?) -> Unit
     ) {
         connectedSessions[fromAddress]?.let {
+            val id = System.currentTimeMillis()
+            onResponseStore[id] = onResponse
             it.performMethodCall(
                 Session.MethodCall.SendTransaction(
-                    id = System.currentTimeMillis(),
+                    id = id,
                     from = fromAddress,
                     to = toAddress,
                     nonce = "",
@@ -168,6 +166,11 @@ class WalletConnectClientManagerV1(private val context: Context) : WalletConnect
                         // remove from connected sessions
                         connectedSessions.remove(address)
                         this@WalletConnectClientManagerV1.onDisconnect.invoke(address)
+                    }, onResponse = { id, response, error ->
+                        onResponseStore.remove(id)?.invoke(
+                            response,
+                            error
+                        )
                     })
                 )
                 update(
@@ -177,18 +180,6 @@ class WalletConnectClientManagerV1(private val context: Context) : WalletConnect
             }
         }
     }
-
-    private fun Session.FullyQualifiedConfig.session() = WCSessionV1(
-        config = this,
-        payloadAdapter = MoshiPayloadAdapter(moshi),
-        sessionStore = storage,
-        transportBuilder = OkHttpTransport.Builder(client = client, moshi = moshi),
-        clientMeta = Session.PeerMeta(
-            name = "Mask Network",
-            url = "https://mask.io",
-            description = "Mask Network"
-        )
-    )
 }
 
 private fun Session.responder(chainId: Long?) = peerMeta()?.let {
@@ -261,9 +252,17 @@ private class ConnectedSessionCallback(
     private val session: Session,
     private val address: String,
     private val onDisconnect: (address: String, session: Session) -> Unit,
+    private val onResponse: (id: Long, response: Any, error: Throwable?) -> Unit
 ) : Session.Callback {
     override fun onMethodCall(call: Session.MethodCall) {
-        // do nothing
+        when (call) {
+            is Session.MethodCall.Response -> {
+                call.error?.let {
+                    onResponse.invoke(call.id, "failed", WCError(errorCode = it.code.toString(), message = it.message))
+                } ?: onResponse.invoke(call.id, call.result ?: "", null)
+            }
+            else -> {}
+        }
     }
 
     override fun onStatus(status: Session.Status) {
@@ -280,6 +279,6 @@ private class ConnectedSessionCallback(
 
 private fun String.log() {
     if (BuildConfig.DEBUG) {
-        Log.d("WalletConnect", this)
+        Log.d("WalletConnectClient", this)
     }
 }

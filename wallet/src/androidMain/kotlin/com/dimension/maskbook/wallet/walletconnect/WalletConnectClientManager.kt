@@ -39,6 +39,7 @@ interface WalletConnectClientManager {
         data: String,
         gasLimit: Double,
         gasPrice: BigDecimal, // ether
+        onResponse: (response: Any, error: Throwable?) -> Unit
     )
 }
 
@@ -50,3 +51,5 @@ data class WCResponder(
     val url: String,
     val chainType: ChainType,
 )
+
+class WCError(val errorCode: String, message: String) : Throwable(message = message)

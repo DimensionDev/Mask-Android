@@ -90,7 +90,9 @@ import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendConfirmViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendTokenDataViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendTokenViewModel
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager
-import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManagerV1
+import com.dimension.maskbook.wallet.walletconnect.WalletConnectServerManager
+import com.dimension.maskbook.wallet.walletconnect.v1.client.WalletConnectClientManagerV1
+import com.dimension.maskbook.wallet.walletconnect.v1.server.WalletConnectServerManagerV1
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.bottomSheet
 import kotlinx.coroutines.CoroutineScope
@@ -201,12 +203,19 @@ private fun initWalletConnect() {
                 }
             }
         }
+    KoinPlatformTools.defaultContext().get().get<WalletConnectServerManager>()
+        .init { clientMeta, request ->
+            TODO("navigate to wallet connect request handle scene")
+        }
 }
 
 private fun Module.provideRepository() {
     single<WalletConnectClientManager> {
         // V2 SDK support only provides the Responder implementation at the Beta stage
         WalletConnectClientManagerV1(get())
+    }
+    single<WalletConnectServerManager> {
+        WalletConnectServerManagerV1(get())
     }
     single<IWalletRepository> { WalletRepository(get<Context>().walletDataStore, get(), get(), get()) }
     single<ICollectibleRepository> { CollectibleRepository(get(), get()) }
