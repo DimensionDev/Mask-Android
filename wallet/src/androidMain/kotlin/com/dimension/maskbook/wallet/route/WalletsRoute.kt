@@ -40,11 +40,11 @@ import androidx.navigation.navOptions
 import com.dimension.maskbook.common.ext.copyText
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.ext.shareText
+import com.dimension.maskbook.common.route.CommonRoute
+import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.ui.widget.MaskDialog
 import com.dimension.maskbook.common.ui.widget.PrimaryButton
 import com.dimension.maskbook.common.viewmodel.BiometricEnableViewModel
-import com.dimension.maskbook.common.route.CommonRoute
-import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.setting.export.SettingServices
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.export.model.ChainType

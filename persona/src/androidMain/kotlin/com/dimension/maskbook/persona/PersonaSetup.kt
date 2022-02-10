@@ -31,7 +31,6 @@ import androidx.navigation.compose.dialog
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import com.dimension.maskbook.common.ModuleSetup
-import com.dimension.maskbook.common.ext.encodeUrl
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
@@ -42,6 +41,7 @@ import com.dimension.maskbook.persona.repository.IContactsRepository
 import com.dimension.maskbook.persona.repository.IPersonaRepository
 import com.dimension.maskbook.persona.repository.PersonaRepository
 import com.dimension.maskbook.persona.repository.personaDataStore
+import com.dimension.maskbook.persona.route.PersonaRoute
 import com.dimension.maskbook.persona.ui.scenes.ExportPrivateKeyScene
 import com.dimension.maskbook.persona.ui.scenes.LogoutDialog
 import com.dimension.maskbook.persona.ui.scenes.PersonaMenuScene
@@ -50,7 +50,6 @@ import com.dimension.maskbook.persona.ui.scenes.SwitchPersonaModal
 import com.dimension.maskbook.persona.ui.scenes.social.ConnectSocialModal
 import com.dimension.maskbook.persona.ui.scenes.social.DisconnectSocialDialog
 import com.dimension.maskbook.persona.ui.scenes.social.SelectPlatformModal
-import com.dimension.maskbook.persona.route.PersonaRoute
 import com.dimension.maskbook.persona.ui.tab.PersonasTabScreen
 import com.dimension.maskbook.persona.viewmodel.ExportPrivateKeyViewModel
 import com.dimension.maskbook.persona.viewmodel.PersonaViewModel

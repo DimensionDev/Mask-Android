@@ -23,7 +23,6 @@ package com.dimension.maskbook.persona.ui.tab
 import android.net.Uri
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
-import com.dimension.maskbook.common.ext.encodeUrl
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.ui.LocalRootNavController
@@ -31,8 +30,8 @@ import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.export.model.Network
 import com.dimension.maskbook.persona.export.model.PlatformType
-import com.dimension.maskbook.persona.ui.scenes.PersonaScene
 import com.dimension.maskbook.persona.route.PersonaRoute
+import com.dimension.maskbook.persona.ui.scenes.PersonaScene
 
 class PersonasTabScreen : TabScreen {
     override val route = CommonRoute.Main.Tabs.Persona

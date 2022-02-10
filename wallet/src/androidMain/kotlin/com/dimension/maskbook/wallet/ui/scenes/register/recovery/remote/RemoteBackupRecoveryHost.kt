@@ -52,6 +52,7 @@ import com.dimension.maskbook.common.ui.widget.MaskModal
 import com.dimension.maskbook.common.ui.widget.PrimaryButton
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.wallet.R
+import com.dimension.maskbook.wallet.route.WalletRoute
 import com.dimension.maskbook.wallet.viewmodel.register.EmailRemoteBackupRecoveryViewModel
 import com.dimension.maskbook.wallet.viewmodel.register.PhoneRemoteBackupRecoveryViewModel
 import com.dimension.maskbook.wallet.viewmodel.register.RemoteBackupRecoveryViewModelBase
@@ -59,7 +60,6 @@ import com.google.accompanist.navigation.material.ExperimentalMaterialNavigation
 import com.google.accompanist.navigation.material.bottomSheet
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
-import com.dimension.maskbook.wallet.route.WalletRoute
 
 @OptIn(ExperimentalMaterialNavigationApi::class)
 fun NavGraphBuilder.remoteBackupRecovery(

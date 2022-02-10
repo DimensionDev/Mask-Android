@@ -43,10 +43,8 @@ import com.dimension.maskbook.labs.LabsSetup
 import com.dimension.maskbook.persona.PersonaSetup
 import com.dimension.maskbook.setting.SettingSetup
 import com.dimension.maskbook.wallet.WalletSetup
-import com.dimension.maskbook.wallet.route.mainRoute
 import com.dimension.maskbook.wallet.route.WalletRoute
-import com.dimension.maskbook.wallet.route.registerRoute
-import com.dimension.maskbook.wallet.route.walletsRoute
+import com.dimension.maskbook.wallet.route.mainRoute
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi

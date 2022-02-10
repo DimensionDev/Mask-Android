@@ -35,10 +35,8 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.dialog
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
-import com.dimension.maskbook.setting.route.SettingRoute
-import com.dimension.maskbook.common.route.Deeplinks
-import com.dimension.maskbook.common.ext.encodeUrl
 import com.dimension.maskbook.common.ext.observeAsState
+import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.ui.widget.EmailCodeInputModal
 import com.dimension.maskbook.common.ui.widget.EmailInputModal
 import com.dimension.maskbook.common.ui.widget.MaskDialog
@@ -54,7 +52,6 @@ import com.dimension.maskbook.setting.ui.scenes.LanguageSettings
 import com.dimension.maskbook.setting.viewmodel.EmailSetupViewModel
 import com.dimension.maskbook.setting.viewmodel.PhoneSetupViewModel
 import com.dimension.maskbook.setting.viewmodel.RemoteBackupRecoveryViewModelBase
-import com.google.accompanist.navigation.animation.navigation
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.bottomSheet
 import org.koin.androidx.compose.getViewModel
