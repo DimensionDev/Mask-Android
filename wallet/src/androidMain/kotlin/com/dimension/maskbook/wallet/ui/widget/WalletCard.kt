@@ -238,16 +238,18 @@ private fun WalletDisplayAmount(
     chainType: ChainType?,
     onDisplayChainTypeClick: (ChainType?) -> Unit,
 ) {
-    LazyRow(
+    Row(
         modifier = Modifier
             .background(
                 brush = WalletCardDefaults.displayAmountTypeBackground,
             )
+            .padding(
+                horizontal = WalletCardDefaults.contentPadding,
+            )
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(WalletCardDefaults.contentPadding),
-        contentPadding = PaddingValues(horizontal = WalletCardDefaults.contentPadding),
     ) {
-        items(amountTypeList) { item ->
+        amountTypeList.forEach { item ->
             val isSelected = if (chainType == null) {
                 DisplayAmountType.All === item
             } else {
