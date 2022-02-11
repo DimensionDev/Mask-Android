@@ -32,16 +32,13 @@ import com.dimension.maskbook.labs.repository.AppRepository
 import com.dimension.maskbook.labs.repository.IAppRepository
 import com.dimension.maskbook.labs.route.LabsRoute
 import com.dimension.maskbook.labs.ui.scenes.LabsTransakScene
-import com.dimension.maskbook.labs.ui.scenes.MarketTrendSettingsModal
 import com.dimension.maskbook.labs.ui.scenes.PluginSettingsScene
 import com.dimension.maskbook.labs.ui.tab.LabsTabScreen
 import com.dimension.maskbook.labs.viewmodel.LabsViewModel
-import com.dimension.maskbook.labs.viewmodel.MarketTrendSettingsViewModel
 import com.dimension.maskbook.labs.viewmodel.PluginSettingsViewModel
 import com.dimension.maskbook.wallet.export.WalletServices
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
-import com.google.accompanist.navigation.material.bottomSheet
 import org.koin.androidx.compose.get
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.bind
@@ -77,9 +74,6 @@ object LabsSetup : ModuleSetup {
                 )
             )
         }
-        bottomSheet(LabsRoute.MarketTrendSettings) {
-            MarketTrendSettingsModal()
-        }
     }
 
     override fun dependencyInject() = module {
@@ -89,7 +83,6 @@ object LabsSetup : ModuleSetup {
 
         viewModel { LabsViewModel(get(), get()) }
         viewModel { PluginSettingsViewModel(get(), get()) }
-        viewModel { MarketTrendSettingsViewModel(get()) }
     }
 
     override fun onExtensionReady() {

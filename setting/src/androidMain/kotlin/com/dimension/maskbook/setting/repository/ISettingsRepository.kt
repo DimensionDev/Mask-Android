@@ -24,8 +24,6 @@ import com.dimension.maskbook.setting.export.model.Appearance
 import com.dimension.maskbook.setting.export.model.BackupMeta
 import com.dimension.maskbook.setting.export.model.DataProvider
 import com.dimension.maskbook.setting.export.model.Language
-import com.dimension.maskbook.setting.export.model.NetworkType
-import com.dimension.maskbook.setting.export.model.TradeProvider
 import kotlinx.coroutines.flow.Flow
 
 interface ISettingsRepository {
@@ -35,10 +33,8 @@ interface ISettingsRepository {
     val dataProvider: Flow<DataProvider>
     val paymentPassword: Flow<String>
     val backupPassword: Flow<String>
-    val tradeProvider: Flow<Map<NetworkType, TradeProvider>>
     val shouldShowLegalScene: Flow<Boolean>
     fun setBiometricEnabled(value: Boolean)
-    fun setTradeProvider(networkType: NetworkType, tradeProvider: TradeProvider)
     fun setLanguage(language: Language)
     fun setAppearance(appearance: Appearance)
     fun setDataProvider(dataProvider: DataProvider)

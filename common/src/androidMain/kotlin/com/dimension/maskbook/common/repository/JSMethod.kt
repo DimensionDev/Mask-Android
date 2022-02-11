@@ -30,8 +30,6 @@ import com.dimension.maskbook.setting.export.model.Appearance
 import com.dimension.maskbook.setting.export.model.BackupPreview
 import com.dimension.maskbook.setting.export.model.DataProvider
 import com.dimension.maskbook.setting.export.model.Language
-import com.dimension.maskbook.setting.export.model.NetworkType
-import com.dimension.maskbook.setting.export.model.TradeProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.SerialName
@@ -362,28 +360,6 @@ object JSMethod {
     }
 
     object Setting {
-        suspend fun getNetworkTraderProvider(networkType: NetworkType): TradeProvider {
-            return MessageChannel.execute<Int>(
-                "setting_getNetworkTraderProvider",
-                mapOf("network" to networkType.name)
-            ).let { result ->
-                TradeProvider.values().first { it.value == result }
-            }
-        }
-
-        suspend fun setNetworkTraderProvider(
-            networkType: NetworkType,
-            tradeProvider: TradeProvider
-        ) {
-            MessageChannel.executeMessage(
-                "setting_setNetworkTraderProvider",
-                mapOf(
-                    "network" to networkType.name,
-                    "provider" to tradeProvider.ordinal
-                ),
-            )
-        }
-
         suspend fun getTrendingDataSource(): DataProvider {
             return MessageChannel.execute<Int>("settings_getTrendingDataSource").let { result ->
                 DataProvider.values().first { it.value == result }
