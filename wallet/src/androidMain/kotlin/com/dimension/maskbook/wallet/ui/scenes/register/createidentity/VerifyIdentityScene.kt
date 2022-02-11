@@ -114,7 +114,7 @@ fun VerifyIdentityScene(
                 LaunchedEffect(selectedWords.size) {
                     snapshotFlow { selectedWords.size }
                         .collect {
-                            pagerState.animateScrollToPage(max(0, it - 1))
+                            pagerState.animateScrollToPage(max(0, it))
                         }
                 }
                 Column(
