@@ -28,7 +28,7 @@ import com.dimension.maskbook.common.routeProcessor.annotations.Route
 expect object Deeplinks {
     object Main {
         object Home {
-            operator fun invoke(initialRoute: String?): String
+            operator fun invoke(initialRoute: String): String
         }
     }
     object Setting {

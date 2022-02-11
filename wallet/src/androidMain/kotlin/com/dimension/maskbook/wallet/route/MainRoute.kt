@@ -44,11 +44,11 @@ fun NavGraphBuilder.mainRoute(
             }
         ),
         arguments = listOf(
-            navArgument("tab") { type = NavType.StringType; nullable = true }
+            navArgument("initialRoute") { type = NavType.StringType; nullable = true }
         )
     ) {
         MainHost(
-            initialTab = it.arguments?.getString("tab").orEmpty(),
+            initialTab = it.arguments?.getString("initialRoute").orEmpty(),
             onBack = onBack,
         )
     }

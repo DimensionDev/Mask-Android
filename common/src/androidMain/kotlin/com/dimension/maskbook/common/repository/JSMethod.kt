@@ -21,6 +21,8 @@
 package com.dimension.maskbook.common.repository
 
 import com.dimension.maskbook.common.ext.decodeJson
+import com.dimension.maskbook.common.route.CommonRoute
+import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.util.MessageChannel
 import com.dimension.maskbook.persona.export.model.Network
 import com.dimension.maskbook.persona.export.model.Profile
@@ -70,25 +72,25 @@ object JSMethod {
     object Misc {
         fun openCreateWalletView(): Flow<String> {
             return MessageChannel.subscribeMessage("misc_openCreateWalletView").map {
-                if (!it?.params.isNullOrEmpty()) "maskwallet://Home/Personas" else ""
+                if (!it?.params.isNullOrEmpty()) Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona) else ""
             }
         }
 
         fun openDashboardView(): Flow<String> {
             return MessageChannel.subscribeMessage("misc_openDashboardView").map {
-                if (!it?.params.isNullOrEmpty()) "maskwallet://Home/Wallets" else ""
+                if (!it?.params.isNullOrEmpty()) Deeplinks.Main.Home(CommonRoute.Main.Tabs.Wallet) else ""
             }
         }
 
         fun openAppsView(): Flow<String> {
             return MessageChannel.subscribeMessage("misc_openAppsView").map {
-                if (!it?.params.isNullOrEmpty()) "maskwallet://Home/Labs" else ""
+                if (!it?.params.isNullOrEmpty()) Deeplinks.Main.Home(CommonRoute.Main.Tabs.Labs) else ""
             }
         }
 
         fun openSettingsView(): Flow<String> {
             return MessageChannel.subscribeMessage("misc_openSettingsView").map {
-                if (!it?.params.isNullOrEmpty()) "maskwallet://Home/Settings" else ""
+                if (!it?.params.isNullOrEmpty()) Deeplinks.Main.Home(CommonRoute.Main.Tabs.Setting) else ""
             }
         }
     }

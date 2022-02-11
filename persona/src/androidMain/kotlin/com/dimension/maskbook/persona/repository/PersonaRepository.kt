@@ -29,6 +29,8 @@ import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.MutableLiveData
 import com.dimension.maskbook.common.platform.IPlatformSwitcher
 import com.dimension.maskbook.common.repository.JSMethod
+import com.dimension.maskbook.common.route.CommonRoute
+import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.persona.export.model.Network
 import com.dimension.maskbook.persona.export.model.Persona
 import com.dimension.maskbook.persona.export.model.PersonaData
@@ -136,19 +138,7 @@ class PersonaRepository(
                 }
                 refreshSocial()
                 refreshPersona()
-                platformSwitcher.launchDeeplink("maskwallet://Home/Personas")
-//            platformSwitcher.launchDeeplink("maskwallet://ConnectSocial/${personaId.encodeUrl()}/${platformType}")
-//            while (true) {
-//                delay(Duration.Companion.seconds(5))
-//                val profile = JSMethod.Persona.getCurrentDetectedProfile()
-//                if (profile != null) {
-//                    platformSwitcher.showTooltips(false)
-//                    refreshPersona()
-//                    setCurrentPersona(profile)
-//                    context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("maskwallet://ConnectSocial/${personaId.encodeUrl()}/${platformType}")))
-//                    break
-//                }
-//            }
+                platformSwitcher.launchDeeplink(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona))
             }
         }
     }

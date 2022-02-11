@@ -29,7 +29,6 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.dialog
 import androidx.navigation.navArgument
-import androidx.navigation.navDeepLink
 import com.dimension.maskbook.common.ModuleSetup
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.route.CommonRoute
@@ -176,11 +175,6 @@ object PersonaSetup : ModuleSetup {
                 navArgument("personaId") { type = NavType.StringType },
                 navArgument("platform") { type = NavType.StringType },
             ),
-            deepLinks = listOf(
-                navDeepLink {
-                    uriPattern = "maskwallet://ConnectSocial/{personaId}/{platform}"
-                }
-            )
         ) {
             val personaId = it.arguments?.getString("personaId")
             val platform = it.arguments?.getString("platform")

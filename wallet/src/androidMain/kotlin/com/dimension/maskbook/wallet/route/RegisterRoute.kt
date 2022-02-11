@@ -71,7 +71,7 @@ fun NavGraphBuilder.registerRoute(
                 .collect {
                     if (it != null) {
                         navController.navigate(
-                            Uri.parse(Deeplinks.Main.Home(null)),
+                            Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona)),
                             navOptions {
                                 popUpTo(WalletRoute.Register.Init) {
                                     inclusive = true
@@ -260,7 +260,7 @@ fun NavGraphBuilder.registerRoute(
             },
             onConfirm = {
                 navController.navigate(
-                    Uri.parse(Deeplinks.Main.Home(null)),
+                    Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona)),
                     navOptions {
                         popUpTo(WalletRoute.Register.Init) {
                             inclusive = true
