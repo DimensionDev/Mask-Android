@@ -66,7 +66,7 @@ kotlin {
 
                 api("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.Kotlin.serialization}")
 
-                implementation("androidx.biometric:biometric-ktx:${Versions.biometric}")
+                implementation("androidx.biometric:biometric-ktx:${Versions.Androidx.biometric}")
             }
         }
         val androidTest by getting {

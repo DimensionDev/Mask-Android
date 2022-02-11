@@ -48,29 +48,30 @@ android {
 }
 
 dependencies {
-    implementation("androidx.activity:activity-compose:1.4.0")
-    implementation("androidx.annotation:annotation:1.3.0")
-    implementation("androidx.appcompat:appcompat:1.4.0")
-    implementation("androidx.core:core-ktx:1.7.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.1.2")
-    implementation("com.google.android.material:material:1.4.0")
-    implementation("com.github.romandanylyk:PageIndicatorView:v.1.0.3")
-    implementation("androidx.preference:preference-ktx:1.1.1")
-    implementation("com.google.code.gson:gson:2.8.6")
+    implementation("androidx.activity:activity-compose:${Versions.Androidx.activityCompose}")
+    implementation("androidx.annotation:annotation:${Versions.Androidx.annotation}")
+    implementation("androidx.appcompat:appcompat:${Versions.Androidx.appcompat}")
+    implementation("androidx.core:core-ktx:${Versions.Androidx.core}")
+    implementation("androidx.constraintlayout:constraintlayout:${Versions.Androidx.constraintlayout}")
+    implementation("androidx.preference:preference-ktx:${Versions.Androidx.preference}")
+    implementation("androidx.biometric:biometric-ktx:${Versions.Androidx.biometric}")
+    implementation("com.google.android.material:material:${Versions.material}")
     implementation(projects.wallet)
     implementation(projects.persona)
     implementation(projects.labs)
     implementation(projects.setting)
-    implementation("io.github.dimensiondev:maskwalletcore:0.4.0")
-    implementation("androidx.biometric:biometric-ktx:1.2.0-alpha04")
-    implementation("org.web3j:core:4.8.8-android")
-    implementation("androidx.paging:paging-runtime-ktx:3.1.0")
+    implementation("io.github.dimensiondev:maskwalletcore:${Versions.maskWalletCore}")
+
+    implementation("org.web3j:core:${Versions.web3j}")
+    implementation("androidx.paging:paging-runtime-ktx:${Versions.Androidx.paging}")
 
     implementation(projects.debankapi)
 
     implementation(projects.common)
     implementation(projects.common.okhttp)
 
+    implementation("com.github.romandanylyk:PageIndicatorView:v.1.0.3")
+    implementation("com.google.code.gson:gson:2.8.6")
     implementation("org.mozilla.geckoview:geckoview:95.+")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test:runner:1.4.0")
