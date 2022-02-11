@@ -20,6 +20,7 @@
  */
 package com.dimension.maskbook.persona.ui.scenes
 
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -45,13 +46,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.dimension.maskbook.common.ext.encodeUrl
+import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.ui.widget.MaskBackButton
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.export.model.PersonaData
+import com.dimension.maskbook.persona.route.PersonaRoute
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -87,7 +89,7 @@ fun PersonaMenuScene(
                     modifier = Modifier.fillMaxWidth(),
                     elevation = 0.dp,
                     onClick = {
-                        navController.navigate("SwitchPersona")
+                        navController.navigate(PersonaRoute.SwitchPersona)
                     }
                 ) {
                     Row(
@@ -107,7 +109,7 @@ fun PersonaMenuScene(
                     modifier = Modifier.fillMaxWidth(),
                     elevation = 0.dp,
                     onClick = {
-                        navController.navigate("RenamePersona/${personaData.id.encodeUrl()}")
+                        navController.navigate(PersonaRoute.RenamePersona(personaData.id))
                     }
                 ) {
                     Row(
@@ -129,9 +131,9 @@ fun PersonaMenuScene(
                     onClick = {
                         // first check if it has backup password
                         if (backupPassword.isEmpty()) {
-                            navController.navigate("SetupPasswordDialog")
+                            navController.navigate(Uri.parse(Deeplinks.Setting.SetupPasswordDialog))
                         } else {
-                            navController.navigate("BackUpPassword/ExportPrivateKey")
+                            navController.navigate(Uri.parse(Deeplinks.Wallet.BackUpPassword(PersonaRoute.ExportPrivateKey)))
                         }
                     }
                 ) {
@@ -153,7 +155,7 @@ fun PersonaMenuScene(
                     elevation = 0.dp,
                     onClick = {
                         navController.navigate(
-                            if (backupPassword.isEmpty() || paymentPassword.isEmpty()) "SetupPasswordDialog" else "BackupData"
+                            Uri.parse(if (backupPassword.isEmpty() || paymentPassword.isEmpty()) Deeplinks.Setting.SetupPasswordDialog else Deeplinks.Setting.BackupData.BackupSelection)
                         )
                     }
                 ) {
@@ -174,7 +176,7 @@ fun PersonaMenuScene(
                     modifier = Modifier.fillMaxWidth(),
                     elevation = 0.dp,
                     onClick = {
-                        navController.navigate("Logout")
+                        navController.navigate(PersonaRoute.Logout)
                     }
                 ) {
                     Row(

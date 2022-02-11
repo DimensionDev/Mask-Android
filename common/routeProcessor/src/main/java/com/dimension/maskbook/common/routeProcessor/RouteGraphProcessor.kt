@@ -20,6 +20,11 @@
  */
 package com.dimension.maskbook.common.routeProcessor
 
+import com.dimension.maskbook.common.routeProcessor.annotations.Back
+import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
+import com.dimension.maskbook.common.routeProcessor.annotations.Navigate
+import com.dimension.maskbook.common.routeProcessor.annotations.Path
+import com.dimension.maskbook.common.routeProcessor.annotations.Query
 import com.google.devtools.ksp.KspExperimental
 import com.google.devtools.ksp.getAnnotationsByType
 import com.google.devtools.ksp.getDeclaredFunctions
@@ -50,12 +55,12 @@ internal class RouteGraphProcessor(
     override fun process(resolver: Resolver): List<KSAnnotated> {
         val symbols = resolver
             .getSymbolsWithAnnotation(
-                RouteGraphDestination::class.qualifiedName
+                NavGraphDestination::class.qualifiedName
                     ?: throw CloneNotSupportedException("Can not get qualifiedName for RouteGraphDestination")
             ).filterIsInstance<KSFunctionDeclaration>().toList()
         val ret = symbols.filter {
             try {
-                it.getAnnotationsByType(RouteGraphDestination::class).first().route
+                it.getAnnotationsByType(NavGraphDestination::class).first().route
                 false
             } catch (e: Throwable) {
                 true
@@ -63,11 +68,15 @@ internal class RouteGraphProcessor(
         }
 
         val actualSymbols = symbols - ret.toSet()
-        generateRoute(actualSymbols)
+        actualSymbols.groupBy {
+            it.getAnnotationsByType(NavGraphDestination::class).first().generatedFunctionName
+        }.forEach { (name, items) ->
+            generateRoute(items, name)
+        }
         return ret
     }
 
-    private fun generateRoute(data: List<KSFunctionDeclaration>) {
+    private fun generateRoute(data: List<KSFunctionDeclaration>, generatedFunctionName: String) {
         if (data.isEmpty()) {
             return
         }
@@ -82,7 +91,7 @@ internal class RouteGraphProcessor(
             .addImport("androidx.navigation", "navArgument")
             .also { fileBuilder ->
                 fileBuilder.addFunction(
-                    FunSpec.builder("generatedRoute")
+                    FunSpec.builder(generatedFunctionName)
                         .receiver(ClassName("androidx.navigation", "NavGraphBuilder"))
                         .addParameter(
                             navControllerName,
@@ -95,7 +104,7 @@ internal class RouteGraphProcessor(
                                 }
                                 val annotation =
                                     ksFunctionDeclaration.getAnnotationsByType(
-                                        RouteGraphDestination::class
+                                        NavGraphDestination::class
                                     )
                                         .first()
                                 fileBuilder.addImport(

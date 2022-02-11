@@ -24,13 +24,13 @@ import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.Validator
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.setting.repository.BackupRepository
-import com.dimension.maskbook.setting.repository.SettingsRepository
+import com.dimension.maskbook.setting.repository.ISettingsRepository
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 class EmailSetupViewModel(
-    private val settingsRepository: SettingsRepository,
+    private val settingsRepository: ISettingsRepository,
     private val backupRepository: BackupRepository,
     private val requestNavigate: (NavigateArgs) -> Unit,
 ) : RemoteBackupRecoveryViewModelBase(
@@ -66,7 +66,7 @@ class EmailSetupViewModel(
 }
 
 class PhoneSetupViewModel(
-    private val settingsRepository: SettingsRepository,
+    private val settingsRepository: ISettingsRepository,
     private val requestNavigate: (NavigateArgs) -> Unit,
     private val backupRepository: BackupRepository,
 ) : RemoteBackupRecoveryViewModelBase(

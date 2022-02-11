@@ -20,18 +20,21 @@
  */
 package com.dimension.maskbook.persona.ui.tab
 
+import android.net.Uri
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
-import com.dimension.maskbook.common.ext.encodeUrl
+import com.dimension.maskbook.common.route.CommonRoute
+import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.ui.LocalRootNavController
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.export.model.Network
 import com.dimension.maskbook.persona.export.model.PlatformType
+import com.dimension.maskbook.persona.route.PersonaRoute
 import com.dimension.maskbook.persona.ui.scenes.PersonaScene
 
 class PersonasTabScreen : TabScreen {
-    override val route = "Personas"
+    override val route = CommonRoute.Main.Tabs.Persona
     override val title: Int = R.string.tab_personas
     override val icon: Int = R.drawable.ic_persona
 
@@ -42,13 +45,13 @@ class PersonasTabScreen : TabScreen {
         PersonaScene(
             onBack = onBack,
             onPersonaCreateClick = {
-                rootNavController.navigate("WelcomeCreatePersona")
+                rootNavController.navigate(Uri.parse(Deeplinks.Wallet.Register.WelcomeCreatePersona))
             },
             onPersonaRecoveryClick = {
-                rootNavController.navigate("Recovery")
+                rootNavController.navigate(Uri.parse(Deeplinks.Wallet.Recovery))
             },
             onPersonaNameClick = {
-                rootNavController.navigate("PersonaMenu")
+                rootNavController.navigate(PersonaRoute.PersonaMenu)
             },
             onAddSocialClick = { persona, network ->
                 val platform = when (network) {
@@ -57,9 +60,9 @@ class PersonasTabScreen : TabScreen {
                     else -> null // TODO support other network
                 }
                 if (platform == null) {
-                    rootNavController.navigate("SelectPlatform/${persona.id.encodeUrl()}")
+                    rootNavController.navigate(PersonaRoute.SelectPlatform(persona.id))
                 } else {
-                    rootNavController.navigate("ConnectSocial/${persona.id.encodeUrl()}/$platform")
+                    rootNavController.navigate(PersonaRoute.ConnectSocial(persona.id, platform.name))
                 }
             },
             onRemoveSocialClick = { persona, social ->
@@ -70,8 +73,13 @@ class PersonasTabScreen : TabScreen {
                 }
                 if (platform != null) {
                     rootNavController.navigate(
-                        "DisconnectSocial/${persona.id.encodeUrl()}/$platform/${social.id.encodeUrl()}" +
-                            "?personaName=${persona.name.encodeUrl()}&socialName=${social.name.encodeUrl()}"
+                        PersonaRoute.DisconnectSocial(
+                            personaId = persona.id,
+                            platform = platform.name,
+                            socialId = social.id,
+                            personaName = persona.name,
+                            socialName = social.name,
+                        )
                     )
                 }
             },

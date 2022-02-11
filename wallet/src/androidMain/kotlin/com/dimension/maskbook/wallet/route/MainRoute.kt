@@ -21,40 +21,35 @@
 package com.dimension.maskbook.wallet.route
 
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
+import com.dimension.maskbook.common.route.CommonRoute
+import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.wallet.ui.scenes.MainHost
 import com.google.accompanist.navigation.animation.composable
-import com.google.accompanist.navigation.animation.navigation
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 
 @ExperimentalAnimationApi
 @ExperimentalMaterialNavigationApi
 fun NavGraphBuilder.mainRoute(
-    navController: NavController,
     onBack: () -> Unit,
-    builder: NavGraphBuilder.() -> Unit,
 ) {
-    navigation(route = "Main", startDestination = "Home") {
-        composable(
-            "Home",
-            deepLinks = listOf(
-                navDeepLink {
-                    uriPattern = "maskwallet://Home/{tab}"
-                }
-            ),
-            arguments = listOf(
-                navArgument("tab") { type = NavType.StringType }
-            )
-        ) {
-            MainHost(
-                initialTab = it.arguments?.getString("tab").orEmpty(),
-                onBack = onBack,
-            )
-        }
-        builder()
+    composable(
+        CommonRoute.Main.Home,
+        deepLinks = listOf(
+            navDeepLink {
+                uriPattern = Deeplinks.Main.Home.path
+            }
+        ),
+        arguments = listOf(
+            navArgument("initialRoute") { type = NavType.StringType; nullable = true }
+        )
+    ) {
+        MainHost(
+            initialTab = it.arguments?.getString("initialRoute").orEmpty(),
+            onBack = onBack,
+        )
     }
 }

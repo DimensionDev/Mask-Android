@@ -18,23 +18,23 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.common.routeProcessor
+package com.dimension.maskbook.common.routeProcessor.annotations
 
 @Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.CLASS)
 annotation class Route(
     val schema: String = "",
     val packageName: String = "",
-    val className: String = "",
 )
 
 @Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.FUNCTION)
-annotation class RouteGraphDestination(
+annotation class NavGraphDestination(
     val route: String,
     val deeplink: Array<String> = [],
     val packageName: String = "androidx.navigation.compose",
-    val functionName: String = "composable"
+    val functionName: String = "composable",
+    val generatedFunctionName: String = "generatedRoute",
 )
 
 @Retention(AnnotationRetention.SOURCE)

@@ -55,6 +55,7 @@ import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
 import com.dimension.maskbook.common.ui.widget.PrimaryButton
 import com.dimension.maskbook.wallet.R
+import com.dimension.maskbook.wallet.route.WalletRoute
 
 @Composable
 fun CreateOrImportWalletScene(
@@ -106,7 +107,7 @@ fun CreateOrImportWalletScene(
                         trailing = {
                             MaskIconButton(
                                 onClick = {
-                                    rootNavController.navigate("MultiChainWalletDialog")
+                                    rootNavController.navigate(WalletRoute.MultiChainWalletDialog)
                                 }
                             ) {
                                 Image(
@@ -137,8 +138,8 @@ fun CreateOrImportWalletScene(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
                         when (type) {
-                            CreateType.CREATE -> rootNavController.navigate("CreateWallet/$input")
-                            CreateType.IMPORT -> rootNavController.navigate("ImportWallet/$input")
+                            CreateType.CREATE -> rootNavController.navigate(WalletRoute.CreateWallet(input))
+                            CreateType.IMPORT -> rootNavController.navigate(WalletRoute.ImportWallet(input))
                         }
                     },
                     enabled = input.isNotEmpty()

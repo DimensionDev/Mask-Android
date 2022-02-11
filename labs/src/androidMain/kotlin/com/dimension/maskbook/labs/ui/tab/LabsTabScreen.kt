@@ -21,14 +21,16 @@
 package com.dimension.maskbook.labs.ui.tab
 
 import androidx.compose.runtime.Composable
+import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.ui.LocalRootNavController
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.labs.R
 import com.dimension.maskbook.labs.export.model.AppKey
+import com.dimension.maskbook.labs.route.LabsRoute
 import com.dimension.maskbook.labs.ui.scenes.LabsScene
 
 class LabsTabScreen : TabScreen {
-    override val route = "Labs"
+    override val route = CommonRoute.Main.Tabs.Labs
     override val title: Int = R.string.tab_labs
     override val icon: Int = R.drawable.ic_labs
 
@@ -37,15 +39,15 @@ class LabsTabScreen : TabScreen {
         val rootNavController = LocalRootNavController.current
         LabsScene(
             onSettingClick = {
-                rootNavController.navigate("PluginSettings")
+                rootNavController.navigate(LabsRoute.PluginSettings)
             },
             onItemClick = { appKey ->
                 when (appKey) {
                     AppKey.Swap -> {
-                        rootNavController.navigate("MarketTrendSettings")
+                        rootNavController.navigate(LabsRoute.MarketTrendSettings)
                     }
                     AppKey.Transak -> {
-                        rootNavController.navigate("LabsTransak")
+                        rootNavController.navigate(LabsRoute.LabsTransak)
                     }
                     else -> Unit
                 }

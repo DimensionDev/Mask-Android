@@ -42,3 +42,7 @@ fun com.android.build.gradle.LibraryExtension.withCompose() {
         kotlinCompilerExtensionVersion = Versions.compose
     }
 }
+
+fun org.gradle.api.Project.kspAndroid(dependencyNotation: Any) {
+    project.dependencies.add("kspAndroid", dependencyNotation)
+}

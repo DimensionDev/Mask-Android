@@ -21,6 +21,7 @@
 package com.dimension.maskbook.persona
 
 import android.content.Context
+import android.net.Uri
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.getValue
 import androidx.navigation.NavController
@@ -28,10 +29,10 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.dialog
 import androidx.navigation.navArgument
-import androidx.navigation.navDeepLink
 import com.dimension.maskbook.common.ModuleSetup
-import com.dimension.maskbook.common.ext.encodeUrl
 import com.dimension.maskbook.common.ext.observeAsState
+import com.dimension.maskbook.common.route.CommonRoute
+import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.persona.export.model.PlatformType
@@ -39,6 +40,7 @@ import com.dimension.maskbook.persona.repository.IContactsRepository
 import com.dimension.maskbook.persona.repository.IPersonaRepository
 import com.dimension.maskbook.persona.repository.PersonaRepository
 import com.dimension.maskbook.persona.repository.personaDataStore
+import com.dimension.maskbook.persona.route.PersonaRoute
 import com.dimension.maskbook.persona.ui.scenes.ExportPrivateKeyScene
 import com.dimension.maskbook.persona.ui.scenes.LogoutDialog
 import com.dimension.maskbook.persona.ui.scenes.PersonaMenuScene
@@ -79,7 +81,7 @@ object PersonaSetup : ModuleSetup {
         ExperimentalAnimationApi::class
     )
     override fun NavGraphBuilder.route(navController: NavController, onBack: () -> Unit) {
-        dialog("Logout") {
+        dialog(PersonaRoute.Logout) {
             val repository = get<IPersonaRepository>()
             LogoutDialog(
                 onBack = {
@@ -87,11 +89,11 @@ object PersonaSetup : ModuleSetup {
                 },
                 onDone = {
                     repository.logout()
-                    navController.popBackStack("Home", inclusive = false)
+                    navController.popBackStack(CommonRoute.Main.Home, inclusive = false)
                 }
             )
         }
-        composable("PersonaMenu") {
+        composable(PersonaRoute.PersonaMenu) {
             val persona by get<IPersonaRepository>().currentPersona.observeAsState(initial = null)
             val repository = get<SettingServices>()
             val backupPassword by repository.backupPassword.observeAsState(initial = "")
@@ -108,7 +110,7 @@ object PersonaSetup : ModuleSetup {
                 )
             }
         }
-        bottomSheet("SwitchPersona") {
+        bottomSheet(PersonaRoute.SwitchPersona) {
             val viewModel = getViewModel<SwitchPersonaViewModel>()
             val current by viewModel.current.observeAsState(initial = null)
             val items by viewModel.items.observeAsState(initial = emptyList())
@@ -116,7 +118,7 @@ object PersonaSetup : ModuleSetup {
                 currentPersonaData = current,
                 items = items,
                 onAdd = {
-                    navController.navigate("CreatePersona")
+                    navController.navigate(Uri.parse(Deeplinks.Wallet.Register.CreatePersona))
                 },
                 onItemClicked = {
                     viewModel.switch(it)
@@ -124,7 +126,7 @@ object PersonaSetup : ModuleSetup {
             )
         }
         bottomSheet(
-            "RenamePersona/{personaId}",
+            PersonaRoute.RenamePersona.path,
             arguments = listOf(
                 navArgument("personaId") { type = NavType.StringType },
             )
@@ -147,7 +149,7 @@ object PersonaSetup : ModuleSetup {
                 )
             }
         }
-        composable("ExportPrivateKey") {
+        composable(PersonaRoute.ExportPrivateKey) {
             ExportPrivateKeyScene(
                 onBack = {
                     navController.popBackStack()
@@ -155,7 +157,7 @@ object PersonaSetup : ModuleSetup {
             )
         }
         bottomSheet(
-            route = "SelectPlatform/{personaId}",
+            route = PersonaRoute.SelectPlatform.path,
             arguments = listOf(
                 navArgument("personaId") { type = NavType.StringType },
             ),
@@ -163,21 +165,16 @@ object PersonaSetup : ModuleSetup {
             val personaId = it.arguments?.getString("personaId").orEmpty()
             SelectPlatformModal(
                 onDone = { platform ->
-                    navController.navigate("ConnectSocial/${personaId.encodeUrl()}/$platform")
+                    navController.navigate(PersonaRoute.ConnectSocial(personaId, platform.name))
                 }
             )
         }
         bottomSheet(
-            route = "ConnectSocial/{personaId}/{platform}",
+            route = PersonaRoute.ConnectSocial.path,
             arguments = listOf(
                 navArgument("personaId") { type = NavType.StringType },
                 navArgument("platform") { type = NavType.StringType },
             ),
-            deepLinks = listOf(
-                navDeepLink {
-                    uriPattern = "maskwallet://ConnectSocial/{personaId}/{platform}"
-                }
-            )
         ) {
             val personaId = it.arguments?.getString("personaId")
             val platform = it.arguments?.getString("platform")
@@ -195,7 +192,7 @@ object PersonaSetup : ModuleSetup {
             }
         }
         dialog(
-            "DisconnectSocial/{personaId}/{platform}/{socialId}?personaName={personaName}&socialName={socialName}",
+            PersonaRoute.DisconnectSocial.path,
             arguments = listOf(
                 navArgument("personaId") { type = NavType.StringType },
                 navArgument("platform") { type = NavType.StringType },

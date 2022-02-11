@@ -20,7 +20,7 @@
  */
 package com.dimension.maskbook.wallet.export.model
 
-import java.math.BigDecimal
+import com.dimension.maskbook.common.bigDecimal.BigDecimal
 
 data class WalletTokenData(
     val count: BigDecimal,

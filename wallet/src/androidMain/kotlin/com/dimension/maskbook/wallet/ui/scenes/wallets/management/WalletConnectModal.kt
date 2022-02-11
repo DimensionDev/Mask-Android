@@ -86,6 +86,7 @@ import com.dimension.maskbook.common.ui.widget.itemsGridIndexed
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.repository.WCWallet
+import com.dimension.maskbook.wallet.route.WalletRoute
 import com.dimension.maskbook.wallet.viewmodel.wallets.WalletConnectViewModel
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
@@ -112,9 +113,9 @@ fun WalletConnectModal() {
         scope.launch(Dispatchers.Main) {
             if (success) {
                 if (switch) rootNavController.navigate(
-                    "WalletNetworkSwitchWarningDialog",
+                    WalletRoute.WalletNetworkSwitchWarningDialog,
                     navOptions {
-                        popUpTo("SwitchWalletAddWalletConnect") {
+                        popUpTo(WalletRoute.SwitchWalletAddWalletConnect) {
                             inclusive = true
                         }
                     }
