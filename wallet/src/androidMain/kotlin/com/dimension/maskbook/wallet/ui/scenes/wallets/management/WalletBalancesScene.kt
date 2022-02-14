@@ -245,15 +245,16 @@ fun WalletBalancesScene(
                                 }
                             }
                         }
-                        TextButton(onClick = { /*TODO*/ }) {
-                            Text(text = stringResource(R.string.scene_wallet_derivation_path_operation_add))
-                            Spacer(Modifier.width(4.dp))
-                            Icon(
-                                imageVector = Icons.Default.Add,
-                                contentDescription = null,
-                                tint = LocalTextStyle.current.color,
-                            )
-                        }
+                        // TODO haven't implement yet
+                        // TextButton(onClick = { /*TODO*/ }) {
+                        //     Text(text = stringResource(R.string.scene_wallet_derivation_path_operation_add))
+                        //     Spacer(Modifier.width(4.dp))
+                        //     Icon(
+                        //         imageVector = Icons.Default.Add,
+                        //         contentDescription = null,
+                        //         tint = LocalTextStyle.current.color,
+                        //     )
+                        // }
                     }
                 }
                 when (sceneType) {
