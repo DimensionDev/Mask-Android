@@ -46,7 +46,6 @@ import com.dimension.maskbook.persona.ui.scenes.LogoutDialog
 import com.dimension.maskbook.persona.ui.scenes.PersonaMenuScene
 import com.dimension.maskbook.persona.ui.scenes.RenamePersonaModal
 import com.dimension.maskbook.persona.ui.scenes.SwitchPersonaModal
-import com.dimension.maskbook.persona.ui.scenes.social.ConnectSocialModal
 import com.dimension.maskbook.persona.ui.scenes.social.DisconnectSocialDialog
 import com.dimension.maskbook.persona.ui.scenes.social.SelectPlatformModal
 import com.dimension.maskbook.persona.ui.tab.PersonasTabScreen
@@ -180,15 +179,11 @@ object PersonaSetup : ModuleSetup {
             val platform = it.arguments?.getString("platform")
             if (personaId != null && platform != null) {
                 val repository = get<IPersonaRepository>()
-                ConnectSocialModal(
-                    onDone = {
-                        repository.beginConnectingProcess(
-                            personaId = personaId,
-                            platformType = PlatformType.valueOf(platform),
-                        )
-                        onBack.invoke()
-                    }
+                repository.beginConnectingProcess(
+                    personaId = personaId,
+                    platformType = PlatformType.valueOf(platform),
                 )
+                onBack.invoke()
             }
         }
         dialog(
