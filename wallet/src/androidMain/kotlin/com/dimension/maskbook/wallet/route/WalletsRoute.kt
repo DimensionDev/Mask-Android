@@ -250,12 +250,15 @@ fun NavGraphBuilder.walletsRoute(
                     viewModel.setChainType(it)
                 },
                 onAddWalletClicked = {
+                    navController.popBackStack()
                     navController.navigate(WalletRoute.SwitchWalletAdd)
                 },
                 onWalletConnectClicked = {
+                    navController.popBackStack()
                     navController.navigate(WalletRoute.SwitchWalletAddWalletConnect)
                 },
                 onEditMenuClicked = {
+                    navController.popBackStack()
                     navController.navigate(WalletRoute.WalletSwitchEditModal(it.id))
                 }
             )
