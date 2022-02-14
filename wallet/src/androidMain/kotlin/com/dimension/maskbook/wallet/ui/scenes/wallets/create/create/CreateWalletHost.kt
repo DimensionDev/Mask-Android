@@ -82,7 +82,7 @@ fun CreateWalletHost(
         composable("Pharse") {
             val words by viewModel.words.observeAsState(initial = emptyList())
             MnemonicPhraseScene(
-                words = words,
+                words = words.map { it.word },
                 onRefreshWords = {
                     viewModel.refreshWords()
                 },
