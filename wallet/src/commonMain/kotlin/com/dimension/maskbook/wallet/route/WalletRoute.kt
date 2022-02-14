@@ -63,7 +63,7 @@ expect object WalletRoute {
     val WalletManagementTransactionHistory: String
 
     object WalletManagementRename {
-        operator fun invoke(id: String): String
+        operator fun invoke(id: String, name: String): String
     }
 
     object WalletIntroHostLegal {

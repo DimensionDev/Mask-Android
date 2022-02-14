@@ -271,7 +271,7 @@ private fun Module.provideViewModel() {
         )
     }
     viewModel { WalletTransactionHistoryViewModel(get(), get()) }
-    viewModel { (id: String) -> WalletRenameViewModel(id, get()) }
+    viewModel { (id: String, name: String) -> WalletRenameViewModel(id, name, get()) }
     viewModel { WalletBalancesViewModel(get(), get()) }
     viewModel { WalletManagementModalViewModel(get()) }
     viewModel { WalletBackupViewModel(get(), get()) }
