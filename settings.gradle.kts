@@ -23,6 +23,7 @@ rootProject.name = "Mask"
 include(
     ":app",
     ":common",
+    ":common:gecko",
     ":common:okhttp",
     ":common:retrofit",
     ":common:routeProcessor",

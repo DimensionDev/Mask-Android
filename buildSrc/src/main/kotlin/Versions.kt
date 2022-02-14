@@ -43,6 +43,7 @@ object Versions {
     const val zxing = "4.3.0"
     const val maskWalletCore = "0.4.0"
     const val jodaTime = "2.10.13"
+    const val gecko = "97.+"
 
     object Androidx{
         const val core = "1.7.0"
