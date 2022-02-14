@@ -20,7 +20,6 @@
  */
 package com.dimension.maskbook.wallet.ui.scenes.register.createidentity
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -276,7 +275,6 @@ private fun PhraseContent(
 ) {
     LazyColumn {
         itemsGridIndexed(words, rowSize = 4, spacing = 14.dp) { _, word ->
-            Log.d("Mimao", "word: ${word.word}")
             val isSelected = selectedWords.contains(word)
             val backgroundColor = if (isSelected) {
                 MaterialTheme.colors.primary
