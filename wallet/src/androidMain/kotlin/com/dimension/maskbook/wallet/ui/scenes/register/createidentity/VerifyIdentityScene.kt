@@ -20,6 +20,7 @@
  */
 package com.dimension.maskbook.wallet.ui.scenes.register.createidentity
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -70,9 +71,7 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.calculateCurrentOffsetForPage
 import com.google.accompanist.pager.rememberPagerState
-import kotlinx.coroutines.flow.collect
 import kotlin.math.absoluteValue
-import kotlin.math.max
 
 @OptIn(ExperimentalPagerApi::class, ExperimentalMaterialApi::class)
 @Composable
@@ -89,6 +88,8 @@ fun VerifyIdentityScene(
     onClear: () -> Unit,
     onBack: () -> Unit,
 ) {
+    BackHandler(onBack = onBack)
+
     MaskTheme {
         MaskScaffold(
             topBar = {
@@ -111,11 +112,14 @@ fun VerifyIdentityScene(
                     .padding(ScaffoldPadding),
             ) {
                 val pagerState = rememberPagerState()
-                LaunchedEffect(selectedWords.size) {
-                    snapshotFlow { selectedWords.size }
-                        .collect {
-                            pagerState.animateScrollToPage(max(0, it - 1))
+                if (words.isNotEmpty()) {
+                    LaunchedEffect(selectedWords.size) {
+                        snapshotFlow { selectedWords.size }.collect {
+                            pagerState.animateScrollToPage(
+                                it.coerceAtMost(words.size - 1).coerceAtLeast(0)
+                            )
                         }
+                    }
                 }
                 Column(
                     modifier = Modifier.weight(1f).fillMaxWidth(),

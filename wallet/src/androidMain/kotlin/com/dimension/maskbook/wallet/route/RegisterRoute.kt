@@ -133,7 +133,12 @@ fun NavGraphBuilder.registerRoute(
             }
         )
     }
-    bottomSheet(WalletRoute.Register.CreatePersona) {
+    bottomSheet(
+        WalletRoute.Register.CreatePersona,
+        deepLinks = listOf(
+            navDeepLink { uriPattern = Deeplinks.Wallet.Register.CreatePersona }
+        )
+    ) {
         CreatePersonaModal(
             onDone = { name ->
                 navController.navigate(WalletRoute.Register.CreateIdentity(name))
