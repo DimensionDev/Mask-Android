@@ -18,47 +18,41 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.common.ui.widget
+package com.dimension.maskbook.common.ui.widget.button
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.ContentAlpha
-import androidx.compose.material.IconButton
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
+import com.dimension.maskbook.common.ui.widget.clickable
 
 @Composable
 fun MaskIconButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     content: @Composable () -> Unit
 ) {
-    IconButton(
-        onClick = onClick,
-        modifier = modifier.size(MaskIconButtonDefaults.defaultSize),
-        enabled = enabled,
-        interactionSource = interactionSource,
-        content = {
-            CompositionLocalProvider(
-                LocalContentAlpha provides 1f,
-                content = content
-            )
-        }
-    )
+    Box(
+        modifier = modifier
+            .clickable(
+                onClick = onClick,
+                enabled = enabled,
+                role = Role.Button,
+            ).size(MaskIconButtonDefaults.defaultSize),
+        contentAlignment = Alignment.Center
+    ) {
+        content.invoke()
+    }
 }
 
 @Composable
@@ -66,7 +60,6 @@ fun MaskIconCardButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     content: @Composable () -> Unit
 ) {
     Box(
@@ -77,8 +70,6 @@ fun MaskIconCardButton(
                 onClick = onClick,
                 enabled = enabled,
                 role = Role.Button,
-                interactionSource = interactionSource,
-                indication = rememberRipple()
             )
             .size(MaskIconButtonDefaults.defaultSize),
         contentAlignment = Alignment.Center

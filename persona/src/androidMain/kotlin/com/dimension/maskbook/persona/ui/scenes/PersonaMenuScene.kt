@@ -31,7 +31,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Card
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.LocalTextStyle
@@ -48,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.ui.widget.MaskBackButton
+import com.dimension.maskbook.common.ui.widget.MaskCard
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
@@ -85,7 +85,7 @@ fun PersonaMenuScene(
                     .padding(ScaffoldPadding),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Card(
+                MaskCard(
                     modifier = Modifier.fillMaxWidth(),
                     elevation = 0.dp,
                     onClick = {
@@ -105,7 +105,7 @@ fun PersonaMenuScene(
                     }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
-                Card(
+                MaskCard(
                     modifier = Modifier.fillMaxWidth(),
                     elevation = 0.dp,
                     onClick = {
@@ -125,7 +125,7 @@ fun PersonaMenuScene(
                     }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
-                Card(
+                MaskCard(
                     modifier = Modifier.fillMaxWidth(),
                     elevation = 0.dp,
                     onClick = {
@@ -150,7 +150,7 @@ fun PersonaMenuScene(
                     }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
-                Card(
+                MaskCard(
                     modifier = Modifier.fillMaxWidth(),
                     elevation = 0.dp,
                     onClick = {
@@ -172,7 +172,7 @@ fun PersonaMenuScene(
                     }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
-                Card(
+                MaskCard(
                     modifier = Modifier.fillMaxWidth(),
                     elevation = 0.dp,
                     onClick = {

@@ -18,52 +18,55 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.common.ui.widget
+package com.dimension.maskbook.common.ui.widget.button
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.RowScope
+import androidx.compose.material.ButtonColors
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.ButtonElevation
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.dimension.maskbook.common.ui.widget.BaseButton
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun MaskCard(
-    onClick: () -> Unit = {},
+fun MaskButton(
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    shape: Shape = MaterialTheme.shapes.medium,
-    backgroundColor: Color = MaterialTheme.colors.surface,
-    contentColor: Color = contentColorFor(backgroundColor),
-    border: BorderStroke? = null,
-    elevation: Dp = 1.dp,
-    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     enabled: Boolean = true,
-    onClickLabel: String? = null,
-    role: Role? = null,
-    content: @Composable () -> Unit
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    elevation: ButtonElevation? = null,
+    shape: Shape = MaterialTheme.shapes.medium,
+    border: BorderStroke? = null,
+    colors: ButtonColors = ButtonDefaults.buttonColors(
+        backgroundColor = MaterialTheme.colors.surface,
+        disabledBackgroundColor = MaterialTheme.colors.surface.copy(alpha = 0.5f),
+    ),
+    contentPadding: PaddingValues = MaskButtonDefaults.defaultPaddingValues,
+    content: @Composable RowScope.() -> Unit
 ) {
-    Surface(
+    BaseButton(
         onClick = onClick,
         modifier = modifier,
-        shape = shape,
-        color = backgroundColor,
-        contentColor = contentColor,
-        border = border,
-        elevation = elevation,
-        interactionSource = interactionSource,
-        indication = null,
         enabled = enabled,
-        onClickLabel = onClickLabel,
-        role = role,
-        content = content
+        interactionSource = interactionSource,
+        elevation = elevation,
+        shape = shape,
+        border = border,
+        colors = colors,
+        contentPadding = contentPadding,
+        content = content,
     )
+}
+
+private object MaskButtonDefaults {
+    val defaultPaddingValues = PaddingValues(0.dp)
 }

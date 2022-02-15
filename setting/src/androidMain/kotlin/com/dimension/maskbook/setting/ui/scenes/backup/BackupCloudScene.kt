@@ -20,7 +20,6 @@
  */
 package com.dimension.maskbook.setting.ui.scenes.backup
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -50,6 +49,7 @@ import com.dimension.maskbook.common.ui.widget.MaskTopAppBar
 import com.dimension.maskbook.common.ui.widget.MetaItem
 import com.dimension.maskbook.common.ui.widget.PrimaryButton
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
+import com.dimension.maskbook.common.ui.widget.clickable
 import com.dimension.maskbook.localization.R
 import com.dimension.maskbook.setting.viewmodel.BackupCloudViewModel
 import org.koin.androidx.compose.getViewModel

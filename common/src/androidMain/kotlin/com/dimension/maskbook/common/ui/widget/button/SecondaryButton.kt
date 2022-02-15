@@ -28,7 +28,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Button
 import androidx.compose.material.ButtonColors
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.ButtonElevation
@@ -38,7 +37,6 @@ import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ProvideTextStyle
 import androidx.compose.material.Surface
-import androidx.compose.material.TextButton
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -49,6 +47,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
+import com.dimension.maskbook.common.ui.widget.button.BaseTextButton
 
 @Composable
 fun SecondaryButton(
@@ -66,7 +65,7 @@ fun SecondaryButton(
     CompositionLocalProvider(
         LocalTextStyle provides MaterialTheme.typography.button,
     ) {
-        TextButton(
+        BaseTextButton(
             onClick = onClick,
             modifier = modifier
                 .background(
@@ -101,7 +100,7 @@ fun PrimaryButton(
     CompositionLocalProvider(
         LocalTextStyle provides MaterialTheme.typography.button,
     ) {
-        Button(
+        BaseButton(
             onClick = onClick,
             modifier = modifier,
             enabled = enabled,

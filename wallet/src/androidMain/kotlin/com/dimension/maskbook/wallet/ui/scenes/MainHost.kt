@@ -31,7 +31,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
@@ -56,6 +55,7 @@ import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.common.ui.theme.MaskTheme
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
+import com.dimension.maskbook.common.ui.widget.clickable
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -154,8 +154,7 @@ private fun RowScope.BottomNavigationItem(
     ) {
         Box(
             modifier
-                .selectable(
-                    selected = selected,
+                .clickable(
                     onClick = onClick,
                     enabled = enabled,
                     role = Role.Tab,

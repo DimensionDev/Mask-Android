@@ -22,7 +22,6 @@ package com.dimension.maskbook.wallet.ui.widget
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -48,8 +47,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
-import com.dimension.maskbook.common.ui.widget.MaskButton
 import com.dimension.maskbook.common.ui.widget.MaskListItem
+import com.dimension.maskbook.common.ui.widget.button.MaskButton
+import com.dimension.maskbook.common.ui.widget.clickable
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.repository.WalletCollectibleData
 import com.dimension.maskbook.wallet.repository.WalletCollectibleItemData

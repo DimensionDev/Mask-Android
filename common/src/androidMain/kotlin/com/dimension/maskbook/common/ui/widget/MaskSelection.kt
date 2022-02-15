@@ -25,7 +25,6 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Card
 import androidx.compose.material.CheckboxColors
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.LocalTextStyle
@@ -46,7 +45,7 @@ fun MaskSelection(
     checkboxColors: CheckboxColors = CircleCheckboxDefaults.colors(),
     content: @Composable RowScope.() -> Unit,
 ) {
-    Card(
+    MaskCard(
         elevation = 0.dp,
         backgroundColor = if (selected) MaterialTheme.colors.surface else Color.Transparent,
         onClick = onClicked,
