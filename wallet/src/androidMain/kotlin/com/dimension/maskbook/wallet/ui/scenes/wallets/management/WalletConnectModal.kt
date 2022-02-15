@@ -21,7 +21,6 @@
 package com.dimension.maskbook.wallet.ui.scenes.wallets.management
 
 import android.content.ActivityNotFoundException
-import android.content.Intent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
@@ -163,10 +162,7 @@ fun WalletConnectModal() {
                             navController.navigate("WalletConnectConnecting")
                             try {
                                 context.startActivity(
-                                    Intent(Intent.ACTION_VIEW).apply {
-                                        data = viewModel.generateDeeplink()
-                                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                                    }
+                                    viewModel.generateWcWalletIntent(it)
                                 )
                             } catch (e: ActivityNotFoundException) {
                                 e.printStackTrace()
