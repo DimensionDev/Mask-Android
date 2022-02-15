@@ -1,3 +1,6 @@
+
+import groovy.xml.XmlUtil
+
 plugins {
     kotlin("multiplatform")
     id("com.android.library")
@@ -57,4 +60,46 @@ kotlin {
 
 android {
     setupLibrary()
+}
+
+fun findAndroidManifest(file: File): File? {
+    if (file.name == "AndroidManifest.xml") {
+        return file
+    }
+    if (file.isDirectory) {
+        val list = file.listFiles()
+        if (list.isNullOrEmpty()) return null
+        for (child in list) {
+            val result = findAndroidManifest(child)
+            if (result != null) {
+                return result
+            }
+        }
+    }
+    return null
+}
+val addQueriesForWalletConnect by tasks.registering {
+    doLast {
+        val generatedDir = File(project.buildDir, "intermediates/merged_manifest/")
+        println("generatedDir:${generatedDir.absolutePath}")
+        if (generatedDir.exists()) {
+            generatedDir.listFiles()?.forEach {
+                findAndroidManifest(it)?.let { file ->
+                    val manifest = groovy.xml.XmlParser().parse(file)
+                    val queries = (manifest["queries"] as groovy.util.NodeList)[0] as groovy.util.Node
+                    // TODO get packages from json
+                    queries.appendNode("package", mapOf("android:name" to "com.test", "xmlns:android" to "http://schemas.android.com/apk/res/android"))
+                    val xml = XmlUtil.serialize(manifest)
+                    println("xml:$xml")
+                    file.writeText(xml)
+                }
+            }
+        }
+    }
+}
+
+// processReleaseManifest
+afterEvaluate {
+    tasks.getByName("processDebugManifest").finalizedBy(addQueriesForWalletConnect)
+    tasks.getByName("processReleaseManifest").finalizedBy(addQueriesForWalletConnect)
 }
