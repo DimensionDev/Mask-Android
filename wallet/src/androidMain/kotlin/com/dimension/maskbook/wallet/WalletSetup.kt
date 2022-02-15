@@ -304,7 +304,7 @@ private fun Module.provideViewModel() {
             get(),
             get(),
             get(),
-            get(),
+            get<Context>().packageManager,
             onResult
         )
     }

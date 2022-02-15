@@ -21,8 +21,8 @@
 package com.dimension.maskbook.wallet.viewmodel.wallets
 
 import android.content.ComponentName
-import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.pm.PackageManager.MATCH_DEFAULT_ONLY
 import android.content.pm.ResolveInfo
 import android.net.Uri
@@ -45,7 +45,7 @@ class WalletConnectViewModel(
     private val manager: WalletConnectClientManager,
     private val repository: IWalletConnectRepository,
     private val walletRepository: IWalletRepository,
-    private val context: Context,
+    private val packageManager: PackageManager,
     private val onResult: (success: Boolean, needToSwitchNetwork: Boolean) -> Unit,
 ) : ViewModel() {
     val network =
@@ -113,11 +113,11 @@ class WalletConnectViewModel(
     val currentSupportedWallets = combine(_chainType, _supportedWallets) { type, wallets ->
         wallets.filter {
             isWalletSupported(it, type)
-        }
+        }.sortedByDescending { isWalletInstalled(it.packageName) }
     }
 
     private val _installedWallets: Map<String, ResolveInfo> by lazy {
-        context.packageManager.queryIntentActivities(Intent(Intent.ACTION_VIEW, Uri.parse("wc:")), MATCH_DEFAULT_ONLY)
+        packageManager.queryIntentActivities(Intent(Intent.ACTION_VIEW, Uri.parse("wc:")), MATCH_DEFAULT_ONLY)
             .filter { it.activityInfo != null }
             .associateBy {
                 it.activityInfo.packageName
@@ -127,11 +127,10 @@ class WalletConnectViewModel(
 
     private fun isWalletSupported(wallet: WCWallet, chainType: ChainType): Boolean {
         return wallet.chains.contains(chainType) &&
-            (wallet.nativeDeeplink.isNotEmpty() || wallet.universalLink.isNotEmpty()) &&
-            isWalletInstalled(wallet.packageName)
+            (wallet.nativeDeeplink.isNotEmpty() || wallet.universalLink.isNotEmpty())
     }
 
-    private fun isWalletInstalled(packageName: String): Boolean {
+    fun isWalletInstalled(packageName: String): Boolean {
         return packageName.isNotEmpty() && _installedWallets[packageName] != null
     }
 }
