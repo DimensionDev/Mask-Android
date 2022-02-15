@@ -41,7 +41,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.common.ui.theme.MaskTheme
@@ -128,7 +127,7 @@ private fun BackupContent(
                                     onRefreshWords.invoke()
                                 },
                                 contentDescription = null,
-                                tint = Color(0XFF1C68F3)
+                                tint = MaterialTheme.colors.primary
                             )
                         }
                     }

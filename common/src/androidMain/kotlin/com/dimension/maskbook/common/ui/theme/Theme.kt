@@ -154,8 +154,8 @@ fun isDarkTheme(): Boolean {
 
 @Composable
 fun provideColor(isDarkTheme: Boolean): Colors {
-    val primary = Color(0xFF1C68F3)
     return if (isDarkTheme) {
+        val primary = Color(0xFF4989FF)
         darkColors(
             primary = primary,
             onPrimary = Color.White.copy(0.8f),
@@ -168,6 +168,7 @@ fun provideColor(isDarkTheme: Boolean): Colors {
             onSurface = Color.White.copy(alpha = 0.4f),
         )
     } else {
+        val primary = Color(0xFF1C68F3)
         lightColors(
             primary = primary,
             onPrimary = Color.White,
