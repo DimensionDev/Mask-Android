@@ -94,6 +94,7 @@ interface IWalletConnectRepository {
     suspend fun saveAccounts(responder: WCResponder, platformType: CoinPlatformType): String?
 }
 
+//TODO use modified wallets.json as data source
 class WalletConnectRepository(
     private val walletServices: WalletServices,
     private val database: AppDatabase
@@ -182,7 +183,7 @@ class WalletConnectRepository(
             nativeDeeplink = mobile?.native ?: "",
             universalLink = mobile?.universal ?: "",
             shortName = metadata?.shortName ?: "",
-            logo = "https://registry.walletconnect.org/logo/sm/$id.jpeg",
+            logo = "https://registry.walletconnect.com/api/v1/logo/md/$id",
             packageName = app?.android?.let {
                 try {
                     Uri.parse(it).getQueryParameter("id")
