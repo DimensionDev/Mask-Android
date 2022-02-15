@@ -77,7 +77,7 @@ fun CreateIdentityHost(
         composable("Backup") {
             val words by viewModel.words.observeAsState(emptyList())
             BackupIdentityScene(
-                words = words,
+                words = words.map { it.word },
                 onRefreshWords = {
                     viewModel.refreshWords()
                 },

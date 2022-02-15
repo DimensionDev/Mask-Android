@@ -24,26 +24,27 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.wallet.BuildConfig
+import com.dimension.maskbook.wallet.repository.model.MnemonicWord
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 
 abstract class BaseMnemonicPhraseViewModel : ViewModel() {
-    protected val _words = MutableStateFlow(emptyList<String>())
+    protected val _words = MutableStateFlow(emptyList<MnemonicWord>())
     val words = _words.asStateIn(viewModelScope, emptyList())
     val wordsInRandomOrder = _words.map { if (BuildConfig.DEBUG) it else it.shuffled() }
         .asStateIn(viewModelScope, emptyList())
-    protected val _selectedWords = MutableStateFlow(emptyList<String>())
+    protected val _selectedWords = MutableStateFlow(emptyList<MnemonicWord>())
     val selectedWords = _selectedWords.asStateIn(viewModelScope, emptyList())
     val correct = _words
         .combine(_selectedWords) { w, s -> w.toTypedArray().contentEquals(s.toTypedArray()) }
         .asStateIn(viewModelScope, false)
 
     fun refreshWords() {
-        _words.value = generateWords()
+        _words.value = generateWords().mapIndexed { index, word -> MnemonicWord(index, word) }
     }
 
-    fun selectWord(word: String) {
+    fun selectWord(word: MnemonicWord) {
         _selectedWords.value += word
     }
 
@@ -55,7 +56,7 @@ abstract class BaseMnemonicPhraseViewModel : ViewModel() {
 
     abstract fun confirm()
 
-    fun deselectWord(word: String) {
+    fun deselectWord(word: MnemonicWord) {
         val index = _selectedWords.value.indexOf(word)
         if (index >= 0) {
             _selectedWords.value = _selectedWords.value.subList(0, index)

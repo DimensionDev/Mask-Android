@@ -250,13 +250,25 @@ fun NavGraphBuilder.walletsRoute(
                     viewModel.setChainType(it)
                 },
                 onAddWalletClicked = {
-                    navController.navigate(WalletRoute.SwitchWalletAdd)
+                    navController.navigate(WalletRoute.SwitchWalletAdd) {
+                        popUpTo(WalletRoute.SwitchWallet) {
+                            inclusive = true
+                        }
+                    }
                 },
                 onWalletConnectClicked = {
-                    navController.navigate(WalletRoute.SwitchWalletAddWalletConnect)
+                    navController.navigate(WalletRoute.SwitchWalletAddWalletConnect) {
+                        popUpTo(WalletRoute.SwitchWallet) {
+                            inclusive = true
+                        }
+                    }
                 },
-                onEditMenuClicked = {
-                    navController.navigate(WalletRoute.WalletSwitchEditModal(it.id))
+                onEditMenuClicked = { wallet ->
+                    navController.navigate(WalletRoute.WalletSwitchEditModal(wallet.id)) {
+                        popUpTo(WalletRoute.SwitchWallet) {
+                            inclusive = true
+                        }
+                    }
                 }
             )
         }

@@ -18,23 +18,9 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.viewmodel.register
+package com.dimension.maskbook.wallet.repository.model
 
-import com.dimension.maskbook.persona.export.PersonaServices
-import com.dimension.maskbook.wallet.repository.IWalletRepository
-import com.dimension.maskbook.wallet.viewmodel.base.BaseMnemonicPhraseViewModel
-
-class CreateIdentityViewModel(
-    private val personaName: String,
-    private val repository: IWalletRepository,
-    private val personaServices: PersonaServices,
-) : BaseMnemonicPhraseViewModel() {
-
-    override fun generateWords(): List<String> {
-        return repository.generateNewMnemonic()
-    }
-
-    override fun confirm() {
-        personaServices.createPersonaFromMnemonic(_words.value.map { it.word }, personaName)
-    }
-}
+data class MnemonicWord(
+    val id: Int,
+    val word: String
+)

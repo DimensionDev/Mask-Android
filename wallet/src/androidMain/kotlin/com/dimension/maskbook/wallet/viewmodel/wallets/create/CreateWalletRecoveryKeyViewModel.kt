@@ -51,7 +51,7 @@ class CreateWalletRecoveryKeyViewModel(
         viewModelScope.launch {
             try {
                 val platform = repository.dWebData.firstOrNull()?.coinPlatformType ?: CoinPlatformType.Ethereum
-                repository.createWallet(_words.value, _wallet.value, platform)
+                repository.createWallet(_words.value.map { it.word }, _wallet.value, platform)
                 _result.value = WalletCreateOrImportResult(
                     type = WalletCreateOrImportResult.Type.SUCCESS,
                 )
