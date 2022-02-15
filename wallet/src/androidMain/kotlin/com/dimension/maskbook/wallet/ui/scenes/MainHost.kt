@@ -25,13 +25,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.Colors
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
 import androidx.compose.material.LocalContentAlpha
@@ -46,6 +47,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -61,6 +63,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
+import kotlin.math.max
 
 private val tabOrder = listOf(
     CommonRoute.Main.Tabs.Persona,
@@ -68,6 +71,14 @@ private val tabOrder = listOf(
     CommonRoute.Main.Tabs.Labs,
     CommonRoute.Main.Tabs.Setting,
 ).withIndex().associate { it.value to it.index }
+
+private val Colors.tabBackground: Color
+    @Composable
+    get() = if (isLight) {
+        MaterialTheme.colors.surface
+    } else {
+        MaterialTheme.colors.background
+    }
 
 @ExperimentalMaterialNavigationApi
 @OptIn(ExperimentalAnimationApi::class, ExperimentalPagerApi::class)
@@ -91,31 +102,45 @@ fun MainHost(
     MaskTheme {
         MaskScaffold(
             bottomBar = {
-                Row(
+                Box(
                     modifier = Modifier
-                        .background(MaterialTheme.colors.surface)
-                        .height(56.dp)
+                        .background(MaterialTheme.colors.tabBackground)
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    contentAlignment = Alignment.Center,
                 ) {
-                    tabs.forEachIndexed { index, screen ->
-                        BottomNavigationItem(
-                            selected = pagerState.currentPage == index,
-                            onClick = {
-                                scope.launch {
-                                    pagerState.animateScrollToPage(index)
-                                }
-                            },
-                            text = {
-                                Text(stringResource(screen.title))
-                            },
-                            icon = {
-                                Icon(
-                                    painterResource(id = screen.icon),
-                                    contentDescription = null
+                    Layout(
+                        content = {
+                            tabs.forEachIndexed { index, screen ->
+                                BottomNavigationItem(
+                                    selected = pagerState.currentPage == index,
+                                    onClick = {
+                                        scope.launch {
+                                            pagerState.animateScrollToPage(index)
+                                        }
+                                    },
+                                    text = {
+                                        Text(stringResource(screen.title))
+                                    },
+                                    icon = {
+                                        Icon(
+                                            painterResource(id = screen.icon),
+                                            contentDescription = null
+                                        )
+                                    },
+                                    selectedContentColor = MaterialTheme.colors.primary,
+                                    unselectedContentColor = LocalContentColor.current.copy(alpha = ContentAlpha.disabled),
                                 )
-                            },
-                            selectedContentColor = MaterialTheme.colors.primary,
-                            unselectedContentColor = LocalContentColor.current.copy(alpha = ContentAlpha.disabled),
-                        )
+                            }
+                        }
+                    ) { measurables, constraints ->
+                        val placeables = measurables.map { it.measure(constraints) }
+                        val maxWidth = placeables.maxOf { it.measuredWidth }
+                        layout(maxWidth * placeables.size, constraints.maxHeight) {
+                            placeables.forEachIndexed { index, placeable ->
+                                placeable.placeRelative(index * maxWidth, 0)
+                            }
+                        }
                     }
                 }
             }
@@ -132,7 +157,7 @@ fun MainHost(
 }
 
 @Composable
-private fun RowScope.BottomNavigationItem(
+private fun BottomNavigationItem(
     modifier: Modifier = Modifier,
     selected: Boolean,
     enabled: Boolean = true,
@@ -150,33 +175,51 @@ private fun RowScope.BottomNavigationItem(
     CompositionLocalProvider(
         LocalContentColor provides color.copy(alpha = 1f),
         LocalContentAlpha provides color.alpha,
-        LocalTextStyle provides MaterialTheme.typography.caption.copy(color = color),
+        LocalTextStyle provides LocalTextStyle.current.copy(color = color),
     ) {
-        Box(
-            modifier
+        Layout(
+            modifier = modifier
                 .clickable(
                     onClick = onClick,
                     enabled = enabled,
                     role = Role.Tab,
                 )
                 .fillMaxHeight()
-                .padding(horizontal = 16.dp, vertical = 6.dp)
-                .weight(1f),
-            contentAlignment = Alignment.Center,
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                if (selected) {
+                .padding(horizontal = 9.dp, vertical = 6.dp),
+            content = {
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
                     text.invoke()
+                    Spacer(modifier = Modifier.height(4.dp))
                     Box(
                         modifier = Modifier
-                            .size(5.dp)
+                            .size(4.dp)
                             .background(color, shape = CircleShape)
                     )
-                } else {
+                }
+                Box(
+                    contentAlignment = Alignment.Center,
+                ) {
                     icon.invoke()
+                }
+            }
+        ) { measurables, constraints ->
+            val textMeasurable = measurables[0].measure(constraints)
+            val iconMeasurable = measurables[1].measure(constraints)
+            val width = max(textMeasurable.measuredWidth, iconMeasurable.measuredWidth)
+            layout(width, constraints.maxHeight) {
+                if (selected) {
+                    textMeasurable.placeRelative(
+                        ((width.toFloat() - textMeasurable.measuredWidth.toFloat()) / 2f).toInt(),
+                        0,
+                    )
+                } else {
+                    iconMeasurable.placeRelative(
+                        ((width.toFloat() - iconMeasurable.measuredWidth.toFloat()) / 2f).toInt(),
+                        0,
+                    )
                 }
             }
         }
