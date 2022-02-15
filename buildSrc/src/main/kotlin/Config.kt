@@ -31,6 +31,7 @@ fun com.android.build.api.dsl.LibraryExtension.setupLibrary() {
         targetCompatibility = Versions.Java.java
     }
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
+    sourceSets["debug"].java.srcDir("build/generated/ksp/androidDebug/kotlin")
 }
 
 
