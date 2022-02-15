@@ -37,8 +37,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.dimension.maskbook.common.ui.theme.MaskTheme
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
+import com.dimension.maskbook.common.ui.widget.MaskScene
 import com.dimension.maskbook.common.ui.widget.PrimaryButton
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.common.ui.widget.SecondaryButton
@@ -50,7 +50,7 @@ fun RegisterScene(
     onRecoveryAndSignIn: () -> Unit,
     onSynchronization: () -> Unit,
 ) {
-    MaskTheme {
+    MaskScene {
         MaskScaffold {
             Column(
                 modifier = Modifier

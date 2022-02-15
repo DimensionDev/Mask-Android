@@ -53,10 +53,10 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.navHostAnimationDurationMillis
-import com.dimension.maskbook.common.ui.theme.MaskTheme
 import com.dimension.maskbook.common.ui.widget.MaskBackButton
 import com.dimension.maskbook.common.ui.widget.MaskPasswordInputField
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
+import com.dimension.maskbook.common.ui.widget.MaskScene
 import com.dimension.maskbook.common.ui.widget.MaskTopAppBar
 import com.dimension.maskbook.common.ui.widget.MetaItem
 import com.dimension.maskbook.common.ui.widget.PrimaryButton
@@ -111,7 +111,7 @@ fun BackupLocalHost(
             BackupLocalScene(onBack = onBack, viewModel = viewModel)
         }
         composable("Loading") {
-            MaskTheme {
+            MaskScene {
                 MaskScaffold(
                     topBar = {
                         MaskTopAppBar(
@@ -149,108 +149,122 @@ fun BackupLocalScene(
     val withWallet by viewModel.withWallet.observeAsState(initial = false)
     val paymentPassword by viewModel.paymentPassword.observeAsState(initial = "")
     val paymentPasswordValid by viewModel.paymentPasswordValid.observeAsState(initial = false)
-    MaskScaffold(
-        topBar = {
-            MaskTopAppBar(
-                title = {
-                    Text(text = stringResource(R.string.common_controls_back_up_locally))
-                },
-                navigationIcon = {
-                    MaskBackButton(
-                        onBack = onBack
-                    )
-                }
-            )
-        }
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(ScaffoldPadding),
-        ) {
-            meta?.let { meta ->
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    elevation = 0.dp,
-                ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp)
-                    ) {
-                        MetaItem(title = stringResource(R.string.scene_backup_restored_account), value = meta.account)
-                        Spacer(modifier = Modifier.height(16.dp))
-                        MetaItem(title = stringResource(R.string.tab_personas), value = meta.personas.toString())
-                        Spacer(modifier = Modifier.height(16.dp))
-                        MetaItem(
-                            title = stringResource(R.string.scene_backup_restored_account),
-                            value = meta.associatedAccount.toString()
+    MaskScene {
+        MaskScaffold(
+            topBar = {
+                MaskTopAppBar(
+                    title = {
+                        Text(text = stringResource(R.string.common_controls_back_up_locally))
+                    },
+                    navigationIcon = {
+                        MaskBackButton(
+                            onBack = onBack
                         )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        MetaItem(title = stringResource(R.string.scene_backup_restored_post), value = meta.encryptedPost.toString())
-                        Spacer(modifier = Modifier.height(16.dp))
-                        MetaItem(title = stringResource(R.string.scene_backup_restored_contacts), value = meta.contacts.toString())
-                        Spacer(modifier = Modifier.height(16.dp))
-                        MetaItem(title = stringResource(R.string.scene_backup_restored_files), value = meta.file.toString())
                     }
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-                Row(
-                    modifier = Modifier.clickable {
-                        viewModel.setWithWallet(!withWallet)
-                    },
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Checkbox(checked = withWallet, onCheckedChange = {
-                        viewModel.setWithWallet(it)
-                    })
-                    Spacer(modifier = Modifier.width(10.dp))
-                    MetaItem(
-                        title = stringResource(R.string.scene_setting_local_backup_local_wallet),
-                        value = meta.wallet.toString()
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(text = stringResource(R.string.scene_setting_backup_recovery_back_up_password))
-            Spacer(modifier = Modifier.height(8.dp))
-            MaskPasswordInputField(
-                value = password,
-                onValueChange = {
-                    viewModel.setPassword(it)
-                },
-                modifier = Modifier.fillMaxWidth(),
-                imeAction = if (withWallet) ImeAction.Next else ImeAction.Done,
-            )
-            if (withWallet) {
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(text = stringResource(R.string.scene_setting_general_setup_payment_password))
-                Spacer(modifier = Modifier.height(8.dp))
-                MaskPasswordInputField(
-                    value = paymentPassword,
-                    onValueChange = {
-                        viewModel.setPaymentPassword(it)
-                    },
-                    modifier = Modifier.fillMaxWidth(),
                 )
             }
-            Spacer(modifier = Modifier.height(16.dp))
-            Spacer(modifier = Modifier.weight(1f))
-            val filePickerLauncher = rememberLauncherForActivityResult(
-                contract = ActivityResultContracts.CreateDocument(),
-                onResult = {
-                    if (it != null) {
-                        viewModel.save(it, withWallet)
-                    }
-                },
-            )
-            PrimaryButton(
-                onClick = {
-                    filePickerLauncher.launch("${System.currentTimeMillis()}.json")
-                },
-                modifier = Modifier.fillMaxWidth(),
-                enabled = backupPasswordValid && (if (withWallet) paymentPasswordValid else true)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(ScaffoldPadding),
             ) {
-                Text(text = stringResource(R.string.scene_personas_action_backup))
+                meta?.let { meta ->
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        elevation = 0.dp,
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp)
+                        ) {
+                            MetaItem(
+                                title = stringResource(R.string.scene_backup_restored_account),
+                                value = meta.account
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            MetaItem(title = stringResource(R.string.tab_personas), value = meta.personas.toString())
+                            Spacer(modifier = Modifier.height(16.dp))
+                            MetaItem(
+                                title = stringResource(R.string.scene_backup_restored_account),
+                                value = meta.associatedAccount.toString()
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            MetaItem(
+                                title = stringResource(R.string.scene_backup_restored_post),
+                                value = meta.encryptedPost.toString()
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            MetaItem(
+                                title = stringResource(R.string.scene_backup_restored_contacts),
+                                value = meta.contacts.toString()
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            MetaItem(
+                                title = stringResource(R.string.scene_backup_restored_files),
+                                value = meta.file.toString()
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Row(
+                        modifier = Modifier.clickable {
+                            viewModel.setWithWallet(!withWallet)
+                        },
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Checkbox(checked = withWallet, onCheckedChange = {
+                            viewModel.setWithWallet(it)
+                        })
+                        Spacer(modifier = Modifier.width(10.dp))
+                        MetaItem(
+                            title = stringResource(R.string.scene_setting_local_backup_local_wallet),
+                            value = meta.wallet.toString()
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(text = stringResource(R.string.scene_setting_backup_recovery_back_up_password))
+                Spacer(modifier = Modifier.height(8.dp))
+                MaskPasswordInputField(
+                    value = password,
+                    onValueChange = {
+                        viewModel.setPassword(it)
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    imeAction = if (withWallet) ImeAction.Next else ImeAction.Done,
+                )
+                if (withWallet) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(text = stringResource(R.string.scene_setting_general_setup_payment_password))
+                    Spacer(modifier = Modifier.height(8.dp))
+                    MaskPasswordInputField(
+                        value = paymentPassword,
+                        onValueChange = {
+                            viewModel.setPaymentPassword(it)
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
+                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.weight(1f))
+                val filePickerLauncher = rememberLauncherForActivityResult(
+                    contract = ActivityResultContracts.CreateDocument(),
+                    onResult = {
+                        if (it != null) {
+                            viewModel.save(it, withWallet)
+                        }
+                    },
+                )
+                PrimaryButton(
+                    onClick = {
+                        filePickerLauncher.launch("${System.currentTimeMillis()}.json")
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = backupPasswordValid && (if (withWallet) paymentPasswordValid else true)
+                ) {
+                    Text(text = stringResource(R.string.scene_personas_action_backup))
+                }
             }
         }
     }
