@@ -94,7 +94,6 @@ interface IWalletConnectRepository {
     suspend fun saveAccounts(responder: WCResponder, platformType: CoinPlatformType): String?
 }
 
-//TODO use modified wallets.json as data source
 class WalletConnectRepository(
     private val walletServices: WalletServices,
     private val database: AppDatabase

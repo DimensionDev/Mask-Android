@@ -315,5 +315,5 @@ private fun Module.provideViewModel() {
 }
 
 private fun Module.provideServices() {
-    single { WalletServices() }
+    single { WalletServices(get()) }
 }
