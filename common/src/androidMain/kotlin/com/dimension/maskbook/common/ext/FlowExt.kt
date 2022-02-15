@@ -20,6 +20,7 @@
  */
 package com.dimension.maskbook.common.ext
 
+import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
@@ -40,6 +41,8 @@ fun <T> Flow<T>.observeAsState(initial: T): State<T> {
     }.collectAsState(initial = initial)
 }
 
+@SuppressLint("StateFlowValueCalledInComposition")
+@Composable
 fun <T> StateFlow<T>.observeAsState(): State<T> {
     return observeAsState(initial = value)
 }
