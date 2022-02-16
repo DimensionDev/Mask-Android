@@ -65,6 +65,7 @@ import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.common.ui.widget.button.MaskBackButton
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.common.ui.widget.button.SecondaryButton
+import com.dimension.maskbook.common.ui.widget.rememberMaskBottomSheetNavigator
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.viewmodel.recovery.RecoveryLocalViewModel
 import com.google.accompanist.navigation.animation.AnimatedNavHost
@@ -73,7 +74,6 @@ import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 import com.google.accompanist.navigation.material.bottomSheet
-import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 import kotlinx.coroutines.flow.distinctUntilChanged
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
@@ -88,7 +88,7 @@ fun RecoveryLocalHost(
     onBack: () -> Unit,
     uri: Uri
 ) {
-    val bottomSheetNavigator = rememberBottomSheetNavigator()
+    val bottomSheetNavigator = rememberMaskBottomSheetNavigator()
     val navController = rememberAnimatedNavController()
     navController.navigatorProvider += bottomSheetNavigator
     val viewModel: RecoveryLocalViewModel = getViewModel {

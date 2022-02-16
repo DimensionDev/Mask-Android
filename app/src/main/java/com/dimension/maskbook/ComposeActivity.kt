@@ -45,6 +45,7 @@ import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.ui.LocalRootNavController
 import com.dimension.maskbook.common.ui.theme.MaskTheme
 import com.dimension.maskbook.common.ui.widget.LocalWindowInsetsController
+import com.dimension.maskbook.common.ui.widget.rememberMaskBottomSheetNavigator
 import com.dimension.maskbook.labs.LabsSetup
 import com.dimension.maskbook.persona.PersonaSetup
 import com.dimension.maskbook.setting.SettingSetup
@@ -56,7 +57,6 @@ import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.ModalBottomSheetLayout
-import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 
 class ComposeActivity : ComponentActivity() {
     companion object {
@@ -104,7 +104,7 @@ fun App(
     onBack: () -> Unit,
 ) {
     val navController = rememberAnimatedNavController()
-    val bottomSheetNavigator = rememberBottomSheetNavigator()
+    val bottomSheetNavigator = rememberMaskBottomSheetNavigator()
     navController.navigatorProvider += bottomSheetNavigator
     CompositionLocalProvider(LocalRootNavController provides navController) {
         ModalBottomSheetLayout(
