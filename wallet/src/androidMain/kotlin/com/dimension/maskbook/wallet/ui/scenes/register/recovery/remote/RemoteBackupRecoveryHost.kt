@@ -25,7 +25,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Text
@@ -50,7 +49,6 @@ import com.dimension.maskbook.common.ui.widget.MaskDialog
 import com.dimension.maskbook.common.ui.widget.MaskInputField
 import com.dimension.maskbook.common.ui.widget.MaskModal
 import com.dimension.maskbook.common.ui.widget.PrimaryButton
-import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.route.WalletRoute
 import com.dimension.maskbook.wallet.viewmodel.register.EmailRemoteBackupRecoveryViewModel
@@ -133,7 +131,7 @@ fun NavGraphBuilder.remoteBackupRecovery(
                 Text(text = stringResource(R.string.scene_restore_titles_recovery_with_email))
             }
         ) {
-            Column(Modifier.padding(ScaffoldPadding)) {
+            Column {
                 Text(text = stringResource(R.string.scene_backup_backup_verify_field_email))
                 Spacer(modifier = Modifier.height(8.dp))
                 MaskInputField(
@@ -207,7 +205,7 @@ fun NavGraphBuilder.remoteBackupRecovery(
                     Text(text = stringResource(R.string.scene_restore_titles_recovery_with_mobile))
                 }
             ) {
-                Column(Modifier.padding(ScaffoldPadding)) {
+                Column {
                     Text(text = stringResource(R.string.scene_backup_validation_code))
                     Spacer(modifier = Modifier.height(8.dp))
                     Row(
@@ -280,7 +278,7 @@ fun NavGraphBuilder.remoteBackupRecovery(
                 Text(text = stringResource(R.string.scene_restore_titles_recovery_with_mobile))
             }
         ) {
-            Column(Modifier.padding(ScaffoldPadding)) {
+            Column {
                 Text(text = stringResource(R.string.scene_backup_backup_verify_field_phone))
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(

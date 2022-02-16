@@ -24,7 +24,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -33,7 +32,6 @@ import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.common.ui.widget.MaskModal
 import com.dimension.maskbook.common.ui.widget.MaskPasswordInputField
 import com.dimension.maskbook.common.ui.widget.PrimaryButton
-import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.localization.R
 
 @Composable
@@ -44,10 +42,7 @@ fun BackupPasswordInputModal(
     enabled: Boolean = true,
 ) {
     MaskModal {
-        Column(
-            modifier = Modifier
-                .padding(ScaffoldPadding)
-        ) {
+        Column {
             Text(text = stringResource(R.string.scene_set_backup_password_backup_password))
             Spacer(modifier = Modifier.height(8.dp))
             MaskPasswordInputField(

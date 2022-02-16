@@ -80,7 +80,6 @@ import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.ui.LocalRootNavController
 import com.dimension.maskbook.common.ui.widget.MaskModal
 import com.dimension.maskbook.common.ui.widget.PrimaryButton
-import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.common.ui.widget.clickable
 import com.dimension.maskbook.common.ui.widget.itemsGridIndexed
 import com.dimension.maskbook.wallet.R
@@ -134,7 +133,6 @@ fun WalletConnectModal() {
     MaskModal {
         Column(
             modifier = Modifier
-                .padding(ScaffoldPadding)
                 .animateContentSize(),
         ) {
             Text(

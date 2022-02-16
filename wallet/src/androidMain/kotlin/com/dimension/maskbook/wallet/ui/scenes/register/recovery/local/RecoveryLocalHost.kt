@@ -156,10 +156,7 @@ fun RecoveryLocalHost(
                 val password by viewModel.password.observeAsState(initial = "")
                 val error by viewModel.passwordError.observeAsState(initial = false)
                 MaskModal {
-                    Column(
-                        modifier = Modifier
-                            .padding(ScaffoldPadding),
-                    ) {
+                    Column {
                         Text(text = stringResource(R.string.scene_set_backup_password_backup_password))
                         Spacer(modifier = Modifier.height(8.dp))
                         MaskInputField(

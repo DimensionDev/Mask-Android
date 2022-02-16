@@ -26,7 +26,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.MaterialTheme
@@ -58,7 +57,7 @@ fun EmailInputModal(
             Text(text = title)
         }
     ) {
-        Column(Modifier.padding(ScaffoldPadding)) {
+        Column {
             Text(text = stringResource(R.string.scene_backup_backup_verify_field_email))
             Spacer(modifier = Modifier.height(8.dp))
             MaskInputField(
@@ -100,19 +99,16 @@ fun EmailCodeInputModal(
     onSendCode: () -> Unit,
     onVerify: () -> Unit,
     title: String,
-    subTitle: @Composable ((ColumnScope) -> Unit)? = null,
+    subTitle: @Composable (() -> Unit)? = null,
     footer: @Composable (ColumnScope) -> Unit = {},
 ) {
     MaskModal(
         title = {
             Text(text = title)
         },
+        subTitle = subTitle
     ) {
-        Column(Modifier.padding(ScaffoldPadding)) {
-            subTitle?.let {
-                Spacer(modifier = Modifier.height(13.dp))
-                subTitle.invoke(this)
-            }
+        Column {
             Spacer(modifier = Modifier.height(21.dp))
             Text(text = stringResource(R.string.scene_backup_validation_code))
             Spacer(modifier = Modifier.height(8.dp))

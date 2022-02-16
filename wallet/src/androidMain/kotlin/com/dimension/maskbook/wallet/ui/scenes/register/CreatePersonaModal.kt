@@ -24,7 +24,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -37,7 +36,6 @@ import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.common.ui.widget.MaskInputField
 import com.dimension.maskbook.common.ui.widget.MaskModal
 import com.dimension.maskbook.common.ui.widget.PrimaryButton
-import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.wallet.R
 
 @Composable
@@ -46,9 +44,7 @@ fun CreatePersonaModal(
 ) {
     var name by remember { mutableStateOf("") }
     MaskModal {
-        Column(
-            modifier = Modifier.padding(ScaffoldPadding),
-        ) {
+        Column {
             Text(text = stringResource(R.string.scene_personas_create_create_persona))
             Spacer(modifier = Modifier.height(8.dp))
             MaskInputField(

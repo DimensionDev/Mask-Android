@@ -26,8 +26,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.MaterialTheme
@@ -39,7 +37,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.common.ui.widget.MaskGridButton
 import com.dimension.maskbook.common.ui.widget.MaskModal
-import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.persona.export.model.Network
 import com.dimension.maskbook.persona.export.model.PlatformType
 import com.dimension.maskbook.persona.model.icon
@@ -55,16 +52,16 @@ private val items = listOf(
 fun SelectPlatformModal(
     onDone: (PlatformType) -> Unit
 ) {
-    MaskModal {
-        Column(
-            modifier = Modifier.padding(ScaffoldPadding),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
+    MaskModal(
+        title = {
             Text(
                 text = "Connect Social accounts",
-                style = MaterialTheme.typography.h6
             )
-            Spacer(modifier = Modifier.height(21.dp))
+        }
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,

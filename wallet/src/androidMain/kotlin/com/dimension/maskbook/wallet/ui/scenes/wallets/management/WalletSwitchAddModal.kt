@@ -25,7 +25,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
@@ -36,7 +35,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.common.ui.widget.MaskListItem
 import com.dimension.maskbook.common.ui.widget.MaskModal
-import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.common.ui.widget.button.MaskButton
 import com.dimension.maskbook.wallet.R
 
@@ -47,9 +45,7 @@ fun WalletSwitchAddModal(
     onImport: () -> Unit,
 ) {
     MaskModal {
-        Column(
-            modifier = Modifier.padding(ScaffoldPadding)
-        ) {
+        Column {
             WalletSwitchAddItem(
                 onClick = onCreate,
                 icon = R.drawable.ic_create_wallet,

@@ -65,7 +65,6 @@ import com.dimension.maskbook.common.ui.widget.MaskModal
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.PhoneCodeInputModal
 import com.dimension.maskbook.common.ui.widget.PrimaryButton
-import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.common.ui.widget.SecondaryButton
 import com.dimension.maskbook.localization.R
 import com.dimension.maskbook.persona.export.PersonaServices
@@ -344,9 +343,7 @@ fun NavGraphBuilder.backupRoute(
                 Text(text = stringResource(R.string.scene_backup_merge_to_local_title))
             }
         ) {
-            Column(
-                modifier = Modifier.padding(ScaffoldPadding)
-            ) {
+            Column {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -407,9 +404,7 @@ fun NavGraphBuilder.backupRoute(
         val uploaded_at = backStackEntry.arguments?.getLong("uploaded_at") ?: return@bottomSheet
         val abstract = backStackEntry.arguments?.getString("abstract") ?: return@bottomSheet
         MaskModal {
-            Column(
-                modifier = Modifier.padding(ScaffoldPadding)
-            ) {
+            Column {
                 Image(
                     modifier = Modifier.fillMaxWidth(),
                     painter = painterResource(id = R.drawable.ic_property_1_note),

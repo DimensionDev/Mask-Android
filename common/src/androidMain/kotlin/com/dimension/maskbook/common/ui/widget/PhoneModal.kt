@@ -26,7 +26,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.MaterialTheme
@@ -40,7 +39,6 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.localization.R
@@ -61,7 +59,7 @@ fun PhoneInputModal(
             Text(text = title)
         }
     ) {
-        Column(Modifier.padding(ScaffoldPadding)) {
+        Column {
             Text(text = stringResource(R.string.scene_setting_profile_phone_number))
             Spacer(modifier = Modifier.height(8.dp))
             Row(
@@ -115,24 +113,18 @@ fun PhoneCodeInputModal(
     onSendCode: () -> Unit,
     onVerify: () -> Unit,
     title: String,
-    subTitle: @Composable ((ColumnScope) -> Unit)? = null,
+    subTitle: @Composable (() -> Unit)? = null,
     footer: @Composable (ColumnScope) -> Unit = {},
 ) {
-    MaskModal {
-        Column(
-            modifier = Modifier.padding(ScaffoldPadding)
-        ) {
+    MaskModal(
+        title = {
             Text(
-                modifier = Modifier.fillMaxWidth(),
                 text = title,
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.h6,
             )
-            subTitle?.let {
-                Spacer(modifier = Modifier.height(13.dp))
-                it.invoke(this)
-            }
-            Spacer(modifier = Modifier.height(21.dp))
+        },
+        subTitle = subTitle
+    ) {
+        Column {
             Text(text = stringResource(R.string.scene_backup_validation_code))
             Spacer(modifier = Modifier.height(8.dp))
             Row(

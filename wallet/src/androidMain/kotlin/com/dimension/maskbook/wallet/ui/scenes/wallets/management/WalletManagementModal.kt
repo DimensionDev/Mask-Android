@@ -26,7 +26,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
@@ -41,7 +40,6 @@ import com.dimension.maskbook.common.ext.applyTextStyle
 import com.dimension.maskbook.common.ui.widget.MaskListItem
 import com.dimension.maskbook.common.ui.widget.MaskModal
 import com.dimension.maskbook.common.ui.widget.MiddleEllipsisText
-import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.common.ui.widget.button.MaskButton
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.export.model.WalletData
@@ -64,10 +62,7 @@ fun WalletManagementModal(
             )
         }
     ) {
-        Column(
-            modifier = Modifier
-                .padding(ScaffoldPadding),
-        ) {
+        Column {
             WalletManagementItem(
                 onClick = onRename,
                 icon = R.drawable.ic_rename_wallet,

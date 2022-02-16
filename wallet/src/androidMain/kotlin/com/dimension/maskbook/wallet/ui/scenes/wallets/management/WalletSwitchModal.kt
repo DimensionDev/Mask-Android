@@ -123,7 +123,9 @@ fun WalletSwitchSceneModal(
     var editMode by rememberSaveable {
         mutableStateOf(false)
     }
-    MaskModal {
+    MaskModal(
+        contentPadding = PaddingValues(0.dp)
+    ) {
         MaskScaffold(
             topBar = {
                 Column {

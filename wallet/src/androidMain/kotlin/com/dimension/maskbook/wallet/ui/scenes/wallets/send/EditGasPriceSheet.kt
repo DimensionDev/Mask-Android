@@ -53,7 +53,6 @@ import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.common.ui.widget.MaskInputField
 import com.dimension.maskbook.common.ui.widget.MaskModal
 import com.dimension.maskbook.common.ui.widget.PrimaryButton
-import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.common.ui.widget.clickable
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.repository.GasPriceEditMode
@@ -80,23 +79,20 @@ fun EditGasPriceSheet(
     canConfirm: Boolean,
     onConfirm: () -> Unit
 ) {
-    MaskModal {
+    MaskModal(
+        title = {
+            Text(
+                text = stringResource(R.string.scene_sendTransaction_gasPrice_title),
+            )
+        }
+    ) {
         Column(
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
-                .padding(ScaffoldPadding),
         ) {
             var showAdvanced by remember {
                 mutableStateOf(false)
             }
-
-            Spacer(modifier = Modifier.height(20.dp))
-            Text(
-                text = stringResource(R.string.scene_sendTransaction_gasPrice_title),
-                style = MaterialTheme.typography.h6,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-            Spacer(modifier = Modifier.height(20.dp))
             Text(
                 text = "~$price",
                 style = MaterialTheme.typography.h4,

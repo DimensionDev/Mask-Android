@@ -25,7 +25,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.Icon
 import androidx.compose.material.LocalContentColor
@@ -37,7 +36,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.common.ui.widget.MaskModal
 import com.dimension.maskbook.common.ui.widget.PrimaryButton
-import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.setting.R
 
 @Composable
@@ -50,7 +48,7 @@ fun BackupSelectionModal(
             Text(text = stringResource(com.dimension.maskbook.localization.R.string.scene_setting_backup_data_title))
         }
     ) {
-        Column(Modifier.padding(ScaffoldPadding)) {
+        Column {
             IconButton(
                 icon = R.drawable.ic_icloud,
                 text = stringResource(com.dimension.maskbook.localization.R.string.common_controls_back_up_to_cloud),

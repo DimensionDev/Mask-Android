@@ -21,15 +21,12 @@
 package com.dimension.maskbook.setting.ui.scenes
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.ui.widget.MaskModal
 import com.dimension.maskbook.common.ui.widget.MaskSelection
-import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.setting.export.model.DataProvider
 import com.dimension.maskbook.setting.viewmodel.DataSourceSettingsViewModel
 import org.koin.androidx.compose.getViewModel
@@ -47,9 +44,7 @@ fun DataSourceSettings(
     val viewModel: DataSourceSettingsViewModel = getViewModel()
     val dataProvider by viewModel.dataProvider.observeAsState(initial = DataProvider.COIN_GECKO)
     MaskModal {
-        Column(
-            modifier = Modifier.padding(ScaffoldPadding)
-        ) {
+        Column {
             dataProviderMap.forEach {
                 MaskSelection(
                     selected = it.key == dataProvider,
