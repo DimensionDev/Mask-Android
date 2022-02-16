@@ -226,15 +226,15 @@ private fun SearchInput(
         Spacer(Modifier.width(8.dp))
         if (value.isEmpty()) {
             MaskIconButton(onClick = onScanQrCode) {
-                Image(
+                Icon(
                     painter = painterResource(id = R.drawable.ic_scan),
                     contentDescription = null,
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(24.dp),
                 )
             }
         } else {
             MaskIconButton(onClick = onClear) {
-                Image(
+                Icon(
                     painter = painterResource(id = R.drawable.ic_clear),
                     contentDescription = null,
                     modifier = Modifier.size(24.dp)
