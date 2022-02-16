@@ -1,6 +1,3 @@
-
-import groovy.xml.XmlUtil
-
 plugins {
     kotlin("multiplatform")
     id("com.android.library")
@@ -81,24 +78,38 @@ fun findAndroidManifest(file: File): File? {
 val addQueriesForWalletConnect by tasks.registering {
     doLast {
         val generatedDir = File(project.buildDir, "intermediates/merged_manifest/")
-        println("generatedDir:${generatedDir.absolutePath}")
+        val json = File(project.projectDir, "src/androidMain/assets/wallet_connect.json").readText(Charsets.UTF_8)
+        val jsonObj = org.json.JSONObject(json)
+        val packages = mutableListOf<String>()
+        jsonObj.keys().let {
+            while (it.hasNext()) {
+                val obj = jsonObj.get(it.next())
+                if (obj is org.json.JSONObject) {
+                    obj.getJSONObject("app").getString("android")?.let { url ->
+                        url.split("?").last().split("&").forEach { query ->
+                            if (query.startsWith("id=")) {
+                                packages.add(query.substring(3))
+                            }
+                        }
+                    }
+                }
+            }
+        }
         if (generatedDir.exists()) {
             generatedDir.listFiles()?.forEach {
                 findAndroidManifest(it)?.let { file ->
                     val manifest = groovy.xml.XmlParser().parse(file)
                     val queries = (manifest["queries"] as groovy.util.NodeList)[0] as groovy.util.Node
-                    // TODO get packages from json
-                    queries.appendNode("package", mapOf("android:name" to "com.test", "xmlns:android" to "http://schemas.android.com/apk/res/android"))
-                    val xml = XmlUtil.serialize(manifest)
-                    println("xml:$xml")
-                    file.writeText(xml)
+                    packages.forEach {
+                        queries.appendNode("package", mapOf("android:name" to it, "xmlns:android" to "http://schemas.android.com/apk/res/android"))
+                    }
+                    file.writeText(groovy.xml.XmlUtil.serialize(manifest))
                 }
             }
         }
     }
 }
 
-// processReleaseManifest
 afterEvaluate {
     tasks.getByName("processDebugManifest").finalizedBy(addQueriesForWalletConnect)
     tasks.getByName("processReleaseManifest").finalizedBy(addQueriesForWalletConnect)
