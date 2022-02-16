@@ -101,7 +101,7 @@ fun MainHost(
 
     MaskScene(
         navigationBarColorProvider = {
-            MaterialTheme.colors.surface
+            MaterialTheme.colors.tabBackground
         }
     ) {
         MaskScaffold(
