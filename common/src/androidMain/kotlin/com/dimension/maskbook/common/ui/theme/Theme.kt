@@ -42,6 +42,9 @@ import com.dimension.maskbook.setting.export.SettingServices
 import com.dimension.maskbook.setting.export.model.Appearance
 import org.koin.androidx.compose.get
 
+val Colors.modalScrimColor: Color
+    get() = Color(0x99000000)
+
 @Composable
 fun MaskTheme(
     isDarkTheme: Boolean = isDarkTheme(),

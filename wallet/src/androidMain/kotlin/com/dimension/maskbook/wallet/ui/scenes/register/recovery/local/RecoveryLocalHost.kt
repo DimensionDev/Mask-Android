@@ -54,6 +54,7 @@ import androidx.navigation.compose.dialog
 import androidx.navigation.plusAssign
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.navHostAnimationDurationMillis
+import com.dimension.maskbook.common.ui.theme.modalScrimColor
 import com.dimension.maskbook.common.ui.widget.BackMetaDisplay
 import com.dimension.maskbook.common.ui.widget.MaskDialog
 import com.dimension.maskbook.common.ui.widget.MaskInputField
@@ -133,6 +134,7 @@ fun RecoveryLocalHost(
     ModalBottomSheetLayout(
         bottomSheetNavigator,
         sheetBackgroundColor = MaterialTheme.colors.background,
+        scrimColor = MaterialTheme.colors.modalScrimColor,
     ) {
         AnimatedNavHost(
             navController = navController,

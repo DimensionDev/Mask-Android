@@ -44,6 +44,7 @@ import com.dimension.maskbook.common.route
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.ui.LocalRootNavController
 import com.dimension.maskbook.common.ui.theme.MaskTheme
+import com.dimension.maskbook.common.ui.theme.modalScrimColor
 import com.dimension.maskbook.common.ui.widget.LocalWindowInsetsController
 import com.dimension.maskbook.common.ui.widget.rememberMaskBottomSheetNavigator
 import com.dimension.maskbook.labs.LabsSetup
@@ -113,7 +114,8 @@ fun App(
             sheetShape = MaterialTheme.shapes.large.copy(
                 bottomStart = CornerSize(0.dp),
                 bottomEnd = CornerSize(0.dp),
-            )
+            ),
+            scrimColor = MaterialTheme.colors.modalScrimColor,
         ) {
             AnimatedNavHost(
                 navController = navController,
