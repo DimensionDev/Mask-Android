@@ -40,8 +40,6 @@ import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.ui.widget.EmailCodeInputModal
 import com.dimension.maskbook.common.ui.widget.EmailInputModal
 import com.dimension.maskbook.common.ui.widget.MaskDialog
-import com.dimension.maskbook.common.ui.widget.PhoneCodeInputModal
-import com.dimension.maskbook.common.ui.widget.PhoneInputModal
 import com.dimension.maskbook.common.ui.widget.PrimaryButton
 import com.dimension.maskbook.localization.R
 import com.dimension.maskbook.setting.ui.scenes.AppearanceSettings
@@ -49,6 +47,8 @@ import com.dimension.maskbook.setting.ui.scenes.ChangeBackUpPasswordModal
 import com.dimension.maskbook.setting.ui.scenes.ChangePaymentPasswordModal
 import com.dimension.maskbook.setting.ui.scenes.DataSourceSettings
 import com.dimension.maskbook.setting.ui.scenes.LanguageSettings
+import com.dimension.maskbook.setting.ui.scenes.PhoneCodeInputModal
+import com.dimension.maskbook.setting.ui.scenes.PhoneInputModal
 import com.dimension.maskbook.setting.viewmodel.EmailSetupViewModel
 import com.dimension.maskbook.setting.viewmodel.PhoneSetupViewModel
 import com.dimension.maskbook.setting.viewmodel.RemoteBackupRecoveryViewModelBase

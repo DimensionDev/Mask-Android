@@ -18,7 +18,7 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.common.ui.widget
+package com.dimension.maskbook.setting.ui.scenes
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -43,6 +43,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import com.dimension.maskbook.common.ui.widget.MaskInputField
+import com.dimension.maskbook.common.ui.widget.MaskModal
+import com.dimension.maskbook.common.ui.widget.PrimaryButton
+import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.localization.R
 
 @Composable
@@ -70,7 +74,7 @@ fun PhoneInputModal(
                 MaskInputField(
                     modifier = Modifier.weight(1f),
                     value = regionCode,
-                    onValueChange = { onRegionCodeChange(it) },
+                    onValueChange = onRegionCodeChange,
                     maxLines = 1,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                 )
@@ -78,9 +82,7 @@ fun PhoneInputModal(
                 MaskInputField(
                     modifier = Modifier.weight(4f),
                     value = phone,
-                    onValueChange = {
-                        onPhoneChange(it)
-                    },
+                    onValueChange = onPhoneChange,
                     maxLines = 1,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                 )
@@ -92,9 +94,7 @@ fun PhoneInputModal(
             Spacer(modifier = Modifier.height(16.dp))
             PrimaryButton(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = {
-                    onConfirm()
-                },
+                onClick = onConfirm,
                 enabled = phoneValid && !buttonEnabled && phone.isNotEmpty(),
             ) {
                 Text(text = stringResource(R.string.common_controls_confirm))
