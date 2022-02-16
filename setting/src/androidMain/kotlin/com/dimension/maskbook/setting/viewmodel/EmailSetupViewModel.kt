@@ -26,6 +26,7 @@ import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.setting.defaultRegionCode
 import com.dimension.maskbook.setting.repository.BackupRepository
 import com.dimension.maskbook.setting.repository.ISettingsRepository
+import com.dimension.maskbook.setting.viewmodel.base.RemoteBackupRecoveryViewModelBase
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class EmailSetupViewModel(
