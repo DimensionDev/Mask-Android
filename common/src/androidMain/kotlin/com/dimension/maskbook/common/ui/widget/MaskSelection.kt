@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.CheckboxColors
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.LocalElevationOverlay
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -45,27 +46,31 @@ fun MaskSelection(
     checkboxColors: CheckboxColors = CircleCheckboxDefaults.colors(),
     content: @Composable RowScope.() -> Unit,
 ) {
-    MaskCard(
-        elevation = 0.dp,
-        backgroundColor = if (selected) MaterialTheme.colors.surface else Color.Transparent,
-        onClick = onClicked,
-        enabled = enabled,
-        modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+    CompositionLocalProvider(
+        LocalElevationOverlay provides null
     ) {
-        Row(
-            modifier = Modifier.padding(14.dp),
-            verticalAlignment = Alignment.CenterVertically,
+        MaskCard(
+            elevation = 0.dp,
+            backgroundColor = if (selected) MaterialTheme.colors.surface else Color.Transparent,
+            onClick = onClicked,
+            enabled = enabled,
+            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
         ) {
-            CompositionLocalProvider(
-                LocalTextStyle provides MaterialTheme.typography.h5,
-                content = { content.invoke(this) }
-            )
-            if (selected) {
-                Spacer(Modifier.weight(1f))
-                CircleCheckbox(
-                    checked = true,
-                    colors = checkboxColors,
+            Row(
+                modifier = Modifier.padding(14.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                CompositionLocalProvider(
+                    LocalTextStyle provides MaterialTheme.typography.h5,
+                    content = { content.invoke(this) }
                 )
+                if (selected) {
+                    Spacer(Modifier.weight(1f))
+                    CircleCheckbox(
+                        checked = true,
+                        colors = checkboxColors,
+                    )
+                }
             }
         }
     }
