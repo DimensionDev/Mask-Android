@@ -24,6 +24,7 @@ import androidx.annotation.DrawableRes
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -286,6 +287,7 @@ fun WalletBalancesScene(
                                                 painter = rememberImagePainter(data = tokenData.chainType.onDrawableRes),
                                                 contentDescription = null,
                                                 modifier = Modifier.size(16.dp).align(Alignment.BottomEnd)
+                                                    .border(1.dp, MaterialTheme.colors.background, shape = CircleShape)
                                             )
                                         }
                                     }
