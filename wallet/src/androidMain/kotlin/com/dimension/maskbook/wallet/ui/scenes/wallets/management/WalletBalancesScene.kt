@@ -168,6 +168,9 @@ fun WalletBalancesScene(
                     )
                 }
                 item {
+                    Spacer(modifier = Modifier.height(2.dp))
+                }
+                item {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.Center,
