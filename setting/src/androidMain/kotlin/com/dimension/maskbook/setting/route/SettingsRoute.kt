@@ -37,6 +37,7 @@ import androidx.navigation.compose.dialog
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import com.dimension.maskbook.common.ext.observeAsState
+import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.ui.widget.EmailCodeInputModal
 import com.dimension.maskbook.common.ui.widget.EmailInputModal
@@ -442,7 +443,11 @@ fun NavGraphBuilder.settingsRoute(
                     viewModel.sendCodeNow(code).onSuccess {
                         navController.navigate(
                             SettingRoute.Settings_ChangePhone.Settings_ChangePhone_Setup_Code(code)
-                        )
+                        ) {
+                            popUpTo(CommonRoute.Main.Home) {
+                                inclusive = false
+                            }
+                        }
                     }
                 }
             },
@@ -580,10 +585,12 @@ fun NavGraphBuilder.settingsRoute(
                     val code = regionCode + phone
                     viewModel.sendCodeNow(code).onSuccess {
                         navController.navigate(
-                            SettingRoute.Settings_ChangePhone.Settings_ChangePhone_Change_New_Code(
-                                code
-                            )
-                        )
+                            SettingRoute.Settings_ChangePhone.Settings_ChangePhone_Change_New_Code(code)
+                        ) {
+                            popUpTo(CommonRoute.Main.Home) {
+                                inclusive = false
+                            }
+                        }
                     }
                 }
             },
