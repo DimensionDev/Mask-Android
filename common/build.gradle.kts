@@ -15,7 +15,11 @@ kotlin {
                 kspAndroid(projects.common.routeProcessor)
             }
         }
-
+        val commonTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
+            }
+        }
         val androidMain by getting {
             dependencies {
                 api(projects.wallet.export)
@@ -68,11 +72,6 @@ kotlin {
                 api("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.Kotlin.serialization}")
 
                 implementation("androidx.biometric:biometric-ktx:${Versions.Androidx.biometric}")
-            }
-        }
-        val androidTest by getting {
-            dependencies {
-                implementation("junit:junit:4.13.2")
             }
         }
     }
