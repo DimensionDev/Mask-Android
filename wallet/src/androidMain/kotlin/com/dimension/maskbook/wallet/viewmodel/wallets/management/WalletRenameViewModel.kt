@@ -27,15 +27,19 @@ import com.dimension.maskbook.wallet.repository.IWalletRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class WalletRenameViewModel(
-    private val id: String,
+    private val walletId: String,
+    initialWalletName: String,
     private val repository: IWalletRepository,
 ) : ViewModel() {
-    private val _name = MutableStateFlow("")
-    val name = _name.asStateIn(viewModelScope, "")
+
+    private val _name = MutableStateFlow(initialWalletName)
+    val name = _name.asStateIn(viewModelScope)
+
     fun setName(value: String) {
         _name.value = value
     }
+
     fun confirm() {
-        repository.renameWallet(_name.value, id)
+        repository.renameWallet(_name.value, walletId)
     }
 }
