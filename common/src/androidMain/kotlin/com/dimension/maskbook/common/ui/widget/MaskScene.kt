@@ -57,6 +57,7 @@ fun MaskScene(
                 extendToBottom = extendViewIntoNavigationBar,
                 extendToStart = extendViewIntoNavigationBar,
                 extendToEnd = extendViewIntoNavigationBar,
+                darkTheme = darkTheme,
             ),
             color = NativeInsetsColor(
                 top = statusBarColor,
