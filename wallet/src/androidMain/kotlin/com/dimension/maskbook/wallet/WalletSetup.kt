@@ -304,6 +304,7 @@ private fun Module.provideViewModel() {
             get(),
             get(),
             get(),
+            get<Context>().packageManager,
             onResult
         )
     }
@@ -314,5 +315,5 @@ private fun Module.provideViewModel() {
 }
 
 private fun Module.provideServices() {
-    single { WalletServices() }
+    single { WalletServices(get()) }
 }
