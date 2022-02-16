@@ -64,16 +64,14 @@ fun PhoneCodeInputModal(
     subTitle: @Composable ((ColumnScope) -> Unit)? = null,
     footer: @Composable (ColumnScope) -> Unit = {},
 ) {
-    MaskModal {
+    MaskModal(
+        title = {
+            Text(text = title)
+        },
+    ) {
         Column(
             modifier = Modifier.padding(ScaffoldPadding)
         ) {
-            Text(
-                modifier = Modifier.fillMaxWidth(),
-                text = title,
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.h6,
-            )
             subTitle?.let {
                 Spacer(modifier = Modifier.height(13.dp))
                 it.invoke(this)
