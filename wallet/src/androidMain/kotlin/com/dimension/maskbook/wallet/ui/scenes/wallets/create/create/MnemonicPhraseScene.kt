@@ -54,6 +54,7 @@ import androidx.compose.ui.unit.sp
 import com.dimension.maskbook.common.ui.theme.MaskTheme
 import com.dimension.maskbook.common.ui.widget.MaskBackButton
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
+import com.dimension.maskbook.common.ui.widget.MaskScene
 import com.dimension.maskbook.common.ui.widget.MaskTopAppBar
 import com.dimension.maskbook.common.ui.widget.PrimaryButton
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
@@ -73,7 +74,7 @@ fun MnemonicPhraseScene(
     LaunchedEffect(Unit) {
         onRefreshWords.invoke()
     }
-    MaskTheme {
+    MaskScene {
         MaskScaffold(
             topBar = {
                 MaskTopAppBar(

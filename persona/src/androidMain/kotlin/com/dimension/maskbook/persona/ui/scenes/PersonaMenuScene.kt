@@ -49,6 +49,7 @@ import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.ui.widget.MaskBackButton
 import com.dimension.maskbook.common.ui.widget.MaskCard
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
+import com.dimension.maskbook.common.ui.widget.MaskScene
 import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.persona.R
@@ -64,132 +65,134 @@ fun PersonaMenuScene(
     navController: NavController,
     onBack: () -> Unit,
 ) {
-    MaskScaffold(
-        topBar = {
-            MaskSingleLineTopAppBar(
-                navigationIcon = {
-                    MaskBackButton(onBack = onBack)
-                },
-                title = {
-                    Text(text = personaData.name)
-                }
-            )
-        }
-    ) {
-        CompositionLocalProvider(
-            LocalTextStyle provides MaterialTheme.typography.subtitle1
+    MaskScene {
+        MaskScaffold(
+            topBar = {
+                MaskSingleLineTopAppBar(
+                    navigationIcon = {
+                        MaskBackButton(onBack = onBack)
+                    },
+                    title = {
+                        Text(text = personaData.name)
+                    }
+                )
+            }
         ) {
-            Column(
-                modifier = Modifier
-                    .verticalScroll(rememberScrollState())
-                    .padding(ScaffoldPadding),
-                horizontalAlignment = Alignment.CenterHorizontally,
+            CompositionLocalProvider(
+                LocalTextStyle provides MaterialTheme.typography.subtitle1
             ) {
-                MaskCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    elevation = 0.dp,
-                    onClick = {
-                        navController.navigate(PersonaRoute.SwitchPersona)
-                    }
+                Column(
+                    modifier = Modifier
+                        .verticalScroll(rememberScrollState())
+                        .padding(ScaffoldPadding),
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    Row(
-                        modifier = Modifier.padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically,
+                    MaskCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        elevation = 0.dp,
+                        onClick = {
+                            navController.navigate(PersonaRoute.SwitchPersona)
+                        }
                     ) {
-                        Image(
-                            painterResource(id = R.drawable.ic_profile),
-                            contentDescription = null
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(text = stringResource(R.string.scene_personas_action_change_add_persona))
-                    }
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-                MaskCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    elevation = 0.dp,
-                    onClick = {
-                        navController.navigate(PersonaRoute.RenamePersona(personaData.id))
-                    }
-                ) {
-                    Row(
-                        modifier = Modifier.padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Image(
-                            painterResource(id = R.drawable.ic_edit),
-                            contentDescription = null
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(text = stringResource(R.string.scene_personas_action_rename))
-                    }
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-                MaskCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    elevation = 0.dp,
-                    onClick = {
-                        // first check if it has backup password
-                        if (backupPassword.isEmpty()) {
-                            navController.navigate(Uri.parse(Deeplinks.Setting.SetupPasswordDialog))
-                        } else {
-                            navController.navigate(Uri.parse(Deeplinks.Wallet.BackUpPassword(PersonaRoute.ExportPrivateKey)))
+                        Row(
+                            modifier = Modifier.padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Image(
+                                painterResource(id = R.drawable.ic_profile),
+                                contentDescription = null
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(text = stringResource(R.string.scene_personas_action_change_add_persona))
                         }
                     }
-                ) {
-                    Row(
-                        modifier = Modifier.padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically,
+                    Spacer(modifier = Modifier.height(16.dp))
+                    MaskCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        elevation = 0.dp,
+                        onClick = {
+                            navController.navigate(PersonaRoute.RenamePersona(personaData.id))
+                        }
                     ) {
-                        Image(
-                            painterResource(id = R.drawable.ic_password),
-                            contentDescription = null
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(text = stringResource(R.string.scene_persona_export_private_key_title))
+                        Row(
+                            modifier = Modifier.padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Image(
+                                painterResource(id = R.drawable.ic_edit),
+                                contentDescription = null
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(text = stringResource(R.string.scene_personas_action_rename))
+                        }
                     }
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-                MaskCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    elevation = 0.dp,
-                    onClick = {
-                        navController.navigate(
-                            Uri.parse(if (backupPassword.isEmpty() || paymentPassword.isEmpty()) Deeplinks.Setting.SetupPasswordDialog else Deeplinks.Setting.BackupData.BackupSelection)
-                        )
-                    }
-                ) {
-                    Row(
-                        modifier = Modifier.padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically,
+                    Spacer(modifier = Modifier.height(16.dp))
+                    MaskCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        elevation = 0.dp,
+                        onClick = {
+                            // first check if it has backup password
+                            if (backupPassword.isEmpty()) {
+                                navController.navigate(Uri.parse(Deeplinks.Setting.SetupPasswordDialog))
+                            } else {
+                                navController.navigate(Uri.parse(Deeplinks.Wallet.BackUpPassword(PersonaRoute.ExportPrivateKey)))
+                            }
+                        }
                     ) {
-                        Image(
-                            painterResource(id = R.drawable.ic_paper_plus),
-                            contentDescription = null
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(text = stringResource(R.string.common_controls_back_up))
+                        Row(
+                            modifier = Modifier.padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Image(
+                                painterResource(id = R.drawable.ic_password),
+                                contentDescription = null
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(text = stringResource(R.string.scene_persona_export_private_key_title))
+                        }
                     }
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-                MaskCard(
-                    modifier = Modifier.fillMaxWidth(),
-                    elevation = 0.dp,
-                    onClick = {
-                        navController.navigate(PersonaRoute.Logout)
-                    }
-                ) {
-                    Row(
-                        modifier = Modifier.padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically,
+                    Spacer(modifier = Modifier.height(16.dp))
+                    MaskCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        elevation = 0.dp,
+                        onClick = {
+                            navController.navigate(
+                                Uri.parse(if (backupPassword.isEmpty() || paymentPassword.isEmpty()) Deeplinks.Setting.SetupPasswordDialog else Deeplinks.Setting.BackupData.BackupSelection)
+                            )
+                        }
                     ) {
-                        Icon(
-                            painterResource(id = R.drawable.ic_logout),
-                            contentDescription = null,
-                            tint = Color.Red,
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(text = stringResource(R.string.scene_setting_profile_log_out), color = Color.Red)
+                        Row(
+                            modifier = Modifier.padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Image(
+                                painterResource(id = R.drawable.ic_paper_plus),
+                                contentDescription = null
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(text = stringResource(R.string.common_controls_back_up))
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                    MaskCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        elevation = 0.dp,
+                        onClick = {
+                            navController.navigate(PersonaRoute.Logout)
+                        }
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Icon(
+                                painterResource(id = R.drawable.ic_logout),
+                                contentDescription = null,
+                                tint = Color.Red,
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(text = stringResource(R.string.scene_setting_profile_log_out), color = Color.Red)
+                        }
                     }
                 }
             }

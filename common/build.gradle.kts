@@ -55,6 +55,7 @@ kotlin {
                 api("com.google.accompanist:accompanist-navigation-animation:${Versions.accompanist}")
                 api("com.google.accompanist:accompanist-navigation-material:${Versions.accompanist}")
                 api("com.google.accompanist:accompanist-permissions:${Versions.accompanist}")
+                api("com.google.accompanist:accompanist-insets:${Versions.accompanist}")
 
                 // coroutines
                 api("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.Kotlin.coroutines}")

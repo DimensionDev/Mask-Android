@@ -22,10 +22,11 @@ package com.dimension.maskbook.wallet.ui.scenes.wallets.management
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
@@ -62,7 +63,9 @@ fun WalletManagementModal(
             )
         }
     ) {
-        Column {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
             WalletManagementItem(
                 onClick = onRename,
                 icon = R.drawable.ic_rename_wallet,
@@ -73,7 +76,15 @@ fun WalletManagementModal(
                     Text(text = walletData.name)
                 }
             )
-            Spacer(Modifier.height(16.dp))
+            if (!walletData.fromWalletConnect) {
+                WalletManagementItem(
+                    onClick = onBackup,
+                    icon = R.drawable.ic_back_up,
+                    text = {
+                        Text(text = stringResource(R.string.scene_personas_action_backup))
+                    },
+                )
+            }
             WalletManagementItem(
                 onClick = onTransactionHistory,
                 icon = R.drawable.ic_transaction_history,
@@ -81,7 +92,6 @@ fun WalletManagementModal(
                     Text(text = stringResource(R.string.scene_wallet_detail_wallet_items_history))
                 },
             )
-            Spacer(Modifier.height(16.dp))
             if (walletData.fromWalletConnect) {
                 WalletManagementItem(
                     onClick = onDisconnect,
@@ -94,14 +104,6 @@ fun WalletManagementModal(
                     },
                 )
             } else {
-                WalletManagementItem(
-                    onClick = onBackup,
-                    icon = R.drawable.ic_back_up,
-                    text = {
-                        Text(text = stringResource(R.string.scene_personas_action_backup))
-                    },
-                )
-                Spacer(Modifier.height(16.dp))
                 WalletManagementItem(
                     onClick = onDelete,
                     icon = R.drawable.ic_delete_wallet,

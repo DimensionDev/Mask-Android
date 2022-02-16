@@ -39,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.common.ui.theme.isDarkTheme
+import com.google.accompanist.insets.navigationBarsWithImePadding
 
 @Composable
 fun MaskModal(
@@ -49,7 +50,9 @@ fun MaskModal(
     content: @Composable () -> Unit,
 ) {
     Column(
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier
+            .fillMaxWidth()
+            .navigationBarsWithImePadding()
             .animateContentSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {

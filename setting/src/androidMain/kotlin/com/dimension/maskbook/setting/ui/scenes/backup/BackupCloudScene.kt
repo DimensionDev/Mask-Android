@@ -40,11 +40,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.common.ext.observeAsState
-import com.dimension.maskbook.common.ui.theme.MaskTheme
 import com.dimension.maskbook.common.ui.widget.BackMetaDisplay
 import com.dimension.maskbook.common.ui.widget.MaskBackButton
 import com.dimension.maskbook.common.ui.widget.MaskPasswordInputField
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
+import com.dimension.maskbook.common.ui.widget.MaskScene
 import com.dimension.maskbook.common.ui.widget.MaskTopAppBar
 import com.dimension.maskbook.common.ui.widget.MetaItem
 import com.dimension.maskbook.common.ui.widget.PrimaryButton
@@ -66,7 +66,7 @@ fun BackupCloudScene(
     val backupPasswordValid by viewModel.backupPasswordValid.observeAsState(initial = false)
     val paymentPassword by viewModel.paymentPassword.observeAsState(initial = "")
     val paymentPasswordValid by viewModel.paymentPasswordValid.observeAsState(initial = false)
-    MaskTheme {
+    MaskScene {
         MaskScaffold(
             topBar = {
                 MaskTopAppBar(
