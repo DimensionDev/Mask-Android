@@ -21,15 +21,20 @@
 package com.dimension.maskbook
 
 import android.os.Bundle
+import android.view.WindowManager
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.unit.dp
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.navigation.plusAssign
 import coil.ImageLoader
 import coil.compose.LocalImageLoader
@@ -39,19 +44,21 @@ import com.dimension.maskbook.common.route
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.ui.LocalRootNavController
 import com.dimension.maskbook.common.ui.theme.MaskTheme
+import com.dimension.maskbook.common.ui.widget.LocalWindowInsetsController
 import com.dimension.maskbook.labs.LabsSetup
 import com.dimension.maskbook.persona.PersonaSetup
 import com.dimension.maskbook.setting.SettingSetup
 import com.dimension.maskbook.wallet.WalletSetup
 import com.dimension.maskbook.wallet.route.WalletRoute
 import com.dimension.maskbook.wallet.route.mainRoute
+import com.google.accompanist.insets.ProvideWindowInsets
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 
-class ComposeActivity : AppCompatActivity() {
+class ComposeActivity : ComponentActivity() {
     companion object {
         object Destination {
             val register = WalletRoute.Register.Init
@@ -59,20 +66,31 @@ class ComposeActivity : AppCompatActivity() {
         }
     }
 
+    private val windowInsetsControllerCompat by lazy {
+        WindowInsetsControllerCompat(window, window.decorView)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
         val startDestination = intent.getStringExtra("startDestination") ?: Destination.register
         setContent {
             CompositionLocalProvider(
                 LocalImageLoader provides ImageLoader.Builder(this).componentRegistry {
                     add(SvgDecoder(this@ComposeActivity))
-                }.build()
+                }.build(),
+                LocalWindowInsetsController provides windowInsetsControllerCompat,
             ) {
-                MaskTheme {
-                    App(
-                        onBack = { finish() },
-                        startDestination = startDestination,
-                    )
+                ProvideWindowInsets(
+                    windowInsetsAnimationsEnabled = true
+                ) {
+                    MaskTheme {
+                        App(
+                            onBack = { finish() },
+                            startDestination = startDestination,
+                        )
+                    }
                 }
             }
         }
@@ -92,6 +110,10 @@ fun App(
         ModalBottomSheetLayout(
             bottomSheetNavigator,
             sheetBackgroundColor = MaterialTheme.colors.background,
+            sheetShape = MaterialTheme.shapes.large.copy(
+                bottomStart = CornerSize(0.dp),
+                bottomEnd = CornerSize(0.dp),
+            )
         ) {
             AnimatedNavHost(
                 navController = navController,

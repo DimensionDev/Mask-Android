@@ -45,6 +45,7 @@ import com.dimension.maskbook.common.ui.widget.MaskBackButton
 import com.dimension.maskbook.common.ui.widget.MaskButton
 import com.dimension.maskbook.common.ui.widget.MaskListItem
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
+import com.dimension.maskbook.common.ui.widget.MaskScene
 import com.dimension.maskbook.common.ui.widget.MaskTopAppBar
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.wallet.R
@@ -57,48 +58,50 @@ fun RecoveryHomeScene(
     onLocalBackup: () -> Unit,
     onRemoteBackup: () -> Unit,
 ) {
-    MaskScaffold(
-        topBar = {
-            MaskTopAppBar(
-                title = {
-                    Text(text = stringResource(R.string.scene_identity_empty_recovery_sign_in))
-                },
-                navigationIcon = {
-                    MaskBackButton(
-                        onBack = onBack,
-                    )
-                }
-            )
-        }
-    ) {
-        Column(
-            modifier = Modifier.fillMaxSize().padding(ScaffoldPadding),
-            horizontalAlignment = Alignment.CenterHorizontally,
+    MaskScene {
+        MaskScaffold(
+            topBar = {
+                MaskTopAppBar(
+                    title = {
+                        Text(text = stringResource(R.string.scene_identity_empty_recovery_sign_in))
+                    },
+                    navigationIcon = {
+                        MaskBackButton(
+                            onBack = onBack,
+                        )
+                    }
+                )
+            }
         ) {
-            ItemButton(
-                icon = R.drawable.ic_recovery_identity,
-                text = stringResource(R.string.scene_identity_mnemonic_import_title),
-                secondaryText = "Recovering your persona.",
-                onClick = onIdentity,
-            )
-            ItemButton(
-                icon = R.drawable.ic_recovery_private_key,
-                text = stringResource(R.string.scene_identity_privatekey_import_title),
-                secondaryText = "Recovering your persona.",
-                onClick = onPrivateKey,
-            )
-            ItemButton(
-                icon = R.drawable.ic_recovery_local_backup,
-                text = stringResource(R.string.scene_identity_recovery_local_backup_recovery_button),
-                secondaryText = "Recovering your personas and wallets (if backed up).",
-                onClick = onLocalBackup,
-            )
-            ItemButton(
-                icon = R.drawable.ic_recovery_icloud_backup,
-                text = stringResource(R.string.scene_identity_recovery_cloud_backup_recovery_button_title),
-                secondaryText = "Recovering your personas and wallets (if backed up) with Email or phone number.",
-                onClick = onRemoteBackup,
-            )
+            Column(
+                modifier = Modifier.fillMaxSize().padding(ScaffoldPadding),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                ItemButton(
+                    icon = R.drawable.ic_recovery_identity,
+                    text = stringResource(R.string.scene_identity_mnemonic_import_title),
+                    secondaryText = "Recovering your persona.",
+                    onClick = onIdentity,
+                )
+                ItemButton(
+                    icon = R.drawable.ic_recovery_private_key,
+                    text = stringResource(R.string.scene_identity_privatekey_import_title),
+                    secondaryText = "Recovering your persona.",
+                    onClick = onPrivateKey,
+                )
+                ItemButton(
+                    icon = R.drawable.ic_recovery_local_backup,
+                    text = stringResource(R.string.scene_identity_recovery_local_backup_recovery_button),
+                    secondaryText = "Recovering your personas and wallets (if backed up).",
+                    onClick = onLocalBackup,
+                )
+                ItemButton(
+                    icon = R.drawable.ic_recovery_icloud_backup,
+                    text = stringResource(R.string.scene_identity_recovery_cloud_backup_recovery_button_title),
+                    secondaryText = "Recovering your personas and wallets (if backed up) with Email or phone number.",
+                    onClick = onRemoteBackup,
+                )
+            }
         }
     }
 }
