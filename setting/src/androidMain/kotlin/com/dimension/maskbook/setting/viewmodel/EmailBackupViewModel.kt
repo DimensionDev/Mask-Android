@@ -20,46 +20,38 @@
  */
 package com.dimension.maskbook.setting.viewmodel
 
-import android.os.CountDownTimer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.Validator
 import com.dimension.maskbook.common.ext.asStateIn
+import com.dimension.maskbook.setting.defaultCountDownTime
+import com.dimension.maskbook.setting.defaultRegionCode
 import com.dimension.maskbook.setting.repository.BackupRepository
 import com.dimension.maskbook.setting.services.model.DownloadResponse
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.seconds
 
 class EmailBackupViewModel(
     private val backupRepository: BackupRepository,
-    private val requestMerge: (target: DownloadResponse, email: String, code: String) -> Unit,
-    private val next: (email: String, code: String) -> Unit,
-) : RemoteBackupRecoveryViewModelBase(
-    { }
-) {
-    override fun verifyCode(code: String, value: String, skipValidate: Boolean): Job = viewModelScope.launch {
-        _loading.value = true
-        try {
-            if (!skipValidate) backupRepository.validateEmailCode(email = value, code = code)
-        } catch (e: Throwable) {
-            _codeValid.value = false
-        }
-        try {
-            val target = backupRepository.getBackupInformationByEmail(email = value, code = code)
-            requestMerge.invoke(target, value, code)
-        } catch (e: Throwable) {
-            next.invoke(value, code)
-        }
-        _loading.value = false
-    }
+) : RemoteBackupRecoveryViewModelBase() {
 
-    override suspend fun downloadBackupInternal(code: String, value: String): String {
-        throw NotImplementedError()
-    }
+    suspend fun verifyCodeNow(code: String, email: String, skipValidate: Boolean = false): Result<DownloadResponse> {
+        return try {
+            _loading.value = true
 
-    override suspend fun verifyCodeInternal(value: String, code: String) {
-        throw NotImplementedError()
+            if (!skipValidate) {
+                backupRepository.validateEmailCode(email = email, code = code)
+            }
+            val target = backupRepository.getBackupInformationByEmail(email = email, code = code)
+
+            Result.success(target)
+        } catch (e: Throwable) {
+            Result.failure(e)
+        } finally {
+            _loading.value = false
+        }
     }
 
     override fun validate(value: String): Boolean {
@@ -73,39 +65,30 @@ class EmailBackupViewModel(
 
 class PhoneBackupViewModel(
     private val backupRepository: BackupRepository,
-    private val requestMerge: (target: DownloadResponse, phone: String, code: String) -> Unit,
-    private val next: (phone: String, code: String) -> Unit,
-) : RemoteBackupRecoveryViewModelBase(
-    {}
-) {
-    private val _regionCode = MutableStateFlow("+86")
-    val regionCode = _regionCode.asStateIn(viewModelScope, "+86")
+) : RemoteBackupRecoveryViewModelBase() {
+
+    private val _regionCode = MutableStateFlow(defaultRegionCode)
+    val regionCode = _regionCode.asStateIn(viewModelScope)
+
     fun setRegionCode(value: String) {
         _regionCode.value = value
     }
 
-    override fun verifyCode(code: String, value: String, skipValidate: Boolean): Job = viewModelScope.launch {
-        _loading.value = true
-        try {
-            if (!skipValidate) backupRepository.validateEmailCode(email = value, code = code)
-        } catch (e: Throwable) {
-            _codeValid.value = false
-        }
-        try {
-            val target = backupRepository.getBackupInformationByPhone(phone = value, code = code)
-            requestMerge.invoke(target, value, code)
-        } catch (e: Throwable) {
-            next.invoke(value, code)
-        }
-        _loading.value = false
-    }
+    suspend fun verifyCodeNow(code: String, phone: String, skipValidate: Boolean = false): Result<DownloadResponse> {
+        return try {
+            _loading.value = true
 
-    override suspend fun downloadBackupInternal(code: String, value: String): String {
-        throw NotImplementedError()
-    }
+            if (!skipValidate) {
+                backupRepository.validatePhoneCode(phone = phone, code = code)
+            }
+            val target = backupRepository.getBackupInformationByPhone(phone = phone, code = code)
 
-    override suspend fun verifyCodeInternal(value: String, code: String) {
-        throw NotImplementedError()
+            Result.success(target)
+        } catch (e: Throwable) {
+            Result.failure(e)
+        } finally {
+            _loading.value = false
+        }
     }
 
     override fun validate(value: String): Boolean {
@@ -117,46 +100,28 @@ class PhoneBackupViewModel(
     }
 }
 
-abstract class RemoteBackupRecoveryViewModelBase(
-    private val requestNavigate: (NavigateArgs) -> Unit,
-) : ViewModel() {
-
-    enum class NavigateTarget {
-        Code,
-        NoBackup,
-        RestoreBackup,
-        Next,
-    }
-
-    data class NavigateArgs(
-        val value: String,
-        val target: NavigateTarget,
-    )
+abstract class RemoteBackupRecoveryViewModelBase : ViewModel() {
 
     private val _value = MutableStateFlow("")
-    val value = _value.asStateIn(viewModelScope, "")
-    private val _valueValid = MutableStateFlow(true)
-    val valueValid = _valueValid.asStateIn(viewModelScope, true)
-    private val _code = MutableStateFlow("")
-    val code = _code.asStateIn(viewModelScope, "")
-    protected val _codeValid = MutableStateFlow(true)
-    val codeValid = _codeValid.asStateIn(viewModelScope, true)
-    private val _countdown = MutableStateFlow(60)
-    val countdown = _countdown.asStateIn(viewModelScope, 60)
-    private val _canSend = MutableStateFlow(true)
-    val canSend = _canSend.asStateIn(viewModelScope, true)
-    protected val _loading = MutableStateFlow(false)
-    val loading = _loading.asStateIn(viewModelScope, false)
-    private val _time = object : CountDownTimer(60 * 1000L, 1000) {
-        override fun onTick(millisUntilFinished: Long) {
-            _countdown.value = (millisUntilFinished / 1000).toInt()
-        }
+    val value = _value.asStateIn(viewModelScope)
 
-        override fun onFinish() {
-            _countdown.value = 60
-            _canSend.value = true
-        }
-    }
+    private val _valueValid = MutableStateFlow(true)
+    val valueValid = _valueValid.asStateIn(viewModelScope)
+
+    private val _code = MutableStateFlow("")
+    val code = _code.asStateIn(viewModelScope)
+
+    protected val _codeValid = MutableStateFlow(true)
+    val codeValid = _codeValid.asStateIn(viewModelScope)
+
+    private val _countdown = MutableStateFlow(0)
+    val countdown = _countdown.asStateIn(viewModelScope)
+
+    private val _canSend = MutableStateFlow(true)
+    val canSend = _canSend.asStateIn(viewModelScope)
+
+    protected val _loading = MutableStateFlow(false)
+    val loading = _loading.asStateIn(viewModelScope)
 
     fun setValue(value: String) {
         _value.value = value
@@ -168,44 +133,33 @@ abstract class RemoteBackupRecoveryViewModelBase(
         _code.value = value
     }
 
-    // if skipValidate is true then verifyCodeInternal will not be called
-    open fun verifyCode(code: String, value: String, skipValidate: Boolean = false) = viewModelScope.launch {
-        _loading.value = true
-        try {
-            if (!skipValidate) verifyCodeInternal(value, code)
-        } catch (e: Throwable) {
-            _codeValid.value = false
-            _loading.value = false
-            return@launch
-        }
-        try {
-            val uri = downloadBackupInternal(code, value)
-            requestNavigate.invoke(NavigateArgs(uri, NavigateTarget.RestoreBackup))
-        } catch (e: Throwable) {
-            requestNavigate.invoke(NavigateArgs(value, NavigateTarget.NoBackup))
-        }
-        _loading.value = false
-    }
-
-    abstract suspend fun downloadBackupInternal(code: String, value: String): String
-
-    abstract suspend fun verifyCodeInternal(value: String, code: String)
-
-    fun startCountDown() {
+    fun startCountDown() = viewModelScope.launch {
         _canSend.value = false
-        _time.start()
+
+        _countdown.value = defaultCountDownTime
+        while (_countdown.value > 0) {
+            delay(1.seconds)
+            _countdown.value -= 1
+        }
+
+        _canSend.value = true
     }
 
     protected abstract fun validate(value: String): Boolean
-    fun sendCode(value: String) = viewModelScope.launch {
-        _loading.value = true
-        try {
-            sendCodeInternal(value)
-            requestNavigate.invoke(NavigateArgs(value, NavigateTarget.Code))
+
+    suspend fun sendCodeNow(code: String): Result<Unit> {
+        return try {
+            _loading.value = true
+
             startCountDown()
+            sendCodeInternal(code)
+
+            Result.success(Unit)
         } catch (e: Throwable) {
+            Result.failure(e)
+        } finally {
+            _loading.value = false
         }
-        _loading.value = false
     }
 
     abstract suspend fun sendCodeInternal(value: String)

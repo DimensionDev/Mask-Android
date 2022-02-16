@@ -23,37 +23,30 @@ package com.dimension.maskbook.setting.viewmodel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.Validator
 import com.dimension.maskbook.common.ext.asStateIn
+import com.dimension.maskbook.setting.defaultRegionCode
 import com.dimension.maskbook.setting.repository.BackupRepository
 import com.dimension.maskbook.setting.repository.ISettingsRepository
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
 
 class EmailSetupViewModel(
     private val settingsRepository: ISettingsRepository,
     private val backupRepository: BackupRepository,
-    private val requestNavigate: (NavigateArgs) -> Unit,
-) : RemoteBackupRecoveryViewModelBase(
-    requestNavigate
-) {
-    override fun verifyCode(code: String, value: String, skipValidate: Boolean): Job = viewModelScope.launch {
-        _loading.value = true
-        try {
+) : RemoteBackupRecoveryViewModelBase() {
+
+    suspend fun verifyCodeNow(code: String, value: String): Result<Unit> {
+        return try {
+            _loading.value = true
+
             backupRepository.validateEmailCode(email = value, code = code)
             settingsRepository.saveEmailForCurrentPersona(value)
-            requestNavigate.invoke(NavigateArgs(value, NavigateTarget.Next))
+
+            Result.success(Unit)
         } catch (e: Throwable) {
             _codeValid.value = false
+            Result.failure(e)
+        } finally {
+            _loading.value = false
         }
-        _loading.value = false
-    }
-
-    override suspend fun downloadBackupInternal(code: String, value: String): String {
-        throw NotImplementedError()
-    }
-
-    override suspend fun verifyCodeInternal(value: String, code: String) {
-        throw NotImplementedError()
     }
 
     override fun validate(value: String): Boolean {
@@ -67,35 +60,29 @@ class EmailSetupViewModel(
 
 class PhoneSetupViewModel(
     private val settingsRepository: ISettingsRepository,
-    private val requestNavigate: (NavigateArgs) -> Unit,
     private val backupRepository: BackupRepository,
-) : RemoteBackupRecoveryViewModelBase(
-    requestNavigate
-) {
-    private val _regionCode = MutableStateFlow("+86")
-    val regionCode = _regionCode.asStateIn(viewModelScope, "+86")
+) : RemoteBackupRecoveryViewModelBase() {
+
+    private val _regionCode = MutableStateFlow(defaultRegionCode)
+    val regionCode = _regionCode.asStateIn(viewModelScope)
+
     fun setRegionCode(value: String) {
         _regionCode.value = value
     }
 
-    override fun verifyCode(code: String, value: String, skipValidate: Boolean): Job = viewModelScope.launch {
-        _loading.value = true
-        try {
-            backupRepository.validatePhoneCode(phone = value, code = code)
-            settingsRepository.savePhoneForCurrentPersona(value)
-            requestNavigate.invoke(NavigateArgs(value, NavigateTarget.Next))
+    suspend fun verifyCodeNow(code: String, phone: String): Result<Unit> {
+        return try {
+            _loading.value = true
+
+            backupRepository.validatePhoneCode(phone = phone, code = code)
+            settingsRepository.savePhoneForCurrentPersona(phone)
+
+            Result.success(Unit)
         } catch (e: Throwable) {
-            _codeValid.value = false
+            Result.failure(e)
+        } finally {
+            _loading.value = false
         }
-        _loading.value = false
-    }
-
-    override suspend fun downloadBackupInternal(code: String, value: String): String {
-        throw NotImplementedError()
-    }
-
-    override suspend fun verifyCodeInternal(value: String, code: String) {
-        throw NotImplementedError()
     }
 
     override fun validate(value: String): Boolean {
