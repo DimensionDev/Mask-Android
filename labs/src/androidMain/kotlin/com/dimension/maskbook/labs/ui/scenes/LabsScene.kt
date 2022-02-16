@@ -66,7 +66,7 @@ fun LabsScene(
                     Text(text = stringResource(R.string.tab_labs))
                 },
                 actions = {
-                    MaskIconButton(onClick = onSettingClick) {
+                    MaskIconCardButton(onClick = onSettingClick) {
                         Icon(
                             painterResource(id = R.drawable.ic_setting),
                             contentDescription = null,
