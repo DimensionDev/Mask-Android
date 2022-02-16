@@ -228,7 +228,7 @@ fun NavGraphBuilder.settingsRoute(
             val countDown by viewModel.countdown.observeAsState()
 
             LaunchedEffect(Unit) {
-                viewModel.startCountDown()
+                viewModel.sendCodeNow(email)
             }
 
             EmailCodeInputModal(
@@ -297,7 +297,6 @@ fun NavGraphBuilder.settingsRoute(
             val countDown by viewModel.countdown.observeAsState()
 
             LaunchedEffect(Unit) {
-                viewModel.startCountDown()
                 viewModel.sendCodeNow(email)
             }
 
@@ -370,7 +369,7 @@ fun NavGraphBuilder.settingsRoute(
             val countDown by viewModel.countdown.observeAsState()
 
             LaunchedEffect(Unit) {
-                viewModel.startCountDown()
+                viewModel.sendCodeNow(email)
             }
 
             EmailCodeInputModal(
@@ -464,6 +463,11 @@ fun NavGraphBuilder.settingsRoute(
             val valid by viewModel.codeValid.observeAsState()
             val countDown by viewModel.countdown.observeAsState()
             val loading by viewModel.loading.observeAsState()
+
+            LaunchedEffect(Unit) {
+                viewModel.sendCodeNow(phone)
+            }
+
             PhoneCodeInputModal(
                 phone = phone,
                 code = code,
@@ -527,6 +531,11 @@ fun NavGraphBuilder.settingsRoute(
             val valid by viewModel.codeValid.observeAsState()
             val countDown by viewModel.countdown.observeAsState()
             val loading by viewModel.loading.observeAsState()
+
+            LaunchedEffect(Unit) {
+                viewModel.sendCodeNow(phone)
+            }
+
             PhoneCodeInputModal(
                 phone = phone,
                 code = code,
@@ -596,6 +605,11 @@ fun NavGraphBuilder.settingsRoute(
             val valid by viewModel.codeValid.observeAsState()
             val countDown by viewModel.countdown.observeAsState()
             val loading by viewModel.loading.observeAsState()
+
+            LaunchedEffect(Unit) {
+                viewModel.sendCodeNow(phone)
+            }
+
             PhoneCodeInputModal(
                 phone = phone,
                 code = code,
