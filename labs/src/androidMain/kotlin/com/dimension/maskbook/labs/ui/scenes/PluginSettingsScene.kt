@@ -51,12 +51,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dimension.maskbook.common.ui.widget.IosSwitch
-import com.dimension.maskbook.common.ui.widget.MaskBackButton
 import com.dimension.maskbook.common.ui.widget.MaskListItem
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskScene
 import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
+import com.dimension.maskbook.common.ui.widget.button.MaskBackButton
 import com.dimension.maskbook.common.ui.widget.button.MaskButton
 import com.dimension.maskbook.common.ui.widget.button.MaskIconButton
 import com.dimension.maskbook.labs.viewmodel.PluginDisplayData

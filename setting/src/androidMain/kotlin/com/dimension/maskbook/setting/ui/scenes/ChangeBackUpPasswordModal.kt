@@ -44,7 +44,7 @@ import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.navHostAnimationDurationMillis
 import com.dimension.maskbook.common.ui.widget.MaskModal
 import com.dimension.maskbook.common.ui.widget.MaskPasswordInputField
-import com.dimension.maskbook.common.ui.widget.PrimaryButton
+import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.localization.R
 import com.dimension.maskbook.setting.viewmodel.BackupPasswordSettingsViewModel
 import org.koin.androidx.compose.getViewModel

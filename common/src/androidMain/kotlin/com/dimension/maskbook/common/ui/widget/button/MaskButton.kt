@@ -34,7 +34,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
-import com.dimension.maskbook.common.ui.widget.BaseButton
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable

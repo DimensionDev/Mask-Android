@@ -41,14 +41,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.common.ext.observeAsState
-import com.dimension.maskbook.common.ui.widget.MaskBackButton
 import com.dimension.maskbook.common.ui.widget.MaskInputField
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskScene
 import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
-import com.dimension.maskbook.common.ui.widget.PrimaryButton
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
-import com.dimension.maskbook.common.ui.widget.SecondaryButton
+import com.dimension.maskbook.common.ui.widget.button.MaskBackButton
+import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
+import com.dimension.maskbook.common.ui.widget.button.SecondaryButton
 import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.viewmodel.ExportPrivateKeyViewModel
 import org.koin.androidx.compose.getViewModel

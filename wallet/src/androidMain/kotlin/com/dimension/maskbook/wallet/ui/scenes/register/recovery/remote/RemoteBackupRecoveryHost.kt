@@ -48,7 +48,7 @@ import com.dimension.maskbook.common.ui.widget.EmailCodeInputModal
 import com.dimension.maskbook.common.ui.widget.MaskDialog
 import com.dimension.maskbook.common.ui.widget.MaskInputField
 import com.dimension.maskbook.common.ui.widget.MaskModal
-import com.dimension.maskbook.common.ui.widget.PrimaryButton
+import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.route.WalletRoute
 import com.dimension.maskbook.wallet.viewmodel.register.EmailRemoteBackupRecoveryViewModel

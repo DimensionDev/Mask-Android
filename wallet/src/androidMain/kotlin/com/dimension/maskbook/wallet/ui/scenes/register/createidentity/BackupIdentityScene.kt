@@ -41,14 +41,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.dimension.maskbook.common.ui.widget.MaskBackButton
 import com.dimension.maskbook.common.ui.widget.MaskCard
 import com.dimension.maskbook.common.ui.widget.MaskDialog
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskScene
 import com.dimension.maskbook.common.ui.widget.MaskTopAppBar
-import com.dimension.maskbook.common.ui.widget.PrimaryButton
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
+import com.dimension.maskbook.common.ui.widget.button.MaskBackButton
+import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.common.ui.widget.clickable
 import com.dimension.maskbook.common.ui.widget.itemsGridIndexed
 import com.dimension.maskbook.wallet.R

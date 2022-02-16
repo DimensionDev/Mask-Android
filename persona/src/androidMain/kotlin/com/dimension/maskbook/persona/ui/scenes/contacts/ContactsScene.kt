@@ -44,8 +44,8 @@ import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.ui.widget.MaskListItem
 import com.dimension.maskbook.common.ui.widget.NameImage
-import com.dimension.maskbook.common.ui.widget.PrimaryButton
 import com.dimension.maskbook.common.ui.widget.button.MaskButton
+import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.viewmodel.contacts.ContactsViewModel
 import org.koin.androidx.compose.getViewModel

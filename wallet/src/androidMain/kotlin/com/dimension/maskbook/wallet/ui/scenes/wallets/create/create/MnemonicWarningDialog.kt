@@ -29,7 +29,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.dimension.maskbook.common.ui.LocalRootNavController
 import com.dimension.maskbook.common.ui.widget.MaskDialog
-import com.dimension.maskbook.common.ui.widget.PrimaryButton
+import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.wallet.R
 
 @Composable

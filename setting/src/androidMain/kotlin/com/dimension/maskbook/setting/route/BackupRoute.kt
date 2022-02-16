@@ -64,8 +64,8 @@ import com.dimension.maskbook.common.ui.widget.MaskModal
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskScene
 import com.dimension.maskbook.common.ui.widget.PhoneCodeInputModal
-import com.dimension.maskbook.common.ui.widget.PrimaryButton
-import com.dimension.maskbook.common.ui.widget.SecondaryButton
+import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
+import com.dimension.maskbook.common.ui.widget.button.SecondaryButton
 import com.dimension.maskbook.localization.R
 import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.setting.repository.ISettingsRepository

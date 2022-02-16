@@ -41,7 +41,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.common.ui.LocalRootNavController
 import com.dimension.maskbook.common.ui.widget.MaskDialog
-import com.dimension.maskbook.common.ui.widget.PrimaryButton
+import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.wallet.R
 
 @Composable

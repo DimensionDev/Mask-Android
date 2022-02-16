@@ -43,7 +43,7 @@ import com.dimension.maskbook.common.ext.shareText
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.ui.widget.MaskDialog
-import com.dimension.maskbook.common.ui.widget.PrimaryButton
+import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.common.viewmodel.BiometricEnableViewModel
 import com.dimension.maskbook.setting.export.SettingServices
 import com.dimension.maskbook.wallet.R

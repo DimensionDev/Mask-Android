@@ -18,7 +18,7 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.common.ui.widget
+package com.dimension.maskbook.common.ui.widget.button
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -47,7 +47,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
-import com.dimension.maskbook.common.ui.widget.button.BaseTextButton
 
 @Composable
 fun SecondaryButton(

@@ -38,7 +38,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.common.ui.widget.MaskModal
 import com.dimension.maskbook.common.ui.widget.MaskPasswordInputField
-import com.dimension.maskbook.common.ui.widget.PrimaryButton
+import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.wallet.R
 
 @OptIn(ExperimentalComposeUiApi::class)

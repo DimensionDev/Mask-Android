@@ -48,7 +48,7 @@ import com.dimension.maskbook.common.ui.theme.MaskTheme
 import com.dimension.maskbook.common.ui.widget.MaskInputField
 import com.dimension.maskbook.common.ui.widget.MaskModal
 import com.dimension.maskbook.common.ui.widget.ModalPadding
-import com.dimension.maskbook.common.ui.widget.PrimaryButton
+import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.ext.fromHexString
 import com.dimension.maskbook.wallet.ext.hexWei

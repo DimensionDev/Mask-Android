@@ -45,7 +45,7 @@ import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.common.ui.widget.button.MaskButton
-import com.dimension.maskbook.common.ui.widget.button.MaskIconButton
+import com.dimension.maskbook.common.ui.widget.button.MaskIconCardButton
 import com.dimension.maskbook.labs.R
 import com.dimension.maskbook.labs.export.model.AppKey
 import com.dimension.maskbook.labs.viewmodel.AppDisplayData
