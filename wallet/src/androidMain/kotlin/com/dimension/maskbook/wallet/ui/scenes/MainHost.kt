@@ -120,7 +120,7 @@ fun MainHost(
                                     selected = pagerState.currentPage == index,
                                     onClick = {
                                         scope.launch {
-                                            pagerState.animateScrollToPage(index)
+                                            pagerState.scrollToPage(index)
                                         }
                                     },
                                     text = {
