@@ -26,6 +26,7 @@ import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.setting.defaultCountDownTime
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
 
@@ -34,8 +35,7 @@ abstract class RemoteBackupRecoveryViewModelBase : ViewModel() {
     private val _value = MutableStateFlow("")
     val value = _value.asStateIn(viewModelScope)
 
-    private val _valueValid = MutableStateFlow(true)
-    val valueValid = _valueValid.asStateIn(viewModelScope)
+    abstract val valueValid: StateFlow<Boolean>
 
     private val _code = MutableStateFlow("")
     val code = _code.asStateIn(viewModelScope)
@@ -54,7 +54,6 @@ abstract class RemoteBackupRecoveryViewModelBase : ViewModel() {
 
     fun setValue(value: String) {
         _value.value = value
-        _valueValid.value = validate(value)
         _codeValid.value = true
     }
 
@@ -73,8 +72,6 @@ abstract class RemoteBackupRecoveryViewModelBase : ViewModel() {
 
         _canSend.value = true
     }
-
-    protected abstract fun validate(value: String): Boolean
 
     suspend fun sendCodeNow(code: String): Result<Unit> {
         return try {

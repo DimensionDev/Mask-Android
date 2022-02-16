@@ -28,11 +28,19 @@ import com.dimension.maskbook.setting.repository.BackupRepository
 import com.dimension.maskbook.setting.repository.ISettingsRepository
 import com.dimension.maskbook.setting.viewmodel.base.RemoteBackupRecoveryViewModelBase
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 
 class EmailSetupViewModel(
     private val settingsRepository: ISettingsRepository,
     private val backupRepository: BackupRepository,
 ) : RemoteBackupRecoveryViewModelBase() {
+
+    override val valueValid: StateFlow<Boolean>
+        get() = value.map { email ->
+            Validator.isEmail(email)
+        }.asStateIn(viewModelScope, true)
 
     suspend fun verifyCodeNow(code: String, value: String): Result<Unit> {
         return try {
@@ -50,10 +58,6 @@ class EmailSetupViewModel(
         }
     }
 
-    override fun validate(value: String): Boolean {
-        return Validator.isEmail(value)
-    }
-
     override suspend fun sendCodeInternal(value: String) {
         backupRepository.sendEmailCode(value)
     }
@@ -66,6 +70,11 @@ class PhoneSetupViewModel(
 
     private val _regionCode = MutableStateFlow(defaultRegionCode)
     val regionCode = _regionCode.asStateIn(viewModelScope)
+
+    override val valueValid: StateFlow<Boolean>
+        get() = combine(_regionCode, value) { regionCode, phone ->
+            Validator.isPhone(regionCode + phone)
+        }.asStateIn(viewModelScope, true)
 
     fun setRegionCode(value: String) {
         _regionCode.value = value
@@ -84,10 +93,6 @@ class PhoneSetupViewModel(
         } finally {
             _loading.value = false
         }
-    }
-
-    override fun validate(value: String): Boolean {
-        return Validator.isPhone(_regionCode.value + value)
     }
 
     override suspend fun sendCodeInternal(value: String) {
