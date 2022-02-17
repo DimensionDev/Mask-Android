@@ -20,13 +20,13 @@
  */
 package com.dimension.maskbook.handler
 
+import com.dimension.maskbook.common.ext.decodeJson
+import com.dimension.maskbook.common.repository.Web3Request
+import com.dimension.maskbook.common.util.ExtensionResponseMessage
+import com.dimension.maskbook.common.util.MessageChannel
 import com.dimension.maskbook.ext.normalized
 import com.dimension.maskbook.platform.PlatformSwitcher
-import com.dimension.maskbook.repository.Web3Request
-import com.dimension.maskbook.util.ExtensionResponseMessage
-import com.dimension.maskbook.util.MessageChannel
 import com.dimension.maskbook.wallet.db.model.CoinPlatformType
-import com.dimension.maskbook.wallet.ext.decodeJson
 import com.dimension.maskbook.wallet.repository.IWalletRepository
 import com.dimension.maskbook.wallet.repository.SendTokenConfirmData
 import com.dimension.maskbook.wallet.repository.SendTransactionData
@@ -56,8 +56,9 @@ class Web3MessageHandler(
     private val scope = CoroutineScope(Dispatchers.IO)
     fun handle(request: Web3Request) {
         scope.launch {
-            if (request.payload?.id != null) {
-                when (request.payload.method) {
+            val payload = request.payload
+            if (payload?.id != null) {
+                when (payload.method) {
                     "getRPCurl" -> {
                         walletRepository.dWebData.firstOrNull()?.chainType?.endpoint?.let {
                             MessageChannel.sendResponseMessage(
@@ -85,7 +86,7 @@ class Web3MessageHandler(
                     }
                     "eth_sendTransaction" -> {
                         val data =
-                            request.payload.params.firstOrNull()?.toString()
+                            payload.params.firstOrNull()?.toString()
                                 ?.decodeJson<SendTransactionData>()
                                 ?: return@launch
                         platformSwitcher.showModal(
@@ -131,10 +132,10 @@ class Web3MessageHandler(
                     }
                     "personal_sign" -> {
                         val message =
-                            request.payload.params.getOrNull(0)?.normalized as? String
+                            payload.params.getOrNull(0)?.normalized as? String
                                 ?: return@launch
                         val fromAddress =
-                            request.payload.params.getOrNull(1)?.normalized as? String
+                            payload.params.getOrNull(1)?.normalized as? String
                                 ?: return@launch
 //                        val password = payload.params.getOrNull(2) ?: return@launch
                         val wallet =
@@ -156,7 +157,7 @@ class Web3MessageHandler(
                         )
                     }
                     else -> {
-                        val method = request.payload.method
+                        val method = payload.method
                         val chainType =
                             walletRepository.dWebData.firstOrNull()?.chainType ?: return@launch
                         val service = chainType.httpService
@@ -164,7 +165,7 @@ class Web3MessageHandler(
                             val response = service.send(
                                 Request(
                                     method,
-                                    request.payload.params.map { it.normalized },
+                                    payload.params.map { it.normalized },
                                     service,
                                     JsonResponse::class.java
                                 ),

@@ -1,0 +1,793 @@
+{
+    "tab": {
+        "personas": "Personas",
+        "wallet": "Wallet",
+        "labs": "Labs",
+        "setting": "Setting"
+    },
+    "common": {
+        "alert": {
+            "biometry_id_activate": {
+                "title": "Activation successful",
+                "description": "%s has been enabled successfully."
+            },
+            "face_id_activate_fail": {
+                "title": "Activation fails",
+                "description": "Fail to enable Face id."
+            },
+            "keychain_auth_prompt": {
+                "title": "Authenticate to use your secrets"
+            },
+            "recovery_key": {
+                "title": "Keep Recovery Key Carefully",
+                "description": "Your recovery key is composed of randomly selected words. Please carefully write down each word in the order it appears."
+            },
+            "recovery_key_warning": {
+                "title": "Warning",
+                "description": "Simply taking a screenshot of recovery phrase is not safe."
+            },
+            "recovery_key_tips": {
+                "title": "Store recovery key safely",
+                "description": "Your recovery key is composed of randomly selected words. Please carefully write down each word in the order it appears."
+            },
+            "wallet_create_success": {
+                "title": "Perfect!",
+                "description": "In order to protect your funds against hackers and thieves, store this recovery phrase in a safe and secure place."
+            }, 
+            "wallet_derive_success": {
+                "title": "Perfect!",
+                "description": "New wallet account created successfully"
+            }, 
+            "wallet_import": {
+                "alert_title_success": "Import completed!",
+                "alert_title_fail": "Error!"
+            },
+            "signout": {
+                "title": "Are you sure?",
+                "description": "Mask Network does not save any of your data. Please remember your account and password, and back up your data in time before your sign out."
+            },
+            "set_password": {
+                "title": "Payment Password set up successfully!",
+                "description": "You have successfully set up your payment password."
+            },
+            "change_password": {
+                "title": "Password changed successfully!",
+                "description": "You have successfully changed your payment password."
+            },
+            "change_password_failed": {
+                "title": "Password changed failed!"
+            },
+            "setup_backup_password": {
+                "title": "Backup Password set up successfully!",
+                "description": "You have successfully set up your backup password."
+            },
+            "setup_backup_password_failed": {
+                "title": "Backup Password set up failed!"
+            },
+            "change_backup_password": {
+                "title": "Backup Password changed successfully!",
+                "description": "You have successfully changed your backup password."
+            },
+            "change_backup_password_failed": {
+                "title": "Backup Password changed failed!"
+            },
+            "wallet_backup": {
+                "title": "Copied!"
+            },
+            "identity_phrase": {
+                "title": "Identity Phrase",
+                "description": "Your identity phrase is composed of randomly selected words. Please carefully write down each word in the order it appears."
+            },
+            "identify_code_screenshot_warning": {
+                "title": "Warning",
+                "description": "Simply taking a screenshot of identity code is not safe."
+            },
+            "identity_create": {
+                "title": "Identity created!",
+                "description": "Please don’t forget your identity code. Your identity code is the only proof of your user identity and the only basis for you to encrypt or decrypt social activities. "
+            },
+            "persona_logout": {
+                "title": "Confirm to log out?",
+                "description": "After logging out, your associated social accounts can no longer decrypt past encrypted messages."
+            },
+            "persona_name_duplicated": {
+            	"title": "The username has already been created."
+            },
+            "local_backup": {
+                "backup_completed": "Backup completed!",
+                "backup_failed": "Backup failed!"
+            },
+            "setting": {
+                "warning_backup_data_titile": " Set up password before backup",
+                "warning_backup_data_description": "We have detected that you haven’t set up your backup password and/or payment password. Please set up your backup password and/or payment password before you back up."
+            },
+            "disconnect_profile": {
+                "title": "Are you sure you want to disconnect the %s account of %s ? After disconnection, this account will no longer be able to decrypt and encrypt any information with Mask Network."
+            },
+            "bind_remote_info": {
+              "title": "Internet or server problems",
+              "detail": "Unable to verify because of internet connection or server problems. Please try again."
+            },
+            "export_private_key": {
+                "title": "Set up backup password ",
+                "description": "Please set up your %s before you export private key. "
+            },
+            "backup_tips_no_backup_password": {
+                "title": " Set up backup password",
+                "description": "Please set up your %s before you back up."
+            },
+            "copied_to_clipboard": {
+                "title": "Copied to clipboard"
+            },
+            "permissions": {
+                "title": "Allow %s access",
+                "description": "We need your permission to %s",
+                "open_settings": "Please, grant us access on the Settings screen.",
+                "btn": {
+                    "ok": "OK",
+                    "cancel": "Cancel",
+                    "settings": "Open Settings"
+                }
+            }
+        },
+        "controls": {
+            "create_wallet": "Create Wallet",
+            "import_wallet": "Import Wallet",
+            "accept": "Accept",
+            "enable": "Enable",
+            "no_thanks": "No thanks",
+            "done": "Done",
+            "ok": "Ok",
+            "i_understand": "Understood",
+            "verify": "Verify",
+            "confirm": "Confirm",
+            "sending": "Sending...",
+            "sent": "Sent",
+            "clear": "Clear",
+            "next": "Next",
+            "signout": "Sign Out",
+            "cancel": "Cancel",
+            "change": "Change",
+            "invite": "Invite",
+            "try_again": "Try Again",
+            "retry": "Retry",
+            "webview_go_back": "Back",
+            "merge_and_back_up": "Merge and back up",
+            "merge_to_local_data": "Merge to local data",
+            "back_up_to_cloud": "Back up to cloud",
+            "back_up_locally": "Back up locally",
+            "back_up": "Back up",
+            "resend": "Resend"
+        },
+        "loading": "Loading..."
+    },
+    "scene": {
+        "terms_of_service": {
+            "title": "Legal",
+            "description": "Please review the Privacy Policy and Terms of Service of Mask Network.",
+            "service_agreement": "Service Agreement"
+        },
+        "create_wallet": {
+           "wallet_name": "Wallet Name",
+           "wallet_name_placeholder": "Name your wallet",
+           "enter_password": "Enter Password",
+           "password_error": "Incorrect Password.",
+           "select_network": "Select Network",
+           "multichain_wallet_title": "Multi-chain wallet",
+           "multichain_wallet_description": "Our EVM compatible wallet supports the following blockchain networks:"
+        },
+        "biometry_recognition": {
+            "face_id": {
+                "title": "Unlock with Face ID?",
+                "description": "Unlock Mask Network faster by setting up facial recognition."
+            },
+            "touch_id": {
+                "title": "Unlock with touch ID?",
+                "description": "Unlock Mask faster with touch ID."
+            }
+        },
+        "biometry_id": {
+            "face_id": "Face ID",
+            "touch_id": "Touch ID",
+            "face_id_reason": "Mask Network needs FaceID to protect your wallet",
+            "touch_id_reason": "Mask Network needs TouchID to protect your wallet",
+            "passcode_notSet": "Authentication could not start because passcode is not set on the device.",
+            "biometry_not_enrolled": "Authentication could not start because %s has no enrolled identities.",
+            "biometry_lockout": "Authentication was not successful because there were too many failed %s attempts and %s is now locked. Passcode is required to unlock %s.",
+            "biometry_not_available": "Mask need your Authentication of %s. Please go to Setting -> Mask Network to open",
+            "biometry_has_changed": "Your %s has been changed, %s will be closed"
+        },
+        "wallet_detail": {
+            "wallet_items_rename": "Rename Wallet",
+            "wallet_items_backup": "Back up",
+            "wallet_items_delete": "Delete",
+            "wallet_title_change": "Change",
+            "wallet_items_history": "Transaction History"
+        },
+        "wallet_list": {
+            "title": "Switch Wallets",
+            "wallets_items_create": "Create a new wallet",
+            "wallets_items_import": "Import wallet",
+            "wallets_items_add": "Add wallet",
+            "wallets_list_import": "Imported"
+        },
+        "mnemonic_word": {
+            "title": "Mnemonic word",
+            "description": "Write down each word."
+        },
+        "mnemonic_verify": {
+            "title": "Verify Your Phrase",
+            "description": "Tap each word in the correct order.",
+            "words_title": "Tap each word in the correct order.",
+            "mnemonic_error": "The mnemonic is incorrect",
+            "mnemonic_prompt": "Tap the middle to replace the word."
+        },
+        "select_network": {
+        }, 
+        "wallets_list_add": {
+            "wallets_items_add": "Create a New Wallet",
+            "wallets_list_import": "Import Wallet"
+        },
+        "wallet_rename": {
+            "name_title": "Wallet name",
+            "placeholder": "Name your wallet",
+            "rename_button": "Rename"
+        },
+        "wallet_delete": {
+            "title": "Delete wallet",
+            "content": "Are you sure you want to delete this wallet? Your wallet cannot be recoverd without seed phrase.",
+            "password": "Password",
+            "placeholder": "Password",
+            "btn_cancel": "Cancel",
+            "btn_delete": "Delete"
+        },
+        "wallet_backup": {
+            "title": "Back up wallet",
+            "tab_keystore": "Keystore",
+            "tab_private_key": "Private Key",
+            "keystore_tips": "Please remember your current payment password. Your current payment password is required for decryption when using the wallet Keystore for recovery.",
+            "private_key_tips": "One can use the private key to recover wallet account directly. Please do not let anyone else see the private key.",
+            "btn_cancel": "Cancel",
+            "btn_copy": "Copy"
+        },
+        "wallet_edit": {
+            "item_rename": "Rename Wallet",
+            "item_delete": "Delete Wallet"
+        },
+        "wallet_import": {
+            "title": "Import wallet",
+            "item_mnemonic_words": "Mnemonic words",
+            "item_mnemonic_words_desc": "The mnemonic is composed of words and separated by spaces",
+            "item_private_key": "Private Key",
+            "item_private_key_desc": "Plaintext private key",
+            "item_keystore": "Keystore",
+            "item_keystore_desc": "Encrypted private key JSON content."
+        },
+        "wallet_derivation_path": {
+            "title": "Derivation path",
+            "header_address": "Address",
+            "header_balance": "Balance (%@)",
+            "header_operation": "Operation",
+            "operation_add": "Add",
+            "operation_added": "Added"
+        },
+        "wallet_mnemonic": {
+            "title": "Mnemonic",
+            "btn_confirm": "Confirm",
+            "placeholder": "Enter mnemonic phrase separated by spaces"
+        },
+        "wallet_private_key": {
+            "title": "Private key",
+            "btn_confirm": "Confirm",
+            "placeholder": "Enter Private Key"
+        },
+        "wallet_keystore": {
+            "title": "Keystore",
+            "btn_confirm": "Confirm",
+            "password_placeholder": "Wallet password",
+            "keystore_placeholder": "Keystore content"
+        },
+        "setting": {
+            "general": {
+                "title": "General",
+                "language": "Language",
+                "appearance": "Appearance",
+                "data_source": "Data Source",
+                "sync_with_plug": "Sync with Plug-ins",
+                "setup_payment_password": "Payment Password",
+                "change_payment_password": "Change Payment Password",
+                "unlock_wallet_with_face_id": "Unlock wallet with Face ID",
+                "unlock_wallet_with_touch_id": "Unlock wallet with Touch ID"
+            },
+            "backup_recovery": {
+                "title": "Backup & Recovery",
+                "restore_data": "Restore Data",
+                "back_up_data": "Back Up Data",
+                "back_up_password": "Backup Password",
+                "back_up_password_empty": "Please set up backup password",
+                "change_backup_password": "Change Backup Password"
+            },
+            "profile": {
+                "title": "Profile",
+                "email": "Email",
+                "email_empty": "Please bind your Email",
+                "phone_number": "Phone Number",
+                "phone_number_empty": "Please bind your phone number",
+                "log_out": "Log Out"
+            },
+            "detail": {
+                "automatic": "Automatic",
+                "light": "Light",
+                "dark": "Dark"
+            },
+            "backup_data": {
+                "title": "Back up your data",
+                "no_backup_title": "You haven’t backed up yet",
+                "subtitle": "Your most recent backup is %@.",
+                "backup_icloud": "Back Up All to iCloud",
+                "backup_manually": "Back Up Manually"
+            },
+            "recovery": {
+                "title": "Backup Recovery",
+                "backup_icloud": "Backup Recovery from iCloud",
+                "backup_manually": "Backup Recovery from iPhone"
+            },
+            "local_backup": {
+                "title": "Back up locally",
+                "local_wallet": "Local Wallet",
+                "loading_text": "Backing up..."
+            },
+            "remote_backup": {
+                "title": "Back up to cloud"
+            },
+            "bind_phone_number": {
+              "title": "Set Up Phone number",
+              "sub_title": "Phone number"
+            },
+            "change_phone_number": {
+              "title": "Change Phone number",
+              "sub_title": "New Phone number",
+              "tips": "To change your phone,  you need to verify your current phone number."
+            },
+            "bind_email": {
+              "title": "Set up email",
+              "sub_title": "Email"
+            },
+            "change_email": {
+              "title": "Change Email",
+              "sub_title": "New Email",
+              "tips": "To change Email, please verify your current Email address"
+            },
+            "bind_remote_info": {
+              "setup_email_title": "Email successfully set up!",
+              "change_email_title": "Email successfully changed!",
+              "setup_phone_number_title": "Phone number successfully set up!",
+              "change_phone_number_title": "Phone number successfully changed!",
+              "setup_email_detail": "You have successfully set up your email.",
+              "change_email_detail": "You have successfully change your email.",
+              "setup_phone_number_detail": "You have successfully set up your phone number.",
+              "change_phone_number_detail": "You have successfully change your phone number."
+            },
+            "validation_code": "Verification Code",
+            "validation_code_mismatch": "Incorrect Verification Code",
+            "validation_code_via_email": "Verification code has been sent by Email to",
+            "validation_code_via_mobile_phone": "Verification code has been sent by SMS to"
+        },
+        "backup_password_verify": {
+            "title": "Backup password"
+        },
+        "set_backup_password": {
+            "title": "Set Up Backup Password",
+            "backup_password": "Backup password",
+            "confirm_backup_password": "Confirm Backup Password",
+            "tips": "Backup password must be between 8 and 20 characters and contains at least a number, a uppercase letter, a lowercase letter and a special character.",
+            "error_inconsistent_password": "Two inconsistent passwords."
+        },
+        "change_backup_password": {
+            "title": "Change Backup Password",
+            "sub_title": "Please verify your current Backup Password",
+            "backup_password": "Backup password",
+            "new_backup_password": "New Backup Password",
+            "confirm_backup_password": "Repeat New Backup Password",
+            "tips": "Backup password must be between 8 and 20 characters and contains at least a number, a uppercase letter, a lowercase letter and a special character.",
+            "error_incorrect_password": "Incorrect Backup Password.",
+            "error_inconsistent_password": "Two inconsistent passwords."
+        },
+        "sendTransaction":{
+            "send":{
+        		"placeholder_address":"Ens or Address(0x...)",
+        	    "Label_To":"To",
+        	    "label_Amount":"Amount",
+        	    "btn_max":"Max",
+        	    "btn_send":"Send",
+                "btn_Next":"Next",
+        	    "Label_Password":"Password",
+                "btn_withoutPassword":"Hold to Send",
+                "amount_error":"Insufficient amount.",
+                "password_error":"Incorrect payment password."
+        	},
+        	"addContact":{
+        		"btn_add":"Add Contact",
+        		"placeholder_name":"Name"
+        	},
+            "tokenList":{
+                "title":"Search Token",
+                "placeholder":"Token name or contract address"
+            },
+            "gasPrice":{
+                "title":"Edit Gas Price",
+                "standard":"Standard",
+                "fast":"Fast",
+                "custom":"Custom",
+                "btn_confirm":"Confirm",
+                "fee":"Fee",
+                "arrives":"Arrives in",
+                "gasPrice":"Gas Price(Gwei)",
+                "gasLimit":"Gas Limit(gas)",
+                "maxPriorityFee":"Max priority fee(Gwei)",
+                "maxFee":"Max fee(Gwei)",
+                "costFee":"cost fee:",
+                "advancedBtn":"Advanced",
+                "gasLimit_error":"Gas limit must be at least ",
+                "maxPriorityFee_error_low":"Max pirority fee extremely low for network conditions.",
+                "maxPriorityFee_error_high":"Max fee too low for network conditions.",
+                "maxFee_error_low":"Max fee cannot be lower than max priority fee",
+                "maxFee_error_high":"Max fee is higher than necessary."
+            },
+            "sendConfirmPop":{
+                "gasFee":"Gas fee",
+                "total":"Total",
+                "edit":"Edit",
+                "gasFeeLow":"Maybe in 30 seconds",
+                "gasFeeMedium":"Likely in < 30 seconds",
+                "gasFeeHigh":"Very likely in < 15 seconds"
+            }
+        },
+        "set_password": {
+            "title": "Set Up Payment Password",
+            "payment_password": "Payment Password",
+            "repeat_payment_password": "Repeat Payment Password",
+            "password_invalid": "Payment Password must be a combination of 2 categories out of numbers, letters and special characters with a length of 8-20 characters.",
+            "confirm_payment_password": "Confirm Payment Password ",  
+            "input_payment_password": "Input Payment Password",
+            "failed_updating_password": "Failed updating payment password"
+        },
+        "change_password": {
+            "title": "Change Payment Password",
+            "sub_title": "Please verify current Payment Password",
+            "failed_loading_password": "Failed loading payment password",
+            "password": "Payment Password",
+            "new_password": "New Payment Password",
+            "confirm_Password": "Repeat New Payment Password",
+            "incorrect_password": "Incorrect Password.",
+            "password_not_match": "Two inconsistent passwords.",
+            "password_demand": "Payment Password must be a combination of 2 categories out of numbers, letters and special characters with a length of 8-20 characters."
+        },
+        "personas": {
+            "personas": "Personas",
+            "tabs": {
+                "social": "Social",
+                "post": "Post",
+                "contacts": "Contacts",
+                "group": "Group"
+            },
+            "action": {
+                "change_add_persona": "Change or Add Persona",
+                "rename": "Rename",
+                "export_private_key": "Export Private Key",
+                "backup": "Back Up",
+                "recovery": "Recovery",
+                "log_out": "Log Out",
+                "delete": "Delete"
+            },
+            "create": {
+                "persona": "Persona",
+                "create_persona": "Create Persona",
+                "input_persona_name": "Input persona name"
+            },
+            "delete": "Confirm to delete persona\n",
+            "delete_tip": "If you haven’t backed up, please go to Settings - Backup and Recovery",
+            "add_persona": "Add Persona",
+            "user_id": "User ID",
+            "connect_social_tip": "To connect to Mask, Click here to enter twitter ID.",
+        },
+        "persona_welcome": {
+            "title": "Welcome to Mask Network",
+            "description": "Create personas and connect social accounts",
+            "persona": "Persona"
+        },
+        "persona_export_private_key": {
+            "title": "Export Private Key",
+            "tips": "This export is only for exporting private key. We do not export any other data. If you need more data, please go to Settings: ",
+            "backup_recovery":"Backup and Recovery"
+        },
+        "persona_contacts": {
+            "empty_contacts_tips": "You don’t have encrypted friends. \nInvite friends to download Mask Network.",
+            "delete": "Confirm to delete ",
+            "contact": "Contact"
+        },
+        "persona_social": {
+            "twitter": "Twitter",
+            "facebook": "Facebook",
+            "instagram": "Instagram",
+            "minds": "Minds",
+            "connect_to": "Connect To %s",
+            "disconnect": "Disconnect",
+            "accounts": "Accounts"
+        },
+        "wallet_balance": {
+            "btn_swap": "Swap",
+            "btn_Send": "Send",
+            "btn_receive": "Receive",
+            "header_title_collectibles": "Collectibles",
+            "date_today": "Today",
+            "date_yestoday": "Yesterday",
+            "date_thisMonth": "This month",
+            "date_lastMonth": "Last month",
+            "transaction_received": "Received",
+            "transaction_approve": "Approve",
+            "transaction_send": "Send",
+            "transaction_swap": "Swap",
+            "transaction_deposit": "Deposit",
+            "transaction_cancel": "Cancel",
+            "transaction_action_title": "on %s",
+            "transaction_action_view": "View on %s",
+            "balance_expand_all": "All",
+            "balance_expand_less": "Less",
+            "header_title_tokens": "Tokens",
+            "empty_token": "You don’t have any Tokens",
+            "empty_collectibles": "You don’t have any Collectibles"
+        },
+        "wallet_send_address": {
+            "recent": "Recent",
+            "search_address": "Name, Ens or Address(0x...)",
+            "empty_token_warn": "You have 0 %s in your account to pay for transaction fees. Buy some %s or deposit from another account. ",
+            "by_token": "Buy %s"
+        },
+        "token_detail": {
+            "switch_network": "Switch Network",
+            "walletconnect_switch_network_alert": "The walletConnect wallet network is not the same as the asset network (%s). Please reconnect your wallet to %s network to continue."
+        },
+        "transaction_history": {
+            "no_transaction": "You don’t have any transaction records",
+            "status": {
+                "pending": "Pending...",
+                "fail": "Failed"
+            },
+            "speed_up": "Speed up",
+            "type": {
+                "send": "Send %s",
+                "receive": "Received %s",
+                "swap": "WETH Deposit",
+                "cancel": "Cancel %s",
+                "approve": "Approve %s"
+            }
+        },
+        "wallet_receive": {
+            "btn_share": "Share",
+            "your_address": "Your %@ Address"
+        },
+        "wallet_unlock": {
+            "title": "Unlock Wallet",
+            "button": "Unlock"
+        },
+        "identity_empty": {
+            "title": "Mask",
+            "description": "The portal to a new and open Internet",
+            "create_an_identity": "Create an Identity",
+            "recovery_sign_in": "Recovery & Sign In",
+            "synchronization": "Synchronization"
+        },
+        "identity_create": {
+            "title": "Verify identity code",
+            "description": "Write down each word."
+        },
+        "identify_verify": {
+            "title": "Verify identity code",
+            "description": "Tap each word in the correct order.",
+            "identity_error": "The identity code is incorrect"
+        },
+        "identity_recovery": {
+                "title": "Recovery & Sign In",
+                "identity_button": "Identity Code",
+                "private_key_button": "Private Key",
+                "local_backup_recovery_button": "Local Backup Recovery",
+                "cloud_backup_recovery_button_title": "Cloud backup Recovery"
+        },
+        "identity_mnemonic_import": {
+            "title": "Identity",
+            "description": "The identity code can only recover your persona. ",
+            "placeholder": "Please enter 12 mnemonic words\nseparated by spaces"
+        },
+        "identity_privatekey_import": {
+            "title": "Private Key",
+            "description": "The private key of your identity code can only recover your persona.",
+            "placeholder": "Input your private key"
+        },
+        "Identity_restore_signin_success": {
+            "title": "Restore & Sign In completed!"
+        },
+        "app": {
+            "market_trend_source": "Market trend source",
+            "wallet_address": "Wallet address",
+            "riskwarning": "Dear User,\n\nWhen using any wallet-related plugins in Mask Network, please confirm to accept the following usage risks:\n\nMask Network provides non-commercial free services. The plug-ins are provided by community members and other excellent third-party DApp teams. Due to the freedom of the decentralized network and other uncertain risk factors, users are requested to properly protect their sensitive information such as wallet mnemonic words and private keys. Please be cautious when conducting any blockchain contract interaction. The risks caused by any third-party DApps (plug-ins) are borne by the third-party DApps themselves.\n\nClicking the confirm button means that you agree to bear the above possible risks.",
+            "riskwarning_title": "Risk Warning",
+            "swap_option_source": "Swap source",
+            "swap_network_source": {
+                "eth": "ETH Network",
+                "poly": "Polygon/Matic Network",
+                "bsc": "BSC Network"
+            },
+            "plugins": {
+               "file_service": "File Service",
+               "ito": "ITO",
+               "lucy_drop": "Lucky Drop",
+               "swap": "Swap",
+               "transaction": "Transak",
+               "market_trend": "Market Trend",
+               "snapshot": "Snapshot",
+               "collectibles": "Collectibles",
+               "gitcoin": "Gitcoin",
+               "valuables": "Valuables",
+               "dhedge": "DHEDGE"
+            }
+        },
+        "social": {
+            "login_in_to_continue": "Log in to continue",
+            "login_in_notify": "Please log in to Twitter first and we will guide you through the next steps to connect to Mask Network.",
+            "i_understand": "I understand",
+            "title": "Home",
+            "connect_button_title": "Connect",
+            "profile_select_title": "Select Username",
+            "connected": "Connected",
+            "connect_hint1": "Please log in to ",
+            "connect_hint2": " to connect to Mask Network.",
+            "connect_hint_logged_in": "If you want to connect another account, please log out and log in with another account.",
+            "connect_to_mask_network": "Connect to Mask Network",
+            "account_already_connected": "Account already connected",
+            "connect_stop": "",
+            "error": {
+                "fail_to_connect": "Fail to connect the profile"
+            }
+        },
+        "share": {
+            "shareLink": "Share Mask Network Link:"
+        },
+        "restore": {
+            "titles": {
+                "restore_buckup": "Restore backups",
+                "restore_remote_backup": "Restore Cloud backup",
+                "recovery_with_email": "Recovery with Email",
+                "recovery_with_mobile": "Recovery with Phone Number",
+                "restore_succeed":"Restore succeed",
+                "restore_failed": "Restore failed",
+                "native_wallets": "Wallets for recovery",
+                "unsupport_restore_data": "Unsupported data backup",
+                "loading_failed": "Loading failed",
+                "verify_wallet_password": "Verify Payment Password"
+            },
+            "buttonTitles": {
+                "backup": "Restore Backups",
+                "restore": "Resotre",
+                "next": "Next",
+                "confirm": "Confirm",
+                "resend": "Resend",
+                "email": "Recovery with Mobile",
+                "mobile": "Recovery with Email"
+            },
+            "succeed_detail": "Restore and Sign in completed.",
+            "completion": "Restore completed.",
+            "failed_detail": "Restore Failed. We are unable to restore your backup.",
+            "input_placeholder": {
+                "email": "Input your Email Address"
+            },
+            "check_unsupport_data": "Please examine your data backup.",
+            "restore_created_date": "Backup time",
+            "restored_post": "Encrypted post",
+            "restored_account": "Associated account",
+            "restored_persona": "Personas",
+            "restored_files": "Files",
+            "restored_contacts": "Contacts",
+            "restored_relations": "Relations",
+            "wallet_existed": "existed",
+            "input_title": {
+                "remote_backup_password": "Cloud backup password",
+                "email": "Email",
+                "validationcode":  "Verification Code",
+                "mobile": "Phone Number",
+                "payment_password": "Payment Password "
+            },
+            "tip": {
+                "data_failed_to_fetch": "Please try to load data again.",
+                "failed_to_download_file": "failed to download remote file",
+                "incorrect_backup_password": "Incorrect cloud backup password",
+                "invalid_email_address": "Incorrect Email Address",
+                "invalid_mobile_number": "Incorrect Phone number",
+                "email_validationcode": "Verification code has been sent by Email to",
+                "mobile_validationcode": "Verification code has been sent to by SMS to",
+                "incorrect_validationcode": "The verification code is incorrect",
+                "invalid_validationcode": "The verification code is invalid",
+                "validationcode_five_minutes": "Incorrect verification code, please try again after 5 minutes",
+                "validationcode_ten_minutes": "Incorrect verification code, please try again after 10 minutes",
+                "validationcode_thirty_minutes": "Incorrect verification code, please try again after 30 minutes",
+                "validationcode_one_hour": "Incorrect verification code, please try again after 1 hour",
+                "validationcode_twentyfour_hours": "Incorrect verification code, please try again after 24 hours",
+                "failed_loading_remotefile": "Failed to download restore file, please try again",
+                "remote_restore_succeed": "You have successfully verified your cloud password and the backup is being uploaded. ",
+                "remote_restore_syncing_password": "To unify backup passwords, do you want to synchronize your cloud password as local password?"
+            }
+        },
+        "wallet_connect": {
+            "wallet_connect": "WalletConnect",
+            "select_wallet": "Select Wallet",
+            "scan_q_r_code": "Scan QR Code",
+            "qr_code_tips": "Use a WalletConnect compatiable wallet\nto scan the QR Code",
+            "tap_to_copy": "Tap to copy to clipboard",
+            "connecting": "Connecting...",
+            "connect_success": "Wallet Successfully Connected to Mask Network",
+            "scan": "Scan the QR code",
+            "disconnect": "Disconnect",
+            "connection_fail": "Connection failed.",
+            "could_not_switch_blockchain_network_title": "Switching blockchain network not supported with WalletConnect",
+            "could_not_switch_blockchain_network_message": "Please try to use a native wallet, then switch the blockchain network again",
+            "network_not_match": "The current network %s is different from the connecting network %s. Do you want to switch your current network to %s?",
+            "network_not_support": "The wallet network %s is currently not supported by Mask Network. We can’t connect your wallet. Please switch your wallet network manually.",
+            "address_exist": "The wallet address already exists.",
+            "replace_wallet_connect_wallet": "This wallet address was connected with WalletConnect. Importing this wallet address automatically dis-connects the walletConnect account."
+        },
+        "wallet_connect_server": {
+            "want_to_connect": "%s wants to connect to your wallet",
+            "connected_apps": "Connected Apps",
+            "connect": "Connect",
+            "wallet_connect_notification": "A transaction is requested by wallet connect",
+            "switch_wallet": "Switch wallets"
+        },
+        "backup": {
+            "remote_backup_actions_view": {
+                "tips": "There is already a cloud backup, you can either first merge this cloud backup to your local data before you back up, or back up directly."
+            },
+            "merge_to_local": {
+                "title": "Merge cloud backup"
+            },
+            "validation_code":  "Verification Code",
+            "with_phone": "Back up with Phone",
+            "with_email": "Back up with Email",
+            "tips_phone": "Verification code has been sent by SMS to ",
+            "tips_email": "Verification code has been sent by Email to ",
+            "backup_verify_field_email": "Email",
+            "backup_verify_field_phone": "Phone",
+            "backup_verify_title_email": "Cloud backup with Email",
+            "backup_verify_title_phone": "Cloud backup with Phone",
+            "restore_created_date": "Create at",
+            "restored_post": "Encrypted post",
+            "restored_account": "Associated account",
+            "restored_persona": "Personas",
+            "restored_files": "Files",
+            "restored_contacts": "Contacts",
+            "restored_relations": "Relations"
+        },
+        "scan_qr_code": {
+            "title": "Scan QR Code"
+        }
+    },
+    "chain": {
+        "short_name": {
+            "eth": "ETH",
+            "bsc": "BSC",
+            "dot": "DOT",
+            "polygon": "Polygon",
+            "arbitrum": "Arbitrum",
+            "xdai": "xDai",
+            "optimism": "Optimism"
+        },
+        "name": {
+            "eth": "Ethereum",
+            "bsc": "Binance smart chain",
+            "dot": "Polkadot",
+            "polygon": "Polygon/Matic Network",
+            "arbitrum": "Arbitrum",
+            "xdai": "xDai",
+            "optimism": "Optimism"
+        }
+    }
+}

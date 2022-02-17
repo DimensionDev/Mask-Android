@@ -30,6 +30,7 @@ import androidx.annotation.Nullable;
 
 import com.dimension.maskbook.MaskbookAppKt;
 import com.dimension.maskbook.common.WebExtensionDelegate;
+import com.dimension.maskbook.common.component.IWebExtensionManager;
 import com.dimension.maskbook.site.Site;
 import com.dimension.maskbook.util.JsonRPCUtil;
 import com.dimension.maskbook.widget.ActionButton;
@@ -49,7 +50,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class WebExtensionManager implements WebExtension.ActionDelegate,
+public class WebExtensionManager implements IWebExtensionManager,
+        WebExtension.ActionDelegate,
         WebExtension.PortDelegate,
         WebExtension.SessionTabDelegate,
         WebExtension.TabDelegate,
@@ -338,10 +340,8 @@ public class WebExtensionManager implements WebExtension.ActionDelegate,
 
         mPort.setDelegate(this);
         sendSetupPortMessages();
-        MaskbookAppKt.initRepository();
+        MaskbookAppKt.initModule();
         MaskbookAppKt.initEvent();
-        MaskbookAppKt.initWalletConnect();
-
 //        MaskbookAppKt.initKoinModules();
     }
 
@@ -456,7 +456,8 @@ public class WebExtensionManager implements WebExtension.ActionDelegate,
 //        }
     }
 
-    public void sendMessage(Integer messageId, @NonNull String methodName, @NonNull List<String> params){
+    @Override
+    public void sendMessage(int messageId, @NonNull String methodName, @NonNull List<String> params){
         try{
             if(mPort!=null){
                 mPort.postMessage(JsonRPCUtil.createMessage(messageId, methodName, params));
@@ -467,7 +468,8 @@ public class WebExtensionManager implements WebExtension.ActionDelegate,
         }
     }
 
-    public void sendMessage(Integer messageId, @NonNull String methodName, @NonNull JSONObject jsonObject){
+    @Override
+    public void sendMessage(int messageId, @NonNull String methodName, @NonNull JSONObject jsonObject){
         try{
             if(mPort!=null){
                 mPort.postMessage(JsonRPCUtil.createMessage(messageId, methodName, jsonObject));
@@ -478,7 +480,8 @@ public class WebExtensionManager implements WebExtension.ActionDelegate,
         }
     }
 
-    public void sendMessage(String messageId, @NonNull String methodName, @NonNull List<String> params){
+    @Override
+    public void sendMessage(@NonNull String messageId, @NonNull String methodName, @NonNull List<String> params){
         try{
             if(mPort!=null){
                 mPort.postMessage(JsonRPCUtil.createMessage(messageId, methodName, params));
@@ -489,7 +492,8 @@ public class WebExtensionManager implements WebExtension.ActionDelegate,
         }
     }
 
-    public void sendMessage(String messageId, @NonNull String methodName, @NonNull JSONObject jsonObject){
+    @Override
+    public void sendMessage(@NonNull String messageId, @NonNull String methodName, @NonNull JSONObject jsonObject){
         try{
             if(mPort!=null){
                 mPort.postMessage(JsonRPCUtil.createMessage(messageId, methodName, jsonObject));
@@ -500,7 +504,8 @@ public class WebExtensionManager implements WebExtension.ActionDelegate,
         }
     }
 
-    public void sendRawMessage(JSONObject jsonObject){
+    @Override
+    public void sendRawMessage(@NonNull JSONObject jsonObject){
         if(mPort!=null){
             mPort.postMessage(jsonObject);
         }

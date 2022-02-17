@@ -1,26 +1,18 @@
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
+    id("com.android.application").apply(false)
+    id("com.android.library").apply(false)
+    kotlin("android").apply(false)
     id("com.diffplug.spotless").version(Versions.spotless)
 }
 
-buildscript {
-    repositories {
-        google()
-        mavenCentral()
-    }
-    dependencies {
-        classpath(kotlin("gradle-plugin", version = Versions.Kotlin.lang))
-        classpath("com.android.tools.build:gradle:${Versions.agp}")
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
-    }
-}
-
 allprojects {
-    repositories {
-        google()
-        mavenCentral()
-        maven(url = "https://jitpack.io")
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+        kotlinOptions {
+            jvmTarget = Versions.Java.jvmTarget
+            freeCompilerArgs = listOf(
+                "-opt-in=kotlin.RequiresOptIn",
+            )
+        }
     }
 
     apply(plugin = "com.diffplug.spotless")
