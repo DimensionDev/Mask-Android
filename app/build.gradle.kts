@@ -5,13 +5,13 @@ plugins {
     kotlin("android")
     kotlin("plugin.serialization").version(Versions.Kotlin.lang)
     id("org.jetbrains.compose").version(Versions.compose_jb)
+    id("com.google.gms.google-services").version(Versions.Firebase.Plugin.google_services).apply(false)
+    id("com.google.firebase.crashlytics").version(Versions.Firebase.Plugin.crashlytics).apply(false)
 }
 
 if (enableGoogleVariant) {
-    plugins {
-        id("com.google.gms.google-services").version(Versions.Firebase.Plugin.google_services)
-        id("com.google.firebase.crashlytics").version(Versions.Firebase.Plugin.crashlytics)
-    }
+    apply(plugin = "com.google.gms.google-services")
+    apply(plugin = "com.google.firebase.crashlytics")
 }
 
 android {
