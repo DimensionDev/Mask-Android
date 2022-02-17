@@ -62,7 +62,7 @@
                             android:layout_width="8dp"
                             android:layout_height="wrap_content"/>
                         <TextView
-                            android:text="Please log in to Twitter first to connect to Mask Network."
+                            android:text="@string/scene_personas_connect_social_tip"
                             android:layout_weight="1"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"/>

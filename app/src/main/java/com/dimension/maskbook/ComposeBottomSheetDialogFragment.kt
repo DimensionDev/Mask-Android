@@ -265,7 +265,7 @@ private fun UserNameModal(
         Column(
             modifier = Modifier.padding(ScaffoldPadding)
         ) {
-            Text(text = "User Name")
+            Text(text = stringResource(R.string.scene_personas_user_id))
             Spacer(modifier = Modifier.height(8.dp))
             MaskInputField(
                 modifier = Modifier.fillMaxWidth(),
