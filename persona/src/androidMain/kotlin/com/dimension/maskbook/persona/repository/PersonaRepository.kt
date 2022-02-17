@@ -39,6 +39,7 @@ import com.dimension.maskbook.persona.export.model.Profile
 import com.dimension.maskbook.persona.export.model.SocialData
 import com.dimension.maskbook.persona.model.ContactData
 import com.dimension.maskbook.persona.model.RedirectTarget
+import com.dimension.maskbook.persona.model.SocialProfile
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
@@ -47,12 +48,14 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
 
 private val CurrentPersonaKey = stringPreferencesKey("current_persona")
@@ -129,16 +132,26 @@ class PersonaRepository(
         platformSwitcher.switchTo(platformType)
         platformSwitcher.showTooltips(true)
         connectingJob = GlobalScope.launch {
-            val name = _connectingChannel.receive()
-            if (name.isNotEmpty()) {
-                platformSwitcher.showTooltips(false)
-                when (platformType) {
-                    PlatformType.Twitter -> JSMethod.Persona.connectProfile(Network.Twitter, personaId, name)
-                    PlatformType.Facebook -> JSMethod.Persona.connectProfile(Network.Facebook, personaId, name)
+            while (true) {
+                delay(5.seconds)
+                // TODO: getCurrentDetectedProfileDelegateToSNSAdaptor will always return person:localhost/$unknown when first login
+                val profile = JSMethod.Persona.getCurrentDetectedProfileDelegateToSNSAdaptor()?.takeIf {
+                    it.isNotEmpty()
+                }?.let {
+                    SocialProfile.parse(it)
                 }
-                refreshSocial()
-                refreshPersona()
-                platformSwitcher.launchDeeplink(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona))
+                if (profile != null) {
+                    platformSwitcher.showTooltips(false)
+                    when (platformType) {
+                        PlatformType.Twitter -> JSMethod.Persona.connectProfile(Network.Twitter, personaId, profile.userId)
+                        PlatformType.Facebook -> JSMethod.Persona.connectProfile(Network.Facebook, personaId, profile.userId)
+                    }
+                    refreshSocial()
+                    refreshPersona()
+                    // TODO: show connect social modal
+                    platformSwitcher.launchDeeplink(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona))
+                    break
+                }
             }
         }
     }
