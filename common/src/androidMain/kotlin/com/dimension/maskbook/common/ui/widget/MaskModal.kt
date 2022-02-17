@@ -55,11 +55,10 @@ fun MaskModal(
     val inAppNotification = remember { InAppNotification() }
     CompositionLocalProvider(LocalInAppNotification provides inAppNotification) {
         MaskInAppNotification(snackBarHostState)
-        Box {
+        Box(modifier = Modifier.navigationBarsWithImePadding()) {
             Column(
                 modifier = modifier
                     .fillMaxWidth()
-                    .navigationBarsWithImePadding()
                     .animateContentSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
