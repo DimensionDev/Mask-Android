@@ -298,6 +298,9 @@ private fun IntroPagerIndicator(
     val activeIndicatorWidthPx = LocalDensity.current.run { activeIndicatorWidth.roundToPx() }
     val spacingPx = LocalDensity.current.run { spacing.roundToPx() }
 
+    val scrollPosition = (pagerState.currentPage + pagerState.currentPageOffset)
+        .coerceIn(0f, (pagerState.pageCount - 1).coerceAtLeast(0).toFloat())
+
     Box(
         modifier = modifier,
         contentAlignment = Alignment.CenterStart
@@ -307,7 +310,7 @@ private fun IntroPagerIndicator(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             repeat(pagerState.pageCount) { index ->
-                val isSelected = pagerState.currentPage == index
+                val isSelected = scrollPosition.toInt() == index
                 val animeWidth by animateDpAsState(if (isSelected) activeIndicatorWidth else indicatorWidth)
                 val animeHeight by animateDpAsState(if (isSelected) activeIndicatorHeight else indicatorHeight)
                 Box(
@@ -321,8 +324,6 @@ private fun IntroPagerIndicator(
         Box(
             Modifier
                 .offset {
-                    val scrollPosition = (pagerState.currentPage + pagerState.currentPageOffset)
-                        .coerceIn(0f, (pagerState.pageCount - 1).coerceAtLeast(0).toFloat())
                     IntOffset(
                         x = ((spacingPx + indicatorWidthPx) * (scrollPosition - 1) + activeIndicatorWidthPx).toInt(),
                         y = 0
