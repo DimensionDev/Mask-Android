@@ -33,11 +33,16 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ProvideTextStyle
+import androidx.compose.material.SnackbarHost
+import androidx.compose.material.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.dimension.maskbook.common.ui.notification.InAppNotification
 import com.dimension.maskbook.common.ui.theme.isDarkTheme
 import com.google.accompanist.insets.navigationBarsWithImePadding
 
@@ -49,43 +54,54 @@ fun MaskModal(
     contentPadding: PaddingValues = ModalPadding,
     content: @Composable () -> Unit,
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .navigationBarsWithImePadding()
-            .animateContentSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Spacer(Modifier.height(20.dp))
-        Spacer(
-            modifier = Modifier
-                .size(40.dp, 4.dp)
-                .background(
-                    if (isDarkTheme()) {
-                        MaskModalDefaults.lineDarkColor
-                    } else {
-                        MaskModalDefaults.lineLightColor
-                    },
-                    shape = CircleShape
+    val snackBarHostState = remember { SnackbarHostState() }
+    val inAppNotification = remember { InAppNotification() }
+    CompositionLocalProvider(LocalInAppNotification provides inAppNotification) {
+        MaskInAppNotification(snackBarHostState)
+        Box(modifier = Modifier.navigationBarsWithImePadding()) {
+            Column(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .animateContentSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Spacer(Modifier.height(20.dp))
+                Spacer(
+                    modifier = Modifier
+                        .size(40.dp, 4.dp)
+                        .background(
+                            if (isDarkTheme()) {
+                                MaskModalDefaults.lineDarkColor
+                            } else {
+                                MaskModalDefaults.lineLightColor
+                            },
+                            shape = CircleShape
+                        )
                 )
-        )
-        Spacer(Modifier.height(24.dp))
-        if (title != null) {
-            ProvideTextStyle(MaterialTheme.typography.h4, title)
+                Spacer(Modifier.height(24.dp))
+                if (title != null) {
+                    ProvideTextStyle(MaterialTheme.typography.h4, title)
+                }
+                if (subTitle != null) {
+                    Spacer(Modifier.height(13.dp))
+                    ProvideTextStyle(MaterialTheme.typography.subtitle2, subTitle)
+                }
+                if (title != null || subTitle != null) {
+                    Spacer(Modifier.height(20.dp))
+                }
+                Box(
+                    modifier = Modifier.padding(contentPadding)
+                ) {
+                    content.invoke()
+                }
+                Spacer(Modifier.height(24.dp))
+            }
+            SnackbarHost(
+                hostState = snackBarHostState,
+                modifier = Modifier.align(Alignment.BottomCenter),
+                snackbar = { MaskSnackbar(it) }
+            )
         }
-        if (subTitle != null) {
-            Spacer(Modifier.height(13.dp))
-            ProvideTextStyle(MaterialTheme.typography.subtitle2, subTitle)
-        }
-        if (title != null || subTitle != null) {
-            Spacer(Modifier.height(20.dp))
-        }
-        Box(
-            modifier = Modifier.padding(contentPadding)
-        ) {
-            content.invoke()
-        }
-        Spacer(Modifier.height(24.dp))
     }
 }
 

@@ -44,7 +44,7 @@ fun MaskScaffold(
     scaffoldState: ScaffoldState = rememberScaffoldState(),
     topBar: @Composable () -> Unit = {},
     bottomBar: @Composable () -> Unit = {},
-    snackbarHost: @Composable (SnackbarHostState) -> Unit = { SnackbarHost(it) },
+    snackbarHost: @Composable (SnackbarHostState) -> Unit = { SnackbarHost(it, snackbar = { MaskSnackbar(it) }) },
     floatingActionButton: @Composable () -> Unit = {},
     floatingActionButtonPosition: FabPosition = FabPosition.End,
     isFloatingActionButtonDocked: Boolean = false,
@@ -59,6 +59,7 @@ fun MaskScaffold(
     contentColor: Color = contentColorFor(backgroundColor),
     content: @Composable (PaddingValues) -> Unit
 ) {
+    MaskInAppNotification(scaffoldState.snackbarHostState)
     Scaffold(
         modifier = modifier,
         scaffoldState = scaffoldState,
