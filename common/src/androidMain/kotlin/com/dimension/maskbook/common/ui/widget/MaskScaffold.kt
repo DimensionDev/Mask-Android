@@ -84,14 +84,14 @@ fun MaskScaffold(
 
 val ScaffoldPadding = PaddingValues(
     top = 24.dp,
-    start = 23.dp,
-    end = 23.dp,
-    bottom = 58.dp,
+    start = 24.dp,
+    end = 24.dp,
+    bottom = 24.dp,
 )
 
 val TabScaffoldPadding = PaddingValues(
     top = 12.dp,
-    start = 23.dp,
-    end = 23.dp,
+    start = 24.dp,
+    end = 24.dp,
     bottom = 24.dp,
 )

@@ -40,7 +40,7 @@ import androidx.navigation.compose.dialog
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.navHostAnimationDurationMillis
 import com.dimension.maskbook.common.ui.widget.MaskDialog
-import com.dimension.maskbook.common.ui.widget.PrimaryButton
+import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.repository.WalletCreateOrImportResult
 import com.dimension.maskbook.wallet.ui.scenes.register.createidentity.VerifyIdentityScene

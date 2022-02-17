@@ -42,7 +42,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.common.ext.observeAsState
-import com.dimension.maskbook.common.ui.widget.PrimaryButton
+import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.viewmodel.post.PostViewModel
 import org.koin.androidx.compose.getViewModel

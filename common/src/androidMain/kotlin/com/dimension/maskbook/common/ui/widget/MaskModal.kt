@@ -24,9 +24,11 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.MaterialTheme
@@ -49,6 +51,7 @@ fun MaskModal(
     modifier: Modifier = Modifier,
     title: @Composable (() -> Unit)? = null,
     subTitle: @Composable (() -> Unit)? = null,
+    contentPadding: PaddingValues = ModalPadding,
     content: @Composable () -> Unit,
 ) {
     val snackBarHostState = remember { SnackbarHostState() }
@@ -75,16 +78,23 @@ fun MaskModal(
                             shape = CircleShape
                         )
                 )
-                Spacer(Modifier.height(20.dp))
+                Spacer(Modifier.height(24.dp))
                 if (title != null) {
                     ProvideTextStyle(MaterialTheme.typography.h4, title)
-                    Spacer(Modifier.height(12.dp))
                 }
                 if (subTitle != null) {
+                    Spacer(Modifier.height(13.dp))
                     ProvideTextStyle(MaterialTheme.typography.subtitle2, subTitle)
+                }
+                if (title != null || subTitle != null) {
                     Spacer(Modifier.height(20.dp))
                 }
-                content.invoke()
+                Box(
+                    modifier = Modifier.padding(contentPadding)
+                ) {
+                    content.invoke()
+                }
+                Spacer(Modifier.height(24.dp))
             }
             SnackbarHost(
                 hostState = snackBarHostState,
@@ -99,3 +109,10 @@ private object MaskModalDefaults {
     val lineLightColor = Color(0xFFCBD1D9)
     val lineDarkColor = Color(0xFF2C354C)
 }
+
+val ModalPadding = PaddingValues(
+    top = 0.dp,
+    start = 24.dp,
+    end = 24.dp,
+    bottom = 0.dp,
+)

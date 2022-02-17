@@ -59,8 +59,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
-import com.dimension.maskbook.common.ui.widget.MaskGridButton
 import com.dimension.maskbook.common.ui.widget.NameImage
+import com.dimension.maskbook.common.ui.widget.button.MaskGridButton
 import com.dimension.maskbook.common.ui.widget.itemsGridIndexed
 import com.dimension.maskbook.persona.export.model.Network
 import com.dimension.maskbook.persona.export.model.SocialData

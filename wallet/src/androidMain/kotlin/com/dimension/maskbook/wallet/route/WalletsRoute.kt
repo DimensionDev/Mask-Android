@@ -46,7 +46,7 @@ import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.ui.notification.StringResNotificationEvent.Companion.show
 import com.dimension.maskbook.common.ui.widget.LocalInAppNotification
 import com.dimension.maskbook.common.ui.widget.MaskDialog
-import com.dimension.maskbook.common.ui.widget.PrimaryButton
+import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.common.viewmodel.BiometricEnableViewModel
 import com.dimension.maskbook.setting.export.SettingServices
 import com.dimension.maskbook.wallet.R

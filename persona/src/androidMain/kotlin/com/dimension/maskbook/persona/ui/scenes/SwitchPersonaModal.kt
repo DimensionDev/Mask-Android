@@ -23,15 +23,12 @@ package com.dimension.maskbook.persona.ui.scenes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
@@ -43,7 +40,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.common.ui.widget.MaskModal
 import com.dimension.maskbook.common.ui.widget.MaskSelection
-import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.export.model.PersonaData
 
@@ -55,17 +51,16 @@ fun SwitchPersonaModal(
     onAdd: () -> Unit,
     onItemClicked: (PersonaData) -> Unit,
 ) {
-    MaskModal {
-        Column(
-            modifier = Modifier
-                .padding(ScaffoldPadding),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
+    MaskModal(
+        title = {
             Text(
                 text = stringResource(R.string.tab_personas),
-                style = MaterialTheme.typography.h6
             )
-            Spacer(Modifier.height(12.dp))
+        }
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
             LazyColumn {
                 items(items) { item ->
                     MaskSelection(

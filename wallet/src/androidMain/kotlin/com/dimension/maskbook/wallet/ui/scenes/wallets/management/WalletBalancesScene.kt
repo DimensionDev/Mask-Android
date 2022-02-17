@@ -24,6 +24,7 @@ import androidx.annotation.DrawableRes
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -62,11 +63,11 @@ import androidx.paging.compose.items
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import com.dimension.maskbook.common.ui.theme.MaskTheme
-import com.dimension.maskbook.common.ui.widget.MaskButton
-import com.dimension.maskbook.common.ui.widget.MaskIconCardButton
 import com.dimension.maskbook.common.ui.widget.MaskListItem
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
+import com.dimension.maskbook.common.ui.widget.button.MaskButton
+import com.dimension.maskbook.common.ui.widget.button.MaskIconCardButton
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.export.model.TokenData
@@ -165,6 +166,9 @@ fun WalletBalancesScene(
                         pagerState = pagerState,
                         modifier = Modifier.fillMaxWidth(),
                     )
+                }
+                item {
+                    Spacer(modifier = Modifier.height(2.dp))
                 }
                 item {
                     Row(
@@ -286,6 +290,7 @@ fun WalletBalancesScene(
                                                 painter = rememberImagePainter(data = tokenData.chainType.onDrawableRes),
                                                 contentDescription = null,
                                                 modifier = Modifier.size(16.dp).align(Alignment.BottomEnd)
+                                                    .border(1.dp, MaterialTheme.colors.background, shape = CircleShape)
                                             )
                                         }
                                     }

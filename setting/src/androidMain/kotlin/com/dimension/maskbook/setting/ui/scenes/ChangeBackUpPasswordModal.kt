@@ -30,7 +30,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
@@ -45,8 +44,7 @@ import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.navHostAnimationDurationMillis
 import com.dimension.maskbook.common.ui.widget.MaskModal
 import com.dimension.maskbook.common.ui.widget.MaskPasswordInputField
-import com.dimension.maskbook.common.ui.widget.PrimaryButton
-import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
+import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.localization.R
 import com.dimension.maskbook.setting.viewmodel.BackupPasswordSettingsViewModel
 import org.koin.androidx.compose.getViewModel
@@ -86,7 +84,6 @@ fun ChangeBackUpPasswordModal(
                     animationSpec = tween(navHostAnimationDurationMillis)
                 )
             },
-            modifier = Modifier.padding(ScaffoldPadding),
         ) { next ->
             if (!next) {
                 CheckBackupPassword(

@@ -18,28 +18,25 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.common.ui.widget
+package com.dimension.maskbook.common.ui.widget.button
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Button
 import androidx.compose.material.ButtonColors
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.ButtonElevation
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.LocalContentAlpha
-import androidx.compose.material.LocalTextStyle
+import androidx.compose.material.LocalElevationOverlay
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ProvideTextStyle
 import androidx.compose.material.Surface
-import androidx.compose.material.TextButton
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -50,75 +47,9 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 
-@Composable
-fun SecondaryButton(
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    enabled: Boolean = true,
-    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-    elevation: ButtonElevation? = null,
-    shape: Shape = MaterialTheme.shapes.small,
-    border: BorderStroke? = null,
-    colors: ButtonColors = ButtonDefaults.textButtonColors(),
-    contentPadding: PaddingValues = PaddingValues(16.dp),
-    content: @Composable RowScope.() -> Unit
-) {
-    CompositionLocalProvider(
-        LocalTextStyle provides MaterialTheme.typography.button,
-    ) {
-        TextButton(
-            onClick = onClick,
-            modifier = modifier
-                .background(
-                    MaterialTheme.colors.primary.copy(alpha = 0.15f),
-                    shape = MaterialTheme.shapes.small,
-                ),
-            enabled = enabled,
-            interactionSource = interactionSource,
-            elevation = elevation,
-            shape = shape,
-            border = border,
-            colors = colors,
-            contentPadding = contentPadding,
-            content = content,
-        )
-    }
-}
-
-@Composable
-fun PrimaryButton(
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    enabled: Boolean = true,
-    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-    elevation: ButtonElevation? = ButtonDefaults.elevation(),
-    shape: Shape = MaterialTheme.shapes.small,
-    border: BorderStroke? = null,
-    colors: ButtonColors = ButtonDefaults.buttonColors(),
-    contentPadding: PaddingValues = PaddingValues(16.dp),
-    content: @Composable RowScope.() -> Unit
-) {
-    CompositionLocalProvider(
-        LocalTextStyle provides MaterialTheme.typography.button,
-    ) {
-        Button(
-            onClick = onClick,
-            modifier = modifier,
-            enabled = enabled,
-            interactionSource = interactionSource,
-            elevation = elevation,
-            shape = shape,
-            border = border,
-            colors = colors,
-            contentPadding = contentPadding,
-            content = content,
-        )
-    }
-}
-
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun PrimaryCompatButton(
+fun BaseButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
@@ -127,11 +58,11 @@ fun PrimaryCompatButton(
     shape: Shape = MaterialTheme.shapes.small,
     border: BorderStroke? = null,
     colors: ButtonColors = ButtonDefaults.buttonColors(),
-    contentPadding: PaddingValues = PaddingValues(16.dp),
+    contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     content: @Composable RowScope.() -> Unit
 ) {
     CompositionLocalProvider(
-        LocalTextStyle provides MaterialTheme.typography.button,
+        LocalElevationOverlay provides null
     ) {
         val contentColor by colors.contentColor(enabled)
         Surface(
@@ -140,12 +71,13 @@ fun PrimaryCompatButton(
             color = colors.backgroundColor(enabled).value,
             contentColor = contentColor.copy(alpha = 1f),
             border = border,
-            elevation = elevation?.elevation(enabled, interactionSource)?.value ?: 0.dp,
+            // elevation = elevation?.elevation(enabled, interactionSource)?.value ?: 0.dp,
+            elevation = 0.dp,
             onClick = onClick,
             enabled = enabled,
             role = Role.Button,
             interactionSource = interactionSource,
-            indication = rememberRipple()
+            indication = null,
         ) {
             CompositionLocalProvider(LocalContentAlpha provides contentColor.alpha) {
                 ProvideTextStyle(
@@ -153,6 +85,10 @@ fun PrimaryCompatButton(
                 ) {
                     Row(
                         Modifier
+                            .defaultMinSize(
+                                minWidth = ButtonDefaults.MinWidth,
+                                minHeight = ButtonDefaults.MinHeight
+                            )
                             .padding(contentPadding),
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically,

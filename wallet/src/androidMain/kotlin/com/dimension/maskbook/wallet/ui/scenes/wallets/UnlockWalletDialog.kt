@@ -43,9 +43,8 @@ import androidx.compose.ui.window.DialogProperties
 import com.dimension.maskbook.common.ui.widget.MaskDialog
 import com.dimension.maskbook.common.ui.widget.MaskModal
 import com.dimension.maskbook.common.ui.widget.MaskPasswordInputField
-import com.dimension.maskbook.common.ui.widget.PrimaryButton
-import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
-import com.dimension.maskbook.common.ui.widget.SecondaryButton
+import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
+import com.dimension.maskbook.common.ui.widget.button.SecondaryButton
 import com.dimension.maskbook.wallet.R
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -104,10 +103,7 @@ fun UnlockWalletDialog(
 @Composable
 fun UnlockWalletWithTouchModal() {
     MaskModal {
-        Column(
-            modifier = Modifier
-                .padding(ScaffoldPadding)
-        ) {
+        Column {
             Image(
                 painterResource(id = R.drawable.touch_id),
                 contentDescription = null,

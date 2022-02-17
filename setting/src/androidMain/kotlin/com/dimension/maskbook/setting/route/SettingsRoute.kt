@@ -42,7 +42,7 @@ import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.ui.widget.EmailCodeInputModal
 import com.dimension.maskbook.common.ui.widget.EmailInputModal
 import com.dimension.maskbook.common.ui.widget.MaskDialog
-import com.dimension.maskbook.common.ui.widget.PrimaryButton
+import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.localization.R
 import com.dimension.maskbook.setting.ui.scenes.AppearanceSettings
 import com.dimension.maskbook.setting.ui.scenes.ChangeBackUpPasswordModal

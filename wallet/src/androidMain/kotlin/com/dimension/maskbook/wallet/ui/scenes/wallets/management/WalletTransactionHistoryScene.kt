@@ -23,10 +23,10 @@ package com.dimension.maskbook.wallet.ui.scenes.wallets.management
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
-import com.dimension.maskbook.common.ui.widget.MaskBackButton
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskScene
 import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
+import com.dimension.maskbook.common.ui.widget.button.MaskBackButton
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.repository.TransactionData
 import com.dimension.maskbook.wallet.ui.scenes.wallets.token.TransactionHistoryList

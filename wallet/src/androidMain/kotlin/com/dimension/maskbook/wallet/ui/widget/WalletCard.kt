@@ -23,8 +23,6 @@ package com.dimension.maskbook.wallet.ui.widget
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -55,9 +53,10 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
-import com.dimension.maskbook.common.ui.widget.MaskIconButton
-import com.dimension.maskbook.common.ui.widget.MaskTextButton
 import com.dimension.maskbook.common.ui.widget.MiddleEllipsisText
+import com.dimension.maskbook.common.ui.widget.button.MaskIconButton
+import com.dimension.maskbook.common.ui.widget.button.MaskTextButton
+import com.dimension.maskbook.common.ui.widget.button.clickable
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.export.model.DbWalletBalanceType
@@ -260,8 +259,6 @@ private fun WalletDisplayAmount(
                     .clickable(
                         enabled = !isSelected,
                         onClick = { onDisplayChainTypeClick(item.chainType) },
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() },
                     ),
             ) {
                 Spacer(Modifier.height(13.dp))

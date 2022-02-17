@@ -41,7 +41,9 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.ui.notification.StringResNotificationEvent.Companion.show
+import com.dimension.maskbook.common.ui.theme.modalScrimColor
 import com.dimension.maskbook.common.ui.widget.LocalInAppNotification
+import com.dimension.maskbook.common.ui.widget.rememberMaskBottomSheetNavigator
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ext.humanizeDollar
 import com.dimension.maskbook.wallet.ext.humanizeToken
@@ -57,7 +59,6 @@ import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendTokenViewModel
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 import com.google.accompanist.navigation.material.bottomSheet
-import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 import java.math.BigDecimal
@@ -72,7 +73,7 @@ fun SendTokenHost(
 ) {
     val context = LocalContext.current
 
-    val bottomSheetNavigator = rememberBottomSheetNavigator()
+    val bottomSheetNavigator = rememberMaskBottomSheetNavigator()
     val navController = rememberNavController(bottomSheetNavigator)
 
     val gasFeeViewModel = getViewModel<GasFeeViewModel> {
@@ -95,6 +96,7 @@ fun SendTokenHost(
     ModalBottomSheetLayout(
         bottomSheetNavigator,
         sheetBackgroundColor = MaterialTheme.colors.background,
+        scrimColor = MaterialTheme.colors.modalScrimColor,
     ) {
         NavHost(
             navController = navController,

@@ -47,8 +47,8 @@ import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.ui.theme.MaskTheme
 import com.dimension.maskbook.common.ui.widget.MaskInputField
 import com.dimension.maskbook.common.ui.widget.MaskModal
-import com.dimension.maskbook.common.ui.widget.PrimaryButton
-import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
+import com.dimension.maskbook.common.ui.widget.ModalPadding
+import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.ext.fromHexString
 import com.dimension.maskbook.wallet.ext.hexWei
@@ -263,9 +263,9 @@ private fun UserNameModal(
         modifier = Modifier.background(MaterialTheme.colors.background, shape = MaterialTheme.shapes.medium)
     ) {
         Column(
-            modifier = Modifier.padding(ScaffoldPadding)
+            modifier = Modifier.padding(ModalPadding)
         ) {
-            Text(text = stringResource(R.string.scene_personas_user_id))
+            Text(text = stringResource(R.string.username))
             Spacer(modifier = Modifier.height(8.dp))
             MaskInputField(
                 modifier = Modifier.fillMaxWidth(),

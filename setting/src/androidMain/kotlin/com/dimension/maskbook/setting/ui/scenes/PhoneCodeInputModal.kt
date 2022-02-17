@@ -26,7 +26,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.MaterialTheme
@@ -44,8 +43,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.common.ui.widget.MaskInputField
 import com.dimension.maskbook.common.ui.widget.MaskModal
-import com.dimension.maskbook.common.ui.widget.PrimaryButton
-import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
+import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.localization.R
 
 @Composable
@@ -60,22 +58,18 @@ fun PhoneCodeInputModal(
     onSendCode: () -> Unit,
     onVerify: () -> Unit,
     title: String,
-    subTitle: @Composable ((ColumnScope) -> Unit)? = null,
+    subTitle: @Composable (() -> Unit)? = null,
     footer: @Composable (ColumnScope) -> Unit = {},
 ) {
     MaskModal(
         title = {
-            Text(text = title)
+            Text(
+                text = title,
+            )
         },
+        subTitle = subTitle
     ) {
-        Column(
-            modifier = Modifier.padding(ScaffoldPadding)
-        ) {
-            subTitle?.let {
-                Spacer(modifier = Modifier.height(13.dp))
-                it.invoke(this)
-            }
-            Spacer(modifier = Modifier.height(21.dp))
+        Column {
             Text(text = stringResource(R.string.scene_backup_validation_code))
             Spacer(modifier = Modifier.height(8.dp))
             Row(

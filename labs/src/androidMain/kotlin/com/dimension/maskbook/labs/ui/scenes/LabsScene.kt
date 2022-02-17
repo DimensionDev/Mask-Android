@@ -40,12 +40,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.common.ext.observeAsState
-import com.dimension.maskbook.common.ui.widget.MaskButton
-import com.dimension.maskbook.common.ui.widget.MaskIconButton
 import com.dimension.maskbook.common.ui.widget.MaskListItem
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
+import com.dimension.maskbook.common.ui.widget.button.MaskButton
+import com.dimension.maskbook.common.ui.widget.button.MaskIconCardButton
 import com.dimension.maskbook.labs.R
 import com.dimension.maskbook.labs.export.model.AppKey
 import com.dimension.maskbook.labs.viewmodel.AppDisplayData
@@ -66,7 +66,7 @@ fun LabsScene(
                     Text(text = stringResource(R.string.tab_labs))
                 },
                 actions = {
-                    MaskIconButton(onClick = onSettingClick) {
+                    MaskIconCardButton(onClick = onSettingClick) {
                         Icon(
                             painterResource(id = R.drawable.ic_setting),
                             contentDescription = null,
