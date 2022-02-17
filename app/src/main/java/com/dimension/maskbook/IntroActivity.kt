@@ -35,6 +35,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -55,6 +56,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
@@ -244,15 +246,25 @@ private fun IntroScene(
 private fun IntroPage(
     item: IntroData,
 ) {
-    Box(Modifier.fillMaxSize(), Alignment.Center) {
+    Box(
+        modifier = Modifier
+            .padding(bottom = 64.dp)
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Image(
+            painter = painterResource(R.drawable.ic_intro_grid),
+            contentDescription = null,
+            contentScale = ContentScale.FillWidth,
+            modifier = Modifier.fillMaxWidth(),
+        )
         Column(
-            modifier = Modifier.padding(bottom = 64.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Image(
                 painter = painterResource(item.img),
                 contentDescription = null,
-                modifier = Modifier.size(300.dp)
+                modifier = Modifier.size(300.dp),
             )
             Spacer(Modifier.height(80.dp))
             Text(
