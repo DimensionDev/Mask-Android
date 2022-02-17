@@ -70,7 +70,6 @@ dependencies {
     implementation(projects.common)
     implementation(projects.common.okhttp)
 
-    implementation("com.github.romandanylyk:PageIndicatorView:v.1.0.3")
     implementation("com.google.code.gson:gson:2.8.6")
     implementation("org.mozilla.geckoview:geckoview:95.+")
     testImplementation("junit:junit:4.13.2")

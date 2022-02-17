@@ -21,78 +21,76 @@
 package com.dimension.maskbook
 
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
+import androidx.activity.compose.setContent
+import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isVisible
-import androidx.recyclerview.widget.RecyclerView
-import androidx.transition.Fade
-import androidx.transition.TransitionManager
-import androidx.transition.TransitionSet
-import androidx.viewpager2.widget.ViewPager2
-import com.dimension.maskbook.component.ChangeColor
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.ContentAlpha
+import androidx.compose.material.LocalContentAlpha
+import androidx.compose.material.LocalContentColor
+import androidx.compose.material.Text
+import androidx.compose.material.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.core.view.WindowCompat
 import com.dimension.maskbook.util.setSettings
-import com.rd.PageIndicatorView
+import com.google.accompanist.insets.ProvideWindowInsets
+import com.google.accompanist.insets.navigationBarsPadding
+import com.google.accompanist.insets.statusBarsPadding
+import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.PagerState
+import com.google.accompanist.pager.rememberPagerState
 
 class IntroActivity : AppCompatActivity() {
 
-    data class SceneData(
-        val img: Int,
-        val color: Int,
-        val title: String,
-        val desc: String
-    )
-
-    private val scenes by lazy {
-        listOf(
-            SceneData(
-                R.drawable.ic_intro_logo,
-                Color.parseColor("#BED2FF"),
-                "Welcome to Mask Network",
-                "Post on Social Media Sites without being monitored"
-            ),
-            SceneData(
-                R.drawable.ic_intro_chat,
-                Color.parseColor("#DBFFFE"),
-                "Encrypt for Friends",
-                "Share your secret with anyone as your wish"
-            ),
-            SceneData(
-                R.drawable.ic_intro_locker,
-                Color.parseColor("#D2E7FF"),
-                "Keep Data Carefully",
-                "No one but you will own your data Be careful and backup your data regularly"
-            )
-        )
-    }
-
-    private var currentScene = 0
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_intro)
-        findViewById<Button>(R.id.next_button).setOnClickListener {
-            toScene(++currentScene)
+
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+
+        setContent {
+            ProvideWindowInsets {
+                IntroScene(
+                    onStart = { complete() },
+                )
+            }
         }
-        findViewById<Button>(R.id.start_using_button).setOnClickListener {
-            complete()
-        }
-        findViewById<PageIndicatorView>(R.id.page_indicator).count = scenes.count()
-        findViewById<ViewPager2>(R.id.view_pager).apply {
-            adapter = IntroAdapter(scenes)
-            registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-                override fun onPageSelected(position: Int) {
-                    toScene(position)
-                }
-            })
-        }
-        toScene(currentScene)
     }
 
     private fun complete() {
@@ -100,77 +98,229 @@ class IntroActivity : AppCompatActivity() {
         startActivity(Intent(this, GeckoViewActivity::class.java))
         finish()
     }
+}
 
-    private fun toScene(index: Int) {
-        if (index >= scenes.size) {
-            return
-        }
-        val data = scenes[index]
-        TransitionManager.beginDelayedTransition(
-            findViewById(R.id.root),
-            TransitionSet()
-                .addTransition(
-                    ChangeColor()
-                        .addTarget(findViewById<View>(R.id.intro_background))
-                )
-                .addTransition(
-                    Fade()
-                        .addTarget(findViewById<Button>(R.id.next_button))
-                        .addTarget(findViewById<Button>(R.id.start_using_button))
-                )
+private data class IntroData(
+    @DrawableRes val img: Int,
+    val desc: AnnotatedString,
+)
+
+@OptIn(ExperimentalPagerApi::class)
+@Composable
+private fun IntroScene(
+    onStart: () -> Unit,
+) {
+    val introList = remember {
+        listOf(
+            IntroData(
+                img = R.drawable.ic_intro_01,
+                desc = buildAnnotatedString {
+                    append("Your ")
+                    withStyle(SpanStyle(fontWeight = FontWeight.W800)) {
+                        append("Portal")
+                    }
+                    append(" to the ")
+                    withStyle(SpanStyle(fontWeight = FontWeight.W800)) {
+                        append("New, \nOpen Internet")
+                    }
+                }
+            ),
+            IntroData(
+                img = R.drawable.ic_intro_02,
+                desc = buildAnnotatedString {
+                    append("Send ")
+                    withStyle(SpanStyle(fontWeight = FontWeight.W800)) {
+                        append("encrypted")
+                    }
+                    append(" messages \non social media with ")
+                    withStyle(SpanStyle(fontWeight = FontWeight.W800)) {
+                        append("persona")
+                    }
+                }
+            ),
+            IntroData(
+                img = R.drawable.ic_intro_03,
+                desc = buildAnnotatedString {
+                    withStyle(SpanStyle(fontWeight = FontWeight.W800)) {
+                        append("Multi-Chain wallet,")
+                    }
+                    append(" \ncompatible with ")
+                    withStyle(SpanStyle(fontWeight = FontWeight.W800)) {
+                        append("WalletConnect")
+                    }
+                }
+            ),
+            IntroData(
+                img = R.drawable.ic_intro_04,
+                desc = buildAnnotatedString {
+                    withStyle(SpanStyle(fontWeight = FontWeight.W800)) {
+                        append("Back up in time,")
+                    }
+                    append("\nwith cloud / local ")
+                    withStyle(SpanStyle(fontWeight = FontWeight.W800)) {
+                        append("backup")
+                    }
+                }
+            ),
         )
-        findViewById<View>(R.id.intro_background).setBackgroundColor(data.color)
-//        intro_img.setImageResource(data.img)
-//        intro_title.text = data.title
-//        intro_desc.text = data.desc
-        findViewById<ViewPager2>(R.id.view_pager).apply {
-            if (currentItem != index) {
-                currentItem = index
-            }
-        }
-        findViewById<PageIndicatorView>(R.id.page_indicator).selection = index
-        if (index == scenes.count() - 1) {
-            findViewById<View>(R.id.next_button).isVisible = false
-            findViewById<View>(R.id.start_using_button).isVisible = true
-        } else {
-            findViewById<View>(R.id.next_button).isVisible = true
-            findViewById<View>(R.id.start_using_button).isVisible = false
-        }
     }
 
-    override fun onBackPressed() {
-        if (currentScene > 0) {
-            toScene(--currentScene)
-        } else {
-            super.onBackPressed()
+    Box(
+        modifier = Modifier
+            .background(Color(0xFF1C68F3))
+            .fillMaxSize(),
+    ) {
+        val pagerState = rememberPagerState()
+
+        HorizontalPager(
+            state = pagerState,
+            count = introList.size,
+        ) { page ->
+            Box {
+                IntroPage(
+                    item = introList[page],
+                )
+                if (page == introList.size - 1) {
+                    Button(
+                        onClick = onStart,
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = Color.White,
+                            contentColor = Color(0xFF1C68F3),
+                        ),
+                        contentPadding = PaddingValues(
+                            horizontal = 29.dp,
+                            vertical = 16.dp
+                        ),
+                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(bottom = 147.dp)
+                            .navigationBarsPadding(),
+                    ) {
+                        Text(
+                            text = "Let’s start",
+                            fontWeight = FontWeight.W600,
+                            fontSize = 18.sp,
+                            lineHeight = 21.6.sp,
+                        )
+                    }
+                } else {
+                    TextButton(
+                        onClick = onStart,
+                        colors = ButtonDefaults.textButtonColors(
+                            contentColor = Color(0xFFD7E6FF),
+                        ),
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(end = 22.5.dp, top = 10.dp)
+                            .statusBarsPadding(),
+                    ) {
+                        Text(
+                            text = "Skip",
+                            fontWeight = FontWeight.W700,
+                            fontSize = 16.sp,
+                            lineHeight = 24.sp,
+                        )
+                    }
+                }
+            }
+        }
+        IntroPagerIndicator(
+            pagerState = pagerState,
+            inactiveColor = Color(0xFFD7E6FF),
+            indicatorWidth = 10.dp,
+            indicatorHeight = 6.dp,
+            activeColor = Color.White,
+            activeIndicatorWidth = 20.dp,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 58.dp)
+                .navigationBarsPadding(),
+        )
+    }
+}
+
+@Composable
+private fun IntroPage(
+    item: IntroData,
+) {
+    Box(Modifier.fillMaxSize(), Alignment.Center) {
+        Column(
+            modifier = Modifier.padding(bottom = 64.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Image(
+                painter = painterResource(item.img),
+                contentDescription = null,
+                modifier = Modifier.size(300.dp)
+            )
+            Spacer(Modifier.height(80.dp))
+            Text(
+                text = item.desc,
+                textAlign = TextAlign.Center,
+                color = Color.White,
+                fontWeight = FontWeight.W400,
+                fontSize = 18.sp,
+                lineHeight = 27.sp,
+            )
         }
     }
 }
 
-class IntroViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView)
+@ExperimentalPagerApi
+@Composable
+private fun IntroPagerIndicator(
+    pagerState: PagerState,
+    modifier: Modifier = Modifier,
+    activeColor: Color = LocalContentColor.current.copy(alpha = LocalContentAlpha.current),
+    inactiveColor: Color = activeColor.copy(ContentAlpha.disabled),
+    indicatorWidth: Dp = 8.dp,
+    indicatorHeight: Dp = indicatorWidth,
+    activeIndicatorWidth: Dp = indicatorWidth,
+    activeIndicatorHeight: Dp = indicatorHeight,
+    spacing: Dp = indicatorWidth,
+    indicatorShape: Shape = CircleShape,
+) {
 
-class IntroAdapter(private val scenes: List<IntroActivity.SceneData>) :
-    RecyclerView.Adapter<IntroViewHolder>() {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): IntroViewHolder {
-        return IntroViewHolder(
-            LayoutInflater.from(parent.context).inflate(
-                R.layout.item_intro,
-                parent,
-                false
-            )
-        )
-    }
+    val indicatorWidthPx = LocalDensity.current.run { indicatorWidth.roundToPx() }
+    val activeIndicatorWidthPx = LocalDensity.current.run { activeIndicatorWidth.roundToPx() }
+    val spacingPx = LocalDensity.current.run { spacing.roundToPx() }
 
-    override fun getItemCount(): Int {
-        return scenes.count()
-    }
-
-    override fun onBindViewHolder(holder: IntroViewHolder, position: Int) {
-        val data = scenes[position]
-        holder.itemView.apply {
-            findViewById<ImageView>(R.id.intro_img).setImageResource(data.img)
-            findViewById<TextView>(R.id.intro_title).text = data.title
-            findViewById<TextView>(R.id.intro_desc).text = data.desc
+    Box(
+        modifier = modifier,
+        contentAlignment = Alignment.CenterStart
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(spacing),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            repeat(pagerState.pageCount) { index ->
+                val isSelected = pagerState.currentPage == index
+                val animeWidth by animateDpAsState(if (isSelected) activeIndicatorWidth else indicatorWidth)
+                val animeHeight by animateDpAsState(if (isSelected) activeIndicatorHeight else indicatorHeight)
+                Box(
+                    modifier = Modifier
+                        .size(animeWidth, animeHeight)
+                        .background(color = inactiveColor, shape = indicatorShape)
+                )
+            }
         }
+
+        Box(
+            Modifier
+                .offset {
+                    val scrollPosition = (pagerState.currentPage + pagerState.currentPageOffset)
+                        .coerceIn(0f, (pagerState.pageCount - 1).coerceAtLeast(0).toFloat())
+                    IntOffset(
+                        x = ((spacingPx + indicatorWidthPx) * (scrollPosition - 1) + activeIndicatorWidthPx).toInt(),
+                        y = 0
+                    )
+                }
+                .size(width = activeIndicatorWidth, height = activeIndicatorHeight)
+                .background(
+                    color = activeColor,
+                    shape = indicatorShape,
+                )
+        )
     }
 }
