@@ -31,6 +31,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
@@ -103,18 +104,18 @@ fun SendTokenHost(
             startDestination = "SearchAddress",
             route = "SendTokenScene",
         ) {
-            composable(
-                "SearchAddress"
-            ) {
-                val input by searchAddressViewModel.input.observeAsState(initial = "")
-                val contacts by searchAddressViewModel.contacts.observeAsState(initial = emptyList())
-                val recent by searchAddressViewModel.recent.observeAsState(initial = emptyList())
-                val ensData by searchAddressViewModel.ensData.collectAsState()
-                val selectEnsData by searchAddressViewModel.selectEnsData.collectAsState()
-                val canConfirm by searchAddressViewModel.canConfirm.observeAsState(initial = false)
-                val noTokenFound by tokenDataViewModel.noTokenFound.collectAsState()
+            composable("SearchAddress") {
+                val input by searchAddressViewModel.input.observeAsState()
+                val contacts by searchAddressViewModel.contacts.observeAsState()
+                val recent by searchAddressViewModel.recent.observeAsState()
+                val ensData by searchAddressViewModel.ensData.observeAsState()
+                val selectEnsData by searchAddressViewModel.selectEnsData.observeAsState()
+                val canConfirm by searchAddressViewModel.canConfirm.observeAsState()
+                val noTokenFound by tokenDataViewModel.noTokenFound.observeAsState()
+
                 val clipboardManager = LocalClipboardManager.current
                 val inAppNotification = LocalInAppNotification.current
+
                 SearchAddressScene(
                     onBack = onBack,
                     tokenAddress = tokenAddress,
