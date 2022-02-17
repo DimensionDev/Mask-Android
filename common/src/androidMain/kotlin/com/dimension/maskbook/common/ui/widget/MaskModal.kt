@@ -42,6 +42,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.common.ui.notification.InAppNotification
 import com.dimension.maskbook.common.ui.theme.isDarkTheme
+import com.google.accompanist.insets.navigationBarsWithImePadding
 
 @Composable
 fun MaskModal(
@@ -56,7 +57,9 @@ fun MaskModal(
         MaskInAppNotification(snackBarHostState)
         Box {
             Column(
-                modifier = modifier.fillMaxWidth()
+                modifier = modifier
+                    .fillMaxWidth()
+                    .navigationBarsWithImePadding()
                     .animateContentSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {

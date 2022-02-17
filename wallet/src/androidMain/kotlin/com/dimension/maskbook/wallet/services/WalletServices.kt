@@ -20,10 +20,11 @@
  */
 package com.dimension.maskbook.wallet.services
 
+import android.content.Context
 import com.dimension.maskbook.common.retrofit.retrofit
 import com.dimension.maskbook.debankapi.api.DebankResources
 
-class WalletServices {
+class WalletServices(private val context: Context) {
     val debankServices by lazy {
         retrofit<DebankResources>("https://openapi.debank.com")
     }
@@ -38,6 +39,6 @@ class WalletServices {
     }
 
     val walletConnectServices by lazy {
-        retrofit<WalletConnectServices>("https://registry.walletconnect.org")
+        LocalJsonWalletConnectServices(context)
     }
 }

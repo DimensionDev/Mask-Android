@@ -21,7 +21,6 @@
 package com.dimension.maskbook.wallet.ui.scenes.wallets.management
 
 import android.content.ActivityNotFoundException
-import android.content.Intent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
@@ -39,7 +38,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -167,15 +165,15 @@ fun WalletConnectModal() {
                             navController.navigate("WalletConnectConnecting")
                             try {
                                 context.startActivity(
-                                    Intent(Intent.ACTION_VIEW).apply {
-                                        data = viewModel.generateDeeplink()
-                                        flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                                    }
+                                    viewModel.generateWcWalletIntent(it)
                                 )
                             } catch (e: ActivityNotFoundException) {
                                 e.printStackTrace()
                                 navController.popBackStack()
                             }
+                        },
+                        isWalletInstalled = {
+                            viewModel.isWalletInstalled(it.packageName)
                         }
                     )
                 }
@@ -257,7 +255,8 @@ private fun TypeSelectScene(
     onCopy: (String) -> Unit,
     wallets: List<WCWallet>,
     onChainSelected: (chainType: ChainType) -> Unit,
-    onWalletConnect: (wallet: WCWallet) -> Unit
+    onWalletConnect: (wallet: WCWallet) -> Unit,
+    isWalletInstalled: (wallet: WCWallet) -> Boolean,
 ) {
     Column {
         var selectedTabIndex by remember {
@@ -307,7 +306,8 @@ private fun TypeSelectScene(
                 wallets = wallets,
                 onChainSelected = onChainSelected,
                 onWalletConnect = onWalletConnect,
-                loading = qrCode.isEmpty()
+                loading = qrCode.isEmpty(),
+                isWalletInstalled = isWalletInstalled
             )
             WalletConnectType.QRCode -> WalletConnectQRCode(
                 qrCode = qrCode,
@@ -369,6 +369,7 @@ fun WalletConnectManually(
     wallets: List<WCWallet>,
     onChainSelected: (chainType: ChainType) -> Unit,
     onWalletConnect: (wallet: WCWallet) -> Unit,
+    isWalletInstalled: (wallet: WCWallet) -> Boolean,
     loading: Boolean
 ) {
     var selectedTabIndex by remember {
@@ -413,7 +414,7 @@ fun WalletConnectManually(
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
-                .heightIn(0.dp, max = 500.dp)
+                .height(338.dp)
                 .background(MaterialTheme.colors.surface, shape = MaterialTheme.shapes.medium),
             state = rememberLazyListState(),
             contentPadding = PaddingValues(vertical = 20.dp, horizontal = 25.dp)
@@ -426,13 +427,12 @@ fun WalletConnectManually(
                 }
             } else {
                 itemsGridIndexed(wallets, rowSize = 4, spacing = 10.dp) { index, wallet ->
+                    val isInstalled = isWalletInstalled.invoke(wallet)
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable {
-                                onWalletConnect.invoke(wallet)
-                            },
+                            .clickable(enabled = isInstalled, onClick = { onWalletConnect.invoke(wallet) })
                     ) {
                         Image(
                             painter = rememberImagePainter(data = wallet.logo),
@@ -440,14 +440,15 @@ fun WalletConnectManually(
                             contentScale = ContentScale.FillBounds,
                             modifier = Modifier
                                 .size(48.dp)
-                                .clip(shape = CircleShape)
+                                .clip(shape = CircleShape),
+                            alpha = if (isInstalled) ContentAlpha.high else ContentAlpha.disabled
                         )
                         Spacer(modifier = Modifier.height(10.dp))
                         Text(
                             text = wallet.displayName,
                             style = MaterialTheme.typography.body2, maxLines = 1,
                             textAlign = TextAlign.Center,
-                            overflow = TextOverflow.Ellipsis
+                            overflow = TextOverflow.Ellipsis,
                         )
                     }
                 }

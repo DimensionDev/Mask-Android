@@ -21,6 +21,7 @@
 package com.dimension.maskbook.wallet.repository
 
 import android.net.Uri
+import androidx.room.withTransaction
 import com.dimension.maskbook.wallet.BuildConfig
 import com.dimension.maskbook.wallet.db.AppDatabase
 import com.dimension.maskbook.wallet.db.model.CoinPlatformType
@@ -167,7 +168,11 @@ class WalletConnectRepository(
                 wallet.toDb()
             }
         }.let {
-            database.wcWalletDao().add(it)
+            database.withTransaction {
+                // some wallets might have been changed with a different id
+                database.wcWalletDao().clearAll()
+                database.wcWalletDao().add(it)
+            }
         }
     }
 
@@ -182,7 +187,7 @@ class WalletConnectRepository(
             nativeDeeplink = mobile?.native ?: "",
             universalLink = mobile?.universal ?: "",
             shortName = metadata?.shortName ?: "",
-            logo = "https://registry.walletconnect.org/logo/sm/$id.jpeg",
+            logo = "https://registry.walletconnect.org/logo/md/$id.jpeg",
             packageName = app?.android?.let {
                 try {
                     Uri.parse(it).getQueryParameter("id")
