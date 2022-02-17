@@ -18,7 +18,7 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.common.ui.widget
+package com.dimension.maskbook.setting.ui.scenes
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -40,68 +40,13 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import com.dimension.maskbook.common.ui.widget.MaskInputField
+import com.dimension.maskbook.common.ui.widget.MaskModal
+import com.dimension.maskbook.common.ui.widget.PrimaryButton
+import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.localization.R
-
-@Composable
-fun PhoneInputModal(
-    regionCode: String,
-    onRegionCodeChange: (String) -> Unit,
-    phone: String,
-    onPhoneChange: (String) -> Unit,
-    phoneValid: Boolean,
-    onConfirm: () -> Unit,
-    buttonEnabled: Boolean,
-    title: String,
-) {
-    MaskModal(
-        title = {
-            Text(text = title)
-        }
-    ) {
-        Column(Modifier.padding(ScaffoldPadding)) {
-            Text(text = stringResource(R.string.scene_setting_profile_phone_number))
-            Spacer(modifier = Modifier.height(8.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                MaskInputField(
-                    modifier = Modifier.weight(1f),
-                    value = regionCode,
-                    onValueChange = { onRegionCodeChange(it) },
-                    maxLines = 1,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                MaskInputField(
-                    modifier = Modifier.weight(4f),
-                    value = phone,
-                    onValueChange = {
-                        onPhoneChange(it)
-                    },
-                    maxLines = 1,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-                )
-            }
-            if (!phoneValid) {
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(text = stringResource(R.string.scene_restore_tip_invalid_mobile_number), color = Color.Red)
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-            PrimaryButton(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = {
-                    onConfirm()
-                },
-                enabled = phoneValid && !buttonEnabled && phone.isNotEmpty(),
-            ) {
-                Text(text = stringResource(R.string.common_controls_confirm))
-            }
-        }
-    }
-}
 
 @Composable
 fun PhoneCodeInputModal(
@@ -118,16 +63,14 @@ fun PhoneCodeInputModal(
     subTitle: @Composable ((ColumnScope) -> Unit)? = null,
     footer: @Composable (ColumnScope) -> Unit = {},
 ) {
-    MaskModal {
+    MaskModal(
+        title = {
+            Text(text = title)
+        },
+    ) {
         Column(
             modifier = Modifier.padding(ScaffoldPadding)
         ) {
-            Text(
-                modifier = Modifier.fillMaxWidth(),
-                text = title,
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.h6,
-            )
             subTitle?.let {
                 Spacer(modifier = Modifier.height(13.dp))
                 it.invoke(this)

@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Text
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -36,12 +37,11 @@ import androidx.navigation.compose.dialog
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import com.dimension.maskbook.common.ext.observeAsState
+import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.ui.widget.EmailCodeInputModal
 import com.dimension.maskbook.common.ui.widget.EmailInputModal
 import com.dimension.maskbook.common.ui.widget.MaskDialog
-import com.dimension.maskbook.common.ui.widget.PhoneCodeInputModal
-import com.dimension.maskbook.common.ui.widget.PhoneInputModal
 import com.dimension.maskbook.common.ui.widget.PrimaryButton
 import com.dimension.maskbook.localization.R
 import com.dimension.maskbook.setting.ui.scenes.AppearanceSettings
@@ -49,13 +49,14 @@ import com.dimension.maskbook.setting.ui.scenes.ChangeBackUpPasswordModal
 import com.dimension.maskbook.setting.ui.scenes.ChangePaymentPasswordModal
 import com.dimension.maskbook.setting.ui.scenes.DataSourceSettings
 import com.dimension.maskbook.setting.ui.scenes.LanguageSettings
+import com.dimension.maskbook.setting.ui.scenes.PhoneCodeInputModal
+import com.dimension.maskbook.setting.ui.scenes.PhoneInputModal
 import com.dimension.maskbook.setting.viewmodel.EmailSetupViewModel
 import com.dimension.maskbook.setting.viewmodel.PhoneSetupViewModel
-import com.dimension.maskbook.setting.viewmodel.RemoteBackupRecoveryViewModelBase
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.bottomSheet
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
-import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalAnimationApi::class, ExperimentalMaterialNavigationApi::class)
 fun NavGraphBuilder.settingsRoute(
@@ -190,22 +191,23 @@ fun NavGraphBuilder.settingsRoute(
     }
 
     bottomSheet(SettingRoute.Settings_ChangeEmail.Settings_ChangeEmail_Setup) {
-        val requestNavigate: (RemoteBackupRecoveryViewModelBase.NavigateArgs) -> Unit = {
-            if (it.target == RemoteBackupRecoveryViewModelBase.NavigateTarget.Code) {
-                navController.navigate(SettingRoute.Settings_ChangeEmail.Settings_ChangeEmail_Setup_Code(it.value))
-            }
-        }
-        val viewModel = getViewModel<EmailSetupViewModel> {
-            parametersOf(requestNavigate)
-        }
-        val value by viewModel.value.observeAsState(initial = "")
-        val valid by viewModel.valueValid.observeAsState(initial = true)
-        val loading by viewModel.loading.observeAsState(initial = false)
+        val scope = rememberCoroutineScope()
+
+        val viewModel = getViewModel<EmailSetupViewModel>()
+        val email by viewModel.value.observeAsState()
+        val emailValid by viewModel.valueValid.observeAsState()
+        val loading by viewModel.loading.observeAsState()
         EmailInputModal(
-            email = value,
+            email = email,
             onEmailChange = { viewModel.setValue(it) },
-            emailValid = valid,
-            onConfirm = { viewModel.sendCode(value) },
+            emailValid = emailValid,
+            onConfirm = {
+                scope.launch {
+                    viewModel.sendCodeNow(email).onSuccess {
+                        navController.navigate(SettingRoute.Settings_ChangeEmail.Settings_ChangeEmail_Setup_Code(email))
+                    }
+                }
+            },
             buttonEnabled = loading,
             title = stringResource(R.string.scene_setting_bind_email_title)
         )
@@ -217,26 +219,19 @@ fun NavGraphBuilder.settingsRoute(
         )
     ) { backStackEntry ->
         backStackEntry.arguments?.getString("email")?.let { email ->
-            val requestNavigate: (RemoteBackupRecoveryViewModelBase.NavigateArgs) -> Unit = {
-                if (it.target == RemoteBackupRecoveryViewModelBase.NavigateTarget.Next) {
-                    navController.navigate(SettingRoute.Settings_ChangeEmail.Settings_ChangeEmail_Setup_Success) {
-                        popUpTo(SettingRoute.Settings_ChangeEmail.Settings_ChangeEmail_Setup) {
-                            inclusive = true
-                        }
-                    }
-                }
-            }
-            val viewModel = getViewModel<EmailSetupViewModel> {
-                parametersOf(requestNavigate)
-            }
-            val code by viewModel.code.observeAsState(initial = "")
-            val valid by viewModel.codeValid.observeAsState(initial = true)
-            val loading by viewModel.loading.observeAsState(initial = false)
-            val canSend by viewModel.canSend.observeAsState(initial = false)
-            val countDown by viewModel.countdown.observeAsState(initial = 60)
+            val scope = rememberCoroutineScope()
+
+            val viewModel = getViewModel<EmailSetupViewModel>()
+            val code by viewModel.code.observeAsState()
+            val valid by viewModel.codeValid.observeAsState()
+            val loading by viewModel.loading.observeAsState()
+            val canSend by viewModel.canSend.observeAsState()
+            val countDown by viewModel.countdown.observeAsState()
+
             LaunchedEffect(Unit) {
-                viewModel.startCountDown()
+                viewModel.sendCodeNow(email)
             }
+
             EmailCodeInputModal(
                 email = email,
                 buttonEnabled = loading,
@@ -246,8 +241,22 @@ fun NavGraphBuilder.settingsRoute(
                 codeValid = valid,
                 code = code,
                 onCodeChange = { viewModel.setCode(it) },
-                onSendCode = { viewModel.sendCode(email) },
-                onVerify = { viewModel.verifyCode(code, email) }
+                onSendCode = {
+                    scope.launch {
+                        viewModel.sendCodeNow(email)
+                    }
+                },
+                onVerify = {
+                    scope.launch {
+                        viewModel.verifyCodeNow(code, email).onSuccess {
+                            navController.navigate(SettingRoute.Settings_ChangeEmail.Settings_ChangeEmail_Setup_Success) {
+                                popUpTo(SettingRoute.Settings_ChangeEmail.Settings_ChangeEmail_Setup) {
+                                    inclusive = true
+                                }
+                            }
+                        }
+                    }
+                }
             )
         }
     }
@@ -279,21 +288,19 @@ fun NavGraphBuilder.settingsRoute(
         ),
     ) { backStackEntry ->
         backStackEntry.arguments?.getString("email")?.let { email ->
-            val requestNavigate: (RemoteBackupRecoveryViewModelBase.NavigateArgs) -> Unit = {
-                navController.navigate(SettingRoute.Settings_ChangeEmail.Settings_ChangeEmail_Change_New)
-            }
-            val viewModel = getViewModel<EmailSetupViewModel> {
-                parametersOf(requestNavigate)
-            }
-            val code by viewModel.code.observeAsState(initial = "")
-            val valid by viewModel.codeValid.observeAsState(initial = true)
-            val loading by viewModel.loading.observeAsState(initial = false)
-            val canSend by viewModel.canSend.observeAsState(initial = false)
-            val countDown by viewModel.countdown.observeAsState(initial = 60)
+            val scope = rememberCoroutineScope()
+
+            val viewModel = getViewModel<EmailSetupViewModel>()
+            val code by viewModel.code.observeAsState()
+            val valid by viewModel.codeValid.observeAsState()
+            val loading by viewModel.loading.observeAsState()
+            val canSend by viewModel.canSend.observeAsState()
+            val countDown by viewModel.countdown.observeAsState()
+
             LaunchedEffect(Unit) {
-                viewModel.startCountDown()
-                viewModel.sendCode(email)
+                viewModel.sendCodeNow(email)
             }
+
             EmailCodeInputModal(
                 email = email,
                 buttonEnabled = loading,
@@ -304,28 +311,43 @@ fun NavGraphBuilder.settingsRoute(
                 codeValid = valid,
                 code = code,
                 onCodeChange = { viewModel.setCode(it) },
-                onSendCode = { viewModel.sendCode(email) },
-                onVerify = { viewModel.verifyCode(code, email) }
+                onSendCode = {
+                    scope.launch {
+                        viewModel.sendCodeNow(email)
+                    }
+                },
+                onVerify = {
+                    scope.launch {
+                        viewModel.verifyCodeNow(code, email).onSuccess {
+                            navController.navigate(SettingRoute.Settings_ChangeEmail.Settings_ChangeEmail_Change_New)
+                        }
+                    }
+                }
             )
         }
     }
     bottomSheet(SettingRoute.Settings_ChangeEmail.Settings_ChangeEmail_Change_New) {
-        val requestNavigate: (RemoteBackupRecoveryViewModelBase.NavigateArgs) -> Unit = {
-            if (it.target == RemoteBackupRecoveryViewModelBase.NavigateTarget.Code) {
-                navController.navigate(SettingRoute.Settings_ChangeEmail.Settings_ChangeEmail_Change_New_Code(it.value))
-            }
-        }
-        val viewModel = getViewModel<EmailSetupViewModel> {
-            parametersOf(requestNavigate)
-        }
-        val value by viewModel.value.observeAsState(initial = "")
-        val valid by viewModel.valueValid.observeAsState(initial = true)
-        val loading by viewModel.loading.observeAsState(initial = false)
+        val scope = rememberCoroutineScope()
+
+        val viewModel = getViewModel<EmailSetupViewModel>()
+        val email by viewModel.value.observeAsState()
+        val emailValid by viewModel.valueValid.observeAsState()
+        val loading by viewModel.loading.observeAsState()
         EmailInputModal(
-            email = value,
+            email = email,
             onEmailChange = { viewModel.setValue(it) },
-            emailValid = valid,
-            onConfirm = { viewModel.sendCode(value) },
+            emailValid = emailValid,
+            onConfirm = {
+                scope.launch {
+                    viewModel.sendCodeNow(email).onSuccess {
+                        navController.navigate(
+                            SettingRoute.Settings_ChangeEmail.Settings_ChangeEmail_Change_New_Code(
+                                email
+                            )
+                        )
+                    }
+                }
+            },
             buttonEnabled = loading,
             title = stringResource(R.string.scene_setting_change_email_title)
         )
@@ -338,26 +360,19 @@ fun NavGraphBuilder.settingsRoute(
         )
     ) { backStackEntry ->
         backStackEntry.arguments?.getString("email")?.let { email ->
-            val requestNavigate: (RemoteBackupRecoveryViewModelBase.NavigateArgs) -> Unit = {
-                if (it.target == RemoteBackupRecoveryViewModelBase.NavigateTarget.Next) {
-                    navController.navigate(SettingRoute.Settings_ChangeEmail.Settings_ChangeEmail_Change_Success) {
-                        popUpTo(SettingRoute.Settings_ChangeEmail.Settings_ChangeEmail_Change_Code.path) {
-                            inclusive = true
-                        }
-                    }
-                }
-            }
-            val viewModel = getViewModel<EmailSetupViewModel> {
-                parametersOf(requestNavigate)
-            }
-            val code by viewModel.code.observeAsState(initial = "")
-            val valid by viewModel.codeValid.observeAsState(initial = true)
-            val loading by viewModel.loading.observeAsState(initial = false)
-            val canSend by viewModel.canSend.observeAsState(initial = false)
-            val countDown by viewModel.countdown.observeAsState(initial = 60)
+            val scope = rememberCoroutineScope()
+
+            val viewModel = getViewModel<EmailSetupViewModel>()
+            val code by viewModel.code.observeAsState()
+            val valid by viewModel.codeValid.observeAsState()
+            val loading by viewModel.loading.observeAsState()
+            val canSend by viewModel.canSend.observeAsState()
+            val countDown by viewModel.countdown.observeAsState()
+
             LaunchedEffect(Unit) {
-                viewModel.startCountDown()
+                viewModel.sendCodeNow(email)
             }
+
             EmailCodeInputModal(
                 email = email,
                 buttonEnabled = loading,
@@ -367,8 +382,22 @@ fun NavGraphBuilder.settingsRoute(
                 codeValid = valid,
                 code = code,
                 onCodeChange = { viewModel.setCode(it) },
-                onSendCode = { viewModel.sendCode(email) },
-                onVerify = { viewModel.verifyCode(code, email) }
+                onSendCode = {
+                    scope.launch {
+                        viewModel.sendCodeNow(email)
+                    }
+                },
+                onVerify = {
+                    scope.launch {
+                        viewModel.verifyCodeNow(code, email).onSuccess {
+                            navController.navigate(SettingRoute.Settings_ChangeEmail.Settings_ChangeEmail_Change_Success) {
+                                popUpTo(SettingRoute.Settings_ChangeEmail.Settings_ChangeEmail_Change_Code.path) {
+                                    inclusive = true
+                                }
+                            }
+                        }
+                    }
+                }
             )
         }
     }
@@ -395,25 +424,33 @@ fun NavGraphBuilder.settingsRoute(
     }
 
     bottomSheet(SettingRoute.Settings_ChangePhone.Settings_ChangePhone_Setup) {
-        val requestNavigate: (RemoteBackupRecoveryViewModelBase.NavigateArgs) -> Unit = {
-            if (it.target == RemoteBackupRecoveryViewModelBase.NavigateTarget.Code) {
-                navController.navigate(SettingRoute.Settings_ChangePhone.Settings_ChangePhone_Setup_Code(it.value))
-            }
-        }
-        val viewModel = getViewModel<PhoneSetupViewModel> {
-            parametersOf(requestNavigate)
-        }
-        val regionCode by viewModel.regionCode.observeAsState(initial = "+86")
-        val phone by viewModel.value.observeAsState(initial = "")
-        val valid by viewModel.valueValid.observeAsState(initial = true)
-        val loading by viewModel.loading.observeAsState(initial = true)
+        val scope = rememberCoroutineScope()
+
+        val viewModel = getViewModel<PhoneSetupViewModel>()
+        val regionCode by viewModel.regionCode.observeAsState()
+        val phone by viewModel.value.observeAsState()
+        val valid by viewModel.valueValid.observeAsState()
+        val loading by viewModel.loading.observeAsState()
         PhoneInputModal(
             regionCode = regionCode,
             onRegionCodeChange = { viewModel.setRegionCode(it) },
             phone = phone,
             onPhoneChange = { viewModel.setValue(it) },
             phoneValid = valid,
-            onConfirm = { viewModel.sendCode(regionCode + phone) },
+            onConfirm = {
+                scope.launch {
+                    val code = regionCode + phone
+                    viewModel.sendCodeNow(code).onSuccess {
+                        navController.navigate(
+                            SettingRoute.Settings_ChangePhone.Settings_ChangePhone_Setup_Code(code)
+                        ) {
+                            popUpTo(CommonRoute.Main.Home) {
+                                inclusive = false
+                            }
+                        }
+                    }
+                }
+            },
             buttonEnabled = loading,
             title = stringResource(R.string.scene_setting_bind_phone_number_title),
         )
@@ -423,23 +460,19 @@ fun NavGraphBuilder.settingsRoute(
         arguments = listOf(navArgument("phone") { type = NavType.StringType })
     ) { backStackEntry ->
         backStackEntry.arguments?.getString("phone")?.let { phone ->
-            val requestNavigate: (RemoteBackupRecoveryViewModelBase.NavigateArgs) -> Unit = {
-                if (it.target == RemoteBackupRecoveryViewModelBase.NavigateTarget.Next) {
-                    navController.navigate(SettingRoute.Settings_ChangePhone.Settings_ChangePhone_Setup_Success) {
-                        popUpTo(SettingRoute.Settings_ChangePhone.Settings_ChangePhone_Setup) {
-                            inclusive = true
-                        }
-                    }
-                }
+            val scope = rememberCoroutineScope()
+
+            val viewModel = getViewModel<PhoneSetupViewModel>()
+            val code by viewModel.code.observeAsState()
+            val canSend by viewModel.canSend.observeAsState()
+            val valid by viewModel.codeValid.observeAsState()
+            val countDown by viewModel.countdown.observeAsState()
+            val loading by viewModel.loading.observeAsState()
+
+            LaunchedEffect(Unit) {
+                viewModel.sendCodeNow(phone)
             }
-            val viewModel = getViewModel<PhoneSetupViewModel> {
-                parametersOf(requestNavigate)
-            }
-            val code by viewModel.code.observeAsState(initial = "")
-            val canSend by viewModel.canSend.observeAsState(initial = false)
-            val valid by viewModel.codeValid.observeAsState(initial = true)
-            val countDown by viewModel.countdown.observeAsState(initial = 60)
-            val loading by viewModel.loading.observeAsState(initial = false)
+
             PhoneCodeInputModal(
                 phone = phone,
                 code = code,
@@ -448,8 +481,22 @@ fun NavGraphBuilder.settingsRoute(
                 codeValid = valid,
                 countDown = countDown,
                 buttonEnabled = loading,
-                onSendCode = { viewModel.sendCode(phone) },
-                onVerify = { viewModel.verifyCode(code = code, value = phone) },
+                onSendCode = {
+                    scope.launch {
+                        viewModel.sendCodeNow(phone)
+                    }
+                },
+                onVerify = {
+                    scope.launch {
+                        viewModel.verifyCodeNow(code = code, phone = phone).onSuccess {
+                            navController.navigate(SettingRoute.Settings_ChangePhone.Settings_ChangePhone_Setup_Success) {
+                                popUpTo(SettingRoute.Settings_ChangePhone.Settings_ChangePhone_Setup) {
+                                    inclusive = true
+                                }
+                            }
+                        }
+                    }
+                },
                 title = stringResource(R.string.scene_setting_bind_phone_number_title)
             )
         }
@@ -481,19 +528,19 @@ fun NavGraphBuilder.settingsRoute(
         arguments = listOf(navArgument("phone") { type = NavType.StringType })
     ) { backStackEntry ->
         backStackEntry.arguments?.getString("phone")?.let { phone ->
-            val requestNavigate: (RemoteBackupRecoveryViewModelBase.NavigateArgs) -> Unit = {
-                if (it.target == RemoteBackupRecoveryViewModelBase.NavigateTarget.Next) {
-                    navController.navigate(SettingRoute.Settings_ChangePhone.Settings_ChangePhone_Change_New)
-                }
+            val scope = rememberCoroutineScope()
+
+            val viewModel = getViewModel<PhoneSetupViewModel>()
+            val code by viewModel.code.observeAsState()
+            val canSend by viewModel.canSend.observeAsState()
+            val valid by viewModel.codeValid.observeAsState()
+            val countDown by viewModel.countdown.observeAsState()
+            val loading by viewModel.loading.observeAsState()
+
+            LaunchedEffect(Unit) {
+                viewModel.sendCodeNow(phone)
             }
-            val viewModel = getViewModel<PhoneSetupViewModel> {
-                parametersOf(requestNavigate)
-            }
-            val code by viewModel.code.observeAsState(initial = "")
-            val canSend by viewModel.canSend.observeAsState(initial = false)
-            val valid by viewModel.codeValid.observeAsState(initial = true)
-            val countDown by viewModel.countdown.observeAsState(initial = 60)
-            val loading by viewModel.loading.observeAsState(initial = false)
+
             PhoneCodeInputModal(
                 phone = phone,
                 code = code,
@@ -502,33 +549,51 @@ fun NavGraphBuilder.settingsRoute(
                 codeValid = valid,
                 countDown = countDown,
                 buttonEnabled = loading,
-                onSendCode = { viewModel.sendCode(phone) },
-                onVerify = { viewModel.verifyCode(code = code, value = phone) },
+                onSendCode = {
+                    scope.launch {
+                        viewModel.sendCodeNow(phone)
+                    }
+                },
+                onVerify = {
+                    scope.launch {
+                        viewModel.verifyCodeNow(code = code, phone = phone).onSuccess {
+                            navController.navigate(SettingRoute.Settings_ChangePhone.Settings_ChangePhone_Change_New)
+                        }
+                    }
+                },
                 title = stringResource(R.string.scene_setting_change_phone_number_title),
                 subTitle = { Text(text = stringResource(R.string.scene_setting_change_phone_number_tips)) }
             )
         }
     }
     bottomSheet(SettingRoute.Settings_ChangePhone.Settings_ChangePhone_Change_New) {
-        val requestNavigate: (RemoteBackupRecoveryViewModelBase.NavigateArgs) -> Unit = {
-            if (it.target == RemoteBackupRecoveryViewModelBase.NavigateTarget.Code) {
-                navController.navigate(SettingRoute.Settings_ChangePhone.Settings_ChangePhone_Change_New_Code(it.value))
-            }
-        }
-        val viewModel = getViewModel<PhoneSetupViewModel> {
-            parametersOf(requestNavigate)
-        }
-        val regionCode by viewModel.regionCode.observeAsState(initial = "+86")
-        val phone by viewModel.value.observeAsState(initial = "")
-        val valid by viewModel.valueValid.observeAsState(initial = true)
-        val loading by viewModel.loading.observeAsState(initial = true)
+        val scope = rememberCoroutineScope()
+
+        val viewModel = getViewModel<PhoneSetupViewModel>()
+        val regionCode by viewModel.regionCode.observeAsState()
+        val phone by viewModel.value.observeAsState()
+        val valid by viewModel.valueValid.observeAsState()
+        val loading by viewModel.loading.observeAsState()
         PhoneInputModal(
             regionCode = regionCode,
             onRegionCodeChange = { viewModel.setRegionCode(it) },
             phone = phone,
             onPhoneChange = { viewModel.setValue(it) },
             phoneValid = valid,
-            onConfirm = { viewModel.sendCode(regionCode + phone) },
+            onConfirm = {
+                scope.launch {
+                    val code = regionCode + phone
+                    viewModel.sendCodeNow(code).onSuccess {
+                        navController.navigate(
+                            SettingRoute.Settings_ChangePhone.Settings_ChangePhone_Change_New_Code(code)
+                        ) {
+                            popUpTo(CommonRoute.Main.Home) {
+                                inclusive = false
+                            }
+                        }
+                    }
+                }
+            },
             buttonEnabled = loading,
             title = stringResource(R.string.scene_setting_change_phone_number_title),
         )
@@ -539,23 +604,19 @@ fun NavGraphBuilder.settingsRoute(
         arguments = listOf(navArgument("phone") { type = NavType.StringType })
     ) { backStackEntry ->
         backStackEntry.arguments?.getString("phone")?.let { phone ->
-            val requestNavigate: (RemoteBackupRecoveryViewModelBase.NavigateArgs) -> Unit = {
-                if (it.target == RemoteBackupRecoveryViewModelBase.NavigateTarget.Next) {
-                    navController.navigate(SettingRoute.Settings_ChangePhone.Settings_ChangePhone_Change_Success) {
-                        popUpTo(SettingRoute.Settings_ChangePhone.Settings_ChangePhone_Change_Code.path) {
-                            inclusive = true
-                        }
-                    }
-                }
+            val scope = rememberCoroutineScope()
+
+            val viewModel = getViewModel<PhoneSetupViewModel>()
+            val code by viewModel.code.observeAsState()
+            val canSend by viewModel.canSend.observeAsState()
+            val valid by viewModel.codeValid.observeAsState()
+            val countDown by viewModel.countdown.observeAsState()
+            val loading by viewModel.loading.observeAsState()
+
+            LaunchedEffect(Unit) {
+                viewModel.sendCodeNow(phone)
             }
-            val viewModel = getViewModel<PhoneSetupViewModel> {
-                parametersOf(requestNavigate)
-            }
-            val code by viewModel.code.observeAsState(initial = "")
-            val canSend by viewModel.canSend.observeAsState(initial = false)
-            val valid by viewModel.codeValid.observeAsState(initial = true)
-            val countDown by viewModel.countdown.observeAsState(initial = 60)
-            val loading by viewModel.loading.observeAsState(initial = false)
+
             PhoneCodeInputModal(
                 phone = phone,
                 code = code,
@@ -564,8 +625,22 @@ fun NavGraphBuilder.settingsRoute(
                 codeValid = valid,
                 countDown = countDown,
                 buttonEnabled = loading,
-                onSendCode = { viewModel.sendCode(phone) },
-                onVerify = { viewModel.verifyCode(code = code, value = phone) },
+                onSendCode = {
+                    scope.launch {
+                        viewModel.sendCodeNow(phone)
+                    }
+                },
+                onVerify = {
+                    scope.launch {
+                        viewModel.verifyCodeNow(code = code, phone = phone).onSuccess {
+                            navController.navigate(SettingRoute.Settings_ChangePhone.Settings_ChangePhone_Change_Success) {
+                                popUpTo(SettingRoute.Settings_ChangePhone.Settings_ChangePhone_Change_Code.path) {
+                                    inclusive = true
+                                }
+                            }
+                        }
+                    }
+                },
                 title = stringResource(R.string.scene_setting_change_phone_number_title)
             )
         }
