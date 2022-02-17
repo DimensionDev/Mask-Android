@@ -23,10 +23,12 @@ package com.dimension.maskbook.common.ui.widget
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.LocalElevationOverlay
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.contentColorFor
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -51,19 +53,23 @@ fun MaskCard(
     role: Role? = null,
     content: @Composable () -> Unit
 ) {
-    Surface(
-        onClick = onClick,
-        modifier = modifier,
-        shape = shape,
-        color = backgroundColor,
-        contentColor = contentColor,
-        border = border,
-        elevation = elevation,
-        interactionSource = interactionSource,
-        indication = null,
-        enabled = enabled,
-        onClickLabel = onClickLabel,
-        role = role,
-        content = content
-    )
+    CompositionLocalProvider(
+        LocalElevationOverlay provides null
+    ) {
+        Surface(
+            onClick = onClick,
+            modifier = modifier,
+            shape = shape,
+            color = backgroundColor,
+            contentColor = contentColor,
+            border = border,
+            elevation = elevation,
+            interactionSource = interactionSource,
+            indication = null,
+            enabled = enabled,
+            onClickLabel = onClickLabel,
+            role = role,
+            content = content
+        )
+    }
 }
