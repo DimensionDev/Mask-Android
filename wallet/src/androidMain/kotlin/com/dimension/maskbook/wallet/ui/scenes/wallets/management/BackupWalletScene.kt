@@ -50,6 +50,8 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.unit.dp
+import com.dimension.maskbook.common.ui.notification.StringResNotificationEvent.Companion.show
+import com.dimension.maskbook.common.ui.widget.LocalInAppNotification
 import com.dimension.maskbook.common.ui.widget.MaskInputField
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskScene
@@ -165,9 +167,11 @@ fun BackupWalletScene(
                         }
                         Spacer(modifier = Modifier.width(20.dp))
                         val clipboardManager = LocalClipboardManager.current
+                        val inAppNotification = LocalInAppNotification.current
                         PrimaryButton(
                             onClick = {
                                 clipboardManager.setText(buildAnnotatedString { append(content) })
+                                inAppNotification.show(R.string.common_alert_copied_to_clipboard_title)
                             },
                             modifier = Modifier.weight(1f),
                         ) {

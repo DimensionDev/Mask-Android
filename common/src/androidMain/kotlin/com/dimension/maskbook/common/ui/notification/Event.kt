@@ -18,19 +18,30 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.common.ext
+package com.dimension.maskbook.common.ui.notification
 
-import android.content.Context
-import android.content.Intent
+/**
+ * Used as a wrapper for data that is exposed via a Flow that represents an event.
+ */
+open class Event<out T>(private val content: T) {
 
-fun Context.shareText(text: String) {
-    startActivity(
-        Intent().apply {
-            action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_TEXT, text)
-            type = "text/plain"
-        }.let {
-            Intent.createChooser(it, text)
+    var hasBeenHandled = false
+        private set
+
+    /**
+     * Returns the content and prevents its use again.
+     */
+    fun getContentIfNotHandled(): T? {
+        return if (hasBeenHandled) {
+            null
+        } else {
+            hasBeenHandled = true
+            content
         }
-    )
+    }
+
+    /**
+     * Returns the content, even if it's already been handled.
+     */
+    fun peekContent(): T = content
 }

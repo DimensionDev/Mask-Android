@@ -91,6 +91,7 @@ fun UnlockWalletDialog(
                 Spacer(modifier = Modifier.width(8.dp))
                 PrimaryButton(
                     onClick = onConfirm,
+                    enabled = passwordValid || biometricEnabled,
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(text = stringResource(R.string.scene_wallet_unlock_button))
