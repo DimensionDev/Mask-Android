@@ -25,7 +25,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Text
@@ -37,8 +36,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.common.ui.widget.MaskInputField
 import com.dimension.maskbook.common.ui.widget.MaskModal
-import com.dimension.maskbook.common.ui.widget.PrimaryButton
-import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
+import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.localization.R
 
 @Composable
@@ -57,7 +55,7 @@ fun PhoneInputModal(
             Text(text = title)
         }
     ) {
-        Column(Modifier.padding(ScaffoldPadding)) {
+        Column {
             Text(text = stringResource(R.string.scene_setting_profile_phone_number))
             Spacer(modifier = Modifier.height(8.dp))
             Row(
