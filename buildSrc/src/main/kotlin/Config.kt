@@ -1,4 +1,5 @@
 
+import org.gradle.api.Project
 import org.gradle.kotlin.dsl.get
 
 fun com.android.build.gradle.internal.dsl.BaseAppModuleExtension.setup() {
@@ -44,6 +45,9 @@ fun com.android.build.gradle.LibraryExtension.withCompose() {
     }
 }
 
-fun org.gradle.api.Project.kspAndroid(dependencyNotation: Any) {
+fun Project.kspAndroid(dependencyNotation: Any) {
     project.dependencies.add("kspAndroid", dependencyNotation)
 }
+
+val Project.enableGoogleVariant: Boolean
+    get() = file("google-services.json").exists()

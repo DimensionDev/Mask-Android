@@ -7,6 +7,13 @@ plugins {
     id("org.jetbrains.compose").version(Versions.compose_jb)
 }
 
+if (enableGoogleVariant) {
+    plugins {
+        id("com.google.gms.google-services").version(Versions.Firebase.Plugin.google_services)
+        id("com.google.firebase.crashlytics").version(Versions.Firebase.Plugin.crashlytics)
+    }
+}
+
 android {
     setup()
     defaultConfig {
@@ -61,6 +68,12 @@ dependencies {
     implementation(projects.labs)
     implementation(projects.setting)
     implementation("io.github.dimensiondev:maskwalletcore:${Versions.maskWalletCore}")
+
+    if (enableGoogleVariant) {
+        implementation("com.google.firebase:firebase-analytics-ktx:${Versions.Firebase.analytics}")
+        implementation(platform("com.google.firebase:firebase-bom:${Versions.Firebase.bom}"))
+        implementation("com.google.firebase:firebase-crashlytics-ktx:${Versions.Firebase.crashlytics}")
+    }
 
     implementation("org.web3j:core:${Versions.web3j}")
     implementation("androidx.paging:paging-runtime-ktx:${Versions.Androidx.paging}")
