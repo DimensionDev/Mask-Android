@@ -68,17 +68,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.navOptions
 import coil.compose.rememberImagePainter
-import com.dimension.maskbook.common.ext.copyText
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.ui.LocalRootNavController
+import com.dimension.maskbook.common.ui.notification.StringResNotificationEvent.Companion.show
+import com.dimension.maskbook.common.ui.widget.LocalInAppNotification
 import com.dimension.maskbook.common.ui.widget.MaskModal
 import com.dimension.maskbook.common.ui.widget.PrimaryButton
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
@@ -130,6 +133,8 @@ fun WalletConnectModal() {
     }
     val wcUrl by viewModel.wcUrl.observeAsState(initial = "")
     val context = LocalContext.current
+    val clipboardManager = LocalClipboardManager.current
+    val inAppNotification = LocalInAppNotification.current
     val currentSupportedWallets by viewModel.currentSupportedWallets.observeAsState(initial = emptyList())
     MaskModal {
         Column(
@@ -151,9 +156,8 @@ fun WalletConnectModal() {
                     TypeSelectScene(
                         qrCode = wcUrl,
                         onCopy = {
-                            context.copyText(
-                                text = it,
-                            )
+                            clipboardManager.setText(buildAnnotatedString { append(it) })
+                            inAppNotification.show(R.string.common_alert_copied_to_clipboard_title)
                         },
                         wallets = currentSupportedWallets,
                         onChainSelected = {

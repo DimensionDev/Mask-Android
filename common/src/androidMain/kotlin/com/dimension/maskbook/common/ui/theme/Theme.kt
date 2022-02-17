@@ -112,7 +112,7 @@ fun provideTypography(isDarkTheme: Boolean): Typography {
             lineHeight = 19.5.sp,
             fontStyle = FontStyle.Normal,
             fontWeight = FontWeight.W400,
-            color = if (isDarkTheme) Color.White.copy(0.4f) else Color(0xFF6B738D),
+            // color = if (isDarkTheme) Color.White.copy(0.4f) else Color(0xFF6B738D),
         ),
         button = TextStyle(
             fontSize = 16.sp,

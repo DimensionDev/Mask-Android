@@ -30,15 +30,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.dimension.maskbook.common.ext.copyText
 import com.dimension.maskbook.common.ext.observeAsState
+import com.dimension.maskbook.common.ui.notification.StringResNotificationEvent.Companion.show
+import com.dimension.maskbook.common.ui.widget.LocalInAppNotification
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ext.humanizeDollar
 import com.dimension.maskbook.wallet.ext.humanizeToken
@@ -108,7 +111,8 @@ fun SendTokenHost(
                 val selectEnsData by searchAddressViewModel.selectEnsData.collectAsState()
                 val canConfirm by searchAddressViewModel.canConfirm.observeAsState(initial = false)
                 val noTokenFound by tokenDataViewModel.noTokenFound.collectAsState()
-
+                val clipboardManager = LocalClipboardManager.current
+                val inAppNotification = LocalInAppNotification.current
                 SearchAddressScene(
                     onBack = onBack,
                     tokenAddress = tokenAddress,
@@ -133,7 +137,8 @@ fun SendTokenHost(
                         // nothing to do
                     },
                     onCopy = { address ->
-                        context.copyText(address)
+                        clipboardManager.setText(buildAnnotatedString { append(address) })
+                        inAppNotification.show(R.string.common_alert_copied_to_clipboard_title)
                     },
                     onClear = {
                         searchAddressViewModel.onInputChanged("")

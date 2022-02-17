@@ -28,20 +28,23 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.dialog
 import androidx.navigation.navArgument
 import androidx.navigation.navOptions
-import com.dimension.maskbook.common.ext.copyText
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.ext.shareText
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
+import com.dimension.maskbook.common.ui.notification.StringResNotificationEvent.Companion.show
+import com.dimension.maskbook.common.ui.widget.LocalInAppNotification
 import com.dimension.maskbook.common.ui.widget.MaskDialog
 import com.dimension.maskbook.common.ui.widget.PrimaryButton
 import com.dimension.maskbook.common.viewmodel.BiometricEnableViewModel
@@ -130,13 +133,18 @@ fun NavGraphBuilder.walletsRoute(
         val currentWallet by repository.currentWallet.observeAsState(initial = null)
         val name = it.arguments?.getString("name") ?: ""
         val context = LocalContext.current
+        val clipboardManager = LocalClipboardManager.current
+        val inAppNotification = LocalInAppNotification.current
         currentWallet?.let {
             WalletQrcodeScene(
                 address = it.address,
                 name = name,
                 onShare = { context.shareText(it.address) },
                 onBack = { navController.popBackStack() },
-                onCopy = { context.copyText(it.address) }
+                onCopy = {
+                    clipboardManager.setText(buildAnnotatedString { append(it.address) })
+                    inAppNotification.show(R.string.common_alert_copied_to_clipboard_title)
+                }
             )
         }
     }
