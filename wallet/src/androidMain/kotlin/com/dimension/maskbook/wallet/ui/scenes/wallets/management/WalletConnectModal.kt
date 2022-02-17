@@ -133,10 +133,10 @@ fun WalletConnectModal() {
     }
     val wcUrl by viewModel.wcUrl.observeAsState(initial = "")
     val context = LocalContext.current
-    val clipboardManager = LocalClipboardManager.current
-    val inAppNotification = LocalInAppNotification.current
     val currentSupportedWallets by viewModel.currentSupportedWallets.observeAsState(initial = emptyList())
     MaskModal {
+        val clipboardManager = LocalClipboardManager.current
+        val inAppNotification = LocalInAppNotification.current
         Column(
             modifier = Modifier
                 .padding(ScaffoldPadding)

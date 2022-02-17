@@ -27,25 +27,16 @@ import androidx.compose.material.FabPosition
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.ScaffoldState
-import androidx.compose.material.SnackbarDuration
 import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
-import androidx.compose.material.SnackbarResult
 import androidx.compose.material.contentColorFor
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.compositionLocalOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.dimension.maskbook.common.ui.notification.EventActionContext
-import com.dimension.maskbook.common.ui.notification.InAppNotification
-import com.dimension.maskbook.common.ui.notification.NotificationWithActionEvent
 
 @Composable
 fun MaskScaffold(
@@ -53,7 +44,7 @@ fun MaskScaffold(
     scaffoldState: ScaffoldState = rememberScaffoldState(),
     topBar: @Composable () -> Unit = {},
     bottomBar: @Composable () -> Unit = {},
-    snackbarHost: @Composable (SnackbarHostState) -> Unit = { SnackbarHost(it) },
+    snackbarHost: @Composable (SnackbarHostState) -> Unit = { SnackbarHost(it, snackbar = { MaskSnackbar(it) }) },
     floatingActionButton: @Composable () -> Unit = {},
     floatingActionButtonPosition: FabPosition = FabPosition.End,
     isFloatingActionButtonDocked: Boolean = false,
@@ -68,7 +59,7 @@ fun MaskScaffold(
     contentColor: Color = contentColorFor(backgroundColor),
     content: @Composable (PaddingValues) -> Unit
 ) {
-    ApplyNotification(scaffoldState.snackbarHostState)
+    MaskInAppNotification(scaffoldState.snackbarHostState)
     Scaffold(
         modifier = modifier,
         scaffoldState = scaffoldState,
@@ -89,51 +80,6 @@ fun MaskScaffold(
         contentColor = contentColor,
         content = content,
     )
-}
-
-val LocalInAppNotification = compositionLocalOf { InAppNotification() }
-
-@Composable
-fun ApplyNotification(
-    snackBarHostState: SnackbarHostState
-) {
-    val inAppNotification = LocalInAppNotification.current
-    val notification by inAppNotification.observeAsState(null)
-    val event = notification?.getContentIfNotHandled()
-    val message = event?.getMessage()
-    val actionMessage = event?.let {
-        if (it is NotificationWithActionEvent) {
-            it.getActionMessage()
-        } else {
-            null
-        }
-    }
-    val actionContext = remember {
-        EventActionContext()
-    }
-    LaunchedEffect(event) {
-        message?.let {
-            when (
-                snackBarHostState.showSnackbar(
-                    message = it,
-                    actionLabel = actionMessage,
-                    duration = if (event is NotificationWithActionEvent) {
-                        SnackbarDuration.Long
-                    } else {
-                        SnackbarDuration.Short
-                    }
-                )
-            ) {
-                SnackbarResult.Dismissed -> {
-                }
-                SnackbarResult.ActionPerformed -> {
-                    if (event is NotificationWithActionEvent) {
-                        event.action.invoke(actionContext)
-                    }
-                }
-            }
-        }
-    }
 }
 
 val ScaffoldPadding = PaddingValues(
