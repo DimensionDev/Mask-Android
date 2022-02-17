@@ -54,6 +54,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
@@ -175,7 +176,11 @@ private fun IntroScene(
 
     Box(
         modifier = Modifier
-            .background(Color(0xFF1C68F3))
+            .background(
+                brush = Brush.verticalGradient(
+                    listOf(Color(0xFF1565F7), Color(0xFF4E8DFF))
+                )
+            )
             .fillMaxSize(),
     ) {
         val pagerState = rememberPagerState()
@@ -199,6 +204,7 @@ private fun IntroScene(
                             horizontal = 29.dp,
                             vertical = 16.dp
                         ),
+                        elevation = null,
                         shape = RoundedCornerShape(8.dp),
                         modifier = Modifier
                             .align(Alignment.BottomCenter)
@@ -266,11 +272,13 @@ private fun IntroPage(
         )
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(horizontal = 36.5.dp),
         ) {
             Image(
                 painter = painterResource(item.img),
                 contentDescription = null,
-                modifier = Modifier.size(300.dp),
+                contentScale = ContentScale.FillWidth,
+                modifier = Modifier.fillMaxWidth(),
             )
             Spacer(Modifier.height(80.dp))
             Text(
