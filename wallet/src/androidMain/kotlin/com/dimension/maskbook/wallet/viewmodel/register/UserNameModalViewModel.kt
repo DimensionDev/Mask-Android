@@ -30,12 +30,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 class UserNameModalViewModel(
     private val personaServices: PersonaServices
 ) : ViewModel() {
-    private val _userName = MutableStateFlow("")
-    val userName = _userName.asStateIn(viewModelScope, "")
+    private val _userName = MutableStateFlow("@")
+    val userName = _userName.asStateIn(viewModelScope, "@")
     fun setUserName(value: String) {
         _userName.value = value
     }
     fun done(name: String) {
-        personaServices.finishConnectingProcess(name, PlatformType.Twitter)
+        personaServices.finishConnectingProcess(name.replace("@", ""), PlatformType.Twitter)
     }
 }
