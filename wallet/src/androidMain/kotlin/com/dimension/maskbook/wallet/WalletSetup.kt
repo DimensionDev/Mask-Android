@@ -271,7 +271,7 @@ private fun Module.provideViewModel() {
         )
     }
     viewModel { WalletTransactionHistoryViewModel(get(), get()) }
-    viewModel { (id: String) -> WalletRenameViewModel(id, get()) }
+    viewModel { (id: String, name: String) -> WalletRenameViewModel(id, name, get()) }
     viewModel { WalletBalancesViewModel(get(), get()) }
     viewModel { WalletManagementModalViewModel(get()) }
     viewModel { WalletBackupViewModel(get(), get()) }
@@ -304,6 +304,7 @@ private fun Module.provideViewModel() {
             get(),
             get(),
             get(),
+            get<Context>().packageManager,
             onResult
         )
     }
@@ -314,5 +315,5 @@ private fun Module.provideViewModel() {
 }
 
 private fun Module.provideServices() {
-    single { WalletServices() }
+    single { WalletServices(get()) }
 }

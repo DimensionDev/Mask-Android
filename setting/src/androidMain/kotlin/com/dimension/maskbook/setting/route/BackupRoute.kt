@@ -57,12 +57,12 @@ import androidx.navigation.navDeepLink
 import androidx.navigation.navOptions
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.route.Deeplinks
-import com.dimension.maskbook.common.ui.theme.MaskTheme
 import com.dimension.maskbook.common.ui.widget.EmailCodeInputModal
 import com.dimension.maskbook.common.ui.widget.MaskDialog
 import com.dimension.maskbook.common.ui.widget.MaskInputField
 import com.dimension.maskbook.common.ui.widget.MaskModal
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
+import com.dimension.maskbook.common.ui.widget.MaskScene
 import com.dimension.maskbook.common.ui.widget.PhoneCodeInputModal
 import com.dimension.maskbook.common.ui.widget.PrimaryButton
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
@@ -209,7 +209,7 @@ fun NavGraphBuilder.backupRoute(
                     }
                 }
             }
-            MaskTheme {
+            MaskScene {
                 MaskScaffold {
                     Column(
                         modifier = Modifier.fillMaxSize(),

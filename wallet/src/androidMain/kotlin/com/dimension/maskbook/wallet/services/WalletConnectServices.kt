@@ -20,10 +20,28 @@
  */
 package com.dimension.maskbook.wallet.services
 
+import android.content.Context
+import com.dimension.maskbook.common.ext.JSON
 import com.dimension.maskbook.wallet.services.model.WCSupportedWallet
-import retrofit2.http.GET
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import kotlinx.serialization.decodeFromString
 
 interface WalletConnectServices {
-    @GET("/data/wallets.json")
     suspend fun supportedWallets(): Map<String, WCSupportedWallet>
+}
+
+/**
+ * many wallet's info from https://registry.walletconnect.com/api/v1/wallets missing supported chains
+ * Use local json file instead just like the Mask iOS app
+ */
+class LocalJsonWalletConnectServices(private val context: Context) : WalletConnectServices {
+    override suspend fun supportedWallets(): Map<String, WCSupportedWallet> {
+        return withContext(Dispatchers.IO) {
+            context.assets.open("wallet_connect.json").use { inputStream ->
+                val json = inputStream.bufferedReader().use { it.readText() }
+                JSON.decodeFromString(json)
+            }
+        }
+    }
 }
