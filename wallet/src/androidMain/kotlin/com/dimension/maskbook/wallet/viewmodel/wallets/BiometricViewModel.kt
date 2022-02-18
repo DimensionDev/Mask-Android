@@ -23,6 +23,7 @@ package com.dimension.maskbook.wallet.viewmodel.wallets
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.common.util.BiometricAuthenticator
 import com.dimension.maskbook.setting.export.SettingServices
 import com.dimension.maskbook.wallet.R
@@ -39,7 +40,7 @@ open class BiometricViewModel(
     val biometricEnabled by lazy {
         combine(settingsRepository.biometricEnabled, _enterPassword) { enabled, enterPassword ->
             enabled && !enterPassword
-        }
+        }.asStateIn(viewModelScope, false)
     }
 
     fun authenticate(

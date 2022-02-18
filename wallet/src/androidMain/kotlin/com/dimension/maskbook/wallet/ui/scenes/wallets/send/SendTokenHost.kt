@@ -103,18 +103,18 @@ fun SendTokenHost(
             startDestination = "SearchAddress",
             route = "SendTokenScene",
         ) {
-            composable(
-                "SearchAddress"
-            ) {
-                val input by searchAddressViewModel.input.observeAsState(initial = "")
-                val contacts by searchAddressViewModel.contacts.observeAsState(initial = emptyList())
-                val recent by searchAddressViewModel.recent.observeAsState(initial = emptyList())
-                val ensData by searchAddressViewModel.ensData.collectAsState()
-                val selectEnsData by searchAddressViewModel.selectEnsData.collectAsState()
-                val canConfirm by searchAddressViewModel.canConfirm.observeAsState(initial = false)
-                val noTokenFound by tokenDataViewModel.noTokenFound.collectAsState()
+            composable("SearchAddress") {
+                val input by searchAddressViewModel.input.observeAsState()
+                val contacts by searchAddressViewModel.contacts.observeAsState()
+                val recent by searchAddressViewModel.recent.observeAsState()
+                val ensData by searchAddressViewModel.ensData.observeAsState()
+                val selectEnsData by searchAddressViewModel.selectEnsData.observeAsState()
+                val canConfirm by searchAddressViewModel.canConfirm.observeAsState()
+                val noTokenFound by tokenDataViewModel.noTokenFound.observeAsState()
+
                 val clipboardManager = LocalClipboardManager.current
                 val inAppNotification = LocalInAppNotification.current
+
                 SearchAddressScene(
                     onBack = onBack,
                     tokenAddress = tokenAddress,
@@ -197,15 +197,15 @@ fun SendTokenHost(
                 val viewModel = getViewModel<SendTokenViewModel> {
                     parametersOf(address)
                 }
-                val addressData by viewModel.addressData.observeAsState(initial = null)
-                val amount by viewModel.amount.observeAsState(initial = "0")
-                val password by viewModel.password.observeAsState(initial = "")
-                val canConfirm by viewModel.canConfirm.observeAsState(initial = false)
+                val addressData by viewModel.addressData.observeAsState()
+                val amount by viewModel.amount.observeAsState()
+                val password by viewModel.password.observeAsState()
+                val canConfirm by viewModel.canConfirm.observeAsState()
 
                 val biometricViewModel = getViewModel<BiometricViewModel>()
-                val biometricEnabled by biometricViewModel.biometricEnabled.observeAsState(initial = false)
+                val biometricEnabled by biometricViewModel.biometricEnabled.observeAsState()
 
-                val walletTokenData by tokenDataViewModel.walletTokenData.observeAsState(initial = null)
+                val walletTokenData by tokenDataViewModel.walletTokenData.observeAsState()
 
                 val currentTokenData = tokenData
                 val currentAddressData = addressData
