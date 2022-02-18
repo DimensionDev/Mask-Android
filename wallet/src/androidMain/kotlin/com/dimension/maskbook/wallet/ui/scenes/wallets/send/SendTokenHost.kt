@@ -31,7 +31,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalClipboardManager
-import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
@@ -198,15 +197,15 @@ fun SendTokenHost(
                 val viewModel = getViewModel<SendTokenViewModel> {
                     parametersOf(address)
                 }
-                val addressData by viewModel.addressData.observeAsState(initial = null)
-                val amount by viewModel.amount.observeAsState(initial = "0")
-                val password by viewModel.password.observeAsState(initial = "")
-                val canConfirm by viewModel.canConfirm.observeAsState(initial = false)
+                val addressData by viewModel.addressData.observeAsState()
+                val amount by viewModel.amount.observeAsState()
+                val password by viewModel.password.observeAsState()
+                val canConfirm by viewModel.canConfirm.observeAsState()
 
                 val biometricViewModel = getViewModel<BiometricViewModel>()
-                val biometricEnabled by biometricViewModel.biometricEnabled.observeAsState(initial = false)
+                val biometricEnabled by biometricViewModel.biometricEnabled.observeAsState()
 
-                val walletTokenData by tokenDataViewModel.walletTokenData.observeAsState(initial = null)
+                val walletTokenData by tokenDataViewModel.walletTokenData.observeAsState()
 
                 val currentTokenData = tokenData
                 val currentAddressData = addressData
