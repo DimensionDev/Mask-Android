@@ -116,8 +116,10 @@ private fun TokenDetailEmptyLayout() {
             painter = painterResource(id = R.drawable.ic_token_detail_empty),
             contentDescription = null,
         )
-        Spacer(modifier = Modifier.height(12.dp))
-        Text(text = stringResource(R.string.scene_transaction_history_no_transaction))
+        Spacer(Modifier.height(12.dp))
+        Text(
+            text = stringResource(R.string.scene_transaction_history_no_transaction)
+        )
     }
 }
 
@@ -189,9 +191,7 @@ private fun TransactionItem(
             }
         },
         trailing = {
-            Column(
-                horizontalAlignment = Alignment.End,
-            ) {
+            Column(horizontalAlignment = Alignment.End) {
                 Text(
                     text = "${item.count.humanizeToken()} ${tokenData.symbol}",
                 )
@@ -204,30 +204,24 @@ private fun TransactionItem(
             }
         },
         icon = {
-            val icon = when {
+            when {
                 item.status == TransactionStatus.Failure -> R.drawable.ic_close_square
                 item.type == TransactionType.Receive -> R.drawable.download
                 item.type == TransactionType.Send -> R.drawable.upload
                 item.type == TransactionType.Swap -> R.drawable.filter2
                 item.type == TransactionType.Approve -> R.drawable.filter2
                 else -> null
-            }
-            if (icon != null) {
-                val color = if (item.status == TransactionStatus.Failure) {
-                    Color(0x0AFF5F5F)
-                } else if (item.type == TransactionType.Receive) {
-                    Color(0x1A1C68F3)
-                } else {
-                    Color(0x1AFFB915)
+            }?.let { icon ->
+                val color = when {
+                    item.status == TransactionStatus.Failure -> Color(0x0AFF5F5F)
+                    item.type == TransactionType.Receive -> Color(0x1A1C68F3)
+                    else -> Color(0x1AFFB915)
                 }
-                val iconColor = if (item.status == TransactionStatus.Failure) {
-                    Color(0xFFFF5F5F)
-                } else if (item.type == TransactionType.Receive) {
-                    Color(0xFF1C68F3)
-                } else {
-                    Color(0xFFFFB915)
+                val iconColor = when {
+                    item.status == TransactionStatus.Failure -> Color(0xFFFF5F5F)
+                    item.type == TransactionType.Receive -> Color(0xFF1C68F3)
+                    else -> Color(0xFFFFB915)
                 }
-
                 Box(
                     modifier = Modifier
                         .size(38.dp)
@@ -244,10 +238,24 @@ private fun TransactionItem(
 @Composable
 private fun TransactionData.title() = message.ifEmpty {
     when (type) {
-        TransactionType.Swap -> stringResource(R.string.scene_transaction_history_type_swap)
-        TransactionType.Receive -> stringResource(R.string.scene_transaction_history_type_receive, tokenData.symbol)
-        TransactionType.Send -> stringResource(R.string.scene_transaction_history_type_send, tokenData.symbol)
-        TransactionType.Approve -> stringResource(R.string.scene_transaction_history_type_approve, tokenData.symbol)
-        TransactionType.Cancel -> stringResource(R.string.scene_transaction_history_type_cancel, tokenData.symbol)
+        TransactionType.Swap -> stringResource(
+            R.string.scene_transaction_history_type_swap,
+        )
+        TransactionType.Receive -> stringResource(
+            R.string.scene_transaction_history_type_receive,
+            tokenData.symbol
+        )
+        TransactionType.Send -> stringResource(
+            R.string.scene_transaction_history_type_send,
+            tokenData.symbol
+        )
+        TransactionType.Approve -> stringResource(
+            R.string.scene_transaction_history_type_approve,
+            tokenData.symbol
+        )
+        TransactionType.Cancel -> stringResource(
+            R.string.scene_transaction_history_type_cancel,
+            tokenData.symbol
+        )
     }
 }
