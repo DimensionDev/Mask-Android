@@ -218,7 +218,6 @@ fun NavGraphBuilder.registerRoute(
             filePickerLauncher.launch(arrayOf("*/*"))
         }
     }
-
     bottomSheet(
         WalletRoute.Register.Recovery.IdentityPersona,
     ) {
@@ -228,7 +227,6 @@ fun NavGraphBuilder.registerRoute(
             }
         )
     }
-
     composable(
         WalletRoute.Register.Recovery.Identity.path,
         arguments = listOf(
@@ -239,12 +237,14 @@ fun NavGraphBuilder.registerRoute(
             val viewModel: IdentityViewModel = getViewModel {
                 parametersOf(name)
             }
-            val identity by viewModel.identity.observeAsState(initial = "")
+            val identity by viewModel.identity.observeAsState()
+            val canConfirm by viewModel.canConfirm.observeAsState()
             IdentityScene(
                 identity = identity,
                 onIdentityChanged = {
                     viewModel.setIdentity(it)
                 },
+                canConfirm = canConfirm,
                 onConfirm = {
                     viewModel.onConfirm()
                     navController.navigate(WalletRoute.Register.Recovery.Complected) {

@@ -43,8 +43,9 @@ object Validator {
     }
 
     fun isMnemonic(value: String): Boolean {
-        return value.split(" ").size.let {
-            it == 12 || it == 18 || it == 24
+        return value.split(" ").let { list ->
+            list.size.let { it == 12 || it == 18 || it == 24 } &&
+                list.all { it.isNotEmpty() }
         }
     }
 

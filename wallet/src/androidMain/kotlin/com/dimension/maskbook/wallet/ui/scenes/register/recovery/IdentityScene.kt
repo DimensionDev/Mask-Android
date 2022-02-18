@@ -46,6 +46,7 @@ import com.dimension.maskbook.wallet.R
 fun IdentityScene(
     identity: String,
     onIdentityChanged: (String) -> Unit,
+    canConfirm: Boolean,
     onConfirm: () -> Unit,
     onBack: () -> Unit,
 ) {
@@ -84,7 +85,8 @@ fun IdentityScene(
                 Spacer(modifier = Modifier.weight(1f))
                 PrimaryButton(
                     modifier = Modifier.fillMaxWidth(),
-                    onClick = onConfirm
+                    onClick = onConfirm,
+                    enabled = canConfirm,
                 ) {
                     Text(text = stringResource(R.string.common_controls_confirm))
                 }
