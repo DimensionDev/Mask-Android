@@ -241,7 +241,7 @@
     <string name="scene_app_plugins_lucy_drop">Lucky Drop</string>
     <string name="scene_app_plugins_file_service_desc">Decentralized file storage for users.</string>
     <string name="scene_app_plugins_lucy_drop_desc">Surprise your encrypted friends with Token/NFT Lucky Drops.</string>
-    <string name="scene_app_plugins_transaction_desc">Buy crypto in 60+ countries with Transak support.</string>
+    <string name="scene_app_plugins_transaction_desc">Buy crypto with Transak, support 60+ currencies. </string>
     <string name="scene_app_plugins_transaction">Transak</string>
     <string name="scene_app_plugins_snapshot">Snapshot</string>
     <string name="scene_app_swap_network_source_bsc">BSC Network</string>
