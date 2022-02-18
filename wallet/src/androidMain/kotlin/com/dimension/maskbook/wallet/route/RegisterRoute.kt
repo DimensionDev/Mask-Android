@@ -218,12 +218,14 @@ fun NavGraphBuilder.registerRoute(
     }
     composable(WalletRoute.Register.Recovery.Identity) {
         val viewModel: IdentityViewModel = getViewModel()
-        val identity by viewModel.identity.observeAsState(initial = "")
+        val identity by viewModel.identity.observeAsState()
+        val canConfirm by viewModel.canConfirm.observeAsState()
         IdentityScene(
             identity = identity,
             onIdentityChanged = {
                 viewModel.setIdentity(it)
             },
+            canConfirm = canConfirm,
             onConfirm = {
                 viewModel.onConfirm()
                 navController.navigate(WalletRoute.Register.Recovery.Complected) {
