@@ -20,9 +20,9 @@
  */
 package com.dimension.maskbook.wallet.walletconnect
 
+import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.wallet.export.model.ChainType
 import kotlinx.coroutines.flow.Flow
-import java.math.BigDecimal
 
 // wallets that supported wallet connection
 // https://registry.walletconnect.org/data/wallets.json

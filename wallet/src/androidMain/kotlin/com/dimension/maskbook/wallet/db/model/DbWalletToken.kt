@@ -25,7 +25,7 @@ import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import androidx.room.Relation
-import java.math.BigDecimal
+import com.dimension.maskbook.common.bigDecimal.BigDecimal
 
 @Entity(
     indices = [Index(value = ["walletId", "tokenId"], unique = true)],
