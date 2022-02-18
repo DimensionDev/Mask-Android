@@ -117,7 +117,7 @@ private fun AppItem(
             },
             secondaryText = {
                 Text(
-                    text = item.description,
+                    text = stringResource(item.description),
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                 )

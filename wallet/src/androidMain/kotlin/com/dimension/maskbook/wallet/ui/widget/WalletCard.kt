@@ -53,6 +53,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
+import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.common.ui.widget.MiddleEllipsisText
 import com.dimension.maskbook.common.ui.widget.button.MaskIconButton
 import com.dimension.maskbook.common.ui.widget.button.MaskTextButton
@@ -67,7 +68,6 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.calculateCurrentOffsetForPage
-import java.math.BigDecimal
 import kotlin.math.absoluteValue
 
 @ExperimentalPagerApi

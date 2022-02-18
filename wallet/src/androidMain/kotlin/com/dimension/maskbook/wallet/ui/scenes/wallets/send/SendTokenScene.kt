@@ -55,6 +55,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
+import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.common.ext.ifNullOrEmpty
 import com.dimension.maskbook.common.ui.widget.MaskInputField
 import com.dimension.maskbook.common.ui.widget.MaskPasswordInputField
@@ -74,7 +75,6 @@ import com.dimension.maskbook.wallet.ext.humanizeDollar
 import com.dimension.maskbook.wallet.ext.humanizeToken
 import com.dimension.maskbook.wallet.repository.SearchAddressData
 import com.dimension.maskbook.wallet.repository.UnlockType
-import java.math.BigDecimal
 
 @Composable
 fun SendTokenScene(

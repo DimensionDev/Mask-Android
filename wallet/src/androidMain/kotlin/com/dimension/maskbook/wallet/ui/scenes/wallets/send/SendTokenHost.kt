@@ -39,6 +39,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.ui.notification.StringResNotificationEvent.Companion.show
 import com.dimension.maskbook.common.ui.theme.modalScrimColor
@@ -61,7 +62,6 @@ import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 import com.google.accompanist.navigation.material.bottomSheet
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
-import java.math.BigDecimal
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalMaterialNavigationApi::class, ExperimentalTime::class)

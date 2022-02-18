@@ -38,6 +38,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
+import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.common.ui.widget.MaskInputField
 import com.dimension.maskbook.common.ui.widget.MaskListItem
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
@@ -52,7 +53,6 @@ import com.dimension.maskbook.wallet.export.model.TokenData
 import com.dimension.maskbook.wallet.export.model.WalletTokenData
 import com.dimension.maskbook.wallet.ext.humanizeDollar
 import com.dimension.maskbook.wallet.ext.humanizeToken
-import java.math.BigDecimal
 
 @Composable
 fun SearchTokenScene(
