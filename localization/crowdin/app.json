@@ -619,17 +619,22 @@
                 "bsc": "BSC Network"
             },
             "plugins": {
-               "file_service": "File Service",
-               "ito": "ITO",
-               "lucy_drop": "Lucky Drop",
-               "swap": "Swap",
-               "transaction": "Transak",
-               "market_trend": "Market Trend",
-               "snapshot": "Snapshot",
-               "collectibles": "Collectibles",
-               "gitcoin": "Gitcoin",
-               "valuables": "Valuables",
-               "dhedge": "DHEDGE"
+                "file_service": "File Service",
+                "ito": "ITO",
+                "lucy_drop": "Lucky Drop",
+                "swap": "Swap",
+                "transaction": "Transak",
+                "market_trend": "Market Trend",
+                "snapshot": "Snapshot",
+                "collectibles": "Collectibles",
+                "gitcoin": "Gitcoin",
+                "valuables": "Valuables",
+                "dhedge": "DHEDGE",
+                "file_service_desc": "Decentralized file storage for users.",
+                "ito_desc": "Enable users to buy tokens directly on Twitter.",
+                "lucy_drop_desc": "Surprise your encrypted friends with Token/NFT Lucky Drops.",
+                "swap_desc": "Pop-up trading widget that allows you to instantly view prices of the hottest Crypto/Stock and trade. Can also invest in the best performing managers.",
+                "transaction_desc": "Buy crypto in 60+ countries with Transak support."
             }
         },
         "social": {
