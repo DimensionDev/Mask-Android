@@ -27,7 +27,8 @@ import com.dimension.maskbook.persona.export.PersonaServices
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class IdentityViewModel(
-    private val personaServices: PersonaServices
+    private val personaServices: PersonaServices,
+    private val name: String
 ) : ViewModel() {
     private val _identity = MutableStateFlow("")
     val identity = _identity.asStateIn(viewModelScope, "")
@@ -37,6 +38,6 @@ class IdentityViewModel(
     }
 
     fun onConfirm() {
-        personaServices.createPersonaFromMnemonic(_identity.value.trim().split(" "), "")
+        personaServices.createPersonaFromMnemonic(_identity.value.trim().split(" "), name)
     }
 }
