@@ -29,7 +29,7 @@ import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
 import com.dimension.maskbook.common.ui.widget.button.MaskBackButton
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.repository.TransactionData
-import com.dimension.maskbook.wallet.ui.scenes.wallets.token.TransactionHistoryList
+import com.dimension.maskbook.wallet.ui.widget.TransactionHistoryList
 
 @Composable
 fun WalletTransactionHistoryScene(
