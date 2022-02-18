@@ -33,8 +33,6 @@ import com.dimension.maskbook.setting.export.model.TradeProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.launch
 
 class SettingsRepository(
     private val personaServices: PersonaServices,
@@ -141,18 +139,10 @@ class SettingsRepository(
     }
 
     override fun saveEmailForCurrentPersona(value: String) {
-        scope.launch {
-            personaServices.currentPersona.firstOrNull()?.let {
-                settingDataSource.saveEmailForPersona(it, value)
-            }
-        }
+        personaServices.saveEmailForCurrentPersona(value)
     }
 
     override fun savePhoneForCurrentPersona(value: String) {
-        scope.launch {
-            personaServices.currentPersona.firstOrNull()?.let {
-                settingDataSource.savePhoneForPersona(it, value)
-            }
-        }
+        personaServices.savePhoneForCurrentPersona(value)
     }
 }

@@ -27,7 +27,6 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import com.dimension.maskbook.persona.export.model.PersonaData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -88,24 +87,6 @@ class SettingDataSource(
         scope.launch {
             dataStore.edit {
                 it[BiometricEnabledKey] = value
-            }
-        }
-    }
-
-    fun saveEmailForPersona(personaData: PersonaData, value: String) {
-        scope.launch {
-            val emailKey = stringPreferencesKey("${personaData.id}_email")
-            dataStore.edit {
-                it[emailKey] = value
-            }
-        }
-    }
-
-    fun savePhoneForPersona(personaData: PersonaData, value: String) {
-        scope.launch {
-            val phoneKey = stringPreferencesKey("${personaData.id}_phone")
-            dataStore.edit {
-                it[phoneKey] = value
             }
         }
     }
