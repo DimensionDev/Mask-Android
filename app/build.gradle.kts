@@ -9,7 +9,7 @@ plugins {
     id("com.google.firebase.crashlytics").version(Versions.Firebase.Plugin.crashlytics).apply(false)
 }
 
-if (enableGoogleVariant) {
+if (enableFirebase) {
     apply(plugin = "com.google.gms.google-services")
     apply(plugin = "com.google.firebase.crashlytics")
 }
@@ -69,7 +69,7 @@ dependencies {
     implementation(projects.setting)
     implementation("io.github.dimensiondev:maskwalletcore:${Versions.maskWalletCore}")
 
-    if (enableGoogleVariant) {
+    if (enableFirebase) {
         implementation("com.google.firebase:firebase-analytics-ktx:${Versions.Firebase.analytics}")
         implementation(platform("com.google.firebase:firebase-bom:${Versions.Firebase.bom}"))
         implementation("com.google.firebase:firebase-crashlytics-ktx:${Versions.Firebase.crashlytics}")

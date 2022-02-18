@@ -49,5 +49,5 @@ fun Project.kspAndroid(dependencyNotation: Any) {
     project.dependencies.add("kspAndroid", dependencyNotation)
 }
 
-val Project.enableGoogleVariant: Boolean
+val Project.enableFirebase: Boolean
     get() = file("google-services.json").exists()
