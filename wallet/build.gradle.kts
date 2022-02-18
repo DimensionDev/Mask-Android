@@ -28,6 +28,7 @@ kotlin {
                 implementation(projects.common)
                 implementation(projects.common.retrofit)
                 implementation(projects.common.okhttp)
+                implementation(projects.common.bigDecimal)
 
                 implementation("androidx.compose.runtime:runtime-livedata:${Versions.Androidx.livedata}")
                 api("androidx.room:room-runtime:${Versions.Androidx.room}")
