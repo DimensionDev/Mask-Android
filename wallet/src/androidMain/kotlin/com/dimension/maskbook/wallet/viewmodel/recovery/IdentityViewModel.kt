@@ -29,7 +29,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 
 class IdentityViewModel(
-    private val personaServices: PersonaServices
+    private val personaServices: PersonaServices,
+    private val name: String
 ) : ViewModel() {
 
     private val _identity = MutableStateFlow("")
@@ -44,6 +45,6 @@ class IdentityViewModel(
     }
 
     fun onConfirm() {
-        personaServices.createPersonaFromMnemonic(_identity.value.trim().split(" "), "")
+        personaServices.createPersonaFromMnemonic(_identity.value.trim().split(" "), name)
     }
 }
