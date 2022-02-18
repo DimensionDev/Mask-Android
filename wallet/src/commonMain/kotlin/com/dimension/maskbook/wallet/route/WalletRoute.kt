@@ -149,7 +149,10 @@ expect object WalletRoute {
                 val LocalBackup_PickFile: String
             }
 
-            val Identity: String
+            val IdentityPersona: String
+            object Identity {
+                operator fun invoke(name: String): String
+            }
             val PrivateKey: String
             val Complected: String
         }
