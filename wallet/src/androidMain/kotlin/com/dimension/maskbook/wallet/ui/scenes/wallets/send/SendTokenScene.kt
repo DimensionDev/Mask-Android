@@ -55,6 +55,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
+import com.dimension.maskbook.common.ext.ifNullOrEmpty
 import com.dimension.maskbook.common.ui.widget.MaskInputField
 import com.dimension.maskbook.common.ui.widget.MaskPasswordInputField
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
@@ -116,7 +117,9 @@ fun SendTokenScene(
                 Text(text = stringResource(R.string.scene_sendTransaction_send_Label_To))
                 Spacer(modifier = Modifier.height(10.dp))
                 AddressContent(
-                    name = addressData.name ?: addressData.ens ?: addressData.address,
+                    name = addressData.name
+                        .ifNullOrEmpty { addressData.ens }
+                        .ifNullOrEmpty { addressData.address },
                     isContact = addressData.isContact,
                     onAddContact = onAddContact
                 )
