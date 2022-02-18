@@ -40,7 +40,7 @@ private val BiometricEnabledKey = booleanPreferencesKey("biometric_enabled")
 private val ShouldShowLegalSceneKey = booleanPreferencesKey("ShowLegalSceneKey")
 val Context.settingsDataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
-class PreferenceDataSource(
+class SettingDataSource(
     private val dataStore: DataStore<Preferences>,
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
