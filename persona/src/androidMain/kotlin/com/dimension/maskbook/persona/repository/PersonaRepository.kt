@@ -61,7 +61,6 @@ private const val TAG = "PersonaRepository"
 
 class PersonaRepository(
     private val dataStore: DataStore<Preferences>,
-    private val context: Context,
     private val platformSwitcher: IPlatformSwitcher,
 ) : IPersonaRepository,
     IContactsRepository {

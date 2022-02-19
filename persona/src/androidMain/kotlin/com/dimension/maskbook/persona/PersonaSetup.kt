@@ -229,7 +229,7 @@ object PersonaSetup : ModuleSetup {
 
     override fun dependencyInject() = module {
         single {
-            PersonaRepository(get<Context>().personaDataStore, get(), get())
+            PersonaRepository(get<Context>().personaDataStore, get())
         } binds arrayOf(
             IPersonaRepository::class,
             IContactsRepository::class
