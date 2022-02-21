@@ -18,6 +18,7 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 implementation(projects.common)
+                implementation(projects.common.retrofit)
             }
         }
         val androidTest by getting {
