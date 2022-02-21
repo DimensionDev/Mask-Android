@@ -22,6 +22,7 @@ package com.dimension.maskbook.common.ui.widget
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
@@ -38,6 +39,7 @@ import com.dimension.maskbook.common.ext.applyTextStyle
 @Composable
 fun MaskListItem(
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(12.dp),
     icon: @Composable (() -> Unit)? = null,
     secondaryText: @Composable (() -> Unit)? = null,
     overlineText: @Composable (() -> Unit)? = null,
@@ -51,7 +53,7 @@ fun MaskListItem(
     val styledTrailing = applyTextStyle(typography.body2, trailing)
 
     Row(
-        modifier = modifier.padding(12.dp),
+        modifier = modifier.padding(contentPadding),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (icon != null) {

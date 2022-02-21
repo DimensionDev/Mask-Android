@@ -41,6 +41,7 @@ import com.dimension.maskbook.persona.repository.IPersonaRepository
 import com.dimension.maskbook.persona.repository.PersonaRepository
 import com.dimension.maskbook.persona.repository.personaDataStore
 import com.dimension.maskbook.persona.route.PersonaRoute
+import com.dimension.maskbook.persona.ui.demo.PersonasConnectModal
 import com.dimension.maskbook.persona.ui.demo.PersonasScene
 import com.dimension.maskbook.persona.ui.scenes.ExportPrivateKeyScene
 import com.dimension.maskbook.persona.ui.scenes.LogoutDialog
@@ -261,6 +262,7 @@ object PersonaSetup : ModuleSetup {
     }
 }
 
+@ExperimentalMaterialNavigationApi
 @ExperimentalAnimationApi
 private fun NavGraphBuilder.demoRoute(navController: NavController, onBack: () -> Unit) {
     composable("Demo/Personas") {
@@ -271,7 +273,14 @@ private fun NavGraphBuilder.demoRoute(navController: NavController, onBack: () -
             onCreatePersonas = {
             },
             onConnectAccount = {
+                navController.navigate("Demo/ConnectPersonas")
             },
+        )
+    }
+    bottomSheet("Demo/ConnectPersonas") {
+        PersonasConnectModal(
+            onConnect = { network ->
+            }
         )
     }
 }
