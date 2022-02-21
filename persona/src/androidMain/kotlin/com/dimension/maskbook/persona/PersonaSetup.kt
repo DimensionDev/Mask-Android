@@ -41,6 +41,7 @@ import com.dimension.maskbook.persona.repository.IPersonaRepository
 import com.dimension.maskbook.persona.repository.PersonaRepository
 import com.dimension.maskbook.persona.repository.personaDataStore
 import com.dimension.maskbook.persona.route.PersonaRoute
+import com.dimension.maskbook.persona.ui.demo.PersonasScene
 import com.dimension.maskbook.persona.ui.scenes.ExportPrivateKeyScene
 import com.dimension.maskbook.persona.ui.scenes.LogoutDialog
 import com.dimension.maskbook.persona.ui.scenes.PersonaMenuScene
@@ -67,6 +68,7 @@ import com.google.accompanist.navigation.material.bottomSheet
 import org.koin.androidx.compose.get
 import org.koin.androidx.compose.getViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.module.Module
 import org.koin.core.parameter.parametersOf
 import org.koin.dsl.bind
 import org.koin.dsl.binds
@@ -225,6 +227,7 @@ object PersonaSetup : ModuleSetup {
                 )
             }
         }
+        demoRoute(navController, onBack)
     }
 
     override fun dependencyInject() = module {
@@ -249,9 +252,29 @@ object PersonaSetup : ModuleSetup {
         viewModel { ExportPrivateKeyViewModel(get()) }
         viewModel { PostViewModel(get(), get()) }
         viewModel { ContactsViewModel(get(), get()) }
+
+        demoModule()
     }
 
     override fun onExtensionReady() {
         KoinPlatformTools.defaultContext().get().get<IPersonaRepository>().init()
     }
+}
+
+@ExperimentalAnimationApi
+private fun NavGraphBuilder.demoRoute(navController: NavController, onBack: () -> Unit) {
+    composable("Demo/Personas") {
+        val persona by get<IPersonaRepository>().currentPersona.observeAsState(initial = null)
+        PersonasScene(
+            persona = persona,
+            onBack = onBack,
+            onCreatePersonas = {
+            },
+            onConnectAccount = {
+            },
+        )
+    }
+}
+
+private fun Module.demoModule() {
 }
