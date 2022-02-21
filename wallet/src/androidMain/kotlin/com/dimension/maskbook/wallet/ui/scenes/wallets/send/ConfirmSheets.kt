@@ -27,7 +27,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -42,9 +41,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import com.dimension.maskbook.common.ui.widget.MaskModal
-import com.dimension.maskbook.common.ui.widget.PrimaryButton
-import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
-import com.dimension.maskbook.common.ui.widget.SecondaryButton
+import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
+import com.dimension.maskbook.common.ui.widget.button.SecondaryButton
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.export.model.TokenData
 import com.dimension.maskbook.wallet.repository.SearchAddressData
@@ -106,19 +104,17 @@ fun SignatureRequestSignSheet(
     onSign: () -> Unit,
     onCancel: () -> Unit,
 ) {
-    MaskModal {
+    MaskModal(
+        title = {
+            Text(
+                text = "Signature request",
+            )
+        }
+    ) {
         Column(
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
-                .padding(ScaffoldPadding),
         ) {
-            Spacer(modifier = Modifier.height(20.dp))
-            Text(
-                text = "Signature request",
-                style = MaterialTheme.typography.h6,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-            Spacer(modifier = Modifier.height(20.dp))
             AddressAndTokenContent(
                 addressData = addressData,
                 tokenData = tokenData,
@@ -147,19 +143,17 @@ private fun ConfirmSheet(
     onCancel: () -> Unit,
     onEditGasFee: () -> Unit,
 ) {
-    MaskModal {
+    MaskModal(
+        title = {
+            Text(
+                text = title,
+            )
+        }
+    ) {
         Column(
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
-                .padding(ScaffoldPadding),
         ) {
-            Spacer(modifier = Modifier.height(20.dp))
-            Text(
-                text = title,
-                style = MaterialTheme.typography.h6,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-            Spacer(modifier = Modifier.height(20.dp))
             AddressAndTokenContent(
                 addressData = addressData,
                 tokenData = tokenData,

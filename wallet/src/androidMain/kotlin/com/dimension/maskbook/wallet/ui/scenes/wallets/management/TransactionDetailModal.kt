@@ -21,33 +21,23 @@
 package com.dimension.maskbook.wallet.ui.scenes.wallets.management
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.sp
 import com.dimension.maskbook.common.ui.widget.MaskModal
-import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.wallet.repository.TransactionData
 
 @Composable
 fun TransactionDetailModal(
     transactionData: TransactionData,
 ) {
-    MaskModal {
-        Column(
-            modifier = Modifier
-                .padding(ScaffoldPadding)
-        ) {
+    MaskModal(
+        title = {
             Text(
                 text = transactionData.message,
-                style = MaterialTheme.typography.subtitle1.copy(fontSize = 18.sp),
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.Center,
             )
+        }
+    ) {
+        Column {
         }
     }
 }

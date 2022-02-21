@@ -34,6 +34,7 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
@@ -44,6 +45,7 @@ sealed class EnsData {
         val name: String,
         val address: String,
     ) : EnsData()
+
     data class Failure(
         val exception: Exception
     ) : EnsData()
@@ -65,7 +67,7 @@ class SearchAddressViewModel(
                         it.address.contains(input, ignoreCase = true)
                 }
             }
-        }.flowOn(Dispatchers.IO)
+        }.flowOn(Dispatchers.IO).asStateIn(viewModelScope, emptyList())
     }
 
     val recent by lazy {
@@ -78,37 +80,39 @@ class SearchAddressViewModel(
                         it.address.contains(input, ignoreCase = true)
                 }
             }
-        }.flowOn(Dispatchers.IO)
+        }.flowOn(Dispatchers.IO).asStateIn(viewModelScope, emptyList())
     }
 
     private val _input = MutableStateFlow("")
-    val input = _input.asStateIn(viewModelScope, "")
+    val input = _input.asStateIn(viewModelScope)
 
     @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
-    val ensData = _input.debounce(400).flatMapLatest { name ->
-        flow {
-            if (!Validator.isEnsName(name)) {
-                emit(null)
-                return@flow
-            }
+    val ensData = _input.debounce(400)
+        .filter { _selectEnsData.value == null }
+        .flatMapLatest { name ->
+            flow {
+                if (!Validator.isEnsName(name)) {
+                    emit(null)
+                    return@flow
+                }
 
-            emit(EnsData.Loading)
+                emit(EnsData.Loading)
 
-            val address = try {
-                walletRepository.getEnsAddress(ChainType.eth, name)
-            } catch (e: Exception) {
-                emit(EnsData.Failure(e))
-                return@flow
-            }
+                val address = try {
+                    walletRepository.getEnsAddress(ChainType.eth, name)
+                } catch (e: Exception) {
+                    emit(EnsData.Failure(e))
+                    return@flow
+                }
 
-            emit(
-                EnsData.Success(
-                    name = name,
-                    address = address,
+                emit(
+                    EnsData.Success(
+                        name = name,
+                        address = address,
+                    )
                 )
-            )
-        }
-    }.asStateIn(viewModelScope, null)
+            }
+        }.asStateIn(viewModelScope, null)
 
     private val _selectEnsData = MutableStateFlow<EnsData.Success?>(null)
     val selectEnsData = _selectEnsData.asStateIn(viewModelScope, null)

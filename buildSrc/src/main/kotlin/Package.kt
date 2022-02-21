@@ -10,7 +10,7 @@ object Package {
         const val main = "2"
         const val mirror = "0"
         const val patch = "0"
-        const val revision = "dev06"
-        const val build = 47
+        const val revision = "dev07"
+        const val build = 48
     }
 }

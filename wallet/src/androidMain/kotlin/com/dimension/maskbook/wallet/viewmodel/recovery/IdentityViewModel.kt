@@ -22,21 +22,29 @@ package com.dimension.maskbook.wallet.viewmodel.recovery
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dimension.maskbook.common.ext.Validator
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.persona.export.PersonaServices
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
 
 class IdentityViewModel(
-    private val personaServices: PersonaServices
+    private val personaServices: PersonaServices,
+    private val name: String
 ) : ViewModel() {
+
     private val _identity = MutableStateFlow("")
-    val identity = _identity.asStateIn(viewModelScope, "")
+    val identity = _identity.asStateIn(viewModelScope)
+
+    val canConfirm = _identity.map {
+        Validator.isMnemonic(it.trim())
+    }.asStateIn(viewModelScope, false)
 
     fun setIdentity(text: String) {
         _identity.value = text
     }
 
     fun onConfirm() {
-        personaServices.createPersonaFromMnemonic(_identity.value.trim().split(" "), "")
+        personaServices.createPersonaFromMnemonic(_identity.value.trim().split(" "), name)
     }
 }

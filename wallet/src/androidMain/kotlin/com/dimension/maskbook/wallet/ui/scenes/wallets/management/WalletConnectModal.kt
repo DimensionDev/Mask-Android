@@ -25,7 +25,6 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -66,20 +65,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.navOptions
 import coil.compose.rememberImagePainter
-import com.dimension.maskbook.common.ext.copyText
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.ui.LocalRootNavController
+import com.dimension.maskbook.common.ui.notification.StringResNotificationEvent.Companion.show
+import com.dimension.maskbook.common.ui.widget.LocalInAppNotification
 import com.dimension.maskbook.common.ui.widget.MaskModal
-import com.dimension.maskbook.common.ui.widget.PrimaryButton
-import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
+import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
+import com.dimension.maskbook.common.ui.widget.button.clickable
 import com.dimension.maskbook.common.ui.widget.itemsGridIndexed
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.export.model.ChainType
@@ -130,9 +132,10 @@ fun WalletConnectModal() {
     val context = LocalContext.current
     val currentSupportedWallets by viewModel.currentSupportedWallets.observeAsState(initial = emptyList())
     MaskModal {
+        val clipboardManager = LocalClipboardManager.current
+        val inAppNotification = LocalInAppNotification.current
         Column(
             modifier = Modifier
-                .padding(ScaffoldPadding)
                 .animateContentSize(),
         ) {
             Text(
@@ -149,9 +152,8 @@ fun WalletConnectModal() {
                     TypeSelectScene(
                         qrCode = wcUrl,
                         onCopy = {
-                            context.copyText(
-                                text = it,
-                            )
+                            clipboardManager.setText(buildAnnotatedString { append(it) })
+                            inAppNotification.show(R.string.common_alert_copied_to_clipboard_title)
                         },
                         wallets = currentSupportedWallets,
                         onChainSelected = {

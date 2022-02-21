@@ -37,7 +37,7 @@ data class AppDisplayData(
     val key: AppKey,
     @DrawableRes val onIcon: Int,
     @StringRes val name: Int,
-    val description: String,
+    @StringRes val description: Int,
     val enabled: Boolean = true,
     val canExplore: Boolean = false,
 )
@@ -46,32 +46,32 @@ private val displayDataList = listOf(
     AppDisplayData(
         key = AppKey.Transak,
         name = R.string.scene_app_plugins_transaction,
-        description = "Buy crypto in 60+ countries with Transak support.",
+        description = R.string.scene_app_plugins_transaction_desc,
         onIcon = R.drawable.ic_labs_transak,
         canExplore = true,
     ),
     AppDisplayData(
         key = AppKey.ITO,
         name = R.string.scene_app_plugins_ito,
-        description = "Enable users to buy tokens directly on Twitter.",
+        description = R.string.scene_app_plugins_ito_desc,
         onIcon = R.drawable.ic_labs_ito,
     ),
     AppDisplayData(
         key = AppKey.LuckDrop,
         name = R.string.scene_app_plugins_lucy_drop,
-        description = "Surprise your encrypted friends with Token/NFT Lucky Drops.",
+        description = R.string.scene_app_plugins_lucy_drop_desc,
         onIcon = R.drawable.ic_labs_packet,
     ),
     AppDisplayData(
         key = AppKey.Swap,
         name = R.string.scene_app_plugins_swap,
-        description = "Pop-up trading widget that allows you to instantly view prices of the hottest Crypto/Stock and trade. Can also invest in the best performing managers.",
+        description = R.string.scene_app_plugins_swap_desc,
         onIcon = R.drawable.ic_labs_swap,
     ),
     AppDisplayData(
         key = AppKey.FileService,
         name = R.string.scene_app_plugins_file_service,
-        description = "Decentralized file storage for users.",
+        description = R.string.scene_app_plugins_file_service_desc,
         onIcon = R.drawable.ic_labs_encrypted_file,
     ),
 )

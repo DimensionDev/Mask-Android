@@ -24,7 +24,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -36,8 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dimension.maskbook.common.ui.widget.MaskInputField
 import com.dimension.maskbook.common.ui.widget.MaskModal
-import com.dimension.maskbook.common.ui.widget.PrimaryButton
-import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
+import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.wallet.R
 
 @Composable
@@ -53,20 +51,15 @@ fun SpeedUpOrCancelTransactionModal(
     maxFee: Long,
     onMaxFeeChanged: (Long) -> Unit,
 ) {
-    MaskModal {
-        Column(
-            modifier = Modifier.padding(ScaffoldPadding)
-        ) {
-            title.invoke()
-//            Text(
-//                text = "Speed Up Transaction",
-//                style = MaterialTheme.typography.subtitle1,
-//                modifier = Modifier.fillMaxWidth(),
-//                textAlign = TextAlign.Center,
-//            )
-            Spacer(modifier = Modifier.height(20.dp))
-            Text(text = price, style = MaterialTheme.typography.h4)
-            Spacer(modifier = Modifier.height(4.dp))
+    MaskModal(
+        title = {
+            Column {
+                title.invoke()
+                Text(text = price)
+            }
+        }
+    ) {
+        Column {
             Text(
                 text = "${stringResource(R.string.scene_sendTransaction_gasPrice_costFee)} $costFee",
                 style = MaterialTheme.typography.caption.copy(fontSize = 16.sp),

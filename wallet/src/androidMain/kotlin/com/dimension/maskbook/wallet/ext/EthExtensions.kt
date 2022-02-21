@@ -20,8 +20,8 @@
  */
 package com.dimension.maskbook.wallet.ext
 
+import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import org.web3j.utils.Convert
-import java.math.BigDecimal
 
 data class EtherNumber(
     val wei: BigDecimal,

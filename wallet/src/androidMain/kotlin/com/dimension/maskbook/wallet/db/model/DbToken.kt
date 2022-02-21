@@ -22,8 +22,8 @@ package com.dimension.maskbook.wallet.db.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.wallet.export.model.ChainType
-import java.math.BigDecimal
 
 @Entity
 data class DbToken(

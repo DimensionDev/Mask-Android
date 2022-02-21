@@ -33,19 +33,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.dimension.maskbook.common.ui.widget.MaskBackButton
 import com.dimension.maskbook.common.ui.widget.MaskInputField
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskScene
 import com.dimension.maskbook.common.ui.widget.MaskTopAppBar
-import com.dimension.maskbook.common.ui.widget.PrimaryButton
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
+import com.dimension.maskbook.common.ui.widget.button.MaskBackButton
+import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.wallet.R
 
 @Composable
 fun IdentityScene(
     identity: String,
     onIdentityChanged: (String) -> Unit,
+    canConfirm: Boolean,
     onConfirm: () -> Unit,
     onBack: () -> Unit,
 ) {
@@ -84,7 +85,8 @@ fun IdentityScene(
                 Spacer(modifier = Modifier.weight(1f))
                 PrimaryButton(
                     modifier = Modifier.fillMaxWidth(),
-                    onClick = onConfirm
+                    onClick = onConfirm,
+                    enabled = canConfirm,
                 ) {
                     Text(text = stringResource(R.string.common_controls_confirm))
                 }

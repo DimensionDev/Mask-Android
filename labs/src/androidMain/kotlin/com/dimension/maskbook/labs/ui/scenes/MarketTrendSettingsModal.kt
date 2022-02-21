@@ -24,9 +24,6 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -38,13 +35,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.ui.widget.CircleCheckboxDefaults
 import com.dimension.maskbook.common.ui.widget.MaskModal
 import com.dimension.maskbook.common.ui.widget.MaskSelection
-import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.labs.R
 import com.dimension.maskbook.labs.viewmodel.MarketTrendSettingsViewModel
 import com.dimension.maskbook.setting.export.model.NetworkType
@@ -105,21 +100,18 @@ private val TradeProvider.icon
 fun MarketTrendSettingsModal() {
     val viewModel = getViewModel<MarketTrendSettingsViewModel>()
     val tradeProvider by viewModel.tradeProvider.observeAsState(initial = emptyMap())
-    MaskModal {
+    MaskModal(
+        title = {
+            Text(
+                text = "Default trading source",
+            )
+        }
+    ) {
         Column(
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
-                .padding(ScaffoldPadding)
                 .animateContentSize(),
         ) {
-            Text(
-                text = "Default trading source",
-                style = MaterialTheme.typography.h6,
-                modifier = Modifier
-                    .fillMaxWidth(),
-                textAlign = TextAlign.Center,
-            )
-            Spacer(modifier = Modifier.height(21.dp))
             tradeSources.forEach { item ->
                 Text(text = item.key.text, style = MaterialTheme.typography.subtitle1)
                 item.value.forEach { provider ->

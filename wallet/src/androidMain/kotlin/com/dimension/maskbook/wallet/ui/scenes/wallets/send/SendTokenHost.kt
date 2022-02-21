@@ -30,15 +30,21 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.dimension.maskbook.common.ext.copyText
+import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.common.ext.observeAsState
+import com.dimension.maskbook.common.ui.notification.StringResNotificationEvent.Companion.show
+import com.dimension.maskbook.common.ui.theme.modalScrimColor
+import com.dimension.maskbook.common.ui.widget.LocalInAppNotification
+import com.dimension.maskbook.common.ui.widget.rememberMaskBottomSheetNavigator
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ext.humanizeDollar
 import com.dimension.maskbook.wallet.ext.humanizeToken
@@ -54,10 +60,8 @@ import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendTokenViewModel
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 import com.google.accompanist.navigation.material.bottomSheet
-import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
-import java.math.BigDecimal
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalMaterialNavigationApi::class, ExperimentalTime::class)
@@ -69,7 +73,7 @@ fun SendTokenHost(
 ) {
     val context = LocalContext.current
 
-    val bottomSheetNavigator = rememberBottomSheetNavigator()
+    val bottomSheetNavigator = rememberMaskBottomSheetNavigator()
     val navController = rememberNavController(bottomSheetNavigator)
 
     val gasFeeViewModel = getViewModel<GasFeeViewModel> {
@@ -92,22 +96,24 @@ fun SendTokenHost(
     ModalBottomSheetLayout(
         bottomSheetNavigator,
         sheetBackgroundColor = MaterialTheme.colors.background,
+        scrimColor = MaterialTheme.colors.modalScrimColor,
     ) {
         NavHost(
             navController = navController,
             startDestination = "SearchAddress",
             route = "SendTokenScene",
         ) {
-            composable(
-                "SearchAddress"
-            ) {
-                val input by searchAddressViewModel.input.observeAsState(initial = "")
-                val contacts by searchAddressViewModel.contacts.observeAsState(initial = emptyList())
-                val recent by searchAddressViewModel.recent.observeAsState(initial = emptyList())
-                val ensData by searchAddressViewModel.ensData.collectAsState()
-                val selectEnsData by searchAddressViewModel.selectEnsData.collectAsState()
-                val canConfirm by searchAddressViewModel.canConfirm.observeAsState(initial = false)
-                val noTokenFound by tokenDataViewModel.noTokenFound.collectAsState()
+            composable("SearchAddress") {
+                val input by searchAddressViewModel.input.observeAsState()
+                val contacts by searchAddressViewModel.contacts.observeAsState()
+                val recent by searchAddressViewModel.recent.observeAsState()
+                val ensData by searchAddressViewModel.ensData.observeAsState()
+                val selectEnsData by searchAddressViewModel.selectEnsData.observeAsState()
+                val canConfirm by searchAddressViewModel.canConfirm.observeAsState()
+                val noTokenFound by tokenDataViewModel.noTokenFound.observeAsState()
+
+                val clipboardManager = LocalClipboardManager.current
+                val inAppNotification = LocalInAppNotification.current
 
                 SearchAddressScene(
                     onBack = onBack,
@@ -133,7 +139,8 @@ fun SendTokenHost(
                         // nothing to do
                     },
                     onCopy = { address ->
-                        context.copyText(address)
+                        clipboardManager.setText(buildAnnotatedString { append(address) })
+                        inAppNotification.show(R.string.common_alert_copied_to_clipboard_title)
                     },
                     onClear = {
                         searchAddressViewModel.onInputChanged("")
@@ -190,15 +197,15 @@ fun SendTokenHost(
                 val viewModel = getViewModel<SendTokenViewModel> {
                     parametersOf(address)
                 }
-                val addressData by viewModel.addressData.observeAsState(initial = null)
-                val amount by viewModel.amount.observeAsState(initial = "0")
-                val password by viewModel.password.observeAsState(initial = "")
-                val canConfirm by viewModel.canConfirm.observeAsState(initial = false)
+                val addressData by viewModel.addressData.observeAsState()
+                val amount by viewModel.amount.observeAsState()
+                val password by viewModel.password.observeAsState()
+                val canConfirm by viewModel.canConfirm.observeAsState()
 
                 val biometricViewModel = getViewModel<BiometricViewModel>()
-                val biometricEnabled by biometricViewModel.biometricEnabled.observeAsState(initial = false)
+                val biometricEnabled by biometricViewModel.biometricEnabled.observeAsState()
 
-                val walletTokenData by tokenDataViewModel.walletTokenData.observeAsState(initial = null)
+                val walletTokenData by tokenDataViewModel.walletTokenData.observeAsState()
 
                 val currentTokenData = tokenData
                 val currentAddressData = addressData

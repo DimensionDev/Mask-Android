@@ -27,15 +27,16 @@ import com.dimension.maskbook.setting.export.SettingServices
 import com.dimension.maskbook.wallet.repository.ISendHistoryRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.mapNotNull
 
 class SendTokenViewModel(
     private val toAddress: String,
     private val sendHistoryRepository: ISendHistoryRepository,
     private val settingServices: SettingServices,
 ) : ViewModel() {
+
     private val _password = MutableStateFlow("")
-    val password = _password.asStateIn(viewModelScope, "")
+    val password = _password.asStateIn(viewModelScope)
+
     fun setPassword(value: String) {
         _password.value = value
     }
@@ -43,11 +44,12 @@ class SendTokenViewModel(
     val canConfirm by lazy {
         combine(settingServices.paymentPassword, _password) { current, input ->
             current == input
-        }
+        }.asStateIn(viewModelScope, false)
     }
 
     private val _amount = MutableStateFlow("0")
-    val amount = _amount.asStateIn(viewModelScope, "0")
+    val amount = _amount.asStateIn(viewModelScope)
+
     fun setAmount(value: String) {
         _amount.value = value
     }
@@ -55,6 +57,5 @@ class SendTokenViewModel(
     val addressData by lazy {
         sendHistoryRepository.getByAddress(toAddress)
             .asStateIn(viewModelScope, null)
-            .mapNotNull { it }
     }
 }

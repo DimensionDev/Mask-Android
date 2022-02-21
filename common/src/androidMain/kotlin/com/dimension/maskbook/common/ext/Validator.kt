@@ -26,7 +26,7 @@ import org.web3j.ens.EnsResolver
 
 object Validator {
     fun isPhone(value: String): Boolean {
-        return "^\\+(?:[0-9]?){6,14}[0-9]\$".toRegex().matches(value)
+        return "^(\\+?\\d{2,3}-?)([1][3,4578][0-9]\\d{8})".toRegex().matches(value)
     }
 
     fun isEmail(value: String): Boolean {
@@ -43,8 +43,9 @@ object Validator {
     }
 
     fun isMnemonic(value: String): Boolean {
-        return value.split(" ").size.let {
-            it == 12 || it == 18 || it == 24
+        return value.split(" ").let { list ->
+            list.size.let { it == 12 || it == 18 || it == 24 } &&
+                list.all { it.isNotEmpty() }
         }
     }
 
