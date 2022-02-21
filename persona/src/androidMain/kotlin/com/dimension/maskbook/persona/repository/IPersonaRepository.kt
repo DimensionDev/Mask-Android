@@ -25,6 +25,7 @@ import com.dimension.maskbook.persona.export.model.PersonaData
 import com.dimension.maskbook.persona.export.model.PlatformType
 import com.dimension.maskbook.persona.export.model.SocialData
 import com.dimension.maskbook.persona.model.RedirectTarget
+import com.dimension.maskbook.persona.model.SocialProfile
 import kotlinx.coroutines.flow.Flow
 
 interface IPersonaRepository {
@@ -39,8 +40,8 @@ interface IPersonaRepository {
     )
 
     fun finishConnectingProcess(
-        userName: String,
-        platformType: PlatformType,
+        profile: SocialProfile,
+        personaId: String,
     )
 
     fun cancelConnectingProcess()

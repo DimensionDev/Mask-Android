@@ -18,12 +18,12 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.persona.model
+package com.dimension.maskbook.persona.export.model
 
 private const val Prefix = "person:"
 
 class SocialProfile private constructor(
-    val network: String,
+    val network: Network,
     val userId: String,
 ) {
     companion object {
@@ -37,11 +37,15 @@ class SocialProfile private constructor(
             if (network == "localhost") {
                 return null
             }
-            return SocialProfile(network, components[1])
+            return SocialProfile(Network.valueOf(network), components[1])
         }
     }
 
     override fun toString(): String {
         return "${Prefix}$network/$userId"
+    }
+
+    fun copy(network: Network? = null, userId: String? = null): SocialProfile {
+        return SocialProfile(network ?: this.network, userId ?: this.userId)
     }
 }
