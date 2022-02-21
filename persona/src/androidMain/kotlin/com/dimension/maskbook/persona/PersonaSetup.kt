@@ -37,7 +37,9 @@ import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.persona.export.model.PlatformType
 import com.dimension.maskbook.persona.repository.IContactsRepository
+import com.dimension.maskbook.persona.repository.INextIDRepository
 import com.dimension.maskbook.persona.repository.IPersonaRepository
+import com.dimension.maskbook.persona.repository.NextIDRepository
 import com.dimension.maskbook.persona.repository.PersonaRepository
 import com.dimension.maskbook.persona.repository.personaDataStore
 import com.dimension.maskbook.persona.route.PersonaRoute
@@ -237,6 +239,7 @@ object PersonaSetup : ModuleSetup {
 
         single<PersonaServices> { PersonaServicesImpl(get()) }
         single { PersonasTabScreen() } bind TabScreen::class
+        single<INextIDRepository> { NextIDRepository() }
 
         viewModel { PersonaViewModel(get()) }
         viewModel { TwitterSocialViewModel(get()) }
