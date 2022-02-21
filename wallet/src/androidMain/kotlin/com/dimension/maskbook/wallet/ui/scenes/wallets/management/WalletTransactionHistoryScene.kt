@@ -23,6 +23,7 @@ package com.dimension.maskbook.wallet.ui.scenes.wallets.management
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
+import com.dimension.maskbook.common.model.DateType
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskScene
 import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
@@ -34,7 +35,7 @@ import com.dimension.maskbook.wallet.ui.widget.TransactionHistoryList
 @Composable
 fun WalletTransactionHistoryScene(
     onBack: () -> Unit,
-    transactions: List<TransactionData>,
+    transactions: Map<DateType, List<TransactionData>>,
     onSpeedUp: (TransactionData) -> Unit,
     onCancel: (TransactionData) -> Unit,
 ) {

@@ -42,7 +42,6 @@ import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
-import androidx.compose.material.ListItem
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -54,6 +53,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.dimension.maskbook.common.model.DateType
+import com.dimension.maskbook.common.ui.widget.MaskListItem
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.export.model.TokenData
@@ -62,44 +63,44 @@ import com.dimension.maskbook.wallet.ext.humanizeToken
 import com.dimension.maskbook.wallet.repository.TransactionData
 import com.dimension.maskbook.wallet.repository.TransactionStatus
 import com.dimension.maskbook.wallet.repository.TransactionType
-import org.joda.time.DateTime
+import org.joda.time.LocalDate
+import java.util.Locale
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
 @Composable
 fun TransactionHistoryList(
-    transactions: List<TransactionData>,
+    transactions: Map<DateType, List<TransactionData>>,
     onSpeedUp: (TransactionData) -> Unit,
     onCancel: (TransactionData) -> Unit,
 ) {
     if (transactions.isEmpty()) {
         TokenDetailEmptyLayout()
-    } else {
-        val items = remember(transactions) {
-            transactions.sortedByDescending { it.createdAt }
-                .groupBy { DateTime(it.createdAt).toLocalDate() }.toMap()
-        }
-        LazyColumn {
-            items.forEach { entry ->
-                stickyHeader {
-                    ListItem {
-                        Text(
-                            text = entry.key.toString(),
-                            style = MaterialTheme.typography.subtitle1.copy(fontSize = 18.sp)
-                        )
-                    }
-                }
-                items(entry.value) { item ->
-                    TransactionItem(
-                        item,
-                        item.tokenData,
-                        onSpeedUp = {
-                            onSpeedUp.invoke(item)
-                        },
-                        onCancel = {
-                            onCancel.invoke(item)
+        return
+    }
+    LazyColumn {
+        transactions.forEach { entry ->
+            stickyHeader {
+                MaskListItem(
+                    modifier = Modifier.background(MaterialTheme.colors.background),
+                    text = {
+                        val title = remember {
+                            createTitle(entry.key, entry.value[0].createdAt)
                         }
-                    )
-                }
+                        Text(text = title)
+                    }
+                )
+            }
+            items(entry.value) { item ->
+                TransactionItem(
+                    item,
+                    item.tokenData,
+                    onSpeedUp = {
+                        onSpeedUp.invoke(item)
+                    },
+                    onCancel = {
+                        onCancel.invoke(item)
+                    }
+                )
             }
         }
     }
@@ -131,7 +132,7 @@ private fun TransactionItem(
     onSpeedUp: () -> Unit,
     onCancel: () -> Unit,
 ) {
-    ListItem(
+    MaskListItem(
         modifier = Modifier.padding(vertical = 10.dp),
         text = {
             Column(modifier = Modifier.fillMaxHeight(), verticalArrangement = Arrangement.Center) {
@@ -257,5 +258,18 @@ private fun TransactionData.title() = message.ifEmpty {
             R.string.scene_transaction_history_type_cancel,
             tokenData.symbol
         )
+    }
+}
+
+private fun createTitle(dateType: DateType, dateTime: Long): String {
+    val date = LocalDate(dateTime)
+    return when (dateType) {
+        DateType.Today -> "Today"
+        DateType.Yesterday -> "Yesterday"
+        is DateType.ThisMonth -> "This Month"
+        is DateType.ThisYear -> date.monthOfYear().getAsText(Locale.US)
+        is DateType.OlderDate -> date.monthOfYear().getAsText(Locale.US) + ", " +
+            date.year().getAsText(Locale.US)
+        else -> ""
     }
 }
