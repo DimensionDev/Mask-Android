@@ -124,10 +124,9 @@ fun PersonasScene(
                     painter = painterResource(image),
                     contentDescription = null,
                     modifier = Modifier
-                        .size(PersonasSceneDefaults.imageSize)
                         .background(Color.White, shape = CircleShape)
                         .clip(CircleShape)
-                        .padding(10.dp),
+                        .size(PersonasSceneDefaults.imageSize),
                 )
                 Spacer(Modifier.height(10.dp))
                 Text(
