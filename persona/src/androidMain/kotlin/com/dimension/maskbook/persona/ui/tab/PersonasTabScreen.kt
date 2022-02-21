@@ -83,6 +83,11 @@ class PersonasTabScreen : TabScreen {
                     )
                 }
             },
+            onDemoPersonasClick = {
+                rootNavController.navigate(
+                    "Demo/Personas"
+                )
+            },
         )
     }
 }

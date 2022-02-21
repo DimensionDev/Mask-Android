@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
@@ -41,6 +42,8 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
+import com.dimension.maskbook.common.ui.widget.NameImage
+import com.dimension.maskbook.common.ui.widget.button.MaskIconButton
 import com.dimension.maskbook.common.ui.widget.button.MaskIconCardButton
 import com.dimension.maskbook.common.ui.widget.button.clickable
 import com.dimension.maskbook.persona.export.model.Network
@@ -58,6 +61,7 @@ fun PersonaScene(
     onPersonaNameClick: () -> Unit,
     onAddSocialClick: (PersonaData, Network?) -> Unit,
     onRemoveSocialClick: (PersonaData, SocialData) -> Unit,
+    onDemoPersonasClick: () -> Unit,
 ) {
     val viewModel: PersonaViewModel = getViewModel()
     val currentPersona by viewModel.currentPersona.collectAsState()
@@ -76,6 +80,16 @@ fun PersonaScene(
     MaskScaffold(
         topBar = {
             MaskSingleLineTopAppBar(
+                navigationIcon = {
+                    if (!socialList.isNullOrEmpty()) {
+                        MaskIconButton(onClick = onDemoPersonasClick) {
+                            NameImage(
+                                name = persona.name,
+                                modifier = Modifier.size(36.dp)
+                            )
+                        }
+                    }
+                },
                 actions = {
                     if (!socialList.isNullOrEmpty()) {
                         MaskIconCardButton(onClick = onBack) {
