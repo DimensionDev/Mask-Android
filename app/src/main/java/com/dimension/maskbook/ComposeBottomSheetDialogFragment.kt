@@ -105,6 +105,7 @@ class ComposeBottomSheetDialogFragment(
                                     ConnectAccountModal(
                                         data,
                                         onDone = {
+                                            this@ComposeBottomSheetDialogFragment.dismiss()
                                         }
                                     )
                                 }
@@ -129,11 +130,12 @@ private fun ConnectAccountModal(data: ConnectAccountData, onDone: () -> Unit) {
     val name by viewModel.userName.collectAsState()
     MaskModal(
         modifier = Modifier
-            .background(MaterialTheme.colors.background, shape = MaterialTheme.shapes.medium)
+            .background(MaterialTheme.colors.background, shape = MaterialTheme.shapes.medium),
+        title = {
+            Text(text = stringResource(R.string.scene_social_connect_to_mask_network))
+        }
     ) {
         Column {
-            Text(text = stringResource(R.string.scene_social_connect_to_mask_network))
-            Spacer(modifier = Modifier.height(8.dp))
             MaskInputField(
                 modifier = Modifier.fillMaxWidth(),
                 value = name,
@@ -147,7 +149,7 @@ private fun ConnectAccountModal(data: ConnectAccountData, onDone: () -> Unit) {
                     onDone.invoke()
                 },
             ) {
-                Text(text = stringResource(R.string.common_controls_done))
+                Text(text = stringResource(R.string.scene_social_connect_button_title))
             }
         }
     }

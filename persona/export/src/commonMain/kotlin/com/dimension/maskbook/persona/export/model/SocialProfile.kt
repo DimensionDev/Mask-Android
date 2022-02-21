@@ -33,11 +33,12 @@ class SocialProfile private constructor(
             if (components.size != 2) {
                 return null
             }
-            val network = components[0]
-            if (network == "localhost") {
-                return null
-            }
-            return SocialProfile(Network.valueOf(network), components[1])
+            val network = components[0].takeIf {
+                it != "localhost"
+            }?.let {
+                Network.values().firstOrNull { value -> value.value == it }
+            } ?: return null
+            return SocialProfile(network, components[1])
         }
     }
 
