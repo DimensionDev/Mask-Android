@@ -242,4 +242,6 @@ internal data class RouteParameter(
     val parameter: KSValueParameter,
 )
 
-private val TypeName.isString get() = this == String::class.asTypeName()
+internal val TypeName.isString get() = this == String::class.asTypeName()
+internal val TypeName.isBoolean get() = this == Boolean::class.asTypeName()
+internal val TypeName.isLong get() = this == Long::class.asTypeName()

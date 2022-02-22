@@ -41,6 +41,7 @@ import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.buildCodeBlock
 import com.squareup.kotlinpoet.ksp.KotlinPoetKspPreview
+import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toTypeName
 import com.squareup.kotlinpoet.ksp.writeTo
 import com.squareup.kotlinpoet.withIndent
@@ -131,12 +132,13 @@ internal class RouteGraphProcessor(
                                                 addStatement("arguments = listOf(")
                                                 withIndent {
                                                     parameters.forEach {
-                                                        val typeName = it.type.resolve().declaration.simpleName.asString()
+                                                        val type = it.type.resolve()
+                                                        val typeName = type.toClassName()
                                                         addStatement(
                                                             "navArgument(%S) { type = NavType.%NType; nullable = %L },",
                                                             it.name?.asString() ?: "",
-                                                            if (typeName == "Boolean") "Bool" else typeName,
-                                                            it.isAnnotationPresent(Query::class)
+                                                            if (typeName.isBoolean) "Bool" else type.declaration.simpleName.asString(),
+                                                            it.isAnnotationPresent(Query::class) && !typeName.isLong
                                                         )
                                                     }
                                                 }
