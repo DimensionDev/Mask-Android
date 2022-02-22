@@ -129,10 +129,11 @@ internal class RouteGraphProcessor(
                                                         Query::class
                                                     ) || it.isAnnotationPresent(Path::class)
                                                 }.forEach {
+                                                    val typeName = it.type.resolve().declaration.simpleName.asString()
                                                     addStatement(
                                                         "navArgument(%S) { type = NavType.%NType; nullable = %L },",
                                                         it.name?.asString() ?: "",
-                                                        it.type.resolve().declaration.simpleName.asString(),
+                                                        if (typeName == "Boolean") "Bool" else typeName,
                                                         it.isAnnotationPresent(Query::class)
                                                     )
                                                 }
