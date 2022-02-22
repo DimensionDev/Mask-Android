@@ -110,8 +110,8 @@ class PersonaRepository(
             }
         }
     override val currentPersona: Flow<PersonaData?>
-        get() = _currentPersona.combine(persona) { a: String, b: List<PersonaData> ->
-            b.firstOrNull { it.id == a }
+        get() = _currentPersona.combine(persona) { current: String, list: List<PersonaData> ->
+            list.firstOrNull { it.id == current }
         }
     private val _redirect = MutableLiveData<RedirectTarget?>(null)
     override val redirect: MutableLiveData<RedirectTarget?>
@@ -213,8 +213,13 @@ class PersonaRepository(
         _facebook.value = JSMethod.Persona.queryProfiles(Network.Facebook)
     }
 
-    private suspend fun refreshPersona() {
-        _persona.value = JSMethod.Persona.queryMyPersonas(null)
+    override fun refreshPersona() {
+        scope.launch {
+            _persona.value = JSMethod.Persona.queryMyPersonas(null)
+            if (_currentPersona.firstOrNull().isNullOrEmpty()) {
+                _persona.value.firstOrNull()?.identifier?.let { setCurrentPersona(it) }
+            }
+        }
     }
 
     override fun setCurrentPersona(id: String) {
@@ -232,9 +237,7 @@ class PersonaRepository(
 
             removePersona(deletePersona.id)
 
-            if (newCurrentPersona != null) {
-                setCurrentPersona(newCurrentPersona.id)
-            }
+            setCurrentPersona(newCurrentPersona?.id ?: "")
             refreshPersona()
         }
     }

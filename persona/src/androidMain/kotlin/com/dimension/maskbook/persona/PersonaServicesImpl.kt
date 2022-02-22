@@ -59,4 +59,8 @@ class PersonaServicesImpl(
     override fun savePhoneForCurrentPersona(value: String) {
         personaRepository.savePhoneForCurrentPersona(value)
     }
+
+    override fun refreshPersonaData() {
+        personaRepository.refreshPersona()
+    }
 }

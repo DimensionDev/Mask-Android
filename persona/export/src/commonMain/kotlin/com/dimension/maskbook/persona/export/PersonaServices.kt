@@ -33,4 +33,5 @@ interface PersonaServices {
     fun cancelConnectingProcess()
     fun saveEmailForCurrentPersona(value: String)
     fun savePhoneForCurrentPersona(value: String)
+    fun refreshPersonaData()
 }
