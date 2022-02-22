@@ -153,13 +153,16 @@ internal class RouteGraphProcessor(
                                 )
                                 builder.beginControlFlow(")")
                                 ksFunctionDeclaration.parameters.forEach {
-                                    if (it.isAnnotationPresent(Query::class) || it.isAnnotationPresent(Path::class)) {
+                                    if (it.isAnnotationPresent(Path::class)) {
+                                        require(!it.type.resolve().isMarkedNullable)
+                                    }
+                                    if (it.isAnnotationPresent(Query::class)) {
                                         require(it.type.resolve().isMarkedNullable)
                                     }
                                     if (it.isAnnotationPresent(Path::class)) {
                                         val path = it.getAnnotationsByType(Path::class).first()
                                         builder.addStatement(
-                                            "val ${it.name?.asString()} = it.arguments?.get(%S) as? %T",
+                                            "val ${it.name?.asString()} = it.arguments!!.get(%S) as %T",
                                             path.name,
                                             it.type.toTypeName()
                                         )
