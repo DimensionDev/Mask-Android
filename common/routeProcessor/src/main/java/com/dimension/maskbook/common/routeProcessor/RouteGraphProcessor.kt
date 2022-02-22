@@ -122,33 +122,38 @@ internal class RouteGraphProcessor(
                                                 "route = %S,",
                                                 annotation.route,
                                             )
-                                            addStatement("arguments = listOf(")
-                                            withIndent {
-                                                ksFunctionDeclaration.parameters.filter {
-                                                    it.isAnnotationPresent(
-                                                        Query::class
-                                                    ) || it.isAnnotationPresent(Path::class)
-                                                }.forEach {
-                                                    val typeName = it.type.resolve().declaration.simpleName.asString()
-                                                    addStatement(
-                                                        "navArgument(%S) { type = NavType.%NType; nullable = %L },",
-                                                        it.name?.asString() ?: "",
-                                                        if (typeName == "Boolean") "Bool" else typeName,
-                                                        it.isAnnotationPresent(Query::class)
-                                                    )
-                                                }
+                                            val parameters = ksFunctionDeclaration.parameters.filter {
+                                                it.isAnnotationPresent(
+                                                    Query::class
+                                                ) || it.isAnnotationPresent(Path::class)
                                             }
-                                            addStatement("),")
-                                            addStatement("deepLinks = listOf(")
-                                            withIndent {
-                                                annotation.deeplink.forEach {
-                                                    addStatement(
-                                                        "navDeepLink { uriPattern = %S }",
-                                                        it
-                                                    )
+                                            if (parameters.isNotEmpty()) {
+                                                addStatement("arguments = listOf(")
+                                                withIndent {
+                                                    parameters.forEach {
+                                                        val typeName = it.type.resolve().declaration.simpleName.asString()
+                                                        addStatement(
+                                                            "navArgument(%S) { type = NavType.%NType; nullable = %L },",
+                                                            it.name?.asString() ?: "",
+                                                            if (typeName == "Boolean") "Bool" else typeName,
+                                                            it.isAnnotationPresent(Query::class)
+                                                        )
+                                                    }
                                                 }
+                                                addStatement("),")
                                             }
-                                            addStatement("),")
+                                            if (annotation.deeplink.isNotEmpty()) {
+                                                addStatement("deepLinks = listOf(")
+                                                withIndent {
+                                                    annotation.deeplink.forEach {
+                                                        addStatement(
+                                                            "navDeepLink { uriPattern = %S }",
+                                                            it
+                                                        )
+                                                    }
+                                                }
+                                                addStatement("),")
+                                            }
                                         }
                                     }
                                 )
