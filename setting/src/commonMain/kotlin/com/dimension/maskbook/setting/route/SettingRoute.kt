@@ -22,52 +22,53 @@ package com.dimension.maskbook.setting.route
 
 import com.dimension.maskbook.common.routeProcessor.annotations.Route
 
+@Suppress("CONST_VAL_WITHOUT_INITIALIZER")
 @Route
 expect object SettingRoute {
-    val SetupPasswordDialog: String
-    val LanguageSettings: String
-    val AppearanceSettings: String
-    val DataSourceSettings: String
-    val PaymentPasswordSettings: String
-    val PaymentPasswordSettingsSuccess: String
-    val ChangeBackUpPassword: String
-    val ChangeBackUpPasswordSuccess: String
+    const val SetupPasswordDialog: String
+    const val LanguageSettings: String
+    const val AppearanceSettings: String
+    const val DataSourceSettings: String
+    const val PaymentPasswordSettings: String
+    const val PaymentPasswordSettingsSuccess: String
+    const val ChangeBackUpPassword: String
+    const val ChangeBackUpPasswordSuccess: String
 
     object Settings_ChangeEmail {
-        val Settings_ChangeEmail_Setup: String
+        const val Settings_ChangeEmail_Setup: String
         object Settings_ChangeEmail_Setup_Code {
             operator fun invoke(email: String): String
         }
-        val Settings_ChangeEmail_Setup_Success: String
+        const val Settings_ChangeEmail_Setup_Success: String
         object Settings_ChangeEmail_Change_Code {
             operator fun invoke(email: String): String
         }
-        val Settings_ChangeEmail_Change_New: String
+        const val Settings_ChangeEmail_Change_New: String
         object Settings_ChangeEmail_Change_New_Code {
             operator fun invoke(email: String): String
         }
-        val Settings_ChangeEmail_Change_Success: String
+        const val Settings_ChangeEmail_Change_Success: String
     }
 
     object Settings_ChangePhone {
-        val Settings_ChangePhone_Setup: String
+        const val Settings_ChangePhone_Setup: String
         object Settings_ChangePhone_Setup_Code {
             operator fun invoke(phone: String): String
         }
-        val Settings_ChangePhone_Setup_Success: String
+        const val Settings_ChangePhone_Setup_Success: String
         object Settings_ChangePhone_Change_Code {
             operator fun invoke(phone: String): String
         }
-        val Settings_ChangePhone_Change_New: String
+        const val Settings_ChangePhone_Change_New: String
         object Settings_ChangePhone_Change_New_Code {
             operator fun invoke(phone: String): String
         }
-        val Settings_ChangePhone_Change_Success: String
+        const val Settings_ChangePhone_Change_Success: String
     }
 
     object BackupData {
-        val BackupData_Cloud_Success: String
-        val BackupData_Cloud_Failed: String
+        const val BackupData_Cloud_Success: String
+        const val BackupData_Cloud_Failed: String
         object BackupData_BackupCloud {
             operator fun invoke(type: String, value: String, code: String): String
         }
@@ -80,7 +81,7 @@ expect object SettingRoute {
             ): String
         }
 
-        val BackupSelection_NoEmailAndPhone: String
+        const val BackupSelection_NoEmailAndPhone: String
         object BackupData_BackupMerge_Confirm_Success {
             operator fun invoke(
                 type: String,
@@ -117,10 +118,10 @@ expect object SettingRoute {
         object BackupSelection_Phone {
             operator fun invoke(phone: String): String
         }
-        val BackupSelection: String
-        val Password: String
-        val BackupLocalHost: String
-        val BackupLocalFailure: String
-        val BackupLocalSuccess: String
+        const val BackupSelection: String
+        const val Password: String
+        const val BackupLocalHost: String
+        const val BackupLocalFailure: String
+        const val BackupLocalSuccess: String
     }
 }

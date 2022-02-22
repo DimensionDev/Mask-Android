@@ -143,10 +143,16 @@ private fun Taggable.addTo(builder: TypeSpec.Builder) {
 internal data class ConstRouteDefinition(
     override val name: String,
     override val parent: RouteDefinition? = null,
+    private val isConst: Boolean
 ) : RouteDefinition {
     override fun generateRoute(): Taggable {
         return PropertySpec.builder(name, String::class)
             .addModifiers(KModifier.ACTUAL)
+            .apply {
+                if (isConst) {
+                    addModifiers(KModifier.CONST)
+                }
+            }
             .initializer("%S + %S + %S", parentPath, RouteDivider, name)
             .build()
     }

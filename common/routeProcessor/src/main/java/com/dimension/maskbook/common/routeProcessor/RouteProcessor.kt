@@ -33,6 +33,7 @@ import com.google.devtools.ksp.symbol.KSDeclaration
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.google.devtools.ksp.symbol.KSNode
 import com.google.devtools.ksp.symbol.KSPropertyDeclaration
+import com.google.devtools.ksp.symbol.Modifier
 import com.google.devtools.ksp.validate
 import com.google.devtools.ksp.visitor.KSEmptyVisitor
 import com.squareup.kotlinpoet.FileSpec
@@ -148,7 +149,8 @@ internal class RouteProcessor(
                     }
                 }
                 is KSPropertyDeclaration -> {
-                    ConstRouteDefinition(name, parent)
+                    val isConst = declaration.modifiers.contains(Modifier.CONST)
+                    ConstRouteDefinition(name, parent, isConst)
                 }
                 is KSFunctionDeclaration -> {
                     FunctionRouteDefinition(
