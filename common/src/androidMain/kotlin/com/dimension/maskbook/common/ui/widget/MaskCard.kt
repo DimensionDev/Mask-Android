@@ -20,24 +20,56 @@
  */
 package com.dimension.maskbook.common.ui.widget
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.LocalElevationOverlay
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.material.contentColorFor
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun MaskCard(
     modifier: Modifier = Modifier,
-    content: @Composable BoxScope.() -> Unit,
+    onClick: () -> Unit = {},
+    shape: Shape = MaterialTheme.shapes.medium,
+    backgroundColor: Color = MaterialTheme.colors.surface,
+    contentColor: Color = contentColorFor(backgroundColor),
+    border: BorderStroke? = null,
+    elevation: Dp = 1.dp,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    enabled: Boolean = true,
+    onClickLabel: String? = null,
+    role: Role? = null,
+    content: @Composable () -> Unit
 ) {
-    Box(
-        modifier = Modifier
-            .background(color = MaterialTheme.colors.surface, MaterialTheme.shapes.medium)
-            .clip(MaterialTheme.shapes.medium)
-            .then(modifier),
-        content = content,
-    )
+    CompositionLocalProvider(
+        LocalElevationOverlay provides null
+    ) {
+        Surface(
+            onClick = onClick,
+            modifier = modifier,
+            shape = shape,
+            color = backgroundColor,
+            contentColor = contentColor,
+            border = border,
+            elevation = elevation,
+            interactionSource = interactionSource,
+            indication = null,
+            enabled = enabled,
+            onClickLabel = onClickLabel,
+            role = role,
+            content = content
+        )
+    }
 }

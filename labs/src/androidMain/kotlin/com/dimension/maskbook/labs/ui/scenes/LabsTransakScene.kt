@@ -39,9 +39,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.viewinterop.AndroidView
-import com.dimension.maskbook.common.ui.widget.MaskBackButton
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
+import com.dimension.maskbook.common.ui.widget.MaskScene
 import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
+import com.dimension.maskbook.common.ui.widget.button.MaskBackButton
 import com.dimension.maskbook.labs.R
 import com.dimension.maskbook.labs.export.model.TransakConfig
 
@@ -72,31 +73,33 @@ fun LabsTransakScene(
     LaunchedEffect(transakConfig.url) {
         webView.loadUrl(transakConfig.url)
     }
-    MaskScaffold(
-        topBar = {
-            MaskSingleLineTopAppBar(
-                title = {
-                    Text(stringResource(id = R.string.scene_app_plugins_transaction))
-                },
-                navigationIcon = {
-                    MaskBackButton {
-                        onBack.invoke()
+    MaskScene {
+        MaskScaffold(
+            topBar = {
+                MaskSingleLineTopAppBar(
+                    title = {
+                        Text(stringResource(id = R.string.scene_app_plugins_transaction))
+                    },
+                    navigationIcon = {
+                        MaskBackButton {
+                            onBack.invoke()
+                        }
                     }
-                }
-            )
-        }
-    ) {
-        Box {
-            AndroidView(
-                modifier = Modifier.fillMaxSize(),
-                factory = {
-                    webView
-                }
-            )
-            if (loading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center)
                 )
+            }
+        ) {
+            Box {
+                AndroidView(
+                    modifier = Modifier.fillMaxSize(),
+                    factory = {
+                        webView
+                    }
+                )
+                if (loading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
             }
         }
     }

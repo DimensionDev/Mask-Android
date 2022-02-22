@@ -22,6 +22,7 @@ package com.dimension.maskbook.wallet.walletconnect.v1.client
 
 import android.content.Context
 import android.util.Log
+import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.wallet.BuildConfig
 import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.ext.ether
@@ -35,7 +36,6 @@ import org.komputing.khex.extensions.toNoPrefixHexString
 import org.walletconnect.Session
 import org.walletconnect.impls.FileWCSessionStore
 import java.io.File
-import java.math.BigDecimal
 import java.util.Random
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap

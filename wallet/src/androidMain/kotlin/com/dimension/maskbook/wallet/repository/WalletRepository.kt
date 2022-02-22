@@ -31,6 +31,7 @@ import androidx.paging.LoadType
 import androidx.paging.PagingConfig
 import androidx.paging.PagingState
 import androidx.room.withTransaction
+import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.common.okhttp.okHttpClient
 import com.dimension.maskbook.common.repository.JSMethod
 import com.dimension.maskbook.debankapi.model.ChainID
@@ -68,7 +69,6 @@ import org.web3j.ens.EnsResolver
 import org.web3j.protocol.Web3j
 import org.web3j.protocol.http.HttpService
 import org.web3j.tx.RawTransactionManager
-import java.math.BigDecimal
 import java.util.UUID
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime

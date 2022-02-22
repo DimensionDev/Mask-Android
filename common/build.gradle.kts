@@ -15,7 +15,11 @@ kotlin {
                 kspAndroid(projects.common.routeProcessor)
             }
         }
-
+        val commonTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
+            }
+        }
         val androidMain by getting {
             dependencies {
                 api(projects.wallet.export)
@@ -55,6 +59,7 @@ kotlin {
                 api("com.google.accompanist:accompanist-navigation-animation:${Versions.accompanist}")
                 api("com.google.accompanist:accompanist-navigation-material:${Versions.accompanist}")
                 api("com.google.accompanist:accompanist-permissions:${Versions.accompanist}")
+                api("com.google.accompanist:accompanist-insets:${Versions.accompanist}")
 
                 // coroutines
                 api("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.Kotlin.coroutines}")
@@ -67,11 +72,6 @@ kotlin {
                 api("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.Kotlin.serialization}")
 
                 implementation("androidx.biometric:biometric-ktx:${Versions.Androidx.biometric}")
-            }
-        }
-        val androidTest by getting {
-            dependencies {
-                implementation("junit:junit:4.13.2")
             }
         }
     }

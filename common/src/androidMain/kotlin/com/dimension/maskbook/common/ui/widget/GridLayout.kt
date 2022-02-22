@@ -114,8 +114,9 @@ fun <T> LazyListScope.itemsGridIndexed(
                 val subSize = rowSize - row.size
                 for (i in row.indices) {
                     val item = row[i]
+                    val realIndex = i + index * rowSize
                     Box(modifier = Modifier.weight(1f)) {
-                        itemContent(data.indexOf(item), item)
+                        itemContent(realIndex, item)
                     }
                     if (i != row.lastIndex && subSize == 0) {
                         Spacer(modifier = Modifier.width(spacing))

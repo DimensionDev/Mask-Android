@@ -20,6 +20,7 @@
  */
 package com.dimension.maskbook.wallet.repository
 
+import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.common.okhttp.okHttpClient
 import com.dimension.maskbook.debankapi.model.ChainID
 import com.dimension.maskbook.wallet.db.model.CoinPlatformType
@@ -34,7 +35,6 @@ import com.dimension.maskbook.wallet.export.model.WalletTokenData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.Serializable
 import org.web3j.protocol.http.HttpService
-import java.math.BigDecimal
 
 data class WalletCreateOrImportResult(
     val type: Type,

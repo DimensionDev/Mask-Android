@@ -1,4 +1,5 @@
 
+import org.gradle.api.Project
 import org.gradle.kotlin.dsl.get
 
 fun com.android.build.gradle.internal.dsl.BaseAppModuleExtension.setup() {
@@ -31,6 +32,7 @@ fun com.android.build.api.dsl.LibraryExtension.setupLibrary() {
         targetCompatibility = Versions.Java.java
     }
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
+    sourceSets["debug"].java.srcDir("build/generated/ksp/androidDebug/kotlin")
 }
 
 
@@ -43,6 +45,9 @@ fun com.android.build.gradle.LibraryExtension.withCompose() {
     }
 }
 
-fun org.gradle.api.Project.kspAndroid(dependencyNotation: Any) {
+fun Project.kspAndroid(dependencyNotation: Any) {
     project.dependencies.add("kspAndroid", dependencyNotation)
 }
+
+val Project.enableFirebase: Boolean
+    get() = file("google-services.json").exists()

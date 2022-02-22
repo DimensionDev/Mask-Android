@@ -37,12 +37,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.dimension.maskbook.common.ui.widget.MaskBackButton
 import com.dimension.maskbook.common.ui.widget.MaskInputField
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
+import com.dimension.maskbook.common.ui.widget.MaskScene
 import com.dimension.maskbook.common.ui.widget.MaskTopAppBar
-import com.dimension.maskbook.common.ui.widget.PrimaryButton
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
+import com.dimension.maskbook.common.ui.widget.button.MaskBackButton
+import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.wallet.R
 
 @Composable
@@ -51,45 +52,47 @@ fun CreatePersonaScene(
     onDone: (String) -> Unit,
 ) {
     var name by remember { mutableStateOf("") }
-    MaskScaffold(
-        topBar = {
-            MaskTopAppBar(
-                title = {
-                    Text(text = stringResource(R.string.scene_persona_welcome_title))
-                },
-                subTitle = {
-                    Text(text = stringResource(R.string.scene_persona_welcome_description))
-                },
-                navigationIcon = {
-                    MaskBackButton(onBack = onBack)
-                }
-            )
-        }
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(ScaffoldPadding)
-        ) {
-            Spacer(modifier = Modifier.height(32.dp))
-            Text(text = stringResource(R.string.scene_persona_welcome_persona))
-            Spacer(modifier = Modifier.height(8.dp))
-            MaskInputField(
-                value = name,
-                onValueChange = { name = it },
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(modifier = Modifier.weight(1f))
-            PrimaryButton(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = {
-                    if (name.isNotBlank()) {
-                        onDone.invoke(name)
+    MaskScene {
+        MaskScaffold(
+            topBar = {
+                MaskTopAppBar(
+                    title = {
+                        Text(text = stringResource(R.string.scene_persona_welcome_title))
+                    },
+                    subTitle = {
+                        Text(text = stringResource(R.string.scene_persona_welcome_description))
+                    },
+                    navigationIcon = {
+                        MaskBackButton(onBack = onBack)
                     }
-                },
+                )
+            }
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(ScaffoldPadding)
             ) {
-                Text(text = stringResource(R.string.common_controls_next))
+                Spacer(modifier = Modifier.height(32.dp))
+                Text(text = stringResource(R.string.scene_persona_welcome_persona))
+                Spacer(modifier = Modifier.height(8.dp))
+                MaskInputField(
+                    value = name,
+                    onValueChange = { name = it },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                PrimaryButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+                        if (name.isNotBlank()) {
+                            onDone.invoke(name)
+                        }
+                    },
+                ) {
+                    Text(text = stringResource(R.string.common_controls_next))
+                }
             }
         }
     }

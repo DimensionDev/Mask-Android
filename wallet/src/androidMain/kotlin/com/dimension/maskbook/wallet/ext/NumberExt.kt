@@ -20,7 +20,7 @@
  */
 package com.dimension.maskbook.wallet.ext
 
-import java.math.BigDecimal
+import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.ExperimentalTime
 

@@ -55,6 +55,7 @@ import com.google.accompanist.navigation.material.bottomSheet
 import kotlinx.coroutines.flow.distinctUntilChanged
 import org.koin.androidx.compose.get
 import org.koin.androidx.compose.getViewModel
+import org.koin.core.parameter.parametersOf
 
 @OptIn(ExperimentalMaterialNavigationApi::class, ExperimentalAnimationApi::class)
 fun NavGraphBuilder.registerRoute(
@@ -133,7 +134,12 @@ fun NavGraphBuilder.registerRoute(
             }
         )
     }
-    bottomSheet(WalletRoute.Register.CreatePersona) {
+    bottomSheet(
+        WalletRoute.Register.CreatePersona,
+        deepLinks = listOf(
+            navDeepLink { uriPattern = Deeplinks.Wallet.Register.CreatePersona }
+        )
+    ) {
         CreatePersonaModal(
             onDone = { name ->
                 navController.navigate(WalletRoute.Register.CreateIdentity(name))
@@ -151,7 +157,7 @@ fun NavGraphBuilder.registerRoute(
                 navController.popBackStack()
             },
             onIdentity = {
-                navController.navigate(WalletRoute.Register.Recovery.Identity)
+                navController.navigate(WalletRoute.Register.Recovery.IdentityPersona)
             },
             onPrivateKey = {
                 navController.navigate(WalletRoute.Register.Recovery.PrivateKey)
@@ -164,6 +170,7 @@ fun NavGraphBuilder.registerRoute(
             }
         )
     }
+
     remoteBackupRecovery(navController)
     composable(
         WalletRoute.Register.Recovery.LocalBackup.RemoteBackupRecovery_RecoveryLocal.path,
@@ -211,26 +218,46 @@ fun NavGraphBuilder.registerRoute(
             filePickerLauncher.launch(arrayOf("*/*"))
         }
     }
-    composable(WalletRoute.Register.Recovery.Identity) {
-        val viewModel: IdentityViewModel = getViewModel()
-        val identity by viewModel.identity.observeAsState(initial = "")
-        IdentityScene(
-            identity = identity,
-            onIdentityChanged = {
-                viewModel.setIdentity(it)
-            },
-            onConfirm = {
-                viewModel.onConfirm()
-                navController.navigate(WalletRoute.Register.Recovery.Complected) {
-                    popUpTo(WalletRoute.Register.Init) {
-                        inclusive = true
-                    }
-                }
-            },
-            onBack = {
-                navController.popBackStack()
-            },
+    bottomSheet(
+        WalletRoute.Register.Recovery.IdentityPersona,
+    ) {
+        CreatePersonaModal(
+            onDone = { name ->
+                navController.navigate(WalletRoute.Register.Recovery.Identity(name))
+            }
         )
+    }
+    composable(
+        WalletRoute.Register.Recovery.Identity.path,
+        arguments = listOf(
+            navArgument("name") { type = NavType.StringType }
+        )
+    ) {
+        it.arguments?.getString("name")?.let { name ->
+            val viewModel: IdentityViewModel = getViewModel {
+                parametersOf(name)
+            }
+            val identity by viewModel.identity.observeAsState()
+            val canConfirm by viewModel.canConfirm.observeAsState()
+            IdentityScene(
+                identity = identity,
+                onIdentityChanged = {
+                    viewModel.setIdentity(it)
+                },
+                canConfirm = canConfirm,
+                onConfirm = {
+                    viewModel.onConfirm()
+                    navController.navigate(WalletRoute.Register.Recovery.Complected) {
+                        popUpTo(WalletRoute.Register.Init) {
+                            inclusive = true
+                        }
+                    }
+                },
+                onBack = {
+                    navController.popBackStack()
+                },
+            )
+        } ?: navController.popBackStack()
     }
     composable(WalletRoute.Register.Recovery.PrivateKey) {
         val viewModel: PrivateKeyViewModel = getViewModel()

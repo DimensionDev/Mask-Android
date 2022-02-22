@@ -34,4 +34,7 @@ interface WCWalletDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun add(data: List<DbWCWallet>)
+
+    @Query("DELETE FROM DbWCWallet")
+    suspend fun clearAll()
 }

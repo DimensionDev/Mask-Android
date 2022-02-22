@@ -227,24 +227,23 @@
     <string name="scene_set_backup_password_tips">Backup password must be between 8 and 20 characters and contains at least a number, a uppercase letter, a lowercase letter and a special character.</string>
     <string name="scene_set_backup_password_confirm_backup_password">Confirm Backup Password</string>
     <string name="scene_app_wallet_address">Wallet address</string>
-    <string name="scene_app_riskwarning">Dear User,
-
-When using any wallet-related plugins in Mask Network, please confirm to accept the following usage risks:
-
-Mask Network provides non-commercial free services. The plug-ins are provided by community members and other excellent third-party DApp teams. Due to the freedom of the decentralized network and other uncertain risk factors, users are requested to properly protect their sensitive information such as wallet mnemonic words and private keys. Please be cautious when conducting any blockchain contract interaction. The risks caused by any third-party DApps (plug-ins) are borne by the third-party DApps themselves.
-
-Clicking the confirm button means that you agree to bear the above possible risks.</string>
+    <string name="scene_app_riskwarning">Dear User,\n\nWhen using any wallet-related plugins in Mask Network, please confirm to accept the following usage risks:\n\nMask Network provides non-commercial free services. The plug-ins are provided by community members and other excellent third-party DApp teams. Due to the freedom of the decentralized network and other uncertain risk factors, users are requested to properly protect their sensitive information such as wallet mnemonic words and private keys. Please be cautious when conducting any blockchain contract interaction. The risks caused by any third-party DApps (plug-ins) are borne by the third-party DApps themselves.\n\nClicking the confirm button means that you agree to bear the above possible risks.</string>
     <string name="scene_app_plugins_gitcoin">Gitcoin</string>
     <string name="scene_app_plugins_ito">ITO</string>
     <string name="scene_app_plugins_swap">Swap</string>
-    <string name="scene_app_plugins_file_service">File Service</string>
     <string name="scene_app_plugins_collectibles">Collectibles</string>
-    <string name="scene_app_plugins_lucy_drop">Lucky Drop</string>
     <string name="scene_app_plugins_dhedge">DHEDGE</string>
     <string name="scene_app_plugins_market_trend">Market Trend</string>
+    <string name="scene_app_plugins_ito_desc">Enable users to buy tokens directly on Twitter.</string>
+    <string name="scene_app_plugins_valuables">Valuables</string>
+    <string name="scene_app_plugins_swap_desc">Pop-up trading widget that allows you to instantly view prices of the hottest Crypto/Stock and trade. Can also invest in the best performing managers.</string>
+    <string name="scene_app_plugins_file_service">File Service</string>
+    <string name="scene_app_plugins_lucy_drop">Lucky Drop</string>
+    <string name="scene_app_plugins_file_service_desc">Decentralized file storage for users.</string>
+    <string name="scene_app_plugins_lucy_drop_desc">Surprise your encrypted friends with Token/NFT Lucky Drops.</string>
+    <string name="scene_app_plugins_transaction_desc">Buy crypto with Transak, support 60+ currencies. </string>
     <string name="scene_app_plugins_transaction">Transak</string>
     <string name="scene_app_plugins_snapshot">Snapshot</string>
-    <string name="scene_app_plugins_valuables">Valuables</string>
     <string name="scene_app_swap_network_source_bsc">BSC Network</string>
     <string name="scene_app_swap_network_source_eth">ETH Network</string>
     <string name="scene_app_swap_network_source_poly">Polygon/Matic Network</string>
@@ -283,6 +282,7 @@ Clicking the confirm button means that you agree to bear the above possible risk
     <string name="scene_change_backup_password_tips">Backup password must be between 8 and 20 characters and contains at least a number, a uppercase letter, a lowercase letter and a special character.</string>
     <string name="scene_change_backup_password_confirm_backup_password">Repeat New Backup Password</string>
     <string name="scene_personas_delete_tip">If you haven’t backed up, please go to Settings - Backup and Recovery</string>
+    <string name="scene_personas_user_id">User ID</string>
     <string name="scene_personas_tabs_post">Post</string>
     <string name="scene_personas_tabs_social">Social</string>
     <string name="scene_personas_tabs_contacts">Contacts</string>
@@ -299,8 +299,8 @@ Clicking the confirm button means that you agree to bear the above possible risk
     <string name="scene_personas_create_create_persona">Create Persona</string>
     <string name="scene_personas_add_persona">Add Persona</string>
     <string name="scene_personas_personas">Personas</string>
-    <string name="scene_personas_delete">Confirm to delete persona
-</string>
+    <string name="scene_personas_delete">Confirm to delete persona\n</string>
+    <string name="scene_personas_connect_social_tip">To connect to Mask, Click here to enter twitter ID.</string>
     <string name="scene_identity_recovery_private_key_button">Private Key</string>
     <string name="scene_identity_recovery_cloud_backup_recovery_button_title">Cloud backup Recovery</string>
     <string name="scene_identity_recovery_local_backup_recovery_button">Local Backup Recovery</string>
@@ -315,16 +315,14 @@ Clicking the confirm button means that you agree to bear the above possible risk
     <string name="scene_wallet_backup_tab_keystore">Keystore</string>
     <string name="scene_identity_create_description">Write down each word.</string>
     <string name="scene_identity_create_title">Verify identity code</string>
-    <string name="scene_persona_contacts_empty_contacts_tips">You don’t have encrypted friends. 
-Invite friends to download Mask Network.</string>
+    <string name="scene_persona_contacts_empty_contacts_tips">You don’t have encrypted friends. \nInvite friends to download Mask Network.</string>
     <string name="scene_persona_contacts_contact">Contact</string>
     <string name="scene_persona_contacts_delete">Confirm to delete </string>
     <string name="scene_wallet_rename_rename_button">Rename</string>
     <string name="scene_wallet_rename_name_title">Wallet name</string>
     <string name="scene_wallet_rename_placeholder">Name your wallet</string>
     <string name="scene_identity_mnemonic_import_description">The identity code can only recover your persona. </string>
-    <string name="scene_identity_mnemonic_import_placeholder">Please enter 12 mnemonic words
-separated by spaces</string>
+    <string name="scene_identity_mnemonic_import_placeholder">Please enter 12 mnemonic words\nseparated by spaces</string>
     <string name="scene_identity_mnemonic_import_title">Identity</string>
     <string name="scene_mnemonic_word_description">Write down each word.</string>
     <string name="scene_mnemonic_word_title">Mnemonic word</string>
@@ -374,8 +372,7 @@ separated by spaces</string>
     <string name="scene_wallet_connect_network_not_support">The wallet network %s is currently not supported by Mask Network. We can’t connect your wallet. Please switch your wallet network manually.</string>
     <string name="scene_wallet_connect_could_not_switch_blockchain_network_title">Switching blockchain network not supported with WalletConnect</string>
     <string name="scene_wallet_connect_replace_wallet_connect_wallet">This wallet address was connected with WalletConnect. Importing this wallet address automatically dis-connects the walletConnect account.</string>
-    <string name="scene_wallet_connect_qr_code_tips">Use a WalletConnect compatiable wallet
-to scan the QR Code</string>
+    <string name="scene_wallet_connect_qr_code_tips">Use a WalletConnect compatiable wallet\nto scan the QR Code</string>
     <string name="scene_wallet_connect_scan_q_r_code">Scan QR Code</string>
     <string name="scene_wallet_connect_connecting">Connecting...</string>
     <string name="scene_wallet_connect_could_not_switch_blockchain_network_message">Please try to use a native wallet, then switch the blockchain network again</string>

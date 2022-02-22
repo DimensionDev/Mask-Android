@@ -20,6 +20,7 @@
  */
 package com.dimension.maskbook.common.ext
 
+import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
@@ -29,6 +30,7 @@ import androidx.lifecycle.flowWithLifecycle
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 
 @Composable
@@ -39,9 +41,18 @@ fun <T> Flow<T>.observeAsState(initial: T): State<T> {
     }.collectAsState(initial = initial)
 }
 
+@SuppressLint("StateFlowValueCalledInComposition")
+@Composable
+fun <T> StateFlow<T>.observeAsState(): State<T> {
+    return observeAsState(initial = value)
+}
+
 fun <T> Flow<T>.asStateIn(scope: CoroutineScope, initial: T) =
     this.stateIn(
         scope,
         SharingStarted.Lazily,
         initialValue = initial,
     )
+
+fun <T> StateFlow<T>.asStateIn(scope: CoroutineScope) =
+    this.asStateIn(scope, value)

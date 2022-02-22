@@ -54,17 +54,19 @@ import androidx.navigation.compose.dialog
 import androidx.navigation.plusAssign
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.navHostAnimationDurationMillis
-import com.dimension.maskbook.common.ui.theme.MaskTheme
+import com.dimension.maskbook.common.ui.theme.modalScrimColor
 import com.dimension.maskbook.common.ui.widget.BackMetaDisplay
-import com.dimension.maskbook.common.ui.widget.MaskBackButton
 import com.dimension.maskbook.common.ui.widget.MaskDialog
 import com.dimension.maskbook.common.ui.widget.MaskInputField
 import com.dimension.maskbook.common.ui.widget.MaskModal
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
+import com.dimension.maskbook.common.ui.widget.MaskScene
 import com.dimension.maskbook.common.ui.widget.MaskTopAppBar
-import com.dimension.maskbook.common.ui.widget.PrimaryButton
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
-import com.dimension.maskbook.common.ui.widget.SecondaryButton
+import com.dimension.maskbook.common.ui.widget.button.MaskBackButton
+import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
+import com.dimension.maskbook.common.ui.widget.button.SecondaryButton
+import com.dimension.maskbook.common.ui.widget.rememberMaskBottomSheetNavigator
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.viewmodel.recovery.RecoveryLocalViewModel
 import com.google.accompanist.navigation.animation.AnimatedNavHost
@@ -73,8 +75,6 @@ import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 import com.google.accompanist.navigation.material.bottomSheet
-import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.distinctUntilChanged
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
@@ -89,7 +89,7 @@ fun RecoveryLocalHost(
     onBack: () -> Unit,
     uri: Uri
 ) {
-    val bottomSheetNavigator = rememberBottomSheetNavigator()
+    val bottomSheetNavigator = rememberMaskBottomSheetNavigator()
     val navController = rememberAnimatedNavController()
     navController.navigatorProvider += bottomSheetNavigator
     val viewModel: RecoveryLocalViewModel = getViewModel {
@@ -134,6 +134,7 @@ fun RecoveryLocalHost(
     ModalBottomSheetLayout(
         bottomSheetNavigator,
         sheetBackgroundColor = MaterialTheme.colors.background,
+        scrimColor = MaterialTheme.colors.modalScrimColor,
     ) {
         AnimatedNavHost(
             navController = navController,
@@ -156,10 +157,7 @@ fun RecoveryLocalHost(
                 val password by viewModel.password.observeAsState(initial = "")
                 val error by viewModel.passwordError.observeAsState(initial = false)
                 MaskModal {
-                    Column(
-                        modifier = Modifier
-                            .padding(ScaffoldPadding),
-                    ) {
+                    Column {
                         Text(text = stringResource(R.string.scene_set_backup_password_backup_password))
                         Spacer(modifier = Modifier.height(8.dp))
                         MaskInputField(
@@ -273,7 +271,7 @@ fun ImportSuccessScene(
     viewModel: RecoveryLocalViewModel,
 ) {
     val meta by viewModel.meta.observeAsState(initial = null)
-    MaskTheme {
+    MaskScene {
         MaskScaffold(
             topBar = {
                 MaskTopAppBar(
@@ -316,7 +314,7 @@ fun ImportSuccessScene(
 fun ImportingScene(
     onBack: () -> Unit
 ) {
-    MaskTheme {
+    MaskScene {
         MaskScaffold(
             topBar = {
                 MaskTopAppBar(

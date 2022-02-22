@@ -63,7 +63,7 @@ expect object WalletRoute {
     val WalletManagementTransactionHistory: String
 
     object WalletManagementRename {
-        operator fun invoke(id: String): String
+        operator fun invoke(id: String, name: String): String
     }
 
     object WalletIntroHostLegal {
@@ -149,7 +149,10 @@ expect object WalletRoute {
                 val LocalBackup_PickFile: String
             }
 
-            val Identity: String
+            val IdentityPersona: String
+            object Identity {
+                operator fun invoke(name: String): String
+            }
             val PrivateKey: String
             val Complected: String
         }

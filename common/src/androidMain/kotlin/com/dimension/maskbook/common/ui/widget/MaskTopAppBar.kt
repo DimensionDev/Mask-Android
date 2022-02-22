@@ -103,6 +103,7 @@ fun MaskTopAppBar(
                 }
             }
             if (title != null) {
+                Spacer(modifier = Modifier.height(24.dp))
                 Row {
                     Spacer(TitleInsetWithoutIcon)
                     ProvideTextStyle(MaterialTheme.typography.h1) {
@@ -196,8 +197,8 @@ fun MaskSingleLineTopAppBar(
     }
 }
 
-private val AppBarHeight = 56.dp
+private val AppBarHeight = 44.dp
 private val TitleInsetWithoutIcon = Modifier.width(24.dp)
 private val TitleIconModifier = Modifier
-    .height(40.dp)
+    .height(36.dp)
     .padding(start = 22.dp)

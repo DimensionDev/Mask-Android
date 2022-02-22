@@ -22,7 +22,7 @@ package com.dimension.maskbook.wallet.db.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import java.math.BigDecimal
+import com.dimension.maskbook.common.bigDecimal.BigDecimal
 
 enum class DbTransactionType {
     Swap,

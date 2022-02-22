@@ -20,6 +20,7 @@
  */
 package com.dimension.maskbook.wallet.ui.scenes.register.createidentity
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,7 +34,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Card
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
@@ -55,41 +55,43 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
-import com.dimension.maskbook.common.ui.theme.MaskTheme
-import com.dimension.maskbook.common.ui.widget.MaskBackButton
-import com.dimension.maskbook.common.ui.widget.MaskButton
+import com.dimension.maskbook.common.ui.widget.MaskCard
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
+import com.dimension.maskbook.common.ui.widget.MaskScene
 import com.dimension.maskbook.common.ui.widget.MaskTopAppBar
-import com.dimension.maskbook.common.ui.widget.PrimaryButton
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
-import com.dimension.maskbook.common.ui.widget.SecondaryButton
+import com.dimension.maskbook.common.ui.widget.button.MaskBackButton
+import com.dimension.maskbook.common.ui.widget.button.MaskButton
+import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
+import com.dimension.maskbook.common.ui.widget.button.SecondaryButton
 import com.dimension.maskbook.common.ui.widget.itemsGridIndexed
 import com.dimension.maskbook.wallet.R
+import com.dimension.maskbook.wallet.repository.model.MnemonicWord
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.calculateCurrentOffsetForPage
 import com.google.accompanist.pager.rememberPagerState
-import kotlinx.coroutines.flow.collect
 import kotlin.math.absoluteValue
-import kotlin.math.max
 
 @OptIn(ExperimentalPagerApi::class, ExperimentalMaterialApi::class)
 @Composable
 fun VerifyIdentityScene(
-    words: List<String>,
+    words: List<MnemonicWord>,
     title: String = stringResource(R.string.scene_identify_verify_title),
     subTitle: String = stringResource(R.string.scene_identify_verify_description),
-    selectedWords: List<String>,
-    onWordSelected: (String) -> Unit,
-    onWordDeselected: (String) -> Unit,
+    selectedWords: List<MnemonicWord>,
+    onWordSelected: (MnemonicWord) -> Unit,
+    onWordDeselected: (MnemonicWord) -> Unit,
     correct: Boolean,
     canConfirm: Boolean = words.size == selectedWords.size,
     onConfirm: () -> Unit,
     onClear: () -> Unit,
     onBack: () -> Unit,
 ) {
-    MaskTheme {
+    BackHandler(onBack = onBack)
+
+    MaskScene {
         MaskScaffold(
             topBar = {
                 MaskTopAppBar(
@@ -111,11 +113,14 @@ fun VerifyIdentityScene(
                     .padding(ScaffoldPadding),
             ) {
                 val pagerState = rememberPagerState()
-                LaunchedEffect(selectedWords.size) {
-                    snapshotFlow { selectedWords.size }
-                        .collect {
-                            pagerState.animateScrollToPage(max(0, it - 1))
+                if (words.isNotEmpty()) {
+                    LaunchedEffect(selectedWords.size) {
+                        snapshotFlow { selectedWords.size }.collect {
+                            pagerState.animateScrollToPage(
+                                it.coerceAtMost(words.size - 1).coerceAtLeast(0)
+                            )
                         }
+                    }
                 }
                 Column(
                     modifier = Modifier.weight(1f).fillMaxWidth(),
@@ -128,8 +133,8 @@ fun VerifyIdentityScene(
                         selectedWords = selectedWords,
                         onPagerClick = {
                             val item = selectedWords.getOrNull(it)
-                            if (!item.isNullOrEmpty()) {
-                                onWordDeselected.invoke(item)
+                            item?.let {
+                                onWordDeselected.invoke(it)
                             }
                         }
                     )
@@ -190,8 +195,8 @@ fun VerifyIdentityScene(
 @Composable
 private fun PhrasePager(
     pagerState: PagerState,
-    words: List<String>,
-    selectedWords: List<String>,
+    words: List<MnemonicWord>,
+    selectedWords: List<MnemonicWord>,
     onPagerClick: (Int) -> Unit,
 ) {
     val selectBackgroundColor = MaterialTheme.colors.primary
@@ -207,7 +212,7 @@ private fun PhrasePager(
     ) { page ->
         var backgroundColor by remember { mutableStateOf(selectBackgroundColor) }
         var contentColor by remember { mutableStateOf(selectContentColor) }
-        Card(
+        MaskCard(
             modifier = Modifier
                 .graphicsLayer {
                     val pageOffset = calculateCurrentOffsetForPage(page).absoluteValue
@@ -248,7 +253,7 @@ private fun PhrasePager(
             ) {
                 val item = selectedWords.getOrNull(page)
                 Text(
-                    text = item ?: "",
+                    text = item?.word ?: "",
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.h1,
                     color = contentColor
@@ -269,9 +274,9 @@ private fun PhrasePager(
 
 @Composable
 private fun PhraseContent(
-    words: List<String>,
-    selectedWords: List<String>,
-    onWordClick: (String) -> Unit,
+    words: List<MnemonicWord>,
+    selectedWords: List<MnemonicWord>,
+    onWordClick: (MnemonicWord) -> Unit,
 ) {
     LazyColumn {
         itemsGridIndexed(words, rowSize = 4, spacing = 14.dp) { _, word ->
@@ -291,7 +296,7 @@ private fun PhraseContent(
             ) {
                 Box(Modifier.fillMaxSize(), Alignment.Center) {
                     Text(
-                        text = word,
+                        text = word.word,
                         color = contentColorFor(backgroundColor)
                     )
                 }

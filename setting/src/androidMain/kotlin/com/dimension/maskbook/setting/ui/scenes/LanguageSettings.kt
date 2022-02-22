@@ -21,15 +21,12 @@
 package com.dimension.maskbook.setting.ui.scenes
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.ui.widget.MaskModal
 import com.dimension.maskbook.common.ui.widget.MaskSelection
-import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.setting.export.model.Language
 import com.dimension.maskbook.setting.viewmodel.LanguageSettingsViewModel
 import org.koin.androidx.compose.getViewModel
@@ -45,9 +42,7 @@ fun LanguageSettings(
     val viewModel: LanguageSettingsViewModel = getViewModel()
     val language by viewModel.language.observeAsState(initial = Language.auto)
     MaskModal {
-        Column(
-            modifier = Modifier.padding(ScaffoldPadding)
-        ) {
+        Column {
             languageMap.forEach {
                 MaskSelection(
                     selected = it.key == language,

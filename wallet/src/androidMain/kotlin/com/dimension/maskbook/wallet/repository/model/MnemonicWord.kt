@@ -18,21 +18,9 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.common.ui.widget
+package com.dimension.maskbook.wallet.repository.model
 
-import androidx.compose.material.Icon
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ArrowBack
-import androidx.compose.runtime.Composable
-
-@Composable
-fun MaskBackButton(
-    onBack: () -> Unit,
-) {
-    MaskIconCardButton(onClick = onBack) {
-        Icon(
-            imageVector = Icons.Rounded.ArrowBack,
-            contentDescription = null,
-        )
-    }
-}
+data class MnemonicWord(
+    val id: Int,
+    val word: String
+)

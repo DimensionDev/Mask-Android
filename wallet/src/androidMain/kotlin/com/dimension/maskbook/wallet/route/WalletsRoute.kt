@@ -28,22 +28,25 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Text
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.dialog
 import androidx.navigation.navArgument
 import androidx.navigation.navOptions
-import com.dimension.maskbook.common.ext.copyText
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.ext.shareText
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
+import com.dimension.maskbook.common.ui.notification.StringResNotificationEvent.Companion.show
+import com.dimension.maskbook.common.ui.widget.LocalInAppNotification
 import com.dimension.maskbook.common.ui.widget.MaskDialog
-import com.dimension.maskbook.common.ui.widget.PrimaryButton
+import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.common.viewmodel.BiometricEnableViewModel
 import com.dimension.maskbook.setting.export.SettingServices
 import com.dimension.maskbook.wallet.R
@@ -130,13 +133,18 @@ fun NavGraphBuilder.walletsRoute(
         val currentWallet by repository.currentWallet.observeAsState(initial = null)
         val name = it.arguments?.getString("name") ?: ""
         val context = LocalContext.current
+        val clipboardManager = LocalClipboardManager.current
+        val inAppNotification = LocalInAppNotification.current
         currentWallet?.let {
             WalletQrcodeScene(
                 address = it.address,
                 name = name,
                 onShare = { context.shareText(it.address) },
                 onBack = { navController.popBackStack() },
-                onCopy = { context.copyText(it.address) }
+                onCopy = {
+                    clipboardManager.setText(buildAnnotatedString { append(it.address) })
+                    inAppNotification.show(R.string.common_alert_copied_to_clipboard_title)
+                }
             )
         }
     }
@@ -250,13 +258,25 @@ fun NavGraphBuilder.walletsRoute(
                     viewModel.setChainType(it)
                 },
                 onAddWalletClicked = {
-                    navController.navigate(WalletRoute.SwitchWalletAdd)
+                    navController.navigate(WalletRoute.SwitchWalletAdd) {
+                        popUpTo(WalletRoute.SwitchWallet) {
+                            inclusive = true
+                        }
+                    }
                 },
                 onWalletConnectClicked = {
-                    navController.navigate(WalletRoute.SwitchWalletAddWalletConnect)
+                    navController.navigate(WalletRoute.SwitchWalletAddWalletConnect) {
+                        popUpTo(WalletRoute.SwitchWallet) {
+                            inclusive = true
+                        }
+                    }
                 },
-                onEditMenuClicked = {
-                    navController.navigate(WalletRoute.WalletSwitchEditModal(it.id))
+                onEditMenuClicked = { wallet ->
+                    navController.navigate(WalletRoute.WalletSwitchEditModal(wallet.id)) {
+                        popUpTo(WalletRoute.SwitchWallet) {
+                            inclusive = true
+                        }
+                    }
                 }
             )
         }
@@ -272,7 +292,7 @@ fun NavGraphBuilder.walletsRoute(
             wallets.firstOrNull { it.id == id }?.let { wallet ->
                 WalletSwitchEditModal(
                     walletData = wallet,
-                    onRename = { navController.navigate(WalletRoute.WalletManagementRename(wallet.id)) },
+                    onRename = { navController.navigate(WalletRoute.WalletManagementRename(wallet.id, wallet.name)) },
                     onDelete = {
                         navController.popBackStack()
                         navController.navigate(WalletRoute.WalletManagementDeleteDialog(wallet.id))
@@ -292,7 +312,7 @@ fun NavGraphBuilder.walletsRoute(
         currentWallet?.let { wallet ->
             WalletManagementModal(
                 walletData = wallet,
-                onRename = { navController.navigate(WalletRoute.WalletManagementRename(wallet.id)) },
+                onRename = { navController.navigate(WalletRoute.WalletManagementRename(wallet.id, wallet.name)) },
                 onBackup = { navController.navigate(WalletRoute.UnlockWalletDialog(WalletRoute.WalletManagementBackup)) },
                 onTransactionHistory = { navController.navigate(WalletRoute.WalletManagementTransactionHistory) },
                 onDelete = {
@@ -375,23 +395,33 @@ fun NavGraphBuilder.walletsRoute(
     bottomSheet(
         WalletRoute.WalletManagementRename.path,
         arguments = listOf(
-            navArgument("id") { type = NavType.StringType }
+            navArgument("id") { type = NavType.StringType },
+            navArgument("name") { type = NavType.StringType }
         )
     ) {
-        it.arguments?.getString("id")?.let { id ->
-            val viewModel = getViewModel<WalletRenameViewModel> {
-                parametersOf(id)
-            }
-            val name by viewModel.name.observeAsState(initial = "")
-            WalletRenameModal(
-                name = name,
-                onNameChanged = { viewModel.setName(it) },
-                onDone = {
-                    viewModel.confirm()
-                    navController.popBackStack()
-                },
-            )
+        val walletId = it.arguments?.getString("id") ?: return@bottomSheet
+        val walletName = it.arguments?.getString("name").orEmpty()
+
+        val viewModel = getViewModel<WalletRenameViewModel> {
+            parametersOf(walletId, walletName)
         }
+        val name by viewModel.name.observeAsState()
+        WalletRenameModal(
+            name = name,
+            onNameChanged = { viewModel.setName(it) },
+            onDone = {
+                viewModel.confirm()
+                navController.navigate(
+                    Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Wallet)),
+                    navOptions {
+                        launchSingleTop = true
+                        popUpTo(CommonRoute.Main.Home) {
+                            inclusive = false
+                        }
+                    }
+                )
+            },
+        )
     }
     composable(
         WalletRoute.WalletIntroHostLegal.path,

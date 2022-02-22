@@ -35,6 +35,6 @@ class CreateIdentityViewModel(
     }
 
     override fun confirm() {
-        personaServices.createPersonaFromMnemonic(_words.value, personaName)
+        personaServices.createPersonaFromMnemonic(_words.value.map { it.word }, personaName)
     }
 }

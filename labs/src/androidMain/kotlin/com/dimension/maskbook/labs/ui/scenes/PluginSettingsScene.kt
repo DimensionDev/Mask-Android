@@ -51,13 +51,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dimension.maskbook.common.ui.widget.IosSwitch
-import com.dimension.maskbook.common.ui.widget.MaskBackButton
-import com.dimension.maskbook.common.ui.widget.MaskButton
-import com.dimension.maskbook.common.ui.widget.MaskIconButton
 import com.dimension.maskbook.common.ui.widget.MaskListItem
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
+import com.dimension.maskbook.common.ui.widget.MaskScene
 import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
+import com.dimension.maskbook.common.ui.widget.button.MaskBackButton
+import com.dimension.maskbook.common.ui.widget.button.MaskButton
+import com.dimension.maskbook.common.ui.widget.button.MaskIconButton
 import com.dimension.maskbook.labs.viewmodel.PluginDisplayData
 import com.dimension.maskbook.labs.viewmodel.PluginSettingsViewModel
 import org.koin.androidx.compose.viewModel
@@ -69,41 +70,43 @@ fun PluginSettingsScene(
     val viewModel by viewModel<PluginSettingsViewModel>()
     val apps by viewModel.apps.collectAsState()
     var isShowTipDialog by remember { mutableStateOf(true) }
-    MaskScaffold(
-        topBar = {
-            MaskSingleLineTopAppBar(
-                title = {
-                    Text(text = PluginSettingsItemDefault.title)
-                },
-                navigationIcon = {
-                    MaskBackButton(onBack = onBack)
-                }
-            )
-        }
-    ) { padding ->
-        Box(
-            modifier = Modifier.padding(padding)
-        ) {
-            LazyColumn(
-                contentPadding = ScaffoldPadding,
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-            ) {
-                items(apps) { item ->
-                    PluginSettingsItem(
-                        item = item,
-                        onClick = {
-                            viewModel.setEnabled(item.key, !item.enabled)
-                        },
-                    )
-                }
-            }
-            if (isShowTipDialog) {
-                TipDialog(
-                    modifier = Modifier.align(Alignment.BottomCenter),
-                    onClose = {
-                        isShowTipDialog = false
+    MaskScene {
+        MaskScaffold(
+            topBar = {
+                MaskSingleLineTopAppBar(
+                    title = {
+                        Text(text = PluginSettingsItemDefault.title)
+                    },
+                    navigationIcon = {
+                        MaskBackButton(onBack = onBack)
                     }
                 )
+            }
+        ) { padding ->
+            Box(
+                modifier = Modifier.padding(padding)
+            ) {
+                LazyColumn(
+                    contentPadding = ScaffoldPadding,
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    items(apps) { item ->
+                        PluginSettingsItem(
+                            item = item,
+                            onClick = {
+                                viewModel.setEnabled(item.key, !item.enabled)
+                            },
+                        )
+                    }
+                }
+                if (isShowTipDialog) {
+                    TipDialog(
+                        modifier = Modifier.align(Alignment.BottomCenter),
+                        onClose = {
+                            isShowTipDialog = false
+                        }
+                    )
+                }
             }
         }
     }

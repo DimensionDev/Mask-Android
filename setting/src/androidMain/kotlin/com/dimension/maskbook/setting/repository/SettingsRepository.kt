@@ -23,7 +23,7 @@ package com.dimension.maskbook.setting.repository
 import com.dimension.maskbook.common.repository.JSMethod
 import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.setting.data.JSDataSource
-import com.dimension.maskbook.setting.data.PreferenceDataSource
+import com.dimension.maskbook.setting.data.SettingDataSource
 import com.dimension.maskbook.setting.export.model.Appearance
 import com.dimension.maskbook.setting.export.model.BackupMeta
 import com.dimension.maskbook.setting.export.model.DataProvider
@@ -33,17 +33,15 @@ import com.dimension.maskbook.setting.export.model.TradeProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.launch
 
 class SettingsRepository(
     private val personaServices: PersonaServices,
-    private val preferenceDataSource: PreferenceDataSource,
+    private val settingDataSource: SettingDataSource,
     private val jsDataSource: JSDataSource,
 ) : ISettingsRepository {
     private val scope = CoroutineScope(Dispatchers.IO)
     override val biometricEnabled: Flow<Boolean>
-        get() = preferenceDataSource.biometricEnabled
+        get() = settingDataSource.biometricEnabled
     override val language: Flow<Language>
         get() = jsDataSource.language
     override val appearance: Flow<Appearance>
@@ -53,14 +51,14 @@ class SettingsRepository(
     override val tradeProvider: Flow<Map<NetworkType, TradeProvider>>
         get() = jsDataSource.tradeProvider
     override val paymentPassword: Flow<String>
-        get() = preferenceDataSource.paymentPassword
+        get() = settingDataSource.paymentPassword
     override val backupPassword: Flow<String>
-        get() = preferenceDataSource.backupPassword
+        get() = settingDataSource.backupPassword
     override val shouldShowLegalScene: Flow<Boolean>
-        get() = preferenceDataSource.shouldShowLegalScene
+        get() = settingDataSource.shouldShowLegalScene
 
     override fun setBiometricEnabled(value: Boolean) {
-        preferenceDataSource.setBiometricEnabled(value)
+        settingDataSource.setBiometricEnabled(value)
     }
 
     override fun setTradeProvider(networkType: NetworkType, tradeProvider: TradeProvider) {
@@ -80,15 +78,15 @@ class SettingsRepository(
     }
 
     override fun setPaymentPassword(value: String) {
-        preferenceDataSource.setPaymentPassword(value)
+        settingDataSource.setPaymentPassword(value)
     }
 
     override fun setBackupPassword(value: String) {
-        preferenceDataSource.setBackupPassword(value)
+        settingDataSource.setBackupPassword(value)
     }
 
     override fun setShouldShowLegalScene(value: Boolean) {
-        preferenceDataSource.setShouldShowLegalScene(value)
+        settingDataSource.setShouldShowLegalScene(value)
     }
 
     override suspend fun provideBackupMeta(): BackupMeta? {
@@ -126,6 +124,7 @@ class SettingsRepository(
     override suspend fun restoreBackupFromJson(value: String) {
         JSMethod.Setting.restoreBackup(value)
         jsDataSource.initData()
+        personaServices.refreshPersonaData()
     }
 
     override suspend fun createBackupJson(
@@ -141,18 +140,10 @@ class SettingsRepository(
     }
 
     override fun saveEmailForCurrentPersona(value: String) {
-        scope.launch {
-            personaServices.currentPersona.firstOrNull()?.let {
-                preferenceDataSource.saveEmailForPersona(it, value)
-            }
-        }
+        personaServices.saveEmailForCurrentPersona(value)
     }
 
     override fun savePhoneForCurrentPersona(value: String) {
-        scope.launch {
-            personaServices.currentPersona.firstOrNull()?.let {
-                preferenceDataSource.savePhoneForPersona(it, value)
-            }
-        }
+        personaServices.savePhoneForCurrentPersona(value)
     }
 }

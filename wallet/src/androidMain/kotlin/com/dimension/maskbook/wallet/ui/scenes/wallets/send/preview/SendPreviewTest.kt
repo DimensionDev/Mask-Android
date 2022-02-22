@@ -22,6 +22,7 @@ package com.dimension.maskbook.wallet.ui.scenes.wallets.send.preview
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
+import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.export.model.TokenData
@@ -34,7 +35,6 @@ import com.dimension.maskbook.wallet.ui.scenes.wallets.send.EditGasPriceSheet
 import com.dimension.maskbook.wallet.ui.scenes.wallets.send.SendConfirmSheet
 import com.dimension.maskbook.wallet.ui.scenes.wallets.send.SignatureRequestSignSheet
 import com.dimension.maskbook.wallet.ui.scenes.wallets.send.UnlockWalletDialog
-import java.math.BigDecimal
 
 /*TODO delete this class later*/
 

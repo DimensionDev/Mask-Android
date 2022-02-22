@@ -87,7 +87,7 @@ fun PersonaInfoScene(
         TabRow(
             modifier = Modifier.shadow(16.dp, clip = false),
             selectedTabIndex = pagerState.currentPage,
-            backgroundColor = MaterialTheme.colors.surface,
+            backgroundColor = MaterialTheme.colors.background,
             divider = {
                 TabRowDefaults.Divider(thickness = 0.dp)
             },

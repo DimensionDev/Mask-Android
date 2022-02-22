@@ -23,8 +23,8 @@ package com.dimension.maskbook.wallet.db.model
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.wallet.export.model.DbWalletBalanceType
-import java.math.BigDecimal
 
 @Entity(
     indices = [Index(value = ["walletId", "type"], unique = true)],

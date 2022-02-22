@@ -41,6 +41,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,20 +58,18 @@ import androidx.navigation.navDeepLink
 import androidx.navigation.navOptions
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.route.Deeplinks
-import com.dimension.maskbook.common.ui.theme.MaskTheme
 import com.dimension.maskbook.common.ui.widget.EmailCodeInputModal
 import com.dimension.maskbook.common.ui.widget.MaskDialog
 import com.dimension.maskbook.common.ui.widget.MaskInputField
 import com.dimension.maskbook.common.ui.widget.MaskModal
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
-import com.dimension.maskbook.common.ui.widget.PhoneCodeInputModal
-import com.dimension.maskbook.common.ui.widget.PrimaryButton
-import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
-import com.dimension.maskbook.common.ui.widget.SecondaryButton
+import com.dimension.maskbook.common.ui.widget.MaskScene
+import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
+import com.dimension.maskbook.common.ui.widget.button.SecondaryButton
 import com.dimension.maskbook.localization.R
 import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.setting.repository.ISettingsRepository
-import com.dimension.maskbook.setting.services.model.DownloadResponse
+import com.dimension.maskbook.setting.ui.scenes.PhoneCodeInputModal
 import com.dimension.maskbook.setting.ui.scenes.backup.BackupCloudScene
 import com.dimension.maskbook.setting.ui.scenes.backup.BackupLocalHost
 import com.dimension.maskbook.setting.ui.scenes.backup.BackupPasswordInputModal
@@ -82,6 +81,7 @@ import com.dimension.maskbook.setting.viewmodel.PhoneBackupViewModel
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.bottomSheet
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.get
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
@@ -209,7 +209,7 @@ fun NavGraphBuilder.backupRoute(
                     }
                 }
             }
-            MaskTheme {
+            MaskScene {
                 MaskScaffold {
                     Column(
                         modifier = Modifier.fillMaxSize(),
@@ -344,9 +344,7 @@ fun NavGraphBuilder.backupRoute(
                 Text(text = stringResource(R.string.scene_backup_merge_to_local_title))
             }
         ) {
-            Column(
-                modifier = Modifier.padding(ScaffoldPadding)
-            ) {
+            Column {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -407,9 +405,7 @@ fun NavGraphBuilder.backupRoute(
         val uploaded_at = backStackEntry.arguments?.getLong("uploaded_at") ?: return@bottomSheet
         val abstract = backStackEntry.arguments?.getString("abstract") ?: return@bottomSheet
         MaskModal {
-            Column(
-                modifier = Modifier.padding(ScaffoldPadding)
-            ) {
+            Column {
                 Image(
                     modifier = Modifier.fillMaxWidth(),
                     painter = painterResource(id = R.drawable.ic_property_1_note),
@@ -472,39 +468,25 @@ fun NavGraphBuilder.backupRoute(
             navArgument("email") { type = NavType.StringType }
         )
     ) { backStackEntry ->
-        val requestMerge: (target: DownloadResponse, email: String, code: String) -> Unit =
-            { target, email, code ->
-                navController.navigate(
-                    SettingRoute.BackupData.BackupData_BackupMerge(
-                        "email",
-                        email,
-                        code,
-                        download_url = target.download_url,
-                        size = target.size,
-                        uploaded_at = target.uploaded_at,
-                        abstract = target.abstract,
-                    ),
-                )
-            }
-        val next: (email: String, code: String) -> Unit = { email, code ->
-            navController.navigate(SettingRoute.BackupData.BackupData_BackupCloud("email", email, code))
-        }
         backStackEntry.arguments?.getString("email")?.let { email ->
+            val scope = rememberCoroutineScope()
+
             val repository = get<PersonaServices>()
             val persona by repository.currentPersona.observeAsState(initial = null)
             val phone = persona?.phone
-            val viewModel = getViewModel<EmailBackupViewModel> {
-                parametersOf(requestMerge, next)
-            }
-            val code by viewModel.code.observeAsState(initial = "")
-            val valid by viewModel.codeValid.observeAsState(initial = true)
-            val loading by viewModel.loading.observeAsState(initial = false)
-            val canSend by viewModel.canSend.observeAsState(initial = false)
-            val countDown by viewModel.countdown.observeAsState(initial = 60)
+
+            val viewModel = getViewModel<EmailBackupViewModel>()
+            val code by viewModel.code.observeAsState()
+            val valid by viewModel.codeValid.observeAsState()
+            val loading by viewModel.loading.observeAsState()
+            val canSend by viewModel.canSend.observeAsState()
+            val countDown by viewModel.countdown.observeAsState()
+
             LaunchedEffect(Unit) {
                 viewModel.startCountDown()
-                viewModel.sendCode(email)
+                viewModel.sendCodeNow(email)
             }
+
             EmailCodeInputModal(
                 email = email,
                 buttonEnabled = loading,
@@ -514,8 +496,38 @@ fun NavGraphBuilder.backupRoute(
                 codeValid = valid,
                 code = code,
                 onCodeChange = { viewModel.setCode(it) },
-                onSendCode = { viewModel.sendCode(email) },
-                onVerify = { viewModel.verifyCode(code, email, skipValidate = true) },
+                onSendCode = {
+                    scope.launch {
+                        viewModel.sendCodeNow(email)
+                    }
+                },
+                onVerify = {
+                    scope.launch {
+                        viewModel.verifyCodeNow(code, email, skipValidate = true)
+                            .onSuccess { target ->
+                                navController.navigate(
+                                    SettingRoute.BackupData.BackupData_BackupMerge(
+                                        "email",
+                                        email,
+                                        code,
+                                        download_url = target.download_url,
+                                        size = target.size,
+                                        uploaded_at = target.uploaded_at,
+                                        abstract = target.abstract,
+                                    ),
+                                )
+                            }
+                            .onFailure {
+                                navController.navigate(
+                                    SettingRoute.BackupData.BackupData_BackupCloud(
+                                        "email",
+                                        email,
+                                        code
+                                    )
+                                )
+                            }
+                    }
+                },
                 subTitle = {
                     Text(text = stringResource(R.string.scene_backup_backup_verify_field_email))
                     Spacer(modifier = Modifier.height(8.dp))
@@ -545,39 +557,25 @@ fun NavGraphBuilder.backupRoute(
         SettingRoute.BackupData.BackupSelection_Phone.path,
         arguments = listOf(navArgument("phone") { type = NavType.StringType })
     ) { backStackEntry ->
-        val requestMerge: (target: DownloadResponse, phone: String, code: String) -> Unit =
-            { target, phone, code ->
-                navController.navigate(
-                    SettingRoute.BackupData.BackupData_BackupMerge(
-                        "phone",
-                        phone,
-                        code,
-                        download_url = target.download_url,
-                        size = target.size,
-                        uploaded_at = target.uploaded_at,
-                        abstract = target.abstract
-                    ),
-                )
-            }
-        val next: (phone: String, code: String) -> Unit = { phone, code ->
-            navController.navigate(SettingRoute.BackupData.BackupData_BackupCloud("phone", phone, code))
-        }
         backStackEntry.arguments?.getString("phone")?.let { phone ->
+            val scope = rememberCoroutineScope()
+
             val repository = get<PersonaServices>()
             val persona by repository.currentPersona.observeAsState(initial = null)
             val email = persona?.email
-            val viewModel = getViewModel<PhoneBackupViewModel> {
-                parametersOf(requestMerge, next)
-            }
-            val code by viewModel.code.observeAsState(initial = "")
-            val canSend by viewModel.canSend.observeAsState(initial = false)
-            val valid by viewModel.codeValid.observeAsState(initial = true)
-            val countDown by viewModel.countdown.observeAsState(initial = 60)
-            val loading by viewModel.loading.observeAsState(initial = false)
+
+            val viewModel = getViewModel<PhoneBackupViewModel>()
+            val code by viewModel.code.observeAsState()
+            val canSend by viewModel.canSend.observeAsState()
+            val valid by viewModel.codeValid.observeAsState()
+            val countDown by viewModel.countdown.observeAsState()
+            val loading by viewModel.loading.observeAsState()
+
             LaunchedEffect(Unit) {
                 viewModel.startCountDown()
-                viewModel.sendCode(phone)
+                viewModel.sendCodeNow(phone)
             }
+
             PhoneCodeInputModal(
                 phone = phone,
                 code = code,
@@ -586,8 +584,38 @@ fun NavGraphBuilder.backupRoute(
                 codeValid = valid,
                 countDown = countDown,
                 buttonEnabled = loading,
-                onSendCode = { viewModel.sendCode(phone) },
-                onVerify = { viewModel.verifyCode(code = code, value = phone, skipValidate = true) },
+                onSendCode = {
+                    scope.launch {
+                        viewModel.sendCodeNow(phone)
+                    }
+                },
+                onVerify = {
+                    scope.launch {
+                        viewModel.verifyCodeNow(code = code, phone = phone, skipValidate = true)
+                            .onSuccess { target ->
+                                navController.navigate(
+                                    SettingRoute.BackupData.BackupData_BackupMerge(
+                                        "phone",
+                                        phone,
+                                        code,
+                                        download_url = target.download_url,
+                                        size = target.size,
+                                        uploaded_at = target.uploaded_at,
+                                        abstract = target.abstract
+                                    ),
+                                )
+                            }
+                            .onFailure {
+                                navController.navigate(
+                                    SettingRoute.BackupData.BackupData_BackupCloud(
+                                        "phone",
+                                        phone,
+                                        code
+                                    )
+                                )
+                            }
+                    }
+                },
                 title = stringResource(R.string.scene_backup_backup_verify_title_phone),
                 subTitle = {
                     Text(text = stringResource(R.string.scene_backup_backup_verify_field_phone))
