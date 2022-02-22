@@ -18,7 +18,7 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.setting.route
+package com.dimension.maskbook.common.route
 
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.runtime.Composable
@@ -32,7 +32,7 @@ import com.google.accompanist.navigation.material.bottomSheet
 const val navigationComposeDialogPackage = "androidx.navigation.compose"
 const val navigationComposeDialog = "dialog"
 
-const val navigationComposeBottomSheetPackage = "com.dimension.maskbook.setting.route"
+const val navigationComposeBottomSheetPackage = "com.dimension.maskbook.common.route"
 const val navigationComposeBottomSheet = "bottomSheet"
 
 @OptIn(ExperimentalMaterialNavigationApi::class)
