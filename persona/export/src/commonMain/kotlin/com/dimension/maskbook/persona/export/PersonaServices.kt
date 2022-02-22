@@ -31,5 +31,7 @@ interface PersonaServices {
     fun createPersonaFromPrivateKey(value: String)
     fun finishConnectingProcess(userName: String, platformType: PlatformType)
     fun cancelConnectingProcess()
+    fun saveEmailForCurrentPersona(value: String)
+    fun savePhoneForCurrentPersona(value: String)
     fun refreshPersonaData()
 }
