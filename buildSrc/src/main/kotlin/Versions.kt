@@ -43,6 +43,15 @@ object Versions {
     const val zxing = "4.3.0"
     const val maskWalletCore = "0.4.0"
     const val jodaTime = "2.10.13"
+    object Firebase {
+        object Plugin {
+            const val crashlytics = "2.8.1"
+            const val google_services = "4.3.10"
+        }
+        const val analytics = "20.1.0"
+        const val crashlytics = "18.2.8"
+        const val bom = "29.1.0"
+    }
 
     object Androidx{
         const val core = "1.7.0"
