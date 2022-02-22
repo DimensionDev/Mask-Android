@@ -64,7 +64,6 @@ private const val TAG = "PersonaRepository"
 
 class PersonaRepository(
     private val dataStore: DataStore<Preferences>,
-    private val context: Context,
     private val platformSwitcher: IPlatformSwitcher,
 ) : IPersonaRepository,
     IContactsRepository {
@@ -114,8 +113,8 @@ class PersonaRepository(
             }
         }
     override val currentPersona: Flow<PersonaData?>
-        get() = _currentPersona.combine(persona) { a: String, b: List<PersonaData> ->
-            b.firstOrNull { it.id == a }
+        get() = _currentPersona.combine(persona) { current: String, list: List<PersonaData> ->
+            list.firstOrNull { it.id == current }
         }
     private val _redirect = MutableLiveData<RedirectTarget?>(null)
     override val redirect: MutableLiveData<RedirectTarget?>
@@ -193,13 +192,40 @@ class PersonaRepository(
         }
     }
 
+    override fun saveEmailForCurrentPersona(value: String) {
+        scope.launch {
+            currentPersona.firstOrNull()?.let { personaData ->
+                val emailKey = stringPreferencesKey("${personaData.id}_email")
+                dataStore.edit {
+                    it[emailKey] = value
+                }
+            }
+        }
+    }
+
+    override fun savePhoneForCurrentPersona(value: String) {
+        scope.launch {
+            currentPersona.firstOrNull()?.let { personaData ->
+                val phoneKey = stringPreferencesKey("${personaData.id}_phone")
+                dataStore.edit {
+                    it[phoneKey] = value
+                }
+            }
+        }
+    }
+
     private suspend fun refreshSocial() {
         _twitter.value = JSMethod.Persona.queryProfiles(Network.Twitter)
         _facebook.value = JSMethod.Persona.queryProfiles(Network.Facebook)
     }
 
-    private suspend fun refreshPersona() {
-        _persona.value = JSMethod.Persona.queryMyPersonas(null)
+    override fun refreshPersona() {
+        scope.launch {
+            _persona.value = JSMethod.Persona.queryMyPersonas(null)
+            if (_currentPersona.firstOrNull().isNullOrEmpty()) {
+                _persona.value.firstOrNull()?.identifier?.let { setCurrentPersona(it) }
+            }
+        }
     }
 
     override fun setCurrentPersona(id: String) {
@@ -217,9 +243,7 @@ class PersonaRepository(
 
             removePersona(deletePersona.id)
 
-            if (newCurrentPersona != null) {
-                setCurrentPersona(newCurrentPersona.id)
-            }
+            setCurrentPersona(newCurrentPersona?.id ?: "")
             refreshPersona()
         }
     }
