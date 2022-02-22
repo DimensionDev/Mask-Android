@@ -126,6 +126,7 @@ class SettingsRepository(
     override suspend fun restoreBackupFromJson(value: String) {
         JSMethod.Setting.restoreBackup(value)
         jsDataSource.initData()
+        personaServices.refreshPersonaData()
     }
 
     override suspend fun createBackupJson(

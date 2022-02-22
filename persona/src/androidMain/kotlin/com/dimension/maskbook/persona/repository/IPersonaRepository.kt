@@ -57,4 +57,5 @@ interface IPersonaRepository {
     fun updateCurrentPersona(value: String)
     suspend fun backupPrivateKey(id: String): String
     fun init()
+    fun refreshPersona()
 }

@@ -51,4 +51,8 @@ class PersonaServicesImpl(
     override fun cancelConnectingProcess() {
         personaRepository.cancelConnectingProcess()
     }
+
+    override fun refreshPersonaData() {
+        personaRepository.refreshPersona()
+    }
 }
