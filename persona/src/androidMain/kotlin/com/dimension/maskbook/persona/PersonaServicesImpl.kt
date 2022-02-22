@@ -51,4 +51,12 @@ class PersonaServicesImpl(
     override fun cancelConnectingProcess() {
         personaRepository.cancelConnectingProcess()
     }
+
+    override fun saveEmailForCurrentPersona(value: String) {
+        personaRepository.saveEmailForCurrentPersona(value)
+    }
+
+    override fun savePhoneForCurrentPersona(value: String) {
+        personaRepository.savePhoneForCurrentPersona(value)
+    }
 }

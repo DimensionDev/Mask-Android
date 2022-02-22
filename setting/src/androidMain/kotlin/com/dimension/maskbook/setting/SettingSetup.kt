@@ -27,7 +27,7 @@ import com.dimension.maskbook.common.ModuleSetup
 import com.dimension.maskbook.common.retrofit.retrofit
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.setting.data.JSDataSource
-import com.dimension.maskbook.setting.data.PreferenceDataSource
+import com.dimension.maskbook.setting.data.SettingDataSource
 import com.dimension.maskbook.setting.data.settingsDataStore
 import com.dimension.maskbook.setting.export.SettingServices
 import com.dimension.maskbook.setting.repository.BackupRepository
@@ -72,7 +72,7 @@ object SettingSetup : ModuleSetup {
         single<SettingServices> { SettingServicesImpl(get(), get()) } bind com.dimension.maskbook.setting.export.BackupServices::class
         single { SettingsTabScreen() } bind TabScreen::class
         single { JSDataSource() }
-        single { PreferenceDataSource(get<Context>().settingsDataStore) }
+        single { SettingDataSource(get<Context>().settingsDataStore) }
 
         viewModel { LanguageSettingsViewModel(get()) }
         viewModel { AppearanceSettingsViewModel(get()) }

@@ -61,7 +61,6 @@ private const val TAG = "PersonaRepository"
 
 class PersonaRepository(
     private val dataStore: DataStore<Preferences>,
-    private val context: Context,
     private val platformSwitcher: IPlatformSwitcher,
 ) : IPersonaRepository,
     IContactsRepository {
@@ -184,6 +183,28 @@ class PersonaRepository(
                     }
                 }
             )
+        }
+    }
+
+    override fun saveEmailForCurrentPersona(value: String) {
+        scope.launch {
+            currentPersona.firstOrNull()?.let { personaData ->
+                val emailKey = stringPreferencesKey("${personaData.id}_email")
+                dataStore.edit {
+                    it[emailKey] = value
+                }
+            }
+        }
+    }
+
+    override fun savePhoneForCurrentPersona(value: String) {
+        scope.launch {
+            currentPersona.firstOrNull()?.let { personaData ->
+                val phoneKey = stringPreferencesKey("${personaData.id}_phone")
+                dataStore.edit {
+                    it[phoneKey] = value
+                }
+            }
         }
     }
 
