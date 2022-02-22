@@ -41,6 +41,7 @@ import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.buildCodeBlock
 import com.squareup.kotlinpoet.ksp.KotlinPoetKspPreview
+import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toTypeName
 import com.squareup.kotlinpoet.ksp.writeTo
 import com.squareup.kotlinpoet.withIndent
@@ -122,44 +123,54 @@ internal class RouteGraphProcessor(
                                                 "route = %S,",
                                                 annotation.route,
                                             )
-                                            addStatement("arguments = listOf(")
-                                            withIndent {
-                                                ksFunctionDeclaration.parameters.filter {
-                                                    it.isAnnotationPresent(
-                                                        Query::class
-                                                    ) || it.isAnnotationPresent(Path::class)
-                                                }.forEach {
-                                                    addStatement(
-                                                        "navArgument(%S) { type = NavType.%NType; nullable = %L },",
-                                                        it.name?.asString() ?: "",
-                                                        it.type.resolve().declaration.simpleName.asString(),
-                                                        it.isAnnotationPresent(Query::class)
-                                                    )
-                                                }
+                                            val parameters = ksFunctionDeclaration.parameters.filter {
+                                                it.isAnnotationPresent(
+                                                    Query::class
+                                                ) || it.isAnnotationPresent(Path::class)
                                             }
-                                            addStatement("),")
-                                            addStatement("deepLinks = listOf(")
-                                            withIndent {
-                                                annotation.deeplink.forEach {
-                                                    addStatement(
-                                                        "navDeepLink { uriPattern = %S }",
-                                                        it
-                                                    )
+                                            if (parameters.isNotEmpty()) {
+                                                addStatement("arguments = listOf(")
+                                                withIndent {
+                                                    parameters.forEach {
+                                                        val type = it.type.resolve()
+                                                        val typeName = type.toClassName()
+                                                        addStatement(
+                                                            "navArgument(%S) { type = NavType.%NType; nullable = %L },",
+                                                            it.name?.asString() ?: "",
+                                                            if (typeName.isBoolean) "Bool" else type.declaration.simpleName.asString(),
+                                                            it.isAnnotationPresent(Query::class) && !typeName.isLong
+                                                        )
+                                                    }
                                                 }
+                                                addStatement("),")
                                             }
-                                            addStatement("),")
+                                            if (annotation.deeplink.isNotEmpty()) {
+                                                addStatement("deepLinks = listOf(")
+                                                withIndent {
+                                                    annotation.deeplink.forEach {
+                                                        addStatement(
+                                                            "navDeepLink { uriPattern = %S }",
+                                                            it
+                                                        )
+                                                    }
+                                                }
+                                                addStatement("),")
+                                            }
                                         }
                                     }
                                 )
                                 builder.beginControlFlow(")")
                                 ksFunctionDeclaration.parameters.forEach {
-                                    if (it.isAnnotationPresent(Query::class) || it.isAnnotationPresent(Path::class)) {
+                                    if (it.isAnnotationPresent(Path::class)) {
+                                        require(!it.type.resolve().isMarkedNullable)
+                                    }
+                                    if (it.isAnnotationPresent(Query::class)) {
                                         require(it.type.resolve().isMarkedNullable)
                                     }
                                     if (it.isAnnotationPresent(Path::class)) {
                                         val path = it.getAnnotationsByType(Path::class).first()
                                         builder.addStatement(
-                                            "val ${it.name?.asString()} = it.arguments?.get(%S) as? %T",
+                                            "val ${it.name?.asString()} = it.arguments!!.get(%S) as %T",
                                             path.name,
                                             it.type.toTypeName()
                                         )
