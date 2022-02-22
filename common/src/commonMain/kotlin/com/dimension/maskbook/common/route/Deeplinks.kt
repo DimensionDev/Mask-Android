@@ -35,7 +35,7 @@ expect object Deeplinks {
     object Setting {
         const val SetupPasswordDialog: String
         object BackupData {
-            val BackupSelection: String
+            const val BackupSelection: String
         }
     }
     object Wallet {
