@@ -206,7 +206,7 @@ private fun TransactionItem(
         trailing = {
             Column(horizontalAlignment = Alignment.End) {
                 val count = item.count.humanizeToken()
-                val countPrefix = when  {
+                val countPrefix = when {
                     count == "0" -> ""
                     item.type == TransactionType.Receive -> "+"
                     item.type == TransactionType.Send -> "-"
@@ -214,7 +214,7 @@ private fun TransactionItem(
                 }
 
                 val dollar = (item.count * tokenData.price).humanizeDollar()
-                val dollarPrefix = when  {
+                val dollarPrefix = when {
                     dollar == "$0" -> ""
                     item.type == TransactionType.Receive -> "+"
                     item.type == TransactionType.Send -> "-"
@@ -298,7 +298,7 @@ private fun TransactionData.iconTintColor() = when {
     status == TransactionStatus.Failure -> Color(0xFFFF5F5F)
     type == TransactionType.Receive -> Color(0xFF1C68F3)
     type == TransactionType.Send ||
-    type == TransactionType.Swap -> Color(0xFFFFB915)
+        type == TransactionType.Swap -> Color(0xFFFFB915)
     type == TransactionType.Approve -> Color(0xFF1FB885)
     else -> Color(0xFFFFB915)
 }
@@ -307,7 +307,7 @@ private fun TransactionData.iconTintBackground() = when {
     status == TransactionStatus.Failure -> Color(0x0AFF5F5F)
     type == TransactionType.Receive -> Color(0x1A1C68F3)
     type == TransactionType.Send ||
-    type == TransactionType.Swap -> Color(0x1AFFB915)
+        type == TransactionType.Swap -> Color(0x1AFFB915)
     type == TransactionType.Approve -> Color(0x2677E0B5)
     else -> Color(0x1AFFB915)
 }
