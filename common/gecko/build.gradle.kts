@@ -1,6 +1,7 @@
 plugins {
     kotlin("multiplatform")
     id("com.android.library")
+    id("org.jetbrains.compose")
 }
 
 kotlin {
@@ -8,7 +9,9 @@ kotlin {
     sourceSets {
         val androidMain by getting {
             dependencies {
-                implementation("org.mozilla.geckoview:geckoview:${Versions.gecko}")
+                implementation("org.jetbrains.compose.ui:ui:${Versions.compose_jb}")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.Kotlin.coroutines}")
+                api("org.mozilla.geckoview:geckoview:${Versions.gecko}")
             }
         }
         val androidTest by getting {

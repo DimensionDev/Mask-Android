@@ -21,6 +21,10 @@
 package com.dimension.maskbook.common.gecko
 
 import android.content.Context
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import org.json.JSONObject
 import org.mozilla.geckoview.AllowOrDeny
 import org.mozilla.geckoview.BuildConfig
@@ -30,24 +34,26 @@ import org.mozilla.geckoview.GeckoRuntimeSettings
 import org.mozilla.geckoview.GeckoSession
 import org.mozilla.geckoview.GeckoSessionSettings
 import org.mozilla.geckoview.WebExtension
+import org.mozilla.geckoview.WebExtension.SessionTabDelegate
 import org.mozilla.geckoview.WebExtensionController
 import org.mozilla.geckoview.WebResponse
+import java.io.Closeable
 
-interface WebExtensionMessageHandler {
-    fun onMessage(message: JSONObject)
-}
-
-internal class TabSession constructor(
+class TabSession internal constructor(
     settings: GeckoSessionSettings? = null,
-    extension: WebExtension? = null,
-    extensionManager: ExtensionManager
+    extensionManager: ExtensionManager,
+    tabDelegate: SessionTabDelegate,
+    private val onClose: (TabSession) -> Unit,
+    private val onNewTab: () -> GeckoSession?,
+    private val onLoadRequest: (String) -> Boolean,
 ) : GeckoSession(settings),
     GeckoSession.ContentDelegate,
     GeckoSession.ProgressDelegate,
     GeckoSession.NavigationDelegate {
-    var fullScreen: Boolean = false
-    var canGoBack: Boolean = false
-    var canGoForward: Boolean = false
+    val fullscreen = MutableStateFlow(false)
+    val canGoBack = MutableStateFlow(false)
+    val canGoForward = MutableStateFlow(false)
+    val url = MutableStateFlow("")
 
     init {
         contentDelegate = this
@@ -57,23 +63,28 @@ internal class TabSession constructor(
         // permissionDelegate = this // TODO
         // mediaDelegate = this // TODO
         // selectionActionDelegate = this // TODO
-        if (extension != null) {
+        extensionManager.extension?.let { extension ->
             webExtensionController.setActionDelegate(extension, extensionManager)
-            webExtensionController.setTabDelegate(extension, extensionManager)
+            webExtensionController.setTabDelegate(extension, tabDelegate)
         }
     }
 
-    override fun onFullScreen(session: GeckoSession, fullScreen: Boolean) {
-        this.fullScreen = fullScreen
+    override fun loadUri(uri: String) {
+        super.loadUri(uri)
+        url.value = uri
     }
 
-    override fun exitFullScreen() {
-        super.exitFullScreen()
-        fullScreen = false
+    override fun onLocationChange(session: GeckoSession, url: String?) {
+        super.onLocationChange(session, url)
+        this.url.value = url ?: ""
+    }
+
+    override fun onFullScreen(session: GeckoSession, fullScreen: Boolean) {
+        fullscreen.value = fullScreen
     }
 
     override fun onCloseRequest(session: GeckoSession) {
-        // TODO
+        onClose.invoke(this)
     }
 
     override fun onExternalResponse(session: GeckoSession, response: WebResponse) {
@@ -81,64 +92,91 @@ internal class TabSession constructor(
     }
 
     override fun onCanGoBack(session: GeckoSession, canGoBack: Boolean) {
-        this.canGoBack = canGoBack
+        this.canGoBack.value = canGoBack
     }
 
     override fun onCanGoForward(session: GeckoSession, canGoForward: Boolean) {
-        this.canGoForward = canGoForward
+        this.canGoForward.value = canGoForward
     }
 
     override fun onLoadRequest(
         session: GeckoSession,
         request: NavigationDelegate.LoadRequest
-    ): GeckoResult<AllowOrDeny>? {
-        // TODO
-        return super.onLoadRequest(session, request)
-    }
-
-    override fun onSubframeLoadRequest(
-        session: GeckoSession,
-        request: NavigationDelegate.LoadRequest
     ): GeckoResult<AllowOrDeny> {
-        // TODO
-        return GeckoResult.fromValue(AllowOrDeny.ALLOW)
+        return if (onLoadRequest.invoke(request.uri)) {
+            GeckoResult.fromValue(AllowOrDeny.ALLOW)
+        } else {
+            GeckoResult.fromValue(AllowOrDeny.DENY)
+        }
     }
 
-    override fun onNewSession(session: GeckoSession, uri: String): GeckoResult<GeckoSession>? {
-        // TODO
-        return super.onNewSession(session, uri)
+    override fun onNewSession(session: GeckoSession, uri: String): GeckoResult<GeckoSession> {
+        return GeckoResult.fromValue(onNewTab.invoke())
     }
 }
 
-internal class TabManager {
-    private val tabs = arrayListOf<TabSession>()
-    private var currentTabIndex = 0
+internal class TabManager : Closeable {
+    private val tabs = MutableStateFlow(listOf<TabSession>())
+    private val currentTabIndex = MutableStateFlow(0)
+    val currentTab = combine(currentTabIndex, tabs) { index, tabs ->
+        tabs.getOrNull(index)
+    }
+    val tabCount = tabs.map { it.size }
 
     operator fun get(index: Int): TabSession? {
-        return if (index < tabs.size) {
-            tabs[index]
+        return tabs.value.elementAtOrNull(index)
+    }
+
+    private fun getCurrentTab(): TabSession? {
+        return get(currentTabIndex.value)
+    }
+
+    fun setCurrentTab(tabSession: TabSession) {
+        val index = tabs.value.indexOf(tabSession)
+        if (index != -1) {
+            currentTabIndex.value = index
         } else {
-            null
+            tabs.value += tabSession
+            currentTabIndex.value = tabs.value.size - 1
         }
     }
 
-    fun getCurrentTab(): TabSession? {
-        return get(currentTabIndex)
-    }
-
-    fun setCurrentTab(index: Int) {
-        currentTabIndex = index
-    }
-
-    fun addTab(session: TabSession) {
-        tabs.add(session)
-    }
-
-    fun removeTab(index: Int) {
-        tabs.removeAt(index)
-        if (currentTabIndex == index) {
-            currentTabIndex = tabs.lastIndex
+    fun createTab(
+        extensionManager: ExtensionManager,
+        tabDelegate: SessionTabDelegate,
+        cookieStoreId: String? = null,
+    ): TabSession {
+        val settingsBuilder = GeckoSessionSettings.Builder()
+        if (cookieStoreId != null) {
+            settingsBuilder.contextId(cookieStoreId)
         }
+        val tab = TabSession(
+            settingsBuilder.build(),
+            extensionManager,
+            tabDelegate,
+            onClose = {
+                closeTab(it)
+            },
+            onNewTab = {
+                createTab(extensionManager, tabDelegate, null)
+            },
+            onLoadRequest = {
+                true
+            },
+        )
+        tabs.value += tab
+        return tab
+    }
+
+    fun closeTab(tabSession: TabSession) {
+        if (!tabs.value.contains(tabSession)) {
+            return
+        }
+        if (tabSession == tabs.value[currentTabIndex.value] && currentTabIndex.value == tabs.value.lastIndex) {
+            currentTabIndex.value--
+        }
+        tabSession.close()
+        tabs.value -= tabSession
     }
 
     fun setWebExtensionDelegates(
@@ -146,20 +184,49 @@ internal class TabManager {
         actionDelegate: WebExtension.ActionDelegate?,
         tabDelegate: WebExtension.SessionTabDelegate?
     ) {
-        for (tab in tabs) {
+        for (tab in tabs.value) {
             val sessionController = tab.webExtensionController
             sessionController.setActionDelegate(extension, actionDelegate)
             sessionController.setTabDelegate(extension, tabDelegate)
         }
     }
+
+    override fun close() {
+        for (tab in tabs.value) {
+            tab.close()
+        }
+        tabs.value = listOf()
+    }
+
+    fun goBack(): Boolean {
+        val currentTab = getCurrentTab()
+        return if (currentTab != null) {
+            if (currentTab.fullscreen.value) {
+                currentTab.exitFullScreen()
+                true
+            } else if (currentTab.canGoBack.value) {
+                currentTab.goBack()
+                true
+            } else if (tabs.value.size > 1) {
+                closeTab(currentTab)
+                true
+            } else {
+                false
+            }
+        } else {
+            false
+        }
+    }
+
+    fun loadUrl(url: String) {
+        getCurrentTab()?.loadUri(url)
+    }
 }
 
 internal class ExtensionManager(
-    private val handler: WebExtensionMessageHandler,
-) : WebExtension.TabDelegate,
-    WebExtension.ActionDelegate,
+    private val messageFlow: MutableStateFlow<JSONObject?>,
+) : WebExtension.ActionDelegate,
     WebExtension.MessageDelegate,
-    WebExtension.SessionTabDelegate,
     WebExtension.PortDelegate {
     var extension: WebExtension? = null
         private set
@@ -168,7 +235,6 @@ internal class ExtensionManager(
 
     fun registerExtension(extension: WebExtension) {
         extension.setActionDelegate(this)
-        extension.tabDelegate = this
         extension.setMessageDelegate(this, "browser")
         this.extension = extension
     }
@@ -187,7 +253,7 @@ internal class ExtensionManager(
     override fun onPortMessage(message: Any, port: WebExtension.Port) {
         super.onPortMessage(message, port)
         if (message is JSONObject) {
-            handler.onMessage(message)
+            messageFlow.value = message
         }
     }
 
@@ -196,14 +262,23 @@ internal class ExtensionManager(
     }
 }
 
-class GeckoEngine(
+internal class GeckoEngine(
     context: Context,
-) : WebEngine, WebExtensionController.DebuggerDelegate, WebExtensionMessageHandler {
-    private val runtime: GeckoRuntime
+) : WebExtensionController.DebuggerDelegate,
+    WebExtension.TabDelegate,
+    WebExtension.SessionTabDelegate,
+    Closeable {
+    val runtime: GeckoRuntime
     private val extensionManager: ExtensionManager
     private val tabManager = TabManager()
-    var webExtensionMessageHandler: WebExtensionMessageHandler? = null
-
+    private val _messageFlow = MutableStateFlow<JSONObject?>(null)
+    val messageFlow = _messageFlow.asSharedFlow()
+    val currentTab by lazy {
+        tabManager.currentTab
+    }
+    val tabCount by lazy {
+        tabManager.tabCount
+    }
     init {
         val builder = GeckoRuntimeSettings.Builder().apply {
             remoteDebuggingEnabled(BuildConfig.DEBUG)
@@ -216,39 +291,73 @@ class GeckoEngine(
             }
         }
         runtime = GeckoRuntime.create(context, builder.build())
-        extensionManager = ExtensionManager(this)
+        extensionManager = ExtensionManager(_messageFlow)
         runtime.webExtensionController.setDebuggerDelegate(this)
     }
 
     override fun onExtensionListUpdated() {
         runtime.webExtensionController.list().accept { list ->
             list?.forEach {
+                it.tabDelegate = this
                 extensionManager.registerExtension(it)
                 tabManager.setWebExtensionDelegates(
                     it,
                     extensionManager,
-                    extensionManager
+                    this
                 )
             }
         }
     }
 
-    override fun loadUrl(url: String) {
+    fun loadUrl(url: String) {
+        tabManager.loadUrl(url)
+    }
+
+    fun ensureBuiltInExtension(id: String, uri: String) {
         TODO("Not yet implemented")
     }
 
-    override fun ensureBuiltInExtension(id: String, uri: String) {
-        TODO("Not yet implemented")
-    }
-
-    override fun goBack() {
+    fun goBack(): Boolean {
+        return tabManager.goBack()
     }
 
     fun sendMessage(message: JSONObject) {
         extensionManager.sendMessage(message)
     }
 
-    override fun onMessage(message: JSONObject) {
-        webExtensionMessageHandler?.onMessage(message)
+    override fun onNewTab(
+        source: WebExtension,
+        createDetails: WebExtension.CreateTabDetails
+    ): GeckoResult<GeckoSession> {
+        val tab = tabManager.createTab(extensionManager, this, createDetails.cookieStoreId)
+        return GeckoResult.fromValue(tab)
+    }
+
+    override fun onUpdateTab(
+        extension: WebExtension,
+        session: GeckoSession,
+        details: WebExtension.UpdateTabDetails
+    ): GeckoResult<AllowOrDeny> {
+        if (session is TabSession) {
+            tabManager.setCurrentTab(session)
+        }
+        return GeckoResult.fromValue(AllowOrDeny.ALLOW)
+    }
+
+    override fun onCloseTab(source: WebExtension?, session: GeckoSession): GeckoResult<AllowOrDeny> {
+        if (session is TabSession) {
+            tabManager.closeTab(session)
+        }
+        return GeckoResult.fromValue(AllowOrDeny.ALLOW)
+    }
+
+    override fun close() {
+        runtime.shutdown()
+        tabManager.close()
+    }
+
+    fun createNewTab() {
+        val tab = tabManager.createTab(extensionManager, this, null)
+        tabManager.setCurrentTab(tab)
     }
 }

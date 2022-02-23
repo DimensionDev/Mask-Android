@@ -24,6 +24,7 @@ include(
     ":app",
     ":common",
     ":common:gecko",
+    ":common:gecko:sample",
     ":common:okhttp",
     ":common:retrofit",
     ":common:routeProcessor",
