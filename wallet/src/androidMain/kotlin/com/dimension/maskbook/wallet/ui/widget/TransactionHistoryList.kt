@@ -278,6 +278,10 @@ private fun TransactionData.title() = message.ifEmpty {
             R.string.scene_transaction_history_type_cancel,
             tokenData.symbol
         )
+        TransactionType.Unknown -> stringResource(
+            R.string.scene_transaction_history_type_unknown,
+            tokenData.symbol
+        )
     }
 }
 
