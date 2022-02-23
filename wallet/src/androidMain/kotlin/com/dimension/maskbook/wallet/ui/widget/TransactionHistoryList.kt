@@ -215,7 +215,7 @@ private fun TransactionItem(
 
                 val dollar = (item.count * tokenData.price).humanizeDollar()
                 val dollarPrefix = when  {
-                    dollar == "0" -> ""
+                    dollar == "$0" -> ""
                     item.type == TransactionType.Receive -> "+"
                     item.type == TransactionType.Send -> "-"
                     else -> ""
@@ -239,29 +239,18 @@ private fun TransactionItem(
             }
         },
         icon = {
-            item.icon()?.let { icon ->
-                val color = when {
-                    item.status == TransactionStatus.Failure -> Color(0x0AFF5F5F)
-                    item.type == TransactionType.Receive -> Color(0x1A1C68F3)
-                    else -> Color(0x1AFFB915)
-                }
-                val iconColor = when {
-                    item.status == TransactionStatus.Failure -> Color(0xFFFF5F5F)
-                    item.type == TransactionType.Receive -> Color(0xFF1C68F3)
-                    else -> Color(0xFFFFB915)
-                }
-                Box(
-                    modifier = Modifier
-                        .size(38.dp)
-                        .background(color, shape = CircleShape),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Icon(
-                        painter = painterResource(icon),
-                        contentDescription = null,
-                        tint = iconColor
-                    )
-                }
+            Box(
+                modifier = Modifier
+                    .size(38.dp)
+                    .background(item.iconTintBackground(), shape = CircleShape),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    painter = painterResource(item.icon()),
+                    contentDescription = null,
+                    modifier = Modifier.size(22.dp),
+                    tint = item.iconTintColor(),
+                )
             }
         }
     )
@@ -294,11 +283,29 @@ private fun TransactionData.title() = message.ifEmpty {
 
 private fun TransactionData.icon() = when {
     status == TransactionStatus.Failure -> R.drawable.ic_close_square
-    type == TransactionType.Receive -> R.drawable.download
-    type == TransactionType.Send -> R.drawable.upload
-    type == TransactionType.Swap -> R.drawable.filter2
-    type == TransactionType.Approve -> R.drawable.filter2
-    else -> null
+    type == TransactionType.Receive -> R.drawable.ic_transaction_history_receive
+    type == TransactionType.Send -> R.drawable.ic_transaction_history_send
+    type == TransactionType.Swap -> R.drawable.ic_transaction_history_swap
+    type == TransactionType.Approve -> R.drawable.ic_transaction_history_approve
+    else -> R.drawable.ic_transaction_history_swap
+}
+
+private fun TransactionData.iconTintColor() = when {
+    status == TransactionStatus.Failure -> Color(0xFFFF5F5F)
+    type == TransactionType.Receive -> Color(0xFF1C68F3)
+    type == TransactionType.Send ||
+    type == TransactionType.Swap -> Color(0xFFFFB915)
+    type == TransactionType.Approve -> Color(0xFF1FB885)
+    else -> Color(0xFFFFB915)
+}
+
+private fun TransactionData.iconTintBackground() = when {
+    status == TransactionStatus.Failure -> Color(0x0AFF5F5F)
+    type == TransactionType.Receive -> Color(0x1A1C68F3)
+    type == TransactionType.Send ||
+    type == TransactionType.Swap -> Color(0x1AFFB915)
+    type == TransactionType.Approve -> Color(0x2677E0B5)
+    else -> Color(0x1AFFB915)
 }
 
 private fun createTitle(dateType: DateType, dateTime: Long): String {
