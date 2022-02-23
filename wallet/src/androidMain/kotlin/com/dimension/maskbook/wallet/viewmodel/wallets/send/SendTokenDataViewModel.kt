@@ -30,9 +30,10 @@ import com.dimension.maskbook.wallet.repository.IWalletRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
-import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.launch
 
 class SendTokenDataViewModel(
     tokenAddress: String,
@@ -42,10 +43,14 @@ class SendTokenDataViewModel(
 
     private val _tokenData = MutableStateFlow<TokenData?>(null)
 
-    val tokenData = merge(
-        tokenRepository.getTokenByAddress(tokenAddress),
-        _tokenData,
-    ).asStateIn(viewModelScope, null)
+    init {
+        viewModelScope.launch {
+            _tokenData.value = tokenRepository.getTokenByAddress(tokenAddress).firstOrNull()
+        }
+    }
+    val tokenData = combine(tokenRepository.getTokenByAddress(tokenAddress), _tokenData) { init, select ->
+        select ?: init
+    }.asStateIn(viewModelScope, null)
 
     val noTokenFound by lazy {
         walletRepository.currentWallet
@@ -59,6 +64,7 @@ class SendTokenDataViewModel(
 
     fun setTokenData(value: TokenData) {
         _tokenData.value = value
+        walletRepository.setChainType(value.chainType)
     }
 
     val walletTokens by lazy {
