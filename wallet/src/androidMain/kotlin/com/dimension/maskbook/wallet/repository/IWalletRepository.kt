@@ -114,7 +114,8 @@ enum class TransactionType {
     Receive,
     Send,
     Approve,
-    Cancel
+    Cancel,
+    Unknown,
 }
 
 enum class TransactionStatus {

@@ -82,7 +82,7 @@ class TransactionRepository(
                     it.receives?.any { it.fromAddr == "0x0000000000000000000000000000000000000000" } == true -> TransactionType.Receive
                     it.receives?.any { it.fromAddr == walletData.address } == true -> TransactionType.Send
                     it.sends?.any { it.toAddr == walletData.address } == true -> TransactionType.Receive
-                    else -> TransactionType.Approve
+                    else -> TransactionType.Unknown
                 },
                 count = java.math.BigDecimal(
                     it.tx?.value ?: it.sends?.firstOrNull()?.amount
