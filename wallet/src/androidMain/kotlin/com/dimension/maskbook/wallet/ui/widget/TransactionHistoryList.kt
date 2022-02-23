@@ -205,13 +205,35 @@ private fun TransactionItem(
         },
         trailing = {
             Column(horizontalAlignment = Alignment.End) {
+                val count = item.count.humanizeToken()
+                val countPrefix = when  {
+                    count == "0" -> ""
+                    item.type == TransactionType.Receive -> "+"
+                    item.type == TransactionType.Send -> "-"
+                    else -> ""
+                }
+
+                val dollar = (item.count * tokenData.price).humanizeDollar()
+                val dollarPrefix = when  {
+                    dollar == "0" -> ""
+                    item.type == TransactionType.Receive -> "+"
+                    item.type == TransactionType.Send -> "-"
+                    else -> ""
+                }
+                val dollarColor = when {
+                    dollar == "$0" -> Color.Unspecified
+                    item.type == TransactionType.Receive -> Color(0xFF1FB885)
+                    item.type == TransactionType.Send -> Color.Unspecified
+                    else -> Color.Unspecified
+                }
+
                 Text(
-                    text = "${item.count.humanizeToken()} ${tokenData.symbol}",
+                    text = "$countPrefix$count ${tokenData.symbol}",
                     style = MaterialTheme.typography.caption,
                 )
                 Text(
-                    text = (item.count * tokenData.price).humanizeDollar(),
-                    color = if (item.type == TransactionType.Receive) Color(0xFF1FB885) else Color.Unspecified,
+                    text = "$dollarPrefix$dollar",
+                    color = dollarColor,
                     style = MaterialTheme.typography.h5,
                 )
             }
