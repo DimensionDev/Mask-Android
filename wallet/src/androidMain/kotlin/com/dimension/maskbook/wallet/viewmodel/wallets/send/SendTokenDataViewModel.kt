@@ -46,12 +46,8 @@ class SendTokenDataViewModel(
                 tokenRepository.getTokenByAddress(tokenAddress).firstOrNull()
             else {
                 walletTokens.firstOrNull()?.firstOrNull()?.tokenData
-            }
+            } ?: walletRepository.currentChain.firstOrNull()?.nativeToken
         }.asStateIn(viewModelScope, null)
-    }
-
-    val noTokenFound by lazy {
-        tokenData.map { it == null }.asStateIn(viewModelScope, true)
     }
 
     fun setTokenData(value: TokenData) {

@@ -209,8 +209,8 @@ class GasFeeViewModel(
     // native token on current chain
     @OptIn(ExperimentalCoroutinesApi::class)
     val nativeToken by lazy {
-        walletRepository.dWebData.mapLatest {
-            walletRepository.getChainNativeToken(it.chainType)
+        walletRepository.currentChain.mapLatest {
+            it?.nativeToken
         }.asStateIn(viewModelScope, null)
     }
 

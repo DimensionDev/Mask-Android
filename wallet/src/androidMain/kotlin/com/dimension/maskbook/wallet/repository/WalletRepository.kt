@@ -38,6 +38,8 @@ import com.dimension.maskbook.debankapi.model.ChainID
 import com.dimension.maskbook.debankapi.model.Token
 import com.dimension.maskbook.wallet.db.AppDatabase
 import com.dimension.maskbook.wallet.db.model.CoinPlatformType
+import com.dimension.maskbook.wallet.db.model.DbChainData
+import com.dimension.maskbook.wallet.db.model.DbChainDataWithTokenData
 import com.dimension.maskbook.wallet.db.model.DbStoredKey
 import com.dimension.maskbook.wallet.db.model.DbToken
 import com.dimension.maskbook.wallet.db.model.DbWallet
@@ -106,6 +108,7 @@ class WalletRepository(
                 delay(12.seconds)
                 refreshCurrentWalletToken()
                 refreshCurrentWalletCollectibles()
+                refreshChainData()
             }
         }
     }
@@ -224,6 +227,43 @@ class WalletRepository(
         }
     }
 
+    // TODO MIMAO opt chain request, there is no need to fetch chain list every time refresh the tokens
+    private suspend fun refreshChainData() {
+        val dbChains = services.debankServices.getChainList().filter {
+            it.id?.let { id ->
+                try {
+                    ChainID.valueOf(id).chainType != ChainType.unknown
+                } catch (e: Throwable) {
+                    false
+                }
+            } ?: false
+        }.mapNotNull {
+            try {
+                val chainID = ChainID.valueOf(it.id ?: "")
+                DbChainDataWithTokenData(
+                    chain = DbChainData(
+                        _id = UUID.randomUUID().toString(),
+                        chainId = chainID.chainType.chainId,
+                        name = it.name ?: chainID.chainType.name,
+                        nativeTokenID = it.nativeTokenID ?: "",
+                        logoURL = it.logoURL ?: ""
+                    ),
+                    token = services.debankServices.token(
+                        id = it.nativeTokenID ?: "",
+                        chainId = chainID
+                    ).toDbToken(chainID)
+                )
+            } catch (e: Throwable) {
+                null
+            }
+        }
+
+        database.withTransaction {
+            database.tokenDao().add(dbChains.map { it.token })
+            database.chainDao().add(dbChains.map { it.chain })
+        }
+    }
+
     override val wallets: Flow<List<WalletData>>
         get() = database
             .walletDao()
@@ -242,6 +282,20 @@ class WalletRepository(
             database.walletDao().getByIdFlow(it)
         }.map {
             it?.let { it1 -> WalletData.fromDb(it1) }
+        }
+
+    override val currentChain: Flow<ChainData?>
+        get() = dWebData.map {
+            database.chainDao().getById(it.chainType.name)?.let {
+                ChainData(
+                    chainId = it.chain.chainId,
+                    name = it.chain.name,
+                    nativeTokenID = it.chain.nativeTokenID,
+                    logoURL = it.chain.logoURL,
+                    nativeToken = TokenData.fromDb(it.token),
+                    chainType = ChainType.valueOf(it.chain.name)
+                )
+            }
         }
 
     override fun setCurrentWallet(walletData: WalletData?) {
@@ -474,27 +528,6 @@ class WalletRepository(
 
     override suspend fun getTotalBalance(address: String): Double {
         return services.debankServices.totalBalance(address).totalUsdValue ?: 0.0
-    }
-
-    override suspend fun getChainNativeToken(chainType: ChainType) = withContext(scope.coroutineContext) {
-        try {
-            chainType.dbank.let { chainId ->
-                services.debankServices.getChainInfo(chainId = chainId).nativeTokenID?.let { tokenId ->
-                    database.tokenDao().getById(tokenId)?.let {
-                        TokenData.fromDb(it)
-                    } ?: services.debankServices.token(tokenId, chainId).let {
-                        TokenData.fromDb(
-                            it.toDbToken(chainId).also { dbToken ->
-                                database.tokenDao().add(listOf(dbToken))
-                            }
-                        )
-                    }
-                }
-            }
-        } catch (e: Throwable) {
-            e.printStackTrace()
-            null
-        }
     }
 
     override fun deleteCurrentWallet() {

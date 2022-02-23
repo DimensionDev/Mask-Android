@@ -110,14 +110,12 @@ fun SendTokenHost(
                 val ensData by searchAddressViewModel.ensData.observeAsState()
                 val selectEnsData by searchAddressViewModel.selectEnsData.observeAsState()
                 val canConfirm by searchAddressViewModel.canConfirm.observeAsState()
-                val noTokenFound by tokenDataViewModel.noTokenFound.observeAsState(true)
 
                 val clipboardManager = LocalClipboardManager.current
                 val inAppNotification = LocalInAppNotification.current
 
                 SearchAddressScene(
                     onBack = onBack,
-                    tokenAddress = tokenAddress.ifEmpty { nativeToken?.symbol.orEmpty() },
                     query = input,
                     canConfirm = canConfirm,
                     ensData = ensData,
@@ -130,8 +128,6 @@ fun SendTokenHost(
                     },
                     contacts = contacts,
                     recent = recent,
-                    noTokenFound = noTokenFound,
-                    onBuyToken = { /*TODO Logic: buy token*/ },
                     onScanQrCode = {
                         navController.navigate("ScanQrCode")
                     },
@@ -206,20 +202,19 @@ fun SendTokenHost(
                 val biometricEnabled by biometricViewModel.biometricEnabled.observeAsState()
 
                 val walletTokenData by tokenDataViewModel.walletTokenData.observeAsState()
-
+                val balance = walletTokenData?.count ?: BigDecimal.ZERO
                 val currentTokenData = tokenData
                 val currentAddressData = addressData
-                val currentWalletTokenData = walletTokenData
-                if (currentTokenData != null && currentAddressData != null && currentWalletTokenData != null) {
+                if (currentTokenData != null && currentAddressData != null) {
                     SendTokenScene(
                         onBack = { navController.popBackStack() },
                         addressData = currentAddressData,
                         onAddContact = { navController.navigate("AddContactSheet/$address") },
                         tokenData = currentTokenData,
-                        walletTokenData = currentWalletTokenData,
+                        balance = walletTokenData?.count ?: BigDecimal.ZERO,
                         onSelectToken = { navController.navigate("SearchToken") },
                         amount = amount,
-                        maxAmount = currentWalletTokenData.count,
+                        maxAmount = walletTokenData?.count ?: BigDecimal.ZERO,
                         onAmountChanged = { viewModel.setAmount(it) },
                         unlockType = if (biometricEnabled) UnlockType.BIOMETRIC else UnlockType.PASSWORD,
                         gasFee = (gasTotal * usdValue).humanizeDollar(),
@@ -240,7 +235,8 @@ fun SendTokenHost(
                         sendError = "",
                         paymentPassword = password,
                         onPaymentPasswordChanged = { viewModel.setPassword(it) },
-                        canConfirm = canConfirm,
+                        // TODO Mimao put it in viewmodel
+                        canConfirm = canConfirm && balance > BigDecimal.ZERO,
                     )
                 }
             }

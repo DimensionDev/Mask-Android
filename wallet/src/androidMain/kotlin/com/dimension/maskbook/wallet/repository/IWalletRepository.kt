@@ -208,6 +208,15 @@ data class SendTokenConfirmData(
     val onError: (Throwable) -> Unit,
 )
 
+data class ChainData(
+    val chainId: Long,
+    val name: String,
+    val nativeTokenID: String,
+    val logoURL: String,
+    val nativeToken: TokenData,
+    val chainType: ChainType
+)
+
 @Serializable
 data class SendTransactionData(
     val from: String? = null,
@@ -245,6 +254,7 @@ interface IWalletRepository {
     suspend fun findWalletByAddress(address: String): WalletData?
     val wallets: Flow<List<WalletData>>
     val currentWallet: Flow<WalletData?>
+    val currentChain: Flow<ChainData?>
     fun setCurrentWallet(walletData: WalletData?)
     fun setCurrentWallet(walletId: String)
     fun generateNewMnemonic(): List<String>
@@ -255,7 +265,6 @@ interface IWalletRepository {
     suspend fun getKeyStore(walletData: WalletData, platformType: CoinPlatformType, paymentPassword: String): String
     suspend fun getPrivateKey(walletData: WalletData, platformType: CoinPlatformType): String
     suspend fun getTotalBalance(address: String): Double
-    suspend fun getChainNativeToken(chainType: ChainType): TokenData?
     fun deleteCurrentWallet()
     fun deleteWallet(id: String)
     fun renameWallet(value: String, id: String)

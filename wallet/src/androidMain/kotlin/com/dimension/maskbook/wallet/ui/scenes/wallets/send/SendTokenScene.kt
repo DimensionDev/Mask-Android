@@ -70,7 +70,6 @@ import com.dimension.maskbook.common.ui.widget.button.SecondaryButton
 import com.dimension.maskbook.common.ui.widget.button.clickable
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.export.model.TokenData
-import com.dimension.maskbook.wallet.export.model.WalletTokenData
 import com.dimension.maskbook.wallet.ext.humanizeDollar
 import com.dimension.maskbook.wallet.ext.humanizeToken
 import com.dimension.maskbook.wallet.repository.SearchAddressData
@@ -82,7 +81,7 @@ fun SendTokenScene(
     addressData: SearchAddressData,
     onAddContact: () -> Unit,
     tokenData: TokenData,
-    walletTokenData: WalletTokenData,
+    balance: BigDecimal,
     onSelectToken: () -> Unit,
     amount: String,
     maxAmount: BigDecimal,
@@ -128,7 +127,7 @@ fun SendTokenScene(
                 TokenContent(
                     logoUri = tokenData.logoURI ?: "",
                     tokenName = tokenData.name,
-                    balance = "${walletTokenData.count.humanizeToken()} ${tokenData.symbol} ≈ ${(walletTokenData.count * tokenData.price).humanizeDollar()}",
+                    balance = "${balance.humanizeToken()} ${tokenData.symbol} ≈ ${(balance * tokenData.price).humanizeDollar()}",
                     onClick = onSelectToken
                 )
 
