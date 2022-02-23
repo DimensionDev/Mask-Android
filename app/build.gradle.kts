@@ -5,6 +5,13 @@ plugins {
     kotlin("android")
     kotlin("plugin.serialization").version(Versions.Kotlin.lang)
     id("org.jetbrains.compose").version(Versions.compose_jb)
+    id("com.google.gms.google-services").version(Versions.Firebase.Plugin.google_services).apply(false)
+    id("com.google.firebase.crashlytics").version(Versions.Firebase.Plugin.crashlytics).apply(false)
+}
+
+if (enableFirebase) {
+    apply(plugin = "com.google.gms.google-services")
+    apply(plugin = "com.google.firebase.crashlytics")
 }
 
 android {
@@ -61,6 +68,12 @@ dependencies {
     implementation(projects.labs)
     implementation(projects.setting)
     implementation("io.github.dimensiondev:maskwalletcore:${Versions.maskWalletCore}")
+
+    if (enableFirebase) {
+        implementation("com.google.firebase:firebase-analytics-ktx:${Versions.Firebase.analytics}")
+        implementation(platform("com.google.firebase:firebase-bom:${Versions.Firebase.bom}"))
+        implementation("com.google.firebase:firebase-crashlytics-ktx:${Versions.Firebase.crashlytics}")
+    }
 
     implementation("org.web3j:core:${Versions.web3j}")
     implementation("androidx.paging:paging-runtime-ktx:${Versions.Androidx.paging}")

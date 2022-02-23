@@ -22,6 +22,7 @@ package com.dimension.maskbook.common.route
 
 import com.dimension.maskbook.common.routeProcessor.annotations.Route
 
+@Suppress("CONST_VAL_WITHOUT_INITIALIZER")
 @Route(
     schema = "maskwallet",
 )
@@ -32,19 +33,19 @@ expect object Deeplinks {
         }
     }
     object Setting {
-        val SetupPasswordDialog: String
+        const val SetupPasswordDialog: String
         object BackupData {
-            val BackupSelection: String
+            const val BackupSelection: String
         }
     }
     object Wallet {
-        val Recovery: String
+        const val Recovery: String
         object BackUpPassword {
             operator fun invoke(target: String): String
         }
         object Register {
-            val WelcomeCreatePersona: String
-            val CreatePersona: String
+            const val WelcomeCreatePersona: String
+            const val CreatePersona: String
         }
     }
 }

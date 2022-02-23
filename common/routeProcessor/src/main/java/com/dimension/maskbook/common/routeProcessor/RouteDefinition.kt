@@ -84,17 +84,20 @@ internal data class ParameterRouteDefinition(
             .apply {
                 childRoute.forEach {
                     if (it is FunctionRouteDefinition) {
-                        val p = it.parameters.filter { !it.parameter.type.resolve().isMarkedNullable }
+                        val pathParams = it.parameters.filter { !it.parameter.type.resolve().isMarkedNullable }
+                        val queryParams = it.parameters.filter { it.parameter.type.resolve().isMarkedNullable }
                         addProperty(
                             PropertySpec.builder("path", String::class)
                                 .addModifiers(KModifier.CONST)
                                 .initializer(
-                                    "%S + %S + %S + %S + %S",
+                                    "%S + %S + %S + %S + %S + %S + %S",
                                     parentPath,
                                     RouteDivider,
                                     name,
-                                    if (p.any()) RouteDivider else "",
-                                    p.joinToString(RouteDivider) { "{${it.name}}" }
+                                    if (pathParams.any()) RouteDivider else "",
+                                    pathParams.joinToString(RouteDivider) { "{${it.name}}" },
+                                    if (queryParams.any()) "?" else "",
+                                    queryParams.joinToString("&") { "${it.name}={${it.name}}" }
                                 )
                                 .build()
                         )
@@ -140,10 +143,16 @@ private fun Taggable.addTo(builder: TypeSpec.Builder) {
 internal data class ConstRouteDefinition(
     override val name: String,
     override val parent: RouteDefinition? = null,
+    private val isConst: Boolean
 ) : RouteDefinition {
     override fun generateRoute(): Taggable {
         return PropertySpec.builder(name, String::class)
             .addModifiers(KModifier.ACTUAL)
+            .apply {
+                if (isConst) {
+                    addModifiers(KModifier.CONST)
+                }
+            }
             .initializer("%S + %S + %S", parentPath, RouteDivider, name)
             .build()
     }
@@ -233,4 +242,6 @@ internal data class RouteParameter(
     val parameter: KSValueParameter,
 )
 
-private val TypeName.isString get() = this == String::class.asTypeName()
+internal val TypeName.isString get() = this == String::class.asTypeName()
+internal val TypeName.isBoolean get() = this == Boolean::class.asTypeName()
+internal val TypeName.isLong get() = this == Long::class.asTypeName()
