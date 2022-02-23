@@ -29,18 +29,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -55,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dimension.maskbook.common.model.DateType
 import com.dimension.maskbook.common.ui.widget.MaskListItem
+import com.dimension.maskbook.common.ui.widget.button.MaskButton
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.export.model.TokenData
@@ -66,7 +63,7 @@ import com.dimension.maskbook.wallet.repository.TransactionType
 import org.joda.time.LocalDate
 import java.util.Locale
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TransactionHistoryList(
     transactions: Map<DateType, List<TransactionData>>,
@@ -77,16 +74,22 @@ fun TransactionHistoryList(
         TokenDetailEmptyLayout()
         return
     }
-    LazyColumn {
+    LazyColumn(
+        contentPadding = PaddingValues(horizontal = 22.5.dp),
+    ) {
         transactions.forEach { entry ->
             stickyHeader {
                 MaskListItem(
                     modifier = Modifier.background(MaterialTheme.colors.background),
+                    contentPadding = PaddingValues(vertical = 24.dp),
                     text = {
                         val title = remember {
                             createTitle(entry.key, entry.value[0].createdAt)
                         }
-                        Text(text = title)
+                        Text(
+                            text = title,
+                            style = MaterialTheme.typography.h4,
+                        )
                     }
                 )
             }
@@ -124,7 +127,6 @@ private fun TokenDetailEmptyLayout() {
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun TransactionItem(
     item: TransactionData,
@@ -133,60 +135,70 @@ private fun TransactionItem(
     onCancel: () -> Unit,
 ) {
     MaskListItem(
-        modifier = Modifier.padding(vertical = 10.dp),
+        contentPadding = PaddingValues(vertical = 12.dp),
         text = {
-            Column(modifier = Modifier.fillMaxHeight(), verticalArrangement = Arrangement.Center) {
-                Row {
-                    Text(text = item.title(), style = MaterialTheme.typography.subtitle1)
-                    when (item.status) {
-                        TransactionStatus.Pending -> {
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text(
-                                text = stringResource(R.string.scene_transaction_history_status_pending),
-                                color = Color(0xFFFFB915)
-                            )
-                        }
-                        TransactionStatus.Failure -> {
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text(
-                                text = stringResource(R.string.scene_transaction_history_status_fail),
-                                color = Color(0xFFFF5F5F)
-                            )
-                        }
-                        else -> Unit
+            Row {
+                Text(
+                    text = item.title(),
+                    style = MaterialTheme.typography.h5,
+                )
+                when (item.status) {
+                    TransactionStatus.Pending -> {
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = stringResource(R.string.scene_transaction_history_status_pending),
+                            color = Color(0xFFFFB915),
+                            style = MaterialTheme.typography.h6,
+                        )
                     }
+                    TransactionStatus.Failure -> {
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = stringResource(R.string.scene_transaction_history_status_fail),
+                            color = Color(0xFFFF5F5F),
+                            style = MaterialTheme.typography.h6,
+                        )
+                    }
+                    else -> Unit
                 }
-
-                if (item.status == TransactionStatus.Pending) {
-                    Spacer(modifier = Modifier.height(6.dp))
-                    Row {
-                        PrimaryButton(
-                            onClick = onSpeedUp,
-                            modifier = Modifier.height(height = 28.dp),
-                            contentPadding = PaddingValues(vertical = 6.dp, horizontal = 8.dp)
-                        ) {
-                            Text(
-                                text = stringResource(R.string.scene_transaction_history_speed_up),
-                                style = MaterialTheme.typography.button.copy(fontSize = 10.sp)
+            }
+        },
+        secondaryText = {
+            if (item.status == TransactionStatus.Pending) {
+                Spacer(Modifier.height(6.dp))
+                Row {
+                    PrimaryButton(
+                        onClick = onSpeedUp,
+                        modifier = Modifier.size(62.dp, 28.dp),
+                        shape = MaterialTheme.shapes.small,
+                        contentPadding = PaddingValues(0.dp),
+                    ) {
+                        Text(
+                            text = stringResource(R.string.scene_transaction_history_speed_up),
+                            color = Color.White,
+                            style = MaterialTheme.typography.caption.copy(
+                                fontSize = 10.sp,
+                                lineHeight = 15.sp,
                             )
-                        }
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Button(
-                            onClick = onCancel,
-                            modifier = Modifier.height(height = 28.dp),
-                            contentPadding = PaddingValues(vertical = 0.dp, horizontal = 0.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                backgroundColor = Color(0xFFD7E6FF),
+                        )
+                    }
+                    Spacer(Modifier.width(8.dp))
+                    MaskButton(
+                        onClick = onCancel,
+                        modifier = Modifier.size(62.dp, 28.dp),
+                        shape = MaterialTheme.shapes.small,
+                        colors = ButtonDefaults.buttonColors(
+                            backgroundColor = Color(0xFFD7E6FF),
+                        )
+                    ) {
+                        Text(
+                            text = stringResource(R.string.common_controls_cancel),
+                            color = MaterialTheme.colors.primary,
+                            style = MaterialTheme.typography.caption.copy(
+                                fontSize = 10.sp,
+                                lineHeight = 15.sp,
                             )
-                        ) {
-                            Text(
-                                text = stringResource(R.string.common_controls_cancel),
-                                style = MaterialTheme.typography.button.copy(
-                                    fontSize = 10.sp,
-                                    color = MaterialTheme.colors.primary
-                                )
-                            )
-                        }
+                        )
                     }
                 }
             }
@@ -195,24 +207,17 @@ private fun TransactionItem(
             Column(horizontalAlignment = Alignment.End) {
                 Text(
                     text = "${item.count.humanizeToken()} ${tokenData.symbol}",
+                    style = MaterialTheme.typography.caption,
                 )
                 Text(
                     text = (item.count * tokenData.price).humanizeDollar(),
-                    style = if (item.type == TransactionType.Receive) MaterialTheme.typography.subtitle1.copy(
-                        color = Color(0xFF1FB885)
-                    ) else MaterialTheme.typography.subtitle1,
+                    color = if (item.type == TransactionType.Receive) Color(0xFF1FB885) else Color.Unspecified,
+                    style = MaterialTheme.typography.h5,
                 )
             }
         },
         icon = {
-            when {
-                item.status == TransactionStatus.Failure -> R.drawable.ic_close_square
-                item.type == TransactionType.Receive -> R.drawable.download
-                item.type == TransactionType.Send -> R.drawable.upload
-                item.type == TransactionType.Swap -> R.drawable.filter2
-                item.type == TransactionType.Approve -> R.drawable.filter2
-                else -> null
-            }?.let { icon ->
+            item.icon()?.let { icon ->
                 val color = when {
                     item.status == TransactionStatus.Failure -> Color(0x0AFF5F5F)
                     item.type == TransactionType.Receive -> Color(0x1A1C68F3)
@@ -229,7 +234,11 @@ private fun TransactionItem(
                         .background(color, shape = CircleShape),
                     contentAlignment = Alignment.Center,
                 ) {
-                    Icon(painterResource(id = icon), contentDescription = null, tint = iconColor)
+                    Icon(
+                        painter = painterResource(icon),
+                        contentDescription = null,
+                        tint = iconColor
+                    )
                 }
             }
         }
@@ -259,6 +268,15 @@ private fun TransactionData.title() = message.ifEmpty {
             tokenData.symbol
         )
     }
+}
+
+private fun TransactionData.icon() = when {
+    status == TransactionStatus.Failure -> R.drawable.ic_close_square
+    type == TransactionType.Receive -> R.drawable.download
+    type == TransactionType.Send -> R.drawable.upload
+    type == TransactionType.Swap -> R.drawable.filter2
+    type == TransactionType.Approve -> R.drawable.filter2
+    else -> null
 }
 
 private fun createTitle(dateType: DateType, dateTime: Long): String {
