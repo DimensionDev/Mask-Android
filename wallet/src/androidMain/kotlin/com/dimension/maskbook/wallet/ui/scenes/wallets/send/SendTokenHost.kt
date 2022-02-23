@@ -110,14 +110,14 @@ fun SendTokenHost(
                 val ensData by searchAddressViewModel.ensData.observeAsState()
                 val selectEnsData by searchAddressViewModel.selectEnsData.observeAsState()
                 val canConfirm by searchAddressViewModel.canConfirm.observeAsState()
-                val noTokenFound by tokenDataViewModel.noTokenFound.observeAsState()
+                val noTokenFound by tokenDataViewModel.noTokenFound.observeAsState(true)
 
                 val clipboardManager = LocalClipboardManager.current
                 val inAppNotification = LocalInAppNotification.current
 
                 SearchAddressScene(
                     onBack = onBack,
-                    tokenAddress = tokenAddress,
+                    tokenAddress = tokenAddress.ifEmpty { nativeToken?.symbol.orEmpty() },
                     query = input,
                     canConfirm = canConfirm,
                     ensData = ensData,

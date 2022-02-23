@@ -22,7 +22,6 @@ package com.dimension.maskbook.wallet.viewmodel.wallets.send
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.wallet.export.model.TokenData
 import com.dimension.maskbook.wallet.repository.ITokenRepository
@@ -32,8 +31,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
-import kotlinx.coroutines.launch
 
 class SendTokenDataViewModel(
     tokenAddress: String,
@@ -43,23 +40,18 @@ class SendTokenDataViewModel(
 
     private val _tokenData = MutableStateFlow<TokenData?>(null)
 
-    init {
-        viewModelScope.launch {
-            _tokenData.value = tokenRepository.getTokenByAddress(tokenAddress).firstOrNull()
-        }
+    val tokenData by lazy {
+        _tokenData.map {
+            it ?: if (tokenAddress.isNotEmpty())
+                tokenRepository.getTokenByAddress(tokenAddress).firstOrNull()
+            else {
+                walletTokens.firstOrNull()?.firstOrNull()?.tokenData
+            }
+        }.asStateIn(viewModelScope, null)
     }
-    val tokenData = combine(tokenRepository.getTokenByAddress(tokenAddress), _tokenData) { init, select ->
-        select ?: init
-    }.asStateIn(viewModelScope, null)
 
     val noTokenFound by lazy {
-        walletRepository.currentWallet
-            .map { wallet ->
-                if (wallet == null) return@map true
-                val token = wallet.tokens.find { it.tokenData.address == tokenAddress } ?: return@map true
-                token.count == BigDecimal.ZERO
-            }
-            .asStateIn(viewModelScope, false)
+        tokenData.map { it == null }.asStateIn(viewModelScope, true)
     }
 
     fun setTokenData(value: TokenData) {
@@ -68,7 +60,9 @@ class SendTokenDataViewModel(
     }
 
     val walletTokens by lazy {
-        walletRepository.currentWallet.mapNotNull { it }.map { it.tokens }
+        combine(walletRepository.currentWallet, walletRepository.dWebData) { wallet, dWebData ->
+            wallet?.tokens?.filter { it.tokenData.chainType == dWebData.chainType } ?: emptyList()
+        }
     }
 
     val walletTokenData by lazy {
