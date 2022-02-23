@@ -84,7 +84,6 @@ fun SendTokenHost(
     }
     val searchAddressViewModel = getViewModel<SearchAddressViewModel>()
 
-    val gasFee by gasFeeViewModel.gasPrice.observeAsState(initial = BigDecimal.ZERO)
     val gasLimit by gasFeeViewModel.gasLimit.observeAsState(initial = -1.0)
     val maxPriorityFee by gasFeeViewModel.maxPriorityFee.observeAsState(initial = -1.0)
     val maxFee by gasFeeViewModel.maxFee.observeAsState(initial = -1.0)
@@ -331,7 +330,7 @@ fun SendTokenHost(
                         gasFee = (gasTotal * ethPrice).humanizeDollar(),
                         total = (amount * currentTokenData.price + gasTotal * ethPrice).humanizeDollar(),
                         onConfirm = {
-                            viewModel.send(currentTokenData, amount, gasLimit, gasFee, maxFee, maxPriorityFee)
+                            viewModel.send(currentTokenData, amount, gasLimit, maxFee, maxPriorityFee)
                             onDone.invoke()
                             // open Wallet App if it is connected
                             if (deeplink.isNotEmpty()) {

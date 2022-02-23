@@ -521,7 +521,6 @@ class WalletRepository(
         address: String,
         tokenData: TokenData,
         gasLimit: Double,
-        gasFee: BigDecimal,
         maxFee: Double,
         maxPriorityFee: Double,
         data: String,
@@ -533,7 +532,6 @@ class WalletRepository(
             address = address,
             chainType = tokenData.chainType,
             gasLimit = gasLimit,
-            gasFee = gasFee,
             maxFee = maxFee,
             maxPriorityFee = maxPriorityFee,
             onDone = onDone,
@@ -547,7 +545,6 @@ class WalletRepository(
         address: String,
         chainType: ChainType,
         gasLimit: Double,
-        gasFee: BigDecimal,
         maxFee: Double,
         maxPriorityFee: Double,
         data: String,
@@ -564,7 +561,7 @@ class WalletRepository(
                             toAddress = address,
                             data = data,
                             gasLimit = gasLimit,
-                            gasPrice = gasFee + maxPriorityFee.toBigDecimal().gwei.ether,
+                            gasPrice = maxFee.toBigDecimal().gwei.ether + maxPriorityFee.toBigDecimal().gwei.ether,
                             onResponse = { response, error ->
                                 error?.let { onError(it) } ?: onDone(response.toString())
                             }
@@ -636,7 +633,6 @@ class WalletRepository(
         address: String,
         tokenData: TokenData,
         gasLimit: Double,
-        gasFee: BigDecimal,
         maxFee: Double,
         maxPriorityFee: Double,
         onDone: (String?) -> Unit,
@@ -667,7 +663,6 @@ class WalletRepository(
                 address = realAddress,
                 tokenData = tokenData,
                 gasLimit = gasLimit,
-                gasFee = gasFee,
                 maxFee = maxFee,
                 maxPriorityFee = maxPriorityFee,
                 data = "",

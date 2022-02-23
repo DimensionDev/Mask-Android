@@ -166,7 +166,6 @@ private fun SendTokenConfirmModal(
                                         address = address,
                                         chainType = chainType,
                                         gasLimit = gasLimit,
-                                        gasFee = gasPrice,
                                         maxFee = maxFee,
                                         maxPriorityFee = maxPriorityFee,
                                         data = data.data.data ?: "",
