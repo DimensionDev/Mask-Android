@@ -38,4 +38,8 @@ class WalletServicesImpl(
     override fun validateMnemonic(mnemonic: String): Boolean {
         return walletRepository.validateMnemonic(mnemonic)
     }
+
+    override fun validatePrivateKey(privateKey: String): Boolean {
+        return walletRepository.validatePrivateKey(privateKey)
+    }
 }
