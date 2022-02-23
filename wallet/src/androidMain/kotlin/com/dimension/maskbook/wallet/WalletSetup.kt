@@ -240,7 +240,7 @@ private fun Module.provideRepository() {
 
 private fun Module.provideViewModel() {
     viewModel { (uri: Uri) -> RecoveryLocalViewModel(get(), uri, get<Context>().contentResolver) }
-    viewModel { (name: String) -> IdentityViewModel(get(), name) }
+    viewModel { (name: String) -> IdentityViewModel(get(), get(), name) }
     viewModel { PrivateKeyViewModel(get()) }
     viewModel { (personaName: String) -> CreateIdentityViewModel(personaName, get(), get()) }
     viewModel { WelcomeViewModel(get()) }

@@ -34,4 +34,8 @@ class WalletServicesImpl(
     override fun generateNewMnemonic(): List<String> {
         return walletRepository.generateNewMnemonic()
     }
+
+    override fun validateMnemonic(mnemonic: String): Boolean {
+        return walletRepository.validateMnemonic(mnemonic)
+    }
 }
