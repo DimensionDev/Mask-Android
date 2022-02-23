@@ -88,7 +88,8 @@ fun SendTokenHost(
     val maxPriorityFee by gasFeeViewModel.maxPriorityFee.observeAsState(initial = -1.0)
     val maxFee by gasFeeViewModel.maxFee.observeAsState(initial = -1.0)
     val arrives by gasFeeViewModel.arrives.observeAsState(initial = "")
-    val ethPrice by gasFeeViewModel.ethPrice.observeAsState(initial = BigDecimal.ZERO)
+    val nativeToken by gasFeeViewModel.nativeToken.observeAsState(initial = null)
+    val usdValue by gasFeeViewModel.usdValue.observeAsState(initial = BigDecimal.ZERO)
     val gasTotal by gasFeeViewModel.gasTotal.observeAsState(initial = BigDecimal.ZERO)
     val tokenData by tokenDataViewModel.tokenData.collectAsState()
 
@@ -221,7 +222,7 @@ fun SendTokenHost(
                         maxAmount = currentWalletTokenData.count,
                         onAmountChanged = { viewModel.setAmount(it) },
                         unlockType = if (biometricEnabled) UnlockType.BIOMETRIC else UnlockType.PASSWORD,
-                        gasFee = (gasTotal * ethPrice).humanizeDollar(),
+                        gasFee = (gasTotal * usdValue).humanizeDollar(),
                         arrivesIn = arrives,
                         onEditGasFee = { navController.navigate("EditGasFee") },
                         onSend = { type ->
@@ -246,9 +247,9 @@ fun SendTokenHost(
             bottomSheet("EditGasFee") {
                 val mode by gasFeeViewModel.gasPriceEditMode.collectAsState()
                 EditGasPriceSheet(
-                    price = (gasTotal * ethPrice).humanizeDollar(),
+                    price = (gasTotal * usdValue).humanizeDollar(),
                     costFee = gasTotal.humanizeToken(),
-                    costFeeUnit = stringResource(R.string.chain_short_name_eth), // TODO:
+                    costFeeUnit = nativeToken?.symbol ?: stringResource(R.string.chain_short_name_eth),
                     arrivesIn = arrives,
                     mode = mode,
                     gasLimit = gasLimit.toString(),
@@ -327,8 +328,8 @@ fun SendTokenHost(
                         addressData = currentAddressData,
                         tokenData = currentTokenData,
                         sendPrice = amount.humanizeToken(),
-                        gasFee = (gasTotal * ethPrice).humanizeDollar(),
-                        total = (amount * currentTokenData.price + gasTotal * ethPrice).humanizeDollar(),
+                        gasFee = (gasTotal * usdValue).humanizeDollar(),
+                        total = (amount * currentTokenData.price + gasTotal * usdValue).humanizeDollar(),
                         onConfirm = {
                             viewModel.send(currentTokenData, amount, gasLimit, maxFee, maxPriorityFee)
                             onDone.invoke()

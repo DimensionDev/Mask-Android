@@ -202,11 +202,16 @@ class GasFeeViewModel(
         }
     }
 
-    val ethPrice by lazy {
-        walletRepository.currentWallet
-            .mapNotNull { it }
-            .map { it.tokens.firstOrNull { it.tokenData.address == "eth" } }
-            .mapNotNull { it?.tokenData?.price }
+    val usdValue by lazy {
+        nativeToken.mapNotNull { it?.price }
+    }
+
+    // native token on current chain
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val nativeToken by lazy {
+        walletRepository.dWebData.mapLatest {
+            walletRepository.getChainNativeToken(it.chainType)
+        }.asStateIn(viewModelScope, null)
     }
 
     @OptIn(ExperimentalTime::class)

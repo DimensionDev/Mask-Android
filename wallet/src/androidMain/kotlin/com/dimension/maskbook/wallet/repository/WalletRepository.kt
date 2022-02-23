@@ -35,6 +35,7 @@ import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.common.okhttp.okHttpClient
 import com.dimension.maskbook.common.repository.JSMethod
 import com.dimension.maskbook.debankapi.model.ChainID
+import com.dimension.maskbook.debankapi.model.Token
 import com.dimension.maskbook.wallet.db.AppDatabase
 import com.dimension.maskbook.wallet.db.model.CoinPlatformType
 import com.dimension.maskbook.wallet.db.model.DbStoredKey
@@ -77,6 +78,17 @@ private val CurrentCoinPlatformTypeKey = stringPreferencesKey("coin_platform_typ
 private val CurrentWalletKey = stringPreferencesKey("current_wallet")
 private val ChainTypeKey = stringPreferencesKey("chain_type")
 val Context.walletDataStore: DataStore<Preferences> by preferencesDataStore(name = "wallet")
+
+private fun Token.toDbToken(chainId: ChainID?) = DbToken(
+    id = id ?: "",
+    address = id ?: "",
+    chainType = chainId?.chainType ?: ChainType.unknown,
+    name = name ?: "",
+    symbol = symbol ?: "",
+    decimals = decimals ?: 0L,
+    logoURI = logoURL,
+    price = BigDecimal(price ?: 0.0)
+)
 
 class WalletRepository(
     private val dataStore: DataStore<Preferences>,
@@ -192,16 +204,7 @@ class WalletRepository(
             val tokens = token.map {
                 val chainId =
                     kotlin.runCatching { it.chain?.let { it1 -> ChainID.valueOf(it1) } }.getOrNull()
-                DbToken(
-                    id = it.id ?: "",
-                    address = it.id ?: "",
-                    chainType = chainId?.chainType ?: ChainType.unknown,
-                    name = it.name ?: "",
-                    symbol = it.symbol ?: "",
-                    decimals = it.decimals ?: 0L,
-                    logoURI = it.logoURL,
-                    price = BigDecimal(it.price ?: 0.0)
-                )
+                it.toDbToken(chainId)
             }
             val walletTokens = token.map {
                 DbWalletToken(
@@ -471,6 +474,27 @@ class WalletRepository(
 
     override suspend fun getTotalBalance(address: String): Double {
         return services.debankServices.totalBalance(address).totalUsdValue ?: 0.0
+    }
+
+    override suspend fun getChainNativeToken(chainType: ChainType) = withContext(scope.coroutineContext) {
+        try {
+            chainType.dbank.let { chainId ->
+                services.debankServices.getChainInfo(chainId = chainId).nativeTokenID?.let { tokenId ->
+                    database.tokenDao().getById(tokenId)?.let {
+                        TokenData.fromDb(it)
+                    } ?: services.debankServices.token(tokenId, chainId).let {
+                        TokenData.fromDb(
+                            it.toDbToken(chainId).also { dbToken ->
+                                database.tokenDao().add(listOf(dbToken))
+                            }
+                        )
+                    }
+                }
+            }
+        } catch (e: Throwable) {
+            e.printStackTrace()
+            null
+        }
     }
 
     override fun deleteCurrentWallet() {
