@@ -21,7 +21,6 @@ kotlin {
                 implementation("androidx.navigation:navigation-ui-ktx:${Versions.navigation}")
                 implementation("androidx.navigation:navigation-compose:${Versions.navigation}")
 
-                implementation("joda-time:joda-time:${Versions.jodaTime}")
                 implementation("io.github.dimensiondev:maskwalletcore:${Versions.maskWalletCore}")
 
                 implementation(projects.debankapi)
