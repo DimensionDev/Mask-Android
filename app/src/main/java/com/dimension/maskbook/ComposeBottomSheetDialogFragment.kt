@@ -134,21 +134,23 @@ private fun SendTokenConfirmModal(
         val wallet by repository.currentWallet.observeAsState(initial = null)
         wallet?.let { wallet ->
             addressData?.let { addressData ->
-                // TODO get token with chainId in SendTokenConfirmData
-                wallet.tokens.firstOrNull { it.tokenData.address == stringResource(R.string.chain_short_name_eth) }?.tokenData?.let { tokenData ->
-                    val gasFeeViewModel = getViewModel<GasFeeViewModel> {
-                        parametersOf(data.data.gas?.fromHexString()?.toDouble() ?: 21000.0)
-                    }
-                    val gasLimit by gasFeeViewModel.gasLimit.observeAsState(initial = -1.0)
-                    val maxPriorityFee by gasFeeViewModel.maxPriorityFee.observeAsState(initial = -1.0)
-                    val maxFee by gasFeeViewModel.maxFee.observeAsState(initial = -1.0)
-                    val arrives by gasFeeViewModel.arrives.observeAsState(initial = "")
-                    val usdValue by gasFeeViewModel.usdValue.observeAsState(initial = BigDecimal.ZERO)
-                    val amount = data.data.value?.hexWei?.ether ?: BigDecimal.ZERO
-                    val gasTotal by gasFeeViewModel.gasTotal.observeAsState(initial = BigDecimal.ZERO)
-                    val chainType = data.data.chainId?.let { chainId ->
-                        ChainType.values().firstOrNull { it.chainId == chainId }
-                    } ?: ChainType.eth
+                val gasFeeViewModel = getViewModel<GasFeeViewModel> {
+                    parametersOf(data.data.gas?.fromHexString()?.toDouble() ?: 21000.0)
+                }
+                val walletRepository = get<IWalletRepository>()
+                val chainType = data.data.chainId?.let { chainId ->
+                    ChainType.values().firstOrNull { it.chainId == chainId }
+                } ?: ChainType.eth
+                walletRepository.setChainType(chainType)
+                val gasLimit by gasFeeViewModel.gasLimit.observeAsState(initial = -1.0)
+                val maxPriorityFee by gasFeeViewModel.maxPriorityFee.observeAsState(initial = -1.0)
+                val maxFee by gasFeeViewModel.maxFee.observeAsState(initial = -1.0)
+                val arrives by gasFeeViewModel.arrives.observeAsState(initial = "")
+                val usdValue by gasFeeViewModel.usdValue.observeAsState(initial = BigDecimal.ZERO)
+                val amount = data.data.value?.hexWei?.ether ?: BigDecimal.ZERO
+                val gasTotal by gasFeeViewModel.gasTotal.observeAsState(initial = BigDecimal.ZERO)
+                val nativeToken by gasFeeViewModel.nativeToken.observeAsState()
+                nativeToken?.let { tokenData ->
                     NavHost(
                         navController,
                         startDestination = "SendConfirm"
@@ -190,7 +192,7 @@ private fun SendTokenConfirmModal(
                             EditGasPriceSheet(
                                 price = (gasTotal * usdValue).humanizeDollar(),
                                 costFee = gasTotal.humanizeToken(),
-                                costFeeUnit = stringResource(R.string.chain_short_name_eth), // TODO:
+                                costFeeUnit = tokenData.symbol,
                                 arrivesIn = arrives,
                                 mode = mode,
                                 gasLimit = gasLimit.toString(),
@@ -259,7 +261,10 @@ private fun UserNameModal(
     val viewModel = getViewModel<UserNameModalViewModel>()
     val name by viewModel.userName.observeAsState(initial = "")
     MaskModal(
-        modifier = Modifier.background(MaterialTheme.colors.background, shape = MaterialTheme.shapes.medium)
+        modifier = Modifier.background(
+            MaterialTheme.colors.background,
+            shape = MaterialTheme.shapes.medium
+        )
     ) {
         Column(
             modifier = Modifier.padding(ModalPadding)
