@@ -46,6 +46,7 @@ import com.dimension.maskbook.wallet.R
 fun PrivateKeyScene(
     privateKey: String,
     onPrivateKeyChanged: (String) -> Unit,
+    canConfirm: Boolean,
     onConfirm: () -> Unit,
     onBack: () -> Unit,
 ) {
@@ -84,6 +85,7 @@ fun PrivateKeyScene(
                 Spacer(modifier = Modifier.weight(1f))
                 PrimaryButton(
                     modifier = Modifier.fillMaxWidth(),
+                    enabled = canConfirm,
                     onClick = onConfirm
                 ) {
                     Text(text = stringResource(R.string.common_controls_confirm))

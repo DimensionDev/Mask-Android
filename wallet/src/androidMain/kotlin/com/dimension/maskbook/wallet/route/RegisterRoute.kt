@@ -261,12 +261,14 @@ fun NavGraphBuilder.registerRoute(
     }
     composable(WalletRoute.Register.Recovery.PrivateKey) {
         val viewModel: PrivateKeyViewModel = getViewModel()
-        val privateKey by viewModel.privateKey.observeAsState(initial = "")
+        val privateKey by viewModel.privateKey.observeAsState()
+        val canConfirm by viewModel.canConfirm.observeAsState()
         PrivateKeyScene(
             privateKey = privateKey,
             onPrivateKeyChanged = {
                 viewModel.setPrivateKey(it)
             },
+            canConfirm = canConfirm,
             onConfirm = {
                 viewModel.onConfirm()
                 navController.navigate(WalletRoute.Register.Recovery.Complected) {

@@ -26,4 +26,6 @@ import kotlinx.coroutines.flow.Flow
 interface WalletServices {
     val currentWallet: Flow<WalletData?>
     fun generateNewMnemonic(): List<String>
+    fun validateMnemonic(mnemonic: String): Boolean
+    fun validatePrivateKey(privateKey: String): Boolean
 }
