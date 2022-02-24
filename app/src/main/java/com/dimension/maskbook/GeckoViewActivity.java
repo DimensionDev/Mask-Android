@@ -1184,9 +1184,9 @@ public class GeckoViewActivity
             return;
         }
 
-        sGeckoRuntime.getContentBlockingController()
-                .checkException(session)
-                .accept(value -> mTrackingProtectionException = value.booleanValue());
+//        sGeckoRuntime.getContentBlockingController()
+//                .checkException(session)
+//                .accept(value -> mTrackingProtectionException = value.booleanValue());
     }
 
     @Override
@@ -1209,14 +1209,14 @@ public class GeckoViewActivity
                 session.goForward();
                 break;
             case R.id.action_tpe:
-                sGeckoRuntime.getContentBlockingController().checkException(session).accept(value -> {
-                    if (value.booleanValue()) {
-                        sGeckoRuntime.getContentBlockingController().removeException(session);
-                    } else {
-                        sGeckoRuntime.getContentBlockingController().addException(session);
-                    }
-                    session.reload();
-                });
+//                sGeckoRuntime.getContentBlockingController().checkException(session).accept(value -> {
+//                    if (value.booleanValue()) {
+//                        sGeckoRuntime.getContentBlockingController().removeException(session);
+//                    } else {
+//                        sGeckoRuntime.getContentBlockingController().addException(session);
+//                    }
+//                    session.reload();
+//                });
                 break;
             case R.id.desktop_mode:
                 mDesktopMode = !mDesktopMode;

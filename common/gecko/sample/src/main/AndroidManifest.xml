@@ -2,8 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.dimension.maskbook.common.gecko.sample">
 
+    <permission android:name="android.permission.INTERNET" />
+
     <application>
         <activity
+            android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar"
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>

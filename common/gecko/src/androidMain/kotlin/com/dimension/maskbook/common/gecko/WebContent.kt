@@ -18,13 +18,23 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.common.gecko.sample
+package com.dimension.maskbook.common.gecko
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import mozilla.components.browser.state.helper.Target
 
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
+@Composable
+fun WebContent(
+    modifier: Modifier = Modifier,
+    state: WebContentState,
+) {
+    val context = LocalContext.current
+    GeckoContent(
+        modifier = modifier,
+        engine = state.engine,
+        target = Target.SelectedTab,
+        store = state.store,
+    )
 }

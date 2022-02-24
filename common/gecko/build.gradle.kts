@@ -10,8 +10,11 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 implementation("org.jetbrains.compose.ui:ui:${Versions.compose_jb}")
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.Kotlin.coroutines}")
-                api("org.mozilla.geckoview:geckoview:${Versions.gecko}")
+                implementation("org.mozilla.components:concept-engine:${Versions.mozilla_components}")
+                implementation("org.mozilla.components:browser-engine-gecko:${Versions.mozilla_components}")
+                implementation("org.mozilla.components:browser-state:${Versions.mozilla_components}")
+                implementation("org.mozilla.components:feature-tabs:${Versions.mozilla_components}")
+                implementation("org.mozilla.components:feature-sessions:${Versions.mozilla_components}")
             }
         }
         val androidTest by getting {

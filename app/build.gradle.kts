@@ -84,7 +84,7 @@ dependencies {
     implementation(projects.common.okhttp)
 
     implementation("com.google.code.gson:gson:2.8.6")
-    implementation("org.mozilla.geckoview:geckoview:95.+")
+    implementation("org.mozilla.geckoview:geckoview:97.+")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test:runner:1.4.0")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
