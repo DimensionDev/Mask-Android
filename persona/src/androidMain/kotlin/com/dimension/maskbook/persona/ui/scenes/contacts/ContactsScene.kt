@@ -32,6 +32,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -40,6 +41,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.ui.widget.MaskListItem
@@ -54,7 +56,7 @@ import org.koin.androidx.compose.getViewModel
 @Composable
 fun ContactsScene() {
     val viewModel: ContactsViewModel = getViewModel()
-    val items by viewModel.items.observeAsState(initial = emptyList())
+    val items by viewModel.items.observeAsState()
     if (!items.any()) {
         EmptyContactsScene()
     } else {
@@ -73,11 +75,31 @@ fun ContactsScene() {
                             )
                         },
                         text = {
-                            Text(text = item.name)
+                            Text(
+                                text = item.name,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
                         },
                         secondaryText = {
                             Text(text = '@' + item.id.substringAfter('/'))
                         },
+                        trailing = {
+                            if (!item.linkedPersona) {
+                                PrimaryButton(
+                                    onClick = {},
+                                    contentPadding = PaddingValues(
+                                        horizontal = 16.dp,
+                                        vertical = 5.5.dp
+                                    ),
+                                ) {
+                                    Text(
+                                        text = stringResource(R.string.common_controls_invite),
+                                        style = MaterialTheme.typography.caption,
+                                    )
+                                }
+                            }
+                        }
                     )
                 }
             }

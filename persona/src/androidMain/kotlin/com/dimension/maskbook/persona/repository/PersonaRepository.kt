@@ -78,6 +78,7 @@ class PersonaRepository(
                     name = profile.nickname ?: "",
                     avatar = "",
                     personaId = b.firstOrNull { it.linkedProfiles.containsKey(profile.identifier) }?.identifier,
+                    linkedPersona = profile.linkedPersona,
                     network = Network.Twitter,
                 )
             }
@@ -91,6 +92,7 @@ class PersonaRepository(
                     name = profile.nickname ?: "",
                     avatar = "",
                     personaId = b.firstOrNull { it.linkedProfiles.containsKey(profile.identifier) }?.identifier,
+                    linkedPersona = profile.linkedPersona,
                     network = Network.Facebook,
                 )
             }
@@ -160,7 +162,8 @@ class PersonaRepository(
                 ContactData(
                     id = it.identifier,
                     name = it.nickname ?: "",
-                    personaId = persona
+                    personaId = persona,
+                    linkedPersona = it.linkedPersona,
                 )
             }
         }

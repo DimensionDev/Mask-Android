@@ -24,4 +24,5 @@ data class ContactData(
     val id: String,
     val name: String,
     val personaId: String,
+    val linkedPersona: Boolean,
 )
