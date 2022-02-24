@@ -80,11 +80,11 @@ fun SendTokenScene(
     onBack: () -> Unit,
     addressData: SearchAddressData,
     onAddContact: () -> Unit,
-    tokenData: TokenData,
+    tokenData: TokenData?,
     balance: BigDecimal,
     onSelectToken: () -> Unit,
     amount: String,
-    maxAmount: BigDecimal,
+    maxAmount: String,
     onAmountChanged: (String) -> Unit,
     unlockType: UnlockType,
     gasFee: String,
@@ -125,9 +125,9 @@ fun SendTokenScene(
                 Spacer(modifier = Modifier.height(20.dp))
 
                 TokenContent(
-                    logoUri = tokenData.logoURI ?: "",
-                    tokenName = tokenData.name,
-                    balance = "${balance.humanizeToken()} ${tokenData.symbol} ≈ ${(balance * tokenData.price).humanizeDollar()}",
+                    logoUri = tokenData?.logoURI ?: "",
+                    tokenName = tokenData?.name ?: "",
+                    balance = "${balance.humanizeToken()} ${tokenData?.symbol ?: ""} ≈ ${(balance * (tokenData?.price ?: BigDecimal.ZERO)).humanizeDollar()}",
                     onClick = onSelectToken
                 )
 
@@ -139,8 +139,8 @@ fun SendTokenScene(
                             onAmountChanged.invoke(it)
                         }
                     },
-                    onMax = { onAmountChanged.invoke(maxAmount.toPlainString()) },
-                    error = amount.toBigDecimal() > maxAmount
+                    onMax = { onAmountChanged.invoke(maxAmount) },
+                    error = amount.toBigDecimal() > maxAmount.toBigDecimal()
                 )
                 Spacer(modifier = Modifier.height(16.dp))
 

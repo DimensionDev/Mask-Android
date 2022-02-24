@@ -189,6 +189,9 @@ fun SendTokenHost(
                 ),
             ) {
                 val address = it.arguments?.getString("address") ?: return@composable
+                val biometricViewModel = getViewModel<BiometricViewModel>()
+                val biometricEnabled by biometricViewModel.biometricEnabled.observeAsState()
+                val walletTokenData by tokenDataViewModel.walletTokenData.observeAsState()
 
                 val viewModel = getViewModel<SendTokenViewModel> {
                     parametersOf(address)
@@ -197,24 +200,25 @@ fun SendTokenHost(
                 val amount by viewModel.amount.observeAsState()
                 val password by viewModel.password.observeAsState()
                 val canConfirm by viewModel.canConfirm.observeAsState()
-
-                val biometricViewModel = getViewModel<BiometricViewModel>()
-                val biometricEnabled by biometricViewModel.biometricEnabled.observeAsState()
-
-                val walletTokenData by tokenDataViewModel.walletTokenData.observeAsState()
                 val balance = walletTokenData?.count ?: BigDecimal.ZERO
-                val currentTokenData = tokenData
-                val currentAddressData = addressData
-                if (currentTokenData != null && currentAddressData != null) {
+                val maxAmount = if (tokenData?.address == nativeToken?.address) {
+                    balance - gasTotal
+                } else {
+                    balance
+                }.let {
+                    if (it < BigDecimal.ZERO) BigDecimal.ZERO else it
+                }.humanizeToken()
+
+                addressData?.let { currentAddressData ->
                     SendTokenScene(
                         onBack = { navController.popBackStack() },
                         addressData = currentAddressData,
                         onAddContact = { navController.navigate("AddContactSheet/$address") },
-                        tokenData = currentTokenData,
-                        balance = walletTokenData?.count ?: BigDecimal.ZERO,
+                        tokenData = tokenData,
+                        balance = balance,
                         onSelectToken = { navController.navigate("SearchToken") },
                         amount = amount,
-                        maxAmount = walletTokenData?.count ?: BigDecimal.ZERO,
+                        maxAmount = maxAmount,
                         onAmountChanged = { viewModel.setAmount(it) },
                         unlockType = if (biometricEnabled) UnlockType.BIOMETRIC else UnlockType.PASSWORD,
                         gasFee = (gasTotal * usdValue).humanizeDollar(),
@@ -235,8 +239,9 @@ fun SendTokenHost(
                         sendError = "",
                         paymentPassword = password,
                         onPaymentPasswordChanged = { viewModel.setPassword(it) },
-                        // TODO Mimao put it in viewmodel
-                        canConfirm = canConfirm && balance > BigDecimal.ZERO,
+                        canConfirm = canConfirm &&
+                            balance > BigDecimal.ZERO &&
+                            amount.toBigDecimal() <= maxAmount.toBigDecimal()
                     )
                 }
             }
