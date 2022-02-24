@@ -687,7 +687,6 @@ fun NavGraphBuilder.walletsRoute(
         )
     ) {
         SendTokenHost(
-            // TODO Mimao fix query arguments is "null"
             tokenAddress = it.arguments?.getString("tokenAddress")?.let { if (it == "null") null else it }.orEmpty(),
             onBack = {
                 navController.popBackStack()

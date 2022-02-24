@@ -108,7 +108,7 @@ class WalletRepository(
                 delay(12.seconds)
                 refreshCurrentWalletToken()
                 refreshCurrentWalletCollectibles()
-                refreshChainData()
+                refreshChainDataWithTokens()
             }
         }
     }
@@ -227,40 +227,55 @@ class WalletRepository(
         }
     }
 
-    // TODO MIMAO opt chain request, there is no need to fetch chain list every time refresh the tokens
-    private suspend fun refreshChainData() {
-        val dbChains = services.debankServices.getChainList().filter {
-            it.id?.let { id ->
-                try {
-                    ChainID.valueOf(id).chainType != ChainType.unknown
-                } catch (e: Throwable) {
-                    false
-                }
-            } ?: false
-        }.mapNotNull {
-            try {
-                val chainID = ChainID.valueOf(it.id ?: "")
-                DbChainDataWithTokenData(
-                    chain = DbChainData(
-                        chainId = chainID.chainType.chainId,
-                        name = chainID.chainType.name,
-                        fullName = it.name ?: chainID.chainType.name,
-                        nativeTokenID = it.nativeTokenID ?: "",
-                        logoURL = it.logoURL ?: ""
-                    ),
-                    token = services.debankServices.token(
-                        id = it.nativeTokenID ?: "",
-                        chainId = chainID
-                    ).toDbToken(chainID)
-                )
-            } catch (e: Throwable) {
+    private var isChainRefreshed = false
+    private suspend fun refreshChainDataWithTokens() {
+        try {
+            val chains = if (isChainRefreshed) {
+                database.chainDao().getAll().map { it.chain }.ifEmpty { null }
+            } else {
                 null
+            } ?: services.debankServices.getChainList().mapNotNull {
+                it.id?.let { id ->
+                    try {
+                        val chainID = ChainID.valueOf(id)
+                        if (chainID.chainType != ChainType.unknown) {
+                            DbChainData(
+                                chainId = chainID.chainType.chainId,
+                                name = chainID.chainType.name,
+                                fullName = it.name ?: chainID.chainType.name,
+                                nativeTokenID = it.nativeTokenID ?: "",
+                                logoURL = it.logoURL ?: ""
+                            )
+                        } else null
+                    } catch (e: Throwable) {
+                        null
+                    }
+                }
+            }.also {
+                isChainRefreshed = true
             }
-        }
 
-        database.withTransaction {
-            database.tokenDao().add(dbChains.map { it.token })
-            database.chainDao().add(dbChains.map { it.chain })
+            val chainsWithToken = chains.mapNotNull {
+                try {
+                    val chainId = ChainType.valueOf(it.name).dbank
+                    DbChainDataWithTokenData(
+                        chain = it,
+                        token = services.debankServices.token(
+                            id = it.nativeTokenID ?: "",
+                            chainId = ChainType.valueOf(it.name).dbank
+                        ).toDbToken(chainId)
+                    )
+                } catch (e: Throwable) {
+                    null
+                }
+            }
+
+            database.withTransaction {
+                database.tokenDao().add(chainsWithToken.map { it.token })
+                database.chainDao().add(chainsWithToken.map { it.chain })
+            }
+        } catch (e: Throwable) {
+            e.printStackTrace()
         }
     }
 

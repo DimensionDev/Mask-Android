@@ -31,6 +31,11 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ChainDao {
+
+    @Transaction
+    @Query("SELECT * FROM DbChainData")
+    suspend fun getAll(): List<DbChainDataWithTokenData>
+
     @Transaction
     @Query("SELECT * FROM DbChainData WHERE chainId = :id")
     fun getByIdFlow(id: Long): Flow<DbChainDataWithTokenData?>
