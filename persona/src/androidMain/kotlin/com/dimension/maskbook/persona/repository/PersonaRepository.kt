@@ -27,6 +27,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.MutableLiveData
+import com.dimension.maskbook.common.ext.ifNullOrEmpty
 import com.dimension.maskbook.common.platform.IPlatformSwitcher
 import com.dimension.maskbook.common.repository.JSMethod
 import com.dimension.maskbook.common.route.CommonRoute
@@ -79,7 +80,9 @@ class PersonaRepository(
             a.map { profile ->
                 SocialData(
                     id = profile.identifier,
-                    name = profile.nickname ?: "",
+                    name = profile.nickname.ifNullOrEmpty {
+                        profile.identifier.substringAfter('/')
+                    },
                     avatar = "",
                     personaId = b.firstOrNull { it.linkedProfiles.containsKey(profile.identifier) }?.identifier,
                     linkedPersona = profile.linkedPersona,
