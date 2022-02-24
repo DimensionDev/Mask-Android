@@ -38,6 +38,7 @@ import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.persona.export.model.PlatformType
 import com.dimension.maskbook.persona.repository.IContactsRepository
 import com.dimension.maskbook.persona.repository.IPersonaRepository
+import com.dimension.maskbook.persona.repository.ISocialsRepository
 import com.dimension.maskbook.persona.repository.PersonaRepository
 import com.dimension.maskbook.persona.repository.personaDataStore
 import com.dimension.maskbook.persona.route.PersonaRoute
@@ -232,13 +233,14 @@ object PersonaSetup : ModuleSetup {
             PersonaRepository(get<Context>().personaDataStore, get())
         } binds arrayOf(
             IPersonaRepository::class,
-            IContactsRepository::class
+            ISocialsRepository::class,
+            IContactsRepository::class,
         )
 
         single<PersonaServices> { PersonaServicesImpl(get()) }
         single { PersonasTabScreen() } bind TabScreen::class
 
-        viewModel { PersonaViewModel(get()) }
+        viewModel { PersonaViewModel(get(), get()) }
         viewModel { TwitterSocialViewModel(get()) }
         viewModel { FacebookSocialViewModel(get()) }
         viewModel { TwitterConnectSocialViewModel(get()) }
@@ -248,7 +250,7 @@ object PersonaSetup : ModuleSetup {
         viewModel { (personaId: String) -> RenamePersonaViewModel(get(), personaId) }
         viewModel { ExportPrivateKeyViewModel(get()) }
         viewModel { PostViewModel(get(), get()) }
-        viewModel { ContactsViewModel(get(), get()) }
+        viewModel { ContactsViewModel(get()) }
     }
 
     override fun onExtensionReady() {

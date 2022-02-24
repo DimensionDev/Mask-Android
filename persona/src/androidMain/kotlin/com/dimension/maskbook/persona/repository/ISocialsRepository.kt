@@ -18,16 +18,11 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.persona.viewmodel.contacts
+package com.dimension.maskbook.persona.repository
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.dimension.maskbook.common.ext.asStateIn
-import com.dimension.maskbook.persona.repository.IContactsRepository
+import com.dimension.maskbook.persona.export.model.SocialData
+import kotlinx.coroutines.flow.Flow
 
-class ContactsViewModel(
-    repository: IContactsRepository,
-) : ViewModel() {
-    val items = repository.contacts
-        .asStateIn(viewModelScope, emptyList())
+interface ISocialsRepository {
+    val socials: Flow<List<SocialData>>
 }
