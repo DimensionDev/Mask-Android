@@ -536,11 +536,7 @@ fun BackupSelectionEmail(
                     }
                     .onFailure {
                         navController.navigate(
-                            SettingRoute.BackupData.BackupData_BackupCloud(
-                                "email",
-                                email,
-                                code
-                            )
+                            SettingRoute.BackupData.BackupData_Cloud_Failed
                         )
                     }
             }
