@@ -22,7 +22,9 @@ package com.dimension.maskbook.persona.ui.scenes.contacts
 
 import android.content.Intent
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -31,6 +33,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -38,6 +41,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -49,6 +53,7 @@ import com.dimension.maskbook.common.ui.widget.NameImage
 import com.dimension.maskbook.common.ui.widget.button.MaskButton
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.persona.R
+import com.dimension.maskbook.persona.model.icon
 import com.dimension.maskbook.persona.viewmodel.contacts.ContactsViewModel
 import org.koin.androidx.compose.getViewModel
 
@@ -69,10 +74,20 @@ fun ContactsScene() {
                 MaskButton(onClick = {}) {
                     MaskListItem(
                         icon = {
-                            NameImage(
-                                name = item.name,
-                                modifier = Modifier.size(38.dp),
-                            )
+                            Box(contentAlignment = Alignment.BottomEnd) {
+                                NameImage(
+                                    name = item.name,
+                                    modifier = Modifier.size(38.dp),
+                                )
+                                Image(
+                                    painter = painterResource(item.network.icon),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .size(16.dp)
+                                        .border(1.dp, MaterialTheme.colors.background, shape = CircleShape)
+                                        .clip(shape = CircleShape),
+                                )
+                            }
                         },
                         text = {
                             Text(

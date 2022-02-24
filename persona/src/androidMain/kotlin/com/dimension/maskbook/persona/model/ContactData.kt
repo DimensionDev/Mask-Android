@@ -20,9 +20,12 @@
  */
 package com.dimension.maskbook.persona.model
 
+import com.dimension.maskbook.persona.export.model.Network
+
 data class ContactData(
     val id: String,
     val name: String,
     val personaId: String,
     val linkedPersona: Boolean,
+    val network: Network,
 )

@@ -157,13 +157,14 @@ class PersonaRepository(
     }
 
     override val contacts =
-        combine(_twitter, _facebook, _currentPersona) { twitter, facebook, persona ->
-            (twitter + facebook).filter { !it.linkedPersona }.map {
+        combine(twitter, facebook, _currentPersona) { twitter, facebook, persona ->
+            (twitter + facebook).map {
                 ContactData(
-                    id = it.identifier,
-                    name = it.nickname ?: "",
+                    id = it.id,
+                    name = it.name,
                     personaId = persona,
                     linkedPersona = it.linkedPersona,
+                    network = it.network,
                 )
             }
         }
