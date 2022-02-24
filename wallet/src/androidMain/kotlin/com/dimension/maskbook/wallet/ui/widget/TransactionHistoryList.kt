@@ -83,7 +83,7 @@ fun TransactionHistoryList(
                     modifier = Modifier.background(MaterialTheme.colors.background),
                     contentPadding = PaddingValues(vertical = 24.dp),
                     text = {
-                        val title = remember {
+                        val title = remember(entry.key) {
                             createTitle(entry.key, entry.value[0].createdAt)
                         }
                         Text(
