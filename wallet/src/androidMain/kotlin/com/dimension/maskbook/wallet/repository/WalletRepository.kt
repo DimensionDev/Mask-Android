@@ -242,9 +242,9 @@ class WalletRepository(
                 val chainID = ChainID.valueOf(it.id ?: "")
                 DbChainDataWithTokenData(
                     chain = DbChainData(
-                        _id = UUID.randomUUID().toString(),
                         chainId = chainID.chainType.chainId,
-                        name = it.name ?: chainID.chainType.name,
+                        name = chainID.chainType.name,
+                        fullName = it.name ?: chainID.chainType.name,
                         nativeTokenID = it.nativeTokenID ?: "",
                         logoURL = it.logoURL ?: ""
                     ),
@@ -284,12 +284,16 @@ class WalletRepository(
             it?.let { it1 -> WalletData.fromDb(it1) }
         }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     override val currentChain: Flow<ChainData?>
-        get() = dWebData.map {
-            database.chainDao().getById(it.chainType.name)?.let {
+        get() = dWebData.flatMapLatest {
+            database.chainDao().getByIdFlow(it.chainType.chainId)
+        }.map {
+            it?.let {
                 ChainData(
                     chainId = it.chain.chainId,
                     name = it.chain.name,
+                    fullName = it.chain.fullName,
                     nativeTokenID = it.chain.nativeTokenID,
                     logoURL = it.chain.logoURL,
                     nativeToken = TokenData.fromDb(it.token),

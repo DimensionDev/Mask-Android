@@ -211,6 +211,7 @@ data class SendTokenConfirmData(
 data class ChainData(
     val chainId: Long,
     val name: String,
+    val fullName: String,
     val nativeTokenID: String,
     val logoURL: String,
     val nativeToken: TokenData,

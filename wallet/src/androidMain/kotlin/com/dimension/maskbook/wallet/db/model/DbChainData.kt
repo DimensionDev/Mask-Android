@@ -22,17 +22,14 @@ package com.dimension.maskbook.wallet.db.model
 
 import androidx.room.Embedded
 import androidx.room.Entity
-import androidx.room.Index
 import androidx.room.PrimaryKey
 import androidx.room.Relation
 
-@Entity(
-    indices = [Index(value = ["chainId"], unique = true)]
-)
+@Entity
 data class DbChainData(
-    @PrimaryKey val _id: String,
-    val chainId: Long,
+    @PrimaryKey val chainId: Long,
     val name: String,
+    val fullName: String,
     val nativeTokenID: String,
     val logoURL: String,
 )

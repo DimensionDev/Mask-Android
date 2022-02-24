@@ -65,7 +65,7 @@ import kotlinx.serialization.encodeToString
         DbWCWallet::class,
         DbChainData::class,
     ],
-    version = 8, // TODO Mimao create mirgration from 7 to 8
+    version = 8,
 )
 @TypeConverters(BigDecimalTypeConverter::class, StringListConverter::class)
 abstract class AppDatabase : RoomDatabase() {
