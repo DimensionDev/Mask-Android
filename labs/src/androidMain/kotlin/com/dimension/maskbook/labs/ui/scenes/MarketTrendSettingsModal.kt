@@ -37,10 +37,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.common.ext.observeAsState
+import com.dimension.maskbook.common.route.navigationComposeBottomSheet
+import com.dimension.maskbook.common.route.navigationComposeBottomSheetPackage
+import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
 import com.dimension.maskbook.common.ui.widget.CircleCheckboxDefaults
 import com.dimension.maskbook.common.ui.widget.MaskModal
 import com.dimension.maskbook.common.ui.widget.MaskSelection
 import com.dimension.maskbook.labs.R
+import com.dimension.maskbook.labs.route.LabsRoute
 import com.dimension.maskbook.labs.viewmodel.MarketTrendSettingsViewModel
 import com.dimension.maskbook.setting.export.model.NetworkType
 import com.dimension.maskbook.setting.export.model.TradeProvider
@@ -96,6 +100,11 @@ private val TradeProvider.icon
         TradeProvider.UNISWAP_V3 -> painterResource(id = R.drawable.uniswap)
     }
 
+@NavGraphDestination(
+    route = LabsRoute.MarketTrendSettings,
+    packageName = navigationComposeBottomSheetPackage,
+    functionName = navigationComposeBottomSheet,
+)
 @Composable
 fun MarketTrendSettingsModal() {
     val viewModel = getViewModel<MarketTrendSettingsViewModel>()
