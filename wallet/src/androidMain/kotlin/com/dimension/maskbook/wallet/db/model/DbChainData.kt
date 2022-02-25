@@ -41,5 +41,5 @@ data class DbChainDataWithTokenData(
         parentColumn = "nativeTokenID",
         entityColumn = "id",
     )
-    val token: DbToken
+    val token: DbToken?
 )

@@ -214,7 +214,7 @@ data class ChainData(
     val fullName: String,
     val nativeTokenID: String,
     val logoURL: String,
-    val nativeToken: TokenData,
+    val nativeToken: TokenData?,
     val chainType: ChainType
 )
 
