@@ -29,10 +29,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
@@ -47,8 +47,8 @@ import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.ui.theme.MaskTheme
 import com.dimension.maskbook.common.ui.widget.MaskInputField
 import com.dimension.maskbook.common.ui.widget.MaskModal
-import com.dimension.maskbook.common.ui.widget.ModalPadding
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
+import com.dimension.maskbook.persona.export.model.ConnectAccountData
 import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.ext.fromHexString
 import com.dimension.maskbook.wallet.ext.hexWei
@@ -87,13 +87,6 @@ class ComposeBottomSheetDialogFragment(
                 setContent {
                     MaskTheme {
                         when (route) {
-                            "UserNameInput" -> {
-                                UserNameModal(
-                                    onDone = {
-                                        this@ComposeBottomSheetDialogFragment.dismiss()
-                                    },
-                                )
-                            }
                             "SendTokenConfirm" -> {
                                 if (data is SendTokenConfirmData) {
                                     SendTokenConfirmModal(
@@ -102,6 +95,16 @@ class ComposeBottomSheetDialogFragment(
                                             this@ComposeBottomSheetDialogFragment.dismiss()
                                         },
                                         onCancel = {
+                                            this@ComposeBottomSheetDialogFragment.dismiss()
+                                        }
+                                    )
+                                }
+                            }
+                            "ConnectAccount" -> {
+                                if (data is ConnectAccountData) {
+                                    ConnectAccountModal(
+                                        data,
+                                        onDone = {
                                             this@ComposeBottomSheetDialogFragment.dismiss()
                                         }
                                     )
@@ -116,6 +119,39 @@ class ComposeBottomSheetDialogFragment(
 
     companion object {
         const val TAG = "ComposeBottomSheetDialogFragment"
+    }
+}
+
+@Composable
+private fun ConnectAccountModal(data: ConnectAccountData, onDone: () -> Unit) {
+    val viewModel = getViewModel<UserNameModalViewModel> {
+        parametersOf(data)
+    }
+    val name by viewModel.userName.collectAsState()
+    MaskModal(
+        modifier = Modifier
+            .background(MaterialTheme.colors.background, shape = MaterialTheme.shapes.medium),
+        title = {
+            Text(text = stringResource(R.string.scene_social_connect_to_mask_network))
+        }
+    ) {
+        Column {
+            MaskInputField(
+                modifier = Modifier.fillMaxWidth(),
+                value = name,
+                onValueChange = { viewModel.setUserName(it) },
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            PrimaryButton(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = {
+                    viewModel.done(name)
+                    onDone.invoke()
+                },
+            ) {
+                Text(text = stringResource(R.string.scene_social_connect_button_title))
+            }
+        }
     }
 }
 
@@ -248,39 +284,6 @@ private fun SendTokenConfirmModal(
                         }
                     }
                 }
-            }
-        }
-    }
-}
-
-@Composable
-private fun UserNameModal(
-    onDone: () -> Unit,
-) {
-    val viewModel = getViewModel<UserNameModalViewModel>()
-    val name by viewModel.userName.observeAsState(initial = "")
-    MaskModal(
-        modifier = Modifier.background(MaterialTheme.colors.background, shape = MaterialTheme.shapes.medium)
-    ) {
-        Column(
-            modifier = Modifier.padding(ModalPadding)
-        ) {
-            Text(text = stringResource(R.string.username))
-            Spacer(modifier = Modifier.height(8.dp))
-            MaskInputField(
-                modifier = Modifier.fillMaxWidth(),
-                value = name,
-                onValueChange = { viewModel.setUserName(it) },
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            PrimaryButton(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = {
-                    viewModel.done(name)
-                    onDone.invoke()
-                },
-            ) {
-                Text(text = stringResource(R.string.common_controls_done))
             }
         }
     }
