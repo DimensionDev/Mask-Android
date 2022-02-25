@@ -20,6 +20,7 @@
  */
 package com.dimension.maskbook.persona.ui.scenes
 
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -27,30 +28,43 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.dimension.maskbook.common.ext.observeAsState
+import com.dimension.maskbook.common.route.Deeplinks
+import com.dimension.maskbook.common.route.navigationComposeBottomSheet
+import com.dimension.maskbook.common.route.navigationComposeBottomSheetPackage
+import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
 import com.dimension.maskbook.common.ui.widget.MaskModal
 import com.dimension.maskbook.common.ui.widget.MaskSelection
 import com.dimension.maskbook.persona.R
-import com.dimension.maskbook.persona.export.model.PersonaData
+import com.dimension.maskbook.persona.route.PersonaRoute
+import com.dimension.maskbook.persona.viewmodel.SwitchPersonaViewModel
+import org.koin.androidx.compose.getViewModel
 
-@OptIn(ExperimentalMaterialApi::class)
+@NavGraphDestination(
+    route = PersonaRoute.SwitchPersona,
+    packageName = navigationComposeBottomSheetPackage,
+    functionName = navigationComposeBottomSheet,
+)
 @Composable
 fun SwitchPersonaModal(
-    currentPersonaData: PersonaData?,
-    items: List<PersonaData>,
-    onAdd: () -> Unit,
-    onItemClicked: (PersonaData) -> Unit,
+    navController: NavController,
 ) {
+    val viewModel = getViewModel<SwitchPersonaViewModel>()
+    val currentPersonaData by viewModel.current.observeAsState(initial = null)
+    val items by viewModel.items.observeAsState(initial = emptyList())
+
     MaskModal(
         title = {
             Text(
@@ -67,7 +81,7 @@ fun SwitchPersonaModal(
                         selected = currentPersonaData == item,
                         enabled = currentPersonaData == null || currentPersonaData != item,
                         onClicked = {
-                            onItemClicked.invoke(item)
+                            viewModel.switch(item)
                         },
                         content = {
                             Image(
@@ -84,7 +98,9 @@ fun SwitchPersonaModal(
                     MaskSelection(
                         selected = false,
                         onClicked = {
-                            onAdd.invoke()
+                            navController.navigate(
+                                Uri.parse(Deeplinks.Wallet.Register.CreatePersona)
+                            )
                         },
                         content = {
                             Text(
