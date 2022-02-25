@@ -46,6 +46,7 @@ import com.dimension.maskbook.wallet.repository.IWalletConnectRepository
 import com.dimension.maskbook.wallet.repository.IWalletContactRepository
 import com.dimension.maskbook.wallet.repository.IWalletRepository
 import com.dimension.maskbook.wallet.repository.SendHistoryRepository
+import com.dimension.maskbook.wallet.repository.SendTokenConfirmData
 import com.dimension.maskbook.wallet.repository.TokenRepository
 import com.dimension.maskbook.wallet.repository.TransactionRepository
 import com.dimension.maskbook.wallet.repository.WalletConnectRepository
@@ -94,6 +95,7 @@ import com.dimension.maskbook.wallet.viewmodel.wallets.send.SearchAddressViewMod
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendConfirmViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendTokenDataViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendTokenViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.send.Web3TransactionConfirmViewModel
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectServerManager
 import com.dimension.maskbook.wallet.walletconnect.v1.client.WalletConnectClientManagerV1
@@ -313,6 +315,7 @@ private fun Module.provideViewModel() {
     viewModel { BackUpPasswordViewModel(get(), get()) }
     viewModel { (id: String) -> CollectibleDetailViewModel(id, get()) }
     viewModel { (tokenAddress: String) -> SendTokenDataViewModel(tokenAddress, get(), get()) }
+    viewModel { (data: SendTokenConfirmData) -> Web3TransactionConfirmViewModel(data, get(), get()) }
 }
 
 private fun Module.provideServices() {
