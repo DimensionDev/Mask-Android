@@ -3,9 +3,9 @@ import org.gradle.api.JavaVersion
 object Versions {
     object Android {
         const val min = 21
-        const val compile = 32
+        const val compile = 31
         const val target = compile
-        const val buildTools = "32.0.0"
+        const val buildTools = "31.0.0"
     }
 
     object Kotlin {
@@ -44,7 +44,7 @@ object Versions {
     const val maskWalletCore = "0.4.0"
     const val jodaTime = "2.10.13"
     const val gecko = "97.+"
-    const val mozilla_components = "98.0.7"
+    const val mozilla_components = "98.0.8"
     object Firebase {
         object Plugin {
             const val crashlytics = "2.8.1"

@@ -13,7 +13,6 @@ android {
         targetSdk = Versions.Android.target
         versionCode = Package.versionCode
         versionName = Package.versionName
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     compileOptions {

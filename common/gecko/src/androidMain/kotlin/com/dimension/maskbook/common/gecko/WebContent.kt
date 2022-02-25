@@ -22,19 +22,17 @@ package com.dimension.maskbook.common.gecko
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import mozilla.components.browser.state.helper.Target
 
 @Composable
 fun WebContent(
     modifier: Modifier = Modifier,
-    state: WebContentState,
+    controller: WebContentController,
 ) {
-    val context = LocalContext.current
     GeckoContent(
         modifier = modifier,
-        engine = state.engine,
+        engine = controller.engine,
         target = Target.SelectedTab,
-        store = state.store,
+        store = controller.store,
     )
 }

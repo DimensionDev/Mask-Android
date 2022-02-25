@@ -14,7 +14,7 @@ kotlin {
                 implementation("org.mozilla.components:browser-engine-gecko:${Versions.mozilla_components}")
                 implementation("org.mozilla.components:browser-state:${Versions.mozilla_components}")
                 implementation("org.mozilla.components:feature-tabs:${Versions.mozilla_components}")
-                implementation("org.mozilla.components:feature-sessions:${Versions.mozilla_components}")
+                implementation("org.mozilla.components:feature-session:${Versions.mozilla_components}")
             }
         }
         val androidTest by getting {
