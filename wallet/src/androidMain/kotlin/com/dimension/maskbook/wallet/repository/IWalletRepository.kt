@@ -209,6 +209,16 @@ data class SendTokenConfirmData(
     val onError: (Throwable) -> Unit,
 )
 
+data class ChainData(
+    val chainId: Long,
+    val name: String,
+    val fullName: String,
+    val nativeTokenID: String,
+    val logoURL: String,
+    val nativeToken: TokenData?,
+    val chainType: ChainType
+)
+
 @Serializable
 data class SendTransactionData(
     val from: String? = null,
@@ -246,6 +256,7 @@ interface IWalletRepository {
     suspend fun findWalletByAddress(address: String): WalletData?
     val wallets: Flow<List<WalletData>>
     val currentWallet: Flow<WalletData?>
+    val currentChain: Flow<ChainData?>
     fun setCurrentWallet(walletData: WalletData?)
     fun setCurrentWallet(walletId: String)
     fun generateNewMnemonic(): List<String>
@@ -265,7 +276,6 @@ interface IWalletRepository {
         address: String,
         tokenData: TokenData,
         gasLimit: Double,
-        gasFee: BigDecimal,
         maxFee: Double,
         maxPriorityFee: Double,
         onDone: (String?) -> Unit = {},
@@ -276,7 +286,6 @@ interface IWalletRepository {
         address: String,
         tokenData: TokenData,
         gasLimit: Double,
-        gasFee: BigDecimal,
         maxFee: Double,
         maxPriorityFee: Double,
         data: String,
@@ -288,7 +297,6 @@ interface IWalletRepository {
         address: String,
         chainType: ChainType,
         gasLimit: Double,
-        gasFee: BigDecimal,
         maxFee: Double,
         maxPriorityFee: Double,
         data: String,

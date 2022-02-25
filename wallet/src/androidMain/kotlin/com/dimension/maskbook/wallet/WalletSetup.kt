@@ -182,6 +182,7 @@ object WalletSetup : ModuleSetup {
                 .setTransactionExecutor(Dispatchers.IO.asExecutor())
                 .addMigrations(
                     RoomMigrations.MIGRATION_6_7,
+                    RoomMigrations.MIGRATION_7_8,
                 )
                 .build()
         }

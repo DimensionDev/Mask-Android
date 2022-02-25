@@ -687,7 +687,7 @@ fun NavGraphBuilder.walletsRoute(
         )
     ) {
         SendTokenHost(
-            tokenAddress = it.arguments?.getString("tokenAddress").orEmpty(),
+            tokenAddress = it.arguments?.getString("tokenAddress")?.let { if (it == "null") null else it }.orEmpty(),
             onBack = {
                 navController.popBackStack()
             },

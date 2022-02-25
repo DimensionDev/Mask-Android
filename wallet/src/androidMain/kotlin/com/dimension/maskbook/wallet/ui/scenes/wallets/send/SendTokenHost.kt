@@ -84,12 +84,12 @@ fun SendTokenHost(
     }
     val searchAddressViewModel = getViewModel<SearchAddressViewModel>()
 
-    val gasFee by gasFeeViewModel.gasPrice.observeAsState(initial = BigDecimal.ZERO)
     val gasLimit by gasFeeViewModel.gasLimit.observeAsState(initial = -1.0)
     val maxPriorityFee by gasFeeViewModel.maxPriorityFee.observeAsState(initial = -1.0)
     val maxFee by gasFeeViewModel.maxFee.observeAsState(initial = -1.0)
     val arrives by gasFeeViewModel.arrives.observeAsState(initial = "")
-    val ethPrice by gasFeeViewModel.ethPrice.observeAsState(initial = BigDecimal.ZERO)
+    val nativeToken by gasFeeViewModel.nativeToken.observeAsState(initial = null)
+    val usdValue by gasFeeViewModel.usdValue.observeAsState(initial = BigDecimal.ZERO)
     val gasTotal by gasFeeViewModel.gasTotal.observeAsState(initial = BigDecimal.ZERO)
     val tokenData by tokenDataViewModel.tokenData.collectAsState()
 
@@ -110,14 +110,12 @@ fun SendTokenHost(
                 val ensData by searchAddressViewModel.ensData.observeAsState()
                 val selectEnsData by searchAddressViewModel.selectEnsData.observeAsState()
                 val canConfirm by searchAddressViewModel.canConfirm.observeAsState()
-                val noTokenFound by tokenDataViewModel.noTokenFound.observeAsState()
 
                 val clipboardManager = LocalClipboardManager.current
                 val inAppNotification = LocalInAppNotification.current
 
                 SearchAddressScene(
                     onBack = onBack,
-                    tokenAddress = tokenAddress,
                     query = input,
                     canConfirm = canConfirm,
                     ensData = ensData,
@@ -130,8 +128,6 @@ fun SendTokenHost(
                     },
                     contacts = contacts,
                     recent = recent,
-                    noTokenFound = noTokenFound,
-                    onBuyToken = { /*TODO Logic: buy token*/ },
                     onScanQrCode = {
                         navController.navigate("ScanQrCode")
                     },
@@ -193,6 +189,9 @@ fun SendTokenHost(
                 ),
             ) {
                 val address = it.arguments?.getString("address") ?: return@composable
+                val biometricViewModel = getViewModel<BiometricViewModel>()
+                val biometricEnabled by biometricViewModel.biometricEnabled.observeAsState()
+                val walletTokenData by tokenDataViewModel.walletTokenData.observeAsState()
 
                 val viewModel = getViewModel<SendTokenViewModel> {
                     parametersOf(address)
@@ -201,28 +200,28 @@ fun SendTokenHost(
                 val amount by viewModel.amount.observeAsState()
                 val password by viewModel.password.observeAsState()
                 val canConfirm by viewModel.canConfirm.observeAsState()
+                val balance = walletTokenData?.count ?: BigDecimal.ZERO
+                val maxAmount = if (tokenData?.address == nativeToken?.address) {
+                    balance - gasTotal
+                } else {
+                    balance
+                }.let {
+                    if (it < BigDecimal.ZERO) BigDecimal.ZERO else it
+                }.humanizeToken()
 
-                val biometricViewModel = getViewModel<BiometricViewModel>()
-                val biometricEnabled by biometricViewModel.biometricEnabled.observeAsState()
-
-                val walletTokenData by tokenDataViewModel.walletTokenData.observeAsState()
-
-                val currentTokenData = tokenData
-                val currentAddressData = addressData
-                val currentWalletTokenData = walletTokenData
-                if (currentTokenData != null && currentAddressData != null && currentWalletTokenData != null) {
+                addressData?.let { currentAddressData ->
                     SendTokenScene(
                         onBack = { navController.popBackStack() },
                         addressData = currentAddressData,
                         onAddContact = { navController.navigate("AddContactSheet/$address") },
-                        tokenData = currentTokenData,
-                        walletTokenData = currentWalletTokenData,
+                        tokenData = tokenData,
+                        balance = balance,
                         onSelectToken = { navController.navigate("SearchToken") },
                         amount = amount,
-                        maxAmount = currentWalletTokenData.count,
+                        maxAmount = maxAmount,
                         onAmountChanged = { viewModel.setAmount(it) },
                         unlockType = if (biometricEnabled) UnlockType.BIOMETRIC else UnlockType.PASSWORD,
-                        gasFee = (gasTotal * ethPrice).humanizeDollar(),
+                        gasFee = (gasTotal * usdValue).humanizeDollar(),
                         arrivesIn = arrives,
                         onEditGasFee = { navController.navigate("EditGasFee") },
                         onSend = { type ->
@@ -240,16 +239,18 @@ fun SendTokenHost(
                         sendError = "",
                         paymentPassword = password,
                         onPaymentPasswordChanged = { viewModel.setPassword(it) },
-                        canConfirm = canConfirm,
+                        canConfirm = canConfirm &&
+                            balance > BigDecimal.ZERO &&
+                            amount.toBigDecimal() <= maxAmount.toBigDecimal()
                     )
                 }
             }
             bottomSheet("EditGasFee") {
                 val mode by gasFeeViewModel.gasPriceEditMode.collectAsState()
                 EditGasPriceSheet(
-                    price = (gasTotal * ethPrice).humanizeDollar(),
+                    price = (gasTotal * usdValue).humanizeDollar(),
                     costFee = gasTotal.humanizeToken(),
-                    costFeeUnit = stringResource(R.string.chain_short_name_eth), // TODO:
+                    costFeeUnit = nativeToken?.symbol ?: stringResource(R.string.chain_short_name_eth),
                     arrivesIn = arrives,
                     mode = mode,
                     gasLimit = gasLimit.toString(),
@@ -328,10 +329,10 @@ fun SendTokenHost(
                         addressData = currentAddressData,
                         tokenData = currentTokenData,
                         sendPrice = amount.humanizeToken(),
-                        gasFee = (gasTotal * ethPrice).humanizeDollar(),
-                        total = (amount * currentTokenData.price + gasTotal * ethPrice).humanizeDollar(),
+                        gasFee = (gasTotal * usdValue).humanizeDollar(),
+                        total = (amount * currentTokenData.price + gasTotal * usdValue).humanizeDollar(),
                         onConfirm = {
-                            viewModel.send(currentTokenData, amount, gasLimit, gasFee, maxFee, maxPriorityFee)
+                            viewModel.send(currentTokenData, amount, gasLimit, maxFee, maxPriorityFee)
                             onDone.invoke()
                             // open Wallet App if it is connected
                             if (deeplink.isNotEmpty()) {

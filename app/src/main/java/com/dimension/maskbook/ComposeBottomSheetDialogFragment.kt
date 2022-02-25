@@ -170,16 +170,16 @@ private fun SendTokenConfirmModal(
         val wallet by repository.currentWallet.observeAsState(initial = null)
         wallet?.let { wallet ->
             addressData?.let { addressData ->
+                // TODO get token with chainId in SendTokenConfirmData
                 wallet.tokens.firstOrNull { it.tokenData.address == stringResource(R.string.chain_short_name_eth) }?.tokenData?.let { tokenData ->
                     val gasFeeViewModel = getViewModel<GasFeeViewModel> {
                         parametersOf(data.data.gas?.fromHexString()?.toDouble() ?: 21000.0)
                     }
-                    val gasPrice by gasFeeViewModel.gasPrice.observeAsState(initial = BigDecimal.ZERO)
                     val gasLimit by gasFeeViewModel.gasLimit.observeAsState(initial = -1.0)
                     val maxPriorityFee by gasFeeViewModel.maxPriorityFee.observeAsState(initial = -1.0)
                     val maxFee by gasFeeViewModel.maxFee.observeAsState(initial = -1.0)
                     val arrives by gasFeeViewModel.arrives.observeAsState(initial = "")
-                    val ethPrice by gasFeeViewModel.ethPrice.observeAsState(initial = BigDecimal.ZERO)
+                    val usdValue by gasFeeViewModel.usdValue.observeAsState(initial = BigDecimal.ZERO)
                     val amount = data.data.value?.hexWei?.ether ?: BigDecimal.ZERO
                     val gasTotal by gasFeeViewModel.gasTotal.observeAsState(initial = BigDecimal.ZERO)
                     val chainType = data.data.chainId?.let { chainId ->
@@ -194,15 +194,14 @@ private fun SendTokenConfirmModal(
                                 addressData = addressData,
                                 tokenData = tokenData,
                                 sendPrice = amount.humanizeToken(),
-                                gasFee = (gasTotal * ethPrice).humanizeDollar(),
-                                total = (amount * tokenData.price + gasTotal * ethPrice).humanizeDollar(),
+                                gasFee = (gasTotal * usdValue).humanizeDollar(),
+                                total = (amount * tokenData.price + gasTotal * usdValue).humanizeDollar(),
                                 onConfirm = {
                                     repository.sendTokenWithCurrentWalletAndChainType(
                                         amount = amount,
                                         address = address,
                                         chainType = chainType,
                                         gasLimit = gasLimit,
-                                        gasFee = gasPrice,
                                         maxFee = maxFee,
                                         maxPriorityFee = maxPriorityFee,
                                         data = data.data.data ?: "",
@@ -225,7 +224,7 @@ private fun SendTokenConfirmModal(
                         composable("EditGasFee") {
                             val mode by gasFeeViewModel.gasPriceEditMode.observeAsState(initial = GasPriceEditMode.MEDIUM)
                             EditGasPriceSheet(
-                                price = (gasTotal * ethPrice).humanizeDollar(),
+                                price = (gasTotal * usdValue).humanizeDollar(),
                                 costFee = gasTotal.humanizeToken(),
                                 costFeeUnit = stringResource(R.string.chain_short_name_eth), // TODO:
                                 arrivesIn = arrives,

@@ -18,21 +18,28 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.db
+package com.dimension.maskbook.wallet.db.model
 
-import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
+import androidx.room.Embedded
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import androidx.room.Relation
 
-object RoomMigrations {
-    val MIGRATION_6_7 get() = object : Migration(6, 7) {
-        override fun migrate(database: SupportSQLiteDatabase) {
-            database.execSQL("ALTER TABLE DbSendHistory ADD COLUMN `name` TEXT DEFAULT '' NOT NULL")
-        }
-    }
+@Entity
+data class DbChainData(
+    @PrimaryKey val chainId: Long,
+    val name: String,
+    val fullName: String,
+    val nativeTokenID: String,
+    val logoURL: String,
+)
 
-    val MIGRATION_7_8 get() = object : Migration(7, 8) {
-        override fun migrate(database: SupportSQLiteDatabase) {
-            database.execSQL("CREATE TABLE IF NOT EXISTS `DbChainData` (`chainId` INTEGER NOT NULL, `name` TEXT NOT NULL,  `fullName` TEXT NOT NULL, `nativeTokenID` TEXT NOT NULL, `logoURL` TEXT NOT NULL, PRIMARY KEY(`chainId`))")
-        }
-    }
-}
+data class DbChainDataWithTokenData(
+    @Embedded
+    val chain: DbChainData,
+    @Relation(
+        parentColumn = "nativeTokenID",
+        entityColumn = "id",
+    )
+    val token: DbToken?
+)

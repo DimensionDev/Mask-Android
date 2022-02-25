@@ -25,22 +25,24 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import com.dimension.maskbook.wallet.db.model.DbToken
+import com.dimension.maskbook.wallet.db.model.DbChainData
+import com.dimension.maskbook.wallet.db.model.DbChainDataWithTokenData
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface TokenDao {
+interface ChainDao {
+
     @Transaction
-    @Query("SELECT * FROM DBTOKEN")
-    fun getAll(): Flow<List<DbToken>>
+    @Query("SELECT * FROM DbChainData")
+    suspend fun getAll(): List<DbChainDataWithTokenData>
+
     @Transaction
-    @Query("SELECT * FROM DBTOKEN WHERE id = :id")
-    suspend fun getById(id: String): DbToken?
-    @Transaction
-    @Query("SELECT * FROM DBTOKEN WHERE id = :id")
-    fun getByIdFlow(id: String): Flow<DbToken?>
-    @Query("DELETE FROM DBTOKEN WHERE id = :id")
-    suspend fun deleteById(id: String)
+    @Query("SELECT * FROM DbChainData WHERE chainId = :id")
+    fun getByIdFlow(id: Long): Flow<DbChainDataWithTokenData?>
+
+    @Query("DELETE FROM DbChainData WHERE chainId = :id")
+    suspend fun deleteById(id: Long)
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun add(data: List<DbToken>)
+    suspend fun add(data: List<DbChainData>)
 }

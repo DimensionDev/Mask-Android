@@ -69,18 +69,18 @@ class GasFeeModel {
 
     constructor(response: MaticGasFeeResponse) {
         low = GasFeeData(
-            maxPriorityFeePerGas = response.safeLow ?: 0.0,
-            maxFeePerGas = 0.0,
+            maxPriorityFeePerGas = 0.0,
+            maxFeePerGas = response.safeLow ?: 0.0,
         )
         medium = GasFeeData(
-            maxPriorityFeePerGas = response.standard ?: 0.0,
-            maxFeePerGas = 0.0,
+            maxPriorityFeePerGas = 0.0,
+            maxFeePerGas = response.standard ?: 0.0,
         )
         high = GasFeeData(
-            maxPriorityFeePerGas = response.fast ?: 0.0,
-            maxFeePerGas = 0.0,
+            maxPriorityFeePerGas = 0.0,
+            maxFeePerGas = response.fast ?: 0.0,
         )
-        baseFee = 0.0
+        baseFee = response.safeLow ?: 0.0
     }
 
     constructor(baseGasFee: Double) {
@@ -195,21 +195,23 @@ class GasFeeViewModel(
         }
     }
 
+    // gasTotal = (maxFeePerGas + maxPriorityFeePerGas) * GasLimit
     val gasTotal by lazy {
-        combine(gasPrice, gasLimit, gasFeeModel, maxPriorityFee) { price, limit, gasFeeModel, maxPriorityFee ->
-            if (gasFeeModel.baseFee != 0.0) {
-                (gasFeeModel.baseFee.toBigDecimal() + maxPriorityFee.toBigDecimal()).gwei.ether
-            } else {
-                price
-            } * limit.toBigDecimal()
+        combine(gasLimit, maxPriorityFee, maxFee) { limit, maxFee, maxPriorityFee ->
+            ((maxFee.toBigDecimal() + maxPriorityFee.toBigDecimal()).gwei.ether) * limit.toBigDecimal()
         }
     }
 
-    val ethPrice by lazy {
-        walletRepository.currentWallet
-            .mapNotNull { it }
-            .map { it.tokens.firstOrNull { it.tokenData.address == "eth" } }
-            .mapNotNull { it?.tokenData?.price }
+    val usdValue by lazy {
+        nativeToken.mapNotNull { it?.price }
+    }
+
+    // native token on current chain
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val nativeToken by lazy {
+        walletRepository.currentChain.mapLatest {
+            it?.nativeToken
+        }.asStateIn(viewModelScope, null)
     }
 
     @OptIn(ExperimentalTime::class)

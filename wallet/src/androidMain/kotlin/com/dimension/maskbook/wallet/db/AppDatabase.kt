@@ -26,6 +26,7 @@ import androidx.room.TypeConverter
 import androidx.room.TypeConverters
 import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.common.ext.JSON
+import com.dimension.maskbook.wallet.db.dao.ChainDao
 import com.dimension.maskbook.wallet.db.dao.CollectibleDao
 import com.dimension.maskbook.wallet.db.dao.SendHistoryDao
 import com.dimension.maskbook.wallet.db.dao.StoredKeyDao
@@ -36,6 +37,7 @@ import com.dimension.maskbook.wallet.db.dao.WalletBalanceDao
 import com.dimension.maskbook.wallet.db.dao.WalletContactDao
 import com.dimension.maskbook.wallet.db.dao.WalletDao
 import com.dimension.maskbook.wallet.db.dao.WalletTokenDao
+import com.dimension.maskbook.wallet.db.model.DbChainData
 import com.dimension.maskbook.wallet.db.model.DbCollectible
 import com.dimension.maskbook.wallet.db.model.DbSendHistory
 import com.dimension.maskbook.wallet.db.model.DbStoredKey
@@ -61,8 +63,9 @@ import kotlinx.serialization.encodeToString
         DbWalletBalance::class,
         DbCollectible::class,
         DbWCWallet::class,
+        DbChainData::class,
     ],
-    version = 7,
+    version = 8,
 )
 @TypeConverters(BigDecimalTypeConverter::class, StringListConverter::class)
 abstract class AppDatabase : RoomDatabase() {
@@ -76,6 +79,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun walletBalanceDao(): WalletBalanceDao
     abstract fun collectibleDao(): CollectibleDao
     abstract fun wcWalletDao(): WCWalletDao
+    abstract fun chainDao(): ChainDao
 }
 
 class BigDecimalTypeConverter {
