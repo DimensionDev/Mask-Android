@@ -21,7 +21,7 @@
 package com.dimension.maskbook.persona.export
 
 import com.dimension.maskbook.persona.export.model.PersonaData
-import com.dimension.maskbook.persona.export.model.PlatformType
+import com.dimension.maskbook.persona.export.model.SocialProfile
 import kotlinx.coroutines.flow.Flow
 
 interface PersonaServices {
@@ -29,7 +29,7 @@ interface PersonaServices {
     fun updateCurrentPersona(value: String)
     fun createPersonaFromMnemonic(value: List<String>, name: String)
     fun createPersonaFromPrivateKey(value: String)
-    fun finishConnectingProcess(userName: String, platformType: PlatformType)
+    fun finishConnectingProcess(profile: SocialProfile, personaId: String)
     fun cancelConnectingProcess()
     fun saveEmailForCurrentPersona(value: String)
     fun savePhoneForCurrentPersona(value: String)

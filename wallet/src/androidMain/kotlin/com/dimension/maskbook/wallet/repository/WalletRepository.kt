@@ -39,7 +39,6 @@ import com.dimension.maskbook.debankapi.model.Token
 import com.dimension.maskbook.wallet.db.AppDatabase
 import com.dimension.maskbook.wallet.db.model.CoinPlatformType
 import com.dimension.maskbook.wallet.db.model.DbChainData
-import com.dimension.maskbook.wallet.db.model.DbChainDataWithTokenData
 import com.dimension.maskbook.wallet.db.model.DbStoredKey
 import com.dimension.maskbook.wallet.db.model.DbToken
 import com.dimension.maskbook.wallet.db.model.DbWallet
@@ -109,11 +108,12 @@ class WalletRepository(
     @OptIn(ExperimentalTime::class)
     override fun init() {
         tokenScope.launch {
+            refreshChainData()
             while (true) {
                 delay(12.seconds)
                 refreshCurrentWalletToken()
                 refreshCurrentWalletCollectibles()
-                refreshChainDataWithTokens()
+                refreshNativeTokens()
             }
         }
     }
@@ -232,14 +232,9 @@ class WalletRepository(
         }
     }
 
-    private var isChainRefreshed = false
-    private suspend fun refreshChainDataWithTokens() {
+    private suspend fun refreshChainData() {
         try {
-            val chains = if (isChainRefreshed) {
-                database.chainDao().getAll().map { it.chain }.ifEmpty { null }
-            } else {
-                null
-            } ?: services.debankServices.getChainList().mapNotNull {
+            val chains = services.debankServices.getChainList().mapNotNull {
                 it.id?.let { id ->
                     try {
                         val chainID = ChainID.valueOf(id)
@@ -256,28 +251,34 @@ class WalletRepository(
                         null
                     }
                 }
-            }.also {
-                isChainRefreshed = true
             }
+            database.chainDao().add(chains)
+        } catch (e: Throwable) {
+            e.printStackTrace()
+        }
+    }
 
-            val chainsWithToken = chains.mapNotNull {
+    private suspend fun refreshNativeTokens() {
+        try {
+            val chains = database.chainDao().getAll().map { it.chain }.ifEmpty {
+                // in case init refreshChainData failed
+                refreshChainData()
+                database.chainDao().getAll().map { it.chain }
+            }
+            val tokens = chains.mapNotNull {
                 try {
                     val chainId = ChainType.valueOf(it.name).dbank
-                    DbChainDataWithTokenData(
-                        chain = it,
-                        token = services.debankServices.token(
-                            id = it.nativeTokenID ?: "",
-                            chainId = ChainType.valueOf(it.name).dbank
-                        ).toDbToken(chainId)
-                    )
+                    services.debankServices.token(
+                        id = it.nativeTokenID,
+                        chainId = ChainType.valueOf(it.name).dbank
+                    ).toDbToken(chainId)
                 } catch (e: Throwable) {
                     null
                 }
             }
 
             database.withTransaction {
-                database.tokenDao().add(chainsWithToken.map { it.token })
-                database.chainDao().add(chainsWithToken.map { it.chain })
+                database.tokenDao().add(tokens)
             }
         } catch (e: Throwable) {
             e.printStackTrace()
@@ -316,7 +317,7 @@ class WalletRepository(
                     fullName = it.chain.fullName,
                     nativeTokenID = it.chain.nativeTokenID,
                     logoURL = it.chain.logoURL,
-                    nativeToken = TokenData.fromDb(it.token),
+                    nativeToken = it.token?.let { token -> TokenData.fromDb(token) },
                     chainType = ChainType.valueOf(it.chain.name)
                 )
             }

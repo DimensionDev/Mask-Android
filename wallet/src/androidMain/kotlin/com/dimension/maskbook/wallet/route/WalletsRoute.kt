@@ -158,17 +158,17 @@ fun NavGraphBuilder.walletsRoute(
             val viewModel = getViewModel<TokenDetailViewModel> {
                 parametersOf(id)
             }
-            val token by viewModel.tokenData.observeAsState(initial = null)
-            val transaction by viewModel.transaction.observeAsState(initial = emptyList())
-            val walletTokenData by viewModel.walletTokenData.observeAsState(initial = null)
-            val dWebData by viewModel.dWebData.observeAsState(initial = null)
+            val token by viewModel.tokenData.observeAsState()
+            val transactions by viewModel.transactions.observeAsState()
+            val walletTokenData by viewModel.walletTokenData.observeAsState()
+            val dWebData by viewModel.dWebData.observeAsState()
             walletTokenData?.let { walletTokenData ->
                 token?.let { token ->
                     TokenDetailScene(
                         onBack = { navController.popBackStack() },
                         tokenData = token,
                         walletTokenData = walletTokenData,
-                        transactions = transaction,
+                        transactions = transactions,
                         onSpeedUp = { },
                         onCancel = { },
                         onSend = {
@@ -380,10 +380,10 @@ fun NavGraphBuilder.walletsRoute(
     }
     composable(WalletRoute.WalletManagementTransactionHistory) {
         val viewModel = getViewModel<WalletTransactionHistoryViewModel>()
-        val transaction by viewModel.transactions.observeAsState(initial = emptyList())
+        val transactions by viewModel.transactions.observeAsState()
         WalletTransactionHistoryScene(
             onBack = { navController.popBackStack() },
-            transactions = transaction,
+            transactions = transactions,
             onSpeedUp = {
                 // TODO:
             },

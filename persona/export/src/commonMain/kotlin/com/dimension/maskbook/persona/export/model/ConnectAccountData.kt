@@ -18,28 +18,9 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.db.model
+package com.dimension.maskbook.persona.export.model
 
-import androidx.room.Embedded
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-import androidx.room.Relation
-
-@Entity
-data class DbChainData(
-    @PrimaryKey val chainId: Long,
-    val name: String,
-    val fullName: String,
-    val nativeTokenID: String,
-    val logoURL: String,
-)
-
-data class DbChainDataWithTokenData(
-    @Embedded
-    val chain: DbChainData,
-    @Relation(
-        parentColumn = "nativeTokenID",
-        entityColumn = "id",
-    )
-    val token: DbToken?
+data class ConnectAccountData(
+    val personaId: String,
+    val profile: SocialProfile,
 )

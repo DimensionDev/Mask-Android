@@ -150,6 +150,10 @@ object JSMethod {
             return MessageChannel.executeMessage("SNSAdaptor_getCurrentDetectedProfile")
         }
 
+        suspend fun getCurrentDetectedProfileDelegateToSNSAdaptor(): String? {
+            return MessageChannel.executeMessage("getCurrentDetectedProfile_delegate_to_SNSAdaptor")
+        }
+
         suspend fun createPersonaByMnemonic(
             mnemonic: String,
             nickname: String,

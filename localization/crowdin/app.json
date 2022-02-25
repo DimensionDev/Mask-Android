@@ -560,7 +560,8 @@
                 "receive": "Received %s",
                 "swap": "WETH Deposit",
                 "cancel": "Cancel %s",
-                "approve": "Approve %s"
+                "approve": "Approve %s",
+                "unknown": "Unknown %s"
             }
         },
         "wallet_receive": {

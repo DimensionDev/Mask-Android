@@ -114,6 +114,7 @@ fun WalletCard(
                     ChainType.bsc -> wallet.balance[DbWalletBalanceType.bsc]
                     ChainType.polygon -> wallet.balance[DbWalletBalanceType.polygon]
                     ChainType.arbitrum -> wallet.balance[DbWalletBalanceType.arbitrum]
+                    ChainType.xdai -> wallet.balance[DbWalletBalanceType.xdai]
                     else -> null
                 } ?: BigDecimal.ZERO
             }
@@ -291,6 +292,7 @@ private enum class DisplayAmountType(
     Binance(R.drawable.wallet_2, ChainType.bsc),
     Matic(R.drawable.wallet_3, ChainType.polygon),
     Arbitrum(R.drawable.wallet_4, ChainType.arbitrum),
+    Xdai(R.drawable.wallet_5, ChainType.xdai),
 }
 
 private object WalletCardDefaults {
