@@ -88,7 +88,7 @@ class ComposeActivity : ComponentActivity() {
                 ) {
                     MaskTheme {
                         App(
-                            onBack = { finish() },
+                            onFinish = { finish() },
                             startDestination = startDestination,
                         )
                     }
@@ -102,7 +102,7 @@ class ComposeActivity : ComponentActivity() {
 @Composable
 fun App(
     startDestination: String = ComposeActivity.Companion.Destination.register,
-    onBack: () -> Unit,
+    onFinish: () -> Unit,
 ) {
     val navController = rememberAnimatedNavController()
     val bottomSheetNavigator = rememberMaskBottomSheetNavigator()
@@ -153,11 +153,11 @@ fun App(
                     )
                 },
             ) {
-                mainRoute(onBack = onBack)
-                WalletSetup.route(this, navController = navController, onBack = onBack)
-                LabsSetup.route(this, navController = navController, onBack = onBack)
-                PersonaSetup.route(this, navController = navController, onBack = onBack)
-                SettingSetup.route(this, navController = navController, onBack = onBack)
+                mainRoute(onBack = onFinish)
+                WalletSetup.route(this, navController = navController, onFinish = onFinish)
+                LabsSetup.route(this, navController = navController, onFinish = onFinish)
+                PersonaSetup.route(this, navController = navController, onFinish = onFinish)
+                SettingSetup.route(this, navController = navController, onFinish = onFinish)
             }
         }
     }

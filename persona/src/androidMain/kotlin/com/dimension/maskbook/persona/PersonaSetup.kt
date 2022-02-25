@@ -51,8 +51,8 @@ import org.koin.mp.KoinPlatformTools
 
 object PersonaSetup : ModuleSetup {
 
-    override fun NavGraphBuilder.route(navController: NavController, onBack: () -> Unit) {
-        generatedRoute(navController, onFinish = onBack)
+    override fun NavGraphBuilder.route(navController: NavController, onFinish: () -> Unit) {
+        generatedRoute(navController, onFinish = onFinish)
     }
 
     override fun dependencyInject() = module {
