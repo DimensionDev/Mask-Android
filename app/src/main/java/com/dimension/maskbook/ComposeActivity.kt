@@ -50,6 +50,7 @@ import com.dimension.maskbook.common.ui.widget.rememberMaskBottomSheetNavigator
 import com.dimension.maskbook.labs.LabsSetup
 import com.dimension.maskbook.persona.PersonaSetup
 import com.dimension.maskbook.setting.SettingSetup
+import com.dimension.maskbook.util.ComposeDebugTool
 import com.dimension.maskbook.wallet.WalletSetup
 import com.dimension.maskbook.wallet.route.WalletRoute
 import com.dimension.maskbook.wallet.route.mainRoute
@@ -159,6 +160,7 @@ fun App(
                 PersonaSetup.route(this, navController = navController, onBack = onBack)
                 SettingSetup.route(this, navController = navController, onBack = onBack)
             }
+            ComposeDebugTool(navController)
         }
     }
 }
