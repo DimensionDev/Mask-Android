@@ -35,6 +35,7 @@ import com.dimension.maskbook.common.ModuleSetup
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.ui.tab.TabScreen
+import com.dimension.maskbook.persona.export.model.ConnectAccountData
 import com.dimension.maskbook.wallet.db.AppDatabase
 import com.dimension.maskbook.wallet.db.RoomMigrations
 import com.dimension.maskbook.wallet.repository.CollectibleRepository
@@ -181,6 +182,7 @@ object WalletSetup : ModuleSetup {
                 .setTransactionExecutor(Dispatchers.IO.asExecutor())
                 .addMigrations(
                     RoomMigrations.MIGRATION_6_7,
+                    RoomMigrations.MIGRATION_7_8,
                 )
                 .build()
         }
@@ -256,7 +258,7 @@ private fun Module.provideViewModel() {
             get()
         )
     }
-    viewModel { UserNameModalViewModel(get()) }
+    viewModel { (data: ConnectAccountData) -> UserNameModalViewModel(get(), data) }
     viewModel { CreateWalletRecoveryKeyViewModel(get()) }
     viewModel { SetUpPaymentPasswordViewModel(get()) }
     viewModel { TouchIdEnableViewModel() }

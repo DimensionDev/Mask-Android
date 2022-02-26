@@ -24,18 +24,20 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.persona.export.PersonaServices
-import com.dimension.maskbook.persona.export.model.PlatformType
+import com.dimension.maskbook.persona.export.model.ConnectAccountData
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class UserNameModalViewModel(
-    private val personaServices: PersonaServices
+    private val personaServices: PersonaServices,
+    private val data: ConnectAccountData,
 ) : ViewModel() {
-    private val _userName = MutableStateFlow("@")
-    val userName = _userName.asStateIn(viewModelScope, "@")
+    private val _userName = MutableStateFlow(data.profile.userId)
+    val userName = _userName.asStateIn(viewModelScope, data.profile.userId)
     fun setUserName(value: String) {
         _userName.value = value
     }
+
     fun done(name: String) {
-        personaServices.finishConnectingProcess(name.replace("@", ""), PlatformType.Twitter)
+        personaServices.finishConnectingProcess(data.profile.copy(userId = name), data.personaId)
     }
 }

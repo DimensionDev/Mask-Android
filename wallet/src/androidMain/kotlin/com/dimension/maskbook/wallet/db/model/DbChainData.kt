@@ -18,14 +18,28 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.labs.route
+package com.dimension.maskbook.wallet.db.model
 
-import com.dimension.maskbook.common.routeProcessor.annotations.Route
+import androidx.room.Embedded
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+import androidx.room.Relation
 
-@Suppress("CONST_VAL_WITHOUT_INITIALIZER")
-@Route
-expect object LabsRoute {
-    const val PluginSettings: String
-    const val LabsTransak: String
-    const val MarketTrendSettings: String
-}
+@Entity
+data class DbChainData(
+    @PrimaryKey val chainId: Long,
+    val name: String,
+    val fullName: String,
+    val nativeTokenID: String,
+    val logoURL: String,
+)
+
+data class DbChainDataWithTokenData(
+    @Embedded
+    val chain: DbChainData,
+    @Relation(
+        parentColumn = "nativeTokenID",
+        entityColumn = "id",
+    )
+    val token: DbToken?
+)

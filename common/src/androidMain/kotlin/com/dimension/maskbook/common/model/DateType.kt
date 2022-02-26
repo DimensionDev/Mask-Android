@@ -18,14 +18,12 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.labs.route
+package com.dimension.maskbook.common.model
 
-import com.dimension.maskbook.common.routeProcessor.annotations.Route
-
-@Suppress("CONST_VAL_WITHOUT_INITIALIZER")
-@Route
-expect object LabsRoute {
-    const val PluginSettings: String
-    const val LabsTransak: String
-    const val MarketTrendSettings: String
+sealed class DateType {
+    object Today : DateType()
+    object Yesterday : DateType()
+    object ThisMonth : DateType()
+    object ThisYear : DateType()
+    object OlderDate : DateType()
 }

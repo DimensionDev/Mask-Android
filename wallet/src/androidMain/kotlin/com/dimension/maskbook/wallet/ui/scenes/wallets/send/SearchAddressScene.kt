@@ -76,7 +76,6 @@ import com.dimension.maskbook.wallet.viewmodel.wallets.send.EnsData
 @Composable
 fun SearchAddressScene(
     onBack: () -> Unit,
-    tokenAddress: String,
     query: String,
     canConfirm: Boolean,
     ensData: EnsData?,
@@ -85,8 +84,6 @@ fun SearchAddressScene(
     onQueryChanged: (String) -> Unit,
     contacts: List<SearchAddressData>,
     recent: List<SearchAddressData>,
-    noTokenFound: Boolean,
-    onBuyToken: () -> Unit,
     onScanQrCode: () -> Unit,
     onSearch: () -> Unit,
     onCopy: (String) -> Unit,
@@ -105,13 +102,6 @@ fun SearchAddressScene(
                 )
             }
         ) {
-            if (noTokenFound) {
-                EmptyTokenWarning(
-                    tokenName = tokenAddress,
-                    onBuy = onBuyToken
-                )
-                return@MaskScaffold
-            }
 
             Column(
                 modifier = Modifier

@@ -18,20 +18,31 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.persona.export
+package com.dimension.maskbook.wallet.db.dao
 
-import com.dimension.maskbook.persona.export.model.PersonaData
-import com.dimension.maskbook.persona.export.model.SocialProfile
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Transaction
+import com.dimension.maskbook.wallet.db.model.DbChainData
+import com.dimension.maskbook.wallet.db.model.DbChainDataWithTokenData
 import kotlinx.coroutines.flow.Flow
 
-interface PersonaServices {
-    val currentPersona: Flow<PersonaData?>
-    fun updateCurrentPersona(value: String)
-    fun createPersonaFromMnemonic(value: List<String>, name: String)
-    fun createPersonaFromPrivateKey(value: String)
-    fun finishConnectingProcess(profile: SocialProfile, personaId: String)
-    fun cancelConnectingProcess()
-    fun saveEmailForCurrentPersona(value: String)
-    fun savePhoneForCurrentPersona(value: String)
-    fun refreshPersonaData()
+@Dao
+interface ChainDao {
+
+    @Transaction
+    @Query("SELECT * FROM DbChainData")
+    suspend fun getAll(): List<DbChainDataWithTokenData>
+
+    @Transaction
+    @Query("SELECT * FROM DbChainData WHERE chainId = :id")
+    fun getByIdFlow(id: Long): Flow<DbChainDataWithTokenData?>
+
+    @Query("DELETE FROM DbChainData WHERE chainId = :id")
+    suspend fun deleteById(id: Long)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun add(data: List<DbChainData>)
 }
