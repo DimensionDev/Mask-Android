@@ -389,10 +389,6 @@ fun SettingsChangeEmailChangeCode(
     val canSend by viewModel.canSend.observeAsState()
     val countDown by viewModel.countdown.observeAsState()
 
-    LaunchedEffect(Unit) {
-        viewModel.sendCodeNow(email)
-    }
-
     EmailCodeInputModal(
         email = email,
         buttonEnabled = loading,
@@ -678,10 +674,6 @@ fun SettingsChangePhoneChangeCode(
     val valid by viewModel.codeValid.observeAsState()
     val countDown by viewModel.countdown.observeAsState()
     val loading by viewModel.loading.observeAsState()
-
-    LaunchedEffect(Unit) {
-        viewModel.sendCodeNow(phone)
-    }
 
     PhoneCodeInputModal(
         phone = phone,
