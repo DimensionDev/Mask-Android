@@ -18,23 +18,26 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook
+package com.dimension.maskbook.extension.ext
 
-import android.content.Intent
-import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import com.dimension.maskbook.util.getSettings
+import android.net.Uri
+import com.dimension.maskbook.extension.export.model.Site
 
-class SplashActivity : AppCompatActivity() {
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-//        startActivity(Intent(this, ComposeActivity::class.java))
-        if (!getSettings("is_intro_shown", false)) {
-            startActivity(Intent(this, IntroActivity::class.java))
-        } else {
-            startActivity(Intent(this, ComposeActivity::class.java))
-        }
-        finish()
+internal val Site.url: String
+    get() = when (this) {
+        Site.Twitter -> "https://m.twitter.com"
+        Site.Facebook -> "https://m.facebook.com"
     }
-}
+
+internal val String.site: Site?
+    get() {
+        if (this.isEmpty()) {
+            return null
+        }
+        val uri = Uri.parse(this)
+        return when (uri.host?.lowercase()) {
+            "mobile.twitter.com" -> Site.Twitter
+            "m.facebook.com" -> Site.Facebook
+            else -> null
+        }
+    }

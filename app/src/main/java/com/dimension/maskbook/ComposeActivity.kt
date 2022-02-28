@@ -23,6 +23,7 @@ package com.dimension.maskbook
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.compose.setContent
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
@@ -34,7 +35,6 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import androidx.fragment.app.FragmentActivity
 import androidx.navigation.plusAssign
 import coil.ImageLoader
 import coil.compose.LocalImageLoader
@@ -47,26 +47,23 @@ import com.dimension.maskbook.common.ui.theme.MaskTheme
 import com.dimension.maskbook.common.ui.theme.modalScrimColor
 import com.dimension.maskbook.common.ui.widget.LocalWindowInsetsController
 import com.dimension.maskbook.common.ui.widget.rememberMaskBottomSheetNavigator
+import com.dimension.maskbook.extension.ExtensionSetup
 import com.dimension.maskbook.labs.LabsSetup
 import com.dimension.maskbook.persona.PersonaSetup
 import com.dimension.maskbook.setting.SettingSetup
 import com.dimension.maskbook.wallet.WalletSetup
-import com.dimension.maskbook.wallet.route.WalletRoute
 import com.dimension.maskbook.wallet.route.mainRoute
 import com.google.accompanist.insets.ProvideWindowInsets
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.ModalBottomSheetLayout
+import org.koin.android.scope.AndroidScopeComponent
+import org.koin.androidx.scope.activityRetainedScope
+import org.koin.core.scope.Scope
 
-class ComposeActivity : FragmentActivity() {
-    companion object {
-        object Destination {
-            val register = WalletRoute.Register.Init
-            val main = CommonRoute.Main.Home
-        }
-    }
-
+class ComposeActivity : AppCompatActivity(), AndroidScopeComponent {
+    override val scope: Scope by activityRetainedScope()
     private val windowInsetsControllerCompat by lazy {
         WindowInsetsControllerCompat(window, window.decorView)
     }
@@ -75,7 +72,6 @@ class ComposeActivity : FragmentActivity() {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-        val startDestination = intent.getStringExtra("startDestination") ?: Destination.register
         setContent {
             CompositionLocalProvider(
                 LocalImageLoader provides ImageLoader.Builder(this).componentRegistry {
@@ -89,7 +85,6 @@ class ComposeActivity : FragmentActivity() {
                     MaskTheme {
                         App(
                             onFinish = { finish() },
-                            startDestination = startDestination,
                         )
                     }
                 }
@@ -101,7 +96,7 @@ class ComposeActivity : FragmentActivity() {
 @OptIn(ExperimentalMaterialNavigationApi::class, ExperimentalAnimationApi::class)
 @Composable
 fun App(
-    startDestination: String = ComposeActivity.Companion.Destination.register,
+    startDestination: String = CommonRoute.Main.Home,
     onFinish: () -> Unit,
 ) {
     val navController = rememberAnimatedNavController()
@@ -158,6 +153,7 @@ fun App(
                 LabsSetup.route(this, navController = navController, onFinish = onFinish)
                 PersonaSetup.route(this, navController = navController, onFinish = onFinish)
                 SettingSetup.route(this, navController = navController, onFinish = onFinish)
+                ExtensionSetup.route(this, navController = navController, onFinish = onFinish)
             }
         }
     }

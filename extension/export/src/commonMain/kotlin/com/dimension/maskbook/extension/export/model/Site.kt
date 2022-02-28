@@ -18,23 +18,9 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook
+package com.dimension.maskbook.extension.export.model
 
-import android.content.Intent
-import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import com.dimension.maskbook.util.getSettings
-
-class SplashActivity : AppCompatActivity() {
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-//        startActivity(Intent(this, ComposeActivity::class.java))
-        if (!getSettings("is_intro_shown", false)) {
-            startActivity(Intent(this, IntroActivity::class.java))
-        } else {
-            startActivity(Intent(this, ComposeActivity::class.java))
-        }
-        finish()
-    }
+enum class Site {
+    Twitter,
+    Facebook,
 }

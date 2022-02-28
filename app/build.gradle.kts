@@ -67,6 +67,7 @@ dependencies {
     implementation(projects.persona)
     implementation(projects.labs)
     implementation(projects.setting)
+    implementation(projects.extension)
     implementation("io.github.dimensiondev:maskwalletcore:${Versions.maskWalletCore}")
 
     if (enableFirebase) {

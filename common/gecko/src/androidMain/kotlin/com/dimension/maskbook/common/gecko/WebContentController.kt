@@ -52,11 +52,12 @@ import org.mozilla.geckoview.GeckoRuntime
 import java.io.Closeable
 
 private const val BackgroundPortName = "browser"
-private const val PERMISSION_CODE = 34298
 
 class WebContentController(
-    fragmentActivity: FragmentActivity
+    fragmentActivity: FragmentActivity,
 ) : Closeable {
+    private val _isExtensionConnected = MutableStateFlow(false)
+    val isExtensionConnected = _isExtensionConnected.asSharedFlow()
     private val _browserState = MutableStateFlow<BrowserState?>(null)
     private var _port: Port? = null
     private val runtime by lazy {
@@ -124,10 +125,12 @@ class WebContentController(
     private val messageHandler = object : MessageHandler {
         override fun onPortConnected(port: Port) {
             _port = port
+            _isExtensionConnected.value = true
         }
 
         override fun onPortDisconnected(port: Port) {
             _port = null
+            _isExtensionConnected.value = false
         }
 
         override fun onPortMessage(message: Any, port: Port) {

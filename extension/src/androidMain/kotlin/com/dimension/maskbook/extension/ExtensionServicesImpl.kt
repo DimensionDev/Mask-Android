@@ -18,23 +18,23 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook
+package com.dimension.maskbook.extension
 
-import android.content.Intent
-import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
-import com.dimension.maskbook.util.getSettings
+import com.dimension.maskbook.extension.export.ExtensionServices
+import com.dimension.maskbook.extension.export.model.Site
+import com.dimension.maskbook.extension.repository.ExtensionRepository
+import kotlinx.coroutines.flow.Flow
 
-class SplashActivity : AppCompatActivity() {
+class ExtensionServicesImpl(
+    private val repository: ExtensionRepository,
+) : ExtensionServices {
+    override val site: Flow<Site>
+        get() = repository.currentSite
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-//        startActivity(Intent(this, ComposeActivity::class.java))
-        if (!getSettings("is_intro_shown", false)) {
-            startActivity(Intent(this, IntroActivity::class.java))
-        } else {
-            startActivity(Intent(this, ComposeActivity::class.java))
-        }
-        finish()
+    override fun setSite(site: Site) {
+        repository.setCurrentSite(site)
     }
+
+    override val isExtensionActive: Flow<Boolean>
+        get() = repository.isExtensionConnected
 }

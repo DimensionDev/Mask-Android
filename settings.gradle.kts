@@ -40,6 +40,8 @@ include(
     ":persona:export",
     ":setting",
     ":setting:export",
+    ":extension",
+    ":extension:export",
 )
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
