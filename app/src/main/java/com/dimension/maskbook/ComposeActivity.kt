@@ -160,7 +160,9 @@ fun App(
                 PersonaSetup.route(this, navController = navController, onBack = onBack)
                 SettingSetup.route(this, navController = navController, onBack = onBack)
             }
-            ComposeDebugTool(navController)
+            if (BuildConfig.DEBUG) {
+                ComposeDebugTool(navController)
+            }
         }
     }
 }

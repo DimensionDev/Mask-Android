@@ -36,33 +36,30 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.dimension.maskbook.BuildConfig
 
 @Composable
 fun ComposeDebugTool(
     rootNavController: NavController,
 ) {
-    if (BuildConfig.DEBUG) {
-        val state by rootNavController.currentBackStackEntryAsState()
-        var debugOpen by remember {
-            mutableStateOf(false)
+    val state by rootNavController.currentBackStackEntryAsState()
+    var debugOpen by remember {
+        mutableStateOf(false)
+    }
+    Column(modifier = Modifier.fillMaxSize()) {
+        Button(
+            modifier = Modifier.padding(top = 56.dp),
+            onClick = {
+                debugOpen = !debugOpen
+            }
+        ) {
+            Text("Debug")
         }
-        Column(modifier = Modifier.fillMaxSize()) {
-            Button(
-                modifier = Modifier.padding(top = 56.dp),
-                onClick = {
-                    debugOpen = !debugOpen
-                }
-            ) {
-                Text("Debug")
-            }
-            if (debugOpen) {
-                Text(
-                    modifier = Modifier.background(MaterialTheme.colors.surface),
-                    text = state?.destination?.route ?: "UnKnow route",
-                    color = MaterialTheme.colors.primary
-                )
-            }
+        if (debugOpen) {
+            Text(
+                modifier = Modifier.background(MaterialTheme.colors.surface),
+                text = state?.destination?.route ?: "UnKnow route",
+                color = MaterialTheme.colors.primary
+            )
         }
     }
 }
