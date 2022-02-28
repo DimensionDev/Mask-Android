@@ -20,8 +20,8 @@
  */
 package com.dimension.maskbook.common.gecko.sample
 
+import android.content.Intent
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -42,27 +42,44 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.fragment.app.FragmentActivity
 import com.dimension.maskbook.common.gecko.WebContent
 import com.dimension.maskbook.common.gecko.WebContentController
 
-class MainActivity : ComponentActivity() {
+class MainActivity : FragmentActivity() {
+    lateinit var controller: WebContentController
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        controller = WebContentController(this).apply {
+            installExtensions(
+                "borderify@mozilla.org",
+                "resource://android/assets/extensions/borderify/"
+            )
+        }
         setContent {
             MaterialTheme {
-                SampleApp()
+                SampleApp(
+                    controller
+                )
             }
         }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        controller.onActivityResult(requestCode, resultCode, data)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        controller.close()
     }
 }
 
 @Composable
-fun SampleApp() {
-    val context = LocalContext.current
-    val controller = remember {
-        WebContentController(context.applicationContext)
-    }
+fun SampleApp(
+    controller: WebContentController
+) {
     val canGoBack by controller.canGoBack.collectAsState(initial = false)
     val canGoForward by controller.canGoForward.collectAsState(initial = false)
     val count by controller.tabCount.collectAsState(initial = 0)
