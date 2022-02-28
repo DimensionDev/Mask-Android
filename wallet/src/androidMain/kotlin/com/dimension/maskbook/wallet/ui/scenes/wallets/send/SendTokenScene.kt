@@ -70,7 +70,6 @@ import com.dimension.maskbook.common.ui.widget.button.SecondaryButton
 import com.dimension.maskbook.common.ui.widget.button.clickable
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.export.model.TokenData
-import com.dimension.maskbook.wallet.export.model.WalletTokenData
 import com.dimension.maskbook.wallet.ext.humanizeDollar
 import com.dimension.maskbook.wallet.ext.humanizeToken
 import com.dimension.maskbook.wallet.repository.SearchAddressData
@@ -81,11 +80,11 @@ fun SendTokenScene(
     onBack: () -> Unit,
     addressData: SearchAddressData,
     onAddContact: () -> Unit,
-    tokenData: TokenData,
-    walletTokenData: WalletTokenData,
+    tokenData: TokenData?,
+    balance: BigDecimal,
     onSelectToken: () -> Unit,
     amount: String,
-    maxAmount: BigDecimal,
+    maxAmount: String,
     onAmountChanged: (String) -> Unit,
     unlockType: UnlockType,
     gasFee: String,
@@ -126,9 +125,9 @@ fun SendTokenScene(
                 Spacer(modifier = Modifier.height(20.dp))
 
                 TokenContent(
-                    logoUri = tokenData.logoURI ?: "",
-                    tokenName = tokenData.name,
-                    balance = "${walletTokenData.count.humanizeToken()} ${tokenData.symbol} ≈ ${(walletTokenData.count * tokenData.price).humanizeDollar()}",
+                    logoUri = tokenData?.logoURI ?: "",
+                    tokenName = tokenData?.name ?: "",
+                    balance = "${balance.humanizeToken()} ${tokenData?.symbol ?: ""} ≈ ${(balance * (tokenData?.price ?: BigDecimal.ZERO)).humanizeDollar()}",
                     onClick = onSelectToken
                 )
 
@@ -140,8 +139,8 @@ fun SendTokenScene(
                             onAmountChanged.invoke(it)
                         }
                     },
-                    onMax = { onAmountChanged.invoke(maxAmount.toPlainString()) },
-                    error = amount.toBigDecimal() > maxAmount
+                    onMax = { onAmountChanged.invoke(maxAmount) },
+                    error = amount.toBigDecimal() > maxAmount.toBigDecimal()
                 )
                 Spacer(modifier = Modifier.height(16.dp))
 

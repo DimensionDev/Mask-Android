@@ -21,6 +21,7 @@
 package com.dimension.maskbook.common.routeProcessor
 
 import com.dimension.maskbook.common.routeProcessor.annotations.Back
+import com.dimension.maskbook.common.routeProcessor.annotations.Finish
 import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
 import com.dimension.maskbook.common.routeProcessor.annotations.Navigate
 import com.dimension.maskbook.common.routeProcessor.annotations.Path
@@ -39,14 +40,19 @@ import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.LambdaTypeName
+import com.squareup.kotlinpoet.ParameterSpec
+import com.squareup.kotlinpoet.asTypeName
 import com.squareup.kotlinpoet.buildCodeBlock
 import com.squareup.kotlinpoet.ksp.KotlinPoetKspPreview
+import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toTypeName
 import com.squareup.kotlinpoet.ksp.writeTo
 import com.squareup.kotlinpoet.withIndent
 
 private val navControllerType = ClassName("androidx.navigation", "NavController")
 private const val navControllerName = "controller"
+private const val onFinishName = "onFinish"
 
 @OptIn(KotlinPoetKspPreview::class, KspExperimental::class)
 internal class RouteGraphProcessor(
@@ -97,10 +103,19 @@ internal class RouteGraphProcessor(
                             navControllerName,
                             navControllerType,
                         )
+                        .addParameter(
+                            ParameterSpec
+                                .builder(onFinishName, LambdaTypeName.get(returnType = Unit::class.asTypeName()))
+                                .defaultValue("{ %N.navigateUp() }", navControllerName)
+                                .build()
+                        )
                         .also { builder ->
                             data.forEach { ksFunctionDeclaration ->
                                 if (packageName != ksFunctionDeclaration.packageName) {
-                                    fileBuilder.addImport(ksFunctionDeclaration.packageName.asString(), ksFunctionDeclaration.simpleName.asString())
+                                    fileBuilder.addImport(
+                                        ksFunctionDeclaration.packageName.asString(),
+                                        ksFunctionDeclaration.simpleName.asString()
+                                    )
                                 }
                                 val annotation =
                                     ksFunctionDeclaration.getAnnotationsByType(
@@ -122,44 +137,61 @@ internal class RouteGraphProcessor(
                                                 "route = %S,",
                                                 annotation.route,
                                             )
-                                            addStatement("arguments = listOf(")
-                                            withIndent {
-                                                ksFunctionDeclaration.parameters.filter {
-                                                    it.isAnnotationPresent(
-                                                        Query::class
-                                                    ) || it.isAnnotationPresent(Path::class)
-                                                }.forEach {
-                                                    addStatement(
-                                                        "navArgument(%S) { type = NavType.%NType; nullable = %L },",
-                                                        it.name?.asString() ?: "",
-                                                        it.type.resolve().declaration.simpleName.asString(),
-                                                        it.isAnnotationPresent(Query::class)
-                                                    )
-                                                }
+                                            val parameters = ksFunctionDeclaration.parameters.filter {
+                                                it.isAnnotationPresent(
+                                                    Query::class
+                                                ) || it.isAnnotationPresent(Path::class)
                                             }
-                                            addStatement("),")
-                                            addStatement("deepLinks = listOf(")
-                                            withIndent {
-                                                annotation.deeplink.forEach {
-                                                    addStatement(
-                                                        "navDeepLink { uriPattern = %S }",
-                                                        it
-                                                    )
+                                            if (parameters.isNotEmpty()) {
+                                                addStatement("arguments = listOf(")
+                                                withIndent {
+                                                    parameters.forEach {
+                                                        val type = it.type.resolve()
+                                                        val typeName = type.toClassName()
+
+                                                        val argumentName = when {
+                                                            it.isAnnotationPresent(Path::class) -> it.getAnnotationsByType(Path::class).first().name
+                                                            it.isAnnotationPresent(Query::class) -> it.getAnnotationsByType(Query::class).first().name
+                                                            else -> it.name?.asString().orEmpty()
+                                                        }
+
+                                                        addStatement(
+                                                            "navArgument(%S) { type = NavType.%NType; nullable = %L },",
+                                                            argumentName,
+                                                            if (typeName.isBoolean) "Bool" else type.declaration.simpleName.asString(),
+                                                            it.isAnnotationPresent(Query::class) && !typeName.isLong
+                                                        )
+                                                    }
                                                 }
+                                                addStatement("),")
                                             }
-                                            addStatement("),")
+                                            if (annotation.deeplink.isNotEmpty()) {
+                                                addStatement("deepLinks = listOf(")
+                                                withIndent {
+                                                    annotation.deeplink.forEach {
+                                                        addStatement(
+                                                            "navDeepLink { uriPattern = %S }",
+                                                            it
+                                                        )
+                                                    }
+                                                }
+                                                addStatement("),")
+                                            }
                                         }
                                     }
                                 )
                                 builder.beginControlFlow(")")
                                 ksFunctionDeclaration.parameters.forEach {
-                                    if (it.isAnnotationPresent(Query::class) || it.isAnnotationPresent(Path::class)) {
+                                    if (it.isAnnotationPresent(Path::class)) {
+                                        require(!it.type.resolve().isMarkedNullable)
+                                    }
+                                    if (it.isAnnotationPresent(Query::class)) {
                                         require(it.type.resolve().isMarkedNullable)
                                     }
                                     if (it.isAnnotationPresent(Path::class)) {
                                         val path = it.getAnnotationsByType(Path::class).first()
                                         builder.addStatement(
-                                            "val ${it.name?.asString()} = it.arguments?.get(%S) as? %T",
+                                            "val ${it.name?.asString()} = it.arguments!!.get(%S) as %T",
                                             path.name,
                                             it.type.toTypeName()
                                         )
@@ -198,9 +230,16 @@ internal class RouteGraphProcessor(
                                                     }
                                                     it.isAnnotationPresent(Back::class) -> {
                                                         addStatement(
-                                                            "%N = { %N.navigateUp() },",
+                                                            "%N = { %N.popBackStack() },",
                                                             it.name?.asString() ?: "",
                                                             navControllerName
+                                                        )
+                                                    }
+                                                    it.isAnnotationPresent(Finish::class) -> {
+                                                        addStatement(
+                                                            "%N = %N,",
+                                                            it.name?.asString() ?: "",
+                                                            onFinishName,
                                                         )
                                                     }
                                                     it.isAnnotationPresent(Navigate::class) -> {

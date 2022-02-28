@@ -35,22 +35,33 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.dimension.maskbook.common.route.navigationComposeBottomSheet
+import com.dimension.maskbook.common.route.navigationComposeBottomSheetPackage
+import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
+import com.dimension.maskbook.common.routeProcessor.annotations.Path
 import com.dimension.maskbook.common.ui.widget.MaskModal
 import com.dimension.maskbook.common.ui.widget.button.MaskGridButton
 import com.dimension.maskbook.persona.export.model.Network
-import com.dimension.maskbook.persona.export.model.PlatformType
 import com.dimension.maskbook.persona.model.icon
 import com.dimension.maskbook.persona.model.platform
 import com.dimension.maskbook.persona.model.title
+import com.dimension.maskbook.persona.route.PersonaRoute
 
 private val items = listOf(
     Network.Twitter,
     Network.Facebook,
 )
 
+@NavGraphDestination(
+    route = PersonaRoute.SelectPlatform.path,
+    packageName = navigationComposeBottomSheetPackage,
+    functionName = navigationComposeBottomSheet,
+)
 @Composable
 fun SelectPlatformModal(
-    onDone: (PlatformType) -> Unit
+    navController: NavController,
+    @Path("personaId") personaId: String,
 ) {
     MaskModal(
         title = {
@@ -70,7 +81,11 @@ fun SelectPlatformModal(
                     MaskGridButton(
                         modifier = Modifier.size(SelectPlatformModalDefaults.itemSize),
                         onClick = {
-                            item.platform?.let(onDone)
+                            item.platform?.let {
+                                navController.navigate(
+                                    PersonaRoute.ConnectSocial(personaId, it.name)
+                                )
+                            }
                         },
                         icon = {
                             Image(

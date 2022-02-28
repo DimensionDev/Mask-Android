@@ -40,7 +40,6 @@ class SendConfirmViewModel(
         tokenData: TokenData,
         amount: BigDecimal,
         gasLimit: Double,
-        gasFee: BigDecimal,
         maxFee: Double,
         maxPriorityFee: Double
     ) {
@@ -49,7 +48,6 @@ class SendConfirmViewModel(
             address = toAddress,
             tokenData = tokenData,
             gasLimit = gasLimit,
-            gasFee = gasFee,
             maxFee = maxFee,
             maxPriorityFee = maxPriorityFee,
         )

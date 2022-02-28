@@ -22,9 +22,10 @@ package com.dimension.maskbook.labs.route
 
 import com.dimension.maskbook.common.routeProcessor.annotations.Route
 
+@Suppress("CONST_VAL_WITHOUT_INITIALIZER")
 @Route
 expect object LabsRoute {
-    val PluginSettings: String
-    val LabsTransak: String
-    val MarketTrendSettings: String
+    const val PluginSettings: String
+    const val LabsTransak: String
+    const val MarketTrendSettings: String
 }

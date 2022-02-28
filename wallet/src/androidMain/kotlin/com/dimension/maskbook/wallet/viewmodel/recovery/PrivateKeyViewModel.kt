@@ -24,13 +24,21 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.persona.export.PersonaServices
+import com.dimension.maskbook.wallet.export.WalletServices
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
 
 class PrivateKeyViewModel(
     private val personaServices: PersonaServices,
+    private val walletServices: WalletServices,
 ) : ViewModel() {
+
     private val _privateKey = MutableStateFlow("")
-    val privateKey = _privateKey.asStateIn(viewModelScope, "")
+    val privateKey = _privateKey.asStateIn(viewModelScope)
+
+    val canConfirm = _privateKey.map {
+        walletServices.validatePrivateKey(it.trim())
+    }.asStateIn(viewModelScope, false)
 
     fun setPrivateKey(text: String) {
         _privateKey.value = text

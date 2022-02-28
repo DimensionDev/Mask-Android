@@ -33,8 +33,7 @@ import com.dimension.maskbook.setting.export.SettingServices
 import com.dimension.maskbook.setting.repository.BackupRepository
 import com.dimension.maskbook.setting.repository.ISettingsRepository
 import com.dimension.maskbook.setting.repository.SettingsRepository
-import com.dimension.maskbook.setting.route.backupRoute
-import com.dimension.maskbook.setting.route.settingsRoute
+import com.dimension.maskbook.setting.route.generatedRoute
 import com.dimension.maskbook.setting.services.BackupServices
 import com.dimension.maskbook.setting.ui.tab.SettingsTabScreen
 import com.dimension.maskbook.setting.viewmodel.AppearanceSettingsViewModel
@@ -56,9 +55,8 @@ import org.koin.dsl.module
 import org.koin.mp.KoinPlatformTools
 
 object SettingSetup : ModuleSetup {
-    override fun NavGraphBuilder.route(navController: NavController, onBack: () -> Unit) {
-        backupRoute(navController)
-        settingsRoute(navController)
+    override fun NavGraphBuilder.route(navController: NavController, onFinish: () -> Unit) {
+        generatedRoute(navController, onFinish = onFinish)
     }
 
     override fun dependencyInject() = module {

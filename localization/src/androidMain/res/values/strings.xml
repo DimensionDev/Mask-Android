@@ -450,6 +450,7 @@
     <string name="scene_transaction_history_type_swap">WETH Deposit</string>
     <string name="scene_transaction_history_type_approve">Approve %s</string>
     <string name="scene_transaction_history_type_send">Send %s</string>
+    <string name="scene_transaction_history_type_unknown">Unknown %s</string>
     <string name="scene_transaction_history_status_fail">Failed</string>
     <string name="scene_transaction_history_status_pending">Pending...</string>
     <string name="scene_social_i_understand">I understand</string>

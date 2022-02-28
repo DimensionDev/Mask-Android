@@ -22,7 +22,6 @@ package com.dimension.maskbook
 
 import android.os.Bundle
 import android.view.WindowManager
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
@@ -35,6 +34,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.fragment.app.FragmentActivity
 import androidx.navigation.plusAssign
 import coil.ImageLoader
 import coil.compose.LocalImageLoader
@@ -59,7 +59,7 @@ import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 
-class ComposeActivity : ComponentActivity() {
+class ComposeActivity : FragmentActivity() {
     companion object {
         object Destination {
             val register = WalletRoute.Register.Init
@@ -88,7 +88,7 @@ class ComposeActivity : ComponentActivity() {
                 ) {
                     MaskTheme {
                         App(
-                            onBack = { finish() },
+                            onFinish = { finish() },
                             startDestination = startDestination,
                         )
                     }
@@ -102,7 +102,7 @@ class ComposeActivity : ComponentActivity() {
 @Composable
 fun App(
     startDestination: String = ComposeActivity.Companion.Destination.register,
-    onBack: () -> Unit,
+    onFinish: () -> Unit,
 ) {
     val navController = rememberAnimatedNavController()
     val bottomSheetNavigator = rememberMaskBottomSheetNavigator()
@@ -153,11 +153,11 @@ fun App(
                     )
                 },
             ) {
-                mainRoute(onBack = onBack)
-                WalletSetup.route(this, navController = navController, onBack = onBack)
-                LabsSetup.route(this, navController = navController, onBack = onBack)
-                PersonaSetup.route(this, navController = navController, onBack = onBack)
-                SettingSetup.route(this, navController = navController, onBack = onBack)
+                mainRoute(onBack = onFinish)
+                WalletSetup.route(this, navController = navController, onFinish = onFinish)
+                LabsSetup.route(this, navController = navController, onFinish = onFinish)
+                PersonaSetup.route(this, navController = navController, onFinish = onFinish)
+                SettingSetup.route(this, navController = navController, onFinish = onFinish)
             }
         }
     }
