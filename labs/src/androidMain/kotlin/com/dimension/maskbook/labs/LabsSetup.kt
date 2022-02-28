@@ -44,8 +44,8 @@ object LabsSetup : ModuleSetup {
         ExperimentalAnimationApi::class,
         ExperimentalMaterialNavigationApi::class
     )
-    override fun NavGraphBuilder.route(navController: NavController, onBack: () -> Unit) {
-        generatedRoute(navController)
+    override fun NavGraphBuilder.route(navController: NavController, onFinish: () -> Unit) {
+        generatedRoute(navController, onFinish = onFinish)
     }
 
     override fun dependencyInject() = module {

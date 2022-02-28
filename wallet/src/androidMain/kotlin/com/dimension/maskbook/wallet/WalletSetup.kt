@@ -116,7 +116,7 @@ import com.dimension.maskbook.wallet.export.WalletServices as ExportWalletServic
 object WalletSetup : ModuleSetup {
 
     @OptIn(ExperimentalMaterialNavigationApi::class)
-    override fun NavGraphBuilder.route(navController: NavController, onBack: () -> Unit) {
+    override fun NavGraphBuilder.route(navController: NavController, onFinish: () -> Unit) {
         walletsRoute(navController)
         registerRoute(navController)
         bottomSheet(
