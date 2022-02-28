@@ -560,13 +560,7 @@ fun SettingsChangePhoneSetup(
             scope.launch {
                 val code = regionCode + phone
                 viewModel.sendCodeNow(code).onSuccess {
-                    navController.navigate(
-                        SettingRoute.Settings_ChangePhone.Settings_ChangePhone_Setup_Code(code)
-                    ) {
-                        popUpTo(CommonRoute.Main.Home) {
-                            inclusive = false
-                        }
-                    }
+                    navController.navigate(SettingRoute.Settings_ChangePhone.Settings_ChangePhone_Setup_Code(code))
                 }
             }
         },
