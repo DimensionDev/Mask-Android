@@ -27,9 +27,11 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
+import androidx.navigation.compose.dialog
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import androidx.navigation.navOptions
@@ -37,11 +39,13 @@ import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.persona.export.PersonaServices
+import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ui.scenes.register.CreatePersonaModal
 import com.dimension.maskbook.wallet.ui.scenes.register.CreatePersonaScene
 import com.dimension.maskbook.wallet.ui.scenes.register.RegisterScene
 import com.dimension.maskbook.wallet.ui.scenes.register.createidentity.CreateIdentityHost
 import com.dimension.maskbook.wallet.ui.scenes.register.recovery.IdentityScene
+import com.dimension.maskbook.wallet.ui.scenes.register.recovery.PersonaAlreadyExitsDialog
 import com.dimension.maskbook.wallet.ui.scenes.register.recovery.PrivateKeyScene
 import com.dimension.maskbook.wallet.ui.scenes.register.recovery.RecoveryComplectedScene
 import com.dimension.maskbook.wallet.ui.scenes.register.recovery.RecoveryHomeScene
@@ -239,6 +243,7 @@ fun NavGraphBuilder.registerRoute(
             }
             val identity by viewModel.identity.observeAsState()
             val canConfirm by viewModel.canConfirm.observeAsState()
+            val from = stringResource(R.string.scene_identity_mnemonic_import_title)
             IdentityScene(
                 identity = identity,
                 onIdentityChanged = {
@@ -246,12 +251,18 @@ fun NavGraphBuilder.registerRoute(
                 },
                 canConfirm = canConfirm,
                 onConfirm = {
-                    viewModel.onConfirm()
-                    navController.navigate(WalletRoute.Register.Recovery.Complected) {
-                        popUpTo(WalletRoute.Register.Init) {
-                            inclusive = true
+                    viewModel.onConfirm(
+                        onSuccess = {
+                            navController.navigate(WalletRoute.Register.Recovery.Complected) {
+                                popUpTo(WalletRoute.Register.Init) {
+                                    inclusive = true
+                                }
+                            }
+                        },
+                        onAlreadyExists = {
+                            navController.navigate(WalletRoute.Register.Recovery.AlreadyExists(from))
                         }
-                    }
+                    )
                 },
                 onBack = {
                     navController.popBackStack()
@@ -259,6 +270,33 @@ fun NavGraphBuilder.registerRoute(
             )
         } ?: navController.popBackStack()
     }
+
+    dialog(
+        WalletRoute.Register.Recovery.AlreadyExists.path,
+        arguments = listOf(
+            navArgument("restoreFrom") { type = NavType.StringType }
+        )
+    ) {
+        it.arguments?.getString("restoreFrom")?.let { restoreFrom ->
+            PersonaAlreadyExitsDialog(
+                onBack = {
+                    navController.popBackStack()
+                },
+                onConfirm = {
+                    navController.navigate(
+                        Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona)),
+                        navOptions {
+                            popUpTo(WalletRoute.Register.Init) {
+                                inclusive = true
+                            }
+                        }
+                    )
+                },
+                restoreFrom = restoreFrom
+            )
+        }
+    }
+
     composable(WalletRoute.Register.Recovery.PrivateKey) {
         val viewModel: PrivateKeyViewModel = getViewModel()
         val privateKey by viewModel.privateKey.observeAsState()

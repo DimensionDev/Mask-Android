@@ -18,20 +18,6 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.persona.export
+package com.dimension.maskbook.persona.export.error
 
-import com.dimension.maskbook.persona.export.model.PersonaData
-import com.dimension.maskbook.persona.export.model.SocialProfile
-import kotlinx.coroutines.flow.Flow
-
-interface PersonaServices {
-    val currentPersona: Flow<PersonaData?>
-    fun updateCurrentPersona(value: String)
-    suspend fun createPersonaFromMnemonic(value: List<String>, name: String)
-    fun createPersonaFromPrivateKey(value: String)
-    fun finishConnectingProcess(profile: SocialProfile, personaId: String)
-    fun cancelConnectingProcess()
-    fun saveEmailForCurrentPersona(value: String)
-    fun savePhoneForCurrentPersona(value: String)
-    fun refreshPersonaData()
-}
+class PersonaAlreadyExitsError : Error()

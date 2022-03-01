@@ -36,7 +36,7 @@ class PersonaServicesImpl(
         personaRepository.updateCurrentPersona(value)
     }
 
-    override fun createPersonaFromMnemonic(value: List<String>, name: String) {
+    override suspend fun createPersonaFromMnemonic(value: List<String>, name: String) {
         personaRepository.createPersonaFromMnemonic(value, name)
     }
 

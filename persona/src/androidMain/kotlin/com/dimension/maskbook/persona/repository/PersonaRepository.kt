@@ -31,6 +31,7 @@ import com.dimension.maskbook.common.platform.IPlatformSwitcher
 import com.dimension.maskbook.common.repository.JSMethod
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
+import com.dimension.maskbook.persona.export.error.PersonaAlreadyExitsError
 import com.dimension.maskbook.persona.export.model.ConnectAccountData
 import com.dimension.maskbook.persona.export.model.Network
 import com.dimension.maskbook.persona.export.model.Persona
@@ -55,6 +56,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
 
@@ -295,8 +297,13 @@ class PersonaRepository(
         }
     }
 
-    override fun createPersonaFromMnemonic(value: List<String>, name: String) {
-        scope.launch {
+    override suspend fun createPersonaFromMnemonic(value: List<String>, name: String) {
+        withContext(scope.coroutineContext) {
+            val personas = _persona.value
+            val mnemonic = value.joinToString(" ")
+            personas.forEach {
+                if (mnemonic == JSMethod.Persona.backupMnemonic(it.identifier)) throw PersonaAlreadyExitsError()
+            }
             val persona = JSMethod.Persona.createPersonaByMnemonic(value.joinToString(" "), name, "")
             refreshPersona()
             persona?.identifier?.let { setCurrentPersona(it) }
