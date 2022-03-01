@@ -55,8 +55,8 @@ import org.koin.dsl.module
 import org.koin.mp.KoinPlatformTools
 
 object SettingSetup : ModuleSetup {
-    override fun NavGraphBuilder.route(navController: NavController, onBack: () -> Unit) {
-        generatedRoute(navController)
+    override fun NavGraphBuilder.route(navController: NavController, onFinish: () -> Unit) {
+        generatedRoute(navController, onFinish = onFinish)
     }
 
     override fun dependencyInject() = module {

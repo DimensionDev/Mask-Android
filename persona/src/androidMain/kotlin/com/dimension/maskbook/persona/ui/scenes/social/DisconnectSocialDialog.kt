@@ -30,18 +30,39 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.dimension.maskbook.common.route.navigationComposeDialog
+import com.dimension.maskbook.common.route.navigationComposeDialogPackage
+import com.dimension.maskbook.common.routeProcessor.annotations.Back
+import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
+import com.dimension.maskbook.common.routeProcessor.annotations.Path
+import com.dimension.maskbook.common.routeProcessor.annotations.Query
 import com.dimension.maskbook.common.ui.widget.MaskDialog
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.common.ui.widget.button.SecondaryButton
 import com.dimension.maskbook.persona.R
+import com.dimension.maskbook.persona.export.model.PlatformType
+import com.dimension.maskbook.persona.route.PersonaRoute
+import com.dimension.maskbook.persona.viewmodel.social.DisconnectSocialViewModel
+import org.koin.androidx.compose.getViewModel
 
+@NavGraphDestination(
+    route = PersonaRoute.DisconnectSocial.path,
+    packageName = navigationComposeDialogPackage,
+    functionName = navigationComposeDialog,
+)
 @Composable
 fun DisconnectSocialDialog(
-    socialName: String,
-    personaName: String,
-    onBack: () -> Unit,
-    onConfirm: () -> Unit,
+    navController: NavController,
+    @Back onBack: () -> Unit,
+    @Path("platform") platform: String,
+    @Path("personaId") personaId: String,
+    @Path("socialId") socialId: String,
+    @Query("personaName") personaName: String?,
+    @Query("socialName") socialName: String?,
 ) {
+    val viewModel = getViewModel<DisconnectSocialViewModel>()
+
     MaskDialog(
         onDismissRequest = { onBack.invoke() },
         icon = {
@@ -51,7 +72,13 @@ fun DisconnectSocialDialog(
             )
         },
         text = {
-            Text(text = stringResource(R.string.common_alert_disconnect_profile_title, socialName, personaName))
+            Text(
+                text = stringResource(
+                    R.string.common_alert_disconnect_profile_title,
+                    socialName.orEmpty(),
+                    personaName.orEmpty(),
+                )
+            )
         },
         buttons = {
             Row {
@@ -67,7 +94,19 @@ fun DisconnectSocialDialog(
                 PrimaryButton(
                     modifier = Modifier.weight(1f),
                     onClick = {
-                        onConfirm.invoke()
+                        when (PlatformType.valueOf(platform)) {
+                            PlatformType.Twitter ->
+                                viewModel.disconnectTwitter(
+                                    personaId = personaId,
+                                    socialId = socialId
+                                )
+                            PlatformType.Facebook ->
+                                viewModel.disconnectFacebook(
+                                    personaId = personaId,
+                                    socialId = socialId
+                                )
+                        }
+                        navController.popBackStack()
                     },
                 ) {
                     Text(text = stringResource(R.string.common_controls_confirm))

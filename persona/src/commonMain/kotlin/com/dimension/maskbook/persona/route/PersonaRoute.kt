@@ -22,15 +22,16 @@ package com.dimension.maskbook.persona.route
 
 import com.dimension.maskbook.common.routeProcessor.annotations.Route
 
+@Suppress("CONST_VAL_WITHOUT_INITIALIZER")
 @Route
 expect object PersonaRoute {
-    val Logout: String
-    val PersonaMenu: String
-    val SwitchPersona: String
+    const val Logout: String
+    const val PersonaMenu: String
+    const val SwitchPersona: String
     object RenamePersona {
         operator fun invoke(personaId: String): String
     }
-    val ExportPrivateKey: String
+    const val ExportPrivateKey: String
     object SelectPlatform {
         operator fun invoke(personaId: String): String
     }
