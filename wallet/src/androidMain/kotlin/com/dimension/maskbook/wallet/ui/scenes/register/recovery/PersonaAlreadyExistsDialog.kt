@@ -37,17 +37,16 @@ fun PersonaAlreadyExitsDialog(
     onConfirm: () -> Unit,
     restoreFrom: String,
 ) {
-    // TODO localize
     MaskDialog(
         onDismissRequest = onBack,
         title = {
-            Text("The persona already existed.")
+            Text(stringResource(R.string.scene_setting_backup_recovery_persona_already_exits_title))
         },
         icon = {
             Image(painter = painterResource(R.drawable.ic_warn), contentDescription = "")
         },
         text = {
-            Text("The persona that corresponds with the $restoreFrom already existed.")
+            Text(stringResource(R.string.scene_setting_backup_recovery_persona_already_exits_desc, restoreFrom))
         },
         buttons = {
             PrimaryButton(onClick = {

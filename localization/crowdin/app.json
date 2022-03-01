@@ -305,7 +305,11 @@
                 "back_up_data": "Back Up Data",
                 "back_up_password": "Backup Password",
                 "back_up_password_empty": "Please set up backup password",
-                "change_backup_password": "Change Backup Password"
+                "change_backup_password": "Change Backup Password",
+                "persona_already_exits":{
+                    "title": "The persona already existed.",
+                    "desc": "The persona that corresponds with the %s already existed."
+                }
             },
             "profile": {
                 "title": "Profile",
