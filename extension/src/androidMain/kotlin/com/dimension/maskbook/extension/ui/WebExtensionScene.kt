@@ -45,12 +45,11 @@ import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
 import com.dimension.maskbook.common.ui.widget.button.MaskIconButton
 import com.dimension.maskbook.extension.export.model.Site
 import com.dimension.maskbook.extension.ext.site
-import com.dimension.maskbook.extension.route.ExtensionRoute
 import com.dimension.maskbook.localization.R
 import org.koin.androidx.compose.get
 
 @NavGraphDestination(
-    route = ExtensionRoute.Extension,
+    route = CommonRoute.WebContent,
     deeplink = [Deeplinks.Extension.Extension],
     packageName = navigationComposeAnimComposablePackage,
     functionName = navigationComposeAnimComposable

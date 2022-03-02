@@ -28,7 +28,9 @@ import com.dimension.maskbook.common.gecko.WebContentController
 import com.dimension.maskbook.extension.export.ExtensionServices
 import com.dimension.maskbook.extension.repository.ExtensionRepository
 import com.dimension.maskbook.extension.ui.generatedRoute
+import com.dimension.maskbook.extension.utils.MessageChannel
 import org.koin.dsl.module
+import org.koin.mp.KoinPlatformTools
 
 object ExtensionSetup : ModuleSetup {
     override fun NavGraphBuilder.route(navController: NavController, onFinish: () -> Unit) {
@@ -40,9 +42,11 @@ object ExtensionSetup : ModuleSetup {
             scoped { WebContentController(get()) }
         }
         single { ExtensionRepository(get()) }
-        single<ExtensionServices> { ExtensionServicesImpl(get()) }
+        single<ExtensionServices> { ExtensionServicesImpl(get(), get()) }
+        single { MessageChannel(get()) }
     }
 
     override fun onExtensionReady() {
+        KoinPlatformTools.defaultContext().get().get<MessageChannel>().startMessageCollect()
     }
 }

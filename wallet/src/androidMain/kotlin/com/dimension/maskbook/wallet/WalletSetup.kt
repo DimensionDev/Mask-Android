@@ -36,8 +36,12 @@ import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.persona.export.model.ConnectAccountData
+import com.dimension.maskbook.wallet.data.JSMethod
 import com.dimension.maskbook.wallet.db.AppDatabase
 import com.dimension.maskbook.wallet.db.RoomMigrations
+import com.dimension.maskbook.wallet.db.model.CoinPlatformType
+import com.dimension.maskbook.wallet.export.model.ChainType
+import com.dimension.maskbook.wallet.handler.Web3MessageHandler
 import com.dimension.maskbook.wallet.repository.CollectibleRepository
 import com.dimension.maskbook.wallet.repository.ICollectibleRepository
 import com.dimension.maskbook.wallet.repository.ISendHistoryRepository
@@ -199,6 +203,35 @@ object WalletSetup : ModuleSetup {
     override fun onExtensionReady() {
         initRepository()
         initWalletConnect()
+        initEvent()
+    }
+}
+
+private fun initEvent() {
+    with(KoinPlatformTools.defaultContext().get()) {
+        CoroutineScope(Dispatchers.IO).launch {
+            launch {
+                get<JSMethod>().web3Event().collect {
+                    get<Web3MessageHandler>().handle(it)
+                }
+            }
+            launch {
+                get<JSMethod>().switchBlockChain().collect { data ->
+                    if (data.coinId != null) {
+                        val platform = CoinPlatformType.values().firstOrNull { it.coinId == data.coinId }
+                        if (platform != null) {
+                            get<IWalletRepository>().setActiveCoinPlatformType(platform)
+                        }
+                    }
+                    if (data.networkId != null) {
+                        val chainType = ChainType.values().firstOrNull { it.chainId == data.networkId }
+                        if (chainType != null) {
+                            get<IWalletRepository>().setChainType(chainType, false)
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -231,7 +264,9 @@ private fun Module.provideRepository() {
     single<WalletConnectServerManager> {
         WalletConnectServerManagerV1(get())
     }
-    single<IWalletRepository> { WalletRepository(get<Context>().walletDataStore, get(), get(), get()) }
+    single<IWalletRepository> { WalletRepository(get<Context>().walletDataStore, get(), get(), get(), get()) }
+    single { JSMethod(get()) }
+    single { Web3MessageHandler(get()) }
     single<ICollectibleRepository> { CollectibleRepository(get(), get()) }
     single<ITransactionRepository> { TransactionRepository(get(), get()) }
     single<ITokenRepository> { TokenRepository(get()) }

@@ -42,6 +42,7 @@ include(
     ":setting:export",
     ":extension",
     ":extension:export",
+    ":entry",
 )
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")

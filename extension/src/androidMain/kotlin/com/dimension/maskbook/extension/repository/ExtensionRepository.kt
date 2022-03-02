@@ -45,20 +45,27 @@ class ExtensionRepository(
             id = "info@dimension.com",
             url = "resource://android/assets/web_extensions/Maskbook/",
         )
+        controller.onNavigate = {
+            onNavigate(it)
+        }
         scope.launch {
-            launch {
-                controller.url.collect {
-                    if (it.site == null) {
-                        // prevent loading extension page
-                        controller.loadUrl(_currentSite.value.url)
-                    }
-                }
-            }
+            // launch {
+            //     controller.url.collect {
+            //         if (it.site == null) {
+            //             // prevent loading extension page
+            //             controller.loadUrl(_currentSite.value.url)
+            //         }
+            //     }
+            // }
             launch {
                 _currentSite.collect {
                     controller.loadUrl(it.url)
                 }
             }
         }
+    }
+
+    private fun onNavigate(target: String): Boolean {
+        return target.site != null
     }
 }

@@ -25,6 +25,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import com.dimension.maskbook.common.ModuleSetup
 import com.dimension.maskbook.common.ui.tab.TabScreen
+import com.dimension.maskbook.persona.data.JSMethod
 import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.persona.repository.IContactsRepository
 import com.dimension.maskbook.persona.repository.IPersonaRepository
@@ -57,11 +58,13 @@ object PersonaSetup : ModuleSetup {
 
     override fun dependencyInject() = module {
         single {
-            PersonaRepository(get<Context>().personaDataStore, get())
+            PersonaRepository(get<Context>().personaDataStore, get(), get())
         } binds arrayOf(
             IPersonaRepository::class,
             IContactsRepository::class
         )
+
+        single { JSMethod(get()) }
 
         single<PersonaServices> { PersonaServicesImpl(get()) }
         single { PersonasTabScreen() } bind TabScreen::class

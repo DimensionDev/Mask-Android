@@ -1,15 +1,18 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:statusBarColor">@android:color/white</item>
-        <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/ic_launcher_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+        <item name="postSplashScreenTheme">@style/ComposeActivityTheme</item>
     </style>
 
-    <style name="SplashTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="android:windowBackground">@drawable/ic_splash</item>
+    <style name="ComposeActivityTheme" parent="android:Theme.DeviceDefault.NoActionBar">
+        <item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="o_mr1">shortEdges</item>
+        <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:enforceNavigationBarContrast" tools:targetApi="q">false</item>
+        <item name="android:enforceStatusBarContrast" tools:targetApi="q">false</item>
     </style>
+
 </resources>

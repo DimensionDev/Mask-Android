@@ -22,6 +22,7 @@ package com.dimension.maskbook.common.gecko
 
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -41,6 +42,8 @@ import mozilla.components.browser.state.selector.selectedTab
 import mozilla.components.browser.state.state.BrowserState
 import mozilla.components.browser.state.store.BrowserStore
 import mozilla.components.concept.engine.DefaultSettings
+import mozilla.components.concept.engine.EngineSession
+import mozilla.components.concept.engine.request.RequestInterceptor
 import mozilla.components.concept.engine.webextension.MessageHandler
 import mozilla.components.concept.engine.webextension.Port
 import mozilla.components.feature.prompts.PromptFeature
@@ -55,6 +58,7 @@ private const val BackgroundPortName = "browser"
 
 class WebContentController(
     fragmentActivity: FragmentActivity,
+    var onNavigate: (String) -> Boolean = { true },
 ) : Closeable {
     private val _isExtensionConnected = MutableStateFlow(false)
     val isExtensionConnected = _isExtensionConnected.asSharedFlow()
@@ -62,6 +66,32 @@ class WebContentController(
     private var _port: Port? = null
     private val runtime by lazy {
         GeckoRuntime.create(fragmentActivity)
+    }
+    private val interceptor by lazy {
+        object : RequestInterceptor {
+            override fun onLoadRequest(
+                engineSession: EngineSession,
+                uri: String,
+                lastUri: String?,
+                hasUserGesture: Boolean,
+                isSameDomain: Boolean,
+                isRedirect: Boolean,
+                isDirectNavigation: Boolean,
+                isSubframeRequest: Boolean
+            ): RequestInterceptor.InterceptionResponse? {
+                if (isSubframeRequest) {
+                    return null
+                }
+                return if (onNavigate(uri)) {
+                    null
+                } else {
+                    RequestInterceptor.InterceptionResponse.AppIntent(
+                        Intent(Intent.ACTION_VIEW, Uri.parse(uri)),
+                        uri
+                    )
+                }
+            }
+        }
     }
     private val backPressedCallback by lazy {
         object : OnBackPressedCallback(false) {
@@ -102,6 +132,7 @@ class WebContentController(
             runtime = runtime,
             defaultSettings = DefaultSettings(
                 remoteDebuggingEnabled = BuildConfig.DEBUG,
+                requestInterceptor = interceptor
             )
         )
     }

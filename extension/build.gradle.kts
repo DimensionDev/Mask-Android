@@ -1,6 +1,7 @@
 plugins {
     kotlin("multiplatform")
     id("com.android.library")
+    kotlin("plugin.serialization").version(Versions.Kotlin.lang)
     id("org.jetbrains.compose").version(Versions.compose_jb)
     id("com.google.devtools.ksp").version(Versions.ksp)
 }

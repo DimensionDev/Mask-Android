@@ -20,11 +20,9 @@
  */
 package com.dimension.maskbook.common.platform
 
-import com.dimension.maskbook.persona.export.model.PlatformType
-
-interface IPlatformSwitcher {
-    fun switchTo(platformType: PlatformType)
-    fun showTooltips(visible: Boolean)
-    fun launchDeeplink(deeplink: String)
-    fun showModal(route: String, data: Any?)
-}
+// interface IPlatformSwitcher {
+//     fun switchTo(platformType: PlatformType)
+//     fun showTooltips(visible: Boolean)
+//     fun launchDeeplink(deeplink: String)
+//     fun showModal(route: String, data: Any?)
+// }

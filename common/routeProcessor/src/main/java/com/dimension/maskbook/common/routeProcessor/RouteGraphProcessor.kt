@@ -73,13 +73,17 @@ internal class RouteGraphProcessor(
             }
         }
 
-        val actualSymbols = symbols - ret.toSet()
-        actualSymbols.groupBy {
+        if (ret.isNotEmpty()) {
+            // skip this processing round and return the symbols
+            return symbols
+        }
+
+        symbols.groupBy {
             it.getAnnotationsByType(NavGraphDestination::class).first().generatedFunctionName
         }.forEach { (name, items) ->
             generateRoute(items, name)
         }
-        return ret
+        return emptyList()
     }
 
     private fun generateRoute(data: List<KSFunctionDeclaration>, generatedFunctionName: String) {

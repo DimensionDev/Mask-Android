@@ -24,6 +24,4 @@ import com.dimension.maskbook.common.routeProcessor.annotations.Route
 
 @Suppress("CONST_VAL_WITHOUT_INITIALIZER")
 @Route
-expect object ExtensionRoute {
-    const val Extension: String
-}
+expect object ExtensionRoute

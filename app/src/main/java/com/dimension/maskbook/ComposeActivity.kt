@@ -24,44 +24,21 @@ import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.foundation.shape.CornerSize
-import androidx.compose.material.MaterialTheme
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.ui.unit.dp
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import androidx.navigation.plusAssign
 import coil.ImageLoader
 import coil.compose.LocalImageLoader
 import coil.decode.SvgDecoder
-import com.dimension.maskbook.common.navHostAnimationDurationMillis
-import com.dimension.maskbook.common.route
-import com.dimension.maskbook.common.route.CommonRoute
-import com.dimension.maskbook.common.ui.LocalRootNavController
-import com.dimension.maskbook.common.ui.theme.MaskTheme
-import com.dimension.maskbook.common.ui.theme.modalScrimColor
 import com.dimension.maskbook.common.ui.widget.LocalWindowInsetsController
-import com.dimension.maskbook.common.ui.widget.rememberMaskBottomSheetNavigator
-import com.dimension.maskbook.extension.ExtensionSetup
-import com.dimension.maskbook.labs.LabsSetup
-import com.dimension.maskbook.persona.PersonaSetup
-import com.dimension.maskbook.setting.SettingSetup
-import com.dimension.maskbook.wallet.WalletSetup
-import com.dimension.maskbook.wallet.route.mainRoute
+import com.dimension.maskbook.entry.ui.App
 import com.google.accompanist.insets.ProvideWindowInsets
-import com.google.accompanist.navigation.animation.AnimatedNavHost
-import com.google.accompanist.navigation.animation.rememberAnimatedNavController
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
-import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 import org.koin.android.scope.AndroidScopeComponent
 import org.koin.androidx.scope.activityRetainedScope
 import org.koin.core.scope.Scope
 
+// TOOD: Change to FragmentActivity, blocked by https://github.com/InsertKoinIO/koin/pull/1287
 class ComposeActivity : AppCompatActivity(), AndroidScopeComponent {
     override val scope: Scope by activityRetainedScope()
     private val windowInsetsControllerCompat by lazy {
@@ -69,6 +46,7 @@ class ComposeActivity : AppCompatActivity(), AndroidScopeComponent {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
@@ -82,78 +60,10 @@ class ComposeActivity : AppCompatActivity(), AndroidScopeComponent {
                 ProvideWindowInsets(
                     windowInsetsAnimationsEnabled = true
                 ) {
-                    MaskTheme {
-                        App(
-                            onFinish = { finish() },
-                        )
-                    }
+                    App(
+                        onFinish = { finish() },
+                    )
                 }
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterialNavigationApi::class, ExperimentalAnimationApi::class)
-@Composable
-fun App(
-    startDestination: String = CommonRoute.Main.Home,
-    onFinish: () -> Unit,
-) {
-    val navController = rememberAnimatedNavController()
-    val bottomSheetNavigator = rememberMaskBottomSheetNavigator()
-    navController.navigatorProvider += bottomSheetNavigator
-    CompositionLocalProvider(LocalRootNavController provides navController) {
-        ModalBottomSheetLayout(
-            bottomSheetNavigator,
-            sheetBackgroundColor = MaterialTheme.colors.background,
-            sheetShape = MaterialTheme.shapes.large.copy(
-                bottomStart = CornerSize(0.dp),
-                bottomEnd = CornerSize(0.dp),
-            ),
-            scrimColor = MaterialTheme.colors.modalScrimColor,
-        ) {
-            AnimatedNavHost(
-                navController = navController,
-                startDestination = startDestination,
-                enterTransition = {
-                    slideInHorizontally(
-                        initialOffsetX = { it },
-                        animationSpec = tween(
-                            navHostAnimationDurationMillis
-                        )
-                    )
-                },
-                exitTransition = {
-                    slideOutHorizontally(
-                        targetOffsetX = { -it },
-                        animationSpec = tween(
-                            navHostAnimationDurationMillis
-                        )
-                    )
-                },
-                popEnterTransition = {
-                    slideInHorizontally(
-                        initialOffsetX = { -it },
-                        animationSpec = tween(
-                            navHostAnimationDurationMillis
-                        )
-                    )
-                },
-                popExitTransition = {
-                    slideOutHorizontally(
-                        targetOffsetX = { it },
-                        animationSpec = tween(
-                            navHostAnimationDurationMillis
-                        )
-                    )
-                },
-            ) {
-                mainRoute(onBack = onFinish)
-                WalletSetup.route(this, navController = navController, onFinish = onFinish)
-                LabsSetup.route(this, navController = navController, onFinish = onFinish)
-                PersonaSetup.route(this, navController = navController, onFinish = onFinish)
-                SettingSetup.route(this, navController = navController, onFinish = onFinish)
-                ExtensionSetup.route(this, navController = navController, onFinish = onFinish)
             }
         }
     }

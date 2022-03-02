@@ -31,6 +31,7 @@ import com.dimension.maskbook.common.platform.IPlatformSwitcher
 import com.dimension.maskbook.common.repository.JSMethod
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
+import com.dimension.maskbook.persona.data.JSMethod
 import com.dimension.maskbook.persona.export.model.ConnectAccountData
 import com.dimension.maskbook.persona.export.model.Network
 import com.dimension.maskbook.persona.export.model.Persona
@@ -62,8 +63,9 @@ private val CurrentPersonaKey = stringPreferencesKey("current_persona")
 val Context.personaDataStore: DataStore<Preferences> by preferencesDataStore(name = "persona")
 private const val TAG = "PersonaRepository"
 
-class PersonaRepository(
+internal class PersonaRepository(
     private val dataStore: DataStore<Preferences>,
+    private val jsMethod: JSMethod,
     private val platformSwitcher: IPlatformSwitcher,
 ) : IPersonaRepository,
     IContactsRepository {
@@ -132,7 +134,7 @@ class PersonaRepository(
             while (true) {
                 delay(5.seconds)
                 // TODO: getCurrentDetectedProfileDelegateToSNSAdaptor will always return person:localhost/$unknown when first login
-                val profile = JSMethod.Persona.getCurrentDetectedProfileDelegateToSNSAdaptor()?.takeIf {
+                val profile = jsMethod.getCurrentDetectedProfileDelegateToSNSAdaptor()?.takeIf {
                     it.isNotEmpty()
                 }?.let {
                     SocialProfile.parse(it)
@@ -148,7 +150,7 @@ class PersonaRepository(
 
     override fun finishConnectingProcess(profile: SocialProfile, personaId: String) {
         scope.launch {
-            JSMethod.Persona.connectProfile(profile.network, personaId, profile.userId)
+            jsMethod.connectProfile(profile.network, personaId, profile.userId)
             refreshSocial()
             refreshPersona()
             platformSwitcher.launchDeeplink(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona))
@@ -215,13 +217,13 @@ class PersonaRepository(
     }
 
     private suspend fun refreshSocial() {
-        _twitter.value = JSMethod.Persona.queryProfiles(Network.Twitter)
-        _facebook.value = JSMethod.Persona.queryProfiles(Network.Facebook)
+        _twitter.value = jsMethod.queryProfiles(Network.Twitter)
+        _facebook.value = jsMethod.queryProfiles(Network.Facebook)
     }
 
     override fun refreshPersona() {
         scope.launch {
-            _persona.value = JSMethod.Persona.queryMyPersonas(null)
+            _persona.value = jsMethod.queryMyPersonas(null)
             if (_currentPersona.firstOrNull().isNullOrEmpty()) {
                 _persona.value.firstOrNull()?.identifier?.let { setCurrentPersona(it) }
             }
@@ -249,7 +251,7 @@ class PersonaRepository(
     }
 
     private suspend fun removePersona(id: String) {
-        JSMethod.Persona.removePersona(id)
+        jsMethod.removePersona(id)
         val emailKey = stringPreferencesKey("${id}_email")
         val phoneKey = stringPreferencesKey("${id}_phone")
         dataStore.edit {
@@ -260,28 +262,28 @@ class PersonaRepository(
 
     override fun updatePersona(id: String, value: String) {
         scope.launch {
-            JSMethod.Persona.updatePersonaInfo(id, value)
+            jsMethod.updatePersonaInfo(id, value)
             refreshPersona()
         }
     }
 
     override fun connectTwitter(personaId: String, userName: String) {
         scope.launch {
-            JSMethod.Persona.connectProfile(Network.Twitter, personaId, userName)
+            jsMethod.connectProfile(Network.Twitter, personaId, userName)
             refreshPersona()
         }
     }
 
     override fun connectFacebook(personaId: String, userName: String) {
         scope.launch {
-            JSMethod.Persona.connectProfile(Network.Facebook, personaId, userName)
+            jsMethod.connectProfile(Network.Facebook, personaId, userName)
             refreshPersona()
         }
     }
 
     override fun disconnectTwitter(personaId: String, socialId: String) {
         scope.launch {
-            JSMethod.Persona.disconnectProfile(socialId)
+            jsMethod.disconnectProfile(socialId)
             refreshSocial()
             refreshPersona()
         }
@@ -289,7 +291,7 @@ class PersonaRepository(
 
     override fun disconnectFacebook(personaId: String, socialId: String) {
         scope.launch {
-            JSMethod.Persona.disconnectProfile(socialId)
+            jsMethod.disconnectProfile(socialId)
             refreshSocial()
             refreshPersona()
         }
@@ -297,7 +299,7 @@ class PersonaRepository(
 
     override fun createPersonaFromMnemonic(value: List<String>, name: String) {
         scope.launch {
-            val persona = JSMethod.Persona.createPersonaByMnemonic(value.joinToString(" "), name, "")
+            val persona = jsMethod.createPersonaByMnemonic(value.joinToString(" "), name, "")
             refreshPersona()
             persona?.identifier?.let { setCurrentPersona(it) }
         }
@@ -311,13 +313,13 @@ class PersonaRepository(
     override fun updateCurrentPersona(value: String) {
         scope.launch {
             _currentPersona.firstOrNull()?.let {
-                JSMethod.Persona.updatePersonaInfo(it, value)
+                jsMethod.updatePersonaInfo(it, value)
                 refreshPersona()
             }
         }
     }
 
     override suspend fun backupPrivateKey(id: String): String {
-        return JSMethod.Persona.backupPrivateKey(id) ?: ""
+        return jsMethod.backupPrivateKey(id) ?: ""
     }
 }

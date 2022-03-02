@@ -21,12 +21,17 @@
 package com.dimension.maskbook.extension
 
 import com.dimension.maskbook.extension.export.ExtensionServices
+import com.dimension.maskbook.extension.export.model.ExtensionMessage
 import com.dimension.maskbook.extension.export.model.Site
 import com.dimension.maskbook.extension.repository.ExtensionRepository
+import com.dimension.maskbook.extension.utils.MessageChannel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.mapNotNull
 
-class ExtensionServicesImpl(
+internal class ExtensionServicesImpl(
     private val repository: ExtensionRepository,
+    private val messageChannel: MessageChannel,
 ) : ExtensionServices {
     override val site: Flow<Site>
         get() = repository.currentSite
@@ -37,4 +42,20 @@ class ExtensionServicesImpl(
 
     override val isExtensionActive: Flow<Boolean>
         get() = repository.isExtensionConnected
+
+    override suspend fun ensureExtensionActive() {
+        isExtensionActive.first { it }
+    }
+
+    override suspend fun runJSMethod(method: String, vararg args: Pair<String, Any>): String {
+        return messageChannel.execute<String>(method, args.toMap()).orEmpty()
+    }
+
+    suspend inline fun <reified T : Any> execute(method: String, vararg args: Pair<String, Any>): T? {
+        return messageChannel.execute(method, args.toMap())
+    }
+
+    override fun subscribeJSEvent(method: String): Flow<ExtensionMessage> {
+        return messageChannel.subscribeMessage(method).mapNotNull { it }
+    }
 }

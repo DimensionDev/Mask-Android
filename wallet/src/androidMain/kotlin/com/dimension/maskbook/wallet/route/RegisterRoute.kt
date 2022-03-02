@@ -106,7 +106,7 @@ fun NavGraphBuilder.registerRoute(
                     Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona)),
                     navOptions = navOptions {
                         launchSingleTop = true
-                        popUpTo(CommonRoute.Main.Home) {
+                        popUpTo(CommonRoute.Main.Home.path) {
                             inclusive = false
                         }
                     }
