@@ -21,21 +21,48 @@
 package com.dimension.maskbook.wallet.paging.mediator
 
 import androidx.paging.ExperimentalPagingApi
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.map
 import com.dimension.maskbook.wallet.db.AppDatabase
 import com.dimension.maskbook.wallet.db.model.DbCollectible
+import com.dimension.maskbook.wallet.repository.WalletCollectibleCollectionData
 import com.dimension.maskbook.wallet.services.OpenSeaServices
+import kotlinx.coroutines.flow.mapNotNull
 
 @OptIn(ExperimentalPagingApi::class)
-class CollectibleMediator(
+class CollectibleCollectionMediator(
     database: AppDatabase,
     walletId: String,
     walletAddress: String,
     openSeaServices: OpenSeaServices,
-    collectionSlug: String? = null
 ) : BaseCollectibleMediator<DbCollectible>(
     database = database,
     walletId = walletId,
     walletAddress = walletAddress,
-    openSeaServices = openSeaServices,
-    collectionSlug = collectionSlug
-)
+    openSeaServices = openSeaServices
+) {
+    companion object {
+        fun pager(
+            walletId: String,
+            walletAddress: String,
+            services: OpenSeaServices,
+            database: AppDatabase
+        ) = Pager(
+            config = PagingConfig(pageSize = 20),
+            remoteMediator = CollectibleCollectionMediator(
+                walletId = walletId,
+                walletAddress = walletAddress,
+                openSeaServices = services,
+                database = database
+            ),
+            pagingSourceFactory = {
+                database.collectibleDao().getCollectionsByWallet(walletId)
+            }
+        ).flow.mapNotNull {
+            it.map {
+                WalletCollectibleCollectionData.fromDb(data = it)
+            }
+        }
+    }
+}

@@ -73,6 +73,26 @@ fun WalletTokenData.Companion.fromDb(data: DbWalletTokenWithToken) = with(data) 
     )
 }
 
+data class WalletCollectibleCollectionData(
+    val slug: String,
+    val name: String,
+    val imageUrl: String,
+    val walletId: String,
+    val chainType: ChainType,
+) {
+    companion object {
+        fun fromDb(data: DbCollectible) = with(data) {
+            WalletCollectibleCollectionData(
+                slug = collection.slug,
+                name = collection.name ?: "",
+                imageUrl = collection.imageURL ?: "",
+                walletId = walletId,
+                chainType = chainType
+            )
+        }
+    }
+}
+
 data class WalletCollectibleData(
     val id: String,
     val chainType: ChainType,
@@ -82,6 +102,7 @@ data class WalletCollectibleData(
 ) {
     companion object {
         fun fromDb(data: DbCollectible) = with(data) {
+            // TODO Mimao refactor WalletCollectibleData
             WalletCollectibleData(
                 id = _id,
                 chainType = chainType,
@@ -292,7 +313,16 @@ interface IWalletRepository {
         onDone: (String?) -> Unit = {},
         onError: (Throwable) -> Unit = {},
     )
-    fun sendTokenWithCurrentWalletAndChainType(
+    fun sendCollectibleWithCurrentWallet(
+        address: String,
+        collectible: WalletCollectibleItemData,
+        gasLimit: Double,
+        maxFee: Double,
+        maxPriorityFee: Double,
+        onDone: (String?) -> Unit = {},
+        onError: (Throwable) -> Unit = {},
+    )
+    fun transactionWithCurrentWalletAndChainType(
         amount: BigDecimal,
         address: String,
         chainType: ChainType,

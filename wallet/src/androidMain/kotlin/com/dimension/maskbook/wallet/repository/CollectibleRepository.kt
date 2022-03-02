@@ -27,6 +27,7 @@ import androidx.paging.PagingData
 import androidx.paging.map
 import com.dimension.maskbook.wallet.db.AppDatabase
 import com.dimension.maskbook.wallet.export.model.WalletData
+import com.dimension.maskbook.wallet.paging.mediator.CollectibleCollectionMediator
 import com.dimension.maskbook.wallet.paging.mediator.CollectibleMediator
 import com.dimension.maskbook.wallet.services.WalletServices
 import kotlinx.coroutines.flow.Flow
@@ -59,5 +60,14 @@ class CollectibleRepository(
         return database.collectibleDao().getById(collectibleId).map {
             it?.let { it1 -> WalletCollectibleData.fromDb(it1) }
         }
+    }
+
+    override fun getCollectibleCollectionsByWallet(walletData: WalletData): Flow<PagingData<WalletCollectibleCollectionData>> {
+        return CollectibleCollectionMediator.pager(
+            walletAddress = walletData.address,
+            walletId = walletData.id,
+            services = services.openSeaServices,
+            database = database
+        )
     }
 }

@@ -32,4 +32,8 @@ interface ICollectibleRepository {
     fun getCollectibleById(
         collectibleId: String,
     ): Flow<WalletCollectibleData?>
+
+    fun getCollectibleCollectionsByWallet(
+        walletData: WalletData,
+    ): Flow<PagingData<WalletCollectibleCollectionData>>
 }

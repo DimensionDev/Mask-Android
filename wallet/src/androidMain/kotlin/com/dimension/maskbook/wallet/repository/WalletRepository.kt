@@ -51,7 +51,7 @@ import com.dimension.maskbook.wallet.export.model.TokenData
 import com.dimension.maskbook.wallet.export.model.WalletData
 import com.dimension.maskbook.wallet.ext.ether
 import com.dimension.maskbook.wallet.ext.gwei
-import com.dimension.maskbook.wallet.paging.mediator.CollectibleMediator
+import com.dimension.maskbook.wallet.paging.mediator.CollectibleCollectionMediator
 import com.dimension.maskbook.wallet.services.WalletServices
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager
 import com.dimension.maskwalletcore.WalletKey
@@ -156,12 +156,12 @@ class WalletRepository(
     private suspend fun refreshCurrentWalletCollectibles() {
         val currentWallet = currentWallet.firstOrNull() ?: return
         try {
-            CollectibleMediator(
+            CollectibleCollectionMediator(
                 walletId = currentWallet.id,
                 database = database,
                 openSeaServices = services.openSeaServices,
                 walletAddress = currentWallet.address,
-            ).load(LoadType.REFRESH, PagingState(emptyList(), null, PagingConfig(pageSize = 10), 0))
+            ).load(LoadType.REFRESH, PagingState(emptyList(), null, PagingConfig(pageSize = 20), 0))
         } catch (e: Throwable) {
             e.printStackTrace()
         }
@@ -609,7 +609,7 @@ class WalletRepository(
         onDone: (String?) -> Unit,
         onError: (Throwable) -> Unit,
     ) {
-        sendTokenWithCurrentWalletAndChainType(
+        transactionWithCurrentWalletAndChainType(
             amount = amount,
             address = address,
             chainType = tokenData.chainType,
@@ -622,7 +622,19 @@ class WalletRepository(
         )
     }
 
-    override fun sendTokenWithCurrentWalletAndChainType(
+    override fun sendCollectibleWithCurrentWallet(
+        address: String,
+        collectible: WalletCollectibleItemData,
+        gasLimit: Double,
+        maxFee: Double,
+        maxPriorityFee: Double,
+        onDone: (String?) -> Unit,
+        onError: (Throwable) -> Unit
+    ) {
+        TODO("Not yet implemented")
+    }
+
+    override fun transactionWithCurrentWalletAndChainType(
         amount: BigDecimal,
         address: String,
         chainType: ChainType,

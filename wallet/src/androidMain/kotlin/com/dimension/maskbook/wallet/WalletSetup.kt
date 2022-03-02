@@ -185,6 +185,7 @@ object WalletSetup : ModuleSetup {
                 .addMigrations(
                     RoomMigrations.MIGRATION_6_7,
                     RoomMigrations.MIGRATION_7_8,
+                    RoomMigrations.MIGRATION_8_9
                 )
                 .build()
         }

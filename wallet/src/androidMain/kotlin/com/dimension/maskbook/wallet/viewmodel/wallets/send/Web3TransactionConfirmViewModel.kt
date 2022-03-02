@@ -57,7 +57,7 @@ class Web3TransactionConfirmViewModel(
         maxPriorityFee: Double,
     ) {
         data.data.to?.let { address ->
-            walletRepository.sendTokenWithCurrentWalletAndChainType(
+            walletRepository.transactionWithCurrentWalletAndChainType(
                 amount = amount.value,
                 address = address,
                 chainType = chainType,
