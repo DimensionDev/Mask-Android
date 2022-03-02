@@ -40,6 +40,9 @@ interface CollectibleDao {
     @Query("SELECT * FROM dbcollectible WHERE walletId = :walletId")
     fun getByWallet(walletId: String): PagingSource<Int, DbCollectible>
 
+    @Query("SELECT * FROM dbcollectible WHERE walletId = :walletId AND collection_slug = :collectionSlug")
+    fun getByWalletAndCollection(walletId: String, collectionSlug: String): PagingSource<Int, DbCollectible>
+
     @Query("SELECT * FROM dbcollectible WHERE _id = :collectibleId")
     fun getById(collectibleId: String): Flow<DbCollectible?>
 

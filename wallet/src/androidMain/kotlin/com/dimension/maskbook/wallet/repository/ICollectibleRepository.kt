@@ -27,6 +27,7 @@ import kotlinx.coroutines.flow.Flow
 interface ICollectibleRepository {
     fun getCollectiblesByWallet(
         walletData: WalletData,
+        collectionSlug: String? = null
     ): Flow<PagingData<WalletCollectibleData>>
 
     fun getCollectibleById(

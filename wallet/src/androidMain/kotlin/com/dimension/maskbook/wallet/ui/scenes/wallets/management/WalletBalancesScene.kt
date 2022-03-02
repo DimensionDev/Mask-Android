@@ -75,8 +75,8 @@ import com.dimension.maskbook.wallet.export.model.WalletData
 import com.dimension.maskbook.wallet.export.model.WalletTokenData
 import com.dimension.maskbook.wallet.ext.humanizeDollar
 import com.dimension.maskbook.wallet.ext.humanizeToken
+import com.dimension.maskbook.wallet.repository.WalletCollectibleCollectionData
 import com.dimension.maskbook.wallet.repository.WalletCollectibleData
-import com.dimension.maskbook.wallet.repository.WalletCollectibleItemData
 import com.dimension.maskbook.wallet.ui.widget.CollectibleCard
 import com.dimension.maskbook.wallet.ui.widget.WalletCard
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -105,12 +105,12 @@ fun WalletBalancesScene(
     sceneType: BalancesSceneType,
     onSceneTypeChanged: (BalancesSceneType) -> Unit,
     walletChainType: ChainType,
-    onCollectibleDetailClicked: (WalletCollectibleItemData) -> Unit,
+    onCollectibleDetailClicked: (WalletCollectibleData) -> Unit,
     onBack: () -> Unit,
     displayChainType: ChainType?,
     onDisplayChainTypeClicked: (ChainType?) -> Unit,
     onWalletAddressClicked: () -> Unit,
-    collectible: LazyPagingItems<WalletCollectibleData>,
+    collectible: LazyPagingItems<WalletCollectibleCollectionData>,
 ) {
     val pagerState = rememberPagerState(initialPage = maxOf(wallets.indexOf(currentWallet), 0))
 

@@ -79,26 +79,24 @@ fun CollectibleDetailScene(
             Box(
                 modifier = Modifier.weight(1f),
             ) {
-                data.items.firstOrNull()?.let { item ->
-                    if (!item.videoUrl.isNullOrEmpty()) {
-                        // TODO: video
-                    } else if (!item.imageUrl.isNullOrEmpty()) {
-                        Image(
-                            painter = rememberImagePainter(item.imageUrl),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(RoundedCornerShape(12.dp)),
-                            contentDescription = null
-                        )
-                    } else {
-                        Image(
-                            painter = painterResource(R.drawable.mask),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(RoundedCornerShape(12.dp)),
-                            contentDescription = null
-                        )
-                    }
+                if (!data.videoUrl.isNullOrEmpty()) {
+                    // TODO: video
+                } else if (!data.imageUrl.isNullOrEmpty()) {
+                    Image(
+                        painter = rememberImagePainter(data.imageUrl),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(12.dp)),
+                        contentDescription = null
+                    )
+                } else {
+                    Image(
+                        painter = painterResource(R.drawable.mask),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(12.dp)),
+                        contentDescription = null
+                    )
                 }
             }
             Row(

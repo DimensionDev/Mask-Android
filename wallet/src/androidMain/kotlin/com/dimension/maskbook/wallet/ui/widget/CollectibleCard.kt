@@ -30,7 +30,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
@@ -49,25 +48,31 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.items
 import coil.compose.rememberImagePainter
 import com.dimension.maskbook.common.ui.widget.MaskListItem
 import com.dimension.maskbook.common.ui.widget.button.MaskButton
 import com.dimension.maskbook.common.ui.widget.button.clickable
 import com.dimension.maskbook.wallet.R
+import com.dimension.maskbook.wallet.repository.WalletCollectibleCollectionData
 import com.dimension.maskbook.wallet.repository.WalletCollectibleData
-import com.dimension.maskbook.wallet.repository.WalletCollectibleItemData
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.onDrawableRes
+import com.dimension.maskbook.wallet.viewmodel.wallets.collectible.CollectiblesViewModel
+import org.koin.androidx.compose.getViewModel
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun CollectibleCard(
     modifier: Modifier = Modifier,
-    data: WalletCollectibleData,
-    onItemClicked: (WalletCollectibleItemData) -> Unit,
+    data: WalletCollectibleCollectionData,
+    onItemClicked: (WalletCollectibleData) -> Unit,
 ) {
     var expanded by rememberSaveable {
         mutableStateOf(false)
     }
+    val viewModel = getViewModel<CollectiblesViewModel>()
+    val items = viewModel.getCollectibles(collectionSlug = data.slug).collectAsLazyPagingItems()
     MaskButton(
         onClick = { expanded = !expanded },
         modifier = modifier
@@ -77,7 +82,7 @@ fun CollectibleCard(
                 icon = {
                     Box {
                         Image(
-                            painter = rememberImagePainter(data.icon) {
+                            painter = rememberImagePainter(data.imageUrl) {
                                 placeholder(R.drawable.mask)
                                 fallback(R.drawable.mask)
                                 error(R.drawable.mask)
@@ -103,9 +108,10 @@ fun CollectibleCard(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Text(
-                            text = data.items.size.toString()
-                        )
+                        // TODO Mimao find a way to display number
+                        // Text(
+                        // text = data.items.size.toString()
+                        // )
                         Icon(
                             imageVector = if (expanded) {
                                 Icons.Default.ExpandMore
@@ -122,21 +128,23 @@ fun CollectibleCard(
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                     contentPadding = PaddingValues(12.dp),
                 ) {
-                    items(data.items) {
-                        Image(
-                            painter = rememberImagePainter(it.previewUrl) {
-                                placeholder(R.drawable.mask)
-                                fallback(R.drawable.mask)
-                                error(R.drawable.mask)
-                            },
-                            modifier = Modifier
-                                .size(145.dp)
-                                .clip(RoundedCornerShape(12.dp))
-                                .clickable {
-                                    onItemClicked.invoke(it)
+                    items(items) {
+                        it?.let { data ->
+                            Image(
+                                painter = rememberImagePainter(data.previewUrl) {
+                                    placeholder(R.drawable.mask)
+                                    fallback(R.drawable.mask)
+                                    error(R.drawable.mask)
                                 },
-                            contentDescription = null
-                        )
+                                modifier = Modifier
+                                    .size(145.dp)
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .clickable {
+                                        onItemClicked.invoke(data)
+                                    },
+                                contentDescription = null
+                            )
+                        }
                     }
                 }
             }

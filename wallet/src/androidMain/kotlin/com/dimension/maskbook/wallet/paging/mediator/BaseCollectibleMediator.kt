@@ -43,16 +43,18 @@ open class BaseCollectibleMediator<Value : Any>(
     val openSeaServices: OpenSeaServices,
     val collectionSlug: String? = null
 ) : RemoteMediator<Int, Value>() {
-    private var page = 0
+    private var cursor: String? = null
     override suspend fun load(loadType: LoadType, state: PagingState<Int, Value>): MediatorResult {
         try {
-            page = when (loadType) {
-                LoadType.REFRESH -> 0
+            cursor = when (loadType) {
+                LoadType.REFRESH -> null
                 LoadType.PREPEND -> return MediatorResult.Success(endOfPaginationReached = true)
-                LoadType.APPEND -> page + 1
+                LoadType.APPEND -> cursor
             }
 
-            val result = openSeaServices.assets(walletAddress, offset = page, collection_slug = collectionSlug).assets
+            val result = openSeaServices.assets(walletAddress, cursor = cursor, collection_slug = collectionSlug).also {
+                cursor = it.next
+            }.assets
 
             result?.let { assets ->
                 database.withTransaction {
@@ -63,7 +65,7 @@ open class BaseCollectibleMediator<Value : Any>(
                     )
                 }
             }
-            return MediatorResult.Success(endOfPaginationReached = result.isNullOrEmpty())
+            return MediatorResult.Success(endOfPaginationReached = cursor == null)
         } catch (e: Throwable) {
             return MediatorResult.Error(e)
         }

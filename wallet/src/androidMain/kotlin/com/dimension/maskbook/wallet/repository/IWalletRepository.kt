@@ -98,25 +98,24 @@ data class WalletCollectibleData(
     val chainType: ChainType,
     val icon: String?,
     val name: String,
-    val items: List<WalletCollectibleItemData>,
+    val tokenId: String,
+    val link: String,
+    val previewUrl: String?,
+    val imageUrl: String?,
+    val videoUrl: String?,
 ) {
     companion object {
         fun fromDb(data: DbCollectible) = with(data) {
-            // TODO Mimao refactor WalletCollectibleData
             WalletCollectibleData(
                 id = _id,
                 chainType = chainType,
                 icon = this.collection.imageURL,
                 name = collection.name ?: name,
-                items = listOf(
-                    WalletCollectibleItemData(
-                        id = _id,
-                        link = this.permalink ?: this.externalLink ?: "",
-                        imageUrl = this.url.imageURL ?: this.url.imageOriginalURL ?: "",
-                        previewUrl = this.url.imagePreviewURL ?: this.url.imageThumbnailURL ?: "",
-                        videoUrl = this.url.animationOriginalURL ?: this.url.animationURL ?: "",
-                    )
-                ),
+                tokenId = tokenId,
+                link = this.permalink ?: this.externalLink ?: "",
+                imageUrl = this.url.imageURL ?: this.url.imageOriginalURL ?: "",
+                previewUrl = this.url.imagePreviewURL ?: this.url.imageThumbnailURL ?: "",
+                videoUrl = this.url.animationOriginalURL ?: this.url.animationURL ?: "",
             )
         }
     }

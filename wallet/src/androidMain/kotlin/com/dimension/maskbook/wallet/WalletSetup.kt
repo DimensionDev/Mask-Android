@@ -80,6 +80,7 @@ import com.dimension.maskbook.wallet.viewmodel.wallets.WalletConnectManagementVi
 import com.dimension.maskbook.wallet.viewmodel.wallets.WalletConnectViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.WalletManagementModalViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.collectible.CollectibleDetailViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.collectible.CollectiblesViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.create.CreateWalletRecoveryKeyViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.import.ImportWalletDerivationPathViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.import.ImportWalletKeystoreViewModel
@@ -318,6 +319,7 @@ private fun Module.provideViewModel() {
     viewModel { (id: String) -> CollectibleDetailViewModel(id, get()) }
     viewModel { (tokenAddress: String) -> SendTokenDataViewModel(tokenAddress, get(), get()) }
     viewModel { (data: SendTokenConfirmData) -> Web3TransactionConfirmViewModel(data, get(), get()) }
+    viewModel { CollectiblesViewModel(get(), get()) }
 }
 
 private fun Module.provideServices() {

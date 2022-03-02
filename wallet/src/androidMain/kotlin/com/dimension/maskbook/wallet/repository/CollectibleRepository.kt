@@ -38,17 +38,20 @@ class CollectibleRepository(
     private val services: WalletServices,
 ) : ICollectibleRepository {
     @OptIn(ExperimentalPagingApi::class)
-    override fun getCollectiblesByWallet(walletData: WalletData): Flow<PagingData<WalletCollectibleData>> {
+    override fun getCollectiblesByWallet(walletData: WalletData, collectionSlug: String?): Flow<PagingData<WalletCollectibleData>> {
         return Pager(
             config = PagingConfig(pageSize = 20),
             remoteMediator = CollectibleMediator(
                 walletId = walletData.id,
                 database = database,
                 openSeaServices = services.openSeaServices,
-                walletAddress = walletData.address
+                walletAddress = walletData.address,
+                collectionSlug = collectionSlug
             ),
         ) {
-            database.collectibleDao().getByWallet(walletData.id)
+            collectionSlug?.let {
+                database.collectibleDao().getByWalletAndCollection(walletData.id, collectionSlug = it)
+            } ?: database.collectibleDao().getByWallet(walletData.id)
         }.flow.map {
             it.map {
                 WalletCollectibleData.fromDb(it)
