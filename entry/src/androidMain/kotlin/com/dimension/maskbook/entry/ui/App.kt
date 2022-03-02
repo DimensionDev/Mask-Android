@@ -48,9 +48,9 @@ import com.dimension.maskbook.wallet.route.WalletRoute
 import kotlinx.coroutines.flow.firstOrNull
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
-import org.koin.androidx.compose.get
 import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
+import org.koin.mp.KoinPlatformTools
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -78,13 +78,13 @@ fun App(
 }
 
 suspend fun getStartDestination(): String {
-    val repository = get<EntryRepository>()
+    val repository = KoinPlatformTools.defaultContext().get().get<EntryRepository>()
     val shouldShowEntry = repository.shouldShowEntry.firstOrNull() ?: true
     if (shouldShowEntry) {
         return EntryRoute.Intro
     }
-    val persona = get<PersonaServices>().currentPersona.firstOrNull()
-    return if (persona == null) {
+    val persona = KoinPlatformTools.defaultContext().get().get<PersonaServices>().currentPersona.firstOrNull()
+    return if (persona != null) {
         CommonRoute.Main.Home(CommonRoute.Main.Tabs.Persona)
     } else {
         WalletRoute.Register.Init
@@ -105,7 +105,7 @@ private suspend fun warmingUp(context: Context) {
             ExtensionSetup.dependencyInject(),
         )
     }
-    get<ExtensionServices>().ensureExtensionActive()
+    KoinPlatformTools.defaultContext().get().get<ExtensionServices>().ensureExtensionActive()
     CommonSetup.onExtensionReady()
     WalletSetup.onExtensionReady()
     SettingSetup.onExtensionReady()

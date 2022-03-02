@@ -18,11 +18,11 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.common.platform
+package com.dimension.maskbook.common.route
 
-// interface IPlatformSwitcher {
-//     fun switchTo(platformType: PlatformType)
-//     fun showTooltips(visible: Boolean)
-//     fun launchDeeplink(deeplink: String)
-//     fun showModal(route: String, data: Any?)
-// }
+class Navigator {
+    fun navigate(route: String) {
+    }
+    fun deeplink(route: String) {
+    }
+}

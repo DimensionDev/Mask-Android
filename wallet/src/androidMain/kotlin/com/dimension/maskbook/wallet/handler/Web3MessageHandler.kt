@@ -26,7 +26,6 @@ import com.dimension.maskbook.wallet.data.Web3Request
 import com.dimension.maskbook.wallet.db.model.CoinPlatformType
 import com.dimension.maskbook.wallet.ext.normalized
 import com.dimension.maskbook.wallet.repository.IWalletRepository
-import com.dimension.maskbook.wallet.repository.SendTokenConfirmData
 import com.dimension.maskbook.wallet.repository.SendTransactionData
 import com.dimension.maskbook.wallet.repository.httpService
 import com.fasterxml.jackson.core.type.TypeReference
@@ -87,46 +86,46 @@ internal class Web3MessageHandler(
                             payload.params.firstOrNull()?.toString()
                                 ?.decodeJson<SendTransactionData>()
                                 ?: return@launch
-                        platformSwitcher.showModal(
-                            "SendTokenConfirm",
-                            SendTokenConfirmData(
-                                data,
-                                request.id,
-                                onDone = {
-                                    it?.let {
-                                        request.message.response(
-                                            ExtensionResponseMessage.success(
-                                                request,
-                                                it
-                                            )
-                                        )
-                                    } ?: run {
-                                        request.message.response(
-                                            ExtensionResponseMessage.error(
-                                                request,
-                                                "Transaction failed"
-                                            )
-                                        )
-                                    }
-                                },
-                                onCancel = {
-                                    request.message.response(
-                                        ExtensionResponseMessage.error(
-                                            request,
-                                            "User canceled"
-                                        )
-                                    )
-                                },
-                                onError = {
-                                    request.message.response(
-                                        ExtensionResponseMessage.error(
-                                            request,
-                                            it.message ?: "error"
-                                        )
-                                    )
-                                }
-                            )
-                        )
+                        // platformSwitcher.showModal(
+                        //     "SendTokenConfirm",
+                        //     SendTokenConfirmData(
+                        //         data,
+                        //         request.id,
+                        //         onDone = {
+                        //             it?.let {
+                        //                 request.message.response(
+                        //                     ExtensionResponseMessage.success(
+                        //                         request,
+                        //                         it
+                        //                     )
+                        //                 )
+                        //             } ?: run {
+                        //                 request.message.response(
+                        //                     ExtensionResponseMessage.error(
+                        //                         request,
+                        //                         "Transaction failed"
+                        //                     )
+                        //                 )
+                        //             }
+                        //         },
+                        //         onCancel = {
+                        //             request.message.response(
+                        //                 ExtensionResponseMessage.error(
+                        //                     request,
+                        //                     "User canceled"
+                        //                 )
+                        //             )
+                        //         },
+                        //         onError = {
+                        //             request.message.response(
+                        //                 ExtensionResponseMessage.error(
+                        //                     request,
+                        //                     it.message ?: "error"
+                        //                 )
+                        //             )
+                        //         }
+                        //     )
+                        // )
                     }
                     "personal_sign" -> {
                         val message =

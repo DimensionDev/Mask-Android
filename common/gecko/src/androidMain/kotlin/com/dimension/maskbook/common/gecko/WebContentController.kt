@@ -20,23 +20,16 @@
  */
 package com.dimension.maskbook.common.gecko
 
+import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.mapNotNull
-import kotlinx.coroutines.launch
 import mozilla.components.browser.engine.gecko.GeckoEngine
+import mozilla.components.browser.state.action.BrowserAction
 import mozilla.components.browser.state.engine.EngineMiddleware
 import mozilla.components.browser.state.selector.selectedTab
 import mozilla.components.browser.state.state.BrowserState
@@ -49,7 +42,8 @@ import mozilla.components.concept.engine.webextension.Port
 import mozilla.components.feature.prompts.PromptFeature
 import mozilla.components.feature.session.SessionUseCases
 import mozilla.components.feature.tabs.TabsUseCases
-import mozilla.components.lib.state.ext.observe
+import mozilla.components.lib.state.Store
+import mozilla.components.support.base.feature.OnNeedToRequestPermissions
 import org.json.JSONObject
 import org.mozilla.geckoview.GeckoRuntime
 import java.io.Closeable
@@ -57,9 +51,10 @@ import java.io.Closeable
 private const val BackgroundPortName = "browser"
 
 class WebContentController(
-    fragmentActivity: FragmentActivity,
+    fragmentActivity: Context,
     var onNavigate: (String) -> Boolean = { true },
 ) : Closeable {
+    private lateinit var _observer: Store.Subscription<BrowserState, BrowserAction>
     private val _isExtensionConnected = MutableStateFlow(false)
     val isExtensionConnected = _isExtensionConnected.asSharedFlow()
     private val _browserState = MutableStateFlow<BrowserState?>(null)
@@ -107,25 +102,6 @@ class WebContentController(
             }
         }
     }
-    private val promptFeature by lazy {
-        PromptFeature(
-            activity = fragmentActivity,
-            fragmentManager = fragmentActivity.supportFragmentManager,
-            store = store,
-            onNeedToRequestPermissions = { permissions ->
-                this.permissionsRequest.launch(permissions)
-            }
-        )
-    }
-    // Make sure register the permission request when the activity is created
-    private val permissionsRequest: ActivityResultLauncher<Array<String>> =
-        fragmentActivity.registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
-            promptFeature.onPermissionsResult(
-                it.keys.toTypedArray(),
-                it.values.map { if (it) PackageManager.PERMISSION_GRANTED else PackageManager.PERMISSION_DENIED }
-                    .toIntArray()
-            )
-        }
     internal val engine by lazy {
         GeckoEngine(
             fragmentActivity,
@@ -140,8 +116,10 @@ class WebContentController(
         BrowserStore(
             middleware = EngineMiddleware.create(engine)
         ).apply {
-            observe(fragmentActivity) {
+            _observer = observeManually {
                 _browserState.value = it
+            }.apply {
+                resume()
             }
         }
     }
@@ -170,28 +148,6 @@ class WebContentController(
             }
         }
     }
-
-    init {
-        require(!fragmentActivity.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
-            "WebContentController must be created before the activity is started"
-        }
-        fragmentActivity.lifecycle.addObserver(object : DefaultLifecycleObserver {
-            override fun onStart(owner: LifecycleOwner) {
-                promptFeature.start()
-            }
-
-            override fun onStop(owner: LifecycleOwner) {
-                promptFeature.stop()
-            }
-        })
-        fragmentActivity.onBackPressedDispatcher.addCallback(fragmentActivity, backPressedCallback)
-        fragmentActivity.lifecycleScope.launch {
-            _browserState.mapNotNull { it }.collect {
-                backPressedCallback.isEnabled = it.selectedTab != null
-            }
-        }
-    }
-
     fun installExtensions(
         id: String,
         url: String,
@@ -225,15 +181,20 @@ class WebContentController(
     val title get() = _browserState.mapNotNull { it?.selectedTab?.content?.title }
     val tabCount get() = _browserState.mapNotNull { it?.tabs?.size }
 
-    fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        promptFeature.onActivityResult(requestCode, data, resultCode)
-    }
-
-    fun onBiometricResult(isAuthenticated: Boolean) {
-        promptFeature.onBiometricResult(isAuthenticated)
+    fun createPromptFeature(
+        fragmentActivity: FragmentActivity,
+        onNeedToRequestPermissions: OnNeedToRequestPermissions,
+    ): PromptFeature {
+        return PromptFeature(
+            activity = fragmentActivity,
+            fragmentManager = fragmentActivity.supportFragmentManager,
+            store = store,
+            onNeedToRequestPermissions = onNeedToRequestPermissions
+        )
     }
 
     override fun close() {
+        _observer.unsubscribe()
         runtime.shutdown()
     }
 

@@ -20,27 +20,41 @@
  */
 package com.dimension.maskbook
 
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.compose.setContent
-import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.fragment.app.FragmentActivity
 import coil.ImageLoader
 import coil.compose.LocalImageLoader
 import coil.decode.SvgDecoder
+import com.dimension.maskbook.common.gecko.WebContentController
 import com.dimension.maskbook.common.ui.widget.LocalWindowInsetsController
 import com.dimension.maskbook.entry.ui.App
 import com.google.accompanist.insets.ProvideWindowInsets
-import org.koin.android.scope.AndroidScopeComponent
-import org.koin.androidx.scope.activityRetainedScope
-import org.koin.core.scope.Scope
+import org.koin.android.ext.android.get
 
-// TOOD: Change to FragmentActivity, blocked by https://github.com/InsertKoinIO/koin/pull/1287
-class ComposeActivity : AppCompatActivity(), AndroidScopeComponent {
-    override val scope: Scope by activityRetainedScope()
+class ComposeActivity : FragmentActivity() {
+    private val permissionsRequest: ActivityResultLauncher<Array<String>> =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
+            promptFeature.onPermissionsResult(
+                it.keys.toTypedArray(),
+                it.values.map { if (it) PackageManager.PERMISSION_GRANTED else PackageManager.PERMISSION_DENIED }
+                    .toIntArray()
+            )
+        }
+    private val promptFeature by lazy {
+        get<WebContentController>().createPromptFeature(this) {
+            permissionsRequest.launch(it)
+        }
+    }
     private val windowInsetsControllerCompat by lazy {
         WindowInsetsControllerCompat(window, window.decorView)
     }
@@ -66,5 +80,26 @@ class ComposeActivity : AppCompatActivity(), AndroidScopeComponent {
                 }
             }
         }
+    }
+
+    override fun onBackPressed() {
+        if (!promptFeature.onBackPressed()) {
+            super.onBackPressed()
+        }
+    }
+
+    // override fun onStart() {
+    //     super.onStart()
+    //     promptFeature.start()
+    // }
+    //
+    // override fun onStop() {
+    //     super.onStop()
+    //     promptFeature.stop()
+    // }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        promptFeature.onActivityResult(requestCode, data, resultCode)
     }
 }

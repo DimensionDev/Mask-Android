@@ -18,24 +18,17 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.common
+package com.dimension.maskbook.common.ext
 
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
-import com.dimension.maskbook.common.util.BiometricAuthenticator
-import com.dimension.maskbook.common.viewmodel.BiometricEnableViewModel
-import org.koin.androidx.viewmodel.dsl.viewModel
-import org.koin.dsl.module
+import com.dimension.maskbook.extension.export.model.Site
+import com.dimension.maskbook.persona.export.model.PlatformType
 
-object CommonSetup : ModuleSetup {
-    override fun NavGraphBuilder.route(navController: NavController, onFinish: () -> Unit) {
-    }
+fun PlatformType.toSite(): Site = when (this) {
+    PlatformType.Twitter -> Site.Twitter
+    PlatformType.Facebook -> Site.Facebook
+}
 
-    override fun dependencyInject() = module {
-        single {
-            BiometricAuthenticator()
-        }
-
-        viewModel { BiometricEnableViewModel(get(), get()) }
-    }
+fun Site.toPlatformType(): PlatformType = when (this) {
+    Site.Twitter -> PlatformType.Twitter
+    Site.Facebook -> PlatformType.Facebook
 }

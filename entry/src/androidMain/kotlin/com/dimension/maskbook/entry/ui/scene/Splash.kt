@@ -20,7 +20,6 @@
  */
 package com.dimension.maskbook.entry.ui.scene
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -32,8 +31,6 @@ import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
-import com.dimension.maskbook.entry.R
 
 @Composable
 fun Splash() {
@@ -50,10 +47,10 @@ fun Splash() {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
             ) {
-                Image(
-                    painter = painterResource(id = R.mipmap.ic_launcher),
-                    contentDescription = null,
-                )
+                // Image(
+                //     painter = painterResource(id = R.mipmap.ic_launcher),
+                //     contentDescription = null,
+                // )
             }
         }
     }

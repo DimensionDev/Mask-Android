@@ -58,8 +58,8 @@ object EntrySetup : ModuleSetup {
                     ).filter { uri ->
                         uri.isNotEmpty()
                     }.collect { uri ->
-                        KoinPlatformTools.defaultContext().get().get<IPlatformSwitcher>()
-                            .launchDeeplink(uri)
+                        // KoinPlatformTools.defaultContext().get().get<IPlatformSwitcher>()
+                        //     .launchDeeplink(uri)
                     }
                 }
             }

@@ -55,10 +55,12 @@ android {
 
 dependencies {
     implementation("androidx.core:core-splashscreen:1.0.0-beta01")
-    implementation("androidx.appcompat:appcompat:1.4.1")
+    implementation("org.mozilla.components:feature-prompts:${Versions.mozilla_components}")
+    implementation("org.mozilla.components:support-base:${Versions.mozilla_components}")
     implementation("androidx.activity:activity-compose:${Versions.Androidx.activityCompose}")
     implementation(projects.entry)
     implementation(projects.common)
+    implementation(projects.common.gecko)
 
     if (enableFirebase) {
         implementation("com.google.firebase:firebase-analytics-ktx:${Versions.Firebase.analytics}")

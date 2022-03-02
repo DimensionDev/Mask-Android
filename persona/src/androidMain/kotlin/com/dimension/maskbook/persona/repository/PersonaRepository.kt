@@ -27,13 +27,10 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.MutableLiveData
-import com.dimension.maskbook.common.platform.IPlatformSwitcher
-import com.dimension.maskbook.common.repository.JSMethod
-import com.dimension.maskbook.common.route.CommonRoute
-import com.dimension.maskbook.common.route.Deeplinks
+import com.dimension.maskbook.common.ext.toSite
+import com.dimension.maskbook.extension.export.ExtensionServices
 import com.dimension.maskbook.persona.data.JSMethod
 import com.dimension.maskbook.persona.export.error.PersonaAlreadyExitsError
-import com.dimension.maskbook.persona.export.model.ConnectAccountData
 import com.dimension.maskbook.persona.export.model.Network
 import com.dimension.maskbook.persona.export.model.Persona
 import com.dimension.maskbook.persona.export.model.PersonaData
@@ -68,7 +65,7 @@ private const val TAG = "PersonaRepository"
 internal class PersonaRepository(
     private val dataStore: DataStore<Preferences>,
     private val jsMethod: JSMethod,
-    private val platformSwitcher: IPlatformSwitcher,
+    private val extensionServices: ExtensionServices,
 ) : IPersonaRepository,
     IContactsRepository {
     private var connectingJob: Job? = null
@@ -130,8 +127,8 @@ internal class PersonaRepository(
         platformType: PlatformType
     ) {
         connectingJob?.cancel()
-        platformSwitcher.switchTo(platformType)
-        platformSwitcher.showTooltips(true)
+        extensionServices.setSite(platformType.toSite())
+        // platformSwitcher.showTooltips(true)
         connectingJob = GlobalScope.launch {
             while (true) {
                 delay(5.seconds)
@@ -142,8 +139,8 @@ internal class PersonaRepository(
                     SocialProfile.parse(it)
                 }
                 if (profile != null) {
-                    platformSwitcher.showTooltips(false)
-                    platformSwitcher.showModal("ConnectAccount", ConnectAccountData(personaId, profile))
+                    // platformSwitcher.showTooltips(false)
+                    // platformSwitcher.showModal("ConnectAccount", ConnectAccountData(personaId, profile))
                     break
                 }
             }
@@ -155,13 +152,13 @@ internal class PersonaRepository(
             jsMethod.connectProfile(profile.network, personaId, profile.userId)
             refreshSocial()
             refreshPersona()
-            platformSwitcher.launchDeeplink(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona))
+            // platformSwitcher.launchDeeplink(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona))
         }
     }
 
     override fun cancelConnectingProcess() {
         connectingJob?.cancel()
-        platformSwitcher.launchDeeplink(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona))
+        // platformSwitcher.launchDeeplink(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona))
     }
 
     override val contacts =
