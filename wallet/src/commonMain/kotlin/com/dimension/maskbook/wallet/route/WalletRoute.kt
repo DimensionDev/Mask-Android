@@ -155,6 +155,9 @@ expect object WalletRoute {
             }
             val PrivateKey: String
             val Complected: String
+            object AlreadyExists {
+                operator fun invoke(restoreFrom: String): String
+            }
         }
     }
 }
