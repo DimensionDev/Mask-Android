@@ -20,13 +20,11 @@
  */
 package com.dimension.maskbook.entry.ui
 
-import android.content.Context
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.platform.LocalContext
 import com.dimension.maskbook.common.CommonSetup
-import com.dimension.maskbook.entry.BuildConfig
+import com.dimension.maskbook.common.ui.theme.MaskTheme
 import com.dimension.maskbook.entry.EntrySetup
 import com.dimension.maskbook.entry.route.EntryRoute
 import com.dimension.maskbook.extension.ExtensionSetup
@@ -35,10 +33,6 @@ import com.dimension.maskbook.labs.LabsSetup
 import com.dimension.maskbook.persona.PersonaSetup
 import com.dimension.maskbook.setting.SettingSetup
 import com.dimension.maskbook.wallet.WalletSetup
-import org.koin.android.ext.koin.androidContext
-import org.koin.android.ext.koin.androidLogger
-import org.koin.core.context.startKoin
-import org.koin.core.logger.Level
 import org.koin.mp.KoinPlatformTools
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -46,30 +40,18 @@ import org.koin.mp.KoinPlatformTools
 fun App(
     onInitialized: () -> Unit = {},
 ) {
-    val context = LocalContext.current
     LaunchedEffect(Unit) {
-        warmingUp(context)
+        warmingUp()
         onInitialized.invoke()
     }
-    Router(
-        startDestination = EntryRoute.Splash,
-    )
-}
-
-private suspend fun warmingUp(context: Context) {
-    startKoin {
-        androidLogger(if (BuildConfig.DEBUG) Level.ERROR else Level.NONE)
-        androidContext(context.applicationContext)
-        modules(
-            CommonSetup.dependencyInject(),
-            WalletSetup.dependencyInject(),
-            SettingSetup.dependencyInject(),
-            LabsSetup.dependencyInject(),
-            PersonaSetup.dependencyInject(),
-            EntrySetup.dependencyInject(),
-            ExtensionSetup.dependencyInject(),
+    MaskTheme {
+        Router(
+            startDestination = EntryRoute.Splash,
         )
     }
+}
+
+private suspend fun warmingUp() {
     KoinPlatformTools.defaultContext().get().get<ExtensionServices>().ensureExtensionActive()
     CommonSetup.onExtensionReady()
     WalletSetup.onExtensionReady()

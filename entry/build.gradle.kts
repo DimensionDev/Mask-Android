@@ -10,12 +10,12 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(projects.common)
-                implementation(projects.wallet)
-                implementation(projects.persona)
-                implementation(projects.labs)
-                implementation(projects.setting)
-                implementation(projects.extension)
+                api(projects.common)
+                api(projects.wallet)
+                api(projects.persona)
+                api(projects.labs)
+                api(projects.setting)
+                api(projects.extension)
                 implementation(projects.common.routeProcessor.annotations)
                 kspAndroid(projects.common.routeProcessor)
             }
