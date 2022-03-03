@@ -316,7 +316,7 @@ private fun Module.provideViewModel() {
     }
     viewModel { UnlockWalletViewModel(get(), get()) }
     viewModel { BackUpPasswordViewModel(get(), get()) }
-    viewModel { (id: String) -> CollectibleDetailViewModel(id, get()) }
+    viewModel { (id: String) -> CollectibleDetailViewModel(id, get(), get(), get()) }
     viewModel { (tokenAddress: String) -> SendTokenDataViewModel(tokenAddress, get(), get()) }
     viewModel { (data: SendTokenConfirmData) -> Web3TransactionConfirmViewModel(data, get(), get()) }
     viewModel { CollectiblesViewModel(get(), get()) }

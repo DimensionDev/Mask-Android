@@ -109,6 +109,7 @@ fun NavGraphBuilder.walletsRoute(
                 parametersOf(id)
             }
             val data by viewModel.data.observeAsState(initial = null)
+            val transactions by viewModel.transactions.observeAsState()
             data?.let {
                 CollectibleDetailScene(
                     data = it,
@@ -119,7 +120,10 @@ fun NavGraphBuilder.walletsRoute(
                     },
                     onReceive = {
                         navController.navigate(WalletRoute.WalletQrcode(it.chainType.name))
-                    }
+                    },
+                    transactions = transactions,
+                    onSpeedUp = {},
+                    onCancel = {}
                 )
             }
         }

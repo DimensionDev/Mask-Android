@@ -96,7 +96,6 @@ data class WalletCollectibleCollectionData(
 data class WalletCollectibleData(
     val id: String,
     val chainType: ChainType,
-    val icon: String?,
     val name: String,
     val tokenId: String,
     val link: String,
@@ -110,8 +109,7 @@ data class WalletCollectibleData(
             WalletCollectibleData(
                 id = _id,
                 chainType = chainType,
-                icon = collection.imageURL,
-                name = collection.name ?: name,
+                name = name,
                 tokenId = tokenId,
                 link = permalink ?: externalLink ?: "",
                 imageUrl = url.imageURL ?: url.imageOriginalURL ?: "",
@@ -158,7 +156,15 @@ data class TransactionData(
     val message: String,
     val createdAt: Long,
     val updatedAt: Long,
-    val tokenData: TokenData,
+    val tokenData: TransactionTokenData,
+)
+
+data class TransactionTokenData(
+    val id: String,
+    val contractId: String,
+    val symbol: String,
+    val price: BigDecimal,
+    val chainType: ChainType
 )
 
 data class SearchAddressResult(
