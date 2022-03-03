@@ -34,7 +34,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -53,78 +52,44 @@ import com.dimension.maskbook.common.ui.widget.NameImage
 import com.dimension.maskbook.common.ui.widget.button.MaskButton
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.persona.R
+import com.dimension.maskbook.persona.model.ContactData
 import com.dimension.maskbook.persona.model.icon
 import com.dimension.maskbook.persona.viewmodel.contacts.ContactsViewModel
 import org.koin.androidx.compose.getViewModel
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ContactsScene() {
+    val context = LocalContext.current
+
     val viewModel: ContactsViewModel = getViewModel()
     val items by viewModel.items.observeAsState()
-    if (!items.any()) {
-        EmptyContactsScene()
-    } else {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            contentPadding = PaddingValues(horizontal = 23.dp, vertical = 24.dp),
-        ) {
-            items(items) { item ->
-                MaskButton(onClick = {}) {
-                    MaskListItem(
-                        icon = {
-                            Box(contentAlignment = Alignment.BottomEnd) {
-                                NameImage(
-                                    name = item.name,
-                                    modifier = Modifier.size(38.dp),
-                                )
-                                Image(
-                                    painter = painterResource(item.network.icon),
-                                    contentDescription = null,
-                                    modifier = Modifier
-                                        .size(16.dp)
-                                        .border(1.dp, MaterialTheme.colors.background, shape = CircleShape)
-                                        .clip(shape = CircleShape),
-                                )
-                            }
-                        },
-                        text = {
-                            Text(
-                                text = item.name,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                        },
-                        secondaryText = {
-                            Text(text = '@' + item.id.substringAfter('/'))
-                        },
-                        trailing = {
-                            if (!item.linkedPersona) {
-                                PrimaryButton(
-                                    onClick = {},
-                                    contentPadding = PaddingValues(
-                                        horizontal = 16.dp,
-                                        vertical = 5.5.dp
-                                    ),
-                                ) {
-                                    Text(
-                                        text = stringResource(R.string.common_controls_invite),
-                                        style = MaterialTheme.typography.caption,
-                                    )
-                                }
-                            }
-                        }
-                    )
-                }
+
+    fun onInvite() {
+        context.startActivity(
+            Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(
+                    Intent.EXTRA_TEXT,
+                    "${context.resources.getText(R.string.scene_share_shareLink)}\nhttps://mask.io/download-links/"
+                )
+                type = "text/plain"
             }
-        }
+        )
+    }
+
+    when {
+        items.isEmpty() -> EmptyContactsScene(
+            onClick = { onInvite() }
+        )
+        else -> ContactsScene(
+            items = items,
+            onItemClick = { onInvite() }
+        )
     }
 }
 
 @Composable
-fun EmptyContactsScene() {
-    val context = LocalContext.current
+fun EmptyContactsScene(onClick: () -> Unit) {
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -137,19 +102,69 @@ fun EmptyContactsScene() {
         Spacer(modifier = Modifier.height(24.dp))
         Text(text = stringResource(R.string.scene_persona_contacts_empty_contacts_tips))
         Spacer(modifier = Modifier.height(24.dp))
-        PrimaryButton(onClick = {
-            context.startActivity(
-                Intent().apply {
-                    action = Intent.ACTION_SEND
-                    putExtra(
-                        Intent.EXTRA_TEXT,
-                        "${context.resources.getText(R.string.scene_share_shareLink)}\nhttps://mask.io/download-links/"
-                    )
-                    type = "text/plain"
-                }
-            )
-        }) {
+        PrimaryButton(onClick = onClick) {
             Text(text = stringResource(R.string.common_controls_invite))
+        }
+    }
+}
+
+@Composable
+fun ContactsScene(
+    items: List<ContactData>,
+    onItemClick: () -> Unit,
+) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        contentPadding = PaddingValues(horizontal = 23.dp, vertical = 24.dp),
+    ) {
+        items(items) { item ->
+            MaskButton(onClick = {}) {
+                MaskListItem(
+                    icon = {
+                        Box(contentAlignment = Alignment.BottomEnd) {
+                            NameImage(
+                                name = item.name,
+                                modifier = Modifier.size(38.dp),
+                            )
+                            Image(
+                                painter = painterResource(item.network.icon),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(16.dp)
+                                    .border(1.dp, MaterialTheme.colors.background, shape = CircleShape)
+                                    .clip(shape = CircleShape),
+                            )
+                        }
+                    },
+                    text = {
+                        Text(
+                            text = item.name,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    },
+                    secondaryText = {
+                        Text(text = '@' + item.id.substringAfter('/'))
+                    },
+                    trailing = {
+                        if (!item.linkedPersona) {
+                            PrimaryButton(
+                                onClick = onItemClick,
+                                contentPadding = PaddingValues(
+                                    horizontal = 16.dp,
+                                    vertical = 5.5.dp
+                                ),
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.common_controls_invite),
+                                    style = MaterialTheme.typography.caption,
+                                )
+                            }
+                        }
+                    }
+                )
+            }
         }
     }
 }
