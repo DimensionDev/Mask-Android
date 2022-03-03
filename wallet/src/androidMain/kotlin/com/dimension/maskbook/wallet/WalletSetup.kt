@@ -35,6 +35,7 @@ import com.dimension.maskbook.common.ModuleSetup
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.ui.tab.TabScreen
+import com.dimension.maskbook.persona.export.model.ConnectAccountData
 import com.dimension.maskbook.wallet.db.AppDatabase
 import com.dimension.maskbook.wallet.db.RoomMigrations
 import com.dimension.maskbook.wallet.repository.CollectibleRepository
@@ -46,6 +47,7 @@ import com.dimension.maskbook.wallet.repository.IWalletConnectRepository
 import com.dimension.maskbook.wallet.repository.IWalletContactRepository
 import com.dimension.maskbook.wallet.repository.IWalletRepository
 import com.dimension.maskbook.wallet.repository.SendHistoryRepository
+import com.dimension.maskbook.wallet.repository.SendTokenConfirmData
 import com.dimension.maskbook.wallet.repository.TokenRepository
 import com.dimension.maskbook.wallet.repository.TransactionRepository
 import com.dimension.maskbook.wallet.repository.WalletConnectRepository
@@ -94,6 +96,7 @@ import com.dimension.maskbook.wallet.viewmodel.wallets.send.SearchAddressViewMod
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendConfirmViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendTokenDataViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendTokenViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.send.Web3TransactionConfirmViewModel
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectServerManager
 import com.dimension.maskbook.wallet.walletconnect.v1.client.WalletConnectClientManagerV1
@@ -115,7 +118,7 @@ import com.dimension.maskbook.wallet.export.WalletServices as ExportWalletServic
 object WalletSetup : ModuleSetup {
 
     @OptIn(ExperimentalMaterialNavigationApi::class)
-    override fun NavGraphBuilder.route(navController: NavController, onBack: () -> Unit) {
+    override fun NavGraphBuilder.route(navController: NavController, onFinish: () -> Unit) {
         walletsRoute(navController)
         registerRoute(navController)
         bottomSheet(
@@ -181,6 +184,7 @@ object WalletSetup : ModuleSetup {
                 .setTransactionExecutor(Dispatchers.IO.asExecutor())
                 .addMigrations(
                     RoomMigrations.MIGRATION_6_7,
+                    RoomMigrations.MIGRATION_7_8,
                 )
                 .build()
         }
@@ -240,8 +244,8 @@ private fun Module.provideRepository() {
 
 private fun Module.provideViewModel() {
     viewModel { (uri: Uri) -> RecoveryLocalViewModel(get(), uri, get<Context>().contentResolver) }
-    viewModel { (name: String) -> IdentityViewModel(get(), name) }
-    viewModel { PrivateKeyViewModel(get()) }
+    viewModel { (name: String) -> IdentityViewModel(get(), get(), name) }
+    viewModel { PrivateKeyViewModel(get(), get()) }
     viewModel { (personaName: String) -> CreateIdentityViewModel(personaName, get(), get()) }
     viewModel { WelcomeViewModel(get()) }
     viewModel { (requestNavigate: (RemoteBackupRecoveryViewModelBase.NavigateArgs) -> Unit) ->
@@ -256,7 +260,7 @@ private fun Module.provideViewModel() {
             get()
         )
     }
-    viewModel { UserNameModalViewModel(get()) }
+    viewModel { (data: ConnectAccountData) -> UserNameModalViewModel(get(), data) }
     viewModel { CreateWalletRecoveryKeyViewModel(get()) }
     viewModel { SetUpPaymentPasswordViewModel(get()) }
     viewModel { TouchIdEnableViewModel() }
@@ -312,6 +316,7 @@ private fun Module.provideViewModel() {
     viewModel { BackUpPasswordViewModel(get(), get()) }
     viewModel { (id: String) -> CollectibleDetailViewModel(id, get()) }
     viewModel { (tokenAddress: String) -> SendTokenDataViewModel(tokenAddress, get(), get()) }
+    viewModel { (data: SendTokenConfirmData) -> Web3TransactionConfirmViewModel(data, get(), get()) }
 }
 
 private fun Module.provideServices() {

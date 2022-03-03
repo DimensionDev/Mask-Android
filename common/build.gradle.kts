@@ -72,6 +72,8 @@ kotlin {
                 api("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.Kotlin.serialization}")
 
                 implementation("androidx.biometric:biometric-ktx:${Versions.Androidx.biometric}")
+
+                api("joda-time:joda-time:${Versions.jodaTime}")
             }
         }
     }

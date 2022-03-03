@@ -23,12 +23,13 @@ package com.dimension.maskbook.wallet.viewmodel.wallets
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
+import com.dimension.maskbook.common.util.DateUtils
 import com.dimension.maskbook.wallet.repository.ITokenRepository
 import com.dimension.maskbook.wallet.repository.ITransactionRepository
 import com.dimension.maskbook.wallet.repository.IWalletRepository
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
 
 class TokenDetailViewModel(
     private val id: String,
@@ -38,18 +39,33 @@ class TokenDetailViewModel(
 ) : ViewModel() {
     val dWebData by lazy {
         walletRepository.dWebData
+            .asStateIn(viewModelScope, null)
     }
+
     val tokenData by lazy {
-        tokenRepository.getTokenByAddress(id).asStateIn(viewModelScope, null).mapNotNull { it }
+        tokenRepository.getTokenByAddress(id)
+            .asStateIn(viewModelScope, null)
     }
+
     val walletTokenData by lazy {
-        walletRepository.currentWallet.mapNotNull { it }.map {
-            it.tokens.firstOrNull { it.tokenData.address == id }
-        }.asStateIn(viewModelScope, null).mapNotNull { it }
+        walletRepository.currentWallet
+            .filterNotNull()
+            .map { wallet ->
+                wallet.tokens.firstOrNull { it.tokenData.address == id }
+            }
+            .asStateIn(viewModelScope, null)
     }
-    val transaction by lazy {
-        combine(walletRepository.currentWallet.mapNotNull { it }, tokenData) { wallet, token ->
+
+    val transactions by lazy {
+        combine(
+            walletRepository.currentWallet.filterNotNull(),
+            tokenData.filterNotNull()
+        ) { wallet, token ->
             transactionRepository.getTransactionByToken(wallet, token)
-        }
+                .asSequence()
+                .sortedByDescending { it.createdAt }
+                .groupBy { DateUtils.getDateText(it.createdAt) }
+                .toMap()
+        }.asStateIn(viewModelScope, emptyMap())
     }
 }

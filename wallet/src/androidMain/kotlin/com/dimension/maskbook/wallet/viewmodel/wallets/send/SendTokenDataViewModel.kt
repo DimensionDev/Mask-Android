@@ -22,7 +22,6 @@ package com.dimension.maskbook.wallet.viewmodel.wallets.send
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.wallet.export.model.TokenData
 import com.dimension.maskbook.wallet.repository.ITokenRepository
@@ -30,9 +29,8 @@ import com.dimension.maskbook.wallet.repository.IWalletRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
-import kotlinx.coroutines.flow.merge
 
 class SendTokenDataViewModel(
     tokenAddress: String,
@@ -42,27 +40,25 @@ class SendTokenDataViewModel(
 
     private val _tokenData = MutableStateFlow<TokenData?>(null)
 
-    val tokenData = merge(
-        tokenRepository.getTokenByAddress(tokenAddress),
-        _tokenData,
-    ).asStateIn(viewModelScope, null)
-
-    val noTokenFound by lazy {
-        walletRepository.currentWallet
-            .map { wallet ->
-                if (wallet == null) return@map true
-                val token = wallet.tokens.find { it.tokenData.address == tokenAddress } ?: return@map true
-                token.count == BigDecimal.ZERO
-            }
-            .asStateIn(viewModelScope, false)
+    val tokenData by lazy {
+        _tokenData.map {
+            it ?: if (tokenAddress.isNotEmpty())
+                tokenRepository.getTokenByAddress(tokenAddress).firstOrNull()
+            else {
+                walletTokens.firstOrNull()?.firstOrNull()?.tokenData
+            } ?: walletRepository.currentChain.firstOrNull()?.nativeToken
+        }.asStateIn(viewModelScope, null)
     }
 
     fun setTokenData(value: TokenData) {
         _tokenData.value = value
+        walletRepository.setChainType(value.chainType)
     }
 
     val walletTokens by lazy {
-        walletRepository.currentWallet.mapNotNull { it }.map { it.tokens }
+        combine(walletRepository.currentWallet, walletRepository.dWebData) { wallet, dWebData ->
+            wallet?.tokens?.filter { it.tokenData.chainType == dWebData.chainType } ?: emptyList()
+        }
     }
 
     val walletTokenData by lazy {

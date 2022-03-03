@@ -32,12 +32,15 @@ import com.dimension.maskbook.common.platform.IPlatformSwitcher
 import com.dimension.maskbook.common.repository.JSMethod
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
+import com.dimension.maskbook.persona.export.error.PersonaAlreadyExitsError
+import com.dimension.maskbook.persona.export.model.ConnectAccountData
 import com.dimension.maskbook.persona.export.model.Network
 import com.dimension.maskbook.persona.export.model.Persona
 import com.dimension.maskbook.persona.export.model.PersonaData
 import com.dimension.maskbook.persona.export.model.PlatformType
 import com.dimension.maskbook.persona.export.model.Profile
 import com.dimension.maskbook.persona.export.model.SocialData
+import com.dimension.maskbook.persona.export.model.SocialProfile
 import com.dimension.maskbook.persona.model.ContactData
 import com.dimension.maskbook.persona.model.RedirectTarget
 import kotlinx.coroutines.CoroutineScope
@@ -47,13 +50,15 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
 
 private val CurrentPersonaKey = stringPreferencesKey("current_persona")
@@ -130,8 +135,6 @@ class PersonaRepository(
     override val redirect: MutableLiveData<RedirectTarget?>
         get() = _redirect
 
-    private val _connectingChannel = Channel<String>()
-
     @OptIn(DelicateCoroutinesApi::class, ExperimentalTime::class)
     override fun beginConnectingProcess(
         personaId: String,
@@ -141,30 +144,35 @@ class PersonaRepository(
         platformSwitcher.switchTo(platformType)
         platformSwitcher.showTooltips(true)
         connectingJob = GlobalScope.launch {
-            val name = _connectingChannel.receive()
-            if (name.isNotEmpty()) {
-                platformSwitcher.showTooltips(false)
-                when (platformType) {
-                    PlatformType.Twitter -> JSMethod.Persona.connectProfile(Network.Twitter, personaId, name)
-                    PlatformType.Facebook -> JSMethod.Persona.connectProfile(Network.Facebook, personaId, name)
+            while (true) {
+                delay(5.seconds)
+                // TODO: getCurrentDetectedProfileDelegateToSNSAdaptor will always return person:localhost/$unknown when first login
+                val profile = JSMethod.Persona.getCurrentDetectedProfileDelegateToSNSAdaptor()?.takeIf {
+                    it.isNotEmpty()
+                }?.let {
+                    SocialProfile.parse(it)
                 }
-                refreshSocial()
-                refreshPersona()
-                platformSwitcher.launchDeeplink(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona))
+                if (profile != null) {
+                    platformSwitcher.showTooltips(false)
+                    platformSwitcher.showModal("ConnectAccount", ConnectAccountData(personaId, profile))
+                    break
+                }
             }
         }
     }
 
-    override fun finishConnectingProcess(userName: String, platformType: PlatformType) {
+    override fun finishConnectingProcess(profile: SocialProfile, personaId: String) {
         scope.launch {
-            _connectingChannel.send(userName)
+            JSMethod.Persona.connectProfile(profile.network, personaId, profile.userId)
+            refreshSocial()
+            refreshPersona()
+            platformSwitcher.launchDeeplink(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona))
         }
     }
 
     override fun cancelConnectingProcess() {
-        scope.launch {
-            _connectingChannel.send("")
-        }
+        connectingJob?.cancel()
+        platformSwitcher.launchDeeplink(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona))
     }
 
     override val socials: Flow<List<SocialData>>
@@ -316,8 +324,13 @@ class PersonaRepository(
         }
     }
 
-    override fun createPersonaFromMnemonic(value: List<String>, name: String) {
-        scope.launch {
+    override suspend fun createPersonaFromMnemonic(value: List<String>, name: String) {
+        withContext(scope.coroutineContext) {
+            val personas = _persona.value
+            val mnemonic = value.joinToString(" ")
+            personas.forEach {
+                if (mnemonic == JSMethod.Persona.backupMnemonic(it.identifier)) throw PersonaAlreadyExitsError()
+            }
             val persona = JSMethod.Persona.createPersonaByMnemonic(value.joinToString(" "), name, "")
             refreshPersona()
             persona?.identifier?.let { setCurrentPersona(it) }

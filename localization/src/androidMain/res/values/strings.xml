@@ -160,6 +160,8 @@
     <string name="scene_setting_backup_recovery_title">Backup &amp; Recovery</string>
     <string name="scene_setting_backup_recovery_back_up_data">Back Up Data</string>
     <string name="scene_setting_backup_recovery_change_backup_password">Change Backup Password</string>
+    <string name="scene_setting_backup_recovery_persona_already_exits_title">The persona already existed.</string>
+    <string name="scene_setting_backup_recovery_persona_already_exits_desc">The persona that corresponds with the %s already existed.</string>
     <string name="scene_setting_general_appearance">Appearance</string>
     <string name="scene_setting_general_unlock_wallet_with_touch_id">Unlock wallet with Touch ID</string>
     <string name="scene_setting_general_unlock_wallet_with_face_id">Unlock wallet with Face ID</string>
@@ -450,6 +452,7 @@
     <string name="scene_transaction_history_type_swap">WETH Deposit</string>
     <string name="scene_transaction_history_type_approve">Approve %s</string>
     <string name="scene_transaction_history_type_send">Send %s</string>
+    <string name="scene_transaction_history_type_unknown">Unknown %s</string>
     <string name="scene_transaction_history_status_fail">Failed</string>
     <string name="scene_transaction_history_status_pending">Pending...</string>
     <string name="scene_social_i_understand">I understand</string>

@@ -24,6 +24,7 @@ import androidx.lifecycle.LiveData
 import com.dimension.maskbook.persona.export.model.PersonaData
 import com.dimension.maskbook.persona.export.model.PlatformType
 import com.dimension.maskbook.persona.export.model.SocialData
+import com.dimension.maskbook.persona.export.model.SocialProfile
 import com.dimension.maskbook.persona.model.RedirectTarget
 import kotlinx.coroutines.flow.Flow
 
@@ -39,8 +40,8 @@ interface IPersonaRepository {
     )
 
     fun finishConnectingProcess(
-        userName: String,
-        platformType: PlatformType,
+        profile: SocialProfile,
+        personaId: String,
     )
 
     fun cancelConnectingProcess()
@@ -52,7 +53,7 @@ interface IPersonaRepository {
     fun connectFacebook(personaId: String, userName: String)
     fun disconnectTwitter(personaId: String, socialId: String)
     fun disconnectFacebook(personaId: String, socialId: String)
-    fun createPersonaFromMnemonic(value: List<String>, name: String)
+    suspend fun createPersonaFromMnemonic(value: List<String>, name: String)
     fun createPersonaFromPrivateKey(value: String)
     fun updateCurrentPersona(value: String)
     suspend fun backupPrivateKey(id: String): String

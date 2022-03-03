@@ -794,9 +794,6 @@ public class GeckoViewActivity
                 ).accept(result -> {
             sExtensionManager.registerExtension(result);
         });
-        findViewById(R.id.top_tooltips).setOnClickListener((view) -> {
-            new ComposeBottomSheetDialogFragment("UserNameInput", null).show(getSupportFragmentManager(), ComposeBottomSheetDialogFragment.TAG);
-        });
         findViewById(R.id.top_tooltips_close_btn).setOnClickListener((view) -> {
             showTooltips(false);
             personaRepository.getValue().cancelConnectingProcess();

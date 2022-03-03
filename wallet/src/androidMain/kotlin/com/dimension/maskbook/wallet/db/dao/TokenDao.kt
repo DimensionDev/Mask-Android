@@ -35,7 +35,7 @@ interface TokenDao {
     fun getAll(): Flow<List<DbToken>>
     @Transaction
     @Query("SELECT * FROM DBTOKEN WHERE id = :id")
-    suspend fun getById(id: String): DbToken
+    suspend fun getById(id: String): DbToken?
     @Transaction
     @Query("SELECT * FROM DBTOKEN WHERE id = :id")
     fun getByIdFlow(id: String): Flow<DbToken?>

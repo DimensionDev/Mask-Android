@@ -45,16 +45,24 @@ class TransactionRepository(
         walletData: WalletData,
         tokenData: TokenData
     ): List<TransactionData> {
-        return getTransactionByWallet(walletData).filter {
+        return getTransactionByWalletAndChainType(
+            walletData = walletData,
+            chainType = tokenData.chainType
+        ).filter {
             it.tokenData == tokenData
         }
     }
 
     override suspend fun getTransactionByWallet(walletData: WalletData): List<TransactionData> {
         val current =
-            walletRepository.dWebData.firstOrNull()?.chainType?.dbank ?: return emptyList()
+            walletRepository.dWebData.firstOrNull()?.chainType ?: return emptyList()
+        return getTransactionByWalletAndChainType(walletData = walletData, chainType = current)
+    }
+
+    private suspend fun getTransactionByWalletAndChainType(walletData: WalletData, chainType: ChainType): List<TransactionData> {
+        val chainId = chainType.dbank
         val result =
-            walletServices.debankServices.history(current, walletData.address.lowercase())
+            walletServices.debankServices.history(chainId, walletData.address.lowercase())
         return result.data?.historyList?.mapNotNull {
             val tokenId = it.tokenApprove?.tokenID
                 ?: it.receives?.firstOrNull()?.tokenID
@@ -82,7 +90,7 @@ class TransactionRepository(
                     it.receives?.any { it.fromAddr == "0x0000000000000000000000000000000000000000" } == true -> TransactionType.Receive
                     it.receives?.any { it.fromAddr == walletData.address } == true -> TransactionType.Send
                     it.sends?.any { it.toAddr == walletData.address } == true -> TransactionType.Receive
-                    else -> TransactionType.Approve
+                    else -> TransactionType.Unknown
                 },
                 count = java.math.BigDecimal(
                     it.tx?.value ?: it.sends?.firstOrNull()?.amount
