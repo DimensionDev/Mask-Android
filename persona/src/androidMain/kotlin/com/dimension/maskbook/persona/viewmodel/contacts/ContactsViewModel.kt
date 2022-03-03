@@ -24,10 +24,22 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.persona.repository.IContactsRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 
 class ContactsViewModel(
     repository: IContactsRepository,
 ) : ViewModel() {
-    val items = repository.contacts
-        .asStateIn(viewModelScope, emptyList())
+
+    private val _input = MutableStateFlow("")
+    val input = _input.asStateFlow()
+
+    val items = combine(repository.contacts, _input) { list, input ->
+        list.filter { it.name.contains(input, ignoreCase = true) }
+    }.asStateIn(viewModelScope, emptyList())
+
+    fun onInputChanged(value: String) {
+        _input.tryEmit(value)
+    }
 }

@@ -318,7 +318,9 @@
     <string name="scene_identity_create_description">Write down each word.</string>
     <string name="scene_identity_create_title">Verify identity code</string>
     <string name="scene_persona_contacts_empty_contacts_tips">You don’t have encrypted friends. \nInvite friends to download Mask Network.</string>
+    <string name="scene_persona_contacts_search_account">Search account name/ID</string>
     <string name="scene_persona_contacts_contact">Contact</string>
+    <string name="scene_persona_contacts_empty_search_tips">No contact found. This account is not\ncaptured on Timeline.</string>
     <string name="scene_persona_contacts_delete">Confirm to delete </string>
     <string name="scene_wallet_rename_rename_button">Rename</string>
     <string name="scene_wallet_rename_name_title">Wallet name</string>

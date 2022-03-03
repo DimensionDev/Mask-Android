@@ -507,6 +507,8 @@
         },
         "persona_contacts": {
             "empty_contacts_tips": "You don’t have encrypted friends. \nInvite friends to download Mask Network.",
+            "empty_search_tips": "No contact found. This account is not\ncaptured on Timeline.",
+            "search_account": "Search account name/ID",
             "delete": "Confirm to delete ",
             "contact": "Contact"
         },
