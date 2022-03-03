@@ -142,7 +142,6 @@ fun Router(
 }
 
 private suspend fun getInitialRoute(): String {
-    // FIXME: 2022/3/3 Might cause a crash if koin can not start just in time
     val repository = KoinPlatformTools.defaultContext().get().get<EntryRepository>()
     val shouldShowEntry = repository.shouldShowEntry.firstOrNull() ?: true
     if (shouldShowEntry) {
