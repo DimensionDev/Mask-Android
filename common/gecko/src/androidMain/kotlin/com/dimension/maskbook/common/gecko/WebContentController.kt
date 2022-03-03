@@ -23,7 +23,7 @@ package com.dimension.maskbook.common.gecko
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import androidx.activity.OnBackPressedCallback
+import android.util.Log
 import androidx.fragment.app.FragmentActivity
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -49,6 +49,7 @@ import org.mozilla.geckoview.GeckoRuntime
 import java.io.Closeable
 
 private const val BackgroundPortName = "browser"
+private const val TAG = "WebContentController"
 
 class WebContentController(
     fragmentActivity: Context,
@@ -84,20 +85,6 @@ class WebContentController(
                         Intent(Intent.ACTION_VIEW, Uri.parse(uri)),
                         uri
                     )
-                }
-            }
-        }
-    }
-    private val backPressedCallback by lazy {
-        object : OnBackPressedCallback(false) {
-            override fun handleOnBackPressed() {
-                val selectedTab = _browserState.value?.selectedTab
-                if (selectedTab != null) {
-                    if (selectedTab.content.canGoBack) {
-                        sessionUseCases.goBack()
-                    } else {
-                        tabsUseCases.removeTab(selectedTab.id)
-                    }
                 }
             }
         }
@@ -144,6 +131,7 @@ class WebContentController(
 
         override fun onPortMessage(message: Any, port: Port) {
             if (message is JSONObject) {
+                Log.i(TAG, "onPortMessage: $message")
                 _message.value = message
             }
         }
@@ -199,6 +187,7 @@ class WebContentController(
     }
 
     fun sendMessage(message: JSONObject) {
+        Log.i(TAG, "sendMessage: $message")
         _port?.postMessage(message)
     }
 }

@@ -20,6 +20,7 @@
  */
 package com.dimension.maskbook.entry.ui.scene
 
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -51,12 +52,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.navOptions
 import com.dimension.maskbook.common.ext.getAll
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
-import com.dimension.maskbook.common.route.navigationComposeAnimComposable
-import com.dimension.maskbook.common.route.navigationComposeAnimComposablePackage
-import com.dimension.maskbook.common.routeProcessor.annotations.Back
+import com.dimension.maskbook.common.route.navigationComposeModalComposable
+import com.dimension.maskbook.common.route.navigationComposeModalComposablePackage
 import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
 import com.dimension.maskbook.common.routeProcessor.annotations.Path
 import com.dimension.maskbook.common.ui.tab.TabScreen
@@ -87,14 +89,14 @@ private val Colors.tabBackground: Color
 @NavGraphDestination(
     route = CommonRoute.Main.Home.path,
     deeplink = [Deeplinks.Main.Home.path],
-    packageName = navigationComposeAnimComposablePackage,
-    functionName = navigationComposeAnimComposable
+    packageName = navigationComposeModalComposablePackage,
+    functionName = navigationComposeModalComposable
 )
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun MainHost(
+    navController: NavController,
     @Path("initialRoute") initialTab: String,
-    @Back onBack: () -> Unit,
 ) {
     val tabs = getAll<TabScreen>().sortedBy {
         tabOrder[it.route]
@@ -163,7 +165,17 @@ fun MainHost(
                 count = tabs.size,
                 state = pagerState,
             ) {
-                tabs.elementAt(it).Content(onBack)
+                tabs.elementAt(it).Content {
+                    navController.navigate(
+                        Uri.parse(Deeplinks.Extension.Extension),
+                        navOptions {
+                            launchSingleTop = true
+                            popUpTo(CommonRoute.Main.Home.path) {
+                                inclusive = true
+                            }
+                        },
+                    )
+                }
             }
         }
     }

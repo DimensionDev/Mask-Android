@@ -20,6 +20,7 @@
  */
 package com.dimension.maskbook.entry.ui
 
+import android.net.Uri
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
@@ -28,33 +29,60 @@ import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.unit.dp
-import androidx.navigation.plusAssign
+import com.dimension.maskbook.common.CommonSetup
 import com.dimension.maskbook.common.navHostAnimationDurationMillis
 import com.dimension.maskbook.common.route
+import com.dimension.maskbook.common.route.CommonRoute
+import com.dimension.maskbook.common.route.DeeplinkNavigateArgs
+import com.dimension.maskbook.common.route.Navigator
+import com.dimension.maskbook.common.route.RouteNavigateArgs
 import com.dimension.maskbook.common.ui.LocalRootNavController
 import com.dimension.maskbook.common.ui.theme.modalScrimColor
 import com.dimension.maskbook.common.ui.widget.rememberMaskBottomSheetNavigator
 import com.dimension.maskbook.entry.EntrySetup
+import com.dimension.maskbook.entry.repository.EntryRepository
+import com.dimension.maskbook.entry.route.EntryRoute
 import com.dimension.maskbook.extension.ExtensionSetup
 import com.dimension.maskbook.labs.LabsSetup
 import com.dimension.maskbook.persona.PersonaSetup
+import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.setting.SettingSetup
 import com.dimension.maskbook.wallet.WalletSetup
+import com.dimension.maskbook.wallet.route.WalletRoute
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.ModalBottomSheetLayout
+import kotlinx.coroutines.flow.firstOrNull
+import org.koin.mp.KoinPlatformTools
 
 @OptIn(ExperimentalMaterialNavigationApi::class, ExperimentalAnimationApi::class)
 @Composable
 fun Router(
     startDestination: String,
-    onFinish: () -> Unit,
 ) {
-    val navController = rememberAnimatedNavController()
     val bottomSheetNavigator = rememberMaskBottomSheetNavigator()
-    navController.navigatorProvider += bottomSheetNavigator
+    val navController = rememberAnimatedNavController(bottomSheetNavigator)
+    LaunchedEffect(Unit) {
+        val initialRoute = getInitialRoute()
+        navController.navigate(initialRoute) {
+            popUpTo(startDestination) {
+                inclusive = true
+            }
+        }
+    }
+    LaunchedEffect(Unit) {
+        Navigator.navigateEvent.collect {
+            it.getContentIfNotHandled()?.let { it1 ->
+                when (it1) {
+                    is DeeplinkNavigateArgs -> navController.navigate(Uri.parse(it1.url))
+                    is RouteNavigateArgs -> navController.navigate(it1.route)
+                }
+            }
+        }
+    }
     CompositionLocalProvider(LocalRootNavController provides navController) {
         ModalBottomSheetLayout(
             bottomSheetNavigator,
@@ -101,13 +129,30 @@ fun Router(
                     )
                 },
             ) {
-                EntrySetup.route(this, navController = navController, onFinish = onFinish)
-                WalletSetup.route(this, navController = navController, onFinish = onFinish)
-                LabsSetup.route(this, navController = navController, onFinish = onFinish)
-                PersonaSetup.route(this, navController = navController, onFinish = onFinish)
-                SettingSetup.route(this, navController = navController, onFinish = onFinish)
-                ExtensionSetup.route(this, navController = navController, onFinish = onFinish)
+                CommonSetup.route(this, navController = navController)
+                EntrySetup.route(this, navController = navController)
+                WalletSetup.route(this, navController = navController)
+                LabsSetup.route(this, navController = navController)
+                PersonaSetup.route(this, navController = navController)
+                SettingSetup.route(this, navController = navController)
+                ExtensionSetup.route(this, navController = navController)
             }
         }
+    }
+}
+
+private suspend fun getInitialRoute(): String {
+    // FIXME: 2022/3/3 Might cause a crash if koin can not start just in time
+    val repository = KoinPlatformTools.defaultContext().get().get<EntryRepository>()
+    val shouldShowEntry = repository.shouldShowEntry.firstOrNull() ?: true
+    if (shouldShowEntry) {
+        return EntryRoute.Intro
+    }
+    KoinPlatformTools.defaultContext().get().get<PersonaServices>().ensurePersonaDataLoaded()
+    val persona = KoinPlatformTools.defaultContext().get().get<PersonaServices>().currentPersona.firstOrNull()
+    return if (persona != null) {
+        CommonRoute.WebContent
+    } else {
+        WalletRoute.Register.Init
     }
 }

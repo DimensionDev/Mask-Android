@@ -22,6 +22,7 @@ package com.dimension.maskbook.extension
 
 import com.dimension.maskbook.extension.export.ExtensionServices
 import com.dimension.maskbook.extension.export.model.ExtensionMessage
+import com.dimension.maskbook.extension.export.model.ExtensionResponseMessage
 import com.dimension.maskbook.extension.export.model.Site
 import com.dimension.maskbook.extension.repository.ExtensionRepository
 import com.dimension.maskbook.extension.utils.MessageChannel
@@ -57,5 +58,9 @@ internal class ExtensionServicesImpl(
 
     override fun subscribeJSEvent(method: String): Flow<ExtensionMessage> {
         return messageChannel.subscribeMessage(method).mapNotNull { it }
+    }
+
+    override fun sendJSEventResponse(response: ExtensionResponseMessage) {
+        messageChannel.sendResponseMessage(response)
     }
 }

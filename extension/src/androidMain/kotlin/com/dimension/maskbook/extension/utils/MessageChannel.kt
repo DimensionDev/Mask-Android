@@ -51,7 +51,7 @@ internal class MessageChannel(
         }
     }
 
-    private fun sendResponseMessage(message: ExtensionResponseMessage) {
+    fun sendResponseMessage(message: ExtensionResponseMessage) {
         controller.sendMessage(JSONObject(message.toMap()))
     }
 

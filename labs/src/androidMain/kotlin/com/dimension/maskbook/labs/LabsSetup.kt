@@ -20,7 +20,6 @@
  */
 package com.dimension.maskbook.labs
 
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import com.dimension.maskbook.common.ModuleSetup
@@ -33,7 +32,6 @@ import com.dimension.maskbook.labs.ui.tab.LabsTabScreen
 import com.dimension.maskbook.labs.viewmodel.LabsViewModel
 import com.dimension.maskbook.labs.viewmodel.MarketTrendSettingsViewModel
 import com.dimension.maskbook.labs.viewmodel.PluginSettingsViewModel
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -41,12 +39,8 @@ import org.koin.mp.KoinPlatformTools
 
 object LabsSetup : ModuleSetup {
 
-    @OptIn(
-        ExperimentalAnimationApi::class,
-        ExperimentalMaterialNavigationApi::class
-    )
-    override fun NavGraphBuilder.route(navController: NavController, onFinish: () -> Unit) {
-        generatedRoute(navController, onFinish = onFinish)
+    override fun NavGraphBuilder.route(navController: NavController) {
+        generatedRoute(navController)
     }
 
     override fun dependencyInject() = module {

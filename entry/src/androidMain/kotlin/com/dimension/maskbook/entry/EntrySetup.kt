@@ -24,6 +24,7 @@ import android.content.Context
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import com.dimension.maskbook.common.ModuleSetup
+import com.dimension.maskbook.common.route.Navigator
 import com.dimension.maskbook.entry.data.JSMethod
 import com.dimension.maskbook.entry.repository.EntryRepository
 import com.dimension.maskbook.entry.repository.entryDataStore
@@ -37,8 +38,8 @@ import org.koin.dsl.module
 import org.koin.mp.KoinPlatformTools
 
 object EntrySetup : ModuleSetup {
-    override fun NavGraphBuilder.route(navController: NavController, onFinish: () -> Unit) {
-        generatedRoute(navController, onFinish)
+    override fun NavGraphBuilder.route(navController: NavController) {
+        generatedRoute(navController)
     }
 
     override fun dependencyInject() = module {
@@ -58,8 +59,7 @@ object EntrySetup : ModuleSetup {
                     ).filter { uri ->
                         uri.isNotEmpty()
                     }.collect { uri ->
-                        // KoinPlatformTools.defaultContext().get().get<IPlatformSwitcher>()
-                        //     .launchDeeplink(uri)
+                        Navigator.deeplink(uri)
                     }
                 }
             }

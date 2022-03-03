@@ -26,4 +26,5 @@ import com.dimension.maskbook.common.routeProcessor.annotations.Route
 @Route
 expect object EntryRoute {
     const val Intro: String
+    const val Splash: String
 }

@@ -21,13 +21,18 @@
 package com.dimension.maskbook.wallet.handler
 
 import com.dimension.maskbook.common.ext.decodeJson
+import com.dimension.maskbook.common.ext.encodeBase64
+import com.dimension.maskbook.common.ext.encodeJson
+import com.dimension.maskbook.common.route.Navigator
 import com.dimension.maskbook.extension.export.model.ExtensionResponseMessage
 import com.dimension.maskbook.wallet.data.Web3Request
 import com.dimension.maskbook.wallet.db.model.CoinPlatformType
 import com.dimension.maskbook.wallet.ext.normalized
 import com.dimension.maskbook.wallet.repository.IWalletRepository
+import com.dimension.maskbook.wallet.repository.SendTokenConfirmData
 import com.dimension.maskbook.wallet.repository.SendTransactionData
 import com.dimension.maskbook.wallet.repository.httpService
+import com.dimension.maskbook.wallet.route.WalletRoute
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -48,7 +53,6 @@ import java.nio.charset.Charset
 
 internal class Web3MessageHandler(
     private val walletRepository: IWalletRepository,
-    // private val platformSwitcher: PlatformSwitcher,
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
     fun handle(request: Web3Request) {
@@ -82,50 +86,13 @@ internal class Web3MessageHandler(
                         )
                     }
                     "eth_sendTransaction" -> {
-                        val data =
-                            payload.params.firstOrNull()?.toString()
-                                ?.decodeJson<SendTransactionData>()
-                                ?: return@launch
-                        // platformSwitcher.showModal(
-                        //     "SendTokenConfirm",
-                        //     SendTokenConfirmData(
-                        //         data,
-                        //         request.id,
-                        //         onDone = {
-                        //             it?.let {
-                        //                 request.message.response(
-                        //                     ExtensionResponseMessage.success(
-                        //                         request,
-                        //                         it
-                        //                     )
-                        //                 )
-                        //             } ?: run {
-                        //                 request.message.response(
-                        //                     ExtensionResponseMessage.error(
-                        //                         request,
-                        //                         "Transaction failed"
-                        //                     )
-                        //                 )
-                        //             }
-                        //         },
-                        //         onCancel = {
-                        //             request.message.response(
-                        //                 ExtensionResponseMessage.error(
-                        //                     request,
-                        //                     "User canceled"
-                        //                 )
-                        //             )
-                        //         },
-                        //         onError = {
-                        //             request.message.response(
-                        //                 ExtensionResponseMessage.error(
-                        //                     request,
-                        //                     it.message ?: "error"
-                        //                 )
-                        //             )
-                        //         }
-                        //     )
-                        // )
+                        val data = payload.params.firstOrNull()?.toString()
+                            ?.decodeJson<SendTransactionData>()?.let {
+                                SendTokenConfirmData(
+                                    it, request.id, request.payload._id, request.payload.jsonrpc
+                                )
+                            }?.encodeJson()?.encodeBase64() ?: return@launch
+                        Navigator.navigate(WalletRoute.SendTokenConfirm(data))
                     }
                     "personal_sign" -> {
                         val message =

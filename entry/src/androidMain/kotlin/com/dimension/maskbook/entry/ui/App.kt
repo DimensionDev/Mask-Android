@@ -21,31 +21,20 @@
 package com.dimension.maskbook.entry.ui
 
 import android.content.Context
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import com.dimension.maskbook.common.CommonSetup
-import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.entry.BuildConfig
 import com.dimension.maskbook.entry.EntrySetup
-import com.dimension.maskbook.entry.repository.EntryRepository
 import com.dimension.maskbook.entry.route.EntryRoute
-import com.dimension.maskbook.entry.ui.scene.Splash
 import com.dimension.maskbook.extension.ExtensionSetup
 import com.dimension.maskbook.extension.export.ExtensionServices
 import com.dimension.maskbook.labs.LabsSetup
 import com.dimension.maskbook.persona.PersonaSetup
-import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.setting.SettingSetup
 import com.dimension.maskbook.wallet.WalletSetup
-import com.dimension.maskbook.wallet.route.WalletRoute
-import kotlinx.coroutines.flow.firstOrNull
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -55,40 +44,16 @@ import org.koin.mp.KoinPlatformTools
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun App(
-    onFinish: () -> Unit,
+    onInitialized: () -> Unit = {},
 ) {
-    var showSplash by rememberSaveable { mutableStateOf(true) }
-    var startDestination by rememberSaveable { mutableStateOf(CommonRoute.WebContent) }
     val context = LocalContext.current
     LaunchedEffect(Unit) {
         warmingUp(context)
-        startDestination = getStartDestination()
-        showSplash = false
+        onInitialized.invoke()
     }
-    AnimatedContent(showSplash) {
-        if (it) {
-            Splash()
-        } else {
-            Router(
-                startDestination = startDestination,
-                onFinish = onFinish,
-            )
-        }
-    }
-}
-
-suspend fun getStartDestination(): String {
-    val repository = KoinPlatformTools.defaultContext().get().get<EntryRepository>()
-    val shouldShowEntry = repository.shouldShowEntry.firstOrNull() ?: true
-    if (shouldShowEntry) {
-        return EntryRoute.Intro
-    }
-    val persona = KoinPlatformTools.defaultContext().get().get<PersonaServices>().currentPersona.firstOrNull()
-    return if (persona != null) {
-        CommonRoute.Main.Home(CommonRoute.Main.Tabs.Persona)
-    } else {
-        WalletRoute.Register.Init
-    }
+    Router(
+        startDestination = EntryRoute.Splash,
+    )
 }
 
 private suspend fun warmingUp(context: Context) {

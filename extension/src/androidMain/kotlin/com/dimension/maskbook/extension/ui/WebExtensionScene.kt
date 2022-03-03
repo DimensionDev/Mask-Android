@@ -21,6 +21,7 @@
 package com.dimension.maskbook.extension.ui
 
 import android.net.Uri
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Text
@@ -31,14 +32,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
+import androidx.navigation.navOptions
 import coil.compose.rememberImagePainter
 import com.dimension.maskbook.common.gecko.WebContent
 import com.dimension.maskbook.common.gecko.WebContentController
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
-import com.dimension.maskbook.common.route.navigationComposeAnimComposable
-import com.dimension.maskbook.common.route.navigationComposeAnimComposablePackage
-import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskScene
 import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
@@ -48,17 +47,17 @@ import com.dimension.maskbook.extension.ext.site
 import com.dimension.maskbook.localization.R
 import org.koin.androidx.compose.get
 
-@NavGraphDestination(
-    route = CommonRoute.WebContent,
-    deeplink = [Deeplinks.Extension.Extension],
-    packageName = navigationComposeAnimComposablePackage,
-    functionName = navigationComposeAnimComposable
-)
 @Composable
 fun WebExtensionScene(
     navController: NavController,
 ) {
     val controller = get<WebContentController>()
+    val canGoBack by controller.canGoBack.collectAsState(initial = false)
+    BackHandler(
+        enabled = canGoBack
+    ) {
+        controller.goBack()
+    }
     MaskScene {
         MaskScaffold(
             topBar = {
@@ -73,7 +72,13 @@ fun WebExtensionScene(
                     actions = {
                         MaskIconButton(
                             onClick = {
-                                navController.navigate(Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona)))
+                                navController.navigate(
+                                    Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona)),
+                                    navOptions {
+                                        launchSingleTop = true
+                                        popUpTo(CommonRoute.WebContent)
+                                    },
+                                )
                             }
                         ) {
                             Image(rememberImagePainter(R.drawable.mask), contentDescription = null)

@@ -18,17 +18,17 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.viewmodel.register
+package com.dimension.maskbook.persona.viewmodel.social
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
-import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.persona.export.model.ConnectAccountData
+import com.dimension.maskbook.persona.repository.IPersonaRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class UserNameModalViewModel(
-    private val personaServices: PersonaServices,
+    private val personaRepository: IPersonaRepository,
     private val data: ConnectAccountData,
 ) : ViewModel() {
     private val _userName = MutableStateFlow(data.profile.userId)
@@ -38,6 +38,6 @@ class UserNameModalViewModel(
     }
 
     fun done(name: String) {
-        personaServices.finishConnectingProcess(data.profile.copy(userId = name), data.personaId)
+        personaRepository.finishConnectingProcess(data.profile.copy(userId = name), data.personaId)
     }
 }

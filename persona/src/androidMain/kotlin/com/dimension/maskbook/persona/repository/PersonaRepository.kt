@@ -26,11 +26,11 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import androidx.lifecycle.MutableLiveData
 import com.dimension.maskbook.common.ext.toSite
 import com.dimension.maskbook.extension.export.ExtensionServices
 import com.dimension.maskbook.persona.data.JSMethod
 import com.dimension.maskbook.persona.export.error.PersonaAlreadyExitsError
+import com.dimension.maskbook.persona.export.model.ConnectAccountData
 import com.dimension.maskbook.persona.export.model.Network
 import com.dimension.maskbook.persona.export.model.Persona
 import com.dimension.maskbook.persona.export.model.PersonaData
@@ -39,7 +39,6 @@ import com.dimension.maskbook.persona.export.model.Profile
 import com.dimension.maskbook.persona.export.model.SocialData
 import com.dimension.maskbook.persona.export.model.SocialProfile
 import com.dimension.maskbook.persona.model.ContactData
-import com.dimension.maskbook.persona.model.RedirectTarget
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
@@ -51,6 +50,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -68,6 +68,7 @@ internal class PersonaRepository(
     private val extensionServices: ExtensionServices,
 ) : IPersonaRepository,
     IContactsRepository {
+    private val _loaded = MutableStateFlow(false)
     private var connectingJob: Job? = null
     private val scope = CoroutineScope(Dispatchers.IO)
     private val _currentPersona = dataStore.data.map {
@@ -117,18 +118,15 @@ internal class PersonaRepository(
         get() = _currentPersona.combine(persona) { current: String, list: List<PersonaData> ->
             list.firstOrNull { it.id == current }
         }
-    private val _redirect = MutableLiveData<RedirectTarget?>(null)
-    override val redirect: MutableLiveData<RedirectTarget?>
-        get() = _redirect
 
     @OptIn(DelicateCoroutinesApi::class, ExperimentalTime::class)
     override fun beginConnectingProcess(
         personaId: String,
-        platformType: PlatformType
+        platformType: PlatformType,
+        onDone: (ConnectAccountData) -> Unit,
     ) {
         connectingJob?.cancel()
         extensionServices.setSite(platformType.toSite())
-        // platformSwitcher.showTooltips(true)
         connectingJob = GlobalScope.launch {
             while (true) {
                 delay(5.seconds)
@@ -139,8 +137,9 @@ internal class PersonaRepository(
                     SocialProfile.parse(it)
                 }
                 if (profile != null) {
-                    // platformSwitcher.showTooltips(false)
-                    // platformSwitcher.showModal("ConnectAccount", ConnectAccountData(personaId, profile))
+                    withContext(Dispatchers.Main) {
+                        onDone.invoke(ConnectAccountData(personaId, profile))
+                    }
                     break
                 }
             }
@@ -183,11 +182,7 @@ internal class PersonaRepository(
                             setCurrentPersona("")
                         }
                     }
-                    if (_currentPersona.firstOrNull().isNullOrEmpty()) {
-                        _redirect.postValue(RedirectTarget.Setup)
-                    } else {
-                        _redirect.postValue(RedirectTarget.Gecko)
-                    }
+                    _loaded.value = true
                 }
             )
         }
@@ -220,12 +215,10 @@ internal class PersonaRepository(
         _facebook.value = jsMethod.queryProfiles(Network.Facebook)
     }
 
-    override fun refreshPersona() {
-        scope.launch {
-            _persona.value = jsMethod.queryMyPersonas(null)
-            if (_currentPersona.firstOrNull().isNullOrEmpty()) {
-                _persona.value.firstOrNull()?.identifier?.let { setCurrentPersona(it) }
-            }
+    override suspend fun refreshPersona() {
+        _persona.value = jsMethod.queryMyPersonas(null)
+        if (_currentPersona.firstOrNull().isNullOrEmpty()) {
+            _persona.value.firstOrNull()?.identifier?.let { setCurrentPersona(it) }
         }
     }
 
@@ -325,5 +318,9 @@ internal class PersonaRepository(
 
     override suspend fun backupPrivateKey(id: String): String {
         return jsMethod.backupPrivateKey(id) ?: ""
+    }
+
+    override suspend fun ensurePersonaDataLoaded() {
+        _loaded.first { it }
     }
 }

@@ -20,10 +20,13 @@
  */
 package com.dimension.maskbook.entry.ui.scene
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.darkColors
@@ -31,7 +34,18 @@ import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import com.dimension.maskbook.common.route.navigationComposeAnimComposable
+import com.dimension.maskbook.common.route.navigationComposeAnimComposablePackage
+import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
+import com.dimension.maskbook.entry.route.EntryRoute
+import com.dimension.maskbook.localization.R
 
+@NavGraphDestination(
+    route = EntryRoute.Splash,
+    packageName = navigationComposeAnimComposablePackage,
+    functionName = navigationComposeAnimComposable,
+)
 @Composable
 fun Splash() {
     MaterialTheme(
@@ -47,10 +61,13 @@ fun Splash() {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
             ) {
-                // Image(
-                //     painter = painterResource(id = R.mipmap.ic_launcher),
-                //     contentDescription = null,
-                // )
+                Image(
+                    modifier = Modifier
+                        .fillMaxWidth(0.5f)
+                        .aspectRatio(1f),
+                    painter = painterResource(id = R.drawable.mask),
+                    contentDescription = null,
+                )
             }
         }
     }

@@ -20,20 +20,48 @@
  */
 package com.dimension.maskbook.extension
 
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.navDeepLink
 import com.dimension.maskbook.common.ModuleSetup
 import com.dimension.maskbook.common.gecko.WebContentController
+import com.dimension.maskbook.common.route.CommonRoute
+import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.extension.export.ExtensionServices
 import com.dimension.maskbook.extension.repository.ExtensionRepository
-import com.dimension.maskbook.extension.ui.generatedRoute
+import com.dimension.maskbook.extension.ui.WebExtensionScene
 import com.dimension.maskbook.extension.utils.MessageChannel
+import com.google.accompanist.navigation.animation.composable
 import org.koin.dsl.module
 import org.koin.mp.KoinPlatformTools
 
 object ExtensionSetup : ModuleSetup {
-    override fun NavGraphBuilder.route(navController: NavController, onFinish: () -> Unit) {
-        generatedRoute(navController, onFinish)
+    @OptIn(ExperimentalAnimationApi::class)
+    override fun NavGraphBuilder.route(navController: NavController) {
+        composable(
+            route = CommonRoute.WebContent,
+            deepLinks = listOf(
+                navDeepLink { uriPattern = Deeplinks.Extension.Extension }
+            ),
+            exitTransition = {
+                scaleOut(
+                    targetScale = 0.9f,
+                )
+            },
+            popExitTransition = null,
+            popEnterTransition = {
+                scaleIn(
+                    initialScale = 0.9f,
+                )
+            }
+        ) {
+            WebExtensionScene(
+                navController = navController,
+            )
+        }
     }
 
     override fun dependencyInject() = module {

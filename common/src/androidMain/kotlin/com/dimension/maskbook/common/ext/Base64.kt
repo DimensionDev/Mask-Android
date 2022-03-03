@@ -18,9 +18,18 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.persona.model
+package com.dimension.maskbook.common.ext
 
-enum class RedirectTarget {
-    Gecko,
-    Setup,
+import android.util.Base64
+
+fun String.encodeBase64(): String {
+    Base64.encode(toByteArray(), Base64.DEFAULT).let {
+        return String(it)
+    }
+}
+
+fun String.decodeBase64(): String {
+    Base64.decode(toByteArray(), Base64.DEFAULT).let {
+        return String(it)
+    }
 }

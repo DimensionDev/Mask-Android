@@ -75,7 +75,9 @@ class ComposeActivity : FragmentActivity() {
                     windowInsetsAnimationsEnabled = true
                 ) {
                     App(
-                        onFinish = { finish() },
+                        onInitialized = {
+                            promptFeature.start()
+                        },
                     )
                 }
             }
@@ -87,16 +89,6 @@ class ComposeActivity : FragmentActivity() {
             super.onBackPressed()
         }
     }
-
-    // override fun onStart() {
-    //     super.onStart()
-    //     promptFeature.start()
-    // }
-    //
-    // override fun onStop() {
-    //     super.onStop()
-    //     promptFeature.stop()
-    // }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)

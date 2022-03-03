@@ -27,6 +27,7 @@ import com.dimension.maskbook.common.ModuleSetup
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.persona.data.JSMethod
 import com.dimension.maskbook.persona.export.PersonaServices
+import com.dimension.maskbook.persona.export.model.ConnectAccountData
 import com.dimension.maskbook.persona.repository.IContactsRepository
 import com.dimension.maskbook.persona.repository.IPersonaRepository
 import com.dimension.maskbook.persona.repository.PersonaRepository
@@ -52,8 +53,8 @@ import org.koin.mp.KoinPlatformTools
 
 object PersonaSetup : ModuleSetup {
 
-    override fun NavGraphBuilder.route(navController: NavController, onFinish: () -> Unit) {
-        generatedRoute(navController, onFinish = onFinish)
+    override fun NavGraphBuilder.route(navController: NavController) {
+        generatedRoute(navController)
     }
 
     override fun dependencyInject() = module {
@@ -80,6 +81,13 @@ object PersonaSetup : ModuleSetup {
         viewModel { ExportPrivateKeyViewModel(get()) }
         viewModel { PostViewModel(get(), get()) }
         viewModel { ContactsViewModel(get(), get()) }
+
+        viewModel { (data: ConnectAccountData) ->
+            com.dimension.maskbook.persona.viewmodel.social.UserNameModalViewModel(
+                get(),
+                data
+            )
+        }
     }
 
     override fun onExtensionReady() {

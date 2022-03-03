@@ -35,7 +35,6 @@ import com.dimension.maskbook.common.ModuleSetup
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.ui.tab.TabScreen
-import com.dimension.maskbook.persona.export.model.ConnectAccountData
 import com.dimension.maskbook.wallet.data.JSMethod
 import com.dimension.maskbook.wallet.db.AppDatabase
 import com.dimension.maskbook.wallet.db.RoomMigrations
@@ -72,7 +71,6 @@ import com.dimension.maskbook.wallet.viewmodel.register.CreateIdentityViewModel
 import com.dimension.maskbook.wallet.viewmodel.register.EmailRemoteBackupRecoveryViewModel
 import com.dimension.maskbook.wallet.viewmodel.register.PhoneRemoteBackupRecoveryViewModel
 import com.dimension.maskbook.wallet.viewmodel.register.RemoteBackupRecoveryViewModelBase
-import com.dimension.maskbook.wallet.viewmodel.register.UserNameModalViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.BackUpPasswordViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.BiometricViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.SetUpPaymentPasswordViewModel
@@ -122,7 +120,7 @@ import com.dimension.maskbook.wallet.export.WalletServices as ExportWalletServic
 object WalletSetup : ModuleSetup {
 
     @OptIn(ExperimentalMaterialNavigationApi::class)
-    override fun NavGraphBuilder.route(navController: NavController, onFinish: () -> Unit) {
+    override fun NavGraphBuilder.route(navController: NavController) {
         walletsRoute(navController)
         registerRoute(navController)
         bottomSheet(
@@ -295,7 +293,6 @@ private fun Module.provideViewModel() {
             get()
         )
     }
-    viewModel { (data: ConnectAccountData) -> UserNameModalViewModel(get(), data) }
     viewModel { CreateWalletRecoveryKeyViewModel(get()) }
     viewModel { SetUpPaymentPasswordViewModel(get()) }
     viewModel { TouchIdEnableViewModel() }
@@ -351,7 +348,7 @@ private fun Module.provideViewModel() {
     viewModel { BackUpPasswordViewModel(get(), get()) }
     viewModel { (id: String) -> CollectibleDetailViewModel(id, get()) }
     viewModel { (tokenAddress: String) -> SendTokenDataViewModel(tokenAddress, get(), get()) }
-    viewModel { (data: SendTokenConfirmData) -> Web3TransactionConfirmViewModel(data, get(), get()) }
+    viewModel { (data: SendTokenConfirmData) -> Web3TransactionConfirmViewModel(data, get(), get(), get()) }
 }
 
 private fun Module.provideServices() {

@@ -28,6 +28,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class ExtensionRepository(
@@ -61,6 +62,10 @@ class ExtensionRepository(
                 _currentSite.collect {
                     controller.loadUrl(it.url)
                 }
+            }
+            launch {
+                isExtensionConnected.first { it }
+                controller.loadUrl(_currentSite.value.url)
             }
         }
     }
