@@ -26,11 +26,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import androidx.lifecycle.MutableLiveData
 import com.dimension.maskbook.common.ext.ifNullOrEmpty
-import com.dimension.maskbook.common.platform.IPlatformSwitcher
-import com.dimension.maskbook.common.route.CommonRoute
-import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.ext.toSite
 import com.dimension.maskbook.extension.export.ExtensionServices
 import com.dimension.maskbook.persona.data.JSMethod

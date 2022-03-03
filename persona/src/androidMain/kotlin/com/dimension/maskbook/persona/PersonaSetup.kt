@@ -83,7 +83,7 @@ object PersonaSetup : ModuleSetup {
         viewModel { ExportPrivateKeyViewModel(get()) }
         viewModel { PostViewModel(get(), get()) }
         viewModel { ContactsViewModel(get()) }
-        viewModel { ContactsViewModel(get(), get()) }
+        viewModel { ContactsViewModel(get()) }
 
         viewModel { (data: ConnectAccountData) ->
             com.dimension.maskbook.persona.viewmodel.social.UserNameModalViewModel(
