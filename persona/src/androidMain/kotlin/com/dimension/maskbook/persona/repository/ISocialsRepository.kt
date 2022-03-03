@@ -18,13 +18,11 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.persona.export.model
+package com.dimension.maskbook.persona.repository
 
-data class SocialData(
-    val id: String,
-    val name: String,
-    val avatar: String,
-    val network: Network,
-    val personaId: String? = null,
-    val linkedPersona: Boolean = false,
-)
+import com.dimension.maskbook.persona.export.model.SocialData
+import kotlinx.coroutines.flow.Flow
+
+interface ISocialsRepository {
+    val socials: Flow<List<SocialData>>
+}

@@ -27,6 +27,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.MutableLiveData
+import com.dimension.maskbook.common.ext.ifNullOrEmpty
 import com.dimension.maskbook.common.platform.IPlatformSwitcher
 import com.dimension.maskbook.common.repository.JSMethod
 import com.dimension.maskbook.common.route.CommonRoute
@@ -68,25 +69,33 @@ class PersonaRepository(
     private val dataStore: DataStore<Preferences>,
     private val platformSwitcher: IPlatformSwitcher,
 ) : IPersonaRepository,
+    ISocialsRepository,
     IContactsRepository {
+
     private var connectingJob: Job? = null
     private val scope = CoroutineScope(Dispatchers.IO)
+
     private val _currentPersona = dataStore.data.map {
         it[CurrentPersonaKey] ?: ""
     }
+
     private val _twitter = MutableStateFlow(emptyList<Profile>())
     override val twitter: Flow<List<SocialData>>
         get() = _twitter.combine(_persona) { a: List<Profile>, b: List<Persona> ->
             a.map { profile ->
                 SocialData(
                     id = profile.identifier,
-                    name = profile.nickname ?: "",
+                    name = profile.nickname.ifNullOrEmpty {
+                        profile.identifier.substringAfter('/')
+                    },
                     avatar = "",
                     personaId = b.firstOrNull { it.linkedProfiles.containsKey(profile.identifier) }?.identifier,
+                    linkedPersona = profile.linkedPersona,
                     network = Network.Twitter,
                 )
             }
         }
+
     private val _facebook = MutableStateFlow(emptyList<Profile>())
     override val facebook: Flow<List<SocialData>>
         get() = _facebook.combine(_persona) { a: List<Profile>, b: List<Persona> ->
@@ -96,10 +105,12 @@ class PersonaRepository(
                     name = profile.nickname ?: "",
                     avatar = "",
                     personaId = b.firstOrNull { it.linkedProfiles.containsKey(profile.identifier) }?.identifier,
+                    linkedPersona = profile.linkedPersona,
                     network = Network.Facebook,
                 )
             }
         }
+
     private val _persona = MutableStateFlow(emptyList<Persona>())
     override val persona: Flow<List<PersonaData>>
         get() = _persona.combine(dataStore.data) { items, data ->
@@ -114,10 +125,12 @@ class PersonaRepository(
                 )
             }
         }
+
     override val currentPersona: Flow<PersonaData?>
         get() = _currentPersona.combine(persona) { current: String, list: List<PersonaData> ->
             list.firstOrNull { it.id == current }
         }
+
     private val _redirect = MutableLiveData<RedirectTarget?>(null)
     override val redirect: MutableLiveData<RedirectTarget?>
         get() = _redirect
@@ -162,15 +175,29 @@ class PersonaRepository(
         platformSwitcher.launchDeeplink(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona))
     }
 
-    override val contacts =
-        combine(_twitter, _facebook, _currentPersona) { twitter, facebook, persona ->
-            (twitter + facebook).filter { !it.linkedPersona }.map {
-                ContactData(
-                    id = it.identifier,
-                    name = it.nickname ?: "",
-                    personaId = persona
-                )
-            }
+    override val socials: Flow<List<SocialData>>
+        get() = combine(
+            twitter, facebook, _currentPersona
+        ) { twitter, facebook, persona ->
+            (twitter + facebook)
+                .filter { it.personaId == persona }
+        }
+
+    override val contacts: Flow<List<ContactData>>
+        get() = combine(
+            twitter, facebook, _currentPersona
+        ) { twitter, facebook, persona ->
+            (twitter + facebook)
+                .filter { it.personaId != persona }
+                .map {
+                    ContactData(
+                        id = it.id,
+                        name = it.name,
+                        personaId = persona,
+                        linkedPersona = it.linkedPersona,
+                        network = it.network,
+                    )
+                }
         }
 
     override fun init() {
