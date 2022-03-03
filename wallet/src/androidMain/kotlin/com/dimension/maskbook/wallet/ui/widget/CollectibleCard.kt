@@ -108,10 +108,7 @@ fun CollectibleCard(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        // TODO Mimao find a way to display number
-                        // Text(
-                        // text = data.items.size.toString()
-                        // )
+                        Text(text = items.itemCount.toString())
                         Icon(
                             imageVector = if (expanded) {
                                 Icons.Default.ExpandMore

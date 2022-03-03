@@ -68,6 +68,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.web3j.abi.FunctionEncoder
 import org.web3j.abi.datatypes.Address
+import org.web3j.abi.datatypes.DynamicBytes
 import org.web3j.abi.datatypes.Function
 import org.web3j.abi.datatypes.generated.Uint256
 import org.web3j.crypto.Credentials
@@ -624,14 +625,40 @@ class WalletRepository(
 
     override fun sendCollectibleWithCurrentWallet(
         address: String,
-        collectible: WalletCollectibleItemData,
+        collectible: WalletCollectibleData,
         gasLimit: Double,
         maxFee: Double,
         maxPriorityFee: Double,
         onDone: (String?) -> Unit,
         onError: (Throwable) -> Unit
     ) {
-        TODO("Not yet implemented")
+        scope.launch {
+            currentWallet.firstOrNull()?.let { wallet ->
+                val data = Function(
+                    "safeTransferFrom",
+                    listOf(
+                        Address(wallet.address), // from
+                        Address(address), // to
+                        Uint256(collectible.tokenId.toBigInteger()),
+                        DynamicBytes(byteArrayOf())
+                    ),
+                    listOf(),
+                ).let {
+                    FunctionEncoder.encode(it)
+                }
+                transactionWithCurrentWalletAndChainType(
+                    amount = BigDecimal.ZERO,
+                    address = collectible.contract.address,
+                    chainType = collectible.chainType,
+                    gasLimit = gasLimit,
+                    maxFee = maxFee,
+                    maxPriorityFee = maxPriorityFee,
+                    data = data,
+                    onDone = onDone,
+                    onError = onError
+                )
+            }
+        }
     }
 
     override fun transactionWithCurrentWalletAndChainType(

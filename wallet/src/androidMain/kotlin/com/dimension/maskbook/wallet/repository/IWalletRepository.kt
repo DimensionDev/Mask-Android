@@ -103,30 +103,36 @@ data class WalletCollectibleData(
     val previewUrl: String?,
     val imageUrl: String?,
     val videoUrl: String?,
+    val contract: WalletCollectibleContract
 ) {
     companion object {
         fun fromDb(data: DbCollectible) = with(data) {
             WalletCollectibleData(
                 id = _id,
                 chainType = chainType,
-                icon = this.collection.imageURL,
+                icon = collection.imageURL,
                 name = collection.name ?: name,
                 tokenId = tokenId,
-                link = this.permalink ?: this.externalLink ?: "",
-                imageUrl = this.url.imageURL ?: this.url.imageOriginalURL ?: "",
-                previewUrl = this.url.imagePreviewURL ?: this.url.imageThumbnailURL ?: "",
-                videoUrl = this.url.animationOriginalURL ?: this.url.animationURL ?: "",
+                link = permalink ?: externalLink ?: "",
+                imageUrl = url.imageURL ?: url.imageOriginalURL ?: "",
+                previewUrl = url.imagePreviewURL ?: url.imageThumbnailURL ?: "",
+                videoUrl = url.animationOriginalURL ?: url.animationURL ?: "",
+                contract = WalletCollectibleContract(
+                    address = contract.address,
+                    imageUrl = contract.imageUrl,
+                    name = contract.name,
+                    symbol = contract.symbol
+                )
             )
         }
     }
 }
 
-data class WalletCollectibleItemData(
-    val id: String,
-    val link: String,
-    val previewUrl: String?,
-    val imageUrl: String?,
-    val videoUrl: String?,
+data class WalletCollectibleContract(
+    val address: String,
+    val imageUrl: String,
+    val name: String,
+    val symbol: String
 )
 
 enum class TransactionType {
@@ -314,7 +320,7 @@ interface IWalletRepository {
     )
     fun sendCollectibleWithCurrentWallet(
         address: String,
-        collectible: WalletCollectibleItemData,
+        collectible: WalletCollectibleData,
         gasLimit: Double,
         maxFee: Double,
         maxPriorityFee: Double,
