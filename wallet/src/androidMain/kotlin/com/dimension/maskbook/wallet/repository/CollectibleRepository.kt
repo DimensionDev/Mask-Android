@@ -26,6 +26,8 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
 import com.dimension.maskbook.wallet.db.AppDatabase
+import com.dimension.maskbook.wallet.export.model.WalletCollectibleCollectionData
+import com.dimension.maskbook.wallet.export.model.WalletCollectibleData
 import com.dimension.maskbook.wallet.export.model.WalletData
 import com.dimension.maskbook.wallet.paging.mediator.CollectibleCollectionMediator
 import com.dimension.maskbook.wallet.paging.mediator.CollectibleMediator

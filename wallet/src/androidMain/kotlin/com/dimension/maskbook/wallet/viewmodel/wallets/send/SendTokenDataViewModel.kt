@@ -69,4 +69,9 @@ class SendTokenDataViewModel(
             wallet.tokens.firstOrNull { it.tokenAddress == token.address }
         }.asStateIn(viewModelScope, null)
     }
+
+    enum class TransactionType {
+        Token,
+        Collectible
+    }
 }

@@ -20,7 +20,6 @@
  */
 package com.dimension.maskbook.wallet.ui.scenes.wallets.collectible
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -43,11 +42,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import coil.compose.rememberImagePainter
 import com.dimension.maskbook.common.model.DateType
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
@@ -55,8 +52,9 @@ import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.common.ui.widget.button.MaskBackButton
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.wallet.R
+import com.dimension.maskbook.wallet.export.model.WalletCollectibleData
 import com.dimension.maskbook.wallet.repository.TransactionData
-import com.dimension.maskbook.wallet.repository.WalletCollectibleData
+import com.dimension.maskbook.wallet.ui.widget.CollectibleCard
 import com.dimension.maskbook.wallet.ui.widget.TransactionHistoryList
 
 @Composable
@@ -97,26 +95,7 @@ fun CollectibleDetailScene(
                     ).clip(RoundedCornerShape(12.dp)),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    if (!data.videoUrl.isNullOrEmpty()) {
-                        // TODO: video
-                    } else if (!data.imageUrl.isNullOrEmpty()) {
-                        Image(
-                            painter = rememberImagePainter(data.imageUrl),
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            contentDescription = null,
-                            contentScale = ContentScale.FillWidth
-                        )
-                    } else {
-                        Image(
-                            painter = painterResource(R.drawable.mask),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(20.dp),
-                            contentDescription = null,
-                            contentScale = ContentScale.FillWidth
-                        )
-                    }
+                    CollectibleCard(data = data)
                     data.name.takeIf { it.isNotEmpty() }?.let {
                         Text(text = data.name, modifier = Modifier.padding(15.dp))
                     }

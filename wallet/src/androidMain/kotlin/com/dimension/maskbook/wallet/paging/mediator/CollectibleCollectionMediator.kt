@@ -26,7 +26,8 @@ import androidx.paging.PagingConfig
 import androidx.paging.map
 import com.dimension.maskbook.wallet.db.AppDatabase
 import com.dimension.maskbook.wallet.db.model.DbCollectible
-import com.dimension.maskbook.wallet.repository.WalletCollectibleCollectionData
+import com.dimension.maskbook.wallet.export.model.WalletCollectibleCollectionData
+import com.dimension.maskbook.wallet.repository.fromDb
 import com.dimension.maskbook.wallet.services.OpenSeaServices
 import kotlinx.coroutines.flow.mapNotNull
 

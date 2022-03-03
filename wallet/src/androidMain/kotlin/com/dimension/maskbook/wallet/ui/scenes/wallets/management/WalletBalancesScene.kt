@@ -71,13 +71,13 @@ import com.dimension.maskbook.common.ui.widget.button.MaskIconCardButton
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.export.model.TokenData
+import com.dimension.maskbook.wallet.export.model.WalletCollectibleCollectionData
+import com.dimension.maskbook.wallet.export.model.WalletCollectibleData
 import com.dimension.maskbook.wallet.export.model.WalletData
 import com.dimension.maskbook.wallet.export.model.WalletTokenData
 import com.dimension.maskbook.wallet.ext.humanizeDollar
 import com.dimension.maskbook.wallet.ext.humanizeToken
-import com.dimension.maskbook.wallet.repository.WalletCollectibleCollectionData
-import com.dimension.maskbook.wallet.repository.WalletCollectibleData
-import com.dimension.maskbook.wallet.ui.widget.CollectibleCard
+import com.dimension.maskbook.wallet.ui.widget.CollectibleCollectionCard
 import com.dimension.maskbook.wallet.ui.widget.WalletCard
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.rememberPagerState
@@ -301,7 +301,7 @@ fun WalletBalancesScene(
                     BalancesSceneType.Collectible -> {
                         items(collectible) { item ->
                             if (item != null) {
-                                CollectibleCard(
+                                CollectibleCollectionCard(
                                     data = item,
                                     onItemClicked = {
                                         onCollectibleDetailClicked.invoke(it)

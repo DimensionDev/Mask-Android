@@ -21,6 +21,7 @@
 package com.dimension.maskbook.wallet.repository
 
 import com.dimension.maskbook.common.bigDecimal.BigDecimal
+import com.dimension.maskbook.common.ext.ifNullOrEmpty
 import com.dimension.maskbook.common.okhttp.okHttpClient
 import com.dimension.maskbook.debankapi.model.ChainID
 import com.dimension.maskbook.wallet.db.model.CoinPlatformType
@@ -30,6 +31,9 @@ import com.dimension.maskbook.wallet.db.model.DbWalletTokenWithToken
 import com.dimension.maskbook.wallet.db.model.WalletSource
 import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.export.model.TokenData
+import com.dimension.maskbook.wallet.export.model.WalletCollectibleCollectionData
+import com.dimension.maskbook.wallet.export.model.WalletCollectibleContract
+import com.dimension.maskbook.wallet.export.model.WalletCollectibleData
 import com.dimension.maskbook.wallet.export.model.WalletData
 import com.dimension.maskbook.wallet.export.model.WalletTokenData
 import kotlinx.coroutines.flow.Flow
@@ -73,65 +77,36 @@ fun WalletTokenData.Companion.fromDb(data: DbWalletTokenWithToken) = with(data) 
     )
 }
 
-data class WalletCollectibleCollectionData(
-    val slug: String,
-    val name: String,
-    val imageUrl: String,
-    val walletId: String,
-    val chainType: ChainType,
-) {
-    companion object {
-        fun fromDb(data: DbCollectible) = with(data) {
-            WalletCollectibleCollectionData(
-                slug = collection.slug,
-                name = collection.name ?: "",
-                imageUrl = collection.imageURL ?: "",
-                walletId = walletId,
-                chainType = chainType
-            )
-        }
-    }
+fun WalletCollectibleData.Companion.fromDb(data: DbCollectible) = with(data) {
+    WalletCollectibleData(
+        id = _id,
+        chainType = chainType,
+        name = name,
+        icon = collection.imageURL.ifNullOrEmpty { url.imagePreviewURL ?: "" },
+        tokenId = tokenId,
+        link = permalink ?: externalLink ?: "",
+        imageUrl = url.imageURL ?: url.imageOriginalURL ?: "",
+        previewUrl = url.imagePreviewURL ?: url.imageThumbnailURL ?: "",
+        videoUrl = url.animationOriginalURL ?: url.animationURL ?: "",
+        contract = WalletCollectibleContract(
+            address = contract.address,
+            imageUrl = contract.imageUrl,
+            name = contract.name,
+            symbol = contract.symbol
+        ),
+        collection = WalletCollectibleCollectionData.fromDb(this)
+    )
 }
 
-data class WalletCollectibleData(
-    val id: String,
-    val chainType: ChainType,
-    val name: String,
-    val tokenId: String,
-    val link: String,
-    val previewUrl: String?,
-    val imageUrl: String?,
-    val videoUrl: String?,
-    val contract: WalletCollectibleContract
-) {
-    companion object {
-        fun fromDb(data: DbCollectible) = with(data) {
-            WalletCollectibleData(
-                id = _id,
-                chainType = chainType,
-                name = name,
-                tokenId = tokenId,
-                link = permalink ?: externalLink ?: "",
-                imageUrl = url.imageURL ?: url.imageOriginalURL ?: "",
-                previewUrl = url.imagePreviewURL ?: url.imageThumbnailURL ?: "",
-                videoUrl = url.animationOriginalURL ?: url.animationURL ?: "",
-                contract = WalletCollectibleContract(
-                    address = contract.address,
-                    imageUrl = contract.imageUrl,
-                    name = contract.name,
-                    symbol = contract.symbol
-                )
-            )
-        }
-    }
+fun WalletCollectibleCollectionData.Companion.fromDb(data: DbCollectible) = with(data) {
+    WalletCollectibleCollectionData(
+        slug = collection.slug,
+        name = collection.name ?: "",
+        imageUrl = collection.imageURL ?: "",
+        walletId = walletId,
+        chainType = chainType
+    )
 }
-
-data class WalletCollectibleContract(
-    val address: String,
-    val imageUrl: String,
-    val name: String,
-    val symbol: String
-)
 
 enum class TransactionType {
     Swap,
@@ -293,10 +268,27 @@ interface IWalletRepository {
     fun setCurrentWallet(walletId: String)
     fun generateNewMnemonic(): List<String>
     suspend fun createWallet(mnemonic: List<String>, name: String, platformType: CoinPlatformType)
-    suspend fun importWallet(mnemonicCode: List<String>, name: String, path: List<String>, platformType: CoinPlatformType)
-    suspend fun importWallet(name: String, keyStore: String, password: String, platformType: CoinPlatformType)
+    suspend fun importWallet(
+        mnemonicCode: List<String>,
+        name: String,
+        path: List<String>,
+        platformType: CoinPlatformType
+    )
+
+    suspend fun importWallet(
+        name: String,
+        keyStore: String,
+        password: String,
+        platformType: CoinPlatformType
+    )
+
     suspend fun importWallet(name: String, privateKey: String, platformType: CoinPlatformType)
-    suspend fun getKeyStore(walletData: WalletData, platformType: CoinPlatformType, paymentPassword: String): String
+    suspend fun getKeyStore(
+        walletData: WalletData,
+        platformType: CoinPlatformType,
+        paymentPassword: String
+    ): String
+
     suspend fun getPrivateKey(walletData: WalletData, platformType: CoinPlatformType): String
     suspend fun getTotalBalance(address: String): Double
     fun deleteCurrentWallet()
@@ -313,6 +305,7 @@ interface IWalletRepository {
         onDone: (String?) -> Unit = {},
         onError: (Throwable) -> Unit = {},
     )
+
     fun sendTokenWithCurrentWallet(
         amount: BigDecimal,
         address: String,
@@ -324,6 +317,7 @@ interface IWalletRepository {
         onDone: (String?) -> Unit = {},
         onError: (Throwable) -> Unit = {},
     )
+
     fun sendCollectibleWithCurrentWallet(
         address: String,
         collectible: WalletCollectibleData,
@@ -333,6 +327,7 @@ interface IWalletRepository {
         onDone: (String?) -> Unit = {},
         onError: (Throwable) -> Unit = {},
     )
+
     fun transactionWithCurrentWalletAndChainType(
         amount: BigDecimal,
         address: String,
@@ -344,6 +339,7 @@ interface IWalletRepository {
         onDone: (String?) -> Unit,
         onError: (Throwable) -> Unit
     )
+
     fun validatePrivateKey(privateKey: String): Boolean
     fun validateMnemonic(mnemonic: String): Boolean
     fun validateKeystore(keyStore: String): Boolean

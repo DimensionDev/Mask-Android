@@ -71,6 +71,7 @@ fun SendTokenHost(
     onBack: () -> Unit,
     onDone: () -> Unit,
 ) {
+    // TODO Mimao refactor this Host with Tradable data
     val context = LocalContext.current
 
     val bottomSheetNavigator = rememberMaskBottomSheetNavigator()
@@ -164,6 +165,7 @@ fun SendTokenHost(
                     }
                 )
             }
+            // TODO mimao support multi select
             composable("SearchToken") {
                 val walletTokens by tokenDataViewModel.walletTokens.observeAsState(emptyList())
                 var query by remember { mutableStateOf("") }
@@ -214,7 +216,7 @@ fun SendTokenHost(
                         onBack = { navController.popBackStack() },
                         addressData = currentAddressData,
                         onAddContact = { navController.navigate("AddContactSheet/$address") },
-                        tokenData = tokenData,
+                        data = tokenData,
                         balance = balance,
                         onSelectToken = { navController.navigate("SearchToken") },
                         amount = amount,

@@ -37,6 +37,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
@@ -70,17 +71,20 @@ import com.dimension.maskbook.common.ui.widget.button.SecondaryButton
 import com.dimension.maskbook.common.ui.widget.button.clickable
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.export.model.TokenData
+import com.dimension.maskbook.wallet.export.model.TradableData
+import com.dimension.maskbook.wallet.export.model.WalletCollectibleData
 import com.dimension.maskbook.wallet.ext.humanizeDollar
 import com.dimension.maskbook.wallet.ext.humanizeToken
 import com.dimension.maskbook.wallet.repository.SearchAddressData
 import com.dimension.maskbook.wallet.repository.UnlockType
+import com.dimension.maskbook.wallet.ui.widget.CollectibleCard
 
 @Composable
 fun SendTokenScene(
     onBack: () -> Unit,
     addressData: SearchAddressData,
     onAddContact: () -> Unit,
-    tokenData: TokenData?,
+    data: TradableData?,
     balance: BigDecimal,
     onSelectToken: () -> Unit,
     amount: String,
@@ -124,24 +128,39 @@ fun SendTokenScene(
                 )
                 Spacer(modifier = Modifier.height(20.dp))
 
-                TokenContent(
-                    logoUri = tokenData?.logoURI ?: "",
-                    tokenName = tokenData?.name ?: "",
-                    balance = "${balance.humanizeToken()} ${tokenData?.symbol ?: ""} ≈ ${(balance * (tokenData?.price ?: BigDecimal.ZERO)).humanizeDollar()}",
-                    onClick = onSelectToken
-                )
+                when (data) {
+                    is TokenData -> TokenContent(
+                        logoUri = data.logoURI ?: "",
+                        tokenName = data.name,
+                        balance = "${balance.humanizeToken()} ${data.symbol} ≈ ${(balance * data.price).humanizeDollar()}",
+                        onClick = onSelectToken
+                    )
+                    is WalletCollectibleData -> CollectibleContent(
+                        logoUri = data.icon,
+                        name = data.name,
+                        collectionName = data.collection.name,
+                        onClick = onSelectToken
+                    )
+                    null -> TokenContent(
+                        onClick = onSelectToken
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(20.dp))
-                AmountContent(
-                    amount = amount,
-                    onValueChanged = {
-                        if (it.toBigDecimalOrNull() != null) {
-                            onAmountChanged.invoke(it)
-                        }
-                    },
-                    onMax = { onAmountChanged.invoke(maxAmount) },
-                    error = amount.toBigDecimal() > maxAmount.toBigDecimal()
-                )
+                when (data) {
+                    is WalletCollectibleData -> CollectibleDisplayContent(data = data)
+                    else -> AmountContent(
+                        amount = amount,
+                        onValueChanged = {
+                            if (it.toBigDecimalOrNull() != null) {
+                                onAmountChanged.invoke(it)
+                            }
+                        },
+                        onMax = { onAmountChanged.invoke(maxAmount) },
+                        error = amount.toBigDecimal() > maxAmount.toBigDecimal()
+                    )
+                }
+
                 Spacer(modifier = Modifier.height(16.dp))
 
                 if (unlockType == UnlockType.PASSWORD) {
@@ -202,9 +221,9 @@ private fun AddressContent(
 
 @Composable
 private fun TokenContent(
-    logoUri: String,
-    tokenName: String,
-    balance: String,
+    logoUri: String = "",
+    tokenName: String = "",
+    balance: String = "",
     onClick: () -> Unit
 ) {
     Row(
@@ -228,6 +247,46 @@ private fun TokenContent(
         }
         Icon(imageVector = Icons.Default.ArrowRight, contentDescription = null)
     }
+}
+
+@Composable
+private fun CollectibleContent(
+    logoUri: String,
+    name: String,
+    collectionName: String,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick.invoke() },
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Image(
+            painter = rememberImagePainter(logoUri),
+            contentDescription = null,
+            modifier = Modifier.size(38.dp)
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = name,
+                style = MaterialTheme.typography.body1.copy(fontWeight = FontWeight.Bold)
+            )
+            Text(text = collectionName)
+        }
+        Icon(imageVector = Icons.Default.ArrowRight, contentDescription = null)
+    }
+}
+
+@Composable
+private fun CollectibleDisplayContent(
+    data: WalletCollectibleData
+) {
+    CollectibleCard(
+        modifier = Modifier.clip(RoundedCornerShape(12.dp)),
+        data = data
+    )
 }
 
 @Composable

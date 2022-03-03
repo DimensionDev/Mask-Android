@@ -20,32 +20,35 @@
  */
 package com.dimension.maskbook.wallet.export.model
 
-import com.dimension.maskbook.common.bigDecimal.BigDecimal
-
-class TokenData(
-    val address: String,
-    val chainType: ChainType,
+data class WalletCollectibleCollectionData(
+    val slug: String,
     val name: String,
-    val symbol: String,
-    val decimals: Long,
-    val logoURI: String?,
-    val price: BigDecimal,
-) : TradableData {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other !is TokenData) return false
-
-        if (address != other.address) return false
-        if (chainType != other.chainType) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = address.hashCode()
-        result = 31 * result + chainType.hashCode()
-        return result
-    }
-
+    val imageUrl: String,
+    val walletId: String,
+    val chainType: ChainType,
+) {
     companion object
 }
+
+data class WalletCollectibleData(
+    val id: String,
+    val chainType: ChainType,
+    val icon: String,
+    val name: String,
+    val tokenId: String,
+    val link: String,
+    val previewUrl: String?,
+    val imageUrl: String?,
+    val videoUrl: String?,
+    val contract: WalletCollectibleContract,
+    val collection: WalletCollectibleCollectionData
+) : TradableData {
+    companion object
+}
+
+data class WalletCollectibleContract(
+    val address: String,
+    val imageUrl: String,
+    val name: String,
+    val symbol: String
+)
