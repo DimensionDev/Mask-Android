@@ -35,23 +35,11 @@ import androidx.fragment.app.FragmentActivity
 import coil.ImageLoader
 import coil.compose.LocalImageLoader
 import coil.decode.SvgDecoder
-import com.dimension.maskbook.common.CommonSetup
 import com.dimension.maskbook.common.gecko.WebContentController
 import com.dimension.maskbook.common.ui.widget.LocalWindowInsetsController
-import com.dimension.maskbook.entry.BuildConfig
-import com.dimension.maskbook.entry.EntrySetup
 import com.dimension.maskbook.entry.ui.App
-import com.dimension.maskbook.extension.ExtensionSetup
-import com.dimension.maskbook.labs.LabsSetup
-import com.dimension.maskbook.persona.PersonaSetup
-import com.dimension.maskbook.setting.SettingSetup
-import com.dimension.maskbook.wallet.WalletSetup
 import com.google.accompanist.insets.ProvideWindowInsets
 import org.koin.android.ext.android.get
-import org.koin.android.ext.koin.androidContext
-import org.koin.android.ext.koin.androidLogger
-import org.koin.core.context.startKoin
-import org.koin.core.logger.Level
 
 class ComposeActivity : FragmentActivity() {
     private val permissionsRequest: ActivityResultLauncher<Array<String>> =
@@ -76,19 +64,6 @@ class ComposeActivity : FragmentActivity() {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-        startKoin {
-            androidLogger(if (BuildConfig.DEBUG) Level.ERROR else Level.NONE)
-            androidContext(applicationContext)
-            modules(
-                CommonSetup.dependencyInject(),
-                WalletSetup.dependencyInject(),
-                SettingSetup.dependencyInject(),
-                LabsSetup.dependencyInject(),
-                PersonaSetup.dependencyInject(),
-                EntrySetup.dependencyInject(),
-                ExtensionSetup.dependencyInject(),
-            )
-        }
         setContent {
             CompositionLocalProvider(
                 LocalImageLoader provides ImageLoader.Builder(this).componentRegistry {
