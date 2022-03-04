@@ -32,7 +32,7 @@ import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.extension.export.ExtensionServices
 import com.dimension.maskbook.extension.repository.ExtensionRepository
-import com.dimension.maskbook.extension.ui.WebExtensionScene
+import com.dimension.maskbook.extension.ui.WebContentScene
 import com.dimension.maskbook.extension.utils.MessageChannel
 import com.google.accompanist.navigation.animation.composable
 import org.koin.dsl.module
@@ -58,7 +58,7 @@ object ExtensionSetup : ModuleSetup {
                 )
             }
         ) {
-            WebExtensionScene(
+            WebContentScene(
                 navController = navController,
             )
         }

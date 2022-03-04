@@ -48,7 +48,7 @@ import com.dimension.maskbook.localization.R
 import org.koin.androidx.compose.get
 
 @Composable
-fun WebExtensionScene(
+fun WebContentScene(
     navController: NavController,
 ) {
     val controller = get<WebContentController>()
