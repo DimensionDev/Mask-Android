@@ -33,12 +33,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.util.UUID
+import java.util.concurrent.ConcurrentHashMap
 
 internal class MessageChannel(
     private val controller: WebContentController
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
-    private val queue = linkedMapOf<String, Channel<String?>>()
+    private val queue = ConcurrentHashMap<String, Channel<String?>>()
     private val subscription = arrayListOf<Pair<String, MutableStateFlow<ExtensionMessage?>>>()
 
     fun startMessageCollect() {
@@ -112,8 +113,7 @@ internal class MessageChannel(
             it != "null"
         }
         if (messageId != null && queue.containsKey(messageId)) {
-            queue[messageId]?.send(result)
-            queue.remove(messageId)
+            queue.remove(messageId)?.send(result)
         } else if (messageId != null) {
             val method = runCatching {
                 jsonObject.getString("method")
