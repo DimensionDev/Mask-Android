@@ -20,8 +20,6 @@
  */
 package com.dimension.maskbook.wallet.ui.scenes.wallets.send
 
-import android.content.Intent
-import android.net.Uri
 import android.util.Log
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -39,6 +37,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.ui.notification.StringResNotificationEvent.Companion.show
@@ -46,6 +45,8 @@ import com.dimension.maskbook.common.ui.theme.modalScrimColor
 import com.dimension.maskbook.common.ui.widget.LocalInAppNotification
 import com.dimension.maskbook.common.ui.widget.rememberMaskBottomSheetNavigator
 import com.dimension.maskbook.wallet.R
+import com.dimension.maskbook.wallet.export.model.TokenData
+import com.dimension.maskbook.wallet.export.model.WalletCollectibleData
 import com.dimension.maskbook.wallet.ext.humanizeDollar
 import com.dimension.maskbook.wallet.ext.humanizeToken
 import com.dimension.maskbook.wallet.repository.UnlockType
@@ -55,8 +56,8 @@ import com.dimension.maskbook.wallet.viewmodel.wallets.send.AddContactViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.GasFeeViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.SearchAddressViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendConfirmViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendTokenDataViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendTokenViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendTradableDataViewModel
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 import com.google.accompanist.navigation.material.bottomSheet
@@ -67,7 +68,7 @@ import kotlin.time.ExperimentalTime
 @OptIn(ExperimentalMaterialNavigationApi::class, ExperimentalTime::class)
 @Composable
 fun SendTokenHost(
-    tokenAddress: String,
+    tradableId: String,
     onBack: () -> Unit,
     onDone: () -> Unit,
 ) {
@@ -80,8 +81,8 @@ fun SendTokenHost(
     val gasFeeViewModel = getViewModel<GasFeeViewModel> {
         parametersOf(21000.0)
     }
-    val tokenDataViewModel = getViewModel<SendTokenDataViewModel> {
-        parametersOf(tokenAddress)
+    val tradableDataViewModel = getViewModel<SendTradableDataViewModel> {
+        parametersOf(tradableId)
     }
     val searchAddressViewModel = getViewModel<SearchAddressViewModel>()
 
@@ -92,7 +93,7 @@ fun SendTokenHost(
     val nativeToken by gasFeeViewModel.nativeToken.observeAsState(initial = null)
     val usdValue by gasFeeViewModel.usdValue.observeAsState(initial = BigDecimal.ZERO)
     val gasTotal by gasFeeViewModel.gasTotal.observeAsState(initial = BigDecimal.ZERO)
-    val tokenData by tokenDataViewModel.tokenData.collectAsState()
+    val tradableData by tradableDataViewModel.tradableData.collectAsState(null)
 
     ModalBottomSheetLayout(
         bottomSheetNavigator,
@@ -167,7 +168,7 @@ fun SendTokenHost(
             }
             // TODO mimao support multi select
             composable("SearchToken") {
-                val walletTokens by tokenDataViewModel.walletTokens.observeAsState(emptyList())
+                val walletTokens by tradableDataViewModel.walletTokens.observeAsState(emptyList())
                 var query by remember { mutableStateOf("") }
                 SearchTokenScene(
                     onBack = {
@@ -178,10 +179,30 @@ fun SendTokenHost(
                         query = it
                     },
                     onSelect = {
-                        tokenDataViewModel.setTokenData(it.tokenData)
+                        tradableDataViewModel.setData(it.tokenData)
                         navController.popBackStack()
                     },
                     tokens = walletTokens
+                )
+            }
+
+            composable("SearchCollectibles") {
+                val walletCollectibleCollections =
+                    tradableDataViewModel.walletCollectibleCollections.collectAsLazyPagingItems()
+                var query by remember { mutableStateOf("") }
+                SearchCollectibleScene(
+                    onBack = {
+                        navController.popBackStack()
+                    },
+                    query = query,
+                    onQueryChanged = {
+                        query = it
+                    },
+                    onSelect = {
+                        tradableDataViewModel.setData(it)
+                        navController.popBackStack()
+                    },
+                    collections = walletCollectibleCollections
                 )
             }
             composable(
@@ -193,7 +214,7 @@ fun SendTokenHost(
                 val address = it.arguments?.getString("address") ?: return@composable
                 val biometricViewModel = getViewModel<BiometricViewModel>()
                 val biometricEnabled by biometricViewModel.biometricEnabled.observeAsState()
-                val walletTokenData by tokenDataViewModel.walletTokenData.observeAsState()
+                val walletTokenData by tradableDataViewModel.walletTokenData.observeAsState()
 
                 val viewModel = getViewModel<SendTokenViewModel> {
                     parametersOf(address)
@@ -203,22 +224,32 @@ fun SendTokenHost(
                 val password by viewModel.password.observeAsState()
                 val canConfirm by viewModel.canConfirm.observeAsState()
                 val balance = walletTokenData?.count ?: BigDecimal.ZERO
-                val maxAmount = if (tokenData?.address == nativeToken?.address) {
-                    balance - gasTotal
-                } else {
-                    balance
-                }.let {
-                    if (it < BigDecimal.ZERO) BigDecimal.ZERO else it
-                }.humanizeToken()
+                val maxAmount = when (tradableData) {
+                    is TokenData -> {
+                        if (tradableData?.tradableId() == nativeToken?.address) {
+                            balance - gasTotal
+                        } else {
+                            balance
+                        }.let {
+                            if (it < BigDecimal.ZERO) BigDecimal.ZERO else it
+                        }.humanizeToken()
+                    }
+                    else -> BigDecimal.ZERO.humanizeToken()
+                }
 
                 addressData?.let { currentAddressData ->
                     SendTokenScene(
                         onBack = { navController.popBackStack() },
                         addressData = currentAddressData,
                         onAddContact = { navController.navigate("AddContactSheet/$address") },
-                        data = tokenData,
+                        data = tradableData,
                         balance = balance,
-                        onSelectToken = { navController.navigate("SearchToken") },
+                        onSelectToken = {
+                            when (tradableData) {
+                                is WalletCollectibleData -> navController.navigate("SearchCollectibles")
+                                else -> navController.navigate("SearchToken")
+                            }
+                        },
                         amount = amount,
                         maxAmount = maxAmount,
                         onAmountChanged = { viewModel.setAmount(it) },
@@ -252,7 +283,8 @@ fun SendTokenHost(
                 EditGasPriceSheet(
                     price = (gasTotal * usdValue).humanizeDollar(),
                     costFee = gasTotal.humanizeToken(),
-                    costFeeUnit = nativeToken?.symbol ?: stringResource(R.string.chain_short_name_eth),
+                    costFeeUnit = nativeToken?.symbol
+                        ?: stringResource(R.string.chain_short_name_eth),
                     arrivesIn = arrives,
                     mode = mode,
                     gasLimit = gasLimit.toString(),
@@ -323,36 +355,37 @@ fun SendTokenHost(
                 }
                 val deeplink by viewModel.deepLink.observeAsState(initial = "")
                 val addressData by viewModel.addressData.observeAsState(initial = null)
+                // TODO Mimao update with tradableData
 
-                val currentTokenData = tokenData
+                val currentData = tradableData
                 val currentAddressData = addressData
-                if (currentTokenData != null && currentAddressData != null) {
-                    SendConfirmSheet(
-                        addressData = currentAddressData,
-                        tokenData = currentTokenData,
-                        sendPrice = amount.humanizeToken(),
-                        gasFee = (gasTotal * usdValue).humanizeDollar(),
-                        total = (amount * currentTokenData.price + gasTotal * usdValue).humanizeDollar(),
-                        onConfirm = {
-                            viewModel.send(currentTokenData, amount, gasLimit, maxFee, maxPriorityFee)
-                            onDone.invoke()
-                            // open Wallet App if it is connected
-                            if (deeplink.isNotEmpty()) {
-                                try {
-                                    context.startActivity(
-                                        Intent().apply {
-                                            data = Uri.parse(deeplink)
-                                        }
-                                    )
-                                } catch (e: Throwable) {
-                                    // ignore
-                                }
-                            }
-                        },
-                        onCancel = { navController.popBackStack() },
-                        onEditGasFee = { navController.navigate("EditGasFee") },
-                    )
-                }
+                // if (currentData != null && currentAddressData != null) {
+                //     SendConfirmSheet(
+                //         addressData = currentAddressData,
+                //         tokenData = currentData,
+                //         sendPrice = amount.humanizeToken(),
+                //         gasFee = (gasTotal * usdValue).humanizeDollar(),
+                //         total = (amount * currentData.price + gasTotal * usdValue).humanizeDollar(),
+                //         onConfirm = {
+                //             viewModel.send(currentTokenData, amount, gasLimit, maxFee, maxPriorityFee)
+                //             onDone.invoke()
+                //             // open Wallet App if it is connected
+                //             if (deeplink.isNotEmpty()) {
+                //                 try {
+                //                     context.startActivity(
+                //                         Intent().apply {
+                //                             data = Uri.parse(deeplink)
+                //                         }
+                //                     )
+                //                 } catch (e: Throwable) {
+                //                     // ignore
+                //                 }
+                //             }
+                //         },
+                //         onCancel = { navController.popBackStack() },
+                //         onEditGasFee = { navController.navigate("EditGasFee") },
+                //     )
+                // }
             }
         }
     }

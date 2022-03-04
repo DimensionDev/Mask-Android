@@ -117,6 +117,7 @@ fun NavGraphBuilder.walletsRoute(
                         navController.popBackStack()
                     },
                     onSend = {
+                        navController.navigate(WalletRoute.SendTokenScene(it.tradableId()))
                     },
                     onReceive = {
                         navController.navigate(WalletRoute.WalletQrcode(it.chainType.name))
@@ -687,11 +688,11 @@ fun NavGraphBuilder.walletsRoute(
     composable(
         WalletRoute.SendTokenScene.path,
         arguments = listOf(
-            navArgument("tokenAddress") { type = NavType.StringType }
+            navArgument("tradableId") { type = NavType.StringType }
         )
     ) {
         SendTokenHost(
-            tokenAddress = it.arguments?.getString("tokenAddress")?.let { if (it == "null") null else it }.orEmpty(),
+            tradableId = it.arguments?.getString("tradableId")?.let { if (it == "null") null else it }.orEmpty(),
             onBack = {
                 navController.popBackStack()
             },

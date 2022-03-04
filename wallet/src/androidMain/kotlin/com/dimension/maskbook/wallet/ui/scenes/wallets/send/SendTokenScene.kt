@@ -35,6 +35,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -280,11 +281,11 @@ private fun CollectibleContent(
 }
 
 @Composable
-private fun CollectibleDisplayContent(
+private fun ColumnScope.CollectibleDisplayContent(
     data: WalletCollectibleData
 ) {
     CollectibleCard(
-        modifier = Modifier.clip(RoundedCornerShape(12.dp)),
+        modifier = Modifier.clip(RoundedCornerShape(12.dp)).wrapContentHeight(),
         data = data
     )
 }
@@ -312,7 +313,10 @@ private fun AmountContent(
                             shape = MaterialTheme.shapes.small
                         )
                     ) {
-                        Text(text = stringResource(R.string.scene_sendTransaction_send_btn_max), color = MaterialTheme.colors.primary)
+                        Text(
+                            text = stringResource(R.string.scene_sendTransaction_send_btn_max),
+                            color = MaterialTheme.colors.primary
+                        )
                     }
                     Spacer(modifier = Modifier.padding(end = 12.dp))
                 }
@@ -321,7 +325,10 @@ private fun AmountContent(
         )
         if (error) {
             Spacer(modifier = Modifier.padding(end = 8.dp))
-            Text(text = stringResource(R.string.scene_sendTransaction_send_amount_error), color = MaterialTheme.colors.error)
+            Text(
+                text = stringResource(R.string.scene_sendTransaction_send_amount_error),
+                color = MaterialTheme.colors.error
+            )
         }
     }
 }
@@ -388,7 +395,10 @@ private fun ColumnScope.SendButton(
                     painter = painterResource(id = R.drawable.ic_faceid_small),
                     contentDescription = null
                 )
-                Text(text = stringResource(R.string.scene_wallet_balance_btn_Send), modifier = Modifier.padding(start = 8.dp))
+                Text(
+                    text = stringResource(R.string.scene_wallet_balance_btn_Send),
+                    modifier = Modifier.padding(start = 8.dp)
+                )
             }
         }
         UnlockType.PASSWORD -> {
@@ -401,7 +411,10 @@ private fun ColumnScope.SendButton(
                     painter = painterResource(id = R.drawable.ic_upload_small),
                     contentDescription = null
                 )
-                Text(text = stringResource(R.string.scene_wallet_balance_btn_Send), modifier = Modifier.padding(start = 8.dp))
+                Text(
+                    text = stringResource(R.string.scene_wallet_balance_btn_Send),
+                    modifier = Modifier.padding(start = 8.dp)
+                )
             }
         }
     }

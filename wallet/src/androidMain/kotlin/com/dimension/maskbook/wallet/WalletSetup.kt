@@ -95,8 +95,8 @@ import com.dimension.maskbook.wallet.viewmodel.wallets.send.AddContactViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.GasFeeViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.SearchAddressViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendConfirmViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendTokenDataViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendTokenViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendTradableDataViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.Web3TransactionConfirmViewModel
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectServerManager
@@ -317,7 +317,7 @@ private fun Module.provideViewModel() {
     viewModel { UnlockWalletViewModel(get(), get()) }
     viewModel { BackUpPasswordViewModel(get(), get()) }
     viewModel { (id: String) -> CollectibleDetailViewModel(id, get(), get(), get()) }
-    viewModel { (tokenAddress: String) -> SendTokenDataViewModel(tokenAddress, get(), get()) }
+    viewModel { (tokenAddress: String) -> SendTradableDataViewModel(tokenAddress, get(), get(), get()) }
     viewModel { (data: SendTokenConfirmData) -> Web3TransactionConfirmViewModel(data, get(), get()) }
     viewModel { CollectiblesViewModel(get(), get()) }
 }

@@ -31,6 +31,8 @@ class TokenData(
     val logoURI: String?,
     val price: BigDecimal,
 ) : TradableData {
+    override fun tradableId() = address
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is TokenData) return false

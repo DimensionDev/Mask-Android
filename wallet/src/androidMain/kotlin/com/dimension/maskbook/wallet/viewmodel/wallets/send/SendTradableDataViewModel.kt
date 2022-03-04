@@ -24,35 +24,65 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.wallet.export.model.TokenData
+import com.dimension.maskbook.wallet.export.model.TradableData
+import com.dimension.maskbook.wallet.export.model.WalletCollectibleData
+import com.dimension.maskbook.wallet.repository.ICollectibleRepository
 import com.dimension.maskbook.wallet.repository.ITokenRepository
 import com.dimension.maskbook.wallet.repository.IWalletRepository
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 
-class SendTokenDataViewModel(
-    tokenAddress: String,
+class SendTradableDataViewModel(
+    tradableId: String,
     private val walletRepository: IWalletRepository,
-    tokenRepository: ITokenRepository,
+    private val tokenRepository: ITokenRepository,
+    private val collectibleRepository: ICollectibleRepository
 ) : ViewModel() {
 
     private val _tokenData = MutableStateFlow<TokenData?>(null)
-
     val tokenData by lazy {
         _tokenData.map {
-            it ?: if (tokenAddress.isNotEmpty())
-                tokenRepository.getTokenByAddress(tokenAddress).firstOrNull()
+            it ?: if (tradableId.isNotEmpty())
+                tokenRepository.getTokenByAddress(tradableId).firstOrNull()
             else {
                 walletTokens.firstOrNull()?.firstOrNull()?.tokenData
             } ?: walletRepository.currentChain.firstOrNull()?.nativeToken
         }.asStateIn(viewModelScope, null)
     }
 
-    fun setTokenData(value: TokenData) {
-        _tokenData.value = value
-        walletRepository.setChainType(value.chainType)
+    private val _collectibleData = MutableStateFlow<WalletCollectibleData?>(null)
+    val collectibleData by lazy {
+        _collectibleData.map {
+            it ?: if (tradableId.isNotEmpty())
+                collectibleRepository.getCollectibleById(tradableId).firstOrNull()
+            else {
+                null
+            }
+        }.asStateIn(viewModelScope, null)
+    }
+
+    val tradableData = combine(collectibleData, tokenData) { collectible, token ->
+        collectible ?: token
+    }
+
+    fun setData(value: TradableData) {
+        when (value) {
+            is TokenData -> {
+                _tokenData.value = value
+                _collectibleData.value = null
+                walletRepository.setChainType(value.chainType)
+            }
+            is WalletCollectibleData -> {
+                _collectibleData.value = value
+                _tokenData.value = null
+                walletRepository.setChainType(value.chainType)
+            }
+        }
     }
 
     val walletTokens by lazy {
@@ -68,6 +98,13 @@ class SendTokenDataViewModel(
         ) { wallet, token ->
             wallet.tokens.firstOrNull { it.tokenAddress == token.address }
         }.asStateIn(viewModelScope, null)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val walletCollectibleCollections by lazy {
+        walletRepository.currentWallet.filterNotNull().flatMapLatest {
+            collectibleRepository.getCollectibleCollectionsByWallet(it)
+        }
     }
 
     enum class TransactionType {

@@ -43,6 +43,8 @@ data class WalletCollectibleData(
     val contract: WalletCollectibleContract,
     val collection: WalletCollectibleCollectionData
 ) : TradableData {
+    override fun tradableId() = id
+
     companion object
 }
 
