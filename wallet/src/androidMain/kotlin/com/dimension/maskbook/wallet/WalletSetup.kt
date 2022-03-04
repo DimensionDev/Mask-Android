@@ -58,11 +58,9 @@ import com.dimension.maskbook.wallet.repository.WalletContactRepository
 import com.dimension.maskbook.wallet.repository.WalletRepository
 import com.dimension.maskbook.wallet.repository.walletDataStore
 import com.dimension.maskbook.wallet.route.WalletRoute
-import com.dimension.maskbook.wallet.route.registerRoute
-import com.dimension.maskbook.wallet.route.walletsRoute
+import com.dimension.maskbook.wallet.route.generatedRoute
 import com.dimension.maskbook.wallet.services.WalletServices
 import com.dimension.maskbook.wallet.ui.scenes.persona.BackUpPasswordModal
-import com.dimension.maskbook.wallet.ui.scenes.wallets.send.generatedRoute
 import com.dimension.maskbook.wallet.ui.tab.WalletTabScreen
 import com.dimension.maskbook.wallet.viewmodel.WelcomeViewModel
 import com.dimension.maskbook.wallet.viewmodel.recovery.IdentityViewModel
@@ -123,8 +121,6 @@ object WalletSetup : ModuleSetup {
     @OptIn(ExperimentalMaterialNavigationApi::class)
     override fun NavGraphBuilder.route(navController: NavController) {
         generatedRoute(navController)
-        walletsRoute(navController)
-        registerRoute(navController)
         bottomSheet(
             WalletRoute.BackUpPassword.path,
             arguments = listOf(
