@@ -67,13 +67,13 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.navigationComposeAnimComposable
 import com.dimension.maskbook.common.route.navigationComposeAnimComposablePackage
 import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
 import com.dimension.maskbook.entry.R
 import com.dimension.maskbook.entry.repository.EntryRepository
 import com.dimension.maskbook.entry.route.EntryRoute
+import com.dimension.maskbook.wallet.route.WalletRoute
 import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -176,7 +176,7 @@ fun IntroScene(
                     Button(
                         onClick = {
                             repository.setShouldShowEntry(false)
-                            navController.navigate(CommonRoute.Main.Home(CommonRoute.Main.Tabs.Persona)) {
+                            navController.navigate(WalletRoute.Register.Init) {
                                 popUpTo(EntryRoute.Intro) {
                                     inclusive = true
                                 }
@@ -208,7 +208,7 @@ fun IntroScene(
                     TextButton(
                         onClick = {
                             repository.setShouldShowEntry(false)
-                            navController.navigate(CommonRoute.Main.Home(CommonRoute.Main.Tabs.Persona)) {
+                            navController.navigate(WalletRoute.Register.Init) {
                                 popUpTo(EntryRoute.Intro) {
                                     inclusive = true
                                 }
