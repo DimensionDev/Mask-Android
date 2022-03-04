@@ -50,14 +50,6 @@ class ExtensionRepository(
             onNavigate(it)
         }
         scope.launch {
-            // launch {
-            //     controller.url.collect {
-            //         if (it.site == null) {
-            //             // prevent loading extension page
-            //             controller.loadUrl(_currentSite.value.url)
-            //         }
-            //     }
-            // }
             launch {
                 _currentSite.collect {
                     controller.loadUrl(it.url)

@@ -43,7 +43,6 @@ object Versions {
     const val zxing = "4.3.0"
     const val maskWalletCore = "0.4.0"
     const val jodaTime = "2.10.13"
-    const val gecko = "97.+"
     const val mozilla_components = "98.0.8"
     object Firebase {
         object Plugin {

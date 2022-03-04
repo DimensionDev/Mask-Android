@@ -96,30 +96,6 @@ internal class MessageChannel(
         }
     }
 
-    // suspend fun executeMessage(
-    //     method: String,
-    //     vararg params: String,
-    // ): String? {
-    //     val id = UUID.randomUUID().toString()
-    //     val channel = Channel<String?>()
-    //     try {
-    //         queue[id] = channel
-    //         controller.sendMessage(
-    //             JSONObject(
-    //                 mapOf(
-    //                     "id" to id,
-    //                     "jsonrpc" to "2.0",
-    //                     "method" to method,
-    //                     "params" to JSONArray(params.toList())
-    //                 )
-    //             )
-    //         )
-    //         return channel.receive()
-    //     } finally {
-    //         channel.close()
-    //     }
-    // }
-
     fun subscribeMessage(method: String): Flow<ExtensionMessage?> {
         val flow = MutableStateFlow<ExtensionMessage?>(null)
         subscription.add(method to flow)
