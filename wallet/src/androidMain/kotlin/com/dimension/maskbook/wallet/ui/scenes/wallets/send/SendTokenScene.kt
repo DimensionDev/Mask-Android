@@ -26,7 +26,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,7 +34,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -118,70 +116,73 @@ fun SendTokenScene(
                     .verticalScroll(rememberScrollState())
                     .padding(ScaffoldPadding)
             ) {
-                Text(text = stringResource(R.string.scene_sendTransaction_send_Label_To))
-                Spacer(modifier = Modifier.height(10.dp))
-                AddressContent(
-                    name = addressData.name
-                        .ifNullOrEmpty { addressData.ens }
-                        .ifNullOrEmpty { addressData.address },
-                    isContact = addressData.isContact,
-                    onAddContact = onAddContact
-                )
-                Spacer(modifier = Modifier.height(20.dp))
+                // in order to display NFT
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(text = stringResource(R.string.scene_sendTransaction_send_Label_To))
+                    Spacer(modifier = Modifier.height(10.dp))
+                    AddressContent(
+                        name = addressData.name
+                            .ifNullOrEmpty { addressData.ens }
+                            .ifNullOrEmpty { addressData.address },
+                        isContact = addressData.isContact,
+                        onAddContact = onAddContact
+                    )
+                    Spacer(modifier = Modifier.height(20.dp))
 
-                when (data) {
-                    is TokenData -> TokenContent(
-                        logoUri = data.logoURI ?: "",
-                        tokenName = data.name,
-                        balance = "${balance.humanizeToken()} ${data.symbol} ≈ ${(balance * data.price).humanizeDollar()}",
-                        onClick = onSelectToken
-                    )
-                    is WalletCollectibleData -> CollectibleContent(
-                        logoUri = data.icon,
-                        name = data.name,
-                        collectionName = data.collection.name,
-                        onClick = onSelectToken
-                    )
-                    null -> TokenContent(
-                        onClick = onSelectToken
-                    )
-                }
+                    when (data) {
+                        is TokenData -> TokenContent(
+                            logoUri = data.logoURI ?: "",
+                            tokenName = data.name,
+                            balance = "${balance.humanizeToken()} ${data.symbol} ≈ ${(balance * data.price).humanizeDollar()}",
+                            onClick = onSelectToken
+                        )
+                        is WalletCollectibleData -> CollectibleContent(
+                            logoUri = data.icon,
+                            name = data.name,
+                            collectionName = data.collection.name,
+                            onClick = onSelectToken
+                        )
+                        null -> TokenContent(
+                            onClick = onSelectToken
+                        )
+                    }
 
-                Spacer(modifier = Modifier.height(20.dp))
-                when (data) {
-                    is WalletCollectibleData -> CollectibleDisplayContent(data = data)
-                    else -> AmountContent(
-                        amount = amount,
-                        onValueChanged = {
-                            if (it.toBigDecimalOrNull() != null) {
-                                onAmountChanged.invoke(it)
-                            }
-                        },
-                        onMax = { onAmountChanged.invoke(maxAmount) },
-                        error = amount.toBigDecimal() > maxAmount.toBigDecimal()
-                    )
-                }
+                    Spacer(modifier = Modifier.height(20.dp))
+                    when (data) {
+                        is WalletCollectibleData -> CollectibleDisplayContent(data = data)
+                        else -> AmountContent(
+                            amount = amount,
+                            onValueChanged = {
+                                if (it.toBigDecimalOrNull() != null) {
+                                    onAmountChanged.invoke(it)
+                                }
+                            },
+                            onMax = { onAmountChanged.invoke(maxAmount) },
+                            error = amount.toBigDecimal() > maxAmount.toBigDecimal()
+                        )
+                    }
 
-                Spacer(modifier = Modifier.height(16.dp))
-
-                if (unlockType == UnlockType.PASSWORD) {
-                    PaymentPasswordContent(
-                        pwd = paymentPassword,
-                        onValueChanged = { onPaymentPasswordChanged.invoke(it) },
-                    )
                     Spacer(modifier = Modifier.height(16.dp))
-                }
 
-                if (!sendError.isNullOrEmpty()) {
-                    Spacer(modifier = Modifier.padding(end = 8.dp))
-                    Text(text = sendError, color = MaterialTheme.colors.error)
-                }
+                    if (unlockType == UnlockType.PASSWORD) {
+                        PaymentPasswordContent(
+                            pwd = paymentPassword,
+                            onValueChanged = { onPaymentPasswordChanged.invoke(it) },
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
 
-                GasFeeContent(
-                    fee = gasFee,
-                    arrivesTimes = arrivesIn,
-                    onChangeGasFee = onEditGasFee
-                )
+                    if (!sendError.isNullOrEmpty()) {
+                        Spacer(modifier = Modifier.padding(end = 8.dp))
+                        Text(text = sendError, color = MaterialTheme.colors.error)
+                    }
+
+                    GasFeeContent(
+                        fee = gasFee,
+                        arrivesTimes = arrivesIn,
+                        onChangeGasFee = onEditGasFee
+                    )
+                }
 
                 SendButton(
                     unlockType = unlockType,
@@ -281,11 +282,11 @@ private fun CollectibleContent(
 }
 
 @Composable
-private fun ColumnScope.CollectibleDisplayContent(
+private fun CollectibleDisplayContent(
     data: WalletCollectibleData
 ) {
     CollectibleCard(
-        modifier = Modifier.clip(RoundedCornerShape(12.dp)).wrapContentHeight(),
+        modifier = Modifier.clip(RoundedCornerShape(12.dp)),
         data = data
     )
 }
@@ -378,12 +379,11 @@ private fun GasFeeContent(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun ColumnScope.SendButton(
+private fun SendButton(
     unlockType: UnlockType,
     onSend: (UnlockType) -> Unit,
     canConfirm: Boolean,
 ) {
-    Spacer(modifier = Modifier.weight(1f))
     when (unlockType) {
         UnlockType.BIOMETRIC -> {
             // TODO Biometrics Replace UI
