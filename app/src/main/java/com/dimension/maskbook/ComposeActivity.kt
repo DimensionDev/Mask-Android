@@ -28,6 +28,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.platform.LocalDensity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -37,6 +38,7 @@ import coil.compose.LocalImageLoader
 import coil.decode.SvgDecoder
 import com.dimension.maskbook.common.gecko.WebContentController
 import com.dimension.maskbook.common.ui.widget.LocalWindowInsetsController
+import com.dimension.maskbook.common.util.autoSizeDensity
 import com.dimension.maskbook.entry.ui.App
 import com.google.accompanist.insets.ProvideWindowInsets
 import org.koin.android.ext.android.get
@@ -70,6 +72,7 @@ class ComposeActivity : FragmentActivity() {
                     add(SvgDecoder(this@ComposeActivity))
                 }.build(),
                 LocalWindowInsetsController provides windowInsetsControllerCompat,
+                LocalDensity provides autoSizeDensity(this, 375),
             ) {
                 ProvideWindowInsets(
                     windowInsetsAnimationsEnabled = true
