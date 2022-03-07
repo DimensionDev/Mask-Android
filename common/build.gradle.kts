@@ -26,6 +26,7 @@ kotlin {
                 api(projects.labs.export)
                 api(projects.persona.export)
                 api(projects.setting.export)
+                api(projects.extension.export)
                 api(projects.localization)
 
                 // Compose

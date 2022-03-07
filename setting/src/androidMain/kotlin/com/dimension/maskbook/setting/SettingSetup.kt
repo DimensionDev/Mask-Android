@@ -27,6 +27,7 @@ import com.dimension.maskbook.common.ModuleSetup
 import com.dimension.maskbook.common.retrofit.retrofit
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.setting.data.JSDataSource
+import com.dimension.maskbook.setting.data.JSMethod
 import com.dimension.maskbook.setting.data.SettingDataSource
 import com.dimension.maskbook.setting.data.settingsDataStore
 import com.dimension.maskbook.setting.export.SettingServices
@@ -55,8 +56,8 @@ import org.koin.dsl.module
 import org.koin.mp.KoinPlatformTools
 
 object SettingSetup : ModuleSetup {
-    override fun NavGraphBuilder.route(navController: NavController, onFinish: () -> Unit) {
-        generatedRoute(navController, onFinish = onFinish)
+    override fun NavGraphBuilder.route(navController: NavController) {
+        generatedRoute(navController)
     }
 
     override fun dependencyInject() = module {
@@ -64,12 +65,13 @@ object SettingSetup : ModuleSetup {
             retrofit("https://vaalh28dbi.execute-api.ap-east-1.amazonaws.com")
         }
         single<ISettingsRepository> {
-            SettingsRepository(get(), get(), get())
+            SettingsRepository(get(), get(), get(), get())
         }
         single { BackupRepository(get(), get<Context>().cacheDir, get<Context>().contentResolver) }
         single<SettingServices> { SettingServicesImpl(get(), get()) } bind com.dimension.maskbook.setting.export.BackupServices::class
         single { SettingsTabScreen() } bind TabScreen::class
-        single { JSDataSource() }
+        single { JSDataSource(get()) }
+        single { JSMethod(get()) }
         single { SettingDataSource(get<Context>().settingsDataStore) }
 
         viewModel { LanguageSettingsViewModel(get()) }

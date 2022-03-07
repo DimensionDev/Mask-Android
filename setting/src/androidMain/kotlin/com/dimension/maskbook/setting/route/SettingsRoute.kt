@@ -723,7 +723,7 @@ fun SettingsChangePhoneChangeNew(
                     navController.navigate(
                         SettingRoute.Settings_ChangePhone.Settings_ChangePhone_Change_New_Code(code)
                     ) {
-                        popUpTo(CommonRoute.Main.Home) {
+                        popUpTo(CommonRoute.Main.Home.path) {
                             inclusive = false
                         }
                     }

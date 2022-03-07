@@ -24,6 +24,10 @@ import com.dimension.maskbook.common.routeProcessor.annotations.Route
 
 @Route
 expect object WalletRoute {
+    object SendTokenConfirm {
+        operator fun invoke(data: String): String
+    }
+
     object BackUpPassword {
         operator fun invoke(target: String): String
     }

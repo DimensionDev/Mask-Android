@@ -20,9 +20,9 @@
  */
 package com.dimension.maskbook.setting.repository
 
-import com.dimension.maskbook.common.repository.JSMethod
 import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.setting.data.JSDataSource
+import com.dimension.maskbook.setting.data.JSMethod
 import com.dimension.maskbook.setting.data.SettingDataSource
 import com.dimension.maskbook.setting.export.model.Appearance
 import com.dimension.maskbook.setting.export.model.BackupMeta
@@ -34,10 +34,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 
-class SettingsRepository(
+internal class SettingsRepository(
     private val personaServices: PersonaServices,
     private val settingDataSource: SettingDataSource,
     private val jsDataSource: JSDataSource,
+    private val jsMethod: JSMethod,
 ) : ISettingsRepository {
     private val scope = CoroutineScope(Dispatchers.IO)
     override val biometricEnabled: Flow<Boolean>
@@ -90,8 +91,8 @@ class SettingsRepository(
     }
 
     override suspend fun provideBackupMeta(): BackupMeta? {
-        return JSMethod.Setting.createBackupJson().let { json ->
-            JSMethod.Setting.getBackupPreviewInfo(json)?.let {
+        return jsMethod.createBackupJson().let { json ->
+            jsMethod.getBackupPreviewInfo(json)?.let {
                 BackupMeta(
                     personas = it.personas,
                     associatedAccount = it.accounts,
@@ -107,7 +108,7 @@ class SettingsRepository(
     }
 
     override suspend fun provideBackupMetaFromJson(value: String): BackupMeta? {
-        return JSMethod.Setting.getBackupPreviewInfo(value)?.let {
+        return jsMethod.getBackupPreviewInfo(value)?.let {
             BackupMeta(
                 personas = it.personas,
                 associatedAccount = it.accounts,
@@ -122,7 +123,7 @@ class SettingsRepository(
     }
 
     override suspend fun restoreBackupFromJson(value: String) {
-        JSMethod.Setting.restoreBackup(value)
+        jsMethod.restoreBackup(value)
         jsDataSource.initData()
         personaServices.refreshPersonaData()
     }
@@ -134,7 +135,7 @@ class SettingsRepository(
         noProfiles: Boolean,
         hasPrivateKeyOnly: Boolean
     ): String {
-        return JSMethod.Setting.createBackupJson(
+        return jsMethod.createBackupJson(
             noPosts, noWallets, noPersonas, noProfiles, hasPrivateKeyOnly
         )
     }

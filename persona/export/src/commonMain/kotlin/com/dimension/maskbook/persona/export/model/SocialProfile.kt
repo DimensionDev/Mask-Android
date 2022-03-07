@@ -43,7 +43,7 @@ class SocialProfile private constructor(
     }
 
     override fun toString(): String {
-        return "${Prefix}$network/$userId"
+        return "${Prefix}${network.value}/$userId"
     }
 
     fun copy(network: Network? = null, userId: String? = null): SocialProfile {

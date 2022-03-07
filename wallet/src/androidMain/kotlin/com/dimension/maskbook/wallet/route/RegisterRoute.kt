@@ -26,7 +26,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -38,7 +37,6 @@ import androidx.navigation.navOptions
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
-import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ui.scenes.register.CreatePersonaModal
 import com.dimension.maskbook.wallet.ui.scenes.register.CreatePersonaScene
@@ -56,8 +54,6 @@ import com.dimension.maskbook.wallet.viewmodel.recovery.PrivateKeyViewModel
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.bottomSheet
-import kotlinx.coroutines.flow.distinctUntilChanged
-import org.koin.androidx.compose.get
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -68,24 +64,6 @@ fun NavGraphBuilder.registerRoute(
     composable(
         WalletRoute.Register.Init,
     ) {
-        val repository = get<PersonaServices>()
-        val persona by repository.currentPersona.observeAsState(initial = null)
-        LaunchedEffect(Unit) {
-            snapshotFlow { persona }
-                .distinctUntilChanged()
-                .collect {
-                    if (it != null) {
-                        navController.navigate(
-                            Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona)),
-                            navOptions {
-                                popUpTo(WalletRoute.Register.Init) {
-                                    inclusive = true
-                                }
-                            }
-                        )
-                    }
-                }
-        }
         RegisterScene(
             onCreateIdentity = {
                 navController.navigate(WalletRoute.Register.WelcomeCreatePersona)
@@ -110,7 +88,7 @@ fun NavGraphBuilder.registerRoute(
                     Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona)),
                     navOptions = navOptions {
                         launchSingleTop = true
-                        popUpTo(CommonRoute.Main.Home) {
+                        popUpTo(CommonRoute.Main.Home.path) {
                             inclusive = false
                         }
                     }
