@@ -79,12 +79,12 @@ class WebContentController(
                     return null
                 }
                 return if (onNavigate(uri)) {
-                    null
-                } else {
                     RequestInterceptor.InterceptionResponse.AppIntent(
                         Intent(Intent.ACTION_VIEW, Uri.parse(uri)),
                         uri
                     )
+                } else {
+                    null
                 }
             }
         }
