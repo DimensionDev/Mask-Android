@@ -38,6 +38,7 @@ import com.dimension.maskbook.wallet.export.model.WalletData
 import com.dimension.maskbook.wallet.export.model.WalletTokenData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonPrimitive
 import org.web3j.protocol.http.HttpService
 
 data class WalletCreateOrImportResult(
@@ -208,12 +209,12 @@ data class DWebData(
     val chainType: ChainType,
 )
 
+@Serializable
 data class SendTokenConfirmData(
     val data: SendTransactionData,
-    val id: Any,
-    val onDone: (String?) -> Unit,
-    val onCancel: () -> Unit,
-    val onError: (Throwable) -> Unit,
+    val messageId: String,
+    val payloadId: JsonPrimitive,
+    val jsonrpc: String,
 )
 
 data class ChainData(

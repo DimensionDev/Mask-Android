@@ -25,9 +25,12 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import com.dimension.maskbook.common.ModuleSetup
 import com.dimension.maskbook.common.ui.tab.TabScreen
+import com.dimension.maskbook.persona.data.JSMethod
 import com.dimension.maskbook.persona.export.PersonaServices
+import com.dimension.maskbook.persona.export.model.ConnectAccountData
 import com.dimension.maskbook.persona.repository.IContactsRepository
 import com.dimension.maskbook.persona.repository.IPersonaRepository
+import com.dimension.maskbook.persona.repository.ISocialsRepository
 import com.dimension.maskbook.persona.repository.PersonaRepository
 import com.dimension.maskbook.persona.repository.personaDataStore
 import com.dimension.maskbook.persona.ui.scenes.generatedRoute
@@ -51,22 +54,25 @@ import org.koin.mp.KoinPlatformTools
 
 object PersonaSetup : ModuleSetup {
 
-    override fun NavGraphBuilder.route(navController: NavController, onFinish: () -> Unit) {
-        generatedRoute(navController, onFinish = onFinish)
+    override fun NavGraphBuilder.route(navController: NavController) {
+        generatedRoute(navController)
     }
 
     override fun dependencyInject() = module {
         single {
-            PersonaRepository(get<Context>().personaDataStore, get())
+            PersonaRepository(get<Context>().personaDataStore, get(), get())
         } binds arrayOf(
             IPersonaRepository::class,
-            IContactsRepository::class
+            ISocialsRepository::class,
+            IContactsRepository::class,
         )
+
+        single { JSMethod(get()) }
 
         single<PersonaServices> { PersonaServicesImpl(get()) }
         single { PersonasTabScreen() } bind TabScreen::class
 
-        viewModel { PersonaViewModel(get()) }
+        viewModel { PersonaViewModel(get(), get()) }
         viewModel { TwitterSocialViewModel(get()) }
         viewModel { FacebookSocialViewModel(get()) }
         viewModel { TwitterConnectSocialViewModel(get()) }
@@ -76,7 +82,14 @@ object PersonaSetup : ModuleSetup {
         viewModel { (personaId: String) -> RenamePersonaViewModel(get(), personaId) }
         viewModel { ExportPrivateKeyViewModel(get()) }
         viewModel { PostViewModel(get(), get()) }
-        viewModel { ContactsViewModel(get(), get()) }
+        viewModel { ContactsViewModel(get()) }
+
+        viewModel { (data: ConnectAccountData) ->
+            com.dimension.maskbook.persona.viewmodel.social.UserNameModalViewModel(
+                get(),
+                data
+            )
+        }
     }
 
     override fun onExtensionReady() {

@@ -20,9 +20,11 @@
  */
 package com.dimension.maskbook.wallet.viewmodel.register
 
+import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.wallet.repository.IWalletRepository
 import com.dimension.maskbook.wallet.viewmodel.base.BaseMnemonicPhraseViewModel
+import kotlinx.coroutines.launch
 
 class CreateIdentityViewModel(
     private val personaName: String,
@@ -35,6 +37,8 @@ class CreateIdentityViewModel(
     }
 
     override fun confirm() {
-        personaServices.createPersonaFromMnemonic(_words.value.map { it.word }, personaName)
+        viewModelScope.launch {
+            personaServices.createPersonaFromMnemonic(_words.value.map { it.word }, personaName)
+        }
     }
 }

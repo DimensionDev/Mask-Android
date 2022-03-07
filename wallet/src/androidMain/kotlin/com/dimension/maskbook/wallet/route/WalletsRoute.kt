@@ -420,7 +420,7 @@ fun NavGraphBuilder.walletsRoute(
                     Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Wallet)),
                     navOptions {
                         launchSingleTop = true
-                        popUpTo(CommonRoute.Main.Home) {
+                        popUpTo(CommonRoute.Main.Home.path) {
                             inclusive = false
                         }
                     }
@@ -649,7 +649,7 @@ fun NavGraphBuilder.walletsRoute(
                         Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Wallet)),
                         navOptions = navOptions {
                             launchSingleTop = true
-                            popUpTo(CommonRoute.Main.Home) {
+                            popUpTo(CommonRoute.Main.Home.path) {
                                 inclusive = false
                             }
                         }
@@ -674,7 +674,7 @@ fun NavGraphBuilder.walletsRoute(
                         Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Wallet)),
                         navOptions = navOptions {
                             launchSingleTop = true
-                            popUpTo(CommonRoute.Main.Home) {
+                            popUpTo(CommonRoute.Main.Home.path) {
                                 inclusive = false
                             }
                         }
@@ -692,7 +692,7 @@ fun NavGraphBuilder.walletsRoute(
         )
     ) {
         SendTokenHost(
-            tradableId = it.arguments?.getString("tradableId")?.let { if (it == "null") null else it }.orEmpty(),
+            tradableId = it.arguments?.getString("tradableId")?.let { if (it != "null") it else null }.orEmpty(),
             onBack = {
                 navController.popBackStack()
             },

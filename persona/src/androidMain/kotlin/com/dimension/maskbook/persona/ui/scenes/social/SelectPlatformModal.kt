@@ -46,7 +46,9 @@ import com.dimension.maskbook.persona.export.model.Network
 import com.dimension.maskbook.persona.model.icon
 import com.dimension.maskbook.persona.model.platform
 import com.dimension.maskbook.persona.model.title
+import com.dimension.maskbook.persona.repository.IPersonaRepository
 import com.dimension.maskbook.persona.route.PersonaRoute
+import org.koin.androidx.compose.get
 
 private val items = listOf(
     Network.Twitter,
@@ -63,6 +65,7 @@ fun SelectPlatformModal(
     navController: NavController,
     @Path("personaId") personaId: String,
 ) {
+    val repository = get<IPersonaRepository>()
     MaskModal(
         title = {
             Text(
@@ -82,8 +85,11 @@ fun SelectPlatformModal(
                         modifier = Modifier.size(SelectPlatformModalDefaults.itemSize),
                         onClick = {
                             item.platform?.let {
-                                navController.navigate(
-                                    PersonaRoute.ConnectSocial(personaId, it.name)
+                                connectSocial(
+                                    controller = navController,
+                                    personaId = personaId,
+                                    platform = it,
+                                    repository = repository
                                 )
                             }
                         },

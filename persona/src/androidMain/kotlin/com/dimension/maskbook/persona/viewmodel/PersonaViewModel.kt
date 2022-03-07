@@ -24,37 +24,25 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.persona.repository.IPersonaRepository
+import com.dimension.maskbook.persona.repository.ISocialsRepository
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 
 class PersonaViewModel(
-    private val repository: IPersonaRepository
+    private val personaRepository: IPersonaRepository,
+    private val socialRepository: ISocialsRepository,
 ) : ViewModel() {
 
     val currentPersona by lazy {
-        repository.currentPersona.asStateIn(viewModelScope, null)
+        personaRepository.currentPersona
+            .asStateIn(viewModelScope, null)
     }
 
     val socialList by lazy {
-        combine(
-            currentPersona,
-            repository.twitter,
-            repository.facebook
-        ) { persona, twitterList, facebookList ->
-            val isEmpty = twitterList.isEmpty() && facebookList.isEmpty()
-            if (isEmpty) {
-                return@combine emptyList()
-            }
-
-            val allList = twitterList + facebookList
-            if (persona == null) {
-                return@combine allList
-            }
-
-            allList.filter { it.personaId == persona.id }
-        }.flowOn(Dispatchers.IO).asStateIn(viewModelScope, null)
+        socialRepository.socials
+            .flowOn(Dispatchers.IO)
+            .asStateIn(viewModelScope, null)
     }
 
     init {

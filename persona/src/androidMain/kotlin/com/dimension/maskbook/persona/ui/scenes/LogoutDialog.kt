@@ -82,7 +82,7 @@ fun LogoutDialog(
                     modifier = Modifier.weight(1f),
                     onClick = {
                         repository.logout()
-                        navController.popBackStack(CommonRoute.Main.Home, inclusive = false)
+                        navController.popBackStack(CommonRoute.Main.Home.path, inclusive = false)
                     },
                 ) {
                     Text(text = stringResource(R.string.common_controls_confirm))

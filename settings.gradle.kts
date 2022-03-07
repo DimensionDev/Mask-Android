@@ -23,6 +23,8 @@ rootProject.name = "Mask"
 include(
     ":app",
     ":common",
+    ":common:gecko",
+    ":common:gecko:sample",
     ":common:okhttp",
     ":common:retrofit",
     ":common:routeProcessor",
@@ -38,6 +40,9 @@ include(
     ":persona:export",
     ":setting",
     ":setting:export",
+    ":extension",
+    ":extension:export",
+    ":entry",
 )
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")

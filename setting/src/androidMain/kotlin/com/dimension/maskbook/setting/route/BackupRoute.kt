@@ -52,6 +52,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.route.Deeplinks
+import com.dimension.maskbook.common.route.navigationComposeAnimComposable
+import com.dimension.maskbook.common.route.navigationComposeAnimComposablePackage
 import com.dimension.maskbook.common.route.navigationComposeBottomSheet
 import com.dimension.maskbook.common.route.navigationComposeBottomSheetPackage
 import com.dimension.maskbook.common.route.navigationComposeDialog
@@ -156,6 +158,8 @@ fun BackupDataCloudFailed(
 
 @NavGraphDestination(
     route = SettingRoute.BackupData.BackupData_BackupCloud.path,
+    packageName = navigationComposeAnimComposablePackage,
+    functionName = navigationComposeAnimComposable,
 )
 @Composable
 fun BackupDataBackupCould(
@@ -182,6 +186,8 @@ fun BackupDataBackupCould(
 
 @NavGraphDestination(
     route = SettingRoute.BackupData.BackupData_BackupCloud_Execute.path,
+    packageName = navigationComposeAnimComposablePackage,
+    functionName = navigationComposeAnimComposable,
 )
 @Composable
 fun BackupDataBackupCouldExecute(
@@ -536,11 +542,7 @@ fun BackupSelectionEmail(
                     }
                     .onFailure {
                         navController.navigate(
-                            SettingRoute.BackupData.BackupData_BackupCloud(
-                                "email",
-                                email,
-                                code
-                            )
+                            SettingRoute.BackupData.BackupData_Cloud_Failed
                         )
                     }
             }
@@ -629,11 +631,7 @@ fun BackupSelectionPhone(
                     }
                     .onFailure {
                         navController.navigate(
-                            SettingRoute.BackupData.BackupData_BackupCloud(
-                                "phone",
-                                phone,
-                                code
-                            )
+                            SettingRoute.BackupData.BackupData_Cloud_Failed
                         )
                     }
             }

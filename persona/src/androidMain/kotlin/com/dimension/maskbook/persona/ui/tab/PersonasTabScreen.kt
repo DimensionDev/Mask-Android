@@ -30,8 +30,11 @@ import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.export.model.Network
 import com.dimension.maskbook.persona.export.model.PlatformType
+import com.dimension.maskbook.persona.repository.IPersonaRepository
 import com.dimension.maskbook.persona.route.PersonaRoute
 import com.dimension.maskbook.persona.ui.scenes.PersonaScene
+import com.dimension.maskbook.persona.ui.scenes.social.connectSocial
+import org.koin.androidx.compose.get
 
 class PersonasTabScreen : TabScreen {
     override val route = CommonRoute.Main.Tabs.Persona
@@ -42,6 +45,7 @@ class PersonasTabScreen : TabScreen {
     @Composable
     override fun Content(onBack: () -> Unit) {
         val rootNavController = LocalRootNavController.current
+        val repository = get<IPersonaRepository>()
         PersonaScene(
             onBack = onBack,
             onPersonaCreateClick = {
@@ -62,7 +66,12 @@ class PersonasTabScreen : TabScreen {
                 if (platform == null) {
                     rootNavController.navigate(PersonaRoute.SelectPlatform(persona.id))
                 } else {
-                    rootNavController.navigate(PersonaRoute.ConnectSocial(persona.id, platform.name))
+                    connectSocial(
+                        controller = rootNavController,
+                        personaId = persona.id,
+                        platform = platform,
+                        repository = repository
+                    )
                 }
             },
             onRemoveSocialClick = { persona, social ->

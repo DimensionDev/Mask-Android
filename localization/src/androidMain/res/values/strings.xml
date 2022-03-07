@@ -160,6 +160,8 @@
     <string name="scene_setting_backup_recovery_title">Backup &amp; Recovery</string>
     <string name="scene_setting_backup_recovery_back_up_data">Back Up Data</string>
     <string name="scene_setting_backup_recovery_change_backup_password">Change Backup Password</string>
+    <string name="scene_setting_backup_recovery_persona_already_exits_title">The persona already existed.</string>
+    <string name="scene_setting_backup_recovery_persona_already_exits_desc">The persona that corresponds with the %s already existed.</string>
     <string name="scene_setting_general_appearance">Appearance</string>
     <string name="scene_setting_general_unlock_wallet_with_touch_id">Unlock wallet with Touch ID</string>
     <string name="scene_setting_general_unlock_wallet_with_face_id">Unlock wallet with Face ID</string>
@@ -316,7 +318,9 @@
     <string name="scene_identity_create_description">Write down each word.</string>
     <string name="scene_identity_create_title">Verify identity code</string>
     <string name="scene_persona_contacts_empty_contacts_tips">You don’t have encrypted friends. \nInvite friends to download Mask Network.</string>
+    <string name="scene_persona_contacts_search_account">Search account name/ID</string>
     <string name="scene_persona_contacts_contact">Contact</string>
+    <string name="scene_persona_contacts_empty_search_tips">No contact found. This account is not\ncaptured on Timeline.</string>
     <string name="scene_persona_contacts_delete">Confirm to delete </string>
     <string name="scene_wallet_rename_rename_button">Rename</string>
     <string name="scene_wallet_rename_name_title">Wallet name</string>

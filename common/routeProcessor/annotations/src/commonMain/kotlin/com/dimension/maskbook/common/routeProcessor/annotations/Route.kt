@@ -58,7 +58,3 @@ annotation class Navigate(
 @Retention(AnnotationRetention.SOURCE)
 @Target(AnnotationTarget.VALUE_PARAMETER)
 annotation class Back
-
-@Retention(AnnotationRetention.SOURCE)
-@Target(AnnotationTarget.VALUE_PARAMETER)
-annotation class Finish

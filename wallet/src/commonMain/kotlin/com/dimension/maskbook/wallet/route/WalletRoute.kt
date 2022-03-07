@@ -24,6 +24,10 @@ import com.dimension.maskbook.common.routeProcessor.annotations.Route
 
 @Route
 expect object WalletRoute {
+    object SendTokenConfirm {
+        operator fun invoke(data: String): String
+    }
+
     object BackUpPassword {
         operator fun invoke(target: String): String
     }
@@ -155,6 +159,9 @@ expect object WalletRoute {
             }
             val PrivateKey: String
             val Complected: String
+            object AlreadyExists {
+                operator fun invoke(restoreFrom: String): String
+            }
         }
     }
 }

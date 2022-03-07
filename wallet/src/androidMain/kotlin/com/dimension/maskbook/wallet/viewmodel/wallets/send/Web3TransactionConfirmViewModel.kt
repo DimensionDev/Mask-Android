@@ -24,6 +24,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.common.ext.asStateIn
+import com.dimension.maskbook.extension.export.ExtensionServices
+import com.dimension.maskbook.extension.export.model.ExtensionResponseMessage
 import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.ext.hexWei
 import com.dimension.maskbook.wallet.repository.ISendHistoryRepository
@@ -41,6 +43,7 @@ class Web3TransactionConfirmViewModel(
     private val data: SendTokenConfirmData,
     private val sendHistoryRepository: ISendHistoryRepository,
     private val walletRepository: IWalletRepository,
+    private val extensionServices: ExtensionServices,
 ) : ViewModel() {
 
     val chainType = data.data.chainId?.let { chainId ->
@@ -66,10 +69,35 @@ class Web3TransactionConfirmViewModel(
                 maxPriorityFee = maxPriorityFee,
                 data = data.data.data ?: "",
                 onDone = {
-                    data.onDone.invoke(it)
+                    it?.let {
+                        extensionServices.sendJSEventResponse(
+                            ExtensionResponseMessage.success(
+                                data.messageId,
+                                data.jsonrpc,
+                                data.payloadId,
+                                it
+                            )
+                        )
+                    } ?: run {
+                        extensionServices.sendJSEventResponse(
+                            ExtensionResponseMessage.error(
+                                data.messageId,
+                                data.jsonrpc,
+                                data.payloadId,
+                                "Failed to send transaction"
+                            )
+                        )
+                    }
                 },
                 onError = {
-                    data.onError.invoke(it)
+                    extensionServices.sendJSEventResponse(
+                        ExtensionResponseMessage.error(
+                            data.messageId,
+                            data.jsonrpc,
+                            data.payloadId,
+                            it.message ?: "Failed to send transaction"
+                        )
+                    )
                 }
             )
         }
@@ -102,6 +130,13 @@ class Web3TransactionConfirmViewModel(
     }
 
     fun cancel() {
-        data.onCancel
+        extensionServices.sendJSEventResponse(
+            ExtensionResponseMessage.error(
+                data.messageId,
+                data.jsonrpc,
+                data.payloadId,
+                "Transaction cancelled"
+            )
+        )
     }
 }
