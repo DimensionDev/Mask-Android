@@ -28,6 +28,7 @@ import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.labs.R
 import com.dimension.maskbook.labs.export.model.AppKey
 import com.dimension.maskbook.labs.repository.IAppRepository
+import com.dimension.maskbook.labs.repository.IPreferenceRepository
 import com.dimension.maskbook.wallet.export.WalletServices
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOn
@@ -96,6 +97,7 @@ private val displayDataList = listOf(
 class PluginSettingsViewModel(
     private val repository: IAppRepository,
     private val walletRepository: WalletServices,
+    private val preferenceRepository: IPreferenceRepository,
 ) : ViewModel() {
 
     val apps by lazy {
@@ -117,5 +119,14 @@ class PluginSettingsViewModel(
 
     fun setEnabled(key: AppKey, enabled: Boolean) {
         repository.setEnabled(key, enabled)
+    }
+
+    val shouldShowPluginSettingsTipDialog by lazy {
+        preferenceRepository.shouldShowPluginSettingsTipDialog
+            .asStateIn(viewModelScope, false)
+    }
+
+    fun setShowPluginSettingsTipDialog(bool: Boolean) {
+        preferenceRepository.setShowPluginSettingsTipDialog(bool)
     }
 }

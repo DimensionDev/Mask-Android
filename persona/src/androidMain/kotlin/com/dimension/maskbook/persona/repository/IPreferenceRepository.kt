@@ -18,8 +18,13 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.common
+package com.dimension.maskbook.persona.repository
 
-const val navHostAnimationDurationMillis = 320
+import kotlinx.coroutines.flow.Flow
 
-const val IoScopeName = "IoScope"
+interface IPreferenceRepository {
+    val shouldShowEmptySocialTipDialog: Flow<Boolean>
+    fun setShowEmptySocialTipDialog(bool: Boolean)
+    val shouldShowContactsTipDialog: Flow<Boolean>
+    fun setShowContactsTipDialog(bool: Boolean)
+}

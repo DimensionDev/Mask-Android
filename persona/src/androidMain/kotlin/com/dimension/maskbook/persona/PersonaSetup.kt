@@ -23,6 +23,7 @@ package com.dimension.maskbook.persona
 import android.content.Context
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import com.dimension.maskbook.common.IoScopeName
 import com.dimension.maskbook.common.ModuleSetup
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.persona.data.JSMethod
@@ -30,8 +31,10 @@ import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.persona.export.model.ConnectAccountData
 import com.dimension.maskbook.persona.repository.IContactsRepository
 import com.dimension.maskbook.persona.repository.IPersonaRepository
+import com.dimension.maskbook.persona.repository.IPreferenceRepository
 import com.dimension.maskbook.persona.repository.ISocialsRepository
 import com.dimension.maskbook.persona.repository.PersonaRepository
+import com.dimension.maskbook.persona.repository.PreferenceRepository
 import com.dimension.maskbook.persona.repository.personaDataStore
 import com.dimension.maskbook.persona.ui.scenes.generatedRoute
 import com.dimension.maskbook.persona.ui.tab.PersonasTabScreen
@@ -47,6 +50,7 @@ import com.dimension.maskbook.persona.viewmodel.social.FacebookSocialViewModel
 import com.dimension.maskbook.persona.viewmodel.social.TwitterConnectSocialViewModel
 import com.dimension.maskbook.persona.viewmodel.social.TwitterSocialViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.binds
 import org.koin.dsl.module
@@ -66,6 +70,9 @@ object PersonaSetup : ModuleSetup {
             ISocialsRepository::class,
             IContactsRepository::class,
         )
+        single<IPreferenceRepository> {
+            PreferenceRepository(get<Context>().personaDataStore, get(named(IoScopeName)))
+        }
 
         single { JSMethod(get()) }
 

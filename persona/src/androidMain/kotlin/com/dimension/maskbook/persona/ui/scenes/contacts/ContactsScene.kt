@@ -47,6 +47,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -55,12 +56,15 @@ import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.common.ui.widget.MaskListItem
 import com.dimension.maskbook.common.ui.widget.MaskSearchInput
 import com.dimension.maskbook.common.ui.widget.NameImage
+import com.dimension.maskbook.common.ui.widget.TipMessageDialog
 import com.dimension.maskbook.common.ui.widget.button.MaskButton
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.model.ContactData
 import com.dimension.maskbook.persona.model.icon
+import com.dimension.maskbook.persona.repository.IPreferenceRepository
 import com.dimension.maskbook.persona.viewmodel.contacts.ContactsViewModel
+import org.koin.androidx.compose.get
 import org.koin.androidx.compose.getViewModel
 
 @OptIn(ExperimentalAnimationApi::class)
@@ -71,6 +75,9 @@ fun ContactsScene() {
     val viewModel: ContactsViewModel = getViewModel()
     val items by viewModel.items.collectAsState()
     val input by viewModel.input.collectAsState()
+
+    val preferenceRepository = get<IPreferenceRepository>()
+    val shouldShowContactsTipDialog by preferenceRepository.shouldShowContactsTipDialog.collectAsState(initial = false)
 
     fun onInvite() {
         context.startActivity(
@@ -105,37 +112,56 @@ fun ContactsScene() {
         return
     }
 
-    Column(
-        modifier = Modifier.padding(horizontal = 23.dp),
-    ) {
-        Spacer(Modifier.height(24.dp))
-        MaskSearchInput(
-            value = input,
-            onValueChanged = { viewModel.onInputChanged(it) },
-            placeholder = {
-                Text(text = stringResource(R.string.scene_persona_contacts_search_account))
+    Box {
+        Column(
+            modifier = Modifier.padding(horizontal = 23.dp),
+        ) {
+            Spacer(Modifier.height(24.dp))
+            MaskSearchInput(
+                value = input,
+                onValueChanged = { viewModel.onInputChanged(it) },
+                placeholder = {
+                    Text(text = stringResource(R.string.scene_persona_contacts_search_account))
+                }
+            )
+            AnimatedContent(items.isEmpty()) { isEmpty ->
+                if (isEmpty) {
+                    ContactsEmptyScene(
+                        icon = {
+                            Image(
+                                painterResource(id = R.drawable.ic_contacts_search_empty),
+                                contentDescription = null,
+                                modifier = Modifier.size(64.dp),
+                            )
+                        },
+                        text = {
+                            Text(text = stringResource(R.string.scene_persona_contacts_empty_search_tips))
+                        }
+                    )
+                } else {
+                    ContactsScene(
+                        items = items,
+                        onItemClick = { onInvite() }
+                    )
+                }
             }
-        )
-        AnimatedContent(items.isEmpty()) { isEmpty ->
-            if (isEmpty) {
-                ContactsEmptyScene(
-                    icon = {
-                        Image(
-                            painterResource(id = R.drawable.ic_contacts_search_empty),
-                            contentDescription = null,
-                            modifier = Modifier.size(64.dp),
-                        )
-                    },
-                    text = {
-                        Text(text = stringResource(R.string.scene_persona_contacts_empty_search_tips))
-                    }
-                )
-            } else {
-                ContactsScene(
-                    items = items,
-                    onItemClick = { onInvite() }
-                )
-            }
+        }
+
+        if (shouldShowContactsTipDialog) {
+            TipMessageDialog(
+                modifier = Modifier
+                    .padding(horizontal = 22.5f.dp, vertical = 24.dp)
+                    .align(Alignment.BottomCenter),
+                onClose = {
+                    preferenceRepository.setShowContactsTipDialog(false)
+                },
+                text = {
+                    Text(
+                        text = stringResource(R.string.scene_persona_contacts_message_tips),
+                        color = Color.White,
+                    )
+                }
+            )
         }
     }
 }
