@@ -508,6 +508,7 @@
         "persona_contacts": {
             "empty_contacts_tips": "You don’t have encrypted friends. \nInvite friends to download Mask Network.",
             "empty_search_tips": "No contact found. This account is not\ncaptured on Timeline.",
+            "message_tips": "Contacts are accounts that are captured in real-time on timeline when you browse Twitter or Facebook.",
             "search_account": "Search account name/ID",
             "delete": "Confirm to delete ",
             "contact": "Contact"
@@ -520,6 +521,10 @@
             "connect_to": "Connect To %s",
             "disconnect": "Disconnect",
             "accounts": "Accounts"
+        },
+        "persona_empty": {
+            "connect_social": "Connect Social accounts",
+            "message_tips": "Select the social account to connect your persona. Enjoy a web 3.0 social expereince."
         },
         "wallet_balance": {
             "btn_swap": "Swap",
@@ -780,6 +785,10 @@
         },
         "scan_qr_code": {
             "title": "Scan QR Code"
+        },
+        "plugin_settings": {
+            "title": "Plugin Settings",
+            "message_tips": "If you turn off a plugin, the plugin function can no longer be rendered on timeline when browsing social media."
         }
     },
     "chain": {

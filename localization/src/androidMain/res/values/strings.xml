@@ -103,6 +103,8 @@
     <string name="common_alert_identity_create_description">Please don’t forget your identity code. Your identity code is the only proof of your user identity and the only basis for you to encrypt or decrypt social activities. </string>
     <string name="common_alert_identity_create_title">Identity created!</string>
     <string name="common_loading">Loading...</string>
+    <string name="scene_plugin_settings_message_tips">If you turn off a plugin, the plugin function can no longer be rendered on timeline when browsing social media.</string>
+    <string name="scene_plugin_settings_title">Plugin Settings</string>
     <string name="scene_backup_with_email">Back up with Email</string>
     <string name="scene_backup_tips_phone">Verification code has been sent by SMS to </string>
     <string name="scene_backup_restored_post">Encrypted post</string>
@@ -318,6 +320,7 @@
     <string name="scene_identity_create_description">Write down each word.</string>
     <string name="scene_identity_create_title">Verify identity code</string>
     <string name="scene_persona_contacts_empty_contacts_tips">You don’t have encrypted friends. \nInvite friends to download Mask Network.</string>
+    <string name="scene_persona_contacts_message_tips">Contacts are accounts that are captured in real-time on timeline when you browse Twitter or Facebook.</string>
     <string name="scene_persona_contacts_search_account">Search account name/ID</string>
     <string name="scene_persona_contacts_contact">Contact</string>
     <string name="scene_persona_contacts_empty_search_tips">No contact found. This account is not\ncaptured on Timeline.</string>
@@ -336,6 +339,8 @@
     <string name="scene_wallet_delete_placeholder">Password</string>
     <string name="scene_wallet_delete_title">Delete wallet</string>
     <string name="scene_wallet_delete_content">Are you sure you want to delete this wallet? Your wallet cannot be recoverd without seed phrase.</string>
+    <string name="scene_persona_empty_message_tips">Select the social account to connect your persona. Enjoy a web 3.0 social expereince.</string>
+    <string name="scene_persona_empty_connect_social">Connect Social accounts</string>
     <string name="scene_biometry_id_biometry_lockout">Authentication was not successful because there were too many failed %s attempts and %s is now locked. Passcode is required to unlock %s.</string>
     <string name="scene_biometry_id_biometry_not_available">Mask need your Authentication of %s. Please go to Setting -&gt; Mask Network to open</string>
     <string name="scene_biometry_id_passcode_notSet">Authentication could not start because passcode is not set on the device.</string>

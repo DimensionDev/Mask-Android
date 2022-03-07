@@ -52,6 +52,7 @@ import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.common.ui.widget.TipMessageDialog
 import com.dimension.maskbook.common.ui.widget.button.MaskBackButton
 import com.dimension.maskbook.common.ui.widget.button.MaskButton
+import com.dimension.maskbook.labs.R
 import com.dimension.maskbook.labs.route.LabsRoute
 import com.dimension.maskbook.labs.viewmodel.PluginDisplayData
 import com.dimension.maskbook.labs.viewmodel.PluginSettingsViewModel
@@ -75,7 +76,7 @@ fun PluginSettingsScene(
             topBar = {
                 MaskSingleLineTopAppBar(
                     title = {
-                        Text(text = PluginSettingsItemDefault.title)
+                        Text(text = stringResource(R.string.scene_plugin_settings_title))
                     },
                     navigationIcon = {
                         MaskBackButton(onBack = onBack)
@@ -109,7 +110,7 @@ fun PluginSettingsScene(
                         },
                         text = {
                             Text(
-                                text = PluginSettingsItemDefault.tipMessage,
+                                text = stringResource(R.string.scene_plugin_settings_message_tips),
                                 color = Color.White,
                             )
                         }
@@ -147,10 +148,4 @@ private fun PluginSettingsItem(
             }
         )
     }
-}
-
-private object PluginSettingsItemDefault {
-    const val title = "Plugin Settings"
-    const val tipMessage =
-        "If you turn off a plugin, the plugin function can no longer be rendered on timeline when browsing social media."
 }

@@ -156,7 +156,7 @@ fun ContactsScene() {
                 },
                 text = {
                     Text(
-                        text = "Contacts are accounts that are captured in real-time on timeline when you browse Twitter or Facebook.",
+                        text = stringResource(R.string.scene_persona_contacts_message_tips),
                         color = Color.White,
                     )
                 }

@@ -42,10 +42,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.common.ui.widget.TipMessageDialog
 import com.dimension.maskbook.common.ui.widget.button.MaskGridButton
 import com.dimension.maskbook.common.ui.widget.itemsGridIndexed
+import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.export.model.Network
 import com.dimension.maskbook.persona.model.icon
 import com.dimension.maskbook.persona.model.title
@@ -90,7 +92,7 @@ fun EmptySocialScene(
         ) {
             item {
                 Text(
-                    text = PersonaEmptySceneDefaults.body,
+                    text = stringResource(R.string.scene_persona_empty_connect_social),
                     style = MaterialTheme.typography.h5,
                 )
             }
@@ -115,7 +117,7 @@ fun EmptySocialScene(
                 },
                 text = {
                     Text(
-                        text = PersonaEmptySceneDefaults.tipMessage,
+                        text = stringResource(R.string.scene_persona_empty_message_tips),
                         color = Color.White,
                     )
                 }
@@ -154,9 +156,6 @@ private fun ConnectItem(
 }
 
 private object PersonaEmptySceneDefaults {
-    const val body = "Connect Social accounts"
-    const val tipMessage = "Select the social account to connect your persona. Enjoy a web 3.0 social expereince."
-
     val contentHorizontalPadding = 22.5f.dp
     val contentVerticalPadding = 16.dp
     val itemPadding = 8.dp
