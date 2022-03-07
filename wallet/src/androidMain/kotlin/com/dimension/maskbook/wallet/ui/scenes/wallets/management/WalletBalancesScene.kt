@@ -35,15 +35,16 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
-import androidx.compose.material.LocalContentColor
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ScrollableTabRow
@@ -70,6 +71,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.items
 import coil.compose.rememberImagePainter
 import com.dimension.maskbook.common.ui.theme.MaskTheme
+import com.dimension.maskbook.common.ui.theme.moreColor
 import com.dimension.maskbook.common.ui.widget.MaskListItem
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
@@ -350,10 +352,14 @@ private fun ShowLessButton(
             onClick = onClick,
             contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
             shape = CircleShape,
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = MaterialTheme.moreColor.caption,
+            ),
         ) {
             Text(
                 text = if (expand) "Less" else "All",
                 modifier = Modifier.widthIn(min = 36.dp),
+                color = MaterialTheme.moreColor.onCaption,
             )
             Spacer(Modifier.width(9.dp))
             Icon(
@@ -363,12 +369,13 @@ private fun ShowLessButton(
                     Icons.Default.ChevronRight
                 },
                 contentDescription = null,
-                tint = LocalContentColor.current,
+                tint = MaterialTheme.moreColor.onCaption,
             )
         }
         Text(
             text = lessAmount,
-            style = MaterialTheme.typography.h5,
+            style = MaterialTheme.typography.subtitle2,
+            modifier = Modifier.padding(end = 8.dp),
         )
     }
 }
