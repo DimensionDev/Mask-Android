@@ -20,6 +20,8 @@
  */
 package com.dimension.maskbook.wallet.ui.scenes.wallets.send
 
+import android.content.Intent
+import android.net.Uri
 import android.util.Log
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -65,6 +67,7 @@ import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 import kotlin.time.ExperimentalTime
 
+// TODO Mimao clean viewmodel
 @OptIn(ExperimentalMaterialNavigationApi::class, ExperimentalTime::class)
 @Composable
 fun SendTokenHost(
@@ -72,7 +75,6 @@ fun SendTokenHost(
     onBack: () -> Unit,
     onDone: () -> Unit,
 ) {
-    // TODO Mimao refactor this Host with Tradable data
     val context = LocalContext.current
 
     val bottomSheetNavigator = rememberMaskBottomSheetNavigator()
@@ -273,9 +275,16 @@ fun SendTokenHost(
                         sendError = "",
                         paymentPassword = password,
                         onPaymentPasswordChanged = { viewModel.setPassword(it) },
-                        canConfirm = canConfirm &&
-                            balance > BigDecimal.ZERO &&
-                            amount.toBigDecimal() <= maxAmount.toBigDecimal()
+                        // canConfirm
+                        canConfirm = when (tradableData) {
+                            is TokenData -> {
+                                canConfirm &&
+                                    balance > BigDecimal.ZERO &&
+                                    amount.toBigDecimal() <= maxAmount.toBigDecimal()
+                            }
+                            is WalletCollectibleData -> canConfirm
+                            null -> false
+                        }
                     )
                 }
             }
@@ -357,37 +366,39 @@ fun SendTokenHost(
                 }
                 val deeplink by viewModel.deepLink.observeAsState(initial = "")
                 val addressData by viewModel.addressData.observeAsState(initial = null)
-                // TODO Mimao update with tradableData
-
                 val currentData = tradableData
                 val currentAddressData = addressData
-                // if (currentData != null && currentAddressData != null) {
-                //     SendConfirmSheet(
-                //         addressData = currentAddressData,
-                //         tokenData = currentData,
-                //         sendPrice = amount.humanizeToken(),
-                //         gasFee = (gasTotal * usdValue).humanizeDollar(),
-                //         total = (amount * currentData.price + gasTotal * usdValue).humanizeDollar(),
-                //         onConfirm = {
-                //             viewModel.send(currentTokenData, amount, gasLimit, maxFee, maxPriorityFee)
-                //             onDone.invoke()
-                //             // open Wallet App if it is connected
-                //             if (deeplink.isNotEmpty()) {
-                //                 try {
-                //                     context.startActivity(
-                //                         Intent().apply {
-                //                             data = Uri.parse(deeplink)
-                //                         }
-                //                     )
-                //                 } catch (e: Throwable) {
-                //                     // ignore
-                //                 }
-                //             }
-                //         },
-                //         onCancel = { navController.popBackStack() },
-                //         onEditGasFee = { navController.navigate("EditGasFee") },
-                //     )
-                // }
+                val totalPrice = when (currentData) {
+                    is TokenData -> (amount * currentData.price + gasTotal * usdValue).humanizeDollar()
+                    else -> (gasTotal * usdValue).humanizeDollar()
+                }
+                if (currentData != null && currentAddressData != null) {
+                    SendConfirmSheet(
+                        addressData = currentAddressData,
+                        tokenData = currentData,
+                        sendPrice = amount.humanizeToken(),
+                        gasFee = (gasTotal * usdValue).humanizeDollar(),
+                        total = totalPrice,
+                        onConfirm = {
+                            viewModel.send(currentData, amount, gasLimit, maxFee, maxPriorityFee)
+                            onDone.invoke()
+                            // open Wallet App if it is connected
+                            if (deeplink.isNotEmpty()) {
+                                try {
+                                    context.startActivity(
+                                        Intent().apply {
+                                            data = Uri.parse(deeplink)
+                                        }
+                                    )
+                                } catch (e: Throwable) {
+                                    // ignore
+                                }
+                            }
+                        },
+                        onCancel = { navController.popBackStack() },
+                        onEditGasFee = { navController.navigate("EditGasFee") },
+                    )
+                }
             }
         }
     }

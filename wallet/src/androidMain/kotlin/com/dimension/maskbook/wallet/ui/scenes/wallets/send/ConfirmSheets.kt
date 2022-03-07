@@ -21,6 +21,7 @@
 package com.dimension.maskbook.wallet.ui.scenes.wallets.send
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -45,6 +46,8 @@ import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.common.ui.widget.button.SecondaryButton
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.export.model.TokenData
+import com.dimension.maskbook.wallet.export.model.TradableData
+import com.dimension.maskbook.wallet.export.model.WalletCollectibleData
 import com.dimension.maskbook.wallet.repository.SearchAddressData
 
 @Composable
@@ -61,7 +64,7 @@ fun ApproveConfirmSheet(
     ConfirmSheet(
         title = stringResource(R.string.scene_wallet_balance_transaction_approve),
         addressData = addressData,
-        tokenData = tokenData,
+        tradableData = tokenData,
         sendPrice = sendPrice,
         gasFee = gasFee,
         total = total,
@@ -74,7 +77,7 @@ fun ApproveConfirmSheet(
 @Composable
 fun SendConfirmSheet(
     addressData: SearchAddressData,
-    tokenData: TokenData,
+    tokenData: TradableData,
     sendPrice: String,
     gasFee: String,
     total: String,
@@ -85,7 +88,7 @@ fun SendConfirmSheet(
     ConfirmSheet(
         title = stringResource(R.string.scene_wallet_balance_btn_Send),
         addressData = addressData,
-        tokenData = tokenData,
+        tradableData = tokenData,
         sendPrice = sendPrice,
         gasFee = gasFee,
         total = total,
@@ -98,7 +101,7 @@ fun SendConfirmSheet(
 @Composable
 fun SignatureRequestSignSheet(
     addressData: SearchAddressData,
-    tokenData: TokenData,
+    tradableData: TokenData,
     sendPrice: String,
     message: String,
     onSign: () -> Unit,
@@ -117,7 +120,7 @@ fun SignatureRequestSignSheet(
         ) {
             AddressAndTokenContent(
                 addressData = addressData,
-                tokenData = tokenData,
+                tradableData = tradableData,
                 sendPrice = sendPrice
             )
             Spacer(modifier = Modifier.height(20.dp))
@@ -135,7 +138,7 @@ fun SignatureRequestSignSheet(
 private fun ConfirmSheet(
     title: String,
     addressData: SearchAddressData,
-    tokenData: TokenData,
+    tradableData: TradableData,
     sendPrice: String,
     gasFee: String,
     total: String,
@@ -156,7 +159,7 @@ private fun ConfirmSheet(
         ) {
             AddressAndTokenContent(
                 addressData = addressData,
-                tokenData = tokenData,
+                tradableData = tradableData,
                 sendPrice = sendPrice
             )
             Spacer(modifier = Modifier.height(20.dp))
@@ -174,7 +177,7 @@ private fun ConfirmSheet(
 @Composable
 private fun ColumnScope.AddressAndTokenContent(
     addressData: SearchAddressData,
-    tokenData: TokenData,
+    tradableData: TradableData,
     sendPrice: String
 ) {
     Text(
@@ -188,6 +191,14 @@ private fun ColumnScope.AddressAndTokenContent(
         modifier = Modifier.align(Alignment.CenterHorizontally)
     )
     Spacer(modifier = Modifier.height(20.dp))
+    when (tradableData) {
+        is TokenData -> TokenContent(tokenData = tradableData, sendPrice = sendPrice)
+        is WalletCollectibleData -> CollectibleContent(collectibleData = tradableData)
+    }
+}
+
+@Composable
+private fun TokenContent(tokenData: TokenData, sendPrice: String) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
@@ -200,6 +211,30 @@ private fun ColumnScope.AddressAndTokenContent(
         Spacer(modifier = Modifier.width(8.dp))
         Text(text = tokenData.symbol, modifier = Modifier.weight(1f))
         Text(text = sendPrice)
+    }
+}
+
+@Composable
+private fun CollectibleContent(
+    collectibleData: WalletCollectibleData
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Image(
+            painter = rememberImagePainter(collectibleData.icon),
+            contentDescription = null,
+            modifier = Modifier.size(38.dp)
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(text = collectibleData.name)
+            Text(text = collectibleData.collection.name)
+        }
     }
 }
 

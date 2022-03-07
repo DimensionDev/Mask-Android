@@ -25,6 +25,8 @@ import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.wallet.export.model.TokenData
+import com.dimension.maskbook.wallet.export.model.TradableData
+import com.dimension.maskbook.wallet.export.model.WalletCollectibleData
 import com.dimension.maskbook.wallet.repository.ISendHistoryRepository
 import com.dimension.maskbook.wallet.repository.IWalletRepository
 import kotlinx.coroutines.flow.map
@@ -37,20 +39,29 @@ class SendConfirmViewModel(
 ) : ViewModel() {
 
     fun send(
-        tokenData: TokenData,
+        tradableData: TradableData,
         amount: BigDecimal,
         gasLimit: Double,
         maxFee: Double,
         maxPriorityFee: Double
     ) {
-        walletRepository.sendTokenWithCurrentWallet(
-            amount = amount,
-            address = toAddress,
-            tokenData = tokenData,
-            gasLimit = gasLimit,
-            maxFee = maxFee,
-            maxPriorityFee = maxPriorityFee,
-        )
+        when (tradableData) {
+            is TokenData -> walletRepository.sendTokenWithCurrentWallet(
+                amount = amount,
+                address = toAddress,
+                tokenData = tradableData,
+                gasLimit = gasLimit,
+                maxFee = maxFee,
+                maxPriorityFee = maxPriorityFee,
+            )
+            is WalletCollectibleData -> walletRepository.sendCollectibleWithCurrentWallet(
+                address = toAddress,
+                collectible = tradableData,
+                gasLimit = gasLimit,
+                maxFee = maxFee,
+                maxPriorityFee = maxPriorityFee,
+            )
+        }
     }
 
     val addressData by lazy {
