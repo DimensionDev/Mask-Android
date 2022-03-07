@@ -20,32 +20,24 @@
  */
 package com.dimension.maskbook.persona.ui.scenes.social
 
-import androidx.compose.runtime.Composable
-import com.dimension.maskbook.common.route.navigationComposeBottomSheet
-import com.dimension.maskbook.common.route.navigationComposeBottomSheetPackage
-import com.dimension.maskbook.common.routeProcessor.annotations.Finish
-import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
-import com.dimension.maskbook.common.routeProcessor.annotations.Path
+import android.net.Uri
+import androidx.navigation.NavController
+import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.persona.export.model.PlatformType
 import com.dimension.maskbook.persona.repository.IPersonaRepository
 import com.dimension.maskbook.persona.route.PersonaRoute
-import org.koin.androidx.compose.get
 
-@NavGraphDestination(
-    route = PersonaRoute.ConnectSocial.path,
-    packageName = navigationComposeBottomSheetPackage,
-    functionName = navigationComposeBottomSheet,
-)
-@Composable
-fun ConnectSocial(
-    @Finish onFinish: () -> Unit,
-    @Path("personaId") personaId: String,
-    @Path("platform") platform: String,
+fun connectSocial(
+    controller: NavController,
+    repository: IPersonaRepository,
+    personaId: String,
+    platform: PlatformType,
 ) {
-    val repository = get<IPersonaRepository>()
     repository.beginConnectingProcess(
         personaId = personaId,
-        platformType = PlatformType.valueOf(platform),
-    )
-    onFinish.invoke()
+        platformType = platform,
+    ) {
+        controller.navigate(PersonaRoute.ConnectAccount(it.personaId, it.profile.toString()))
+    }
+    controller.navigate(Uri.parse(Deeplinks.Extension.Extension))
 }

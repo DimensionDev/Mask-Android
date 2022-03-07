@@ -20,7 +20,7 @@
  */
 package com.dimension.maskbook.labs.repository
 
-import com.dimension.maskbook.common.repository.JSMethod
+import com.dimension.maskbook.labs.data.JSMethod
 import com.dimension.maskbook.labs.export.model.AppData
 import com.dimension.maskbook.labs.export.model.AppKey
 import kotlinx.coroutines.CoroutineScope
@@ -29,7 +29,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
-class AppRepository : IAppRepository {
+internal class AppRepository(
+    private val jsMethod: JSMethod,
+) : IAppRepository {
     private val scope = CoroutineScope(Dispatchers.IO)
 
     private val _apps = MutableStateFlow(
@@ -41,14 +43,14 @@ class AppRepository : IAppRepository {
     private suspend fun refreshApps() {
         _apps.value = _apps.value.let { apps ->
             apps.map {
-                it.copy(enabled = JSMethod.App.isPluginEnabled(it.key.id))
+                it.copy(enabled = jsMethod.isPluginEnabled(it.key.id))
             }
         }
     }
 
     override fun setEnabled(appKey: AppKey, enabled: Boolean) {
         scope.launch {
-            JSMethod.App.setPluginStatus(appKey.id, enabled)
+            jsMethod.setPluginStatus(appKey.id, enabled)
             refreshApps()
         }
     }

@@ -28,8 +28,7 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 object CommonSetup : ModuleSetup {
-
-    override fun NavGraphBuilder.route(navController: NavController, onFinish: () -> Unit) {
+    override fun NavGraphBuilder.route(navController: NavController) {
     }
 
     override fun dependencyInject() = module {

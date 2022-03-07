@@ -20,7 +20,6 @@
  */
 package com.dimension.maskbook.setting.data
 
-import com.dimension.maskbook.common.repository.JSMethod
 import com.dimension.maskbook.setting.export.model.Appearance
 import com.dimension.maskbook.setting.export.model.DataProvider
 import com.dimension.maskbook.setting.export.model.Language
@@ -35,7 +34,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
-class JSDataSource {
+internal class JSDataSource(
+    private val jsMethod: JSMethod,
+) {
     private val scope = CoroutineScope(Dispatchers.IO)
     private val _appearance = MutableStateFlow(Appearance.default)
     private val _dataProvider = MutableStateFlow(DataProvider.COIN_GECKO)
@@ -56,46 +57,46 @@ class JSDataSource {
 
     fun setLanguage(language: Language) {
         scope.launch {
-            JSMethod.Setting.setLanguage(language)
-            _language.value = JSMethod.Setting.getLanguage()
+            jsMethod.setLanguage(language)
+            _language.value = jsMethod.getLanguage()
         }
     }
 
     fun setAppearance(appearance: Appearance) {
         scope.launch {
-            JSMethod.Setting.setTheme(appearance)
-            _appearance.value = JSMethod.Setting.getTheme()
+            jsMethod.setTheme(appearance)
+            _appearance.value = jsMethod.getTheme()
         }
     }
 
     fun setDataProvider(dataProvider: DataProvider) {
         scope.launch {
-            JSMethod.Setting.setTrendingDataSource(dataProvider)
-            _dataProvider.value = JSMethod.Setting.getTrendingDataSource()
+            jsMethod.setTrendingDataSource(dataProvider)
+            _dataProvider.value = jsMethod.getTrendingDataSource()
         }
     }
 
     fun setTradeProvider(networkType: NetworkType, tradeProvider: TradeProvider) {
         scope.launch {
-            JSMethod.Setting.setNetworkTraderProvider(networkType, tradeProvider)
+            jsMethod.setNetworkTraderProvider(networkType, tradeProvider)
             updateTradeProvider()
         }
     }
 
     private suspend fun updateTradeProvider() {
         _tradeProvider.value = mapOf(
-            NetworkType.Ethereum to JSMethod.Setting.getNetworkTraderProvider(NetworkType.Ethereum),
-            NetworkType.Polygon to JSMethod.Setting.getNetworkTraderProvider(NetworkType.Polygon),
-            NetworkType.Binance to JSMethod.Setting.getNetworkTraderProvider(NetworkType.Binance),
+            NetworkType.Ethereum to jsMethod.getNetworkTraderProvider(NetworkType.Ethereum),
+            NetworkType.Polygon to jsMethod.getNetworkTraderProvider(NetworkType.Polygon),
+            NetworkType.Binance to jsMethod.getNetworkTraderProvider(NetworkType.Binance),
         )
     }
 
     fun initData() {
         scope.launch {
             awaitAll(
-                async { _language.value = JSMethod.Setting.getLanguage() },
-                async { _appearance.value = JSMethod.Setting.getTheme() },
-                async { _dataProvider.value = JSMethod.Setting.getTrendingDataSource() },
+                async { _language.value = jsMethod.getLanguage() },
+                async { _appearance.value = jsMethod.getTheme() },
+                async { _dataProvider.value = jsMethod.getTrendingDataSource() },
                 async { updateTradeProvider() }
             )
         }

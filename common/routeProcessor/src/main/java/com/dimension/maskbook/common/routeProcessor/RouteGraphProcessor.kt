@@ -21,7 +21,6 @@
 package com.dimension.maskbook.common.routeProcessor
 
 import com.dimension.maskbook.common.routeProcessor.annotations.Back
-import com.dimension.maskbook.common.routeProcessor.annotations.Finish
 import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
 import com.dimension.maskbook.common.routeProcessor.annotations.Navigate
 import com.dimension.maskbook.common.routeProcessor.annotations.Path
@@ -40,9 +39,7 @@ import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
-import com.squareup.kotlinpoet.LambdaTypeName
-import com.squareup.kotlinpoet.ParameterSpec
-import com.squareup.kotlinpoet.asTypeName
+import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.buildCodeBlock
 import com.squareup.kotlinpoet.ksp.KotlinPoetKspPreview
 import com.squareup.kotlinpoet.ksp.toClassName
@@ -52,7 +49,6 @@ import com.squareup.kotlinpoet.withIndent
 
 private val navControllerType = ClassName("androidx.navigation", "NavController")
 private const val navControllerName = "controller"
-private const val onFinishName = "onFinish"
 
 @OptIn(KotlinPoetKspPreview::class, KspExperimental::class)
 internal class RouteGraphProcessor(
@@ -73,13 +69,17 @@ internal class RouteGraphProcessor(
             }
         }
 
-        val actualSymbols = symbols - ret.toSet()
-        actualSymbols.groupBy {
+        if (ret.isNotEmpty()) {
+            // skip this processing round and return the symbols
+            return symbols
+        }
+
+        symbols.groupBy {
             it.getAnnotationsByType(NavGraphDestination::class).first().generatedFunctionName
         }.forEach { (name, items) ->
             generateRoute(items, name)
         }
-        return ret
+        return emptyList()
     }
 
     private fun generateRoute(data: List<KSFunctionDeclaration>, generatedFunctionName: String) {
@@ -98,16 +98,11 @@ internal class RouteGraphProcessor(
             .also { fileBuilder ->
                 fileBuilder.addFunction(
                     FunSpec.builder(generatedFunctionName)
+                        .addModifiers(KModifier.INTERNAL)
                         .receiver(ClassName("androidx.navigation", "NavGraphBuilder"))
                         .addParameter(
                             navControllerName,
                             navControllerType,
-                        )
-                        .addParameter(
-                            ParameterSpec
-                                .builder(onFinishName, LambdaTypeName.get(returnType = Unit::class.asTypeName()))
-                                .defaultValue("{ %N.navigateUp() }", navControllerName)
-                                .build()
                         )
                         .also { builder ->
                             data.forEach { ksFunctionDeclaration ->
@@ -233,13 +228,6 @@ internal class RouteGraphProcessor(
                                                             "%N = { %N.popBackStack() },",
                                                             it.name?.asString() ?: "",
                                                             navControllerName
-                                                        )
-                                                    }
-                                                    it.isAnnotationPresent(Finish::class) -> {
-                                                        addStatement(
-                                                            "%N = %N,",
-                                                            it.name?.asString() ?: "",
-                                                            onFinishName,
                                                         )
                                                     }
                                                     it.isAnnotationPresent(Navigate::class) -> {

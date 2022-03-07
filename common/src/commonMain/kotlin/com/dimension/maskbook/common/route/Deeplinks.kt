@@ -48,4 +48,7 @@ expect object Deeplinks {
             const val CreatePersona: String
         }
     }
+    object Extension {
+        const val Extension: String
+    }
 }

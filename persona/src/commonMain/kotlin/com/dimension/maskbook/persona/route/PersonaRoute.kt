@@ -35,8 +35,8 @@ expect object PersonaRoute {
     object SelectPlatform {
         operator fun invoke(personaId: String): String
     }
-    object ConnectSocial {
-        operator fun invoke(personaId: String, platform: String): String
+    object ConnectAccount {
+        operator fun invoke(personaId: String, profile: String): String
     }
     object DisconnectSocial {
         operator fun invoke(

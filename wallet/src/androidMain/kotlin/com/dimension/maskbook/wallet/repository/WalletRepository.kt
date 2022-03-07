@@ -33,9 +33,9 @@ import androidx.paging.PagingState
 import androidx.room.withTransaction
 import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.common.okhttp.okHttpClient
-import com.dimension.maskbook.common.repository.JSMethod
 import com.dimension.maskbook.debankapi.model.ChainID
 import com.dimension.maskbook.debankapi.model.Token
+import com.dimension.maskbook.wallet.data.JSMethod
 import com.dimension.maskbook.wallet.db.AppDatabase
 import com.dimension.maskbook.wallet.db.model.CoinPlatformType
 import com.dimension.maskbook.wallet.db.model.DbChainData
@@ -96,11 +96,12 @@ private fun Token.toDbToken(chainId: ChainID?) = DbToken(
     price = BigDecimal(price ?: 0.0)
 )
 
-class WalletRepository(
+internal class WalletRepository(
     private val dataStore: DataStore<Preferences>,
     private val database: AppDatabase,
     private val services: WalletServices,
-    private val walletConnectManager: WalletConnectClientManager
+    private val walletConnectManager: WalletConnectClientManager,
+    private val jsMethod: JSMethod,
 ) : IWalletRepository {
     private val tokenScope = CoroutineScope(Dispatchers.IO)
     private val scope = CoroutineScope(Dispatchers.IO)
@@ -144,7 +145,7 @@ class WalletRepository(
                 it[ChainTypeKey] = networkType.name
             }
             if (notifyJS) {
-                JSMethod.Wallet.updateEthereumChainId(networkType.chainId)
+                jsMethod.updateEthereumChainId(networkType.chainId)
             }
         }
     }
@@ -342,7 +343,7 @@ class WalletRepository(
             dataStore.edit {
                 it[CurrentWalletKey] = dbWallet?.id.orEmpty()
             }
-            JSMethod.Wallet.updateEthereumAccount(dbWallet?.address.orEmpty())
+            jsMethod.updateEthereumAccount(dbWallet?.address.orEmpty())
         }
     }
 
