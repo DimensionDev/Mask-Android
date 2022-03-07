@@ -169,42 +169,20 @@ fun IntroScene(
             count = introList.size,
         ) { page ->
             Box {
+                val isEnd = page == introList.size - 1
                 IntroPage(
                     item = introList[page],
-                )
-                if (page == introList.size - 1) {
-                    Button(
-                        onClick = {
-                            repository.setShouldShowEntry(false)
-                            navController.navigate(WalletRoute.Register.Init) {
-                                popUpTo(EntryRoute.Intro) {
-                                    inclusive = true
-                                }
+                    isEnd = isEnd,
+                    onStartClick = {
+                        repository.setShouldShowEntry(false)
+                        navController.navigate(WalletRoute.Register.Init) {
+                            popUpTo(EntryRoute.Intro) {
+                                inclusive = true
                             }
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Color.White,
-                            contentColor = Color(0xFF1C68F3),
-                        ),
-                        contentPadding = PaddingValues(
-                            horizontal = 29.dp,
-                            vertical = 16.dp
-                        ),
-                        elevation = null,
-                        shape = RoundedCornerShape(8.dp),
-                        modifier = Modifier
-                            .align(Alignment.BottomCenter)
-                            .padding(bottom = 147.dp)
-                            .navigationBarsPadding(),
-                    ) {
-                        Text(
-                            text = "Let’s start",
-                            fontWeight = FontWeight.W600,
-                            fontSize = 18.sp,
-                            lineHeight = 21.6.sp,
-                        )
+                        }
                     }
-                } else {
+                )
+                if (!isEnd) {
                     TextButton(
                         onClick = {
                             repository.setShouldShowEntry(false)
@@ -227,6 +205,7 @@ fun IntroScene(
                             fontWeight = FontWeight.W700,
                             fontSize = 16.sp,
                             lineHeight = 24.sp,
+                            color = Color(0xFFD7E6FF),
                         )
                     }
                 }
@@ -250,6 +229,8 @@ fun IntroScene(
 @Composable
 private fun IntroPage(
     item: IntroData,
+    isEnd: Boolean,
+    onStartClick: () -> Unit,
 ) {
     Box(
         modifier = Modifier
@@ -257,22 +238,10 @@ private fun IntroPage(
             .fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        Image(
-            painter = painterResource(R.drawable.ic_intro_grid),
-            contentDescription = null,
-            contentScale = ContentScale.FillWidth,
-            modifier = Modifier.fillMaxWidth(),
-        )
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(horizontal = 36.5.dp),
         ) {
-            Image(
-                painter = painterResource(item.img),
-                contentDescription = null,
-                contentScale = ContentScale.FillWidth,
-                modifier = Modifier.fillMaxWidth(),
-            )
+            IntroImage(item.img)
             Spacer(Modifier.height(80.dp))
             Text(
                 text = item.desc,
@@ -282,7 +251,59 @@ private fun IntroPage(
                 fontSize = 18.sp,
                 lineHeight = 27.sp,
             )
+            Spacer(Modifier.height(24.dp))
+            if (isEnd) {
+                Button(
+                    onClick = onStartClick,
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = Color.White,
+                        contentColor = Color(0xFF1C68F3),
+                    ),
+                    contentPadding = PaddingValues(
+                        horizontal = 29.dp,
+                    ),
+                    elevation = null,
+                    shape = RoundedCornerShape(8.dp),
+                    modifier = Modifier
+                        .navigationBarsPadding()
+                        .height(54.dp),
+                ) {
+                    Text(
+                        text = "Let’s start",
+                        fontWeight = FontWeight.W600,
+                        fontSize = 18.sp,
+                        lineHeight = 21.6.sp,
+                        color = Color(0xFF1C68F3),
+                    )
+                }
+            } else {
+                Spacer(Modifier.height(54.dp))
+            }
         }
+    }
+}
+
+@Composable
+private fun IntroImage(@DrawableRes imageId: Int) {
+    Box(
+        modifier = Modifier.height(300.dp),
+    ) {
+        Image(
+            painter = painterResource(R.drawable.ic_intro_grid),
+            contentDescription = null,
+            contentScale = ContentScale.FillWidth,
+            modifier = Modifier
+                .padding(top = 80.dp)
+                .fillMaxWidth(),
+        )
+        Image(
+            painter = painterResource(imageId),
+            contentDescription = null,
+            contentScale = ContentScale.FillWidth,
+            modifier = Modifier
+                .padding(horizontal = 36.5.dp)
+                .fillMaxWidth(),
+        )
     }
 }
 
