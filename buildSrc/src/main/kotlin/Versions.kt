@@ -38,12 +38,12 @@ object Versions {
     const val kotlinpoet = "1.10.2"
     const val material = "1.5.0"
     const val khexExtension = "1.1.2"
-    const val moshi = "1.13.0"
+    const val moshi = "1.8.0"
     const val walletConnectV1 = "0.9.7"
     const val zxing = "4.3.0"
     const val maskWalletCore = "0.4.1"
     const val jodaTime = "2.10.13"
-    const val mozilla_components = "98.0.10"
+    const val mozilla_components = "98.0.11"
     object Firebase {
         object Plugin {
             const val crashlytics = "2.8.1"
@@ -63,8 +63,6 @@ object Versions {
         const val livedata = "1.0.5"
         const val annotation = "1.3.0"
         const val activityCompose = "1.4.0"
-        const val constraintlayout = "2.1.2"
-        const val preference = "1.2.0"
         const val biometric = "1.2.0-alpha04"
     }
 }
