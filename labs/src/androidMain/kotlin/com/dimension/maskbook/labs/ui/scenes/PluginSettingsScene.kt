@@ -31,8 +31,6 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -58,8 +56,6 @@ import com.dimension.maskbook.labs.viewmodel.PluginDisplayData
 import com.dimension.maskbook.labs.viewmodel.PluginSettingsViewModel
 import org.koin.androidx.compose.viewModel
 
-private var isShowTipDialog by mutableStateOf(true)
-
 @NavGraphDestination(
     route = LabsRoute.PluginSettings,
     packageName = navigationComposeAnimComposablePackage,
@@ -71,6 +67,7 @@ fun PluginSettingsScene(
 ) {
     val viewModel by viewModel<PluginSettingsViewModel>()
     val apps by viewModel.apps.collectAsState()
+    val shouldShowPluginSettingsTipDialog by viewModel.shouldShowPluginSettingsTipDialog.collectAsState()
     MaskScene {
         MaskScaffold(
             topBar = {
@@ -100,13 +97,13 @@ fun PluginSettingsScene(
                         )
                     }
                 }
-                if (isShowTipDialog) {
+                if (shouldShowPluginSettingsTipDialog) {
                     TipMessageDialog(
                         modifier = Modifier
                             .padding(horizontal = 22.5f.dp, vertical = 44.dp)
                             .align(Alignment.BottomCenter),
                         onClose = {
-                            isShowTipDialog = false
+                            viewModel.setShowPluginSettingsTipDialog(false)
                         },
                         text = {
                             Text(

@@ -44,8 +44,6 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -64,10 +62,10 @@ import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.model.ContactData
 import com.dimension.maskbook.persona.model.icon
+import com.dimension.maskbook.persona.repository.IPreferenceRepository
 import com.dimension.maskbook.persona.viewmodel.contacts.ContactsViewModel
+import org.koin.androidx.compose.get
 import org.koin.androidx.compose.getViewModel
-
-private var isShowTipDialog by mutableStateOf(true)
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -77,6 +75,9 @@ fun ContactsScene() {
     val viewModel: ContactsViewModel = getViewModel()
     val items by viewModel.items.collectAsState()
     val input by viewModel.input.collectAsState()
+
+    val preferenceRepository = get<IPreferenceRepository>()
+    val shouldShowContactsTipDialog by preferenceRepository.shouldShowContactsTipDialog.collectAsState(initial = false)
 
     fun onInvite() {
         context.startActivity(
@@ -146,13 +147,13 @@ fun ContactsScene() {
             }
         }
 
-        if (isShowTipDialog) {
+        if (shouldShowContactsTipDialog) {
             TipMessageDialog(
                 modifier = Modifier
                     .padding(horizontal = 22.5f.dp, vertical = 24.dp)
                     .align(Alignment.BottomCenter),
                 onClose = {
-                    isShowTipDialog = false
+                    preferenceRepository.setShowContactsTipDialog(false)
                 },
                 text = {
                     Text(

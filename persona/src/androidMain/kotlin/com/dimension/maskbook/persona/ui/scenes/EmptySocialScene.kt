@@ -35,9 +35,8 @@ import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -51,6 +50,8 @@ import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.export.model.Network
 import com.dimension.maskbook.persona.model.icon
 import com.dimension.maskbook.persona.model.title
+import com.dimension.maskbook.persona.repository.IPreferenceRepository
+import org.koin.androidx.compose.get
 
 private class ConnectData(
     val enable: Boolean,
@@ -76,12 +77,13 @@ private val showList = listOf(
     )
 )
 
-private var isShowTipDialog by mutableStateOf(true)
-
 @Composable
 fun EmptySocialScene(
     onItemClick: (Network) -> Unit
 ) {
+    val preferenceRepository = get<IPreferenceRepository>()
+    val shouldShowEmptySocialTipDialog by preferenceRepository.shouldShowEmptySocialTipDialog.collectAsState(initial = false)
+
     Box(Modifier.fillMaxSize()) {
         LazyColumn(
             contentPadding = PaddingValues(
@@ -107,13 +109,13 @@ fun EmptySocialScene(
                 )
             }
         }
-        if (isShowTipDialog) {
+        if (shouldShowEmptySocialTipDialog) {
             TipMessageDialog(
                 modifier = Modifier
                     .padding(horizontal = 22.5f.dp, vertical = 24.dp)
                     .align(Alignment.BottomCenter),
                 onClose = {
-                    isShowTipDialog = false
+                    preferenceRepository.setShowEmptySocialTipDialog(false)
                 },
                 text = {
                     Text(
