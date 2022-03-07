@@ -166,7 +166,7 @@ fun SendTokenHost(
                     }
                 )
             }
-            // TODO mimao support multi select
+
             composable("SearchToken") {
                 val walletTokens by tradableDataViewModel.walletTokens.observeAsState(emptyList())
                 var query by remember { mutableStateOf("") }
@@ -205,6 +205,7 @@ fun SendTokenHost(
                     collections = walletCollectibleCollections
                 )
             }
+
             composable(
                 "Send/{address}",
                 arguments = listOf(
@@ -339,6 +340,7 @@ fun SendTokenHost(
                     }
                 )
             }
+
             bottomSheet(
                 "SendConfirm/{address}/{amount}",
                 arguments = listOf(

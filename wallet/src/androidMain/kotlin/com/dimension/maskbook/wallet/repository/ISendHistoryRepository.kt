@@ -28,11 +28,12 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.UUID
 
 interface ISendHistoryRepository {
     val recent: Flow<List<SearchAddressData>>
-    fun addOrUpdate(address: String, name: String)
+    suspend fun addOrUpdate(address: String, name: String)
     fun getByAddress(address: String): Flow<SearchAddressData?>
     fun getOrCreateByAddress(address: String): Flow<SearchAddressData>
 }
@@ -47,8 +48,8 @@ class SendHistoryRepository(
                 .map { SearchAddressData.fromDb(it) }
         }
 
-    override fun addOrUpdate(address: String, name: String) {
-        scope.launch {
+    override suspend fun addOrUpdate(address: String, name: String) {
+        withContext(scope.coroutineContext) {
             with(database.sendHistoryDao()) {
                 val currentTime = System.currentTimeMillis()
                 if (contains(address) > 0) {
@@ -82,7 +83,9 @@ class SendHistoryRepository(
     }
 
     override fun getOrCreateByAddress(address: String): Flow<SearchAddressData> {
-        addOrUpdate(address = address, name = "")
+        scope.launch {
+            addOrUpdate(address = address, name = "")
+        }
         return database.sendHistoryDao().getByAddressFlow(address).mapNotNull { it }
             .map { SearchAddressData.fromDb(it) }
     }

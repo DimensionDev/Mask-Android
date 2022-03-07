@@ -25,19 +25,20 @@ import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.Validator
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.wallet.export.model.ChainType
-import com.dimension.maskbook.wallet.repository.ISendHistoryRepository
-import com.dimension.maskbook.wallet.repository.IWalletContactRepository
-import com.dimension.maskbook.wallet.repository.IWalletRepository
-import kotlinx.coroutines.Dispatchers
+import com.dimension.maskbook.wallet.usecase.AddRecentAddressUseCase
+import com.dimension.maskbook.wallet.usecase.GetContactsUseCase
+import com.dimension.maskbook.wallet.usecase.GetEnsAddressUseCase
+import com.dimension.maskbook.wallet.usecase.GetRecentAddressUseCase
+import com.dimension.maskbook.wallet.usecase.Result
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 
 sealed class EnsData {
     object Loading : EnsData()
@@ -47,75 +48,64 @@ sealed class EnsData {
     ) : EnsData()
 
     data class Failure(
-        val exception: Exception
+        val exception: Throwable
     ) : EnsData()
 }
 
 class SearchAddressViewModel(
-    private val walletRepository: IWalletRepository,
-    private val sendHistoryRepository: ISendHistoryRepository,
-    private val walletContactRepository: IWalletContactRepository,
+    getRecentAddressUseCase: GetRecentAddressUseCase,
+    getContactsUseCase: GetContactsUseCase,
+    getEnsAddressUseCase: GetEnsAddressUseCase,
+    private val addRecentAddressUseCase: AddRecentAddressUseCase,
 ) : ViewModel() {
 
-    val contacts by lazy {
-        combine(walletContactRepository.contacts, input) { contacts, input ->
-            if (input.isEmpty()) {
-                contacts
-            } else {
-                contacts.filter {
-                    it.name?.contains(input, ignoreCase = true) == true ||
-                        it.address.contains(input, ignoreCase = true)
-                }
-            }
-        }.flowOn(Dispatchers.IO).asStateIn(viewModelScope, emptyList())
-    }
-
-    val recent by lazy {
-        combine(sendHistoryRepository.recent, input) { recent, input ->
-            if (input.isEmpty()) {
-                recent
-            } else {
-                recent.filter {
-                    it.name?.contains(input, ignoreCase = true) == true ||
-                        it.address.contains(input, ignoreCase = true)
-                }
-            }
-        }.flowOn(Dispatchers.IO).asStateIn(viewModelScope, emptyList())
-    }
-
     private val _input = MutableStateFlow("")
-    val input = _input.asStateIn(viewModelScope)
+    val input = _input.asStateIn(viewModelScope, "")
 
-    @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
-    val ensData = _input.debounce(400)
-        .filter { _selectEnsData.value == null }
-        .flatMapLatest { name ->
-            flow {
-                if (!Validator.isEnsName(name)) {
-                    emit(null)
-                    return@flow
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val recent = _input.flatMapLatest {
+        getRecentAddressUseCase(filter = it)
+            .map { result ->
+                when (result) {
+                    is Result.Success -> result.value
+                    else -> emptyList()
                 }
-
-                emit(EnsData.Loading)
-
-                val address = try {
-                    walletRepository.getEnsAddress(ChainType.eth, name)
-                } catch (e: Exception) {
-                    emit(EnsData.Failure(e))
-                    return@flow
-                }
-
-                emit(
-                    EnsData.Success(
-                        name = name,
-                        address = address,
-                    )
-                )
             }
-        }.asStateIn(viewModelScope, null)
+    }.asStateIn(viewModelScope, emptyList())
+
+    val contacts = _input.flatMapLatest {
+        getContactsUseCase(filter = it)
+            .map { result ->
+                when (result) {
+                    is Result.Success -> result.value
+                    else -> emptyList()
+                }
+            }
+    }.asStateIn(viewModelScope, emptyList())
 
     private val _selectEnsData = MutableStateFlow<EnsData.Success?>(null)
     val selectEnsData = _selectEnsData.asStateIn(viewModelScope, null)
+
+    @OptIn(ExperimentalCoroutinesApi::class, kotlinx.coroutines.FlowPreview::class)
+    val ensData = input.debounce(400)
+        .filter { _selectEnsData.value == null && input.value.isNotEmpty() }
+        .flatMapLatest { name ->
+            getEnsAddressUseCase(chainType = ChainType.eth, ensName = name)
+                .map { result ->
+                    when (result) {
+                        is Result.Failed -> EnsData.Failure(result.cause)
+                        is Result.Loading -> EnsData.Loading
+                        is Result.Success -> EnsData.Success(
+                            name = name,
+                            address = result.value
+                        )
+                    }
+                }
+        }.asStateIn(viewModelScope, null)
+
+    val canConfirm = combine(_selectEnsData, input) { ens, input ->
+        ens != null || Validator.isWalletAddress(input)
+    }.asStateIn(viewModelScope, false)
 
     fun onSelectEns(ensData: EnsData.Success) {
         _input.value = "${ensData.name}(" +
@@ -126,16 +116,17 @@ class SearchAddressViewModel(
         _selectEnsData.value = ensData
     }
 
-    val canConfirm = combine(_selectEnsData, input) { ens, input ->
-        ens != null || Validator.isWalletAddress(input)
-    }.asStateIn(viewModelScope, false)
-
     fun onInputChanged(value: String) {
         _input.value = value
         _selectEnsData.value = null
     }
 
     fun addSendHistory(address: String, name: String) {
-        sendHistoryRepository.addOrUpdate(address, name)
+        viewModelScope.launch {
+            addRecentAddressUseCase(
+                address = address,
+                name = name
+            ).collect()
+        }
     }
 }

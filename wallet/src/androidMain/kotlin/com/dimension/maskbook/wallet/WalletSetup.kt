@@ -60,6 +60,14 @@ import com.dimension.maskbook.wallet.route.walletsRoute
 import com.dimension.maskbook.wallet.services.WalletServices
 import com.dimension.maskbook.wallet.ui.scenes.persona.BackUpPasswordModal
 import com.dimension.maskbook.wallet.ui.tab.WalletTabScreen
+import com.dimension.maskbook.wallet.usecase.AddRecentAddressUseCase
+import com.dimension.maskbook.wallet.usecase.AddRecentAddressUseCaseImpl
+import com.dimension.maskbook.wallet.usecase.GetContactsUseCase
+import com.dimension.maskbook.wallet.usecase.GetContactsUseCaseImpl
+import com.dimension.maskbook.wallet.usecase.GetEnsAddressUseCase
+import com.dimension.maskbook.wallet.usecase.GetEnsAddressUseCaseImpl
+import com.dimension.maskbook.wallet.usecase.GetRecentAddressUseCase
+import com.dimension.maskbook.wallet.usecase.GetRecentAddressUseCaseImpl
 import com.dimension.maskbook.wallet.viewmodel.WelcomeViewModel
 import com.dimension.maskbook.wallet.viewmodel.recovery.IdentityViewModel
 import com.dimension.maskbook.wallet.viewmodel.recovery.PrivateKeyViewModel
@@ -196,6 +204,7 @@ object WalletSetup : ModuleSetup {
         single { WalletTabScreen() } bind TabScreen::class
 
         provideRepository()
+        provideUseCase()
         provideViewModel()
         provideServices()
     }
@@ -244,6 +253,13 @@ private fun Module.provideRepository() {
     single<IWalletConnectRepository> { WalletConnectRepository(get(), get()) }
 }
 
+private fun Module.provideUseCase() {
+    factory<GetEnsAddressUseCase> { GetEnsAddressUseCaseImpl(get()) }
+    factory<GetRecentAddressUseCase> { GetRecentAddressUseCaseImpl(get()) }
+    factory<GetContactsUseCase> { GetContactsUseCaseImpl(get()) }
+    factory<AddRecentAddressUseCase> { AddRecentAddressUseCaseImpl(get()) }
+}
+
 private fun Module.provideViewModel() {
     viewModel { (uri: Uri) -> RecoveryLocalViewModel(get(), uri, get<Context>().contentResolver) }
     viewModel { (name: String) -> IdentityViewModel(get(), get(), name) }
@@ -283,7 +299,7 @@ private fun Module.provideViewModel() {
     viewModel { WalletBackupViewModel(get(), get()) }
     viewModel { (id: String) -> WalletDeleteViewModel(id, get(), get()) }
     viewModel { WalletSwitchViewModel(get()) }
-    viewModel { SearchAddressViewModel(get(), get(), get()) }
+    viewModel { SearchAddressViewModel(get(), get(), get(), get()) }
     viewModel { (id: String) -> TokenDetailViewModel(id, get(), get(), get()) }
     viewModel { (initialGasLimit: Double) ->
         GasFeeViewModel(
