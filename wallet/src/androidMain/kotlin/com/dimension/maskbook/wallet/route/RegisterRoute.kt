@@ -236,8 +236,8 @@ fun RegisterRecoveryLocalBackupLocalBackupPickFile(
 
 @NavGraphDestination(
     route = WalletRoute.Register.Recovery.IdentityPersona,
-    packageName = navigationComposeAnimComposablePackage,
-    functionName = navigationComposeAnimComposable,
+    packageName = navigationComposeBottomSheetPackage,
+    functionName = navigationComposeBottomSheet,
 )
 @Composable
 fun RegisterRecoveryIdentityPersona(

@@ -77,8 +77,8 @@ fun RegisterRecoveryRemoteBackupRecoveryRemoteBackupRecoveryNoBackup(
 
 @NavGraphDestination(
     route = WalletRoute.Register.Recovery.RemoteBackupRecovery.RemoteBackupRecovery_Email_Code.path,
-    packageName = navigationComposeDialogPackage,
-    functionName = navigationComposeDialog,
+    packageName = navigationComposeBottomSheetPackage,
+    functionName = navigationComposeBottomSheet,
 )
 @Composable
 fun RegisterRecoveryRemoteBackupRecoveryRemoteBackupRecoveryEmailCode(
