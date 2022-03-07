@@ -22,6 +22,7 @@ package com.dimension.maskbook.wallet.route
 
 import com.dimension.maskbook.common.routeProcessor.annotations.Route
 
+@Suppress("CONST_VAL_WITHOUT_INITIALIZER")
 @Route
 expect object WalletRoute {
     object SendTokenConfirm {
@@ -43,8 +44,8 @@ expect object WalletRoute {
         operator fun invoke(id: String): String
     }
 
-    val SwitchWalletAdd: String
-    val SwitchWalletAddWalletConnect: String
+    const val SwitchWalletAdd: String
+    const val SwitchWalletAddWalletConnect: String
 
     object WalletNetworkSwitch {
         operator fun invoke(target: String): String
@@ -54,17 +55,17 @@ expect object WalletRoute {
         operator fun invoke(id: String): String
     }
 
-    val WalletNetworkSwitchWarningDialog: String
-    val SwitchWallet: String
+    const val WalletNetworkSwitchWarningDialog: String
+    const val SwitchWallet: String
 
-    val WalletBalancesMenu: String
+    const val WalletBalancesMenu: String
 
     object WalletManagementDeleteDialog {
         operator fun invoke(id: String): String
     }
 
-    val WalletManagementBackup: String
-    val WalletManagementTransactionHistory: String
+    const val WalletManagementBackup: String
+    const val WalletManagementTransactionHistory: String
 
     object WalletManagementRename {
         operator fun invoke(id: String, name: String): String
@@ -98,7 +99,7 @@ expect object WalletRoute {
         operator fun invoke(type: String): String
     }
 
-    val MultiChainWalletDialog: String
+    const val MultiChainWalletDialog: String
 
     object CreateWallet {
         operator fun invoke(wallet: String): String
@@ -117,32 +118,32 @@ expect object WalletRoute {
     }
 
     object Register {
-        val Init: String
+        const val Init: String
 
         object CreateIdentity {
             operator fun invoke(personaName: String): String
         }
 
-        val WelcomeCreatePersona: String
-        val CreatePersona: String
+        const val WelcomeCreatePersona: String
+        const val CreatePersona: String
 
         object Recovery {
-            val Home: String
+            const val Home: String
 
             object RemoteBackupRecovery {
-                val RemoteBackupRecovery_NoBackup: String
+                const val RemoteBackupRecovery_NoBackup: String
 
                 object RemoteBackupRecovery_Email_Code {
                     operator fun invoke(email: String): String
                 }
 
-                val RemoteBackupRecovery_Email: String
+                const val RemoteBackupRecovery_Email: String
 
                 object RemoteBackupRecovery_Phone_Code {
                     operator fun invoke(phone: String): String
                 }
 
-                val RemoteBackupRecovery_Phone: String
+                const val RemoteBackupRecovery_Phone: String
             }
 
             object LocalBackup {
@@ -150,15 +151,15 @@ expect object WalletRoute {
                     operator fun invoke(uri: String): String
                 }
 
-                val LocalBackup_PickFile: String
+                const val LocalBackup_PickFile: String
             }
 
-            val IdentityPersona: String
+            const val IdentityPersona: String
             object Identity {
                 operator fun invoke(name: String): String
             }
-            val PrivateKey: String
-            val Complected: String
+            const val PrivateKey: String
+            const val Complected: String
             object AlreadyExists {
                 operator fun invoke(restoreFrom: String): String
             }

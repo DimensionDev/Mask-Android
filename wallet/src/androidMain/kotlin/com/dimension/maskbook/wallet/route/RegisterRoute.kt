@@ -23,20 +23,25 @@ package com.dimension.maskbook.wallet.route
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavType
-import androidx.navigation.compose.dialog
-import androidx.navigation.navArgument
-import androidx.navigation.navDeepLink
 import androidx.navigation.navOptions
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
+import com.dimension.maskbook.common.route.navigationComposeAnimComposable
+import com.dimension.maskbook.common.route.navigationComposeAnimComposablePackage
+import com.dimension.maskbook.common.route.navigationComposeBottomSheet
+import com.dimension.maskbook.common.route.navigationComposeBottomSheetPackage
+import com.dimension.maskbook.common.route.navigationComposeDialog
+import com.dimension.maskbook.common.route.navigationComposeDialogPackage
+import com.dimension.maskbook.common.routeProcessor.annotations.Back
+import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
+import com.dimension.maskbook.common.routeProcessor.annotations.Path
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ui.scenes.register.CreatePersonaModal
 import com.dimension.maskbook.wallet.ui.scenes.register.CreatePersonaScene
@@ -48,271 +53,323 @@ import com.dimension.maskbook.wallet.ui.scenes.register.recovery.PrivateKeyScene
 import com.dimension.maskbook.wallet.ui.scenes.register.recovery.RecoveryComplectedScene
 import com.dimension.maskbook.wallet.ui.scenes.register.recovery.RecoveryHomeScene
 import com.dimension.maskbook.wallet.ui.scenes.register.recovery.local.RecoveryLocalHost
-import com.dimension.maskbook.wallet.ui.scenes.register.recovery.remote.remoteBackupRecovery
 import com.dimension.maskbook.wallet.viewmodel.recovery.IdentityViewModel
 import com.dimension.maskbook.wallet.viewmodel.recovery.PrivateKeyViewModel
-import com.google.accompanist.navigation.animation.composable
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
-import com.google.accompanist.navigation.material.bottomSheet
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 
-@OptIn(ExperimentalMaterialNavigationApi::class, ExperimentalAnimationApi::class)
-fun NavGraphBuilder.registerRoute(
+@NavGraphDestination(
+    route = WalletRoute.Register.Init,
+    packageName = navigationComposeAnimComposablePackage,
+    functionName = navigationComposeAnimComposable,
+)
+@Composable
+fun RegisterInit(
     navController: NavController,
 ) {
-    composable(
-        WalletRoute.Register.Init,
-    ) {
-        RegisterScene(
-            onCreateIdentity = {
-                navController.navigate(WalletRoute.Register.WelcomeCreatePersona)
-            },
-            onRecoveryAndSignIn = {
-                navController.navigate(WalletRoute.Register.Recovery.Home)
-            },
-            onSynchronization = {
-            },
-        )
-    }
-    composable(
-        route = WalletRoute.Register.CreateIdentity.path,
-        arguments = listOf(
-            navArgument("personaName") { type = NavType.StringType }
-        )
-    ) {
-        CreateIdentityHost(
-            personaName = it.arguments?.getString("personaName").orEmpty(),
-            onDone = {
-                navController.navigate(
-                    Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona)),
-                    navOptions = navOptions {
-                        launchSingleTop = true
-                        popUpTo(CommonRoute.Main.Home.path) {
-                            inclusive = false
-                        }
-                    }
-                )
-            },
-            onBack = {
-                navController.popBackStack()
-            }
-        )
-    }
-    composable(
-        WalletRoute.Register.WelcomeCreatePersona,
-        deepLinks = listOf(
-            navDeepLink {
-                uriPattern = Deeplinks.Wallet.Register.WelcomeCreatePersona
-            }
-        )
-    ) {
-        CreatePersonaScene(
-            onBack = {
-                navController.popBackStack()
-            },
-            onDone = { name ->
-                navController.navigate(WalletRoute.Register.CreateIdentity(name))
-            }
-        )
-    }
-    bottomSheet(
-        WalletRoute.Register.CreatePersona,
-        deepLinks = listOf(
-            navDeepLink { uriPattern = Deeplinks.Wallet.Register.CreatePersona }
-        )
-    ) {
-        CreatePersonaModal(
-            onDone = { name ->
-                navController.navigate(WalletRoute.Register.CreateIdentity(name))
-            }
-        )
-    }
-    composable(
-        WalletRoute.Register.Recovery.Home,
-        deepLinks = listOf(
-            navDeepLink { uriPattern = Deeplinks.Wallet.Recovery }
-        )
-    ) {
-        RecoveryHomeScene(
-            onBack = {
-                navController.popBackStack()
-            },
-            onIdentity = {
-                navController.navigate(WalletRoute.Register.Recovery.IdentityPersona)
-            },
-            onPrivateKey = {
-                navController.navigate(WalletRoute.Register.Recovery.PrivateKey)
-            },
-            onLocalBackup = {
-                navController.navigate(WalletRoute.Register.Recovery.LocalBackup.LocalBackup_PickFile)
-            },
-            onRemoteBackup = {
-                navController.navigate(WalletRoute.Register.Recovery.RemoteBackupRecovery.RemoteBackupRecovery_Email)
-            }
-        )
-    }
+    RegisterScene(
+        onCreateIdentity = {
+            navController.navigate(WalletRoute.Register.WelcomeCreatePersona)
+        },
+        onRecoveryAndSignIn = {
+            navController.navigate(WalletRoute.Register.Recovery.Home)
+        },
+        onSynchronization = {
+        },
+    )
+}
 
-    remoteBackupRecovery(navController)
-    composable(
-        WalletRoute.Register.Recovery.LocalBackup.RemoteBackupRecovery_RecoveryLocal.path,
-        arguments = listOf(
-            navArgument("uri") { type = NavType.StringType },
-        )
-    ) {
-        val uri = it.arguments?.getString("uri")
-            ?.let { Uri.parse(it) }
-        if (uri != null) {
-            RecoveryLocalHost(
-                uri = uri,
-                onBack = {
-                    navController.popBackStack()
-                },
-                onConfirm = {
+@NavGraphDestination(
+    route = WalletRoute.Register.CreateIdentity.path,
+    packageName = navigationComposeAnimComposablePackage,
+    functionName = navigationComposeAnimComposable,
+)
+@Composable
+fun RegisterCreateIdentity(
+    navController: NavController,
+    @Back onBack: () -> Unit,
+    @Path("personaName") personaName: String,
+) {
+    CreateIdentityHost(
+        personaName = personaName,
+        onDone = {
+            navController.navigate(
+                Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona)),
+                navOptions = navOptions {
+                    launchSingleTop = true
+                    popUpTo(CommonRoute.Main.Home.path) {
+                        inclusive = false
+                    }
+                }
+            )
+        },
+        onBack = onBack,
+    )
+}
+
+@NavGraphDestination(
+    route = WalletRoute.Register.WelcomeCreatePersona,
+    deeplink = [
+        Deeplinks.Wallet.Register.WelcomeCreatePersona,
+    ],
+    packageName = navigationComposeAnimComposablePackage,
+    functionName = navigationComposeAnimComposable,
+)
+@Composable
+fun WelcomeCreatePersona(
+    navController: NavController,
+    @Back onBack: () -> Unit,
+) {
+    CreatePersonaScene(
+        onBack = onBack,
+        onDone = { name ->
+            navController.navigate(WalletRoute.Register.CreateIdentity(name))
+        }
+    )
+}
+
+@NavGraphDestination(
+    route = WalletRoute.Register.CreatePersona,
+    deeplink = [
+        Deeplinks.Wallet.Register.CreatePersona,
+    ],
+    packageName = navigationComposeBottomSheetPackage,
+    functionName = navigationComposeBottomSheet,
+)
+@Composable
+fun CreatePersona(
+    navController: NavController,
+) {
+    CreatePersonaModal(
+        onDone = { name ->
+            navController.navigate(WalletRoute.Register.CreateIdentity(name))
+        }
+    )
+}
+
+@NavGraphDestination(
+    route = WalletRoute.Register.Recovery.Home,
+    deeplink = [
+        Deeplinks.Wallet.Recovery
+    ],
+    packageName = navigationComposeAnimComposablePackage,
+    functionName = navigationComposeAnimComposable,
+)
+@Composable
+fun RegisterRecoveryHome(
+    navController: NavController,
+    @Back onBack: () -> Unit,
+) {
+    RecoveryHomeScene(
+        onBack = onBack,
+        onIdentity = {
+            navController.navigate(WalletRoute.Register.Recovery.IdentityPersona)
+        },
+        onPrivateKey = {
+            navController.navigate(WalletRoute.Register.Recovery.PrivateKey)
+        },
+        onLocalBackup = {
+            navController.navigate(WalletRoute.Register.Recovery.LocalBackup.LocalBackup_PickFile)
+        },
+        onRemoteBackup = {
+            navController.navigate(WalletRoute.Register.Recovery.RemoteBackupRecovery.RemoteBackupRecovery_Email)
+        }
+    )
+}
+
+@NavGraphDestination(
+    route = WalletRoute.Register.Recovery.LocalBackup.RemoteBackupRecovery_RecoveryLocal.path,
+    packageName = navigationComposeAnimComposablePackage,
+    functionName = navigationComposeAnimComposable,
+)
+@Composable
+fun RecoveryLocalBackupRemoteBackupRecoveryRecoveryLocal(
+    navController: NavController,
+    @Back onBack: () -> Unit,
+    @Path("uri") uriString: String,
+) {
+    val uri = remember(uriString) { Uri.parse(uriString) }
+    RecoveryLocalHost(
+        uri = uri,
+        onBack = onBack,
+        onConfirm = {
+            navController.navigate(WalletRoute.Register.Recovery.Complected) {
+                popUpTo(WalletRoute.Register.Init) {
+                    inclusive = true
+                }
+            }
+        }
+    )
+}
+
+@NavGraphDestination(
+    route = WalletRoute.Register.Recovery.LocalBackup.LocalBackup_PickFile,
+    packageName = navigationComposeAnimComposablePackage,
+    functionName = navigationComposeAnimComposable,
+)
+@Composable
+fun RegisterRecoveryLocalBackupLocalBackupPickFile(
+    navController: NavController,
+    @Back onBack: () -> Unit,
+) {
+    val filePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument(),
+        onResult = {
+            if (it != null) {
+                navController.navigate(
+                    WalletRoute.Register.Recovery.LocalBackup.RemoteBackupRecovery_RecoveryLocal(it.toString())
+
+                ) {
+                    popUpTo(WalletRoute.Register.Recovery.LocalBackup.LocalBackup_PickFile) {
+                        inclusive = true
+                    }
+                }
+            } else {
+                onBack.invoke()
+            }
+        },
+    )
+    LaunchedEffect(Unit) {
+        filePickerLauncher.launch(arrayOf("*/*"))
+    }
+}
+
+@NavGraphDestination(
+    route = WalletRoute.Register.Recovery.IdentityPersona,
+    packageName = navigationComposeBottomSheetPackage,
+    functionName = navigationComposeBottomSheet,
+)
+@Composable
+fun RegisterRecoveryIdentityPersona(
+    navController: NavController,
+) {
+    CreatePersonaModal(
+        onDone = { name ->
+            navController.navigate(WalletRoute.Register.Recovery.Identity(name))
+        }
+    )
+}
+
+@NavGraphDestination(
+    route = WalletRoute.Register.Recovery.Identity.path,
+    packageName = navigationComposeAnimComposablePackage,
+    functionName = navigationComposeAnimComposable,
+)
+@Composable
+fun RegisterRecoveryIdentity(
+    navController: NavController,
+    @Back onBack: () -> Unit,
+    @Path("name") name: String,
+) {
+    val viewModel: IdentityViewModel = getViewModel {
+        parametersOf(name)
+    }
+    val identity by viewModel.identity.observeAsState()
+    val canConfirm by viewModel.canConfirm.observeAsState()
+    val from = stringResource(R.string.scene_identity_mnemonic_import_title)
+    IdentityScene(
+        identity = identity,
+        onIdentityChanged = {
+            viewModel.setIdentity(it)
+        },
+        canConfirm = canConfirm,
+        onConfirm = {
+            viewModel.onConfirm(
+                onSuccess = {
                     navController.navigate(WalletRoute.Register.Recovery.Complected) {
                         popUpTo(WalletRoute.Register.Init) {
                             inclusive = true
                         }
                     }
+                },
+                onAlreadyExists = {
+                    navController.navigate(WalletRoute.Register.Recovery.AlreadyExists(from))
                 }
             )
-        }
-    }
-    composable(WalletRoute.Register.Recovery.LocalBackup.LocalBackup_PickFile) {
-        val filePickerLauncher = rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.OpenDocument(),
-            onResult = {
-                if (it != null) {
-                    navController.navigate(
-                        WalletRoute.Register.Recovery.LocalBackup.RemoteBackupRecovery_RecoveryLocal(it.toString())
+        },
+        onBack = onBack,
+    )
+}
 
-                    ) {
-                        popUpTo(WalletRoute.Register.Recovery.LocalBackup.LocalBackup_PickFile) {
-                            inclusive = true
-                        }
-                    }
-                } else {
-                    navController.popBackStack()
-                }
-            },
-        )
-        LaunchedEffect(Unit) {
-            filePickerLauncher.launch(arrayOf("*/*"))
-        }
-    }
-    bottomSheet(
-        WalletRoute.Register.Recovery.IdentityPersona,
-    ) {
-        CreatePersonaModal(
-            onDone = { name ->
-                navController.navigate(WalletRoute.Register.Recovery.Identity(name))
-            }
-        )
-    }
-    composable(
-        WalletRoute.Register.Recovery.Identity.path,
-        arguments = listOf(
-            navArgument("name") { type = NavType.StringType }
-        )
-    ) {
-        it.arguments?.getString("name")?.let { name ->
-            val viewModel: IdentityViewModel = getViewModel {
-                parametersOf(name)
-            }
-            val identity by viewModel.identity.observeAsState()
-            val canConfirm by viewModel.canConfirm.observeAsState()
-            val from = stringResource(R.string.scene_identity_mnemonic_import_title)
-            IdentityScene(
-                identity = identity,
-                onIdentityChanged = {
-                    viewModel.setIdentity(it)
-                },
-                canConfirm = canConfirm,
-                onConfirm = {
-                    viewModel.onConfirm(
-                        onSuccess = {
-                            navController.navigate(WalletRoute.Register.Recovery.Complected) {
-                                popUpTo(WalletRoute.Register.Init) {
-                                    inclusive = true
-                                }
-                            }
-                        },
-                        onAlreadyExists = {
-                            navController.navigate(WalletRoute.Register.Recovery.AlreadyExists(from))
-                        }
-                    )
-                },
-                onBack = {
-                    navController.popBackStack()
-                },
-            )
-        } ?: navController.popBackStack()
-    }
-
-    dialog(
-        WalletRoute.Register.Recovery.AlreadyExists.path,
-        arguments = listOf(
-            navArgument("restoreFrom") { type = NavType.StringType }
-        )
-    ) {
-        it.arguments?.getString("restoreFrom")?.let { restoreFrom ->
-            PersonaAlreadyExitsDialog(
-                onBack = {
-                    navController.popBackStack()
-                },
-                onConfirm = {
-                    navController.navigate(
-                        Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona)),
-                        navOptions {
-                            popUpTo(WalletRoute.Register.Init) {
-                                inclusive = true
-                            }
-                        }
-                    )
-                },
-                restoreFrom = restoreFrom
-            )
-        }
-    }
-
-    composable(WalletRoute.Register.Recovery.PrivateKey) {
-        val viewModel: PrivateKeyViewModel = getViewModel()
-        val privateKey by viewModel.privateKey.observeAsState()
-        val canConfirm by viewModel.canConfirm.observeAsState()
-        PrivateKeyScene(
-            privateKey = privateKey,
-            onPrivateKeyChanged = {
-                viewModel.setPrivateKey(it)
-            },
-            canConfirm = canConfirm,
-            onConfirm = {
-                viewModel.onConfirm()
-                navController.navigate(WalletRoute.Register.Recovery.Complected) {
+@NavGraphDestination(
+    route = WalletRoute.Register.Recovery.AlreadyExists.path,
+    packageName = navigationComposeDialogPackage,
+    functionName = navigationComposeDialog,
+)
+@Composable
+fun RegisterRecoveryAlreadyExists(
+    navController: NavController,
+    @Back onBack: () -> Unit,
+    @Path("restoreFrom") restoreFrom: String,
+) {
+    PersonaAlreadyExitsDialog(
+        onBack = onBack,
+        onConfirm = {
+            navController.navigate(
+                Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona)),
+                navOptions {
                     popUpTo(WalletRoute.Register.Init) {
                         inclusive = true
                     }
                 }
-            },
-            onBack = {
-                navController.popBackStack()
-            },
-        )
-    }
-    composable(WalletRoute.Register.Recovery.Complected) {
-        RecoveryComplectedScene(
-            onBack = {
-                navController.popBackStack()
-            },
-            onConfirm = {
-                navController.navigate(
-                    Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona)),
-                    navOptions {
-                        popUpTo(WalletRoute.Register.Init) {
-                            inclusive = true
-                        }
+            )
+        },
+        restoreFrom = restoreFrom
+    )
+}
+
+@NavGraphDestination(
+    route = WalletRoute.Register.Recovery.PrivateKey,
+    packageName = navigationComposeAnimComposablePackage,
+    functionName = navigationComposeAnimComposable,
+)
+@Composable
+fun RegisterRecoveryPrivateKey(
+    navController: NavController,
+    @Back onBack: () -> Unit,
+) {
+    val viewModel: PrivateKeyViewModel = getViewModel()
+    val privateKey by viewModel.privateKey.observeAsState()
+    val canConfirm by viewModel.canConfirm.observeAsState()
+    PrivateKeyScene(
+        privateKey = privateKey,
+        onPrivateKeyChanged = {
+            viewModel.setPrivateKey(it)
+        },
+        canConfirm = canConfirm,
+        onConfirm = {
+            viewModel.onConfirm()
+            navController.navigate(WalletRoute.Register.Recovery.Complected) {
+                popUpTo(WalletRoute.Register.Init) {
+                    inclusive = true
+                }
+            }
+        },
+        onBack = onBack,
+    )
+}
+
+@NavGraphDestination(
+    route = WalletRoute.Register.Recovery.Complected,
+    packageName = navigationComposeAnimComposablePackage,
+    functionName = navigationComposeAnimComposable,
+)
+@Composable
+fun RegisterRecoveryComplected(
+    navController: NavController,
+    @Back onBack: () -> Unit,
+) {
+    RecoveryComplectedScene(
+        onBack = onBack,
+        onConfirm = {
+            navController.navigate(
+                Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona)),
+                navOptions {
+                    popUpTo(WalletRoute.Register.Init) {
+                        inclusive = true
                     }
-                )
-            },
-        )
-    }
+                }
+            )
+        },
+    )
 }

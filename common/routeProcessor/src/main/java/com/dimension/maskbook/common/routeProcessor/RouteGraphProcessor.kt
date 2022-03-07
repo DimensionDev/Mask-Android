@@ -48,6 +48,7 @@ import com.squareup.kotlinpoet.ksp.writeTo
 import com.squareup.kotlinpoet.withIndent
 
 private val navControllerType = ClassName("androidx.navigation", "NavController")
+private val navBackStackEntryType = ClassName("androidx.navigation", "NavBackStackEntry")
 private const val navControllerName = "controller"
 
 @OptIn(KotlinPoetKspPreview::class, KspExperimental::class)
@@ -214,6 +215,12 @@ internal class RouteGraphProcessor(
                                                             "%N = %N,",
                                                             it.name?.asString() ?: "",
                                                             navControllerName
+                                                        )
+                                                    }
+                                                    it.type.toTypeName() == navBackStackEntryType -> {
+                                                        addStatement(
+                                                            "%N = it,",
+                                                            it.name?.asString() ?: "",
                                                         )
                                                     }
                                                     it.isAnnotationPresent(Query::class) || it.isAnnotationPresent(Path::class) -> {
