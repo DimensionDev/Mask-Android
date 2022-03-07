@@ -37,21 +37,29 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.ContentAlpha
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
+import androidx.compose.material.LocalContentColor
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ScrollableTabRow
 import androidx.compose.material.Tab
 import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -60,7 +68,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.items
-import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import com.dimension.maskbook.common.ui.theme.MaskTheme
 import com.dimension.maskbook.common.ui.widget.MaskListItem
@@ -88,7 +95,7 @@ enum class BalancesSceneType {
 }
 
 @OptIn(
-    ExperimentalMaterialApi::class, ExperimentalCoilApi::class, ExperimentalFoundationApi::class,
+    ExperimentalFoundationApi::class,
     ExperimentalPagerApi::class
 )
 @Composable
@@ -96,6 +103,8 @@ fun WalletBalancesScene(
     wallets: List<WalletData>,
     currentWallet: WalletData,
     showTokens: List<WalletTokenData>,
+    showTokensLess: List<WalletTokenData>,
+    showTokensLessAmount: String,
     onWalletChanged: (WalletData) -> Unit,
     onWalletMenuClicked: () -> Unit,
     onWalletSwitchClicked: () -> Unit,
@@ -106,7 +115,6 @@ fun WalletBalancesScene(
     onSceneTypeChanged: (BalancesSceneType) -> Unit,
     walletChainType: ChainType,
     onCollectibleDetailClicked: (WalletCollectibleItemData) -> Unit,
-    onBack: () -> Unit,
     displayChainType: ChainType?,
     onDisplayChainTypeClicked: (ChainType?) -> Unit,
     onWalletAddressClicked: () -> Unit,
@@ -124,6 +132,8 @@ fun WalletBalancesScene(
             onWalletChanged.invoke(wallets[pagerState.currentPage])
         }
     }
+
+    var isShowLessTokenData by rememberSaveable { mutableStateOf(false) }
 
     MaskTheme {
         MaskScaffold(
@@ -260,41 +270,27 @@ fun WalletBalancesScene(
                 }
                 when (sceneType) {
                     BalancesSceneType.Token -> {
-                        items(showTokens) {
-                            val tokenData = it.tokenData
-                            MaskButton(onClick = { onTokenDetailClicked(it.tokenData) }) {
-                                MaskListItem(
-                                    text = {
-                                        Text(text = tokenData.name)
-                                    },
-                                    secondaryText = {
-                                        Text(text = it.count.humanizeToken() + " ${tokenData.symbol}")
-                                    },
-                                    trailing = {
-                                        Column {
-                                            Text(text = (it.count * tokenData.price).humanizeDollar())
-                                        }
-                                    },
-                                    icon = {
-                                        Box {
-                                            Image(
-                                                painter = rememberImagePainter(data = tokenData.logoURI) {
-                                                    placeholder(R.drawable.mask)
-                                                    error(R.drawable.mask)
-                                                    fallback(R.drawable.mask)
-                                                },
-                                                contentDescription = null,
-                                                modifier = Modifier.size(38.dp)
-                                            )
-                                            Image(
-                                                painter = rememberImagePainter(data = tokenData.chainType.onDrawableRes),
-                                                contentDescription = null,
-                                                modifier = Modifier.size(16.dp).align(Alignment.BottomEnd)
-                                                    .border(1.dp, MaterialTheme.colors.background, shape = CircleShape)
-                                            )
-                                        }
-                                    }
+                        items(showTokens) { item ->
+                            TokenDataItem(
+                                item = item,
+                                onItemClick = { onTokenDetailClicked(item.tokenData) }
+                            )
+                        }
+                        if (showTokensLess.isNotEmpty()) {
+                            item {
+                                ShowLessButton(
+                                    expand = isShowLessTokenData,
+                                    lessAmount = showTokensLessAmount,
+                                    onClick = { isShowLessTokenData = !isShowLessTokenData },
                                 )
+                            }
+                            if (isShowLessTokenData) {
+                                items(showTokensLess) { item ->
+                                    TokenDataItem(
+                                        item = item,
+                                        onItemClick = { onTokenDetailClicked(item.tokenData) }
+                                    )
+                                }
                             }
                         }
                     }
@@ -335,6 +331,83 @@ private fun RowScope.WalletButton(
         Text(
             text = text,
             style = MaterialTheme.typography.button
+        )
+    }
+}
+
+@Composable
+private fun ShowLessButton(
+    expand: Boolean,
+    lessAmount: String,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        MaskButton(
+            onClick = onClick,
+            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
+            shape = CircleShape,
+        ) {
+            Text(
+                text = if (expand) "Less" else "All",
+                modifier = Modifier.widthIn(min = 36.dp),
+            )
+            Spacer(Modifier.width(9.dp))
+            Icon(
+                imageVector = if (expand) {
+                    Icons.Default.ExpandMore
+                } else {
+                    Icons.Default.ChevronRight
+                },
+                contentDescription = null,
+                tint = LocalContentColor.current,
+            )
+        }
+        Text(
+            text = lessAmount,
+            style = MaterialTheme.typography.h5,
+        )
+    }
+}
+
+@Composable
+private fun TokenDataItem(item: WalletTokenData, onItemClick: () -> Unit) {
+    val tokenData = item.tokenData
+    MaskButton(onClick = onItemClick) {
+        MaskListItem(
+            text = {
+                Text(text = tokenData.name)
+            },
+            secondaryText = {
+                Text(text = item.count.humanizeToken() + " ${tokenData.symbol}")
+            },
+            trailing = {
+                Column {
+                    Text(text = (item.count * tokenData.price).humanizeDollar())
+                }
+            },
+            icon = {
+                Box {
+                    Image(
+                        painter = rememberImagePainter(data = tokenData.logoURI) {
+                            placeholder(R.drawable.mask)
+                            error(R.drawable.mask)
+                            fallback(R.drawable.mask)
+                        },
+                        contentDescription = null,
+                        modifier = Modifier.size(38.dp)
+                    )
+                    Image(
+                        painter = rememberImagePainter(data = tokenData.chainType.onDrawableRes),
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp).align(Alignment.BottomEnd)
+                            .border(1.dp, MaterialTheme.colors.background, shape = CircleShape)
+                    )
+                }
+            }
         )
     }
 }
