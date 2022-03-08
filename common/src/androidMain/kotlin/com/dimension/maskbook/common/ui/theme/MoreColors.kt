@@ -32,7 +32,7 @@ import androidx.compose.runtime.structuralEqualityPolicy
 import androidx.compose.ui.graphics.Color
 
 @Stable
-class MoreColors constructor(
+class MoreColors(
     caption: Color,
     onCaption: Color,
 ) {
@@ -49,22 +49,14 @@ val MaterialTheme.moreColor: MoreColors
     @ReadOnlyComposable
     get() = LocalMoreColors.current
 
-fun moreColors(
-    caption: Color,
-    onCaption: Color,
-) = MoreColors(
-    caption = caption,
-    onCaption = onCaption,
-)
-
 fun provideMoreColors(isDarkTheme: Boolean): MoreColors {
     return if (isDarkTheme) {
-        moreColors(
+        MoreColors(
             caption = Color(0xCC171C31),
             onCaption = Color(0x66FFFFFF),
         )
     } else {
-        moreColors(
+        MoreColors(
             caption = Color(0xFFF0F3F8),
             onCaption = Color(0xFF6B738D),
         )
