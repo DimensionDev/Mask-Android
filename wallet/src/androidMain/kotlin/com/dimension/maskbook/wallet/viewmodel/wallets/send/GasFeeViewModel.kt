@@ -37,7 +37,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.mapNotNull
 import kotlin.time.ExperimentalTime
@@ -178,12 +177,6 @@ class GasFeeViewModel(
         _maxFee.value = value
     }
 
-    val gasPrice by lazy {
-        rawGasPrice.map {
-            (it / BigDecimal.TEN).gwei.ether
-        }
-    }
-
     val rawGasPrice by lazy {
         combine(gasPriceEditMode, defaultGasFee) { mode, default ->
             when (mode) {
@@ -204,6 +197,12 @@ class GasFeeViewModel(
 
     val usdValue by lazy {
         nativeToken.mapNotNull { it?.price }
+    }
+
+    val gasUsdTotal by lazy {
+        combine(gasTotal, usdValue) { total, usd ->
+            total * usd
+        }
     }
 
     // native token on current chain

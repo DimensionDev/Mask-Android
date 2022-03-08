@@ -93,8 +93,8 @@ fun SendTokenHost(
     val maxFee by gasFeeViewModel.maxFee.observeAsState(initial = -1.0)
     val arrives by gasFeeViewModel.arrives.observeAsState(initial = "")
     val nativeToken by gasFeeViewModel.nativeToken.observeAsState(initial = null)
-    val usdValue by gasFeeViewModel.usdValue.observeAsState(initial = BigDecimal.ZERO)
     val gasTotal by gasFeeViewModel.gasTotal.observeAsState(initial = BigDecimal.ZERO)
+    val gasUsdTotal by gasFeeViewModel.gasUsdTotal.observeAsState(initial = BigDecimal.ZERO)
     val tradableData by tradableDataViewModel.tradableData.collectAsState(null)
 
     ModalBottomSheetLayout(
@@ -215,10 +215,11 @@ fun SendTokenHost(
                 ),
             ) {
                 val address = it.arguments?.getString("address") ?: return@composable
+
                 val biometricViewModel = getViewModel<BiometricViewModel>()
                 val biometricEnabled by biometricViewModel.biometricEnabled.observeAsState()
-                val walletTokenData by tradableDataViewModel.walletTokenData.observeAsState()
 
+                val walletTokenData by tradableDataViewModel.walletTokenData.observeAsState()
                 val viewModel = getViewModel<SendTokenViewModel> {
                     parametersOf(address)
                 }
@@ -226,6 +227,8 @@ fun SendTokenHost(
                 val amount by viewModel.amount.observeAsState()
                 val password by viewModel.password.observeAsState()
                 val canConfirm by viewModel.canConfirm.observeAsState()
+
+                // TODO move to viewModel
                 val balance = walletTokenData?.count ?: BigDecimal.ZERO
                 val maxAmount = when (tradableData) {
                     is TokenData -> {
@@ -257,7 +260,7 @@ fun SendTokenHost(
                         maxAmount = maxAmount,
                         onAmountChanged = { viewModel.setAmount(it) },
                         unlockType = if (biometricEnabled) UnlockType.BIOMETRIC else UnlockType.PASSWORD,
-                        gasFee = (gasTotal * usdValue).humanizeDollar(),
+                        gasFee = gasUsdTotal.humanizeDollar(),
                         arrivesIn = arrives,
                         onEditGasFee = { navController.navigate("EditGasFee") },
                         onSend = { type ->
@@ -288,10 +291,11 @@ fun SendTokenHost(
                     )
                 }
             }
+
             bottomSheet("EditGasFee") {
                 val mode by gasFeeViewModel.gasPriceEditMode.collectAsState()
                 EditGasPriceSheet(
-                    price = (gasTotal * usdValue).humanizeDollar(),
+                    price = gasUsdTotal.humanizeDollar(),
                     costFee = gasTotal.humanizeToken(),
                     costFeeUnit = nativeToken?.symbol
                         ?: stringResource(R.string.chain_short_name_eth),
@@ -369,15 +373,15 @@ fun SendTokenHost(
                 val currentData = tradableData
                 val currentAddressData = addressData
                 val totalPrice = when (currentData) {
-                    is TokenData -> (amount * currentData.price + gasTotal * usdValue).humanizeDollar()
-                    else -> (gasTotal * usdValue).humanizeDollar()
+                    is TokenData -> (amount * currentData.price + gasUsdTotal).humanizeDollar()
+                    else -> gasUsdTotal.humanizeDollar()
                 }
                 if (currentData != null && currentAddressData != null) {
                     SendConfirmSheet(
                         addressData = currentAddressData,
                         tokenData = currentData,
                         sendPrice = amount.humanizeToken(),
-                        gasFee = (gasTotal * usdValue).humanizeDollar(),
+                        gasFee = gasUsdTotal.humanizeDollar(),
                         total = totalPrice,
                         onConfirm = {
                             viewModel.send(currentData, amount, gasLimit, maxFee, maxPriorityFee)

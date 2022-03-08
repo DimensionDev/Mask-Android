@@ -106,9 +106,4 @@ class SendTradableDataViewModel(
             collectibleRepository.getCollectibleCollectionsByWallet(it)
         }
     }
-
-    enum class TransactionType {
-        Token,
-        Collectible
-    }
 }
