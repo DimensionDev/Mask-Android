@@ -34,10 +34,8 @@ import com.dimension.maskbook.wallet.usecase.password.VerifyPaymentPasswordUseCa
 import com.dimension.maskbook.wallet.usecase.token.GetNativeTokenUseCase
 import com.dimension.maskbook.wallet.usecase.token.GetWalletTokenByAddressUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
@@ -60,9 +58,9 @@ class TransferDetailViewModel(
         _password.value = value
     }
 
-    @OptIn(FlowPreview::class)
+    @OptIn(ExperimentalCoroutinesApi::class)
     private val passwordValid by lazy {
-        _password.flatMapConcat {
+        _password.flatMapLatest {
             verifyPaymentPasswordUseCase(it).map { result ->
                 when (result) {
                     is Result.Success -> true
@@ -197,7 +195,7 @@ class TransferDetailViewModel(
         ) { valid, amount, selectedData, maxAmount ->
             valid && when (selectedData) {
                 is WalletCollectibleData -> true
-                is WalletTokenData -> amount < maxAmount
+                is WalletTokenData -> amount <= maxAmount
             }
         }.asStateIn(viewModelScope, false)
     }

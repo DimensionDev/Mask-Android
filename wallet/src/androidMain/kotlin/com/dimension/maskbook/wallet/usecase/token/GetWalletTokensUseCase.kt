@@ -26,8 +26,7 @@ import com.dimension.maskbook.wallet.repository.IWalletRepository
 import com.dimension.maskbook.wallet.usecase.Result
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 
 interface GetWalletTokensUseCase {
     operator fun invoke(
@@ -44,11 +43,11 @@ class GetWalletTokensUseCaseImpl(
         filterWithChainType: Boolean,
         chainType: ChainType?
     ): Flow<Result<List<WalletTokenData>>> {
-        return repository.currentWallet.map { wallet ->
+        return combine(repository.currentWallet, repository.currentChain) { wallet, currentChain ->
             val filterChainType = if (filterWithChainType) chainType
-                ?: repository.currentChain.firstOrNull()?.chainType else null
+                ?: currentChain?.chainType else null
             wallet?.tokens?.filter {
-                if (filterChainType == null) true else it.tokenData.chainType == chainType
+                if (filterChainType == null) true else it.tokenData.chainType == filterChainType
             }?.let {
                 Result.Success(it)
             } ?: Result.Failed(Error("Current wallet is null"))
