@@ -169,15 +169,10 @@ class WebContentController(
     val title get() = _browserState.mapNotNull { it?.selectedTab?.content?.title }
     val tabCount get() = _browserState.mapNotNull { it?.tabs?.size }
 
-    fun createPromptFeature(
-        fragmentActivity: FragmentActivity,
-        onNeedToRequestPermissions: OnNeedToRequestPermissions,
-    ): PromptFeature {
-        return PromptFeature(
-            activity = fragmentActivity,
-            fragmentManager = fragmentActivity.supportFragmentManager,
+    fun createPromptFeature(fragmentActivity: FragmentActivity): PromptFeatureDelegate {
+        return PromptFeatureDelegate(
+            fragmentActivity = fragmentActivity,
             store = store,
-            onNeedToRequestPermissions = onNeedToRequestPermissions
         )
     }
 
