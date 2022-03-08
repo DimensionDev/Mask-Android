@@ -20,22 +20,129 @@
  */
 package com.dimension.maskbook.common.gecko
 
+import android.content.Context
+import android.view.View
+import android.widget.FrameLayout
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollDispatcher
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.view.NestedScrollingParent3
+import androidx.core.view.NestedScrollingParentHelper
+import androidx.core.view.ViewCompat.TYPE_TOUCH
+import kotlinx.coroutines.runBlocking
 import mozilla.components.browser.state.action.EngineAction
 import mozilla.components.browser.state.helper.Target
 import mozilla.components.browser.state.store.BrowserStore
 import mozilla.components.concept.engine.Engine
 import mozilla.components.concept.engine.EngineView
 
+internal class GeckoParent(
+    context: Context,
+    private val nestedScrollDispatcher: NestedScrollDispatcher,
+) : FrameLayout(context), NestedScrollingParent3 {
+
+    init {
+        isNestedScrollingEnabled = true
+    }
+    private val helper by lazy {
+        NestedScrollingParentHelper(this)
+    }
+
+    override fun onStartNestedScroll(child: View, target: View, axes: Int, type: Int): Boolean {
+        return true
+    }
+
+    override fun onNestedScrollAccepted(child: View, target: View, axes: Int, type: Int) {
+        helper.onNestedScrollAccepted(child, target, axes, type)
+    }
+
+    override fun getNestedScrollAxes(): Int {
+        return helper.nestedScrollAxes
+    }
+
+    override fun onStopNestedScroll(target: View, type: Int) {
+        helper.onStopNestedScroll(target, type)
+    }
+
+    override fun onNestedScroll(
+        target: View,
+        dxConsumed: Int,
+        dyConsumed: Int,
+        dxUnconsumed: Int,
+        dyUnconsumed: Int,
+        type: Int,
+        consumed: IntArray
+    ) {
+        val result = nestedScrollDispatcher.dispatchPostScroll(
+            consumed = Offset(dxConsumed.toFloat(), dyConsumed.inv().toFloat()),
+            available = Offset(dxUnconsumed.toFloat(), dyUnconsumed.inv().toFloat()),
+            source = type.toNestedScrollSource()
+        )
+        consumed[0] = result.x.toInt()
+        consumed[1] = result.y.toInt()
+    }
+
+    override fun onNestedScroll(
+        target: View,
+        dxConsumed: Int,
+        dyConsumed: Int,
+        dxUnconsumed: Int,
+        dyUnconsumed: Int,
+        type: Int
+    ) {
+    }
+
+    override fun onNestedFling(target: View, velocityX: Float, velocityY: Float, consumed: Boolean): Boolean {
+        val consumedX = if (consumed) velocityX else 0f
+        val consumedY = if (consumed) velocityY else 0f
+        val avaliableX = if (consumed) 0f else velocityX
+        val avaliableY = if (consumed) 0f else velocityY
+        val result = runBlocking {
+            nestedScrollDispatcher.dispatchPostFling(
+                Velocity(consumedX, (-consumedY)),
+                Velocity(avaliableX, (-avaliableY)),
+            )
+        }
+        return result.x != 0f || result.y != 0f
+    }
+
+    override fun onNestedPreFling(target: View, velocityX: Float, velocityY: Float): Boolean {
+        val result = runBlocking { nestedScrollDispatcher.dispatchPreFling(Velocity(velocityX, (-velocityY))) }
+        return result.x != 0f || result.y != 0f
+    }
+
+    override fun onNestedPreScroll(target: View, dx: Int, dy: Int, consumed: IntArray, type: Int) {
+        val result =
+            nestedScrollDispatcher.dispatchPreScroll(Offset(dx.toFloat(), dy.inv().toFloat()), type.toNestedScrollSource())
+        consumed[0] = result.x.toInt()
+        consumed[1] = result.y.toInt()
+    }
+}
+
+private fun Int.toNestedScrollSource(): NestedScrollSource = when (this) {
+    TYPE_TOUCH -> NestedScrollSource.Drag
+    else -> NestedScrollSource.Fling
+}
+
 @Composable
 internal fun GeckoContent(
     modifier: Modifier = Modifier,
     engine: Engine,
     store: BrowserStore,
-    target: Target
+    target: Target,
 ) {
+    val nestedScrollDispatcher = remember { NestedScrollDispatcher() }
+    val nestedScrollConnection = remember {
+        object : NestedScrollConnection {
+        }
+    }
     val selectedTab = target.observeAsComposableStateFrom(
         store = store,
         observe = { tab ->
@@ -50,10 +157,18 @@ internal fun GeckoContent(
     )
 
     AndroidView(
-        modifier = modifier,
-        factory = { context -> engine.createView(context).asView() },
+        modifier = modifier.nestedScroll(nestedScrollConnection, nestedScrollDispatcher),
+        factory = { context ->
+            val parent = GeckoParent(
+                context = context,
+                nestedScrollDispatcher = nestedScrollDispatcher
+            )
+            val view = engine.createView(context).asView()
+            parent.addView(view)
+            parent
+        },
         update = { view ->
-            val engineView = view as EngineView
+            val engineView = view.getChildAt(0) as EngineView
 
             val tab = selectedTab.value
             if (tab == null) {

@@ -59,37 +59,40 @@ fun WebContentScene(
         controller.goBack()
     }
     MaskScene {
-        MaskScaffold(
-            topBar = {
-                MaskSingleLineTopAppBar(
-                    title = {
-                        val url by controller.url.collectAsState(initial = "")
-                        val title = remember(url) {
-                            getTitleFromUrl(url)
-                        }
-                        Text(stringResource(title))
-                    },
-                    actions = {
-                        MaskIconButton(
-                            onClick = {
-                                navController.navigate(
-                                    Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona)),
-                                    navOptions {
-                                        launchSingleTop = true
-                                        popUpTo(CommonRoute.WebContent)
-                                    },
-                                )
+        MaskScaffold {
+            NestedScrollView(
+                header = {
+                    MaskSingleLineTopAppBar(
+                        title = {
+                            val url by controller.url.collectAsState(initial = "")
+                            val title = remember(url) {
+                                getTitleFromUrl(url)
                             }
-                        ) {
-                            Image(rememberImagePainter(R.drawable.mask), contentDescription = null)
+                            Text(stringResource(title))
+                        },
+                        actions = {
+                            MaskIconButton(
+                                onClick = {
+                                    navController.navigate(
+                                        Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona)),
+                                        navOptions {
+                                            launchSingleTop = true
+                                            popUpTo(CommonRoute.WebContent)
+                                        },
+                                    )
+                                }
+                            ) {
+                                Image(rememberImagePainter(R.drawable.mask), contentDescription = null)
+                            }
                         }
-                    }
-                )
-            },
-        ) {
-            WebContent(
-                modifier = Modifier.fillMaxSize(),
-                controller = controller
+                    )
+                },
+                content = {
+                    WebContent(
+                        modifier = Modifier.fillMaxSize(),
+                        controller = controller,
+                    )
+                }
             )
         }
     }
