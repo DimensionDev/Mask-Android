@@ -43,12 +43,16 @@ fun WalletIntroHost() {
     val collectible = viewModel.collectible.collectAsLazyPagingItems()
     val dWebData by viewModel.dWebData.observeAsState()
     val sceneType by viewModel.sceneType.observeAsState()
-    val currentWallet by viewModel.currentWallet.observeAsState()
+    val wallet by viewModel.currentWallet.observeAsState()
     val wallets by viewModel.wallets.observeAsState()
     val displayChainType by viewModel.displayChainType.observeAsState()
     val showTokens by viewModel.showTokens.observeAsState()
     val showTokensLess by viewModel.showTokensLess.observeAsState()
     val showTokensLessAmount by viewModel.showTokensLessAmount.observeAsState()
+
+    val currentWallet = wallet
+    val currentDWebData = dWebData
+
     if (currentWallet == null) {
         WalletIntroScene(
             onCreate = {
@@ -61,55 +65,51 @@ fun WalletIntroHost() {
                 rootNavController.navigate(WalletRoute.SwitchWalletAddWalletConnect)
             }
         )
-    } else {
-        dWebData?.let { dWebData ->
-            currentWallet?.let { wallet ->
-                WalletBalancesScene(
-                    wallets = wallets,
-                    currentWallet = wallet,
-                    showTokens = showTokens,
-                    showTokensLess = showTokensLess,
-                    showTokensLessAmount = showTokensLessAmount,
-                    onWalletChanged = {
-                        viewModel.setCurrentWallet(it)
-                    },
-                    onWalletMenuClicked = {
-                        rootNavController.navigate(WalletRoute.WalletBalancesMenu)
-                    },
-                    onWalletSwitchClicked = {
-                        rootNavController.navigate(WalletRoute.SwitchWallet)
-                    },
-                    onTokenDetailClicked = {
-                        rootNavController.navigate(WalletRoute.TokenDetail(it.address))
-                    },
-                    onReceiveClicked = {
-                        rootNavController.navigate(WalletRoute.WalletQrcode(dWebData.chainType.name))
-                    },
-                    onSendClicked = {
-                        rootNavController.navigate(WalletRoute.SendTokenScene(null))
-                    },
-                    sceneType = sceneType,
-                    onSceneTypeChanged = {
-                        viewModel.setSceneType(it)
-                    },
-                    walletChainType = dWebData.chainType,
-                    onCollectibleDetailClicked = {
-                        rootNavController.navigate(WalletRoute.CollectibleDetail(it.id))
-                    },
-                    displayChainType = displayChainType,
-                    onDisplayChainTypeClicked = {
-                        viewModel.setCurrentDisplayChainType(it)
-                    },
-                    onWalletAddressClicked = {
-                        clipboardManager.setText(
-                            buildAnnotatedString {
-                                append(wallet.address)
-                            }
-                        )
-                    },
-                    collectible = collectible,
+    } else if (currentDWebData != null) {
+        WalletBalancesScene(
+            wallets = wallets,
+            currentWallet = currentWallet,
+            showTokens = showTokens,
+            showTokensLess = showTokensLess,
+            showTokensLessAmount = showTokensLessAmount,
+            onWalletChanged = {
+                viewModel.setCurrentWallet(it)
+            },
+            onWalletMenuClicked = {
+                rootNavController.navigate(WalletRoute.WalletBalancesMenu)
+            },
+            onWalletSwitchClicked = {
+                rootNavController.navigate(WalletRoute.SwitchWallet)
+            },
+            onTokenDetailClicked = {
+                rootNavController.navigate(WalletRoute.TokenDetail(it.address))
+            },
+            onReceiveClicked = {
+                rootNavController.navigate(WalletRoute.WalletQrcode(currentDWebData.chainType.name))
+            },
+            onSendClicked = {
+                rootNavController.navigate(WalletRoute.SendTokenScene(null))
+            },
+            sceneType = sceneType,
+            onSceneTypeChanged = {
+                viewModel.setSceneType(it)
+            },
+            walletChainType = currentDWebData.chainType,
+            onCollectibleDetailClicked = {
+                rootNavController.navigate(WalletRoute.CollectibleDetail(it.id))
+            },
+            displayChainType = displayChainType,
+            onDisplayChainTypeClicked = {
+                viewModel.setCurrentDisplayChainType(it)
+            },
+            onWalletAddressClicked = {
+                clipboardManager.setText(
+                    buildAnnotatedString {
+                        append(currentWallet.address)
+                    }
                 )
-            }
-        }
+            },
+            collectible = collectible,
+        )
     }
 }

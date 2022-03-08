@@ -46,7 +46,7 @@ class BackupMergeConfirmViewModel(
         _backupPassword.value = value
     }
 
-    fun confirm(type: String, downloadUrl: String) = viewModelScope.launch {
+    fun confirm(downloadUrl: String) = viewModelScope.launch {
         _loading.value = true
         try {
             // TODO: decrypt .bin backup

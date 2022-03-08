@@ -81,7 +81,7 @@ fun SampleApp(
     controller: WebContentController
 ) {
     val canGoBack by controller.canGoBack.collectAsState(initial = false)
-    val canGoForward by controller.canGoForward.collectAsState(initial = false)
+    // val canGoForward by controller.canGoForward.collectAsState(initial = false)
     val count by controller.tabCount.collectAsState(initial = 0)
     var url by remember {
         mutableStateOf("")
