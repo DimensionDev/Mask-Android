@@ -211,6 +211,7 @@ private class PairCallback(
                 dispatchResult(false)
             }
             try {
+                @Suppress("UNCHECKED_CAST")
                 (call.result as? Map<String, *>)?.let {
                     dispatchResult(true, (it["chainId"] as? Number)?.toLong())
                 } ?: throw Error("parse error")

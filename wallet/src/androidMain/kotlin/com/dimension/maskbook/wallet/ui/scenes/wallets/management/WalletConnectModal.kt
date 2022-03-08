@@ -424,7 +424,7 @@ fun WalletConnectManually(
                     }
                 }
             } else {
-                itemsGridIndexed(wallets, rowSize = 4, spacing = 10.dp) { index, wallet ->
+                itemsGridIndexed(wallets, rowSize = 4, spacing = 10.dp) { _, wallet ->
                     val isInstalled = isWalletInstalled.invoke(wallet)
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,

@@ -148,16 +148,16 @@ fun SendTokenConfirmModal(
                     ),
                 ) {
                     it.arguments?.getString("address")?.let { address ->
-                        val viewModel = getViewModel<AddContactViewModel>()
-                        val name by viewModel.name.observeAsState(initial = "")
+                        val addContactViewModel = getViewModel<AddContactViewModel>()
+                        val name by addContactViewModel.name.observeAsState(initial = "")
                         AddContactSheet(
                             avatarLabel = name,
                             address = address,
                             canConfirm = name.isNotEmpty(),
                             nameInput = name,
-                            onNameChanged = { viewModel.setName(it) },
+                            onNameChanged = { addContactViewModel.setName(it) },
                             onAddContact = {
-                                viewModel.confirm(name, address)
+                                addContactViewModel.confirm(name, address)
                                 navController.popBackStack()
                             }
                         )

@@ -48,7 +48,7 @@ import com.dimension.maskbook.wallet.R
 fun RegisterScene(
     onCreateIdentity: () -> Unit,
     onRecoveryAndSignIn: () -> Unit,
-    onSynchronization: () -> Unit,
+    // onSynchronization: () -> Unit,
 ) {
     MaskScene {
         MaskScaffold {
