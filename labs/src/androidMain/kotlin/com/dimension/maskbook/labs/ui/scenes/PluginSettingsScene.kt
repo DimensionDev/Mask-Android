@@ -21,35 +21,22 @@
 package com.dimension.maskbook.labs.ui.scenes
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.dimension.maskbook.common.route.navigationComposeAnimComposable
 import com.dimension.maskbook.common.route.navigationComposeAnimComposablePackage
 import com.dimension.maskbook.common.routeProcessor.annotations.Back
@@ -60,9 +47,10 @@ import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskScene
 import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
+import com.dimension.maskbook.common.ui.widget.TipMessageDialog
 import com.dimension.maskbook.common.ui.widget.button.MaskBackButton
 import com.dimension.maskbook.common.ui.widget.button.MaskButton
-import com.dimension.maskbook.common.ui.widget.button.MaskIconButton
+import com.dimension.maskbook.labs.R
 import com.dimension.maskbook.labs.route.LabsRoute
 import com.dimension.maskbook.labs.viewmodel.PluginDisplayData
 import com.dimension.maskbook.labs.viewmodel.PluginSettingsViewModel
@@ -79,13 +67,13 @@ fun PluginSettingsScene(
 ) {
     val viewModel by viewModel<PluginSettingsViewModel>()
     val apps by viewModel.apps.collectAsState()
-    var isShowTipDialog by remember { mutableStateOf(true) }
+    val shouldShowPluginSettingsTipDialog by viewModel.shouldShowPluginSettingsTipDialog.collectAsState()
     MaskScene {
         MaskScaffold(
             topBar = {
                 MaskSingleLineTopAppBar(
                     title = {
-                        Text(text = PluginSettingsItemDefault.title)
+                        Text(text = stringResource(R.string.scene_plugin_settings_title))
                     },
                     navigationIcon = {
                         MaskBackButton(onBack = onBack)
@@ -109,11 +97,19 @@ fun PluginSettingsScene(
                         )
                     }
                 }
-                if (isShowTipDialog) {
-                    TipDialog(
-                        modifier = Modifier.align(Alignment.BottomCenter),
+                if (shouldShowPluginSettingsTipDialog) {
+                    TipMessageDialog(
+                        modifier = Modifier
+                            .padding(horizontal = 22.5f.dp, vertical = 44.dp)
+                            .align(Alignment.BottomCenter),
                         onClose = {
-                            isShowTipDialog = false
+                            viewModel.setShowPluginSettingsTipDialog(false)
+                        },
+                        text = {
+                            Text(
+                                text = stringResource(R.string.scene_plugin_settings_message_tips),
+                                color = Color.White,
+                            )
                         }
                     )
                 }
@@ -149,49 +145,4 @@ private fun PluginSettingsItem(
             }
         )
     }
-}
-
-@Composable
-private fun TipDialog(
-    modifier: Modifier,
-    onClose: () -> Unit
-) {
-    Row(
-        modifier = modifier
-            .padding(horizontal = 22.dp, vertical = 44.dp)
-            .shadow(12.dp, MaterialTheme.shapes.medium)
-            .background(
-                brush = PluginSettingsItemDefault.tipDialogBackGround,
-                shape = MaterialTheme.shapes.medium
-            )
-            .padding(start = 16.dp, end = 0.dp, top = 10.dp, bottom = 10.dp)
-            .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(
-            text = PluginSettingsItemDefault.tipMessage,
-            color = Color.White,
-            lineHeight = 21.sp,
-            modifier = Modifier.weight(1f),
-        )
-        MaskIconButton(onClick = onClose) {
-            Icon(
-                imageVector = Icons.Filled.Close,
-                contentDescription = null,
-                tint = Color.White,
-            )
-        }
-    }
-}
-
-private object PluginSettingsItemDefault {
-    const val title = "Plugin Settings"
-    const val tipMessage =
-        "If you turn off a plugin, the plugin function can no longer be rendered on timeline when browsing social media."
-    val tipDialogBackGround = Brush.verticalGradient(
-        colors = listOf(
-            Color(0xFF1C68F3),
-            Color(0xFF499DFF)
-        ),
-    )
 }

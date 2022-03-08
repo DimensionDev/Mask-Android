@@ -20,12 +20,10 @@
  */
 package com.dimension.maskbook.persona.repository
 
-import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
 import com.dimension.maskbook.common.ext.ifNullOrEmpty
 import com.dimension.maskbook.common.ext.toSite
 import com.dimension.maskbook.extension.export.ExtensionServices
@@ -60,8 +58,6 @@ import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
 
 private val CurrentPersonaKey = stringPreferencesKey("current_persona")
-val Context.personaDataStore: DataStore<Preferences> by preferencesDataStore(name = "persona")
-private const val TAG = "PersonaRepository"
 
 internal class PersonaRepository(
     private val dataStore: DataStore<Preferences>,

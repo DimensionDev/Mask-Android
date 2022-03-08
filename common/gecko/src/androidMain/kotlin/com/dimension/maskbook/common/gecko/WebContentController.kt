@@ -78,7 +78,7 @@ class WebContentController(
                 if (isSubframeRequest) {
                     return null
                 }
-                return if (onNavigate(uri)) {
+                return if (!onNavigate(uri)) {
                     RequestInterceptor.InterceptionResponse.AppIntent(
                         Intent(Intent.ACTION_VIEW, Uri.parse(uri)),
                         uri

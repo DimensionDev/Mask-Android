@@ -23,17 +23,10 @@ package com.dimension.maskbook.wallet
 import android.content.Context
 import android.net.Uri
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavType
-import androidx.navigation.navArgument
-import androidx.navigation.navDeepLink
-import androidx.navigation.navOptions
 import androidx.room.Room
 import com.dimension.maskbook.common.ModuleSetup
-import com.dimension.maskbook.common.ext.observeAsState
-import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.wallet.data.JSMethod
 import com.dimension.maskbook.wallet.db.AppDatabase
@@ -57,12 +50,8 @@ import com.dimension.maskbook.wallet.repository.WalletConnectRepository
 import com.dimension.maskbook.wallet.repository.WalletContactRepository
 import com.dimension.maskbook.wallet.repository.WalletRepository
 import com.dimension.maskbook.wallet.repository.walletDataStore
-import com.dimension.maskbook.wallet.route.WalletRoute
-import com.dimension.maskbook.wallet.route.registerRoute
-import com.dimension.maskbook.wallet.route.walletsRoute
+import com.dimension.maskbook.wallet.route.generatedRoute
 import com.dimension.maskbook.wallet.services.WalletServices
-import com.dimension.maskbook.wallet.ui.scenes.persona.BackUpPasswordModal
-import com.dimension.maskbook.wallet.ui.scenes.wallets.send.generatedRoute
 import com.dimension.maskbook.wallet.ui.tab.WalletTabScreen
 import com.dimension.maskbook.wallet.usecase.address.AddRecentAddressUseCase
 import com.dimension.maskbook.wallet.usecase.address.AddRecentAddressUseCaseImpl
@@ -129,13 +118,10 @@ import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectServerManager
 import com.dimension.maskbook.wallet.walletconnect.v1.client.WalletConnectClientManagerV1
 import com.dimension.maskbook.wallet.walletconnect.v1.server.WalletConnectServerManagerV1
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
-import com.google.accompanist.navigation.material.bottomSheet
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asExecutor
 import kotlinx.coroutines.launch
-import org.koin.androidx.compose.getViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.module.Module
 import org.koin.dsl.bind
@@ -145,65 +131,8 @@ import com.dimension.maskbook.wallet.export.WalletServices as ExportWalletServic
 
 object WalletSetup : ModuleSetup {
 
-    @OptIn(ExperimentalMaterialNavigationApi::class)
     override fun NavGraphBuilder.route(navController: NavController) {
         generatedRoute(navController)
-        walletsRoute(navController)
-        registerRoute(navController)
-        bottomSheet(
-            WalletRoute.BackUpPassword.path,
-            arguments = listOf(
-                navArgument("target") { type = NavType.StringType }
-            ),
-            deepLinks = listOf(
-                navDeepLink {
-                    uriPattern = Deeplinks.Wallet.BackUpPassword.path
-                }
-            )
-        ) { backStackEntry ->
-            val target = backStackEntry.arguments?.getString("target")
-            val viewModel = getViewModel<BackUpPasswordViewModel>()
-            val biometricEnable by viewModel.biometricEnabled.observeAsState(initial = false)
-            val password by viewModel.password.observeAsState(initial = "")
-            val passwordValid by viewModel.passwordValid.observeAsState(initial = false)
-            val context = LocalContext.current
-            BackUpPasswordModal(
-                biometricEnabled = biometricEnable,
-                password = password,
-                onPasswordChanged = { viewModel.setPassword(it) },
-                passwordValid = passwordValid,
-                onConfirm = {
-                    if (biometricEnable) {
-                        viewModel.authenticate(
-                            context = context,
-                            onSuccess = {
-                                target?.let {
-                                    navController.navigate(
-                                        it,
-                                        navOptions {
-                                            popUpTo(WalletRoute.BackUpPassword.path) {
-                                                inclusive = true
-                                            }
-                                        }
-                                    )
-                                } ?: navController.popBackStack()
-                            }
-                        )
-                    } else {
-                        target?.let {
-                            navController.navigate(
-                                it,
-                                navOptions {
-                                    popUpTo(WalletRoute.BackUpPassword.path) {
-                                        inclusive = true
-                                    }
-                                }
-                            )
-                        } ?: navController.popBackStack()
-                    }
-                }
-            )
-        }
     }
 
     override fun dependencyInject() = module {

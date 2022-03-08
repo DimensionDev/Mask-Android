@@ -265,6 +265,7 @@ interface IWalletRepository {
     val wallets: Flow<List<WalletData>>
     val currentWallet: Flow<WalletData?>
     val currentChain: Flow<ChainData?>
+    suspend fun getChainTokenData(chainType: ChainType): ChainData?
     fun setCurrentWallet(walletData: WalletData?)
     fun setCurrentWallet(walletId: String)
     fun generateNewMnemonic(): List<String>

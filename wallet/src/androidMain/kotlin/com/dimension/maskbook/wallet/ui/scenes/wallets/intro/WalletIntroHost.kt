@@ -20,7 +20,6 @@
  */
 package com.dimension.maskbook.wallet.ui.scenes.wallets.intro
 
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalClipboardManager
@@ -30,28 +29,26 @@ import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.ui.LocalRootNavController
 import com.dimension.maskbook.wallet.route.WalletRoute
 import com.dimension.maskbook.wallet.ui.scenes.wallets.create.CreateType
-import com.dimension.maskbook.wallet.ui.scenes.wallets.management.BalancesSceneType
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletBalancesScene
 import com.dimension.maskbook.wallet.viewmodel.wallets.WalletBalancesViewModel
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import org.koin.androidx.compose.getViewModel
 
 @ExperimentalMaterialNavigationApi
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun WalletIntroHost(
-    onBack: () -> Unit,
-) {
+fun WalletIntroHost() {
     val clipboardManager = LocalClipboardManager.current
     val rootNavController = LocalRootNavController.current
     val viewModel = getViewModel<WalletBalancesViewModel>()
     val collectible = viewModel.collectible.collectAsLazyPagingItems()
-    val dWebData by viewModel.dWebData.observeAsState(initial = null)
-    val sceneType by viewModel.sceneType.observeAsState(initial = BalancesSceneType.Token)
-    val currentWallet by viewModel.currentWallet.observeAsState(initial = null)
-    val wallets by viewModel.wallets.observeAsState(initial = emptyList())
-    val displayChainType by viewModel.displayChainType.observeAsState(initial = null)
-    val showTokens by viewModel.showTokens.observeAsState(initial = emptyList())
+    val dWebData by viewModel.dWebData.observeAsState()
+    val sceneType by viewModel.sceneType.observeAsState()
+    val currentWallet by viewModel.currentWallet.observeAsState()
+    val wallets by viewModel.wallets.observeAsState()
+    val displayChainType by viewModel.displayChainType.observeAsState()
+    val showTokens by viewModel.showTokens.observeAsState()
+    val showTokensLess by viewModel.showTokensLess.observeAsState()
+    val showTokensLessAmount by viewModel.showTokensLessAmount.observeAsState()
     if (currentWallet == null) {
         WalletIntroScene(
             onCreate = {
@@ -71,6 +68,8 @@ fun WalletIntroHost(
                     wallets = wallets,
                     currentWallet = wallet,
                     showTokens = showTokens,
+                    showTokensLess = showTokensLess,
+                    showTokensLessAmount = showTokensLessAmount,
                     onWalletChanged = {
                         viewModel.setCurrentWallet(it)
                     },
@@ -97,7 +96,6 @@ fun WalletIntroHost(
                     onCollectibleDetailClicked = {
                         rootNavController.navigate(WalletRoute.CollectibleDetail(it.id))
                     },
-                    onBack = onBack,
                     displayChainType = displayChainType,
                     onDisplayChainTypeClicked = {
                         viewModel.setCurrentDisplayChainType(it)
