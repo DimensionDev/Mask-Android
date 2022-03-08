@@ -69,9 +69,9 @@ import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.common.ui.widget.button.SecondaryButton
 import com.dimension.maskbook.common.ui.widget.button.clickable
 import com.dimension.maskbook.wallet.R
-import com.dimension.maskbook.wallet.export.model.TokenData
 import com.dimension.maskbook.wallet.export.model.TradableData
 import com.dimension.maskbook.wallet.export.model.WalletCollectibleData
+import com.dimension.maskbook.wallet.export.model.WalletTokenData
 import com.dimension.maskbook.wallet.ext.humanizeDollar
 import com.dimension.maskbook.wallet.ext.humanizeToken
 import com.dimension.maskbook.wallet.repository.SearchAddressData
@@ -130,10 +130,10 @@ fun SendTokenScene(
                     Spacer(modifier = Modifier.height(20.dp))
 
                     when (data) {
-                        is TokenData -> TokenContent(
-                            logoUri = data.logoURI ?: "",
-                            tokenName = data.name,
-                            balance = "${balance.humanizeToken()} ${data.symbol} ≈ ${(balance * data.price).humanizeDollar()}",
+                        is WalletTokenData -> TokenContent(
+                            logoUri = data.tokenData.logoURI ?: "",
+                            tokenName = data.tokenData.name,
+                            balance = "${balance.humanizeToken()} ${data.tokenData.symbol} ≈ ${(balance * data.tokenData.price).humanizeDollar()}",
                             onClick = onSelectToken
                         )
                         is WalletCollectibleData -> CollectibleContent(

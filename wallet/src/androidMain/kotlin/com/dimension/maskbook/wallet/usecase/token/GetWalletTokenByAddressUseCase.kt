@@ -18,33 +18,31 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.usecase
+package com.dimension.maskbook.wallet.usecase.token
 
-import com.dimension.maskbook.wallet.export.model.ChainType
+import com.dimension.maskbook.wallet.export.model.WalletTokenData
 import com.dimension.maskbook.wallet.repository.IWalletRepository
+import com.dimension.maskbook.wallet.usecase.Result
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
 
-interface GetEnsAddressUseCase {
-    operator fun invoke(chainType: ChainType, ensName: String): Flow<Result<String>>
+interface GetWalletTokenByAddressUseCase {
+    operator fun invoke(tokenAddress: String): Flow<Result<WalletTokenData>>
 }
 
-class GetEnsAddressUseCaseImpl(
-    val repository: IWalletRepository
-) : GetEnsAddressUseCase {
-    override fun invoke(chainType: ChainType, ensName: String): Flow<Result<String>> {
-        return flow {
-            emit(Result.Loading())
-            runCatching {
-                repository.getEnsAddress(
-                    chainType = chainType,
-                    name = ensName
-                )
-            }.onSuccess {
-                emit(Result.Success(it))
-            }.onFailure {
-                emit(Result.Failed(it))
-            }
+class GetWalletTokenByAddressUseCaseImpl(
+    val repository: IWalletRepository,
+) : GetWalletTokenByAddressUseCase {
+    override fun invoke(tokenAddress: String): Flow<Result<WalletTokenData>> {
+        return repository.currentWallet.map {
+            it?.tokens?.firstOrNull { token ->
+                token.tokenAddress == tokenAddress
+            }?.let { token ->
+                Result.Success(token)
+            } ?: Result.Failed(Error("Can't find any token with given address:$tokenAddress"))
+        }.catch {
+            emit(Result.Failed(it))
         }
     }
 }

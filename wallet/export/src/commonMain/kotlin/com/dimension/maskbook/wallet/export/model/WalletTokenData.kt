@@ -26,6 +26,10 @@ data class WalletTokenData(
     val count: BigDecimal,
     val tokenAddress: String,
     val tokenData: TokenData,
-) {
+) : TradableData {
+    override fun tradableId() = tokenAddress
+
+    override fun network() = tokenData.chainType
+
     companion object
 }

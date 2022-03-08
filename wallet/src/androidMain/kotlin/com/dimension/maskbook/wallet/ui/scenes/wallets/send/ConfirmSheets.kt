@@ -48,12 +48,13 @@ import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.export.model.TokenData
 import com.dimension.maskbook.wallet.export.model.TradableData
 import com.dimension.maskbook.wallet.export.model.WalletCollectibleData
+import com.dimension.maskbook.wallet.export.model.WalletTokenData
 import com.dimension.maskbook.wallet.repository.SearchAddressData
 
 @Composable
 fun ApproveConfirmSheet(
     addressData: SearchAddressData,
-    tokenData: TokenData,
+    tokenData: TradableData,
     sendPrice: String,
     gasFee: String,
     total: String,
@@ -101,7 +102,7 @@ fun SendConfirmSheet(
 @Composable
 fun SignatureRequestSignSheet(
     addressData: SearchAddressData,
-    tradableData: TokenData,
+    tradableData: TradableData,
     sendPrice: String,
     message: String,
     onSign: () -> Unit,
@@ -192,7 +193,7 @@ private fun ColumnScope.AddressAndTokenContent(
     )
     Spacer(modifier = Modifier.height(20.dp))
     when (tradableData) {
-        is TokenData -> TokenContent(tokenData = tradableData, sendPrice = sendPrice)
+        is WalletTokenData -> TokenContent(tokenData = tradableData.tokenData, sendPrice = sendPrice)
         is WalletCollectibleData -> CollectibleContent(collectibleData = tradableData)
     }
 }

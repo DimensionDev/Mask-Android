@@ -826,4 +826,20 @@ internal class WalletRepository(
             }
         }
     }
+
+    override suspend fun getChainData(chainType: ChainType): Flow<ChainData?> {
+        return database.chainDao().getByIdFlow(chainType.chainId).map { dbData ->
+            dbData?.let {
+                ChainData(
+                    chainId = it.chain.chainId,
+                    name = it.chain.name,
+                    fullName = it.chain.fullName,
+                    nativeTokenID = it.chain.nativeTokenID,
+                    logoURL = it.chain.logoURL,
+                    nativeToken = it.token?.let { token -> TokenData.fromDb(token) },
+                    chainType = ChainType.valueOf(it.chain.name)
+                )
+            }
+        }
+    }
 }

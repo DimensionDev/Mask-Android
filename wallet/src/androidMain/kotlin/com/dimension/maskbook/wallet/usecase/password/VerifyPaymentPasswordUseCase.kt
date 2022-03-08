@@ -18,29 +18,23 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.usecase
+package com.dimension.maskbook.wallet.usecase.password
 
-import com.dimension.maskbook.wallet.repository.ISendHistoryRepository
+import com.dimension.maskbook.setting.export.SettingServices
+import com.dimension.maskbook.wallet.usecase.Result
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 
-interface AddRecentAddressUseCase {
-    operator fun invoke(address: String, name: String): Flow<Result<Unit>>
+interface VerifyPaymentPasswordUseCase {
+    operator fun invoke(pwd: String): Flow<Result<Unit>>
 }
 
-class AddRecentAddressUseCaseImpl(
-    val repository: ISendHistoryRepository
-) : AddRecentAddressUseCase {
-    override fun invoke(address: String, name: String): Flow<Result<Unit>> {
-        return flow {
-            emit(Result.Loading())
-            runCatching {
-                repository.addOrUpdate(address = address, name = name)
-            }.onSuccess {
-                emit(Result.Success(Unit))
-            }.onFailure {
-                emit(Result.Failed(it))
-            }
+class VerifyPaymentPasswordUseCaseImpl(
+    val service: SettingServices
+) : VerifyPaymentPasswordUseCase {
+    override fun invoke(pwd: String): Flow<Result<Unit>> {
+        return service.paymentPassword.map {
+            if (it.isNotEmpty() && it == pwd) Result.Success(Unit) else Result.Failed(Error())
         }
     }
 }

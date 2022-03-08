@@ -22,4 +22,6 @@ package com.dimension.maskbook.wallet.export.model
 
 sealed interface TradableData {
     fun tradableId(): String
+
+    fun network(): ChainType
 }

@@ -23,15 +23,34 @@ package com.dimension.maskbook.wallet.viewmodel.wallets.send
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
-import com.dimension.maskbook.setting.export.SettingServices
-import com.dimension.maskbook.wallet.repository.ISendHistoryRepository
+import com.dimension.maskbook.wallet.export.model.TradableData
+import com.dimension.maskbook.wallet.export.model.WalletCollectibleData
+import com.dimension.maskbook.wallet.export.model.WalletTokenData
+import com.dimension.maskbook.wallet.usecase.Result
+import com.dimension.maskbook.wallet.usecase.address.GetAddressUseCase
+import com.dimension.maskbook.wallet.usecase.chain.SetCurrentChainUseCase
+import com.dimension.maskbook.wallet.usecase.collectible.GetWalletCollectibleUseCase
+import com.dimension.maskbook.wallet.usecase.password.VerifyPaymentPasswordUseCase
+import com.dimension.maskbook.wallet.usecase.token.GetNativeTokenUseCase
+import com.dimension.maskbook.wallet.usecase.token.GetWalletTokenByAddressUseCase
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
+import java.math.BigDecimal
 
 class SendTokenViewModel(
-    private val toAddress: String,
-    private val sendHistoryRepository: ISendHistoryRepository,
-    private val settingServices: SettingServices,
+    private val tradableId: String,
+    private val verifyPaymentPasswordUseCase: VerifyPaymentPasswordUseCase,
+    private val getAddressUseCase: GetAddressUseCase,
+    private val getWalletTokenByAddressUseCase: GetWalletTokenByAddressUseCase,
+    private val getNativeTokenUseCase: GetNativeTokenUseCase,
+    private val getWalletCollectibleUseCase: GetWalletCollectibleUseCase,
+    private val setCurrentChainUseCase: SetCurrentChainUseCase
 ) : ViewModel() {
 
     private val _password = MutableStateFlow("")
@@ -41,9 +60,15 @@ class SendTokenViewModel(
         _password.value = value
     }
 
-    val canConfirm by lazy {
-        combine(settingServices.paymentPassword, _password) { current, input ->
-            current == input
+    @OptIn(FlowPreview::class)
+    private val passwordValid by lazy {
+        _password.flatMapConcat {
+            verifyPaymentPasswordUseCase(it).map { result ->
+                when (result) {
+                    is Result.Success -> true
+                    else -> false
+                }
+            }
         }.asStateIn(viewModelScope, false)
     }
 
@@ -54,8 +79,126 @@ class SendTokenViewModel(
         _amount.value = value
     }
 
+    val balance by lazy {
+        selectedTradable.map {
+            when (it) {
+                is WalletTokenData -> it.count
+                else -> BigDecimal.ZERO
+            }
+        }.asStateIn(viewModelScope, BigDecimal.ZERO)
+    }
+
+    private val _gasTotal = MutableStateFlow(BigDecimal.ZERO)
+
+    val maxAmount by lazy {
+        combine(
+            balance,
+            selectedTradable,
+            nativeToken,
+            _gasTotal
+        ) { balance, tradable, native, gasTotal ->
+            when (tradable) {
+                is WalletTokenData -> {
+                    if (tradable.tradableId() == native?.tokenAddress) {
+                        balance - gasTotal
+                    } else {
+                        balance
+                    }.let {
+                        if (it < BigDecimal.ZERO) BigDecimal.ZERO else it
+                    }
+                }
+                else -> BigDecimal.ZERO
+            }
+        }.asStateIn(viewModelScope, BigDecimal.ZERO)
+    }
+
+    private val _toAddress = MutableStateFlow("")
+
+    fun setAddress(address: String) {
+        _toAddress.value = address
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
     val addressData by lazy {
-        sendHistoryRepository.getByAddress(toAddress)
-            .asStateIn(viewModelScope, null)
+        _toAddress.flatMapLatest { address ->
+            getAddressUseCase(address)
+                .map {
+                    when (it) {
+                        is Result.Success -> it.value
+                        else -> null
+                    }
+                }
+        }.asStateIn(viewModelScope, null)
+    }
+
+    private val nativeToken by lazy {
+        getNativeTokenUseCase().map { result ->
+            when (result) {
+                is Result.Success -> WalletTokenData(
+                    count = BigDecimal.ZERO,
+                    tokenData = result.value,
+                    tokenAddress = result.value.address
+                )
+                else -> null
+            }
+        }
+    }
+
+    private val _walletTokenData = MutableStateFlow<WalletTokenData?>(null)
+    private val walletTokenData by lazy {
+        combine(
+            _walletTokenData,
+            getWalletTokenByAddressUseCase(tradableId),
+            nativeToken
+        ) { select, default, native ->
+            select ?: when (default) {
+                is Result.Success -> default.value
+                else -> null
+            } ?: native
+        }
+    }
+
+    private val _collectibleData = MutableStateFlow<WalletCollectibleData?>(null)
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val collectibleData by lazy {
+        combine(_collectibleData, getWalletCollectibleUseCase(tradableId)) { select, default ->
+            select ?: when (default) {
+                is Result.Success -> default.value
+                else -> null
+            }
+        }.asStateIn(viewModelScope, null)
+    }
+
+    val selectedTradable = combine(collectibleData, walletTokenData) { collectible, token ->
+        collectible ?: token
+    }.asStateIn(viewModelScope, null)
+
+    fun onSelectTradable(value: TradableData) {
+        when (value) {
+            is WalletTokenData -> {
+                _walletTokenData.value = value
+                _collectibleData.value = null
+            }
+            is WalletCollectibleData -> {
+                _collectibleData.value = value
+                _walletTokenData.value = null
+            }
+        }
+        setCurrentChainUseCase(value.network())
+    }
+
+    val canConfirm by lazy {
+        combine(
+            passwordValid,
+            _amount.map { it.toBigDecimal() },
+            selectedTradable.mapNotNull { it },
+            maxAmount,
+        ) { valid, amount, selectedData, maxAmount ->
+            valid && when (selectedData) {
+                is WalletCollectibleData -> true
+                is WalletTokenData -> amount < maxAmount
+            }
+        }.asStateIn(viewModelScope, false)
     }
 }

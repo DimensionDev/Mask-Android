@@ -38,6 +38,7 @@ import com.dimension.maskbook.common.route.navigationComposeBottomSheetPackage
 import com.dimension.maskbook.common.routeProcessor.annotations.Back
 import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
 import com.dimension.maskbook.common.routeProcessor.annotations.Path
+import com.dimension.maskbook.wallet.export.model.WalletTokenData
 import com.dimension.maskbook.wallet.ext.fromHexString
 import com.dimension.maskbook.wallet.ext.humanizeDollar
 import com.dimension.maskbook.wallet.ext.humanizeToken
@@ -89,7 +90,11 @@ fun SendTokenConfirmModal(
                 composable("SendConfirm") {
                     SendConfirmSheet(
                         addressData = addressData,
-                        tokenData = tokenData,
+                        tokenData = WalletTokenData(
+                            count = BigDecimal.ZERO,
+                            tokenAddress = tokenData.address,
+                            tokenData = tokenData
+                        ),
                         sendPrice = amount.humanizeToken(),
                         gasFee = (gasTotal * usdValue).humanizeDollar(),
                         total = (amount * tokenData.price + gasTotal * usdValue).humanizeDollar(),

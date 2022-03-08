@@ -345,4 +345,5 @@ interface IWalletRepository {
     fun validateMnemonic(mnemonic: String): Boolean
     fun validateKeystore(keyStore: String): Boolean
     suspend fun getEnsAddress(chainType: ChainType, name: String): String
+    suspend fun getChainData(chainType: ChainType): Flow<ChainData?>
 }

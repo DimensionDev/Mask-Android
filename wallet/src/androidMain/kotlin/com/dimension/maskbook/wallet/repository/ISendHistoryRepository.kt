@@ -24,10 +24,11 @@ import com.dimension.maskbook.wallet.db.AppDatabase
 import com.dimension.maskbook.wallet.db.model.DbSendHistory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.UUID
 
@@ -35,7 +36,7 @@ interface ISendHistoryRepository {
     val recent: Flow<List<SearchAddressData>>
     suspend fun addOrUpdate(address: String, name: String)
     fun getByAddress(address: String): Flow<SearchAddressData?>
-    fun getOrCreateByAddress(address: String): Flow<SearchAddressData>
+    fun getOrCreateByAddress(address: String): Flow<SearchAddressData?>
 }
 
 class SendHistoryRepository(
@@ -82,11 +83,20 @@ class SendHistoryRepository(
         }
     }
 
-    override fun getOrCreateByAddress(address: String): Flow<SearchAddressData> {
-        scope.launch {
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override fun getOrCreateByAddress(address: String): Flow<SearchAddressData?> {
+        return flow {
             addOrUpdate(address = address, name = "")
+            emit(Unit)
+        }.flatMapLatest {
+            database.sendHistoryDao().getByAddressFlow(address)
+                .map {
+                    if (it != null) {
+                        SearchAddressData.fromDb(it)
+                    } else {
+                        null
+                    }
+                }
         }
-        return database.sendHistoryDao().getByAddressFlow(address).mapNotNull { it }
-            .map { SearchAddressData.fromDb(it) }
     }
 }

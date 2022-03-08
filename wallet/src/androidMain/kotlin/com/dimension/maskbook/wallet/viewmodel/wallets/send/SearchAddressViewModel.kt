@@ -25,11 +25,11 @@ import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.Validator
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.wallet.export.model.ChainType
-import com.dimension.maskbook.wallet.usecase.AddRecentAddressUseCase
-import com.dimension.maskbook.wallet.usecase.GetContactsUseCase
-import com.dimension.maskbook.wallet.usecase.GetEnsAddressUseCase
-import com.dimension.maskbook.wallet.usecase.GetRecentAddressUseCase
 import com.dimension.maskbook.wallet.usecase.Result
+import com.dimension.maskbook.wallet.usecase.address.AddRecentAddressUseCase
+import com.dimension.maskbook.wallet.usecase.address.GetContactsUseCase
+import com.dimension.maskbook.wallet.usecase.address.GetEnsAddressUseCase
+import com.dimension.maskbook.wallet.usecase.address.GetRecentAddressUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect

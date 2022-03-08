@@ -18,21 +18,22 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.usecase
+package com.dimension.maskbook.wallet.usecase.address
 
-import com.dimension.maskbook.wallet.repository.IWalletContactRepository
+import com.dimension.maskbook.wallet.repository.ISendHistoryRepository
 import com.dimension.maskbook.wallet.repository.SearchAddressData
+import com.dimension.maskbook.wallet.usecase.Result
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-interface GetContactsUseCase {
+interface GetRecentAddressUseCase {
     operator fun invoke(filter: String = ""): Flow<Result<List<SearchAddressData>>>
 }
 
-class GetContactsUseCaseImpl(
-    val repository: IWalletContactRepository
-) : GetContactsUseCase {
-    private val recent = repository.contacts
+class GetRecentAddressUseCaseImpl(
+    val repository: ISendHistoryRepository
+) : GetRecentAddressUseCase {
+    private val recent = repository.recent
 
     override fun invoke(filter: String): Flow<Result<List<SearchAddressData>>> {
         return recent.map { data ->
