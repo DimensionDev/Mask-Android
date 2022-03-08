@@ -74,7 +74,7 @@ import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletSwitchAd
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletSwitchEditModal
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletSwitchSceneModal
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletTransactionHistoryScene
-import com.dimension.maskbook.wallet.ui.scenes.wallets.send.SendTokenHost
+import com.dimension.maskbook.wallet.ui.scenes.wallets.send.TransferHost
 import com.dimension.maskbook.wallet.ui.scenes.wallets.token.TokenDetailScene
 import com.dimension.maskbook.wallet.viewmodel.wallets.BiometricViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.TokenDetailViewModel
@@ -691,7 +691,7 @@ fun NavGraphBuilder.walletsRoute(
             navArgument("tradableId") { type = NavType.StringType }
         )
     ) {
-        SendTokenHost(
+        TransferHost(
             tradableId = it.arguments?.getString("tradableId")?.let { if (it != "null") it else null }.orEmpty(),
             onBack = {
                 navController.popBackStack()

@@ -44,6 +44,7 @@ data class WalletCollectibleData(
     val collection: WalletCollectibleCollectionData
 ) : TradableData {
     override fun tradableId() = id
+    override fun network() = chainType
 
     companion object
 }

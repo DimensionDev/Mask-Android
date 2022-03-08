@@ -43,7 +43,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import java.math.BigDecimal
 
-class SendTokenViewModel(
+class TransferDetailViewModel(
     private val tradableId: String,
     private val verifyPaymentPasswordUseCase: VerifyPaymentPasswordUseCase,
     private val getAddressUseCase: GetAddressUseCase,

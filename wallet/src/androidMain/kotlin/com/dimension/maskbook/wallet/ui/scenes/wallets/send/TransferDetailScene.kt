@@ -79,7 +79,7 @@ import com.dimension.maskbook.wallet.repository.UnlockType
 import com.dimension.maskbook.wallet.ui.widget.CollectibleCard
 
 @Composable
-fun SendTokenScene(
+fun TransferDetailScene(
     onBack: () -> Unit,
     addressData: SearchAddressData,
     onAddContact: () -> Unit,

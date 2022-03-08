@@ -66,12 +66,28 @@ import com.dimension.maskbook.wallet.ui.scenes.wallets.send.generatedRoute
 import com.dimension.maskbook.wallet.ui.tab.WalletTabScreen
 import com.dimension.maskbook.wallet.usecase.address.AddRecentAddressUseCase
 import com.dimension.maskbook.wallet.usecase.address.AddRecentAddressUseCaseImpl
+import com.dimension.maskbook.wallet.usecase.address.GetAddressUseCase
+import com.dimension.maskbook.wallet.usecase.address.GetAddressUseCaseImpl
 import com.dimension.maskbook.wallet.usecase.address.GetContactsUseCase
 import com.dimension.maskbook.wallet.usecase.address.GetContactsUseCaseImpl
 import com.dimension.maskbook.wallet.usecase.address.GetEnsAddressUseCase
 import com.dimension.maskbook.wallet.usecase.address.GetEnsAddressUseCaseImpl
 import com.dimension.maskbook.wallet.usecase.address.GetRecentAddressUseCase
 import com.dimension.maskbook.wallet.usecase.address.GetRecentAddressUseCaseImpl
+import com.dimension.maskbook.wallet.usecase.chain.SetCurrentChainUseCase
+import com.dimension.maskbook.wallet.usecase.chain.SetCurrentChainUseCaseImpl
+import com.dimension.maskbook.wallet.usecase.collectible.GetWalletCollectibleCollectionsUseCase
+import com.dimension.maskbook.wallet.usecase.collectible.GetWalletCollectibleCollectionsUseCaseImpl
+import com.dimension.maskbook.wallet.usecase.collectible.GetWalletCollectibleUseCase
+import com.dimension.maskbook.wallet.usecase.collectible.GetWalletCollectibleUseCaseImpl
+import com.dimension.maskbook.wallet.usecase.password.VerifyPaymentPasswordUseCase
+import com.dimension.maskbook.wallet.usecase.password.VerifyPaymentPasswordUseCaseImpl
+import com.dimension.maskbook.wallet.usecase.token.GetNativeTokenUseCase
+import com.dimension.maskbook.wallet.usecase.token.GetNativeTokenUseCaseImpl
+import com.dimension.maskbook.wallet.usecase.token.GetWalletTokenByAddressUseCase
+import com.dimension.maskbook.wallet.usecase.token.GetWalletTokenByAddressUseCaseImpl
+import com.dimension.maskbook.wallet.usecase.token.GetWalletTokensUseCase
+import com.dimension.maskbook.wallet.usecase.token.GetWalletTokensUseCaseImpl
 import com.dimension.maskbook.wallet.viewmodel.WelcomeViewModel
 import com.dimension.maskbook.wallet.viewmodel.recovery.IdentityViewModel
 import com.dimension.maskbook.wallet.viewmodel.recovery.PrivateKeyViewModel
@@ -105,9 +121,9 @@ import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletTransact
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.AddContactViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.GasFeeViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.SearchAddressViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.send.SearchTradableViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendConfirmViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendTokenViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendTradableDataViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.send.TransferDetailViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.Web3TransactionConfirmViewModel
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectServerManager
@@ -293,6 +309,17 @@ private fun Module.provideUseCase() {
     factory<GetRecentAddressUseCase> { GetRecentAddressUseCaseImpl(get()) }
     factory<GetContactsUseCase> { GetContactsUseCaseImpl(get()) }
     factory<AddRecentAddressUseCase> { AddRecentAddressUseCaseImpl(get()) }
+    factory<GetAddressUseCase> { GetAddressUseCaseImpl(get()) }
+
+    factory<SetCurrentChainUseCase> { SetCurrentChainUseCaseImpl(get()) }
+
+    factory<GetWalletCollectibleCollectionsUseCase> { GetWalletCollectibleCollectionsUseCaseImpl(get(), get()) }
+    factory<GetWalletCollectibleUseCase> { GetWalletCollectibleUseCaseImpl(get()) }
+
+    factory<VerifyPaymentPasswordUseCase> { VerifyPaymentPasswordUseCaseImpl(get()) }
+    factory<GetNativeTokenUseCase> { GetNativeTokenUseCaseImpl(get()) }
+    factory<GetWalletTokenByAddressUseCase> { GetWalletTokenByAddressUseCaseImpl(get()) }
+    factory<GetWalletTokensUseCase> { GetWalletTokensUseCaseImpl(get()) }
 }
 
 private fun Module.provideViewModel() {
@@ -342,9 +369,13 @@ private fun Module.provideViewModel() {
             get()
         )
     }
-    viewModel { (toAddress: String) ->
-        SendTokenViewModel(
-            toAddress = toAddress,
+    viewModel { (tradableId: String) ->
+        TransferDetailViewModel(
+            tradableId = tradableId,
+            get(),
+            get(),
+            get(),
+            get(),
             get(),
             get(),
         )
@@ -367,9 +398,9 @@ private fun Module.provideViewModel() {
     viewModel { UnlockWalletViewModel(get(), get()) }
     viewModel { BackUpPasswordViewModel(get(), get()) }
     viewModel { (id: String) -> CollectibleDetailViewModel(id, get(), get(), get()) }
-    viewModel { (tokenAddress: String) -> SendTradableDataViewModel(tokenAddress, get(), get(), get()) }
     viewModel { CollectiblesViewModel(get(), get()) }
     viewModel { (data: SendTokenConfirmData) -> Web3TransactionConfirmViewModel(data, get(), get(), get()) }
+    viewModel { SearchTradableViewModel(get(), get()) }
 }
 
 private fun Module.provideServices() {

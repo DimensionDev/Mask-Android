@@ -24,9 +24,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.common.ext.asStateIn
-import com.dimension.maskbook.wallet.export.model.TokenData
 import com.dimension.maskbook.wallet.export.model.TradableData
 import com.dimension.maskbook.wallet.export.model.WalletCollectibleData
+import com.dimension.maskbook.wallet.export.model.WalletTokenData
 import com.dimension.maskbook.wallet.repository.ISendHistoryRepository
 import com.dimension.maskbook.wallet.repository.IWalletRepository
 import kotlinx.coroutines.flow.map
@@ -46,10 +46,10 @@ class SendConfirmViewModel(
         maxPriorityFee: Double
     ) {
         when (tradableData) {
-            is TokenData -> walletRepository.sendTokenWithCurrentWallet(
+            is WalletTokenData -> walletRepository.sendTokenWithCurrentWallet(
                 amount = amount,
                 address = toAddress,
-                tokenData = tradableData,
+                tokenData = tradableData.tokenData,
                 gasLimit = gasLimit,
                 maxFee = maxFee,
                 maxPriorityFee = maxPriorityFee,

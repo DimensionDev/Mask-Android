@@ -27,9 +27,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -59,7 +57,7 @@ import com.dimension.maskbook.wallet.viewmodel.wallets.send.GasFeeViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.SearchAddressViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.SearchTradableViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendConfirmViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendTokenViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.send.TransferDetailViewModel
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 import com.google.accompanist.navigation.material.bottomSheet
@@ -69,7 +67,7 @@ import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalMaterialNavigationApi::class, ExperimentalTime::class)
 @Composable
-fun SendTokenHost(
+fun TransferHost(
     tradableId: String,
     onBack: () -> Unit,
     onDone: () -> Unit,
@@ -82,9 +80,7 @@ fun SendTokenHost(
     val gasFeeViewModel = getViewModel<GasFeeViewModel> {
         parametersOf(21000.0)
     }
-    val sendViewModel = getViewModel<SendTokenViewModel> {
-        parametersOf(tradableId)
-    }
+    val transferDetailViewModel = getViewModel<TransferDetailViewModel> { parametersOf(tradableId) }
     val searchAddressViewModel = getViewModel<SearchAddressViewModel>()
 
     val gasLimit by gasFeeViewModel.gasLimit.observeAsState(initial = -1.0)
@@ -94,7 +90,7 @@ fun SendTokenHost(
     val nativeToken by gasFeeViewModel.nativeToken.observeAsState(initial = null)
     val gasTotal by gasFeeViewModel.gasTotal.observeAsState(initial = BigDecimal.ZERO)
     val gasUsdTotal by gasFeeViewModel.gasUsdTotal.observeAsState(initial = BigDecimal.ZERO)
-    val selectTradable by sendViewModel.selectedTradable.collectAsState(null)
+    val selectTradable by transferDetailViewModel.selectedTradable.collectAsState(null)
 
     ModalBottomSheetLayout(
         bottomSheetNavigator,
@@ -175,18 +171,18 @@ fun SendTokenHost(
                 ),
             ) {
                 val address = it.arguments?.getString("address") ?: return@composable
-                sendViewModel.setAddress(address)
+                transferDetailViewModel.setAddress(address)
                 val biometricViewModel = getViewModel<BiometricViewModel>()
                 val biometricEnabled by biometricViewModel.biometricEnabled.observeAsState()
-                val addressData by sendViewModel.addressData.observeAsState()
-                val amount by sendViewModel.amount.observeAsState()
-                val password by sendViewModel.password.observeAsState()
-                val canConfirm by sendViewModel.canConfirm.observeAsState()
-                val balance by sendViewModel.balance.observeAsState()
-                val maxAmount by sendViewModel.maxAmount.observeAsState()
+                val addressData by transferDetailViewModel.addressData.observeAsState()
+                val amount by transferDetailViewModel.amount.observeAsState()
+                val password by transferDetailViewModel.password.observeAsState()
+                val canConfirm by transferDetailViewModel.canConfirm.observeAsState()
+                val balance by transferDetailViewModel.balance.observeAsState()
+                val maxAmount by transferDetailViewModel.maxAmount.observeAsState()
 
                 addressData?.let { currentAddressData ->
-                    SendTokenScene(
+                    TransferDetailScene(
                         onBack = { navController.popBackStack() },
                         addressData = currentAddressData,
                         onAddContact = { navController.navigate("AddContactSheet/$address") },
@@ -200,7 +196,7 @@ fun SendTokenHost(
                         },
                         amount = amount,
                         maxAmount = maxAmount.humanizeToken(),
-                        onAmountChanged = { sendViewModel.setAmount(it) },
+                        onAmountChanged = { transferDetailViewModel.setAmount(it) },
                         unlockType = if (biometricEnabled) UnlockType.BIOMETRIC else UnlockType.PASSWORD,
                         gasFee = gasUsdTotal.humanizeDollar(),
                         arrivesIn = arrives,
@@ -219,7 +215,7 @@ fun SendTokenHost(
                         },
                         sendError = "",
                         paymentPassword = password,
-                        onPaymentPasswordChanged = { sendViewModel.setPassword(it) },
+                        onPaymentPasswordChanged = { transferDetailViewModel.setPassword(it) },
                         canConfirm = canConfirm
                     )
                 }
@@ -228,17 +224,17 @@ fun SendTokenHost(
             composable("SearchToken") {
                 val viewModel = getViewModel<SearchTradableViewModel>()
                 val walletTokens by viewModel.walletTokens.observeAsState(emptyList())
-                var query by remember { mutableStateOf("") }
+                val query by viewModel.query.observeAsState()
                 SearchTokenScene(
                     onBack = {
                         navController.popBackStack()
                     },
                     query = query,
                     onQueryChanged = {
-                        query = it
+                        viewModel.onQueryChanged(it)
                     },
                     onSelect = {
-                        sendViewModel.onSelectTradable(it)
+                        transferDetailViewModel.onSelectTradable(it)
                         navController.popBackStack()
                     },
                     tokens = walletTokens
@@ -248,17 +244,17 @@ fun SendTokenHost(
             composable("SearchCollectibles") {
                 val viewModel = getViewModel<SearchTradableViewModel>()
                 val walletCollectibleCollections = viewModel.walletCollectibleCollections.collectAsLazyPagingItems()
-                var query by remember { mutableStateOf("") }
+                val query by viewModel.query.observeAsState()
                 SearchCollectibleScene(
                     onBack = {
                         navController.popBackStack()
                     },
                     query = query,
                     onQueryChanged = {
-                        query = it
+                        viewModel.onQueryChanged(it)
                     },
                     onSelect = {
-                        sendViewModel.onSelectTradable(it)
+                        transferDetailViewModel.onSelectTradable(it)
                         navController.popBackStack()
                     },
                     collections = walletCollectibleCollections
