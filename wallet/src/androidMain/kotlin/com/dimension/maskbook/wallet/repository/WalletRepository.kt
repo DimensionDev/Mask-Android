@@ -306,23 +306,24 @@ internal class WalletRepository(
             it?.let { it1 -> WalletData.fromDb(it1) }
         }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override val currentChain: Flow<ChainData?>
-        get() = dWebData.flatMapLatest {
-            database.chainDao().getByIdFlow(it.chainType.chainId)
-        }.map {
-            it?.let {
-                ChainData(
-                    chainId = it.chain.chainId,
-                    name = it.chain.name,
-                    fullName = it.chain.fullName,
-                    nativeTokenID = it.chain.nativeTokenID,
-                    logoURL = it.chain.logoURL,
-                    nativeToken = it.token?.let { token -> TokenData.fromDb(token) },
-                    chainType = ChainType.valueOf(it.chain.name)
-                )
-            }
+        get() = dWebData.map {
+            getChainTokenData(it.chainType)
         }
+
+    override suspend fun getChainTokenData(chainType: ChainType): ChainData? {
+        return database.chainDao().getById(chainType.chainId)?.let {
+            ChainData(
+                chainId = it.chain.chainId,
+                name = it.chain.name,
+                fullName = it.chain.fullName,
+                nativeTokenID = it.chain.nativeTokenID,
+                logoURL = it.chain.logoURL,
+                nativeToken = it.token?.let { token -> TokenData.fromDb(token) },
+                chainType = ChainType.valueOf(it.chain.name)
+            )
+        }
+    }
 
     override fun setCurrentWallet(walletData: WalletData?) {
         if (walletData?.id != null) {

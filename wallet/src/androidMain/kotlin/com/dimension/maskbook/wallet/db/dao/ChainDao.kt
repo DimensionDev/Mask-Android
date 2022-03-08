@@ -40,6 +40,10 @@ interface ChainDao {
     @Query("SELECT * FROM DbChainData WHERE chainId = :id")
     fun getByIdFlow(id: Long): Flow<DbChainDataWithTokenData?>
 
+    @Transaction
+    @Query("SELECT * FROM DbChainData WHERE chainId = :id")
+    suspend fun getById(id: Long): DbChainDataWithTokenData?
+
     @Query("DELETE FROM DbChainData WHERE chainId = :id")
     suspend fun deleteById(id: Long)
 
