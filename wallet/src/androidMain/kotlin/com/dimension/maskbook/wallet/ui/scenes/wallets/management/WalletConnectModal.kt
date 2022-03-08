@@ -71,7 +71,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.navOptions
 import coil.compose.rememberImagePainter
@@ -80,6 +79,7 @@ import com.dimension.maskbook.common.ui.LocalRootNavController
 import com.dimension.maskbook.common.ui.notification.StringResNotificationEvent.Companion.show
 import com.dimension.maskbook.common.ui.widget.LocalInAppNotification
 import com.dimension.maskbook.common.ui.widget.MaskModal
+import com.dimension.maskbook.common.ui.widget.SinglelineText
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.common.ui.widget.button.clickable
 import com.dimension.maskbook.common.ui.widget.itemsGridIndexed
@@ -442,11 +442,10 @@ fun WalletConnectManually(
                             alpha = if (isInstalled) ContentAlpha.high else ContentAlpha.disabled
                         )
                         Spacer(modifier = Modifier.height(10.dp))
-                        Text(
+                        SinglelineText(
                             text = wallet.displayName,
-                            style = MaterialTheme.typography.body2, maxLines = 1,
+                            style = MaterialTheme.typography.body2,
                             textAlign = TextAlign.Center,
-                            overflow = TextOverflow.Ellipsis,
                         )
                     }
                 }

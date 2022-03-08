@@ -56,11 +56,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import com.dimension.maskbook.common.ui.widget.NameImage
+import com.dimension.maskbook.common.ui.widget.SinglelineText
 import com.dimension.maskbook.common.ui.widget.button.MaskGridButton
 import com.dimension.maskbook.common.ui.widget.itemsGridIndexed
 import com.dimension.maskbook.persona.export.model.Network
@@ -211,12 +211,10 @@ private fun SocialItem(
             }
         },
         text = {
-            Text(
+            SinglelineText(
                 text = item.name,
                 style = MaterialTheme.typography.subtitle2,
                 color = LocalContentColor.current.copy(LocalContentAlpha.current),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
             )
         }
     )
