@@ -107,7 +107,10 @@ fun SendTokenConfirmModal(
                             viewModel.cancel()
                             onBack.invoke()
                         },
-                        onEditGasFee = { navController.navigate("EditGasFee") },
+                        onEditGasFee = {
+                            navController.navigate("EditGasFee")
+                            gasFeeViewModel.refreshSuggestGasFee()
+                        },
                     )
                 }
                 composable("EditGasFee") {

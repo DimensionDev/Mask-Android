@@ -40,6 +40,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.launch
 import java.math.BigDecimal
 
 class GasFeeViewModel(
@@ -73,25 +74,34 @@ class GasFeeViewModel(
     private val _loadingState = MutableStateFlow(false)
     val loadingState = _loadingState.asStateIn(viewModelScope)
 
+    private val _suggestGasFee = MutableStateFlow(GasFeeModel())
+    val suggestGasFee = _suggestGasFee.asStateIn(viewModelScope, GasFeeModel())
+
+    init {
+        refreshSuggestGasFee()
+    }
+
     @OptIn(ExperimentalCoroutinesApi::class)
-    val suggestGasFee = chainType.flatMapLatest {
-        getSuggestGasFeeUseCase(it)
-    }.mapNotNull {
-        when (it) {
-            is Result.Failed -> {
-                _loadingState.value = false
-                null
-            }
-            is Result.Loading -> {
-                _loadingState.value = true
-                null
-            }
-            is Result.Success -> {
-                _loadingState.value = false
-                it.value
+    fun refreshSuggestGasFee() {
+        viewModelScope.launch {
+            chainType.flatMapLatest {
+                getSuggestGasFeeUseCase(it)
+            }.collect {
+                when (it) {
+                    is Result.Failed -> {
+                        _loadingState.value = false
+                    }
+                    is Result.Loading -> {
+                        _loadingState.value = true
+                    }
+                    is Result.Success -> {
+                        _loadingState.value = false
+                        _suggestGasFee.value = it.value
+                    }
+                }
             }
         }
-    }.asStateIn(viewModelScope, GasFeeModel())
+    }
 
     private val _gasLimit = MutableStateFlow(initialGasLimit)
     val gasLimit = _gasLimit.asStateIn(viewModelScope, -1.0)
@@ -158,16 +168,16 @@ class GasFeeViewModel(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val arrives = combine(chainType, maxFeePerGas, maxPriorityFeePerGas) { _, maxFee, maxPriorityFee ->
+    val arrives = combine(maxFeePerGas, maxPriorityFeePerGas) { maxFee, maxPriorityFee ->
         GasFeeData(maxFeePerGas = maxFee, maxPriorityFeePerGas = maxPriorityFee)
     }.flatMapLatest { gasFee ->
-        chainType.flatMapLatest {
-            getArrivesWithGasFeeUseCase(it, gasFee = gasFee)
+        suggestGasFee.flatMapLatest {
+            getArrivesWithGasFeeUseCase(gasFee = gasFee, suggestGasFee = it)
         }
-    }.map {
+    }.mapNotNull {
         when (it) {
             is Result.Success -> it.value.humanizeMinutes()
-            else -> ""
+            else -> null
         }
     }.asStateIn(viewModelScope, "")
 }

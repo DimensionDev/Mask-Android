@@ -20,50 +20,43 @@
  */
 package com.dimension.maskbook.wallet.usecase.gas
 
-import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.services.WalletServices
 import com.dimension.maskbook.wallet.usecase.Result
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
 interface GetArrivesWithGasFeeUseCase {
-    operator fun invoke(chainType: ChainType?, gasFee: GasFeeData): Flow<Result<Double>> // minutes
+    operator fun invoke(
+        gasFee: GasFeeData,
+        suggestGasFee: GasFeeModel
+    ): Flow<Result<Double>> // minutes
 }
 
 internal class GetArrivesWithGasFeeUseCaseImpl(
     private val services: WalletServices,
 ) : GetArrivesWithGasFeeUseCase {
     private val unKnow = -1.0
-    override fun invoke(chainType: ChainType?, gasFee: GasFeeData): Flow<Result<Double>> {
+    override fun invoke(gasFee: GasFeeData, suggestGasFee: GasFeeModel): Flow<Result<Double>> {
         return flow {
             emit(Result.Loading())
-            val gas = gasFee.total.toBigDecimal()
+            val total = gasFee.total
             runCatching {
-                when (chainType) {
-                    // TODO Mimao this is not correct way
-                    ChainType.eth -> with(services.gasServices.ethGas()) {
-                        if (safeLowWait != null && fastestWait != null && fastWait != null && avgWait != null && fast != null && fastest != null && safeLow != null && average != null) {
-                            when {
-                                gas > fastest.toBigDecimal() -> fastestWait
-                                gas > fast.toBigDecimal() -> fastWait
-                                gas >= average.toBigDecimal() -> avgWait
-                                gas >= safeLow.toBigDecimal() -> safeLowWait
-                                else -> unKnow
-                            }
-                        } else {
-                            unKnow
+                with(services.gasServices.ethGas()) {
+                    if (safeLowWait != null && fastestWait != null && fastWait != null && avgWait != null) {
+                        when {
+                            total > suggestGasFee.high.total -> fastestWait
+                            total >= suggestGasFee.high.total -> fastWait
+                            total >= suggestGasFee.medium.total -> avgWait
+                            total >= suggestGasFee.low.total -> safeLowWait
+                            else -> unKnow
                         }
+                    } else {
+                        unKnow
                     }
-                    // TODO calculate
-                    ChainType.polygon -> -unKnow
-                    ChainType.bsc -> unKnow
-                    ChainType.arbitrum -> unKnow
-                    ChainType.xdai -> unKnow
-                    else -> unKnow
                 }
             }.onSuccess {
                 if (it == unKnow) {
-                    emit(Result.Failed(Error("Can't get arrives on chain:$chainType with give gas fee:$gas")))
+                    emit(Result.Failed(Error("Can't get arrives  with give gas fee:$total")))
                 } else {
                     emit(Result.Success(it))
                 }

@@ -196,7 +196,10 @@ fun TransferHost(
                         unlockType = if (biometricEnabled) UnlockType.BIOMETRIC else UnlockType.PASSWORD,
                         gasFee = gasUsdTotal.humanizeDollar(),
                         arrivesIn = arrives,
-                        onEditGasFee = { navController.navigate("EditGasFee") },
+                        onEditGasFee = {
+                            navController.navigate("EditGasFee")
+                            gasFeeViewModel.refreshSuggestGasFee()
+                        },
                         onSend = { type ->
                             if (type == UnlockType.BIOMETRIC) {
                                 biometricViewModel.authenticate(
@@ -239,7 +242,8 @@ fun TransferHost(
 
             composable("SearchCollectibles") {
                 val viewModel = getViewModel<SearchTradableViewModel>()
-                val walletCollectibleCollections = viewModel.walletCollectibleCollections.collectAsLazyPagingItems()
+                val walletCollectibleCollections =
+                    viewModel.walletCollectibleCollections.collectAsLazyPagingItems()
                 val query by viewModel.query.observeAsState()
                 SearchCollectibleScene(
                     onBack = {
