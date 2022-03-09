@@ -22,7 +22,6 @@ package com.dimension.maskbook.wallet
 
 import android.content.Context
 import android.net.Uri
-import androidx.compose.runtime.getValue
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.room.Room
@@ -53,6 +52,8 @@ import com.dimension.maskbook.wallet.repository.walletDataStore
 import com.dimension.maskbook.wallet.route.generatedRoute
 import com.dimension.maskbook.wallet.services.WalletServices
 import com.dimension.maskbook.wallet.ui.tab.WalletTabScreen
+import com.dimension.maskbook.wallet.usecase.address.AddContactUseCase
+import com.dimension.maskbook.wallet.usecase.address.AddContactUseCaseImpl
 import com.dimension.maskbook.wallet.usecase.address.AddRecentAddressUseCase
 import com.dimension.maskbook.wallet.usecase.address.AddRecentAddressUseCaseImpl
 import com.dimension.maskbook.wallet.usecase.address.GetAddressUseCase
@@ -242,8 +243,10 @@ private fun Module.provideUseCase() {
     factory<GetEnsAddressUseCase> { GetEnsAddressUseCaseImpl(get()) }
     factory<GetRecentAddressUseCase> { GetRecentAddressUseCaseImpl(get()) }
     factory<GetContactsUseCase> { GetContactsUseCaseImpl(get()) }
-    factory<AddRecentAddressUseCase> { AddRecentAddressUseCaseImpl(get()) }
     factory<GetAddressUseCase> { GetAddressUseCaseImpl(get()) }
+    factory<AddRecentAddressUseCase> { AddRecentAddressUseCaseImpl(get()) }
+    factory<AddContactUseCase> { AddContactUseCaseImpl(get()) }
+
     // chain
     factory<SetCurrentChainUseCase> { SetCurrentChainUseCaseImpl(get()) }
     // general

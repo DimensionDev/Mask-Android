@@ -317,8 +317,9 @@ fun TransferHost(
                     nameInput = name,
                     onNameChanged = { viewModel.setName(it) },
                     onAddContact = {
-                        viewModel.confirm(name, address)
-                        navController.popBackStack()
+                        viewModel.confirm(name, address, onResult = {
+                            navController.popBackStack()
+                        })
                     }
                 )
             }
