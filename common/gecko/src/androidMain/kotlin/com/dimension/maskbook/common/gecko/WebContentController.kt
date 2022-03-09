@@ -39,11 +39,9 @@ import mozilla.components.concept.engine.EngineSession
 import mozilla.components.concept.engine.request.RequestInterceptor
 import mozilla.components.concept.engine.webextension.MessageHandler
 import mozilla.components.concept.engine.webextension.Port
-import mozilla.components.feature.prompts.PromptFeature
 import mozilla.components.feature.session.SessionUseCases
 import mozilla.components.feature.tabs.TabsUseCases
 import mozilla.components.lib.state.Store
-import mozilla.components.support.base.feature.OnNeedToRequestPermissions
 import org.json.JSONObject
 import org.mozilla.geckoview.GeckoRuntime
 import java.io.Closeable
@@ -169,15 +167,10 @@ class WebContentController(
     val title get() = _browserState.mapNotNull { it?.selectedTab?.content?.title }
     val tabCount get() = _browserState.mapNotNull { it?.tabs?.size }
 
-    fun createPromptFeature(
-        fragmentActivity: FragmentActivity,
-        onNeedToRequestPermissions: OnNeedToRequestPermissions,
-    ): PromptFeature {
-        return PromptFeature(
-            activity = fragmentActivity,
-            fragmentManager = fragmentActivity.supportFragmentManager,
+    fun createPromptFeature(fragmentActivity: FragmentActivity): PromptFeatureDelegate {
+        return PromptFeatureDelegate(
+            fragmentActivity = fragmentActivity,
             store = store,
-            onNeedToRequestPermissions = onNeedToRequestPermissions
         )
     }
 

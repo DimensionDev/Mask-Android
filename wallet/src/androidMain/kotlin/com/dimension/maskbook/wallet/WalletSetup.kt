@@ -218,7 +218,7 @@ private fun initWalletConnect() {
             }
         }
     KoinPlatformTools.defaultContext().get().get<WalletConnectServerManager>()
-        .init { clientMeta, request ->
+        .init { _, _ -> // clientMeta, request ->
             TODO("navigate to wallet connect request handle scene")
         }
 }

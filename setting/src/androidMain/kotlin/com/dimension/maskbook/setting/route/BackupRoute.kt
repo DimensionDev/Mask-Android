@@ -397,7 +397,7 @@ fun BackupDataBackupMergeConfirm(
             PrimaryButton(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {
-                    viewModel.confirm(type, downloadUrl.orEmpty())
+                    viewModel.confirm(downloadUrl.orEmpty())
                 },
                 enabled = passwordValid && !loading
             ) {

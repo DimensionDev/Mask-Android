@@ -120,9 +120,7 @@ fun CollectibleDetail(
     data?.let {
         CollectibleDetailScene(
             data = it,
-            onBack = {
-                navController.popBackStack()
-            },
+            onBack = onBack,
             onSend = {
                 navController.navigate(WalletRoute.SendTokenScene(it.tradableId()))
             },
@@ -183,27 +181,28 @@ fun TokenDetail(
     val transactions by viewModel.transactions.observeAsState()
     val walletTokenData by viewModel.walletTokenData.observeAsState()
     val dWebData by viewModel.dWebData.observeAsState()
-    walletTokenData?.let { walletTokenData ->
-        token?.let { token ->
-            TokenDetailScene(
-                onBack = onBack,
-                tokenData = token,
-                walletTokenData = walletTokenData,
-                transactions = transactions,
-                onSpeedUp = { },
-                onCancel = { },
-                onSend = {
-                    if (token.chainType != dWebData?.chainType) {
-                        navController.navigate(WalletRoute.WalletNetworkSwitch(token.chainType.name))
-                    } else {
-                        navController.navigate(WalletRoute.SendTokenScene(token.address))
-                    }
-                },
-                onReceive = {
-                    navController.navigate(WalletRoute.WalletQrcode(token.symbol))
-                },
-            )
-        }
+
+    val currentWalletTokenData = walletTokenData
+    val currentToken = token
+    if (currentWalletTokenData != null && currentToken != null) {
+        TokenDetailScene(
+            onBack = onBack,
+            tokenData = currentToken,
+            walletTokenData = currentWalletTokenData,
+            transactions = transactions,
+            onSpeedUp = { },
+            onCancel = { },
+            onSend = {
+                if (currentToken.chainType != dWebData?.chainType) {
+                    navController.navigate(WalletRoute.WalletNetworkSwitch(currentToken.chainType.name))
+                } else {
+                    navController.navigate(WalletRoute.SendTokenScene(currentToken.address))
+                }
+            },
+            onReceive = {
+                navController.navigate(WalletRoute.WalletQrcode(currentToken.symbol))
+            },
+        )
     }
 }
 

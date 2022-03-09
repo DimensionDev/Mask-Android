@@ -33,6 +33,7 @@ import com.dimension.maskbook.wallet.repository.ICollectibleRepository
 import com.dimension.maskbook.wallet.repository.IWalletRepository
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.BalancesSceneType
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -52,6 +53,7 @@ class WalletBalancesViewModel(
     val currentWallet by lazy {
         repository.currentWallet.asStateIn(viewModelScope, null)
     }
+    @OptIn(ExperimentalCoroutinesApi::class)
     val collectible by lazy {
         currentWallet.mapNotNull { it }.flatMapLatest { collectibleRepository.getCollectibleCollectionsByWallet(it) }
     }

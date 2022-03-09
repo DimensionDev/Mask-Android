@@ -74,8 +74,8 @@ fun RegisterInit(
         onRecoveryAndSignIn = {
             navController.navigate(WalletRoute.Register.Recovery.Home)
         },
-        onSynchronization = {
-        },
+        // onSynchronization = {
+        // },
     )
 }
 

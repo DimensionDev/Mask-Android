@@ -73,6 +73,7 @@ class SearchAddressViewModel(
             }
     }.asStateIn(viewModelScope, emptyList())
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     val contacts = _input.flatMapLatest {
         getContactsUseCase(filter = it)
             .map { result ->

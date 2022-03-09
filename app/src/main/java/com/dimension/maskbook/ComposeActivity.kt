@@ -21,12 +21,9 @@
 package com.dimension.maskbook
 
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.compose.setContent
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
@@ -35,6 +32,7 @@ import androidx.fragment.app.FragmentActivity
 import coil.ImageLoader
 import coil.compose.LocalImageLoader
 import coil.decode.SvgDecoder
+import com.dimension.maskbook.common.gecko.PromptFeatureDelegate
 import com.dimension.maskbook.common.gecko.WebContentController
 import com.dimension.maskbook.common.ui.widget.LocalWindowInsetsController
 import com.dimension.maskbook.entry.ui.App
@@ -42,19 +40,9 @@ import com.google.accompanist.insets.ProvideWindowInsets
 import org.koin.android.ext.android.get
 
 class ComposeActivity : FragmentActivity() {
-    private val permissionsRequest: ActivityResultLauncher<Array<String>> =
-        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
-            promptFeature.onPermissionsResult(
-                it.keys.toTypedArray(),
-                it.values.map { if (it) PackageManager.PERMISSION_GRANTED else PackageManager.PERMISSION_DENIED }
-                    .toIntArray()
-            )
-        }
-    private val promptFeature by lazy {
-        get<WebContentController>().createPromptFeature(this) {
-            permissionsRequest.launch(it)
-        }
-    }
+
+    private lateinit var promptFeature: PromptFeatureDelegate
+
     private val windowInsetsControllerCompat by lazy {
         WindowInsetsControllerCompat(window, window.decorView)
     }
@@ -64,6 +52,7 @@ class ComposeActivity : FragmentActivity() {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+        promptFeature = get<WebContentController>().createPromptFeature(this)
         setContent {
             CompositionLocalProvider(
                 LocalImageLoader provides ImageLoader.Builder(this).componentRegistry {
@@ -90,6 +79,8 @@ class ComposeActivity : FragmentActivity() {
         }
     }
 
+    @Deprecated("Deprecated in Java")
+    @Suppress("DEPRECATION")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         promptFeature.onActivityResult(requestCode, data, resultCode)

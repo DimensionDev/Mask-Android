@@ -25,6 +25,7 @@ import androidx.paging.PagingData
 import com.dimension.maskbook.wallet.export.model.WalletCollectibleData
 import com.dimension.maskbook.wallet.repository.ICollectibleRepository
 import com.dimension.maskbook.wallet.repository.IWalletRepository
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.mapNotNull
@@ -35,6 +36,7 @@ class CollectiblesViewModel(
 ) : ViewModel() {
     private val dataStore = mutableMapOf<String, Flow<PagingData<WalletCollectibleData>>>()
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     fun getCollectibles(collectionSlug: String?) = dataStore.getOrPut(collectionSlug ?: "") {
         walletRepository.currentWallet.mapNotNull { it }.flatMapLatest {
             repository.getCollectiblesByWallet(walletData = it, collectionSlug = collectionSlug)
