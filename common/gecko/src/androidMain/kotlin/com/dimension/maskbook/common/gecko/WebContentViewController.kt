@@ -20,22 +20,24 @@
  */
 package com.dimension.maskbook.common.gecko
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
-import mozilla.components.browser.state.helper.Target
+import mozilla.components.concept.engine.EngineView
 
-@Composable
-fun WebContent(
-    modifier: Modifier = Modifier,
-    controller: WebContentController,
-    viewController: WebContentViewController = remember { WebContentViewController(0) },
+class WebContentViewController(
+    private val toolbarHeight: Int,
 ) {
-    GeckoContent(
-        modifier = modifier,
-        engine = controller.engine,
-        target = Target.SelectedTab,
-        store = controller.store,
-        controller = viewController,
-    )
+    internal var view: EngineView? = null
+        set(value) {
+            field = value
+            value?.let {
+                setDynamicToolbarMaxHeight(toolbarHeight)
+            }
+        }
+
+    fun setVerticalClipping(clip: Int) {
+        view?.setVerticalClipping(clip)
+    }
+
+    fun setDynamicToolbarMaxHeight(height: Int) {
+        view?.setDynamicToolbarMaxHeight(height)
+    }
 }

@@ -197,7 +197,7 @@ fun MaskSingleLineTopAppBar(
     }
 }
 
-private val AppBarHeight = 44.dp
+val AppBarHeight = 44.dp
 private val TitleInsetWithoutIcon = Modifier.width(24.dp)
 private val TitleIconModifier = Modifier
     .height(36.dp)

@@ -42,6 +42,7 @@ import mozilla.components.browser.state.helper.Target
 import mozilla.components.browser.state.store.BrowserStore
 import mozilla.components.concept.engine.Engine
 import mozilla.components.concept.engine.EngineView
+import kotlin.math.roundToInt
 
 internal class GeckoParent(
     context: Context,
@@ -85,8 +86,8 @@ internal class GeckoParent(
             available = Offset(dxUnconsumed.toFloat(), dyUnconsumed.inv().toFloat()),
             source = type.toNestedScrollSource()
         )
-        consumed[0] = result.x.toInt()
-        consumed[1] = result.y.toInt()
+        consumed[0] = result.x.roundToInt()
+        consumed[1] = result.y.roundToInt().inv()
     }
 
     override fun onNestedScroll(
@@ -121,8 +122,8 @@ internal class GeckoParent(
     override fun onNestedPreScroll(target: View, dx: Int, dy: Int, consumed: IntArray, type: Int) {
         val result =
             nestedScrollDispatcher.dispatchPreScroll(Offset(dx.toFloat(), dy.inv().toFloat()), type.toNestedScrollSource())
-        consumed[0] = result.x.toInt()
-        consumed[1] = result.y.toInt()
+        consumed[0] = result.x.roundToInt()
+        consumed[1] = result.y.roundToInt().inv()
     }
 }
 
@@ -137,12 +138,9 @@ internal fun GeckoContent(
     engine: Engine,
     store: BrowserStore,
     target: Target,
+    controller: WebContentViewController,
 ) {
     val nestedScrollDispatcher = remember { NestedScrollDispatcher() }
-    val nestedScrollConnection = remember {
-        object : NestedScrollConnection {
-        }
-    }
     val selectedTab = target.observeAsComposableStateFrom(
         store = store,
         observe = { tab ->
@@ -157,13 +155,15 @@ internal fun GeckoContent(
     )
 
     AndroidView(
-        modifier = modifier.nestedScroll(nestedScrollConnection, nestedScrollDispatcher),
+        modifier = modifier.nestedScroll(EmptyNestedScrollConnection, nestedScrollDispatcher),
         factory = { context ->
             val parent = GeckoParent(
                 context = context,
                 nestedScrollDispatcher = nestedScrollDispatcher
             )
-            val view = engine.createView(context).asView()
+            val view = engine.createView(context).apply {
+                controller.view = this
+            }.asView()
             parent.addView(view)
             parent
         },
@@ -187,3 +187,5 @@ internal fun GeckoContent(
         }
     )
 }
+
+private object EmptyNestedScrollConnection : NestedScrollConnection
