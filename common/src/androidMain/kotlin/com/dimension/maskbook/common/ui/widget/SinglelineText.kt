@@ -50,7 +50,6 @@ fun SinglelineText(
     lineHeight: TextUnit = TextUnit.Unspecified,
     overflow: TextOverflow = TextOverflow.Ellipsis,
     softWrap: Boolean = true,
-    maxLines: Int = 1,
     onTextLayout: (TextLayoutResult) -> Unit = {},
     style: TextStyle = LocalTextStyle.current
 ) {
@@ -68,7 +67,7 @@ fun SinglelineText(
         lineHeight = lineHeight,
         overflow = overflow,
         softWrap = softWrap,
-        maxLines = maxLines,
+        maxLines = 1,
         onTextLayout = onTextLayout,
         style = style
     )
