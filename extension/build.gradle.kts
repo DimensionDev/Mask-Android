@@ -13,7 +13,6 @@ kotlin {
             dependencies {
                 implementation(projects.common.routeProcessor.annotations)
                 kspAndroid(projects.common.routeProcessor)
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.Kotlin.coroutines}")
             }
         }
 
@@ -21,7 +20,6 @@ kotlin {
             dependencies {
                 implementation(projects.common)
                 implementation(projects.common.gecko)
-                implementation(projects.localization)
             }
         }
         val androidTest by getting {

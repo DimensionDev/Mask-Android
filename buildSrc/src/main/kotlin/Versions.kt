@@ -20,7 +20,6 @@ object Versions {
     }
 
     const val ksp = "${Kotlin.lang}-1.0.4"
-    const val agp = "7.1.0"
     const val spotless = "6.3.0"
     const val ktlint = "0.43.2"
     const val compose_jb = "1.1.0"
@@ -60,9 +59,10 @@ object Versions {
         const val room = "2.4.2"
         const val paging = "3.1.0"
         const val pagingCompose = "1.0.0-alpha14"
-        const val livedata = "1.0.5"
         const val annotation = "1.3.0"
         const val activityCompose = "1.4.0"
         const val biometric = "1.2.0-alpha04"
+        const val activity = "1.4.0"
+        const val fragment = "1.3.6"
     }
 }

@@ -19,7 +19,6 @@ kotlin {
             dependencies {
                 implementation(projects.common)
                 implementation(projects.common.retrofit)
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.Kotlin.serialization}")
             }
         }
         val androidTest by getting {
