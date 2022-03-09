@@ -78,10 +78,10 @@ fun SendTokenConfirmModal(
                 parametersOf(data.data.gas?.fromHexString()?.toDouble() ?: 21000.0)
             }
             val gasLimit by gasFeeViewModel.gasLimit.observeAsState(initial = -1.0)
-            val maxPriorityFee by gasFeeViewModel.maxPriorityFee.observeAsState(initial = -1.0)
-            val maxFee by gasFeeViewModel.maxFee.observeAsState(initial = -1.0)
+            val maxPriorityFee by gasFeeViewModel.maxPriorityFeePerGas.observeAsState(initial = -1.0)
+            val maxFee by gasFeeViewModel.maxFeePerGas.observeAsState(initial = -1.0)
             val arrives by gasFeeViewModel.arrives.observeAsState(initial = "")
-            val usdValue by gasFeeViewModel.usdValue.observeAsState(initial = BigDecimal.ZERO)
+            val gasUsdTotal by gasFeeViewModel.gasUsdTotal.observeAsState(initial = BigDecimal.ZERO)
             val gasTotal by gasFeeViewModel.gasTotal.observeAsState(initial = BigDecimal.ZERO)
             NavHost(
                 navController,
@@ -96,8 +96,8 @@ fun SendTokenConfirmModal(
                             tokenData = tokenData
                         ),
                         sendPrice = amount.humanizeToken(),
-                        gasFee = (gasTotal * usdValue).humanizeDollar(),
-                        total = (amount * tokenData.price + gasTotal * usdValue).humanizeDollar(),
+                        gasFee = gasUsdTotal.humanizeDollar(),
+                        total = (amount * tokenData.price + gasUsdTotal).humanizeDollar(),
                         // TODO Mimao update
                         sending = false,
                         onConfirm = {
@@ -112,12 +112,14 @@ fun SendTokenConfirmModal(
                 }
                 composable("EditGasFee") {
                     val mode by gasFeeViewModel.gasPriceEditMode.observeAsState(initial = GasPriceEditMode.MEDIUM)
+                    val loading by gasFeeViewModel.loadingState.observeAsState()
                     EditGasPriceSheet(
-                        price = (gasTotal * usdValue).humanizeDollar(),
+                        price = gasUsdTotal.humanizeDollar(),
                         costFee = gasTotal.humanizeToken(),
                         costFeeUnit = tokenData.symbol,
                         arrivesIn = arrives,
                         mode = mode,
+                        loading = loading,
                         gasLimit = gasLimit.toString(),
                         onGasLimitChanged = {
                             gasFeeViewModel.setGasLimit(

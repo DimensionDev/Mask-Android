@@ -29,6 +29,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 
 interface GetNativeTokenUseCase {
+    // if chainType is null use current chain
     operator fun invoke(chainType: ChainType? = null): Flow<Result<TokenData>>
 }
 

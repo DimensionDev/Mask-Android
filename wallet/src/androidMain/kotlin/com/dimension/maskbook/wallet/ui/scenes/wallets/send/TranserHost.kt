@@ -30,7 +30,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -77,17 +76,14 @@ fun TransferHost(
     val bottomSheetNavigator = rememberMaskBottomSheetNavigator()
     val navController = rememberNavController(bottomSheetNavigator)
 
-    val gasFeeViewModel = getViewModel<GasFeeViewModel> {
-        parametersOf(21000.0)
-    }
+    val gasFeeViewModel = getViewModel<GasFeeViewModel> { parametersOf(21000.0) }
     val transferDetailViewModel = getViewModel<TransferDetailViewModel> { parametersOf(tradableId) }
     val searchAddressViewModel = getViewModel<SearchAddressViewModel>()
 
     val gasLimit by gasFeeViewModel.gasLimit.observeAsState(initial = -1.0)
-    val maxPriorityFee by gasFeeViewModel.maxPriorityFee.observeAsState(initial = -1.0)
-    val maxFee by gasFeeViewModel.maxFee.observeAsState(initial = -1.0)
+    val maxPriorityFee by gasFeeViewModel.maxPriorityFeePerGas.observeAsState(initial = -1.0)
+    val maxFee by gasFeeViewModel.maxFeePerGas.observeAsState(initial = -1.0)
     val arrives by gasFeeViewModel.arrives.observeAsState(initial = "")
-    val nativeToken by gasFeeViewModel.nativeToken.observeAsState(initial = null)
     val gasTotal by gasFeeViewModel.gasTotal.observeAsState(initial = BigDecimal.ZERO)
     val gasUsdTotal by gasFeeViewModel.gasUsdTotal.observeAsState(initial = BigDecimal.ZERO)
     val selectTradable by transferDetailViewModel.selectedTradable.collectAsState(null)
@@ -263,13 +259,15 @@ fun TransferHost(
 
             bottomSheet("EditGasFee") {
                 val mode by gasFeeViewModel.gasPriceEditMode.collectAsState()
+                val loading by gasFeeViewModel.loadingState.observeAsState()
+                val gasFeeUnit by gasFeeViewModel.gasFeeUnit.observeAsState()
                 EditGasPriceSheet(
                     price = gasUsdTotal.humanizeDollar(),
                     costFee = gasTotal.humanizeToken(),
-                    costFeeUnit = nativeToken?.symbol
-                        ?: stringResource(R.string.chain_short_name_eth),
+                    costFeeUnit = gasFeeUnit,
                     arrivesIn = arrives,
                     mode = mode,
+                    loading = loading,
                     gasLimit = gasLimit.toString(),
                     onGasLimitChanged = {
                         gasFeeViewModel.setGasLimit(

@@ -72,6 +72,10 @@ import com.dimension.maskbook.wallet.usecase.collectible.GetWalletCollectibleUse
 import com.dimension.maskbook.wallet.usecase.collectible.GetWalletCollectibleUseCaseImpl
 import com.dimension.maskbook.wallet.usecase.collectible.SendWalletCollectibleUseCase
 import com.dimension.maskbook.wallet.usecase.collectible.SendWalletCollectibleUseCaseImpl
+import com.dimension.maskbook.wallet.usecase.gas.GetArrivesWithGasFeeUseCase
+import com.dimension.maskbook.wallet.usecase.gas.GetArrivesWithGasFeeUseCaseImpl
+import com.dimension.maskbook.wallet.usecase.gas.GetSuggestGasFeeUseCase
+import com.dimension.maskbook.wallet.usecase.gas.GetSuggestGasFeeUseCaseImpl
 import com.dimension.maskbook.wallet.usecase.password.VerifyPaymentPasswordUseCase
 import com.dimension.maskbook.wallet.usecase.password.VerifyPaymentPasswordUseCaseImpl
 import com.dimension.maskbook.wallet.usecase.token.GetNativeTokenUseCase
@@ -260,6 +264,9 @@ private fun Module.provideUseCase() {
     factory<GetWalletTokenByAddressUseCase> { GetWalletTokenByAddressUseCaseImpl(get()) }
     factory<GetWalletTokensUseCase> { GetWalletTokensUseCaseImpl(get()) }
     factory<SendTokenUseCase> { SendTokenUseCaseImpl(get()) }
+    // gas
+    factory<GetArrivesWithGasFeeUseCase> { GetArrivesWithGasFeeUseCaseImpl(get()) }
+    factory<GetSuggestGasFeeUseCase> { GetSuggestGasFeeUseCaseImpl(get()) }
 }
 
 private fun Module.provideViewModel() {
@@ -306,7 +313,9 @@ private fun Module.provideViewModel() {
         GasFeeViewModel(
             initialGasLimit = initialGasLimit,
             get(),
-            get()
+            get(),
+            get(),
+            get(),
         )
     }
     viewModel { (tradableId: String) ->
