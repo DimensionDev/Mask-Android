@@ -58,6 +58,7 @@ fun ApproveConfirmSheet(
     sendPrice: String,
     gasFee: String,
     total: String,
+    sending: Boolean,
     onConfirm: () -> Unit,
     onCancel: () -> Unit,
     onEditGasFee: () -> Unit,
@@ -69,6 +70,7 @@ fun ApproveConfirmSheet(
         sendPrice = sendPrice,
         gasFee = gasFee,
         total = total,
+        sending = sending,
         onConfirm = onConfirm,
         onCancel = onCancel,
         onEditGasFee = onEditGasFee
@@ -82,6 +84,7 @@ fun SendConfirmSheet(
     sendPrice: String,
     gasFee: String,
     total: String,
+    sending: Boolean,
     onConfirm: () -> Unit,
     onCancel: () -> Unit,
     onEditGasFee: () -> Unit,
@@ -93,6 +96,7 @@ fun SendConfirmSheet(
         sendPrice = sendPrice,
         gasFee = gasFee,
         total = total,
+        sending = sending,
         onConfirm = onConfirm,
         onCancel = onCancel,
         onEditGasFee = onEditGasFee
@@ -104,6 +108,7 @@ fun SignatureRequestSignSheet(
     addressData: SearchAddressData,
     tradableData: TradableData,
     sendPrice: String,
+    sending: Boolean,
     message: String,
     onSign: () -> Unit,
     onCancel: () -> Unit,
@@ -130,7 +135,7 @@ fun SignatureRequestSignSheet(
                 Text(text = message, modifier = Modifier.weight(1f))
             }
             Spacer(modifier = Modifier.height(20.dp))
-            ButtonContent(onCancel = onCancel, onConfirm = onSign, confirmText = "Sign")
+            ButtonContent(onCancel = onCancel, onConfirm = onSign, confirmText = "Sign", sending = sending)
         }
     }
 }
@@ -143,6 +148,7 @@ private fun ConfirmSheet(
     sendPrice: String,
     gasFee: String,
     total: String,
+    sending: Boolean,
     onConfirm: () -> Unit,
     onCancel: () -> Unit,
     onEditGasFee: () -> Unit,
@@ -170,7 +176,7 @@ private fun ConfirmSheet(
                 total = total
             )
             Spacer(modifier = Modifier.height(20.dp))
-            ButtonContent(onCancel = onCancel, onConfirm = onConfirm)
+            ButtonContent(onCancel = onCancel, onConfirm = onConfirm, sending = sending)
         }
     }
 }
@@ -267,6 +273,7 @@ private fun ColumnScope.GasFeeAndTotalContent(
 
 @Composable
 private fun ColumnScope.ButtonContent(
+    sending: Boolean,
     onCancel: () -> Unit,
     onConfirm: () -> Unit,
     confirmText: String = stringResource(R.string.common_controls_confirm)
@@ -285,8 +292,9 @@ private fun ColumnScope.ButtonContent(
         PrimaryButton(
             modifier = Modifier.weight(1f),
             onClick = onConfirm,
+            enabled = !sending
         ) {
-            Text(text = confirmText)
+            Text(text = if (sending) stringResource(R.string.common_controls_sending) else confirmText)
         }
     }
 }

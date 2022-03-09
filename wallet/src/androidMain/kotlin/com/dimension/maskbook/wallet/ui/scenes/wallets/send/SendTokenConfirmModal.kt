@@ -98,6 +98,8 @@ fun SendTokenConfirmModal(
                         sendPrice = amount.humanizeToken(),
                         gasFee = (gasTotal * usdValue).humanizeDollar(),
                         total = (amount * tokenData.price + gasTotal * usdValue).humanizeDollar(),
+                        // TODO Mimao update
+                        sending = false,
                         onConfirm = {
                             navController.navigate("UnlockWalletDialog")
                         },

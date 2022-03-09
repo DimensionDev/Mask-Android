@@ -335,42 +335,54 @@ fun TransferHost(
                 val amount = remember(amountString) { BigDecimal(amountString) }
 
                 val viewModel = getViewModel<SendConfirmViewModel> {
-                    parametersOf(address)
+                    parametersOf(address, id)
                 }
                 val deeplink by viewModel.deepLink.observeAsState(initial = "")
                 val addressData by viewModel.addressData.observeAsState(initial = null)
-                val currentData = selectTradable
-                val currentAddressData = addressData
-                val totalPrice = when (currentData) {
-                    is WalletTokenData -> (amount * currentData.tokenData.price + gasUsdTotal).humanizeDollar()
-                    else -> gasUsdTotal.humanizeDollar()
-                }
-                if (currentData != null && currentAddressData != null) {
-                    SendConfirmSheet(
-                        addressData = currentAddressData,
-                        tokenData = currentData,
-                        sendPrice = amount.humanizeToken(),
-                        gasFee = gasUsdTotal.humanizeDollar(),
-                        total = totalPrice,
-                        onConfirm = {
-                            viewModel.send(currentData, amount, gasLimit, maxFee, maxPriorityFee)
-                            onDone.invoke()
-                            // open Wallet App if it is connected
-                            if (deeplink.isNotEmpty()) {
-                                try {
-                                    context.startActivity(
-                                        Intent().apply {
-                                            data = Uri.parse(deeplink)
-                                        }
-                                    )
-                                } catch (e: Throwable) {
-                                    // ignore
+                val loading by viewModel.loadingState.observeAsState()
+                addressData?.let { toAddress ->
+                    selectTradable?.let { currentData ->
+                        val totalPrice = when (currentData) {
+                            is WalletTokenData -> (amount * currentData.tokenData.price + gasUsdTotal).humanizeDollar()
+                            else -> gasUsdTotal.humanizeDollar()
+                        }
+                        SendConfirmSheet(
+                            addressData = toAddress,
+                            tokenData = currentData,
+                            sendPrice = amount.humanizeToken(),
+                            gasFee = gasUsdTotal.humanizeDollar(),
+                            total = totalPrice,
+                            sending = loading,
+                            onConfirm = {
+                                viewModel.send(
+                                    currentData,
+                                    amount,
+                                    gasLimit,
+                                    maxFee,
+                                    maxPriorityFee,
+                                    onDone = onDone,
+                                    onFailed = {}
+                                )
+                                // open Wallet App if it is connected
+                                if (deeplink.isNotEmpty()) {
+                                    try {
+                                        context.startActivity(
+                                            Intent().apply {
+                                                data = Uri.parse(deeplink)
+                                            }
+                                        )
+                                    } catch (e: Throwable) {
+                                        // ignore
+                                    }
                                 }
-                            }
-                        },
-                        onCancel = { navController.popBackStack() },
-                        onEditGasFee = { navController.navigate("EditGasFee") },
-                    )
+                            },
+                            onCancel = {
+                                viewModel.cancel()
+                                navController.popBackStack()
+                            },
+                            onEditGasFee = { navController.navigate("EditGasFee") },
+                        )
+                    }
                 }
             }
         }
