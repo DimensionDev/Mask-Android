@@ -34,7 +34,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import androidx.navigation.navOptions
 import coil.compose.rememberImagePainter
-import com.dimension.maskbook.common.gecko.WebContent
 import com.dimension.maskbook.common.gecko.WebContentController
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
@@ -44,6 +43,7 @@ import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
 import com.dimension.maskbook.common.ui.widget.button.MaskIconButton
 import com.dimension.maskbook.extension.export.model.Site
 import com.dimension.maskbook.extension.ext.site
+import com.dimension.maskbook.extension.workaround.AppBarWebContent
 import com.dimension.maskbook.localization.R
 import org.koin.androidx.compose.get
 
@@ -59,37 +59,36 @@ fun WebContentScene(
         controller.goBack()
     }
     MaskScene {
-        MaskScaffold(
-            topBar = {
-                MaskSingleLineTopAppBar(
-                    title = {
-                        val url by controller.url.collectAsState(initial = "")
-                        val title = remember(url) {
-                            getTitleFromUrl(url)
-                        }
-                        Text(stringResource(title))
-                    },
-                    actions = {
-                        MaskIconButton(
-                            onClick = {
-                                navController.navigate(
-                                    Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona)),
-                                    navOptions {
-                                        launchSingleTop = true
-                                        popUpTo(CommonRoute.WebContent)
-                                    },
-                                )
-                            }
-                        ) {
-                            Image(rememberImagePainter(R.drawable.mask), contentDescription = null)
-                        }
-                    }
-                )
-            },
-        ) {
-            WebContent(
+        MaskScaffold {
+            AppBarWebContent(
                 modifier = Modifier.fillMaxSize(),
-                controller = controller
+                controller = controller,
+                appBar = {
+                    MaskSingleLineTopAppBar(
+                        title = {
+                            val url by controller.url.collectAsState(initial = "")
+                            val title = remember(url) {
+                                getTitleFromUrl(url)
+                            }
+                            Text(stringResource(title))
+                        },
+                        actions = {
+                            MaskIconButton(
+                                onClick = {
+                                    navController.navigate(
+                                        Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona)),
+                                        navOptions {
+                                            launchSingleTop = true
+                                            popUpTo(CommonRoute.WebContent)
+                                        },
+                                    )
+                                }
+                            ) {
+                                Image(rememberImagePainter(R.drawable.mask), contentDescription = null)
+                            }
+                        }
+                    )
+                }
             )
         }
     }

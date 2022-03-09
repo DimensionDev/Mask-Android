@@ -87,7 +87,7 @@ class WebContentController(
             }
         }
     }
-    internal val engine by lazy {
+    val engine by lazy {
         GeckoEngine(
             fragmentActivity,
             runtime = runtime,
@@ -97,7 +97,7 @@ class WebContentController(
             )
         )
     }
-    internal val store by lazy {
+    val store by lazy {
         BrowserStore(
             middleware = EngineMiddleware.create(engine)
         ).apply {
