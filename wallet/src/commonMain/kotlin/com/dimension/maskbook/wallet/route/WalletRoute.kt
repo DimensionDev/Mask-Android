@@ -150,8 +150,6 @@ expect object WalletRoute {
                 object RemoteBackupRecovery_RecoveryLocal {
                     operator fun invoke(uri: String): String
                 }
-
-                const val LocalBackup_PickFile: String
             }
 
             const val IdentityPersona: String

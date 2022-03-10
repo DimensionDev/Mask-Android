@@ -70,11 +70,10 @@ class RecoveryLocalViewModel(
 //            }
 //        } ?: return@launch
         try {
-
             contentResolver.openInputStream(uri)?.use {
                 json = it.bufferedReader().use { it.readText() }
                 _meta.value = backupServices.provideBackupMetaFromJson(json)
-                _loadState.value = LoadState.Success
+                _loadState.value = LoadState.RequirePassword
             } ?: run {
                 _loadState.value = LoadState.Failed
             }
@@ -103,14 +102,15 @@ class RecoveryLocalViewModel(
     }
 
     fun confirmPassword() = viewModelScope.launch {
-        _passwordError.value = false
-        try {
-            // TODO: decrypt bin file to json
-            _loadState.value = LoadState.Loading
-        } catch (e: Throwable) {
-            _loadState.value = LoadState.RequirePassword
-            _passwordError.value = true
-        }
+        _loadState.value = LoadState.Success
+        // _passwordError.value = false
+        // try {
+        //     // TODO: decrypt bin file to json
+        //     _loadState.value = LoadState.Loading
+        // } catch (e: Throwable) {
+        //     _loadState.value = LoadState.RequirePassword
+        //     _passwordError.value = true
+        // }
     }
 
     fun restore() = viewModelScope.launch {
