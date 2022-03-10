@@ -18,6 +18,8 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 implementation(projects.common)
+
+                kspAndroid("androidx.room:room-compiler:${Versions.Androidx.room}")
             }
         }
         val androidTest by getting {
@@ -30,4 +32,8 @@ kotlin {
 
 android {
     setupLibrary()
+}
+
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
 }

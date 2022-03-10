@@ -80,6 +80,10 @@ kotlin {
                 // serialization
                 api("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.Kotlin.serialization}")
 
+                // sqlite
+                api("androidx.room:room-runtime:${Versions.Androidx.room}")
+                api("androidx.room:room-ktx:${Versions.Androidx.room}")
+
                 api("org.web3j:core:${Versions.web3j}")
 
                 api("joda-time:joda-time:${Versions.jodaTime}")

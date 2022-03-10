@@ -23,8 +23,6 @@ kotlin {
                 implementation(projects.common.okhttp)
                 implementation(projects.common.bigDecimal)
 
-                api("androidx.room:room-runtime:${Versions.Androidx.room}")
-                api("androidx.room:room-ktx:${Versions.Androidx.room}")
                 kspAndroid("androidx.room:room-compiler:${Versions.Androidx.room}")
 
                 implementation("androidx.room:room-paging:${Versions.Androidx.room}")
