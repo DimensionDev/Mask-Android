@@ -44,7 +44,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
-import androidx.compose.ui.unit.min
 import androidx.compose.ui.unit.sp
 
 @Composable
@@ -65,25 +64,26 @@ fun SinglelineText(
     maxLines: Int = 1,
     onTextLayout: (TextLayoutResult) -> Unit = {},
     style: TextStyle = LocalTextStyle.current,
+    expectSize: TextUnit? = LocalTextStyle.current.fontSize,
 ) {
     AutoSizeText(
-        AnnotatedString(text),
-        modifier,
-        color,
-        suggestedFontSizes,
-        fontStyle,
-        fontWeight,
-        fontFamily,
-        letterSpacing,
-        textDecoration,
-        textAlign,
-        lineHeight,
-        overflow,
-        softWrap,
-        maxLines,
-        emptyMap(),
-        onTextLayout,
-        style,
+        text = AnnotatedString(text),
+        modifier = modifier,
+        color = color,
+        suggestedFontSizes = suggestedFontSizes,
+        fontStyle = fontStyle,
+        fontWeight = fontWeight,
+        fontFamily = fontFamily,
+        letterSpacing = letterSpacing,
+        textDecoration = textDecoration,
+        textAlign = textAlign,
+        lineHeight = lineHeight,
+        overflow = overflow,
+        softWrap = softWrap,
+        maxLines = maxLines,
+        onTextLayout = onTextLayout,
+        style = style,
+        expectSize = expectSize
     )
 }
 
@@ -106,13 +106,14 @@ fun AutoSizeText(
     inlineContent: Map<String, InlineTextContent> = mapOf(),
     onTextLayout: (TextLayoutResult) -> Unit = {},
     style: TextStyle = LocalTextStyle.current,
+    expectSize: TextUnit? = null,
 ) {
     BoxWithConstraints(
         modifier = modifier,
         contentAlignment = Alignment.Center,
     ) {
         var combinedTextStyle = (LocalTextStyle.current + style).copy(
-            fontSize = min(maxWidth, maxHeight).value.sp
+            fontSize = expectSize ?: minOf(maxWidth, maxHeight).value.sp
         )
 
         val fontSizes = suggestedFontSizes.ifEmpty {
