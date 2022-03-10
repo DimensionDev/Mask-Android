@@ -27,7 +27,6 @@ import com.dimension.maskbook.extension.export.model.ExtensionResponseMessage
 import com.dimension.maskbook.extension.ext.toMap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -104,8 +103,7 @@ internal class MessageChannel(
         return flow
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private suspend fun onMessage(jsonObject: JSONObject) {
+    private fun onMessage(jsonObject: JSONObject) {
         val messageId = runCatching {
             jsonObject.get("id")
         }.getOrNull()
@@ -115,7 +113,7 @@ internal class MessageChannel(
             it != "null"
         }
         if (messageId != null && queue.containsKey(messageId)) {
-            queue.remove(messageId)?.takeIf { !it.isClosedForSend }?.send(result)
+            queue.remove(messageId)?.trySend(result)
         } else if (messageId != null) {
             val method = runCatching {
                 jsonObject.getString("method")
