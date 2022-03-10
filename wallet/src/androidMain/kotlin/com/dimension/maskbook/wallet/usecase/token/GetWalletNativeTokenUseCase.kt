@@ -21,22 +21,23 @@
 package com.dimension.maskbook.wallet.usecase.token
 
 import com.dimension.maskbook.wallet.export.model.ChainType
-import com.dimension.maskbook.wallet.export.model.TokenData
+import com.dimension.maskbook.wallet.export.model.WalletTokenData
 import com.dimension.maskbook.wallet.repository.IWalletRepository
 import com.dimension.maskbook.wallet.usecase.Result
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
+import java.math.BigDecimal
 
-interface GetNativeTokenUseCase {
+interface GetWalletNativeTokenUseCase {
     // if chainType is null use current chain
-    operator fun invoke(chainType: ChainType? = null): Flow<Result<TokenData>>
+    operator fun invoke(chainType: ChainType? = null): Flow<Result<WalletTokenData>>
 }
 
-class GetNativeTokenUseCaseImpl(
+class GetWalletNativeTokenUseCaseImpl(
     private val repository: IWalletRepository
-) : GetNativeTokenUseCase {
-    override fun invoke(chainType: ChainType?): Flow<Result<TokenData>> {
+) : GetWalletNativeTokenUseCase {
+    override fun invoke(chainType: ChainType?): Flow<Result<WalletTokenData>> {
         return flow {
             emit(Result.Loading())
             try {
@@ -46,8 +47,15 @@ class GetNativeTokenUseCaseImpl(
                 } else {
                     repository.getChainData(chainType).firstOrNull()?.nativeToken
                 }
-                token?.let {
-                    emit(Result.Success(it))
+                token?.let { nativeToken ->
+                    val walletToken = repository.currentWallet.firstOrNull()?.tokens?.first {
+                        it.tokenAddress == nativeToken.address
+                    } ?: WalletTokenData(
+                        count = BigDecimal.ZERO,
+                        tokenAddress = nativeToken.address,
+                        tokenData = nativeToken
+                    )
+                    emit(Result.Success(walletToken))
                 } ?: emit(Result.Failed(Error()))
             } catch (e: Throwable) {
                 emit(Result.Failed(Error()))

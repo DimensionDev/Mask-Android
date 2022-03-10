@@ -33,7 +33,7 @@ import com.dimension.maskbook.wallet.usecase.gas.GasFeeData
 import com.dimension.maskbook.wallet.usecase.gas.GasFeeModel
 import com.dimension.maskbook.wallet.usecase.gas.GetArrivesWithGasFeeUseCase
 import com.dimension.maskbook.wallet.usecase.gas.GetSuggestGasFeeUseCase
-import com.dimension.maskbook.wallet.usecase.token.GetNativeTokenUseCase
+import com.dimension.maskbook.wallet.usecase.token.GetWalletNativeTokenUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -47,7 +47,7 @@ class GasFeeViewModel(
     initialGasLimit: Double = 21000.0,
     private val getSuggestGasFeeUseCase: GetSuggestGasFeeUseCase,
     private val getArrivesWithGasFeeUseCase: GetArrivesWithGasFeeUseCase,
-    private val getNativeTokenUseCase: GetNativeTokenUseCase,
+    private val getWalletNativeTokenUseCase: GetWalletNativeTokenUseCase,
     private val walletRepository: IWalletRepository,
 ) : ViewModel() {
     private val chainType = walletRepository.currentChain.mapNotNull {
@@ -57,9 +57,9 @@ class GasFeeViewModel(
     // native token on current chain
     @OptIn(ExperimentalCoroutinesApi::class)
     private val nativeToken by lazy {
-        getNativeTokenUseCase().map {
+        getWalletNativeTokenUseCase().map {
             when (it) {
-                is Result.Success -> it.value
+                is Result.Success -> it.value.tokenData
                 else -> null
             }
         }

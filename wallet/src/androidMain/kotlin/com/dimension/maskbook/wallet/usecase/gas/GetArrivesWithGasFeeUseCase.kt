@@ -32,7 +32,7 @@ interface GetArrivesWithGasFeeUseCase {
     ): Flow<Result<Double>> // minutes
 }
 
-internal class GetArrivesWithGasFeeUseCaseImpl(
+class GetArrivesWithGasFeeUseCaseImpl(
     private val services: WalletServices,
 ) : GetArrivesWithGasFeeUseCase {
     private val unKnow = -1.0

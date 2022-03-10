@@ -21,54 +21,64 @@
 package com.dimension.maskbook.wallet.usecase.token
 
 import com.dimension.maskbook.common.bigDecimal.BigDecimal
-import com.dimension.maskbook.common.ext.ifNullOrEmpty
-import com.dimension.maskbook.wallet.export.model.TokenData
+import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.repository.IWalletRepository
 import com.dimension.maskbook.wallet.usecase.Result
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
-interface SendTokenUseCase {
+interface SendTransactionUseCase {
     operator fun invoke(
         amount: BigDecimal,
         address: String,
-        tokenData: TokenData,
         gasLimit: Double,
         maxFee: Double,
         maxPriorityFee: Double,
+        data: String,
+        chainType: ChainType? = null, // if null use current chain
     ): Flow<Result<String>>
 }
 
-class SendTokenUseCaseImpl(
+class SendTransactionUseCaseImpl(
     val repository: IWalletRepository,
-) : SendTokenUseCase {
+) : SendTransactionUseCase {
     private val result = MutableStateFlow<Result<String>>(Result.Loading())
+    private val scope = CoroutineScope(Dispatchers.IO)
     override fun invoke(
         amount: BigDecimal,
         address: String,
-        tokenData: TokenData,
         gasLimit: Double,
         maxFee: Double,
-        maxPriorityFee: Double
+        maxPriorityFee: Double,
+        data: String,
+        chainType: ChainType?,
     ): Flow<Result<String>> {
-        try {
-            result.value = Result.Loading()
-            repository.sendTokenWithCurrentWallet(
-                amount = amount,
-                address = address,
-                tokenData = tokenData,
-                gasLimit = gasLimit,
-                maxFee = maxFee,
-                maxPriorityFee = maxPriorityFee,
-                onError = {
-                    result.value = Result.Failed(it)
-                },
-                onDone = {
-                    result.value = Result.Success(it.ifNullOrEmpty { "" })
-                }
-            )
-        } catch (e: Throwable) {
-            result.value = Result.Failed(e)
+        scope.launch {
+            try {
+                result.value = Result.Loading()
+                repository.transactionWithCurrentWalletAndChainType(
+                    amount = amount,
+                    address = address,
+                    chainType = chainType ?: repository.currentChain.first()?.chainType
+                        ?: throw Error("Current chain is null"),
+                    gasLimit = gasLimit,
+                    maxFee = maxFee,
+                    maxPriorityFee = maxPriorityFee,
+                    data = data,
+                    onDone = {
+                        result.value = it?.let {
+                            Result.Success(it)
+                        } ?: Result.Failed(Error("Failed to send transaction"))
+                    },
+                    onError = { result.value = Result.Failed(it) }
+                )
+            } catch (e: Throwable) {
+                result.value = Result.Failed(e)
+            }
         }
         return result
     }

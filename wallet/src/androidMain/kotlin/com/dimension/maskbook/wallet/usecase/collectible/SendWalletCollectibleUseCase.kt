@@ -40,7 +40,7 @@ interface SendWalletCollectibleUseCase {
 class SendWalletCollectibleUseCaseImpl(
     val repository: IWalletRepository,
 ) : SendWalletCollectibleUseCase {
-    val result = MutableStateFlow<Result<String>>(Result.Loading())
+    private val result = MutableStateFlow<Result<String>>(Result.Loading())
     override fun invoke(
         address: String,
         collectible: WalletCollectibleData,

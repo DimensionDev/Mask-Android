@@ -78,14 +78,16 @@ import com.dimension.maskbook.wallet.usecase.gas.GetSuggestGasFeeUseCase
 import com.dimension.maskbook.wallet.usecase.gas.GetSuggestGasFeeUseCaseImpl
 import com.dimension.maskbook.wallet.usecase.password.VerifyPaymentPasswordUseCase
 import com.dimension.maskbook.wallet.usecase.password.VerifyPaymentPasswordUseCaseImpl
-import com.dimension.maskbook.wallet.usecase.token.GetNativeTokenUseCase
-import com.dimension.maskbook.wallet.usecase.token.GetNativeTokenUseCaseImpl
+import com.dimension.maskbook.wallet.usecase.token.GetWalletNativeTokenUseCase
+import com.dimension.maskbook.wallet.usecase.token.GetWalletNativeTokenUseCaseImpl
 import com.dimension.maskbook.wallet.usecase.token.GetWalletTokenByAddressUseCase
 import com.dimension.maskbook.wallet.usecase.token.GetWalletTokenByAddressUseCaseImpl
 import com.dimension.maskbook.wallet.usecase.token.GetWalletTokensUseCase
 import com.dimension.maskbook.wallet.usecase.token.GetWalletTokensUseCaseImpl
 import com.dimension.maskbook.wallet.usecase.token.SendTokenUseCase
 import com.dimension.maskbook.wallet.usecase.token.SendTokenUseCaseImpl
+import com.dimension.maskbook.wallet.usecase.token.SendTransactionUseCase
+import com.dimension.maskbook.wallet.usecase.token.SendTransactionUseCaseImpl
 import com.dimension.maskbook.wallet.viewmodel.WelcomeViewModel
 import com.dimension.maskbook.wallet.viewmodel.recovery.IdentityViewModel
 import com.dimension.maskbook.wallet.viewmodel.recovery.PrivateKeyViewModel
@@ -260,10 +262,11 @@ private fun Module.provideUseCase() {
     factory<GetWalletCollectibleUseCase> { GetWalletCollectibleUseCaseImpl(get()) }
     factory<SendWalletCollectibleUseCase> { SendWalletCollectibleUseCaseImpl(get()) }
     // Tokens
-    factory<GetNativeTokenUseCase> { GetNativeTokenUseCaseImpl(get()) }
+    factory<GetWalletNativeTokenUseCase> { GetWalletNativeTokenUseCaseImpl(get()) }
     factory<GetWalletTokenByAddressUseCase> { GetWalletTokenByAddressUseCaseImpl(get()) }
     factory<GetWalletTokensUseCase> { GetWalletTokensUseCaseImpl(get()) }
     factory<SendTokenUseCase> { SendTokenUseCaseImpl(get()) }
+    factory<SendTransactionUseCase> { SendTransactionUseCaseImpl(get()) }
     // gas
     factory<GetArrivesWithGasFeeUseCase> { GetArrivesWithGasFeeUseCaseImpl(get()) }
     factory<GetSuggestGasFeeUseCase> { GetSuggestGasFeeUseCaseImpl(get()) }
@@ -348,7 +351,7 @@ private fun Module.provideViewModel() {
     viewModel { BackUpPasswordViewModel(get(), get()) }
     viewModel { (id: String) -> CollectibleDetailViewModel(id, get(), get(), get()) }
     viewModel { CollectiblesViewModel(get(), get()) }
-    viewModel { (data: SendTokenConfirmData) -> Web3TransactionConfirmViewModel(data, get(), get(), get()) }
+    viewModel { (data: SendTokenConfirmData) -> Web3TransactionConfirmViewModel(data, get(), get(), get(), get(), get(), get()) }
     viewModel { SearchTradableViewModel(get(), get()) }
 }
 

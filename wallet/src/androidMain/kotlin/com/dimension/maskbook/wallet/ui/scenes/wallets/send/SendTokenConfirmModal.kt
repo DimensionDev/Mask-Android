@@ -88,6 +88,7 @@ fun SendTokenConfirmModal(
                 startDestination = "SendConfirm"
             ) {
                 composable("SendConfirm") {
+                    val sending by viewModel.loadingState.observeAsState()
                     SendConfirmSheet(
                         addressData = addressData,
                         tokenData = WalletTokenData(
@@ -98,8 +99,7 @@ fun SendTokenConfirmModal(
                         sendPrice = amount.humanizeToken(),
                         gasFee = gasUsdTotal.humanizeDollar(),
                         total = (amount * tokenData.price + gasUsdTotal).humanizeDollar(),
-                        // TODO Mimao update
-                        sending = false,
+                        sending = sending,
                         onConfirm = {
                             navController.navigate("UnlockWalletDialog")
                         },
@@ -189,9 +189,11 @@ fun SendTokenConfirmModal(
                         viewModel.send(
                             gasLimit = gasLimit,
                             maxFee = maxFee,
-                            maxPriorityFee = maxPriorityFee
+                            maxPriorityFee = maxPriorityFee,
+                            onResult = {
+                                onBack.invoke()
+                            }
                         )
-                        onBack.invoke()
                     }
                     UnlockWalletDialog(
                         onBack = { navController.popBackStack() },

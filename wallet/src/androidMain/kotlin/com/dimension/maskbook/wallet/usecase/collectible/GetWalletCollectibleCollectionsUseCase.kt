@@ -36,7 +36,7 @@ interface GetWalletCollectibleCollectionsUseCase {
     operator fun invoke(): Flow<Result<PagingData<WalletCollectibleCollectionData>>>
 }
 
-internal class GetWalletCollectibleCollectionsUseCaseImpl(
+class GetWalletCollectibleCollectionsUseCaseImpl(
     val repository: ICollectibleRepository,
     val walletRepository: IWalletRepository,
 ) : GetWalletCollectibleCollectionsUseCase {

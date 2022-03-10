@@ -31,7 +31,7 @@ import com.dimension.maskbook.wallet.usecase.address.GetAddressUseCase
 import com.dimension.maskbook.wallet.usecase.chain.SetCurrentChainUseCase
 import com.dimension.maskbook.wallet.usecase.collectible.GetWalletCollectibleUseCase
 import com.dimension.maskbook.wallet.usecase.password.VerifyPaymentPasswordUseCase
-import com.dimension.maskbook.wallet.usecase.token.GetNativeTokenUseCase
+import com.dimension.maskbook.wallet.usecase.token.GetWalletNativeTokenUseCase
 import com.dimension.maskbook.wallet.usecase.token.GetWalletTokenByAddressUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -46,7 +46,7 @@ class TransferDetailViewModel(
     private val verifyPaymentPasswordUseCase: VerifyPaymentPasswordUseCase,
     private val getAddressUseCase: GetAddressUseCase,
     private val getWalletTokenByAddressUseCase: GetWalletTokenByAddressUseCase,
-    private val getNativeTokenUseCase: GetNativeTokenUseCase,
+    private val getWalletNativeTokenUseCase: GetWalletNativeTokenUseCase,
     private val getWalletCollectibleUseCase: GetWalletCollectibleUseCase,
     private val setCurrentChainUseCase: SetCurrentChainUseCase
 ) : ViewModel() {
@@ -130,13 +130,9 @@ class TransferDetailViewModel(
     }
 
     private val nativeToken by lazy {
-        getNativeTokenUseCase().map { result ->
+        getWalletNativeTokenUseCase().map { result ->
             when (result) {
-                is Result.Success -> WalletTokenData(
-                    count = BigDecimal.ZERO,
-                    tokenData = result.value,
-                    tokenAddress = result.value.address
-                )
+                is Result.Success -> result.value
                 else -> null
             }
         }

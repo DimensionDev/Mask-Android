@@ -108,7 +108,7 @@ interface GetSuggestGasFeeUseCase {
     operator fun invoke(chainType: ChainType?): Flow<Result<GasFeeModel>>
 }
 
-internal class GetSuggestGasFeeUseCaseImpl(
+class GetSuggestGasFeeUseCaseImpl(
     private val services: WalletServices,
 ) : GetSuggestGasFeeUseCase {
     override fun invoke(chainType: ChainType?): Flow<Result<GasFeeModel>> {
