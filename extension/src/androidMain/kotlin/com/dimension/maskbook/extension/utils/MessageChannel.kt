@@ -20,7 +20,6 @@
  */
 package com.dimension.maskbook.extension.utils
 
-import com.dimension.maskbook.common.ext.decodeJson
 import com.dimension.maskbook.common.gecko.WebContentController
 import com.dimension.maskbook.extension.export.model.ExtensionMessage
 import com.dimension.maskbook.extension.export.model.ExtensionResponseMessage
@@ -56,24 +55,7 @@ internal class MessageChannel(
         controller.sendMessage(JSONObject(message.toMap()))
     }
 
-    suspend inline fun <reified T : Any> execute(
-        method: String,
-        params: Map<String, Any> = emptyMap()
-    ): T? {
-        val result = executeMessage(method, params)
-        return when (T::class) {
-            Short::class -> result?.toShortOrNull() as T?
-            Int::class -> result?.toIntOrNull() as T?
-            Long::class -> result?.toLongOrNull() as T?
-            Float::class -> result?.toFloatOrNull() as T?
-            Double::class -> result?.toDoubleOrNull() as T?
-            Boolean::class -> result?.toBooleanStrictOrNull() as T?
-            String::class -> result as T?
-            else -> result?.decodeJson() as T?
-        }
-    }
-
-    private suspend fun executeMessage(
+    suspend fun executeMessage(
         method: String,
         params: Map<String, Any> = emptyMap(),
     ): String? {

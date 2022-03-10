@@ -30,7 +30,7 @@ interface ExtensionServices {
     fun setSite(site: Site)
     val isExtensionActive: Flow<Boolean>
     suspend fun ensureExtensionActive()
-    suspend fun runJSMethod(method: String, vararg args: Pair<String, Any>): String
+    suspend fun runJSMethod(method: String, vararg args: Pair<String, Any>): String?
     fun sendJSEventResponse(response: ExtensionResponseMessage)
     fun subscribeJSEvent(method: String): Flow<ExtensionMessage>
 }

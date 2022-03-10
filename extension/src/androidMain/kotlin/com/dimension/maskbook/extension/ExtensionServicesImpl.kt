@@ -48,12 +48,8 @@ internal class ExtensionServicesImpl(
         isExtensionActive.first { it }
     }
 
-    override suspend fun runJSMethod(method: String, vararg args: Pair<String, Any>): String {
-        return messageChannel.execute<String>(method, args.toMap()).orEmpty()
-    }
-
-    suspend inline fun <reified T : Any> execute(method: String, vararg args: Pair<String, Any>): T? {
-        return messageChannel.execute(method, args.toMap())
+    override suspend fun runJSMethod(method: String, vararg args: Pair<String, Any>): String? {
+        return messageChannel.executeMessage(method, args.toMap())
     }
 
     override fun subscribeJSEvent(method: String): Flow<ExtensionMessage> {
