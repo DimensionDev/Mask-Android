@@ -61,7 +61,6 @@ fun SinglelineText(
     lineHeight: TextUnit = TextUnit.Unspecified,
     overflow: TextOverflow = TextOverflow.Clip,
     softWrap: Boolean = true,
-    maxLines: Int = 1,
     onTextLayout: (TextLayoutResult) -> Unit = {},
     style: TextStyle = LocalTextStyle.current,
     expectSize: TextUnit? = LocalTextStyle.current.fontSize,
@@ -80,7 +79,7 @@ fun SinglelineText(
         lineHeight = lineHeight,
         overflow = overflow,
         softWrap = softWrap,
-        maxLines = maxLines,
+        maxLines = 1,
         onTextLayout = onTextLayout,
         style = style,
         expectSize = expectSize
@@ -124,9 +123,12 @@ fun AutoSizeText(
 
         var currentFontIndex = 0
 
-        while (shouldShrink(text, combinedTextStyle, maxLines)) {
+        while (
+            shouldShrink(text, combinedTextStyle, maxLines) &&
+            ++currentFontIndex < fontSizes.size
+        ) {
             combinedTextStyle =
-                combinedTextStyle.copy(fontSize = fontSizes[++currentFontIndex])
+                combinedTextStyle.copy(fontSize = fontSizes[currentFontIndex])
         }
 
         Text(
