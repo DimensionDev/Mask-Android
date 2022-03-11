@@ -28,8 +28,6 @@ import com.dimension.maskbook.setting.export.model.Appearance
 import com.dimension.maskbook.setting.export.model.BackupMeta
 import com.dimension.maskbook.setting.export.model.DataProvider
 import com.dimension.maskbook.setting.export.model.Language
-import com.dimension.maskbook.setting.export.model.NetworkType
-import com.dimension.maskbook.setting.export.model.TradeProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -49,8 +47,6 @@ internal class SettingsRepository(
         get() = jsDataSource.appearance
     override val dataProvider: Flow<DataProvider>
         get() = jsDataSource.dataProvider
-    override val tradeProvider: Flow<Map<NetworkType, TradeProvider>>
-        get() = jsDataSource.tradeProvider
     override val paymentPassword: Flow<String>
         get() = settingDataSource.paymentPassword
     override val backupPassword: Flow<String>
@@ -60,10 +56,6 @@ internal class SettingsRepository(
 
     override fun setBiometricEnabled(value: Boolean) {
         settingDataSource.setBiometricEnabled(value)
-    }
-
-    override fun setTradeProvider(networkType: NetworkType, tradeProvider: TradeProvider) {
-        jsDataSource.setTradeProvider(networkType, tradeProvider)
     }
 
     override fun setLanguage(language: Language) {

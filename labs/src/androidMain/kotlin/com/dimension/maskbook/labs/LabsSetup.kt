@@ -35,7 +35,6 @@ import com.dimension.maskbook.labs.repository.labsDataStore
 import com.dimension.maskbook.labs.ui.scenes.generatedRoute
 import com.dimension.maskbook.labs.ui.tab.LabsTabScreen
 import com.dimension.maskbook.labs.viewmodel.LabsViewModel
-import com.dimension.maskbook.labs.viewmodel.MarketTrendSettingsViewModel
 import com.dimension.maskbook.labs.viewmodel.PluginSettingsViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.qualifier.named
@@ -60,7 +59,6 @@ object LabsSetup : ModuleSetup {
 
         viewModel { LabsViewModel(get(), get()) }
         viewModel { PluginSettingsViewModel(get(), get(), get()) }
-        viewModel { MarketTrendSettingsViewModel(get()) }
     }
 
     override fun onExtensionReady() {

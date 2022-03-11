@@ -21,8 +21,6 @@
 package com.dimension.maskbook.setting.export
 
 import com.dimension.maskbook.setting.export.model.Appearance
-import com.dimension.maskbook.setting.export.model.NetworkType
-import com.dimension.maskbook.setting.export.model.TradeProvider
 import kotlinx.coroutines.flow.Flow
 
 interface SettingServices {
@@ -30,10 +28,8 @@ interface SettingServices {
     val appearance: Flow<Appearance>
     val paymentPassword: Flow<String>
     val backupPassword: Flow<String>
-    val tradeProvider: Flow<Map<NetworkType, TradeProvider>>
     val shouldShowLegalScene: Flow<Boolean>
     fun setBiometricEnabled(value: Boolean)
-    fun setTradeProvider(networkType: NetworkType, tradeProvider: TradeProvider)
     fun setPaymentPassword(value: String)
     fun setShouldShowLegalScene(value: Boolean)
 }
