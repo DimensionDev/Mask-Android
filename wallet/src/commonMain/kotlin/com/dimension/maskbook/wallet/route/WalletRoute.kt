@@ -110,7 +110,7 @@ expect object WalletRoute {
     }
 
     object SendTokenScene {
-        operator fun invoke(tokenAddress: String?): String
+        operator fun invoke(tradableId: String?): String
     }
 
     object UnlockWalletDialog {

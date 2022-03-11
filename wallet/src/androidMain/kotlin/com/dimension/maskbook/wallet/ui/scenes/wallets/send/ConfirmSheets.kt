@@ -21,6 +21,7 @@
 package com.dimension.maskbook.wallet.ui.scenes.wallets.send
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -45,15 +46,19 @@ import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.common.ui.widget.button.SecondaryButton
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.export.model.TokenData
+import com.dimension.maskbook.wallet.export.model.TradableData
+import com.dimension.maskbook.wallet.export.model.WalletCollectibleData
+import com.dimension.maskbook.wallet.export.model.WalletTokenData
 import com.dimension.maskbook.wallet.repository.SearchAddressData
 
 @Composable
 fun ApproveConfirmSheet(
     addressData: SearchAddressData,
-    tokenData: TokenData,
+    tokenData: TradableData,
     sendPrice: String,
     gasFee: String,
     total: String,
+    sending: Boolean,
     onConfirm: () -> Unit,
     onCancel: () -> Unit,
     onEditGasFee: () -> Unit,
@@ -61,10 +66,11 @@ fun ApproveConfirmSheet(
     ConfirmSheet(
         title = stringResource(R.string.scene_wallet_balance_transaction_approve),
         addressData = addressData,
-        tokenData = tokenData,
+        tradableData = tokenData,
         sendPrice = sendPrice,
         gasFee = gasFee,
         total = total,
+        sending = sending,
         onConfirm = onConfirm,
         onCancel = onCancel,
         onEditGasFee = onEditGasFee
@@ -74,10 +80,11 @@ fun ApproveConfirmSheet(
 @Composable
 fun SendConfirmSheet(
     addressData: SearchAddressData,
-    tokenData: TokenData,
+    tokenData: TradableData,
     sendPrice: String,
     gasFee: String,
     total: String,
+    sending: Boolean,
     onConfirm: () -> Unit,
     onCancel: () -> Unit,
     onEditGasFee: () -> Unit,
@@ -85,10 +92,11 @@ fun SendConfirmSheet(
     ConfirmSheet(
         title = stringResource(R.string.scene_wallet_balance_btn_Send),
         addressData = addressData,
-        tokenData = tokenData,
+        tradableData = tokenData,
         sendPrice = sendPrice,
         gasFee = gasFee,
         total = total,
+        sending = sending,
         onConfirm = onConfirm,
         onCancel = onCancel,
         onEditGasFee = onEditGasFee
@@ -98,8 +106,9 @@ fun SendConfirmSheet(
 @Composable
 fun SignatureRequestSignSheet(
     addressData: SearchAddressData,
-    tokenData: TokenData,
+    tradableData: TradableData,
     sendPrice: String,
+    sending: Boolean,
     message: String,
     onSign: () -> Unit,
     onCancel: () -> Unit,
@@ -117,7 +126,7 @@ fun SignatureRequestSignSheet(
         ) {
             AddressAndTokenContent(
                 addressData = addressData,
-                tokenData = tokenData,
+                tradableData = tradableData,
                 sendPrice = sendPrice
             )
             Spacer(modifier = Modifier.height(20.dp))
@@ -126,7 +135,7 @@ fun SignatureRequestSignSheet(
                 Text(text = message, modifier = Modifier.weight(1f))
             }
             Spacer(modifier = Modifier.height(20.dp))
-            ButtonContent(onCancel = onCancel, onConfirm = onSign, confirmText = "Sign")
+            ButtonContent(onCancel = onCancel, onConfirm = onSign, confirmText = "Sign", sending = sending)
         }
     }
 }
@@ -135,10 +144,11 @@ fun SignatureRequestSignSheet(
 private fun ConfirmSheet(
     title: String,
     addressData: SearchAddressData,
-    tokenData: TokenData,
+    tradableData: TradableData,
     sendPrice: String,
     gasFee: String,
     total: String,
+    sending: Boolean,
     onConfirm: () -> Unit,
     onCancel: () -> Unit,
     onEditGasFee: () -> Unit,
@@ -156,7 +166,7 @@ private fun ConfirmSheet(
         ) {
             AddressAndTokenContent(
                 addressData = addressData,
-                tokenData = tokenData,
+                tradableData = tradableData,
                 sendPrice = sendPrice
             )
             Spacer(modifier = Modifier.height(20.dp))
@@ -166,7 +176,7 @@ private fun ConfirmSheet(
                 total = total
             )
             Spacer(modifier = Modifier.height(20.dp))
-            ButtonContent(onCancel = onCancel, onConfirm = onConfirm)
+            ButtonContent(onCancel = onCancel, onConfirm = onConfirm, sending = sending)
         }
     }
 }
@@ -174,7 +184,7 @@ private fun ConfirmSheet(
 @Composable
 private fun ColumnScope.AddressAndTokenContent(
     addressData: SearchAddressData,
-    tokenData: TokenData,
+    tradableData: TradableData,
     sendPrice: String
 ) {
     Text(
@@ -188,6 +198,14 @@ private fun ColumnScope.AddressAndTokenContent(
         modifier = Modifier.align(Alignment.CenterHorizontally)
     )
     Spacer(modifier = Modifier.height(20.dp))
+    when (tradableData) {
+        is WalletTokenData -> TokenContent(tokenData = tradableData.tokenData, sendPrice = sendPrice)
+        is WalletCollectibleData -> CollectibleContent(collectibleData = tradableData)
+    }
+}
+
+@Composable
+private fun TokenContent(tokenData: TokenData, sendPrice: String) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
@@ -200,6 +218,30 @@ private fun ColumnScope.AddressAndTokenContent(
         Spacer(modifier = Modifier.width(8.dp))
         Text(text = tokenData.symbol, modifier = Modifier.weight(1f))
         Text(text = sendPrice)
+    }
+}
+
+@Composable
+private fun CollectibleContent(
+    collectibleData: WalletCollectibleData
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Image(
+            painter = rememberImagePainter(collectibleData.icon),
+            contentDescription = null,
+            modifier = Modifier.size(38.dp)
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(text = collectibleData.name)
+            Text(text = collectibleData.collection.name)
+        }
     }
 }
 
@@ -231,6 +273,7 @@ private fun ColumnScope.GasFeeAndTotalContent(
 
 @Composable
 private fun ColumnScope.ButtonContent(
+    sending: Boolean,
     onCancel: () -> Unit,
     onConfirm: () -> Unit,
     confirmText: String = stringResource(R.string.common_controls_confirm)
@@ -249,8 +292,9 @@ private fun ColumnScope.ButtonContent(
         PrimaryButton(
             modifier = Modifier.weight(1f),
             onClick = onConfirm,
+            enabled = !sending
         ) {
-            Text(text = confirmText)
+            Text(text = if (sending) stringResource(R.string.common_controls_sending) else confirmText)
         }
     }
 }

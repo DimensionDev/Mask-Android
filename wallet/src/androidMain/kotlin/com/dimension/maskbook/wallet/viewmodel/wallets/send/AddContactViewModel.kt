@@ -23,11 +23,14 @@ package com.dimension.maskbook.wallet.viewmodel.wallets.send
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
-import com.dimension.maskbook.wallet.repository.IWalletContactRepository
+import com.dimension.maskbook.wallet.usecase.Result
+import com.dimension.maskbook.wallet.usecase.address.AddContactUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 class AddContactViewModel(
-    private val repository: IWalletContactRepository,
+    private val addContactUseCase: AddContactUseCase,
 ) : ViewModel() {
     private val _name = MutableStateFlow("")
     val name = _name.asStateIn(viewModelScope, "")
@@ -35,7 +38,24 @@ class AddContactViewModel(
         _name.value = value
     }
 
-    fun confirm(name: String, address: String) {
-        repository.addOrUpdate(name = name, address = address)
+    private val _loadingState = MutableStateFlow(false)
+    val loadingState = _loadingState.asStateIn(viewModelScope)
+
+    fun confirm(name: String, address: String, onResult: (success: Boolean) -> Unit) {
+        viewModelScope.launch {
+            addContactUseCase(name = name, address = address).collect {
+                when (it) {
+                    is Result.Failed -> {
+                        onResult.invoke(false)
+                        _loadingState.value = false
+                    }
+                    is Result.Loading -> _loadingState.value = true
+                    is Result.Success -> {
+                        onResult.invoke(true)
+                        _loadingState.value = false
+                    }
+                }
+            }
+        }
     }
 }

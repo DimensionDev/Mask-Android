@@ -55,8 +55,6 @@ android {
 
 dependencies {
     implementation("androidx.core:core-splashscreen:1.0.0-beta01")
-    implementation("org.mozilla.components:feature-prompts:${Versions.mozilla_components}")
-    implementation("org.mozilla.components:support-base:${Versions.mozilla_components}")
     implementation("androidx.activity:activity-compose:${Versions.Androidx.activityCompose}")
     implementation(projects.entry)
     implementation(projects.common)
