@@ -48,10 +48,11 @@ import com.dimension.maskbook.wallet.db.model.WalletSource
 import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.export.model.DbWalletBalanceType
 import com.dimension.maskbook.wallet.export.model.TokenData
+import com.dimension.maskbook.wallet.export.model.WalletCollectibleData
 import com.dimension.maskbook.wallet.export.model.WalletData
 import com.dimension.maskbook.wallet.ext.ether
 import com.dimension.maskbook.wallet.ext.gwei
-import com.dimension.maskbook.wallet.paging.mediator.CollectibleMediator
+import com.dimension.maskbook.wallet.paging.mediator.CollectibleCollectionMediator
 import com.dimension.maskbook.wallet.services.WalletServices
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager
 import com.dimension.maskwalletcore.WalletKey
@@ -70,6 +71,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.web3j.abi.FunctionEncoder
 import org.web3j.abi.datatypes.Address
+import org.web3j.abi.datatypes.DynamicBytes
 import org.web3j.abi.datatypes.Function
 import org.web3j.abi.datatypes.generated.Uint256
 import org.web3j.crypto.Credentials
@@ -159,12 +161,12 @@ internal class WalletRepository(
     private suspend fun refreshCurrentWalletCollectibles() {
         val currentWallet = currentWallet.firstOrNull() ?: return
         try {
-            CollectibleMediator(
+            CollectibleCollectionMediator(
                 walletId = currentWallet.id,
                 database = database,
                 openSeaServices = services.openSeaServices,
                 walletAddress = currentWallet.address,
-            ).load(LoadType.REFRESH, PagingState(emptyList(), null, PagingConfig(pageSize = 10), 0))
+            ).load(LoadType.REFRESH, PagingState(emptyList(), null, PagingConfig(pageSize = 20), 0))
         } catch (e: Throwable) {
             e.printStackTrace()
         }
@@ -619,7 +621,7 @@ internal class WalletRepository(
         onDone: (String?) -> Unit,
         onError: (Throwable) -> Unit,
     ) {
-        sendTokenWithCurrentWalletAndChainType(
+        transactionWithCurrentWalletAndChainType(
             amount = amount,
             address = address,
             chainType = tokenData.chainType,
@@ -632,7 +634,45 @@ internal class WalletRepository(
         )
     }
 
-    override fun sendTokenWithCurrentWalletAndChainType(
+    override fun sendCollectibleWithCurrentWallet(
+        address: String,
+        collectible: WalletCollectibleData,
+        gasLimit: Double,
+        maxFee: Double,
+        maxPriorityFee: Double,
+        onDone: (String?) -> Unit,
+        onError: (Throwable) -> Unit
+    ) {
+        scope.launch {
+            currentWallet.firstOrNull()?.let { wallet ->
+                val data = Function(
+                    "safeTransferFrom",
+                    listOf(
+                        Address(wallet.address), // from
+                        Address(address), // to
+                        Uint256(collectible.tokenId.toBigInteger()),
+                        DynamicBytes(byteArrayOf())
+                    ),
+                    listOf(),
+                ).let {
+                    FunctionEncoder.encode(it)
+                }
+                transactionWithCurrentWalletAndChainType(
+                    amount = BigDecimal.ZERO,
+                    address = collectible.contract.address,
+                    chainType = collectible.chainType,
+                    gasLimit = gasLimit,
+                    maxFee = maxFee,
+                    maxPriorityFee = maxPriorityFee,
+                    data = data,
+                    onDone = onDone,
+                    onError = onError
+                )
+            }
+        }
+    }
+
+    override fun transactionWithCurrentWalletAndChainType(
         amount: BigDecimal,
         address: String,
         chainType: ChainType,
@@ -792,6 +832,22 @@ internal class WalletRepository(
             val web3 = Web3j.build(chainType.httpService)
             EnsResolver(web3).resolve(name).apply {
                 web3.shutdown()
+            }
+        }
+    }
+
+    override suspend fun getChainData(chainType: ChainType): Flow<ChainData?> {
+        return database.chainDao().getByIdFlow(chainType.chainId).map { dbData ->
+            dbData?.let {
+                ChainData(
+                    chainId = it.chain.chainId,
+                    name = it.chain.name,
+                    fullName = it.chain.fullName,
+                    nativeTokenID = it.chain.nativeTokenID,
+                    logoURL = it.chain.logoURL,
+                    nativeToken = it.token?.let { token -> TokenData.fromDb(token) },
+                    chainType = ChainType.valueOf(it.chain.name)
+                )
             }
         }
     }

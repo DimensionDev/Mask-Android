@@ -28,21 +28,30 @@ import com.dimension.maskbook.extension.export.ExtensionServices
 import com.dimension.maskbook.extension.export.model.ExtensionResponseMessage
 import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.ext.hexWei
-import com.dimension.maskbook.wallet.repository.ISendHistoryRepository
-import com.dimension.maskbook.wallet.repository.IWalletRepository
 import com.dimension.maskbook.wallet.repository.SendTokenConfirmData
+import com.dimension.maskbook.wallet.usecase.Result
+import com.dimension.maskbook.wallet.usecase.address.GetAddressUseCase
+import com.dimension.maskbook.wallet.usecase.chain.SetCurrentChainUseCase
+import com.dimension.maskbook.wallet.usecase.token.GetWalletNativeTokenUseCase
+import com.dimension.maskbook.wallet.usecase.token.GetWalletTokenByAddressUseCase
+import com.dimension.maskbook.wallet.usecase.token.SendTransactionUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.mapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.launch
 
 class Web3TransactionConfirmViewModel(
     private val data: SendTokenConfirmData,
-    private val sendHistoryRepository: ISendHistoryRepository,
-    private val walletRepository: IWalletRepository,
+    private val setCurrentChainUseCase: SetCurrentChainUseCase,
+    private val getWalletTokenByAddressUseCase: GetWalletTokenByAddressUseCase,
+    private val getWalletNativeTokenUseCase: GetWalletNativeTokenUseCase,
+    private val getAddressUseCase: GetAddressUseCase,
+    private val sendTransactionUseCase: SendTransactionUseCase,
     private val extensionServices: ExtensionServices,
 ) : ViewModel() {
 
@@ -51,67 +60,84 @@ class Web3TransactionConfirmViewModel(
     } ?: ChainType.eth
 
     init {
-        walletRepository.setChainType(chainType)
+        viewModelScope.launch {
+            setCurrentChainUseCase(chainType).collect()
+        }
     }
+
+    private val _loadingState = MutableStateFlow(false)
+    val loadingState = _loadingState.asStateIn(viewModelScope)
 
     fun send(
         gasLimit: Double,
         maxFee: Double,
         maxPriorityFee: Double,
+        onResult: (success: Boolean) -> Unit
     ) {
         data.data.to?.let { address ->
-            walletRepository.sendTokenWithCurrentWalletAndChainType(
-                amount = amount.value,
-                address = address,
-                chainType = chainType,
-                gasLimit = gasLimit,
-                maxFee = maxFee,
-                maxPriorityFee = maxPriorityFee,
-                data = data.data.data ?: "",
-                onDone = {
-                    it?.let {
-                        extensionServices.sendJSEventResponse(
-                            ExtensionResponseMessage.success(
-                                data.messageId,
-                                data.jsonrpc,
-                                data.payloadId,
-                                it
+            viewModelScope.launch {
+                sendTransactionUseCase(
+                    amount = amount.value,
+                    address = address,
+                    chainType = chainType,
+                    gasLimit = gasLimit,
+                    maxFee = maxFee,
+                    maxPriorityFee = maxPriorityFee,
+                    data = data.data.data ?: "",
+                ).collect {
+                    when (it) {
+                        is Result.Failed -> {
+                            extensionServices.sendJSEventResponse(
+                                ExtensionResponseMessage.error(
+                                    data.messageId,
+                                    data.jsonrpc,
+                                    data.payloadId,
+                                    it.cause.message ?: "Failed to send transaction"
+                                )
                             )
-                        )
-                    } ?: run {
-                        extensionServices.sendJSEventResponse(
-                            ExtensionResponseMessage.error(
-                                data.messageId,
-                                data.jsonrpc,
-                                data.payloadId,
-                                "Failed to send transaction"
+                            onResult.invoke(false)
+                        }
+                        is Result.Loading -> _loadingState.value = true
+                        is Result.Success -> {
+                            extensionServices.sendJSEventResponse(
+                                ExtensionResponseMessage.success(
+                                    data.messageId,
+                                    data.jsonrpc,
+                                    data.payloadId,
+                                    it
+                                )
                             )
-                        )
+                            onResult.invoke(true)
+                        }
                     }
-                },
-                onError = {
-                    extensionServices.sendJSEventResponse(
-                        ExtensionResponseMessage.error(
-                            data.messageId,
-                            data.jsonrpc,
-                            data.payloadId,
-                            it.message ?: "Failed to send transaction"
-                        )
-                    )
+                    if (it !is Result.Loading) _loadingState.value = false
                 }
-            )
+            }
         }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val nativeToken = walletRepository.currentChain.mapLatest { it?.nativeToken }
-
     val tokenData by lazy {
-        combine(walletRepository.currentWallet, nativeToken) { wallet, nativeToken ->
-            wallet?.tokens?.find {
-                it.tokenData.address == data.data.to && it.tokenData.address.isNotEmpty()
-            }?.tokenData ?: nativeToken
-        }
+        flow { emit(data.data.to) }
+            .mapNotNull { it }
+            .flatMapLatest {
+                combine(
+                    getWalletTokenByAddressUseCase(it),
+                    getWalletNativeTokenUseCase(chainType)
+                ) { token, native ->
+                    when {
+                        token is Result.Success -> {
+                            token.value.tokenData
+                        }
+                        native is Result.Success -> {
+                            native.value.tokenData
+                        }
+                        else -> {
+                            null
+                        }
+                    }
+                }
+            }.asStateIn(viewModelScope, null)
     }
 
     val amount = MutableStateFlow(data.data.value?.hexWei?.ether ?: BigDecimal.ZERO)
@@ -123,10 +149,13 @@ class Web3TransactionConfirmViewModel(
         }.mapNotNull {
             it
         }.flatMapLatest {
-            sendHistoryRepository.getOrCreateByAddress(it)
-                .asStateIn(viewModelScope, null)
-                .mapNotNull { it }
-        }
+            getAddressUseCase(address = it, addIfNotExists = true)
+        }.map {
+            when (it) {
+                is Result.Success -> it.value
+                else -> null
+            }
+        }.asStateIn(viewModelScope, null)
     }
 
     fun cancel() {

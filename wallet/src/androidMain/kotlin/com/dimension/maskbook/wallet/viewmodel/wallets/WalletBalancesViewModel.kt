@@ -55,8 +55,7 @@ class WalletBalancesViewModel(
     }
     @OptIn(ExperimentalCoroutinesApi::class)
     val collectible by lazy {
-        currentWallet.mapNotNull { it }
-            .flatMapLatest { collectibleRepository.getCollectiblesByWallet(it) }
+        currentWallet.mapNotNull { it }.flatMapLatest { collectibleRepository.getCollectibleCollectionsByWallet(it) }
     }
     val dWebData by lazy {
         repository.dWebData.asStateIn(viewModelScope, null)

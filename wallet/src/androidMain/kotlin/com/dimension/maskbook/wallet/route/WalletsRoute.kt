@@ -83,7 +83,7 @@ import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletSwitchAd
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletSwitchEditModal
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletSwitchSceneModal
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletTransactionHistoryScene
-import com.dimension.maskbook.wallet.ui.scenes.wallets.send.SendTokenHost
+import com.dimension.maskbook.wallet.ui.scenes.wallets.send.TransferHost
 import com.dimension.maskbook.wallet.ui.scenes.wallets.token.TokenDetailScene
 import com.dimension.maskbook.wallet.viewmodel.wallets.BackUpPasswordViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.BiometricViewModel
@@ -116,15 +116,20 @@ fun CollectibleDetail(
         parametersOf(id)
     }
     val data by viewModel.data.observeAsState(initial = null)
+    val transactions by viewModel.transactions.observeAsState()
     data?.let {
         CollectibleDetailScene(
             data = it,
             onBack = onBack,
             onSend = {
+                navController.navigate(WalletRoute.SendTokenScene(it.tradableId()))
             },
             onReceive = {
                 navController.navigate(WalletRoute.WalletQrcode(it.chainType.name))
-            }
+            },
+            transactions = transactions,
+            onSpeedUp = {},
+            onCancel = {}
         )
     }
 }
@@ -350,7 +355,14 @@ fun WalletSwitchEditModal(
     wallets.firstOrNull { it.id == id }?.let { wallet ->
         WalletSwitchEditModal(
             walletData = wallet,
-            onRename = { navController.navigate(WalletRoute.WalletManagementRename(wallet.id, wallet.name)) },
+            onRename = {
+                navController.navigate(
+                    WalletRoute.WalletManagementRename(
+                        wallet.id,
+                        wallet.name
+                    )
+                )
+            },
             onDelete = {
                 onBack.invoke()
                 navController.navigate(WalletRoute.WalletManagementDeleteDialog(wallet.id))
@@ -816,10 +828,10 @@ fun ImportWallet(
 @Composable
 fun SendTokenScene(
     @Back onBack: () -> Unit,
-    @Query("tokenAddress") tokenAddress: String?,
+    @Query("tradableId") tradableId: String?,
 ) {
-    SendTokenHost(
-        tokenAddress = tokenAddress?.let { if (it != "null") it else null }.orEmpty(),
+    TransferHost(
+        tradableId = tradableId?.let { if (it != "null") it else null }.orEmpty(),
         onBack = onBack,
         onDone = onBack,
     )
