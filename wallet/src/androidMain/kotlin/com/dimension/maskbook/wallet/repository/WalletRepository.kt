@@ -60,8 +60,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
@@ -300,8 +302,14 @@ internal class WalletRepository(
     override val currentWallet: Flow<WalletData?>
         get() = dataStore.data.map {
             it[CurrentWalletKey]
-        }.mapNotNull { it }.flatMapLatest {
-            database.walletDao().getByIdFlow(it)
+        }.flatMapLatest {
+            flow {
+                if (it == null) {
+                    emit(null)
+                } else {
+                    emitAll(database.walletDao().getByIdFlow(it))
+                }
+            }
         }.map {
             it?.let { it1 -> WalletData.fromDb(it1) }
         }
