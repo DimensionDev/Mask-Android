@@ -21,7 +21,9 @@
 package com.dimension.maskbook.persona.model.options
 
 import com.dimension.maskbook.persona.db.model.DbPersonaRecord
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class CreatePersonaOptions(
     val persona: DbPersonaRecord,
 )

@@ -22,21 +22,37 @@ package com.dimension.maskbook.persona.db.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import kotlinx.serialization.Serializable
 
-@kotlinx.serialization.Serializable
+@Serializable
 @Entity
 data class DbPersonaRecord(
     @PrimaryKey val identifier: String,
-    val mnemonic: String? = null,
-    val path: String? = null,
-    val withPassword: String? = null,
-    val publicKey: String,
-    val privateKey: String? = null,
-    val localKey: String? = null,
-    val nickname: String? = null,
+    var mnemonic: String? = null,
+    var path: String? = null,
+    var withPassword: String? = null,
+    var publicKey: String? = null,
+    var privateKey: String? = null,
+    var localKey: String? = null,
+    var nickname: String? = null,
     val createAt: Long = 0,
-    val updateAt: Long = 0,
-    val hasLogout: Boolean = false,
-    val initialized: Boolean = false,
-    val avatar: String? = null,
-)
+    var updateAt: Long = 0,
+    var hasLogout: Boolean? = null,
+    var initialized: Boolean? = null,
+    var avatar: String? = null,
+) {
+    fun merge(record: DbPersonaRecord): DbPersonaRecord {
+        if (record.mnemonic != null && record.mnemonic != mnemonic) mnemonic = record.mnemonic
+        if (record.path != null && record.path != path) path = record.path
+        if (record.withPassword != null && record.withPassword != withPassword) withPassword = record.withPassword
+        if (record.publicKey != null && record.publicKey != publicKey) publicKey = record.publicKey
+        if (record.privateKey != null && record.privateKey != privateKey) privateKey = record.privateKey
+        if (record.localKey != null && record.localKey != localKey) localKey = record.localKey
+        if (record.nickname != null && record.nickname != nickname) nickname = record.nickname
+        if (record.hasLogout != null && record.hasLogout != hasLogout) hasLogout = record.hasLogout
+        if (record.initialized != null && record.initialized != initialized) initialized = record.initialized
+        if (record.avatar != null && record.avatar != avatar) avatar = record.avatar
+        record.updateAt = System.currentTimeMillis()
+        return this
+    }
+}

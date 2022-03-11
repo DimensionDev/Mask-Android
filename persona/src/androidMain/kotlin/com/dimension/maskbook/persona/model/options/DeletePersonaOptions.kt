@@ -20,10 +20,14 @@
  */
 package com.dimension.maskbook.persona.model.options
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class DeletePersonaOptions(
     val identifier: String,
     val options: Options,
 ) {
+    @Serializable
     data class Options(
         val safeDelete: Boolean = false,
     )

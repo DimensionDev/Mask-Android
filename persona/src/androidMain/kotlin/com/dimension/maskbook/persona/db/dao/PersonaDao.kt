@@ -18,21 +18,31 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.persona.model.options
+package com.dimension.maskbook.persona.db.dao
 
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.RawQuery
+import androidx.sqlite.db.SupportSQLiteQuery
 import com.dimension.maskbook.persona.db.model.DbPersonaRecord
-import kotlinx.serialization.Serializable
 
-@Serializable
-data class UpdatePersonaOptions(
-    val persona: DbPersonaRecord,
-    val options: Options,
-) {
-    @Serializable
-    data class Options(
-        val linkedProfileMergePolicy: Int = 0,
-        val deleteUndefinedFields: Boolean = false,
-        val protectPrivateKey: Boolean = false,
-        val createWhenNotExist: Boolean = false,
-    )
+@Dao
+interface PersonaDao {
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun add(persona: DbPersonaRecord): Int
+
+    @RawQuery
+    suspend fun findRaw(query: SupportSQLiteQuery): DbPersonaRecord?
+
+    @RawQuery
+    suspend fun findListRaw(query: SupportSQLiteQuery): List<DbPersonaRecord>
+
+    @Query("SELECT * FROM DbPersonaRecord WHERE identifier=:identifier LIMIT 1")
+    suspend fun find(identifier: String): DbPersonaRecord?
+
+    @Query("DELETE FROM DbPersonaRecord WHERE identifier=:identifier")
+    suspend fun delete(identifier: String)
 }

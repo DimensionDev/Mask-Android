@@ -20,7 +20,16 @@
  */
 package com.dimension.maskbook.persona.model.options
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class PageOptions(
     val pageSize: Int,
     val pageOffset: Int,
-)
+) {
+    val limitStart: Int
+        get() = (pageSize * pageOffset) + 1
+
+    val limitOffset: Int
+        get() = pageOffset - 1
+}

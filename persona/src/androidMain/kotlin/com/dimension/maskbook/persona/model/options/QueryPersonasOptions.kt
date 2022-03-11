@@ -20,11 +20,14 @@
  */
 package com.dimension.maskbook.persona.model.options
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class QueryPersonasOptions(
     val identifiers: List<String>? = null,
-    val hasPrivateKey: Boolean = false,
-    val includeLogout: Boolean = false,
+    val hasPrivateKey: Boolean? = null,
+    val includeLogout: Boolean? = null,
     val nameContains: String? = null,
-    val initialized: Boolean = false,
+    val initialized: Boolean? = null,
     val pageOption: PageOptions? = null,
 )

@@ -26,6 +26,7 @@ import androidx.room.TypeConverter
 import androidx.room.TypeConverters
 import com.dimension.maskbook.common.ext.decodeJson
 import com.dimension.maskbook.common.ext.encodeJson
+import com.dimension.maskbook.persona.db.dao.PersonaDao
 import com.dimension.maskbook.persona.db.model.DbPersonaRecord
 import com.dimension.maskbook.persona.db.model.DbPostRecord
 import com.dimension.maskbook.persona.db.model.DbProfileRecord
@@ -42,7 +43,9 @@ import kotlinx.serialization.json.JsonObject
     version = 1,
 )
 @TypeConverters(JsonObjectConverter::class)
-abstract class PersonaDatabase : RoomDatabase()
+abstract class PersonaDatabase : RoomDatabase() {
+    abstract fun personaDao(): PersonaDao
+}
 
 internal class JsonObjectConverter {
 
