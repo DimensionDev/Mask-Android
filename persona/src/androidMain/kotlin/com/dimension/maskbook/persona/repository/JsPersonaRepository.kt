@@ -36,7 +36,10 @@ class JsPersonaRepository(database: PersonaDatabase) {
     private val personaDao = database.personaDao()
 
     suspend fun createPersona(options: CreatePersonaOptions): DbPersonaRecord? {
-        return personaDao.addWithResult(options.persona)
+        val newPersona = options.persona
+        newPersona.createAt = System.currentTimeMillis()
+        newPersona.updateAt = System.currentTimeMillis()
+        return personaDao.addWithResult(newPersona)
     }
 
     suspend fun queryPersona(options: QueryPersonaOptions): DbPersonaRecord? {
@@ -99,6 +102,8 @@ class JsPersonaRepository(database: PersonaDatabase) {
 
         if (oldPersona == null) {
             return if (options.options.createWhenNotExist) {
+                newPersona.createAt = System.currentTimeMillis()
+                newPersona.updateAt = System.currentTimeMillis()
                 personaDao.addWithResult(newPersona)
             } else null
         }
@@ -114,9 +119,15 @@ class JsPersonaRepository(database: PersonaDatabase) {
         // deleteUndefinedFields ?
 
         val resultPersona = when (options.options.linkedProfileMergePolicy) {
-            0 -> newPersona
-            1 -> oldPersona.merge(newPersona)
-            else -> newPersona
+            0 -> {
+                newPersona.createAt = oldPersona.createAt
+                newPersona
+            }
+            1 -> {
+                oldPersona.updateAt = System.currentTimeMillis()
+                oldPersona.merge(newPersona)
+            }
+            else -> oldPersona
         }
         return personaDao.addWithResult(resultPersona)
     }
@@ -126,12 +137,14 @@ class JsPersonaRepository(database: PersonaDatabase) {
     }
 }
 
-private fun buildWhereSql(
+internal fun buildWhereSql(
     identifiers: List<String>? = null,
     hasPrivateKey: Boolean? = null,
     includeLogout: Boolean? = null,
     nameContains: String? = null,
     initialized: Boolean? = null,
+    network: String? = null,
+    favor: Boolean? = null,
 ): String {
     return listOfNotNull(
         if (!identifiers.isNullOrEmpty()) {
@@ -148,10 +161,16 @@ private fun buildWhereSql(
         } else null,
         if (initialized != null) {
             "initialized = $initialized"
-        } else null
+        } else null,
+        if (network != null) {
+            "network = $network"
+        } else null,
+        if (favor != null) {
+            "favor = $favor"
+        } else null,
     ).joinToString(separator = " AND ")
 }
 
-private suspend fun PersonaDao.addWithResult(persona: DbPersonaRecord): DbPersonaRecord? {
-    return if (add(persona) > 0) persona else null
+private suspend fun PersonaDao.addWithResult(persona: DbPersonaRecord): DbPersonaRecord {
+    add(persona) ; return persona
 }

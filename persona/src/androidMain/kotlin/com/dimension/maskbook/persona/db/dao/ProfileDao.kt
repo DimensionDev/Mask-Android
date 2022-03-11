@@ -18,12 +18,31 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.persona.model.options
+package com.dimension.maskbook.persona.db.dao
 
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.RawQuery
+import androidx.sqlite.db.SupportSQLiteQuery
 import com.dimension.maskbook.persona.db.model.DbProfileRecord
-import kotlinx.serialization.Serializable
 
-@Serializable
-data class CreateProfileOptions(
-    val profile: DbProfileRecord,
-)
+@Dao
+interface ProfileDao {
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun add(persona: DbProfileRecord)
+
+    @RawQuery
+    suspend fun findRaw(query: SupportSQLiteQuery): DbProfileRecord?
+
+    @RawQuery
+    suspend fun findListRaw(query: SupportSQLiteQuery): List<DbProfileRecord>
+
+    @Query("SELECT * FROM DbProfileRecord WHERE identifier=:identifier LIMIT 1")
+    suspend fun find(identifier: String): DbProfileRecord?
+
+    @Query("DELETE FROM DbProfileRecord WHERE identifier=:identifier")
+    suspend fun delete(identifier: String)
+}

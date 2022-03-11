@@ -21,7 +21,9 @@
 package com.dimension.maskbook.persona.model.options
 
 import com.dimension.maskbook.persona.model.LinkedProfileDetailsState
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class AttachProfileOptions(
     val personaIdentifier: String,
     val profileIdentifier: String,

@@ -20,6 +20,9 @@
  */
 package com.dimension.maskbook.persona.model.options
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class QueryAvatarOptions(
     val identifier: String,
 )

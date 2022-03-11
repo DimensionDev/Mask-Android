@@ -26,36 +26,59 @@ import androidx.room.TypeConverter
 import androidx.room.TypeConverters
 import com.dimension.maskbook.common.ext.decodeJson
 import com.dimension.maskbook.common.ext.encodeJson
+import com.dimension.maskbook.persona.db.dao.LinkedProfileDao
 import com.dimension.maskbook.persona.db.dao.PersonaDao
+import com.dimension.maskbook.persona.db.dao.ProfileDao
+import com.dimension.maskbook.persona.db.dao.RelationDao
+import com.dimension.maskbook.persona.db.model.DbLinkedProfileRecord
 import com.dimension.maskbook.persona.db.model.DbPersonaRecord
 import com.dimension.maskbook.persona.db.model.DbPostRecord
 import com.dimension.maskbook.persona.db.model.DbProfileRecord
 import com.dimension.maskbook.persona.db.model.DbRelationRecord
+import com.dimension.maskbook.persona.model.LinkedProfileDetailsState
 import kotlinx.serialization.json.JsonObject
 
 @Database(
     entities = [
         DbPersonaRecord::class,
-        DbPostRecord::class,
         DbProfileRecord::class,
         DbRelationRecord::class,
+        DbLinkedProfileRecord::class,
+        DbPostRecord::class,
     ],
     version = 1,
 )
-@TypeConverters(JsonObjectConverter::class)
+@TypeConverters(
+    JsonObjectConverter::class,
+    LinkedProfileDetailsStateConverter::class,
+)
 abstract class PersonaDatabase : RoomDatabase() {
     abstract fun personaDao(): PersonaDao
+    abstract fun profileDao(): ProfileDao
+    abstract fun linkedProfileDao(): LinkedProfileDao
+    abstract fun relationDao(): RelationDao
 }
 
 internal class JsonObjectConverter {
-
     @TypeConverter
-    fun fromString(value: String?): JsonObject {
-        return value?.decodeJson() ?: JsonObject(emptyMap())
+    fun fromJsonObject(value: String?): JsonObject? {
+        return value?.decodeJson()
     }
 
     @TypeConverter
-    fun fromJsonObject(jsonObject: JsonObject): String {
-        return jsonObject.encodeJson()
+    fun toJsonObject(jsonObject: JsonObject?): String? {
+        return jsonObject?.encodeJson()
+    }
+}
+
+internal class LinkedProfileDetailsStateConverter {
+    @TypeConverter
+    fun fromLinkedProfileDetailsState(value: LinkedProfileDetailsState): String {
+        return value.name
+    }
+
+    @TypeConverter
+    fun toLinkedProfileDetailsState(value: String): LinkedProfileDetailsState {
+        return LinkedProfileDetailsState.valueOf(value)
     }
 }

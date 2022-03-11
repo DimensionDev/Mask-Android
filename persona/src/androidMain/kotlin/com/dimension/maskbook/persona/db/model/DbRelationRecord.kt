@@ -22,14 +22,15 @@ package com.dimension.maskbook.persona.db.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import kotlinx.serialization.Serializable
 
-@kotlinx.serialization.Serializable
+@Serializable
 @Entity
 data class DbRelationRecord(
     @PrimaryKey(autoGenerate = true) val _id: Long = 0,
     val personaIdentifier: String = "",
     val profileIdentifier: String = "",
-    val favor: Int = 0,
-    val createdAt: Long = 0,
-    val updatedAt: Long = 0,
+    var favor: Boolean = false,
+    var createdAt: Long = 0,
+    var updatedAt: Long = 0,
 )

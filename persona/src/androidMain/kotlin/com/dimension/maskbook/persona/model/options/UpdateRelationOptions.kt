@@ -21,7 +21,9 @@
 package com.dimension.maskbook.persona.model.options
 
 import com.dimension.maskbook.persona.db.model.DbRelationRecord
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class UpdateRelationOptions(
     val relation: DbRelationRecord,
 )

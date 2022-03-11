@@ -23,16 +23,22 @@ package com.dimension.maskbook.persona
 import android.content.Context
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import androidx.room.Room
 import com.dimension.maskbook.common.IoScopeName
 import com.dimension.maskbook.common.ModuleSetup
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.persona.data.JSMethod
+import com.dimension.maskbook.persona.data.JSMethodV2
+import com.dimension.maskbook.persona.db.PersonaDatabase
 import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.persona.export.model.ConnectAccountData
 import com.dimension.maskbook.persona.repository.IContactsRepository
 import com.dimension.maskbook.persona.repository.IPersonaRepository
 import com.dimension.maskbook.persona.repository.IPreferenceRepository
 import com.dimension.maskbook.persona.repository.ISocialsRepository
+import com.dimension.maskbook.persona.repository.JsPersonaRepository
+import com.dimension.maskbook.persona.repository.JsProfileRepository
+import com.dimension.maskbook.persona.repository.JsRelationRepository
 import com.dimension.maskbook.persona.repository.PersonaRepository
 import com.dimension.maskbook.persona.repository.PreferenceRepository
 import com.dimension.maskbook.persona.repository.personaDataStore
@@ -49,6 +55,8 @@ import com.dimension.maskbook.persona.viewmodel.social.FaceBookConnectSocialView
 import com.dimension.maskbook.persona.viewmodel.social.FacebookSocialViewModel
 import com.dimension.maskbook.persona.viewmodel.social.TwitterConnectSocialViewModel
 import com.dimension.maskbook.persona.viewmodel.social.TwitterSocialViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.asExecutor
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
@@ -64,6 +72,12 @@ object PersonaSetup : ModuleSetup {
 
     override fun dependencyInject() = module {
         single {
+            Room.databaseBuilder(get(), PersonaDatabase::class.java, "maskbook_persona")
+                .setQueryExecutor(Dispatchers.IO.asExecutor())
+                .setTransactionExecutor(Dispatchers.IO.asExecutor())
+                .build()
+        }
+        single {
             PersonaRepository(get<Context>().personaDataStore, get(), get())
         } binds arrayOf(
             IPersonaRepository::class,
@@ -75,6 +89,11 @@ object PersonaSetup : ModuleSetup {
         }
 
         single { JSMethod(get()) }
+        single { JSMethodV2(get(named(IoScopeName)), get(), get(), get(), get()) }
+
+        single { JsPersonaRepository(get()) }
+        single { JsProfileRepository(get()) }
+        single { JsRelationRepository(get()) }
 
         single<PersonaServices> { PersonaServicesImpl(get()) }
         single { PersonasTabScreen() } bind TabScreen::class
@@ -101,5 +120,6 @@ object PersonaSetup : ModuleSetup {
 
     override fun onExtensionReady() {
         KoinPlatformTools.defaultContext().get().get<IPersonaRepository>().init()
+        KoinPlatformTools.defaultContext().get().get<JSMethodV2>().startSubscribe()
     }
 }

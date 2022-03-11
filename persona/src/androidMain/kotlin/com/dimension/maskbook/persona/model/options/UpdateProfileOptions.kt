@@ -21,11 +21,14 @@
 package com.dimension.maskbook.persona.model.options
 
 import com.dimension.maskbook.persona.db.model.DbProfileRecord
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class UpdateProfileOptions(
     val profile: DbProfileRecord,
     val options: Options,
 ) {
+    @Serializable
     data class Options(
         val createWhenNotExist: Boolean = false,
     )

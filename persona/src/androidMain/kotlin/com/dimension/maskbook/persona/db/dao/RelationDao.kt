@@ -26,23 +26,33 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.RawQuery
 import androidx.sqlite.db.SupportSQLiteQuery
-import com.dimension.maskbook.persona.db.model.DbPersonaRecord
+import com.dimension.maskbook.persona.db.model.DbRelationRecord
 
 @Dao
-interface PersonaDao {
+interface RelationDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun add(persona: DbPersonaRecord)
+    suspend fun add(relation: DbRelationRecord)
 
     @RawQuery
-    suspend fun findRaw(query: SupportSQLiteQuery): DbPersonaRecord?
+    suspend fun findListRaw(query: SupportSQLiteQuery): List<DbRelationRecord>
 
-    @RawQuery
-    suspend fun findListRaw(query: SupportSQLiteQuery): List<DbPersonaRecord>
+    @Query("SELECT * FROM DbRelationRecord WHERE personaIdentifier=:personaIdentifier AND profileIdentifier=:profileIdentifier LIMIT 1")
+    suspend fun find(
+        personaIdentifier: String,
+        profileIdentifier: String,
+    ): DbRelationRecord?
 
-    @Query("SELECT * FROM DbPersonaRecord WHERE identifier=:identifier LIMIT 1")
-    suspend fun find(identifier: String): DbPersonaRecord?
+    @Query("UPDATE DbRelationRecord SET favor=:favor WHERE personaIdentifier=:personaIdentifier AND profileIdentifier=:profileIdentifier")
+    suspend fun updateFavor(
+        personaIdentifier: String,
+        profileIdentifier: String,
+        favor: Boolean
+    )
 
-    @Query("DELETE FROM DbPersonaRecord WHERE identifier=:identifier")
-    suspend fun delete(identifier: String)
+    @Query("DELETE FROM DbRelationRecord WHERE personaIdentifier=:personaIdentifier AND profileIdentifier=:profileIdentifier")
+    suspend fun delete(
+        personaIdentifier: String,
+        profileIdentifier: String,
+    )
 }

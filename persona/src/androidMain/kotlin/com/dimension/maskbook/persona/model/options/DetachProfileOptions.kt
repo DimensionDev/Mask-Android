@@ -20,6 +20,9 @@
  */
 package com.dimension.maskbook.persona.model.options
 
+import kotlinx.serialization.SerialName
+
 data class DetachProfileOptions(
-    val identifier: String,
+    @SerialName("identifier")
+    val profileIdentifier: String,
 )

@@ -20,6 +20,9 @@
  */
 package com.dimension.maskbook.persona.model.options
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class DeleteRelationOptions(
     val personaIdentifier: String,
     val profileIdentifier: String,

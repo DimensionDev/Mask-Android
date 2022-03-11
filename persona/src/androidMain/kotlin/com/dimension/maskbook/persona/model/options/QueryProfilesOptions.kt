@@ -20,6 +20,9 @@
  */
 package com.dimension.maskbook.persona.model.options
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class QueryProfilesOptions(
     val identifiers: List<String>? = null,
     val hasLinkedPersona: Boolean = false,

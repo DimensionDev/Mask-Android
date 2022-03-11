@@ -20,6 +20,9 @@
  */
 package com.dimension.maskbook.persona.model.options
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class QueryPostsOptions(
     val encryptBy: String?,
     val userIds: List<String>,

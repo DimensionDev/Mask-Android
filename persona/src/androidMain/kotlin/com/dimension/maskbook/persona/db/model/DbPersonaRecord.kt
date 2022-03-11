@@ -23,6 +23,7 @@ package com.dimension.maskbook.persona.db.model
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonObject
 
 @Serializable
 @Entity
@@ -31,11 +32,11 @@ data class DbPersonaRecord(
     var mnemonic: String? = null,
     var path: String? = null,
     var withPassword: String? = null,
-    var publicKey: String? = null,
-    var privateKey: String? = null,
-    var localKey: String? = null,
+    var publicKey: JsonObject? = null,
+    var privateKey: JsonObject? = null,
+    var localKey: JsonObject? = null,
     var nickname: String? = null,
-    val createAt: Long = 0,
+    var createAt: Long = 0,
     var updateAt: Long = 0,
     var hasLogout: Boolean? = null,
     var initialized: Boolean? = null,
@@ -52,7 +53,6 @@ data class DbPersonaRecord(
         if (record.hasLogout != null && record.hasLogout != hasLogout) hasLogout = record.hasLogout
         if (record.initialized != null && record.initialized != initialized) initialized = record.initialized
         if (record.avatar != null && record.avatar != avatar) avatar = record.avatar
-        record.updateAt = System.currentTimeMillis()
         return this
     }
 }

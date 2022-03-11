@@ -18,18 +18,29 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.persona.model.options
+package com.dimension.maskbook.persona.db.model
 
-import com.dimension.maskbook.persona.db.model.DbPostRecord
-import kotlinx.serialization.Serializable
+import androidx.room.Entity
+import androidx.room.Index
+import androidx.room.PrimaryKey
+import com.dimension.maskbook.persona.model.LinkedProfileDetailsState
 
-@Serializable
-data class UpdatePostOptions(
-    val post: DbPostRecord,
-    val options: Options,
-) {
-    @Serializable
-    data class Options(
-        val mode: Int = 0,
-    )
-}
+@Entity(
+    indices = [
+        Index(
+            value = [
+                "personaIdentifier",
+                "profileIdentifier",
+            ],
+            unique = false
+        )
+    ],
+)
+data class DbLinkedProfileRecord(
+    @PrimaryKey(autoGenerate = true) val _id: Long = 0,
+    val personaIdentifier: String = "",
+    val profileIdentifier: String = "",
+    var state: LinkedProfileDetailsState = LinkedProfileDetailsState.Pending,
+    val createdAt: Long = 0,
+    var updatedAt: Long = 0,
+)

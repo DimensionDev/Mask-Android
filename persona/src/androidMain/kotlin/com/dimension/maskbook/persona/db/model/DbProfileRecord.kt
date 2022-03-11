@@ -29,7 +29,7 @@ data class DbProfileRecord(
     @PrimaryKey val identifier: String,
     val nickname: String? = null,
     val network: String? = null,
-    val createdAt: Long,
-    val updatedAt: Long,
+    var createdAt: Long = 0,
+    var updatedAt: Long = 0,
     val avatar: String? = null,
 )

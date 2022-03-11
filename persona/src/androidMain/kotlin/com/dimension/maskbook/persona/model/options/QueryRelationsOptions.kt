@@ -24,6 +24,6 @@ data class QueryRelationsOptions(
     val personaIdentifier: String,
     val network: String? = null,
     val nameContains: String? = null,
-    val favor: Boolean = false,
+    val favor: Boolean? = null,
     val pageOption: PageOptions? = null,
 )
