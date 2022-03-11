@@ -26,6 +26,7 @@ import androidx.compose.animation.scaleOut
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navDeepLink
+import com.dimension.maskbook.common.IoScopeName
 import com.dimension.maskbook.common.ModuleSetup
 import com.dimension.maskbook.common.gecko.WebContentController
 import com.dimension.maskbook.common.route.CommonRoute
@@ -35,6 +36,7 @@ import com.dimension.maskbook.extension.repository.ExtensionRepository
 import com.dimension.maskbook.extension.ui.WebContentScene
 import com.dimension.maskbook.extension.utils.MessageChannel
 import com.google.accompanist.navigation.animation.composable
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import org.koin.mp.KoinPlatformTools
 
@@ -68,7 +70,7 @@ object ExtensionSetup : ModuleSetup {
         single { WebContentController(get()) }
         single { ExtensionRepository(get()) }
         single<ExtensionServices> { ExtensionServicesImpl(get(), get()) }
-        single { MessageChannel(get()) }
+        single { MessageChannel(get(), get(named(IoScopeName))) }
     }
 
     override fun onExtensionReady() {
