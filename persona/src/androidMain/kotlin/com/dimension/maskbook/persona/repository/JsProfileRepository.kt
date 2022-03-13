@@ -20,12 +20,14 @@
  */
 package com.dimension.maskbook.persona.repository
 
-import androidx.sqlite.db.SimpleSQLiteQuery
 import com.dimension.maskbook.persona.db.PersonaDatabase
 import com.dimension.maskbook.persona.db.dao.ProfileDao
 import com.dimension.maskbook.persona.db.model.DbLinkedProfileRecord
 import com.dimension.maskbook.persona.db.model.DbProfileRecord
-import com.dimension.maskbook.persona.model.LinkedProfileDetailsState
+import com.dimension.maskbook.persona.db.sql.asSqlQuery
+import com.dimension.maskbook.persona.db.sql.buildQueryProfileSql
+import com.dimension.maskbook.persona.db.sql.buildQueryProfilesSql
+import com.dimension.maskbook.persona.export.model.LinkedProfileDetailsState
 import com.dimension.maskbook.persona.model.options.AttachProfileOptions
 import com.dimension.maskbook.persona.model.options.CreateProfileOptions
 import com.dimension.maskbook.persona.model.options.DeleteProfileOptions
@@ -47,36 +49,22 @@ class JsProfileRepository(database: PersonaDatabase) {
     }
 
     suspend fun queryProfile(options: QueryProfileOptions): DbProfileRecord? {
-        val query = buildString {
-            append("SELECT * FROM DbProfileRecord WHERE identifier = ${options.identifier} ")
-            val whereSql = buildWhereSql(
-                network = options.network,
-                nameContains = options.nameContains,
-            )
-            if (whereSql.isNotEmpty()) {
-                append("$whereSql ")
-            }
-            append("LIMIT 1")
-        }
-        return profileDao.findRaw(SimpleSQLiteQuery(query))
+        val query = buildQueryProfileSql(
+            identifier = options.identifier,
+            network = options.network,
+            nameContains = options.nameContains,
+        )
+        return profileDao.findRaw(query.asSqlQuery())
     }
 
     suspend fun queryProfiles(options: QueryProfilesOptions): List<DbProfileRecord> {
-        val query = buildString {
-            append("SELECT * FROM DbProfileRecord ")
-            val whereSql = buildWhereSql(
-                identifiers = options.identifiers,
-                network = options.network,
-                nameContains = options.nameContains,
-            )
-            if (whereSql.isNotEmpty()) {
-                append("WHERE $whereSql ")
-            }
-            if (options.pageOption != null) {
-                append("LIMIT ${options.pageOption.limitStart} OFFSET ${options.pageOption.limitOffset}")
-            }
-        }
-        return profileDao.findListRaw(SimpleSQLiteQuery(query))
+        val query = buildQueryProfilesSql(
+            identifiers = options.identifiers,
+            network = options.network,
+            nameContains = options.nameContains,
+            pageOptions = options.pageOptions,
+        )
+        return profileDao.findListRaw(query.asSqlQuery())
     }
 
     suspend fun updateProfile(options: UpdateProfileOptions): DbProfileRecord? {
@@ -120,7 +108,7 @@ class JsProfileRepository(database: PersonaDatabase) {
 
     suspend fun detachProfile(options: DetachProfileOptions) {
         linkedProfileDao.delete(
-            profileIdentifier = options.profileIdentifier
+            profileIdentifier = options.profileIdentifier,
         )
     }
 }

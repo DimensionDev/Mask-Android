@@ -20,10 +20,13 @@
  */
 package com.dimension.maskbook.persona.repository
 
-import androidx.sqlite.db.SimpleSQLiteQuery
 import com.dimension.maskbook.persona.db.PersonaDatabase
 import com.dimension.maskbook.persona.db.dao.PersonaDao
 import com.dimension.maskbook.persona.db.model.DbPersonaRecord
+import com.dimension.maskbook.persona.db.sql.asSqlQuery
+import com.dimension.maskbook.persona.db.sql.buildQueryPersonaByProfileSql
+import com.dimension.maskbook.persona.db.sql.buildQueryPersonaSql
+import com.dimension.maskbook.persona.db.sql.buildQueryPersonasSql
 import com.dimension.maskbook.persona.model.options.CreatePersonaOptions
 import com.dimension.maskbook.persona.model.options.DeletePersonaOptions
 import com.dimension.maskbook.persona.model.options.QueryPersonaByProfileOptions
@@ -43,57 +46,37 @@ class JsPersonaRepository(database: PersonaDatabase) {
     }
 
     suspend fun queryPersona(options: QueryPersonaOptions): DbPersonaRecord? {
-        val query = buildString {
-            append("SELECT * FROM DbPersonaRecord WHERE identifier = ${options.identifier} ")
-            val whereSql = buildWhereSql(
-                hasPrivateKey = options.hasPrivateKey,
-                includeLogout = options.includeLogout,
-                nameContains = options.nameContains,
-                initialized = options.initialized
-            )
-            if (whereSql.isNotEmpty()) {
-                append("$whereSql ")
-            }
-            append("LIMIT 1")
-        }
-        return personaDao.findRaw(SimpleSQLiteQuery(query))
+        val query = buildQueryPersonaSql(
+            identifier = options.identifier,
+            hasPrivateKey = options.hasPrivateKey,
+            includeLogout = options.includeLogout,
+            nameContains = options.nameContains,
+            initialized = options.initialized,
+        )
+        return personaDao.findRaw(query.asSqlQuery())
     }
 
     suspend fun queryPersonaByProfile(options: QueryPersonaByProfileOptions): DbPersonaRecord? {
-        val query = buildString {
-            append("SELECT * FROM DbPersonaRecord WHERE identifier in (SELECT personaIdentifier FROM DbRelationRecord WHERE profileIdentifier = ${options.profileIdentifier}) ")
-            val whereSql = buildWhereSql(
-                hasPrivateKey = options.hasPrivateKey,
-                includeLogout = options.includeLogout,
-                nameContains = options.nameContains,
-                initialized = options.initialized
-            )
-            if (whereSql.isNotEmpty()) {
-                append("$whereSql ")
-            }
-            append("LIMIT 1")
-        }
-        return personaDao.findRaw(SimpleSQLiteQuery(query))
+        val query = buildQueryPersonaByProfileSql(
+            profileIdentifier = options.profileIdentifier,
+            hasPrivateKey = options.hasPrivateKey,
+            includeLogout = options.includeLogout,
+            nameContains = options.nameContains,
+            initialized = options.initialized,
+        )
+        return personaDao.findRaw(query.asSqlQuery())
     }
 
     suspend fun queryPersonas(options: QueryPersonasOptions): List<DbPersonaRecord> {
-        val query = buildString {
-            append("SELECT * FROM DbPersonaRecord ")
-            val whereSql = buildWhereSql(
-                identifiers = options.identifiers,
-                hasPrivateKey = options.hasPrivateKey,
-                includeLogout = options.includeLogout,
-                nameContains = options.nameContains,
-                initialized = options.initialized
-            )
-            if (whereSql.isNotEmpty()) {
-                append("WHERE $whereSql ")
-            }
-            if (options.pageOption != null) {
-                append("LIMIT ${options.pageOption.limitStart} OFFSET ${options.pageOption.limitOffset}")
-            }
-        }
-        return personaDao.findListRaw(SimpleSQLiteQuery(query))
+        val query = buildQueryPersonasSql(
+            identifiers = options.identifiers,
+            hasPrivateKey = options.hasPrivateKey,
+            includeLogout = options.includeLogout,
+            nameContains = options.nameContains,
+            initialized = options.initialized,
+            pageOptions = options.pageOptions,
+        )
+        return personaDao.findListRaw(query.asSqlQuery())
     }
 
     suspend fun updatePersona(options: UpdatePersonaOptions): DbPersonaRecord? {
@@ -116,7 +99,7 @@ class JsPersonaRepository(database: PersonaDatabase) {
             }
         }
 
-        // deleteUndefinedFields ?
+        // TODO deleteUndefinedFields ?
 
         val resultPersona = when (options.options.linkedProfileMergePolicy) {
             0 -> {
@@ -137,40 +120,6 @@ class JsPersonaRepository(database: PersonaDatabase) {
     }
 }
 
-internal fun buildWhereSql(
-    identifiers: List<String>? = null,
-    hasPrivateKey: Boolean? = null,
-    includeLogout: Boolean? = null,
-    nameContains: String? = null,
-    initialized: Boolean? = null,
-    network: String? = null,
-    favor: Boolean? = null,
-): String {
-    return listOfNotNull(
-        if (!identifiers.isNullOrEmpty()) {
-            "identifier in (${identifiers.joinToString(",")})"
-        } else null,
-        if (hasPrivateKey != null) {
-            "privateKey IS NOT NULL"
-        } else null,
-        if (includeLogout != null) {
-            "hasLogout = $includeLogout"
-        } else null,
-        if (!nameContains.isNullOrEmpty()) {
-            "nickname LIKE '%$nameContains%'"
-        } else null,
-        if (initialized != null) {
-            "initialized = $initialized"
-        } else null,
-        if (network != null) {
-            "network = $network"
-        } else null,
-        if (favor != null) {
-            "favor = $favor"
-        } else null,
-    ).joinToString(separator = " AND ")
-}
-
 private suspend fun PersonaDao.addWithResult(persona: DbPersonaRecord): DbPersonaRecord {
-    add(persona) ; return persona
+    insert(persona) ; return persona
 }

@@ -20,10 +20,11 @@
  */
 package com.dimension.maskbook.persona.repository
 
-import androidx.sqlite.db.SimpleSQLiteQuery
 import com.dimension.maskbook.persona.db.PersonaDatabase
 import com.dimension.maskbook.persona.db.dao.RelationDao
 import com.dimension.maskbook.persona.db.model.DbRelationRecord
+import com.dimension.maskbook.persona.db.sql.asSqlQuery
+import com.dimension.maskbook.persona.db.sql.buildQueryRelationsSql
 import com.dimension.maskbook.persona.model.options.CreateRelationOptions
 import com.dimension.maskbook.persona.model.options.DeleteRelationOptions
 import com.dimension.maskbook.persona.model.options.QueryRelationsOptions
@@ -40,21 +41,14 @@ class JsRelationRepository(database: PersonaDatabase) {
     }
 
     suspend fun queryRelations(options: QueryRelationsOptions): List<DbRelationRecord> {
-        val query = buildString {
-            append("SELECT * FROM DbRelationRecord WHERE personaIdentifier=${options.personaIdentifier} ")
-            val whereSql = buildWhereSql(
-                network = options.network,
-                nameContains = options.nameContains,
-                favor = options.favor,
-            )
-            if (whereSql.isNotEmpty()) {
-                append("$whereSql ")
-            }
-            if (options.pageOption != null) {
-                append("LIMIT ${options.pageOption.limitStart} OFFSET ${options.pageOption.limitOffset}")
-            }
-        }
-        return relationDao.findListRaw(SimpleSQLiteQuery(query))
+        val query = buildQueryRelationsSql(
+            personaIdentifier = options.personaIdentifier,
+            network = options.network,
+            nameContains = options.nameContains,
+            favor = options.favor,
+            pageOptions = options.pageOptions,
+        )
+        return relationDao.findListRaw(query.asSqlQuery())
     }
 
     suspend fun updateRelation(options: UpdateRelationOptions): DbRelationRecord? {
