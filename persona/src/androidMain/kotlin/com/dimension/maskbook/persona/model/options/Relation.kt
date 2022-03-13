@@ -20,10 +20,32 @@
  */
 package com.dimension.maskbook.persona.model.options
 
-import com.dimension.maskbook.persona.db.model.DbProfileRecord
+import com.dimension.maskbook.persona.db.model.DbRelationRecord
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class CreateProfileOptions(
-    val profile: DbProfileRecord,
+data class CreateRelationOptions(
+    val relation: DbRelationRecord,
+)
+
+@Serializable
+data class QueryRelationsOptions(
+    val personaIdentifier: String,
+    val network: String? = null,
+    val nameContains: String? = null,
+    val favor: Boolean? = null,
+    @SerialName("pageOption")
+    val pageOptions: PageOptions? = null,
+)
+
+@Serializable
+data class UpdateRelationOptions(
+    val relation: DbRelationRecord,
+)
+
+@Serializable
+data class DeleteRelationOptions(
+    val personaIdentifier: String,
+    val profileIdentifier: String,
 )

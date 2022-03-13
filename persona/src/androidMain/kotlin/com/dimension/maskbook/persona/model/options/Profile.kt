@@ -21,7 +21,32 @@
 package com.dimension.maskbook.persona.model.options
 
 import com.dimension.maskbook.persona.db.model.DbProfileRecord
+import com.dimension.maskbook.persona.export.model.LinkedProfileDetailsState
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+
+@Serializable
+data class CreateProfileOptions(
+    val profile: DbProfileRecord,
+)
+
+@Serializable
+data class QueryProfileOptions(
+    val identifier: String,
+    val network: String? = null,
+    val nameContains: String? = null,
+    // val pageOption: PageOptions? = null,
+)
+
+@Serializable
+data class QueryProfilesOptions(
+    val identifiers: List<String>? = null,
+    val hasLinkedPersona: Boolean = false,
+    val network: String? = null,
+    val nameContains: String? = null,
+    @SerialName("pageOption")
+    val pageOptions: PageOptions? = null,
+)
 
 @Serializable
 data class UpdateProfileOptions(
@@ -33,3 +58,21 @@ data class UpdateProfileOptions(
         val createWhenNotExist: Boolean = false,
     )
 }
+
+@Serializable
+data class DeleteProfileOptions(
+    val identifier: String,
+)
+
+@Serializable
+data class AttachProfileOptions(
+    val personaIdentifier: String,
+    val profileIdentifier: String,
+    val state: LinkedProfileDetailsState,
+)
+
+@Serializable
+data class DetachProfileOptions(
+    @SerialName("identifier")
+    val profileIdentifier: String,
+)

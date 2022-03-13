@@ -23,11 +23,12 @@ package com.dimension.maskbook.persona.model.options
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class QueryPersonaByProfileOptions(
-    val profileIdentifier: String,
-    val hasPrivateKey: Boolean? = null,
-    val includeLogout: Boolean? = null,
-    val nameContains: String? = null,
-    val initialized: Boolean? = null,
-    val pageOption: PageOptions? = null,
+data class QueryAvatarOptions(
+    val identifier: String,
+)
+
+@Serializable
+data class StoreAvatarOptions(
+    val identifier: String,
+    val avatar: String,
 )

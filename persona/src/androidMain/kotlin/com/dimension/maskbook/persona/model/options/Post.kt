@@ -21,7 +21,27 @@
 package com.dimension.maskbook.persona.model.options
 
 import com.dimension.maskbook.persona.db.model.DbPostRecord
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+
+@Serializable
+data class CreatePostOptions(
+    val post: DbPostRecord,
+)
+
+@Serializable
+data class QueryPostOptions(
+    val identifier: String,
+)
+
+@Serializable
+data class QueryPostsOptions(
+    val encryptBy: String?,
+    val userIds: List<String>,
+    val network: String? = null,
+    @SerialName("pageOption")
+    val pageOptions: PageOptions? = null,
+)
 
 @Serializable
 data class UpdatePostOptions(

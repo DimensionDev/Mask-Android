@@ -21,7 +21,44 @@
 package com.dimension.maskbook.persona.model.options
 
 import com.dimension.maskbook.persona.db.model.DbPersonaRecord
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+
+@Serializable
+data class CreatePersonaOptions(
+    val persona: DbPersonaRecord,
+)
+
+@Serializable
+data class QueryPersonaOptions(
+    val identifier: String,
+    val hasPrivateKey: Boolean? = null,
+    val includeLogout: Boolean? = null,
+    val nameContains: String? = null,
+    val initialized: Boolean? = null,
+    // val pageOption: PageOptions? = null,
+)
+
+@Serializable
+data class QueryPersonaByProfileOptions(
+    val profileIdentifier: String,
+    val hasPrivateKey: Boolean? = null,
+    val includeLogout: Boolean? = null,
+    val nameContains: String? = null,
+    val initialized: Boolean? = null,
+    // val pageOptions: PageOptions? = null,
+)
+
+@Serializable
+data class QueryPersonasOptions(
+    val identifiers: List<String>? = null,
+    val hasPrivateKey: Boolean? = null,
+    val includeLogout: Boolean? = null,
+    val nameContains: String? = null,
+    val initialized: Boolean? = null,
+    @SerialName("pageOption")
+    val pageOptions: PageOptions? = null,
+)
 
 @Serializable
 data class UpdatePersonaOptions(
@@ -34,5 +71,16 @@ data class UpdatePersonaOptions(
         val deleteUndefinedFields: Boolean = false,
         val protectPrivateKey: Boolean = false,
         val createWhenNotExist: Boolean = false,
+    )
+}
+
+@Serializable
+data class DeletePersonaOptions(
+    val identifier: String,
+    val options: Options,
+) {
+    @Serializable
+    data class Options(
+        val safeDelete: Boolean = false,
     )
 }
