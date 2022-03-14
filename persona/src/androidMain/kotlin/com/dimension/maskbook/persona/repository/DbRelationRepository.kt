@@ -21,35 +21,34 @@
 package com.dimension.maskbook.persona.repository
 
 import com.dimension.maskbook.persona.db.PersonaDatabase
-import com.dimension.maskbook.persona.db.model.ProfileWithLinkedProfile
+import com.dimension.maskbook.persona.db.model.RelationWithProfile
 import com.dimension.maskbook.persona.export.model.LinkedProfileDetailsState
 import com.dimension.maskbook.persona.export.model.Network
-import com.dimension.maskbook.persona.export.model.SocialData
+import com.dimension.maskbook.persona.model.ContactData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class DbProfileRepository(database: PersonaDatabase) {
+class DbRelationRepository(database: PersonaDatabase) {
 
-    private val profileDao = database.profileDao()
+    private val relationDao = database.relationDao()
 
-    fun getSocialListFlow(
+    fun getContactListFlow(
         personaIdentifier: String,
-    ): Flow<List<SocialData>> {
-        return profileDao.getListWithPersonaFlow(personaIdentifier).map { list ->
+    ): Flow<List<ContactData>> {
+        return relationDao.getListFlow(personaIdentifier).map { list ->
             list.map { profile ->
-                profile.toSocialData()
+                profile.toContactData()
             }
         }
     }
 }
 
-private fun ProfileWithLinkedProfile.toSocialData(): SocialData {
-    return SocialData(
+fun RelationWithProfile.toContactData(): ContactData {
+    return ContactData(
         id = profile.identifier,
         name = profile.nickname.orEmpty(),
-        avatar = profile.avatar.orEmpty(),
-        network = profile.network ?: Network.Twitter,
-        personaId = linkedProfile?.personaIdentifier,
+        personaId = relation.personaIdentifier,
         linkedPersona = linkedProfile?.state == LinkedProfileDetailsState.Confirmed,
+        network = profile.network ?: Network.Twitter,
     )
 }

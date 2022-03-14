@@ -25,9 +25,10 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.RawQuery
+import androidx.room.Transaction
 import androidx.sqlite.db.SupportSQLiteQuery
 import com.dimension.maskbook.persona.db.model.DbProfileRecord
-import com.dimension.maskbook.persona.export.model.Network
+import com.dimension.maskbook.persona.db.model.ProfileWithLinkedProfile
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -48,11 +49,9 @@ interface ProfileDao {
     @Query("SELECT * FROM DbProfileRecord WHERE identifier=:identifier LIMIT 1")
     suspend fun find(identifier: String): DbProfileRecord?
 
+    @Transaction
     @Query("SELECT * FROM DbProfileRecord WHERE identifier in (SELECT profileIdentifier FROM DbLinkedProfileRecord WHERE personaIdentifier=:personaIdentifier)")
-    fun getListWithPersonaFlow(personaIdentifier: String): Flow<List<DbProfileRecord>>
-
-    @Query("SELECT * FROM DbProfileRecord WHERE identifier in (SELECT profileIdentifier FROM DbLinkedProfileRecord WHERE personaIdentifier=:personaIdentifier) AND network=:network")
-    fun getListWithPersonaFlow(personaIdentifier: String, network: Network): Flow<List<DbProfileRecord>>
+    fun getListWithPersonaFlow(personaIdentifier: String): Flow<List<ProfileWithLinkedProfile>>
 
     @Query("DELETE FROM DbProfileRecord WHERE identifier=:identifier")
     suspend fun delete(identifier: String)

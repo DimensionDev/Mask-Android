@@ -35,6 +35,7 @@ import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.persona.export.model.ConnectAccountData
 import com.dimension.maskbook.persona.repository.DbPersonaRepository
 import com.dimension.maskbook.persona.repository.DbProfileRepository
+import com.dimension.maskbook.persona.repository.DbRelationRepository
 import com.dimension.maskbook.persona.repository.IContactsRepository
 import com.dimension.maskbook.persona.repository.IPersonaRepository
 import com.dimension.maskbook.persona.repository.IPreferenceRepository
@@ -81,7 +82,7 @@ object PersonaSetup : ModuleSetup {
                 get(named(IoScopeName)),
                 get<Context>().personaDataStore,
                 get(), get(),
-                get(), get(),
+                get(), get(), get(),
             )
         } binds arrayOf(
             IPersonaRepository::class,
@@ -108,6 +109,7 @@ object PersonaSetup : ModuleSetup {
         single { JsRelationRepository(get()) }
         single { DbPersonaRepository(get()) }
         single { DbProfileRepository(get()) }
+        single { DbRelationRepository(get()) }
 
         single<PersonaServices> { PersonaServicesImpl(get()) }
         single { PersonasTabScreen() } bind TabScreen::class

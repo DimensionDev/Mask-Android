@@ -40,14 +40,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.launch
@@ -64,6 +62,7 @@ internal class PersonaRepository(
     private val extensionServices: ExtensionServices,
     private val personaRepository: DbPersonaRepository,
     private val profileRepository: DbProfileRepository,
+    private val relationRepository: DbRelationRepository,
 ) : IPersonaRepository,
     ISocialsRepository,
     IContactsRepository {
@@ -95,46 +94,19 @@ internal class PersonaRepository(
         }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override val twitter: Flow<List<SocialData>>
+    override val socials: Flow<List<SocialData>>
         get() = currentPersonaIdentifier.flatMapLatest { personaIdentifier ->
             profileRepository.getSocialListFlow(
                 personaIdentifier = personaIdentifier,
-                network = Network.Twitter,
             )
         }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override val facebook: Flow<List<SocialData>>
-        get() = currentPersonaIdentifier.flatMapLatest { personaIdentifier ->
-            profileRepository.getSocialListFlow(
-                personaIdentifier = personaIdentifier,
-                network = Network.Facebook,
-            )
-        }
-
-    override val socials: Flow<List<SocialData>>
-        get() = combine(
-            twitter, facebook, currentPersonaIdentifier
-        ) { twitter, facebook, persona ->
-            (twitter + facebook)
-                .filter { it.personaId == persona }
-        }
-
     override val contacts: Flow<List<ContactData>>
-        get() = combine(
-            twitter, facebook, currentPersonaIdentifier
-        ) { twitter, facebook, persona ->
-            (twitter + facebook)
-                .filter { it.personaId != persona }
-                .map {
-                    ContactData(
-                        id = it.id,
-                        name = it.name,
-                        personaId = persona,
-                        linkedPersona = it.linkedPersona,
-                        network = it.network,
-                    )
-                }
+        get() = currentPersonaIdentifier.flatMapLatest { personaIdentifier ->
+            relationRepository.getContactListFlow(
+                personaIdentifier = personaIdentifier,
+            )
         }
 
     override suspend fun hasPersona(): Boolean {

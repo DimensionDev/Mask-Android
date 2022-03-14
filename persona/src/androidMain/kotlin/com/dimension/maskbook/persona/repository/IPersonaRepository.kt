@@ -23,7 +23,6 @@ package com.dimension.maskbook.persona.repository
 import com.dimension.maskbook.persona.export.model.ConnectAccountData
 import com.dimension.maskbook.persona.export.model.PersonaData
 import com.dimension.maskbook.persona.export.model.PlatformType
-import com.dimension.maskbook.persona.export.model.SocialData
 import com.dimension.maskbook.persona.export.model.SocialProfile
 import kotlinx.coroutines.flow.Flow
 

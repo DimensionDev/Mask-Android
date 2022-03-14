@@ -29,15 +29,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.onFailure
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
@@ -49,7 +45,7 @@ internal class MessageChannel(
     private val queue = ConcurrentHashMap<String, Channel<String?>>()
     private val subscription = arrayListOf<Pair<String, MutableStateFlow<ExtensionMessage?>>>()
 
-    private val _extensionMessage = Channel<ExtensionMessage>()
+    private val _extensionMessage = Channel<ExtensionMessage>(capacity = Channel.BUFFERED)
     val extensionMessage: Flow<ExtensionMessage> = _extensionMessage.consumeAsFlow()
 
     fun startMessageCollect() {
