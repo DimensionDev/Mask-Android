@@ -33,6 +33,7 @@ import kotlinx.coroutines.launch
 
 private val ShouldShowEmptySocialTipDialog = booleanPreferencesKey("ShouldShowEmptySocialTipDialog")
 private val ShouldShowContactsTipDialog = booleanPreferencesKey("ShouldShowContactsTipDialog")
+private val IsMigratorIndexedDb = booleanPreferencesKey("IsMigratorIndexedDb")
 val Context.personaDataStore: DataStore<Preferences> by preferencesDataStore(name = "persona")
 
 class PreferenceRepository(
@@ -62,6 +63,19 @@ class PreferenceRepository(
         ioScope.launch {
             dataStore.edit {
                 it[ShouldShowContactsTipDialog] = bool
+            }
+        }
+    }
+
+    override val isMigratorIndexedDb: Flow<Boolean>
+        get() = dataStore.data.map {
+            it[IsMigratorIndexedDb] ?: false
+        }
+
+    override fun setIsMigratorIndexedDb(bool: Boolean) {
+        ioScope.launch {
+            dataStore.edit {
+                it[IsMigratorIndexedDb] = bool
             }
         }
     }

@@ -32,10 +32,16 @@ import com.dimension.maskbook.persona.db.model.DbRelationRecord
 interface RelationDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun add(relation: DbRelationRecord)
+    suspend fun insert(relation: DbRelationRecord)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(relations: List<DbRelationRecord>)
 
     @RawQuery
     suspend fun findListRaw(query: SupportSQLiteQuery): List<DbRelationRecord>
+
+    // @Query("SELECT * FROM DbRelationRecord WHERE profileIdentifier=:profileIdentifier LIMIT 1")
+    // suspend fun find(profileIdentifier: String): DbRelationRecord?
 
     @Query("SELECT * FROM DbRelationRecord WHERE personaIdentifier=:personaIdentifier AND profileIdentifier=:profileIdentifier LIMIT 1")
     suspend fun find(

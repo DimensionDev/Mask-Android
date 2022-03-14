@@ -32,6 +32,7 @@ interface IPersonaRepository {
     val facebook: Flow<List<SocialData>>
     val persona: Flow<List<PersonaData>>
     val currentPersona: Flow<PersonaData?>
+    suspend fun hasPersona(): Boolean
     fun beginConnectingProcess(
         personaId: String,
         platformType: PlatformType,
@@ -59,6 +60,6 @@ interface IPersonaRepository {
     fun init()
     fun saveEmailForCurrentPersona(value: String)
     fun savePhoneForCurrentPersona(value: String)
-    suspend fun refreshPersona()
-    suspend fun ensurePersonaDataLoaded()
+    // suspend fun refreshPersona()
+    // suspend fun ensurePersonaDataLoaded()
 }

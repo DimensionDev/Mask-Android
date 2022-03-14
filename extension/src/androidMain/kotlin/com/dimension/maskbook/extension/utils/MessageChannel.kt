@@ -20,16 +20,23 @@
  */
 package com.dimension.maskbook.extension.utils
 
+import android.util.Log
 import com.dimension.maskbook.common.gecko.WebContentController
 import com.dimension.maskbook.extension.export.model.ExtensionMessage
 import com.dimension.maskbook.extension.export.model.ExtensionResponseMessage
 import com.dimension.maskbook.extension.ext.toMap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.onFailure
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.util.UUID
@@ -42,17 +49,14 @@ internal class MessageChannel(
     private val queue = ConcurrentHashMap<String, Channel<String?>>()
     private val subscription = arrayListOf<Pair<String, MutableStateFlow<ExtensionMessage?>>>()
 
-    private val _extensionMessage = MutableSharedFlow<ExtensionMessage>()
-    val extensionMessage: SharedFlow<ExtensionMessage> get() = _extensionMessage
+    private val _extensionMessage = Channel<ExtensionMessage>()
+    val extensionMessage: Flow<ExtensionMessage> = _extensionMessage.consumeAsFlow()
 
     fun startMessageCollect() {
-        scope.launch {
-            controller.message.collect {
-                if (it != null) {
-                    onMessage(it)
-                }
-            }
-        }
+        controller.message
+            .filterNotNull()
+            .onEach { onMessage(it) }
+            .launchIn(scope)
     }
 
     fun sendResponseMessage(message: ExtensionResponseMessage) {
@@ -121,7 +125,7 @@ internal class MessageChannel(
                         }
                     }
                 }
-                _extensionMessage.tryEmit(
+                _extensionMessage.trySend(
                     ExtensionMessage(
                         id = messageId,
                         method = method,
@@ -129,7 +133,9 @@ internal class MessageChannel(
                     ) {
                         sendResponseMessage(it)
                     }
-                )
+                ).onFailure {
+                    Log.w("MessageChannel", it)
+                }
             }
         }
     }

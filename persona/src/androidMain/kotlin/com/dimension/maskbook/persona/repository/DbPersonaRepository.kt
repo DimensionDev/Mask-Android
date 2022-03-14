@@ -20,14 +20,30 @@
  */
 package com.dimension.maskbook.persona.repository
 
+import com.dimension.maskbook.persona.db.PersonaDatabase
+import com.dimension.maskbook.persona.db.model.DbPersonaRecord
 import kotlinx.coroutines.flow.Flow
 
-interface IPreferenceRepository {
-    val shouldShowEmptySocialTipDialog: Flow<Boolean>
-    fun setShowEmptySocialTipDialog(bool: Boolean)
-    val shouldShowContactsTipDialog: Flow<Boolean>
-    fun setShowContactsTipDialog(bool: Boolean)
+class DbPersonaRepository(database: PersonaDatabase) {
+    private val personaDao = database.personaDao()
 
-    val isMigratorIndexedDb: Flow<Boolean>
-    fun setIsMigratorIndexedDb(bool: Boolean)
+    // suspend fun findWithProfiles(personaIdentifier: String): DbPersonaWithProfiles? {
+    //     return personaDao.findWithProfiles(personaIdentifier)
+    // }
+
+    suspend fun getList(): List<DbPersonaRecord> {
+        return personaDao.getList()
+    }
+
+    fun getListFlow(): Flow<List<DbPersonaRecord>> {
+        return personaDao.getListFlow()
+    }
+
+    suspend fun contains(personaIdentifier: String): Boolean {
+        return personaDao.count(personaIdentifier) > 0
+    }
+
+    suspend fun isEmpty(): Boolean {
+        return personaDao.count() == 0
+    }
 }

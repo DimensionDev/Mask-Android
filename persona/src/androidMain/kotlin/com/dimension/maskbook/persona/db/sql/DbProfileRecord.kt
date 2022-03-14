@@ -29,7 +29,7 @@ fun buildQueryProfileSql(
     network: String? = null,
     nameContains: String? = null,
 ) = buildString {
-    append("SELECT * FROM $dbName WHERE identifier = $identifier ")
+    append("SELECT * FROM $dbName WHERE identifier = '$identifier' ")
     buildWhereSql(
         network = network,
         nameContains = nameContains,

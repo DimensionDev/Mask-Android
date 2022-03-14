@@ -71,5 +71,5 @@ class JsRelationRepository(database: PersonaDatabase) {
 }
 
 private suspend fun RelationDao.addWithResult(relation: DbRelationRecord): DbRelationRecord {
-    add(relation) ; return relation
+    insert(relation) ; return relation
 }

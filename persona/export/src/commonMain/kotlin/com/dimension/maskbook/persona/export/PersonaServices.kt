@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface PersonaServices {
     val currentPersona: Flow<PersonaData?>
+    suspend fun hasPersona(): Boolean
     fun updateCurrentPersona(value: String)
     suspend fun createPersonaFromMnemonic(value: List<String>, name: String)
     fun createPersonaFromPrivateKey(value: String)
@@ -33,6 +34,6 @@ interface PersonaServices {
     fun cancelConnectingProcess()
     fun saveEmailForCurrentPersona(value: String)
     fun savePhoneForCurrentPersona(value: String)
-    suspend fun refreshPersonaData()
-    suspend fun ensurePersonaDataLoaded()
+    // suspend fun refreshPersonaData()
+    // suspend fun ensurePersonaDataLoaded()
 }

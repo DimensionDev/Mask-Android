@@ -27,10 +27,15 @@ import com.dimension.maskbook.persona.repository.IPersonaRepository
 import kotlinx.coroutines.flow.Flow
 
 class PersonaServicesImpl(
-    private val personaRepository: IPersonaRepository
+    private val personaRepository: IPersonaRepository,
 ) : PersonaServices {
+
     override val currentPersona: Flow<PersonaData?>
         get() = personaRepository.currentPersona
+
+    override suspend fun hasPersona(): Boolean {
+        return personaRepository.hasPersona()
+    }
 
     override fun updateCurrentPersona(value: String) {
         personaRepository.updateCurrentPersona(value)
@@ -60,11 +65,11 @@ class PersonaServicesImpl(
         personaRepository.savePhoneForCurrentPersona(value)
     }
 
-    override suspend fun refreshPersonaData() {
-        personaRepository.refreshPersona()
-    }
+    // override suspend fun refreshPersonaData() {
+    //     personaRepository.refreshPersona()
+    // }
 
-    override suspend fun ensurePersonaDataLoaded() {
-        personaRepository.ensurePersonaDataLoaded()
-    }
+    // override suspend fun ensurePersonaDataLoaded() {
+    //     personaRepository.ensurePersonaDataLoaded()
+    // }
 }

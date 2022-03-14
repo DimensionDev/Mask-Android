@@ -20,12 +20,14 @@
  */
 package com.dimension.maskbook.persona.data
 
+import android.util.Log
 import com.dimension.maskbook.common.ext.decodeJson
 import com.dimension.maskbook.common.ext.execute
 import com.dimension.maskbook.extension.export.ExtensionServices
 import com.dimension.maskbook.extension.export.model.ExtensionMessage
 import com.dimension.maskbook.extension.export.model.ExtensionResponseMessage
-import com.dimension.maskbook.persona.migrator.model.IndexedDBAllRecord
+import com.dimension.maskbook.persona.db.migrator.IndexedDBDataMigrator
+import com.dimension.maskbook.persona.db.migrator.model.IndexedDBAllRecord
 import com.dimension.maskbook.persona.model.options.AttachProfileOptions
 import com.dimension.maskbook.persona.model.options.CreatePersonaOptions
 import com.dimension.maskbook.persona.model.options.CreateProfileOptions
@@ -34,6 +36,7 @@ import com.dimension.maskbook.persona.model.options.DeletePersonaOptions
 import com.dimension.maskbook.persona.model.options.DeleteProfileOptions
 import com.dimension.maskbook.persona.model.options.DeleteRelationOptions
 import com.dimension.maskbook.persona.model.options.DetachProfileOptions
+import com.dimension.maskbook.persona.model.options.ParamOptions
 import com.dimension.maskbook.persona.model.options.QueryPersonaByProfileOptions
 import com.dimension.maskbook.persona.model.options.QueryPersonaOptions
 import com.dimension.maskbook.persona.model.options.QueryPersonasOptions
@@ -43,12 +46,13 @@ import com.dimension.maskbook.persona.model.options.QueryRelationsOptions
 import com.dimension.maskbook.persona.model.options.UpdatePersonaOptions
 import com.dimension.maskbook.persona.model.options.UpdateProfileOptions
 import com.dimension.maskbook.persona.model.options.UpdateRelationOptions
+import com.dimension.maskbook.persona.repository.IPreferenceRepository
 import com.dimension.maskbook.persona.repository.JsPersonaRepository
 import com.dimension.maskbook.persona.repository.JsProfileRepository
 import com.dimension.maskbook.persona.repository.JsRelationRepository
-import io.github.aakira.napier.log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -56,14 +60,23 @@ import kotlinx.coroutines.launch
 class JSMethodV2(
     private val scope: CoroutineScope,
     private val services: ExtensionServices,
+    private val indexedDBDataMigrator: IndexedDBDataMigrator,
+    private val preferenceRepository: IPreferenceRepository,
     private val personaRepository: JsPersonaRepository,
     private val profileRepository: JsProfileRepository,
     private val relationRepository: JsRelationRepository,
 ) {
     fun startSubscribe() {
         scope.launch {
-            val dbRecords: IndexedDBAllRecord? = services.execute("get_all_indexedDB_records")
-            // TODO migrate db
+            if (preferenceRepository.isMigratorIndexedDb.first()) {
+                return@launch
+            }
+
+            val records: IndexedDBAllRecord? = services.execute("get_all_indexedDB_records")
+            if (records != null) {
+                indexedDBDataMigrator.migrate(records)
+                preferenceRepository.setIsMigratorIndexedDb(true)
+            }
         }
 
         services.extensionMessage
@@ -74,7 +87,7 @@ class JSMethodV2(
                     subscribeWithAvatar(it) ||
                     subscribeWithPost(it)
             }
-            .catch { log(throwable = it) { "subscribe error:" } }
+            .catch { Log.w("JSMethodV2", it) }
             .launchIn(scope)
     }
 
@@ -83,28 +96,28 @@ class JSMethodV2(
     private suspend fun subscribeWithPersona(message: ExtensionMessage): Boolean {
         when (message.method) {
             "create_persona" -> {
-                val options: CreatePersonaOptions = message.params?.decodeJson() ?: return true
+                val options = message.decodeOptions<CreatePersonaOptions>() ?: return true
                 return message.responseSuccess(personaRepository.createPersona(options))
             }
             "query_persona" -> {
-                val options: QueryPersonaOptions = message.params?.decodeJson() ?: return true
+                val options = message.decodeOptions<ParamOptions<QueryPersonaOptions>>()?.options
+                    ?: return true
                 return message.responseSuccess(personaRepository.queryPersona(options))
             }
             "query_persona_by_profile" -> {
-                val options: QueryPersonaByProfileOptions =
-                    message.params?.decodeJson() ?: return true
+                val options = message.decodeOptions<QueryPersonaByProfileOptions>() ?: return true
                 return message.responseSuccess(personaRepository.queryPersonaByProfile(options))
             }
             "query_personas" -> {
-                val options: QueryPersonasOptions = message.params?.decodeJson() ?: return true
+                val options = message.decodeOptions<QueryPersonasOptions>() ?: return true
                 return message.responseSuccess(personaRepository.queryPersonas(options))
             }
             "update_persona" -> {
-                val options: UpdatePersonaOptions = message.params?.decodeJson() ?: return true
+                val options = message.decodeOptions<UpdatePersonaOptions>() ?: return true
                 return message.responseSuccess(personaRepository.updatePersona(options))
             }
             "delete_persona" -> {
-                val options: DeletePersonaOptions = message.params?.decodeJson() ?: return true
+                val options = message.decodeOptions<DeletePersonaOptions>() ?: return true
                 return message.responseSuccess(personaRepository.deletePersona(options))
             }
         }
@@ -116,31 +129,32 @@ class JSMethodV2(
     private suspend fun subscribeWithProfile(message: ExtensionMessage): Boolean {
         when (message.method) {
             "create_profile" -> {
-                val options: CreateProfileOptions = message.params?.decodeJson() ?: return true
+                val options = message.decodeOptions<CreateProfileOptions>() ?: return true
                 return message.responseSuccess(profileRepository.createProfile(options))
             }
             "query_profile" -> {
-                val options: QueryProfileOptions = message.params?.decodeJson() ?: return true
+                val options = message.decodeOptions<ParamOptions<QueryProfileOptions>>()?.options
+                    ?: return true
                 return message.responseSuccess(profileRepository.queryProfile(options))
             }
             "query_profiles" -> {
-                val options: QueryProfilesOptions = message.params?.decodeJson() ?: return true
+                val options = message.decodeOptions<QueryProfilesOptions>() ?: return true
                 return message.responseSuccess(profileRepository.queryProfiles(options))
             }
             "update_profile" -> {
-                val options: UpdateProfileOptions = message.params?.decodeJson() ?: return true
+                val options = message.decodeOptions<UpdateProfileOptions>() ?: return true
                 return message.responseSuccess(profileRepository.updateProfile(options))
             }
             "delete_profile" -> {
-                val options: DeleteProfileOptions = message.params?.decodeJson() ?: return true
+                val options = message.decodeOptions<DeleteProfileOptions>() ?: return true
                 return message.responseSuccess(profileRepository.deleteProfile(options))
             }
             "attachProfile" -> {
-                val options: AttachProfileOptions = message.params?.decodeJson() ?: return true
+                val options = message.decodeOptions<AttachProfileOptions>() ?: return true
                 return message.responseSuccess(profileRepository.attachProfile(options))
             }
             "detachProfile" -> {
-                val options: DetachProfileOptions = message.params?.decodeJson() ?: return true
+                val options = message.decodeOptions<DetachProfileOptions>() ?: return true
                 return message.responseSuccess(profileRepository.detachProfile(options))
             }
         }
@@ -152,19 +166,19 @@ class JSMethodV2(
     private suspend fun subscribeWithRelation(message: ExtensionMessage): Boolean {
         when (message.method) {
             "create_relation" -> {
-                val options: CreateRelationOptions = message.params?.decodeJson() ?: return true
+                val options = message.decodeOptions<CreateRelationOptions>() ?: return true
                 return message.responseSuccess(relationRepository.createRelation(options))
             }
             "query_relations" -> {
-                val options: QueryRelationsOptions = message.params?.decodeJson() ?: return true
+                val options = message.decodeOptions<QueryRelationsOptions>() ?: return true
                 return message.responseSuccess(relationRepository.queryRelations(options))
             }
             "update_relation" -> {
-                val options: UpdateRelationOptions = message.params?.decodeJson() ?: return true
+                val options = message.decodeOptions<UpdateRelationOptions>() ?: return true
                 return message.responseSuccess(relationRepository.updateRelation(options))
             }
             "delete_relation" -> {
-                val options: DeleteRelationOptions = message.params?.decodeJson() ?: return true
+                val options = message.decodeOptions<DeleteRelationOptions>() ?: return true
                 return message.responseSuccess(relationRepository.deleteRelation(options))
             }
         }
@@ -210,6 +224,10 @@ class JSMethodV2(
         }
         return false
     }
+}
+
+private inline fun <reified T> ExtensionMessage.decodeOptions(): T? {
+    return params?.decodeJson<T>()
 }
 
 private fun <T> ExtensionMessage.responseSuccess(result: T): Boolean {

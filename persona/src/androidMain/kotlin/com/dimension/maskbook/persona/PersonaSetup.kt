@@ -30,8 +30,11 @@ import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.persona.data.JSMethod
 import com.dimension.maskbook.persona.data.JSMethodV2
 import com.dimension.maskbook.persona.db.PersonaDatabase
+import com.dimension.maskbook.persona.db.migrator.IndexedDBDataMigrator
 import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.persona.export.model.ConnectAccountData
+import com.dimension.maskbook.persona.repository.DbPersonaRepository
+import com.dimension.maskbook.persona.repository.DbProfileRepository
 import com.dimension.maskbook.persona.repository.IContactsRepository
 import com.dimension.maskbook.persona.repository.IPersonaRepository
 import com.dimension.maskbook.persona.repository.IPreferenceRepository
@@ -78,7 +81,12 @@ object PersonaSetup : ModuleSetup {
                 .build()
         }
         single {
-            PersonaRepository(get<Context>().personaDataStore, get(), get())
+            PersonaRepository(
+                get(named(IoScopeName)),
+                get<Context>().personaDataStore,
+                get(), get(),
+                get(), get(),
+            )
         } binds arrayOf(
             IPersonaRepository::class,
             ISocialsRepository::class,
@@ -89,11 +97,21 @@ object PersonaSetup : ModuleSetup {
         }
 
         single { JSMethod(get()) }
-        single { JSMethodV2(get(named(IoScopeName)), get(), get(), get(), get()) }
+        single {
+            JSMethodV2(
+                get(named(IoScopeName)),
+                get(),
+                get(), get(),
+                get(), get(), get(),
+            )
+        }
 
+        single { IndexedDBDataMigrator(get()) }
         single { JsPersonaRepository(get()) }
         single { JsProfileRepository(get()) }
         single { JsRelationRepository(get()) }
+        single { DbPersonaRepository(get()) }
+        single { DbProfileRepository(get()) }
 
         single<PersonaServices> { PersonaServicesImpl(get()) }
         single { PersonasTabScreen() } bind TabScreen::class

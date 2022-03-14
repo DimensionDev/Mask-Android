@@ -20,26 +20,26 @@
  */
 package com.dimension.maskbook.persona.db.model
 
-import androidx.room.Embedded
-import androidx.room.Relation
-
-data class DbPersonaWithProfiles(
-    @Embedded
-    val persona: DbPersonaRecord,
-    @Relation(
-        parentColumn = "identifier",
-        entityColumn = "personaIdentifier",
-        entity = DbLinkedProfileRecord::class,
-    )
-    val linkedProfiles: List<DbLinkProfile>,
-)
-
-data class DbLinkProfile(
-    @Embedded
-    val linkedProfile: DbLinkedProfileRecord,
-    @Relation(
-        parentColumn = "profileIdentifier",
-        entityColumn = "identifier",
-    )
-    val profile: DbProfileRecord,
-)
+// import androidx.room.Embedded
+// import androidx.room.Relation
+//
+// data class DbPersonaWithProfiles(
+//     @Embedded
+//     val persona: DbPersonaRecord,
+//     @Relation(
+//         parentColumn = "identifier",
+//         entityColumn = "personaIdentifier",
+//         entity = DbLinkedProfileRecord::class,
+//     )
+//     val linkedProfiles: List<DbLinkProfile>,
+// )
+//
+// data class DbLinkProfile(
+//     @Embedded
+//     val linkedProfile: DbLinkedProfileRecord,
+//     @Relation(
+//         parentColumn = "profileIdentifier",
+//         entityColumn = "identifier",
+//     )
+//     val profile: DbProfileRecord,
+// )

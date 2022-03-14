@@ -27,12 +27,20 @@ import androidx.room.Query
 import androidx.room.RawQuery
 import androidx.sqlite.db.SupportSQLiteQuery
 import com.dimension.maskbook.persona.db.model.DbPersonaRecord
+// import com.dimension.maskbook.persona.db.model.DbPersonaWithProfiles
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface PersonaDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun add(persona: DbPersonaRecord)
+    suspend fun insert(persona: DbPersonaRecord)
+
+    @Query("SELECT * FROM DbPersonaRecord WHERE identifier=:identifier LIMIT 1")
+    suspend fun find(identifier: String): DbPersonaRecord?
+
+    @Query("DELETE FROM DbPersonaRecord WHERE identifier=:identifier")
+    suspend fun delete(identifier: String)
 
     @RawQuery
     suspend fun findRaw(query: SupportSQLiteQuery): DbPersonaRecord?
@@ -40,9 +48,18 @@ interface PersonaDao {
     @RawQuery
     suspend fun findListRaw(query: SupportSQLiteQuery): List<DbPersonaRecord>
 
-    @Query("SELECT * FROM DbPersonaRecord WHERE identifier=:identifier LIMIT 1")
-    suspend fun find(identifier: String): DbPersonaRecord?
+    // @Query("SELECT * FROM DbPersonaRecord WHERE identifier=:identifier LIMIT 1")
+    // suspend fun findWithProfiles(identifier: String): DbPersonaWithProfiles?
 
-    @Query("DELETE FROM DbPersonaRecord WHERE identifier=:identifier")
-    suspend fun delete(identifier: String)
+    @Query("SELECT * FROM DbPersonaRecord")
+    suspend fun getList(): List<DbPersonaRecord>
+
+    @Query("SELECT * FROM DbPersonaRecord")
+    fun getListFlow(): Flow<List<DbPersonaRecord>>
+
+    @Query("SELECT COUNT(1) FROM DbPersonaRecord WHERE identifier=:identifier LIMIT 1")
+    suspend fun count(identifier: String): Int
+
+    @Query("SELECT COUNT(1) FROM DbPersonaRecord LIMIT 1")
+    suspend fun count(): Int
 }

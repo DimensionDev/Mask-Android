@@ -31,7 +31,7 @@ fun buildQueryPersonaSql(
     nameContains: String? = null,
     initialized: Boolean? = null,
 ) = buildString {
-    append("SELECT * FROM $dbName WHERE identifier = $identifier ")
+    append("SELECT * FROM $dbName WHERE identifier = '$identifier' ")
     buildWhereSql(
         hasPrivateKey = hasPrivateKey,
         includeLogout = includeLogout,
@@ -53,7 +53,7 @@ fun buildQueryPersonaByProfileSql(
     append(
         "SELECT * FROM $dbName WHERE identifier in " +
             "(SELECT personaIdentifier FROM DbLinkedProfileRecord WHERE " +
-            "profileIdentifier = $profileIdentifier " +
+            "profileIdentifier = '$profileIdentifier' " +
             "LIMIT 1) "
     )
     buildWhereSql(

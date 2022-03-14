@@ -25,13 +25,16 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.dimension.maskbook.persona.db.model.DbLinkedProfileRecord
-import com.dimension.maskbook.persona.model.LinkedProfileDetailsState
+import com.dimension.maskbook.persona.export.model.LinkedProfileDetailsState
 
 @Dao
 interface LinkedProfileDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun add(relation: DbLinkedProfileRecord)
+    suspend fun insert(linkedProfile: DbLinkedProfileRecord)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(linkedProfiles: List<DbLinkedProfileRecord>)
 
     @Query("SELECT * FROM DbLinkedProfileRecord WHERE personaIdentifier=:personaIdentifier AND profileIdentifier=:profileIdentifier LIMIT 1")
     suspend fun find(

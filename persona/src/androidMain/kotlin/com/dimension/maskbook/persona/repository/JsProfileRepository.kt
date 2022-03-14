@@ -103,7 +103,7 @@ class JsProfileRepository(database: PersonaDatabase) {
         linkedProfile.state = LinkedProfileDetailsState.Pending
         linkedProfile.updatedAt = System.currentTimeMillis()
 
-        linkedProfileDao.add(linkedProfile)
+        linkedProfileDao.insert(linkedProfile)
     }
 
     suspend fun detachProfile(options: DetachProfileOptions) {
@@ -114,5 +114,5 @@ class JsProfileRepository(database: PersonaDatabase) {
 }
 
 private suspend fun ProfileDao.addWithResult(profile: DbProfileRecord): DbProfileRecord {
-    add(profile) ; return profile
+    insert(profile) ; return profile
 }

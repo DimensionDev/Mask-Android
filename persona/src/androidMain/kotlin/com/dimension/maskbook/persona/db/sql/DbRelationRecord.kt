@@ -31,7 +31,7 @@ fun buildQueryRelationsSql(
     favor: Boolean? = null,
     pageOptions: PageOptions? = null,
 ) = buildString {
-    append("SELECT * FROM $dbName WHERE personaIdentifier=$personaIdentifier ")
+    append("SELECT * FROM $dbName WHERE personaIdentifier='$personaIdentifier' ")
     buildWhereSql(
         network = network,
         nameContains = nameContains,

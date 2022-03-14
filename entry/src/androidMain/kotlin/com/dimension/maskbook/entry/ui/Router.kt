@@ -147,9 +147,8 @@ private suspend fun getInitialRoute(): String {
     if (shouldShowEntry) {
         return EntryRoute.Intro
     }
-    KoinPlatformTools.defaultContext().get().get<PersonaServices>().ensurePersonaDataLoaded()
-    val persona = KoinPlatformTools.defaultContext().get().get<PersonaServices>().currentPersona.firstOrNull()
-    return if (persona != null) {
+    val hasPersona = KoinPlatformTools.defaultContext().get().get<PersonaServices>().hasPersona()
+    return if (hasPersona) {
         CommonRoute.WebContent
     } else {
         WalletRoute.Register.Init
