@@ -28,8 +28,6 @@ import com.dimension.maskbook.persona.export.model.SocialProfile
 import kotlinx.coroutines.flow.Flow
 
 interface IPersonaRepository {
-    val twitter: Flow<List<SocialData>>
-    val facebook: Flow<List<SocialData>>
     val persona: Flow<List<PersonaData>>
     val currentPersona: Flow<PersonaData?>
     suspend fun hasPersona(): Boolean

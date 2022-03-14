@@ -54,10 +54,6 @@ import com.dimension.maskbook.persona.viewmodel.SwitchPersonaViewModel
 import com.dimension.maskbook.persona.viewmodel.contacts.ContactsViewModel
 import com.dimension.maskbook.persona.viewmodel.post.PostViewModel
 import com.dimension.maskbook.persona.viewmodel.social.DisconnectSocialViewModel
-import com.dimension.maskbook.persona.viewmodel.social.FaceBookConnectSocialViewModel
-import com.dimension.maskbook.persona.viewmodel.social.FacebookSocialViewModel
-import com.dimension.maskbook.persona.viewmodel.social.TwitterConnectSocialViewModel
-import com.dimension.maskbook.persona.viewmodel.social.TwitterSocialViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asExecutor
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -117,10 +113,6 @@ object PersonaSetup : ModuleSetup {
         single { PersonasTabScreen() } bind TabScreen::class
 
         viewModel { PersonaViewModel(get(), get()) }
-        viewModel { TwitterSocialViewModel(get()) }
-        viewModel { FacebookSocialViewModel(get()) }
-        viewModel { TwitterConnectSocialViewModel(get()) }
-        viewModel { FaceBookConnectSocialViewModel(get()) }
         viewModel { DisconnectSocialViewModel(get()) }
         viewModel { SwitchPersonaViewModel(get()) }
         viewModel { (personaId: String) -> RenamePersonaViewModel(get(), personaId) }
