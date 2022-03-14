@@ -57,8 +57,8 @@ import com.dimension.maskbook.common.navHostAnimationDurationMillis
 import com.dimension.maskbook.common.ui.theme.modalScrimColor
 import com.dimension.maskbook.common.ui.widget.BackMetaDisplay
 import com.dimension.maskbook.common.ui.widget.MaskDialog
-import com.dimension.maskbook.common.ui.widget.MaskInputField
 import com.dimension.maskbook.common.ui.widget.MaskModal
+import com.dimension.maskbook.common.ui.widget.MaskPasswordInputField
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskScene
 import com.dimension.maskbook.common.ui.widget.MaskTopAppBar
@@ -160,7 +160,7 @@ fun RecoveryLocalHost(
                     Column {
                         Text(text = stringResource(R.string.scene_set_backup_password_backup_password))
                         Spacer(modifier = Modifier.height(8.dp))
-                        MaskInputField(
+                        MaskPasswordInputField(
                             modifier = Modifier.fillMaxWidth(),
                             value = password,
                             onValueChange = {

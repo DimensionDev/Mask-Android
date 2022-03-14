@@ -24,7 +24,6 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
@@ -160,6 +159,16 @@ fun RegisterRecoveryHome(
     navController: NavController,
     @Back onBack: () -> Unit,
 ) {
+    val filePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument(),
+        onResult = {
+            if (it != null) {
+                navController.navigate(
+                    WalletRoute.Register.Recovery.LocalBackup.RemoteBackupRecovery_RecoveryLocal(it.toString())
+                )
+            }
+        },
+    )
     RecoveryHomeScene(
         onBack = onBack,
         onIdentity = {
@@ -169,7 +178,7 @@ fun RegisterRecoveryHome(
             navController.navigate(WalletRoute.Register.Recovery.PrivateKey)
         },
         onLocalBackup = {
-            navController.navigate(WalletRoute.Register.Recovery.LocalBackup.LocalBackup_PickFile)
+            filePickerLauncher.launch(arrayOf("*/*"))
         },
         onRemoteBackup = {
             navController.navigate(WalletRoute.Register.Recovery.RemoteBackupRecovery.RemoteBackupRecovery_Email)
@@ -200,38 +209,6 @@ fun RecoveryLocalBackupRemoteBackupRecoveryRecoveryLocal(
             }
         }
     )
-}
-
-@NavGraphDestination(
-    route = WalletRoute.Register.Recovery.LocalBackup.LocalBackup_PickFile,
-    packageName = navigationComposeAnimComposablePackage,
-    functionName = navigationComposeAnimComposable,
-)
-@Composable
-fun RegisterRecoveryLocalBackupLocalBackupPickFile(
-    navController: NavController,
-    @Back onBack: () -> Unit,
-) {
-    val filePickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.OpenDocument(),
-        onResult = {
-            if (it != null) {
-                navController.navigate(
-                    WalletRoute.Register.Recovery.LocalBackup.RemoteBackupRecovery_RecoveryLocal(it.toString())
-
-                ) {
-                    popUpTo(WalletRoute.Register.Recovery.LocalBackup.LocalBackup_PickFile) {
-                        inclusive = true
-                    }
-                }
-            } else {
-                onBack.invoke()
-            }
-        },
-    )
-    LaunchedEffect(Unit) {
-        filePickerLauncher.launch(arrayOf("*/*"))
-    }
 }
 
 @NavGraphDestination(
