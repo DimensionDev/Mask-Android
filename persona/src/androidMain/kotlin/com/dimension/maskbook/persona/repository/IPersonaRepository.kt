@@ -61,4 +61,5 @@ interface IPersonaRepository {
     fun savePhoneForCurrentPersona(value: String)
     suspend fun refreshPersona()
     suspend fun ensurePersonaDataLoaded()
+    fun setPlatform(platformType: PlatformType)
 }

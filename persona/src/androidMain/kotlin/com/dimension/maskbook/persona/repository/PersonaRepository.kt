@@ -344,4 +344,8 @@ internal class PersonaRepository(
     override suspend fun ensurePersonaDataLoaded() {
         _loaded.first { it }
     }
+
+    override fun setPlatform(platformType: PlatformType) {
+        extensionServices.setSite(platformType.toSite())
+    }
 }
