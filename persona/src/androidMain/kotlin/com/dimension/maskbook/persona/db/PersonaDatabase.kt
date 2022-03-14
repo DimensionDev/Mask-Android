@@ -35,7 +35,8 @@ import com.dimension.maskbook.persona.db.model.DbPersonaRecord
 import com.dimension.maskbook.persona.db.model.DbPostRecord
 import com.dimension.maskbook.persona.db.model.DbProfileRecord
 import com.dimension.maskbook.persona.db.model.DbRelationRecord
-import com.dimension.maskbook.persona.model.LinkedProfileDetailsState
+import com.dimension.maskbook.persona.export.model.LinkedProfileDetailsState
+import com.dimension.maskbook.persona.export.model.Network
 import kotlinx.serialization.json.JsonObject
 
 @Database(
@@ -51,6 +52,7 @@ import kotlinx.serialization.json.JsonObject
 @TypeConverters(
     JsonObjectConverter::class,
     LinkedProfileDetailsStateConverter::class,
+    NetworkConverter::class,
 )
 abstract class PersonaDatabase : RoomDatabase() {
     abstract fun personaDao(): PersonaDao
@@ -80,5 +82,17 @@ internal class LinkedProfileDetailsStateConverter {
     @TypeConverter
     fun toLinkedProfileDetailsState(value: String): LinkedProfileDetailsState {
         return LinkedProfileDetailsState.valueOf(value)
+    }
+}
+
+internal class NetworkConverter {
+    @TypeConverter
+    fun fromNetwork(value: Network?): String? {
+        return value?.value
+    }
+
+    @TypeConverter
+    fun toNetwork(value: String?): Network? {
+        return Network.withHost(value)
     }
 }

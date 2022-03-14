@@ -23,7 +23,7 @@ package com.dimension.maskbook.persona.db.model
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import com.dimension.maskbook.persona.model.LinkedProfileDetailsState
+import com.dimension.maskbook.persona.export.model.LinkedProfileDetailsState
 
 @Entity(
     indices = [

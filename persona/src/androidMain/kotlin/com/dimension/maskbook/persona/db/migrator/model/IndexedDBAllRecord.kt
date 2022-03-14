@@ -18,11 +18,13 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.persona.model.options
+package com.dimension.maskbook.persona.db.migrator.model
 
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class DeleteProfileOptions(
-    val identifier: String,
+data class IndexedDBAllRecord(
+    val personas: List<IndexedDBPersona>,
+    val profiles: List<IndexedDBProfile>,
+    val relations: List<IndexedDBRelation>,
 )

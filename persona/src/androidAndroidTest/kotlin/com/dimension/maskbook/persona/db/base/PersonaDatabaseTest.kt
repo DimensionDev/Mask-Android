@@ -18,18 +18,10 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.persona.model
+package com.dimension.maskbook.persona.db.base
 
-import kotlinx.serialization.SerialName
+import com.dimension.maskbook.persona.db.PersonaDatabase
 
-@kotlinx.serialization.Serializable
-enum class LinkedProfileDetailsState {
-    @SerialName("confirmed")
-    Confirmed,
-
-    @SerialName("pending")
-    Pending,
-
-    @SerialName("denied")
-    Denied;
+abstract class PersonaDatabaseTest : BaseDaoTest<PersonaDatabase>() {
+    override fun getDBClass() = PersonaDatabase::class.java
 }

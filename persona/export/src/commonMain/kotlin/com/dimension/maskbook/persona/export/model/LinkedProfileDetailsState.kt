@@ -18,12 +18,18 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.persona.migrator.model
+package com.dimension.maskbook.persona.export.model
+
+import kotlinx.serialization.SerialName
 
 @kotlinx.serialization.Serializable
-data class Relation(
-    val personaIdentifier: String,
-    val profileIdentifier: String,
-    val favor: Int,
-    val network: String,
-)
+enum class LinkedProfileDetailsState {
+    @SerialName("confirmed")
+    Confirmed,
+
+    @SerialName("pending")
+    Pending,
+
+    @SerialName("denied")
+    Denied;
+}

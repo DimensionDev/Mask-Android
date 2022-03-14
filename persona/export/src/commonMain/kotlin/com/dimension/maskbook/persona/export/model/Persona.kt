@@ -26,7 +26,7 @@ import kotlinx.serialization.Serializable
 data class Persona(
     val identifier: String,
     val nickname: String?,
-    val linkedProfiles: Map<String, ProfileState>,
+    val linkedProfiles: Map<String, LinkedProfileDetailsState>,
     val hasPrivateKey: Boolean,
     val createdAt: Long,
     val updatedAt: Long,

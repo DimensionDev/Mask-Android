@@ -22,13 +22,15 @@ package com.dimension.maskbook.persona.db.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.dimension.maskbook.persona.export.model.Network
+import kotlinx.serialization.Serializable
 
-@kotlinx.serialization.Serializable
+@Serializable
 @Entity
 data class DbProfileRecord(
     @PrimaryKey val identifier: String,
     val nickname: String? = null,
-    val network: String? = null,
+    val network: Network? = null,
     var createdAt: Long = 0,
     var updatedAt: Long = 0,
     val avatar: String? = null,

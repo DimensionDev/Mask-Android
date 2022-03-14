@@ -31,7 +31,7 @@ data class DbPersonaRecord(
     @PrimaryKey val identifier: String,
     var mnemonic: String? = null,
     var path: String? = null,
-    var withPassword: String? = null,
+    var withPassword: Boolean? = null,
     var publicKey: JsonObject? = null,
     var privateKey: JsonObject? = null,
     var localKey: JsonObject? = null,
