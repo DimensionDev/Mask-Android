@@ -273,7 +273,7 @@ private fun Module.provideUseCase() {
 }
 
 private fun Module.provideViewModel() {
-    viewModel { (uri: Uri) -> RecoveryLocalViewModel(get(), uri, get<Context>().contentResolver) }
+    viewModel { (uri: Uri) -> RecoveryLocalViewModel(get(), uri, get<Context>().contentResolver, get()) }
     viewModel { (name: String) -> IdentityViewModel(get(), get(), name) }
     viewModel { PrivateKeyViewModel(get(), get()) }
     viewModel { (personaName: String) -> CreateIdentityViewModel(personaName, get(), get()) }
