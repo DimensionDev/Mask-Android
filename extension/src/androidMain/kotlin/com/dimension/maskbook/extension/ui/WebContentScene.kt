@@ -22,13 +22,14 @@ package com.dimension.maskbook.extension.ui
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.Icon
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.Surface
@@ -49,7 +50,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
-import com.dimension.maskbook.common.ext.spaceBetween
 import com.dimension.maskbook.common.gecko.WebContent
 import com.dimension.maskbook.common.gecko.WebContentController
 import com.dimension.maskbook.common.gecko.WebContentViewController
@@ -162,12 +162,13 @@ private fun PlatformTips(
                     vertical = 8.dp,
                 ),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spaceBetween(20.dp),
         ) {
             Text(
                 text = stringResource(text),
                 color = LocalContentColor.current,
+                modifier = Modifier.weight(1f),
             )
+            Spacer(modifier = Modifier.width(20.dp))
             Icon(
                 painter = painterResource(R.drawable.ic_close_square),
                 modifier = Modifier.size(24.dp).clickable { onClose.invoke() },
