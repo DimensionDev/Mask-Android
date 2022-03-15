@@ -831,7 +831,7 @@ fun SendTokenScene(
     @Query("tradableId") tradableId: String?,
 ) {
     TransferHost(
-        tradableId = tradableId?.let { if (it != "null") it else null }.orEmpty(),
+        tradableId = tradableId.orEmpty(),
         onBack = onBack,
         onDone = onBack,
     )
