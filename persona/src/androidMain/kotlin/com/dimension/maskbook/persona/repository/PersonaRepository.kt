@@ -38,19 +38,19 @@ import com.dimension.maskbook.persona.export.model.SocialProfile
 import com.dimension.maskbook.persona.model.ContactData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
 
 private val CurrentPersonaKey = stringPreferencesKey("current_persona")
@@ -109,6 +109,12 @@ internal class PersonaRepository(
             )
         }
 
+    private val lastDetectProfile: Flow<SocialProfile?> =
+        extensionServices.subscribeJSEvent("notify_visible_detected_profile_changed")
+            .mapNotNull { it.params }
+            .map { SocialProfile.parse(it) }
+            .asStateIn(scope, null)
+
     override suspend fun hasPersona(): Boolean {
         return !personaRepository.isEmpty()
     }
@@ -122,21 +128,8 @@ internal class PersonaRepository(
         connectingJob?.cancel()
         extensionServices.setSite(platformType.toSite())
         connectingJob = scope.launch {
-            while (true) {
-                delay(5.seconds)
-                // TODO: getCurrentDetectedProfileDelegateToSNSAdaptor will always return person:localhost/$unknown when first login
-                val profile = jsMethod.getCurrentDetectedProfileDelegateToSNSAdaptor()?.takeIf {
-                    it.isNotEmpty()
-                }?.let {
-                    SocialProfile.parse(it)
-                }
-                if (profile != null) {
-                    withContext(Dispatchers.Main) {
-                        onDone.invoke(ConnectAccountData(personaId, profile))
-                    }
-                    break
-                }
-            }
+            val profile = lastDetectProfile.filterNotNull().first()
+            onDone.invoke(ConnectAccountData(personaId, profile))
         }
     }
 
