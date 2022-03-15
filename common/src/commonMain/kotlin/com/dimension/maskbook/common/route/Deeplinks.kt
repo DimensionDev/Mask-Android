@@ -21,7 +21,6 @@
 package com.dimension.maskbook.common.route
 
 import com.dimension.maskbook.common.routeProcessor.annotations.Route
-import com.dimension.maskbook.persona.export.model.PlatformType
 
 @Suppress("CONST_VAL_WITHOUT_INITIALIZER")
 @Route(
@@ -50,6 +49,6 @@ expect object Deeplinks {
         }
     }
     object WebContent {
-        operator fun invoke(platformType: PlatformType?): String
+        operator fun invoke(site: String?): String
     }
 }

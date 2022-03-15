@@ -62,14 +62,13 @@ import com.dimension.maskbook.common.ui.widget.button.clickable
 import com.dimension.maskbook.extension.export.model.Site
 import com.dimension.maskbook.extension.ext.site
 import com.dimension.maskbook.localization.R
-import com.dimension.maskbook.persona.export.model.PlatformType
 import org.koin.androidx.compose.get
 import kotlin.math.roundToInt
 
 @Composable
 fun WebContentScene(
     onPersonaClicked: () -> Unit,
-    platformType: PlatformType?,
+    site: Site?,
 ) {
     val controller = get<WebContentController>()
     val canGoBack by controller.canGoBack.collectAsState(initial = false)
@@ -115,7 +114,7 @@ fun WebContentScene(
                                 }
                             }
                         )
-                        platformType?.let {
+                        site?.let {
                             var showTips by rememberSaveable { mutableStateOf(true) }
                             if (showTips) {
                                 PlatformTips(
@@ -142,13 +141,13 @@ fun WebContentScene(
 
 @Composable
 private fun PlatformTips(
-    platformType: PlatformType,
+    site: Site,
     onClose: () -> Unit,
 ) {
-    val text = remember(platformType) {
-        when (platformType) {
-            PlatformType.Twitter -> R.string.scene_social_login_in_notify_twitter
-            PlatformType.Facebook -> R.string.scene_social_login_in_notify_facebook
+    val text = remember(site) {
+        when (site) {
+            Site.Twitter -> R.string.scene_social_login_in_notify_twitter
+            Site.Facebook -> R.string.scene_social_login_in_notify_facebook
         }
     }
     Surface(
