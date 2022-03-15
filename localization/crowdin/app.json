@@ -760,6 +760,10 @@
             "switch_wallet": "Switch wallets"
         },
         "backup": {
+            "remote_backup_no_backup": {
+                "title": "No cloud backup found",
+                "message": "No cloud backup is found with this Email or phone number."
+            },
             "remote_backup_actions_view": {
                 "tips": "There is already a cloud backup, you can either first merge this cloud backup to your local data before you back up, or back up directly."
             },

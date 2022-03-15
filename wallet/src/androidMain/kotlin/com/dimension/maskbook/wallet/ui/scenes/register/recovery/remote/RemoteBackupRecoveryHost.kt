@@ -20,6 +20,7 @@
  */
 package com.dimension.maskbook.wallet.ui.scenes.register.recovery.remote
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -35,6 +36,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -71,7 +73,25 @@ fun RegisterRecoveryRemoteBackupRecoveryRemoteBackupRecoveryNoBackup(
 ) {
     MaskDialog(
         onDismissRequest = onBack,
-        title = { Text(text = "No Backup data found!") }
+        title = {
+            Text(text = stringResource(R.string.scene_backup_remote_backup_no_backup_title))
+        },
+        text = {
+            Text(text = stringResource(R.string.scene_backup_remote_backup_no_backup_message))
+        },
+        icon = {
+            Image(
+                painter = painterResource(id = com.dimension.maskbook.localization.R.drawable.ic_property_1_failed),
+                contentDescription = null
+            )
+        },
+        buttons = {
+            PrimaryButton(
+                onClick = onBack,
+            ) {
+                Text(text = stringResource(id = R.string.common_controls_ok))
+            }
+        }
     )
 }
 
