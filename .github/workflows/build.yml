@@ -49,7 +49,7 @@ jobs:
       with:
         node-version: '16'
     - name: Fetch maskbook
-      run: ./.github/build_maskbook.sh
+      run: ./.github/fetch_maskbook.sh
 
     - name: Build with Gradle
       run: ./gradlew assemble --stacktrace
