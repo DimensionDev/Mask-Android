@@ -20,7 +20,6 @@
  */
 package com.dimension.maskbook.extension.ui
 
-import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,12 +31,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
-import androidx.navigation.navOptions
 import coil.compose.rememberImagePainter
+import com.dimension.maskbook.common.ext.navigateToHome
 import com.dimension.maskbook.common.gecko.WebContent
 import com.dimension.maskbook.common.gecko.WebContentController
-import com.dimension.maskbook.common.route.CommonRoute
-import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskScene
 import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
@@ -72,13 +69,7 @@ fun WebContentScene(
                     actions = {
                         MaskIconButton(
                             onClick = {
-                                navController.navigate(
-                                    Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona)),
-                                    navOptions {
-                                        launchSingleTop = true
-                                        popUpTo(CommonRoute.WebContent)
-                                    },
-                                )
+                                navController.navigateToHome()
                             }
                         ) {
                             Image(rememberImagePainter(R.drawable.mask), contentDescription = null)
