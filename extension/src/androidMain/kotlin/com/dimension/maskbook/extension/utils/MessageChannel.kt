@@ -103,7 +103,7 @@ internal class MessageChannel(
         return flow
     }
 
-    private suspend fun onMessage(jsonObject: JSONObject) {
+    private fun onMessage(jsonObject: JSONObject) {
         val messageId = runCatching {
             jsonObject.get("id")
         }.getOrNull()
@@ -113,7 +113,7 @@ internal class MessageChannel(
             it != "null"
         }
         if (messageId != null && queue.containsKey(messageId)) {
-            queue.remove(messageId)?.send(result)
+            queue.remove(messageId)?.trySend(result)
         } else if (messageId != null) {
             val method = runCatching {
                 jsonObject.getString("method")

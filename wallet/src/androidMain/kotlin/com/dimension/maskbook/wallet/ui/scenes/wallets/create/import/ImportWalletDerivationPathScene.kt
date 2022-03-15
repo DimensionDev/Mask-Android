@@ -55,7 +55,6 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
@@ -63,6 +62,7 @@ import com.dimension.maskbook.common.ui.widget.MaskScene
 import com.dimension.maskbook.common.ui.widget.MaskTopAppBar
 import com.dimension.maskbook.common.ui.widget.MiddleEllipsisText
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
+import com.dimension.maskbook.common.ui.widget.SinglelineText
 import com.dimension.maskbook.common.ui.widget.button.MaskBackButton
 import com.dimension.maskbook.common.ui.widget.button.MaskIconButton
 import com.dimension.maskbook.common.ui.widget.button.MaskTextButton
@@ -242,12 +242,10 @@ private fun DerivationPathPager(
                     modifier = Modifier.weight(1f),
                     textAlign = TextAlign.Start,
                 )
-                Text(
+                SinglelineText(
                     text = balances[item.address] ?: "--",
                     modifier = Modifier.weight(1f),
                     textAlign = TextAlign.End,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
                 )
                 if (item.isAdded) {
                     Text(
