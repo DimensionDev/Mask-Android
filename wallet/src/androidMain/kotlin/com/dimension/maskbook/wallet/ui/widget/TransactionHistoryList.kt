@@ -54,11 +54,11 @@ import com.dimension.maskbook.common.ui.widget.MaskListItem
 import com.dimension.maskbook.common.ui.widget.button.MaskButton
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.wallet.R
-import com.dimension.maskbook.wallet.export.model.TokenData
 import com.dimension.maskbook.wallet.ext.humanizeDollar
 import com.dimension.maskbook.wallet.ext.humanizeToken
 import com.dimension.maskbook.wallet.repository.TransactionData
 import com.dimension.maskbook.wallet.repository.TransactionStatus
+import com.dimension.maskbook.wallet.repository.TransactionTokenData
 import com.dimension.maskbook.wallet.repository.TransactionType
 import org.joda.time.LocalDate
 import java.util.Locale
@@ -130,7 +130,7 @@ private fun TokenDetailEmptyLayout() {
 @Composable
 private fun TransactionItem(
     item: TransactionData,
-    tokenData: TokenData,
+    tokenData: TransactionTokenData,
     onSpeedUp: () -> Unit,
     onCancel: () -> Unit,
 ) {

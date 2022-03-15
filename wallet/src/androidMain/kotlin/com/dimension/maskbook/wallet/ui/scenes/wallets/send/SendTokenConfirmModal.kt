@@ -38,6 +38,7 @@ import com.dimension.maskbook.common.route.navigationComposeBottomSheetPackage
 import com.dimension.maskbook.common.routeProcessor.annotations.Back
 import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
 import com.dimension.maskbook.common.routeProcessor.annotations.Path
+import com.dimension.maskbook.wallet.export.model.WalletTokenData
 import com.dimension.maskbook.wallet.ext.fromHexString
 import com.dimension.maskbook.wallet.ext.humanizeDollar
 import com.dimension.maskbook.wallet.ext.humanizeToken
@@ -77,22 +78,28 @@ fun SendTokenConfirmModal(
                 parametersOf(data.data.gas?.fromHexString()?.toDouble() ?: 21000.0)
             }
             val gasLimit by gasFeeViewModel.gasLimit.observeAsState(initial = -1.0)
-            val maxPriorityFee by gasFeeViewModel.maxPriorityFee.observeAsState(initial = -1.0)
-            val maxFee by gasFeeViewModel.maxFee.observeAsState(initial = -1.0)
+            val maxPriorityFee by gasFeeViewModel.maxPriorityFeePerGas.observeAsState(initial = -1.0)
+            val maxFee by gasFeeViewModel.maxFeePerGas.observeAsState(initial = -1.0)
             val arrives by gasFeeViewModel.arrives.observeAsState(initial = "")
-            val usdValue by gasFeeViewModel.usdValue.observeAsState(initial = BigDecimal.ZERO)
+            val gasUsdTotal by gasFeeViewModel.gasUsdTotal.observeAsState(initial = BigDecimal.ZERO)
             val gasTotal by gasFeeViewModel.gasTotal.observeAsState(initial = BigDecimal.ZERO)
             NavHost(
                 navController,
                 startDestination = "SendConfirm"
             ) {
                 composable("SendConfirm") {
+                    val sending by viewModel.loadingState.observeAsState()
                     SendConfirmSheet(
                         addressData = addressData,
-                        tokenData = tokenData,
+                        tokenData = WalletTokenData(
+                            count = BigDecimal.ZERO,
+                            tokenAddress = tokenData.address,
+                            tokenData = tokenData
+                        ),
                         sendPrice = amount.humanizeToken(),
-                        gasFee = (gasTotal * usdValue).humanizeDollar(),
-                        total = (amount * tokenData.price + gasTotal * usdValue).humanizeDollar(),
+                        gasFee = gasUsdTotal.humanizeDollar(),
+                        total = (amount * tokenData.price + gasUsdTotal).humanizeDollar(),
+                        sending = sending,
                         onConfirm = {
                             navController.navigate("UnlockWalletDialog")
                         },
@@ -100,17 +107,22 @@ fun SendTokenConfirmModal(
                             viewModel.cancel()
                             onBack.invoke()
                         },
-                        onEditGasFee = { navController.navigate("EditGasFee") },
+                        onEditGasFee = {
+                            navController.navigate("EditGasFee")
+                            gasFeeViewModel.refreshSuggestGasFee()
+                        },
                     )
                 }
                 composable("EditGasFee") {
                     val mode by gasFeeViewModel.gasPriceEditMode.observeAsState(initial = GasPriceEditMode.MEDIUM)
+                    val loading by gasFeeViewModel.loadingState.observeAsState()
                     EditGasPriceSheet(
-                        price = (gasTotal * usdValue).humanizeDollar(),
+                        price = gasUsdTotal.humanizeDollar(),
                         costFee = gasTotal.humanizeToken(),
                         costFeeUnit = tokenData.symbol,
                         arrivesIn = arrives,
                         mode = mode,
+                        loading = loading,
                         gasLimit = gasLimit.toString(),
                         onGasLimitChanged = {
                             gasFeeViewModel.setGasLimit(
@@ -157,8 +169,9 @@ fun SendTokenConfirmModal(
                             nameInput = name,
                             onNameChanged = { addContactViewModel.setName(it) },
                             onAddContact = {
-                                addContactViewModel.confirm(name, address)
-                                navController.popBackStack()
+                                addContactViewModel.confirm(name, address, onResult = {
+                                    navController.popBackStack()
+                                })
                             }
                         )
                     }
@@ -176,9 +189,11 @@ fun SendTokenConfirmModal(
                         viewModel.send(
                             gasLimit = gasLimit,
                             maxFee = maxFee,
-                            maxPriorityFee = maxPriorityFee
+                            maxPriorityFee = maxPriorityFee,
+                            onResult = {
+                                onBack.invoke()
+                            }
                         )
-                        onBack.invoke()
                     }
                     UnlockWalletDialog(
                         onBack = { navController.popBackStack() },

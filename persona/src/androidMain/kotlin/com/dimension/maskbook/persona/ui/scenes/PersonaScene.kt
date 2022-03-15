@@ -58,6 +58,7 @@ fun PersonaScene(
     onPersonaNameClick: () -> Unit,
     onAddSocialClick: (PersonaData, Network?) -> Unit,
     onRemoveSocialClick: (PersonaData, SocialData) -> Unit,
+    onSocialItemClick: (PersonaData, SocialData) -> Unit,
 ) {
     val viewModel: PersonaViewModel = getViewModel()
     val currentPersona by viewModel.currentPersona.collectAsState()
@@ -119,6 +120,8 @@ fun PersonaScene(
                     onSocialItemClick = { data, isEditing ->
                         if (isEditing) {
                             onRemoveSocialClick(persona, data)
+                        } else {
+                            onSocialItemClick(persona, data)
                         }
                     },
                 )

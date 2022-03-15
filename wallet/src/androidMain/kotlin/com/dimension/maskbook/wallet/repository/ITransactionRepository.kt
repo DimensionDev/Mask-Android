@@ -20,8 +20,10 @@
  */
 package com.dimension.maskbook.wallet.repository
 
+import com.dimension.maskbook.common.ext.ifNullOrEmpty
 import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.export.model.TokenData
+import com.dimension.maskbook.wallet.export.model.WalletCollectibleData
 import com.dimension.maskbook.wallet.export.model.WalletData
 import com.dimension.maskbook.wallet.services.WalletServices
 import kotlinx.coroutines.flow.firstOrNull
@@ -34,6 +36,11 @@ interface ITransactionRepository {
     ): List<TransactionData>
 
     suspend fun getTransactionByWallet(walletData: WalletData): List<TransactionData>
+
+    suspend fun getTransactionByCollectible(
+        walletData: WalletData,
+        collectible: WalletCollectibleData
+    ): List<TransactionData>
 }
 
 class TransactionRepository(
@@ -49,7 +56,7 @@ class TransactionRepository(
             walletData = walletData,
             chainType = tokenData.chainType
         ).filter {
-            it.tokenData == tokenData
+            it.tokenData.id == tokenData.address && it.tokenData.chainType == tokenData.chainType
         }
     }
 
@@ -59,8 +66,26 @@ class TransactionRepository(
         return getTransactionByWalletAndChainType(walletData = walletData, chainType = current)
     }
 
+    override suspend fun getTransactionByCollectible(
+        walletData: WalletData,
+        collectible: WalletCollectibleData
+    ): List<TransactionData> {
+        return getTransactionByWalletAndChainType(
+            walletData = walletData,
+            chainType = collectible.chainType
+        ).filter {
+            it.tokenData.chainType == collectible.chainType &&
+                it.tokenData.id == collectible.tokenId &&
+                it.tokenData.contractId == collectible.contract.address
+        }
+    }
+
     private suspend fun getTransactionByWalletAndChainType(walletData: WalletData, chainType: ChainType): List<TransactionData> {
-        val chainId = chainType.dbank
+        val chainId = try {
+            chainType.dbank
+        } catch (ignored: Throwable) {
+            return emptyList()
+        }
         val result =
             walletServices.debankServices.history(chainId, walletData.address.lowercase())
         return result.data?.historyList?.mapNotNull {
@@ -68,14 +93,12 @@ class TransactionRepository(
                 ?: it.receives?.firstOrNull()?.tokenID
                 ?: it.sends?.firstOrNull()?.tokenID
             val tokenData = result.data?.tokenDict?.get(tokenId).let { token ->
-                TokenData(
-                    address = token?.id ?: "",
+                TransactionTokenData(
+                    id = token?.innerId.ifNullOrEmpty { token?.id ?: "" },
                     chainType = token?.chain?.name?.toChainType() ?: ChainType.unknown,
-                    name = token?.name ?: "",
-                    symbol = token?.symbol ?: "",
-                    decimals = token?.decimals ?: 0,
-                    logoURI = token?.logoURL,
-                    price = java.math.BigDecimal(token?.price ?: 0.0)
+                    symbol = token?.symbol.ifNullOrEmpty { token?.name ?: "" },
+                    price = java.math.BigDecimal(token?.price ?: 0.0),
+                    contractId = token?.contractId ?: ""
                 )
             }
             TransactionData(

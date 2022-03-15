@@ -26,7 +26,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -37,6 +36,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
@@ -69,18 +69,21 @@ import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.common.ui.widget.button.SecondaryButton
 import com.dimension.maskbook.common.ui.widget.button.clickable
 import com.dimension.maskbook.wallet.R
-import com.dimension.maskbook.wallet.export.model.TokenData
+import com.dimension.maskbook.wallet.export.model.TradableData
+import com.dimension.maskbook.wallet.export.model.WalletCollectibleData
+import com.dimension.maskbook.wallet.export.model.WalletTokenData
 import com.dimension.maskbook.wallet.ext.humanizeDollar
 import com.dimension.maskbook.wallet.ext.humanizeToken
 import com.dimension.maskbook.wallet.repository.SearchAddressData
 import com.dimension.maskbook.wallet.repository.UnlockType
+import com.dimension.maskbook.wallet.ui.widget.CollectibleCard
 
 @Composable
-fun SendTokenScene(
+fun TransferDetailScene(
     onBack: () -> Unit,
     addressData: SearchAddressData,
     onAddContact: () -> Unit,
-    tokenData: TokenData?,
+    data: TradableData?,
     balance: BigDecimal,
     onSelectToken: () -> Unit,
     amount: String,
@@ -113,55 +116,73 @@ fun SendTokenScene(
                     .verticalScroll(rememberScrollState())
                     .padding(ScaffoldPadding)
             ) {
-                Text(text = stringResource(R.string.scene_sendTransaction_send_Label_To))
-                Spacer(modifier = Modifier.height(10.dp))
-                AddressContent(
-                    name = addressData.name
-                        .ifNullOrEmpty { addressData.ens }
-                        .ifNullOrEmpty { addressData.address },
-                    isContact = addressData.isContact,
-                    onAddContact = onAddContact
-                )
-                Spacer(modifier = Modifier.height(20.dp))
-
-                TokenContent(
-                    logoUri = tokenData?.logoURI ?: "",
-                    tokenName = tokenData?.name ?: "",
-                    balance = "${balance.humanizeToken()} ${tokenData?.symbol ?: ""} ≈ ${(balance * (tokenData?.price ?: BigDecimal.ZERO)).humanizeDollar()}",
-                    onClick = onSelectToken
-                )
-
-                Spacer(modifier = Modifier.height(20.dp))
-                AmountContent(
-                    amount = amount,
-                    onValueChanged = {
-                        if (it.toBigDecimalOrNull() != null) {
-                            onAmountChanged.invoke(it)
-                        }
-                    },
-                    onMax = { onAmountChanged.invoke(maxAmount) },
-                    error = amount.toBigDecimal() > maxAmount.toBigDecimal()
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-
-                if (unlockType == UnlockType.PASSWORD) {
-                    PaymentPasswordContent(
-                        pwd = paymentPassword,
-                        onValueChanged = { onPaymentPasswordChanged.invoke(it) },
+                // in order to display NFT
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(text = stringResource(R.string.scene_sendTransaction_send_Label_To))
+                    Spacer(modifier = Modifier.height(10.dp))
+                    AddressContent(
+                        name = addressData.name
+                            .ifNullOrEmpty { addressData.ens }
+                            .ifNullOrEmpty { addressData.address },
+                        isContact = addressData.isContact,
+                        onAddContact = onAddContact
                     )
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    when (data) {
+                        is WalletTokenData -> TokenContent(
+                            logoUri = data.tokenData.logoURI ?: "",
+                            tokenName = data.tokenData.name,
+                            balance = "${balance.humanizeToken()} ${data.tokenData.symbol} ≈ ${(balance * data.tokenData.price).humanizeDollar()}",
+                            onClick = onSelectToken
+                        )
+                        is WalletCollectibleData -> CollectibleContent(
+                            logoUri = data.icon,
+                            name = data.name,
+                            collectionName = data.collection.name,
+                            onClick = onSelectToken
+                        )
+                        null -> TokenContent(
+                            onClick = onSelectToken
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(20.dp))
+                    when (data) {
+                        is WalletCollectibleData -> CollectibleDisplayContent(data = data)
+                        else -> AmountContent(
+                            amount = amount,
+                            onValueChanged = {
+                                if (it.toBigDecimalOrNull() != null) {
+                                    onAmountChanged.invoke(it)
+                                }
+                            },
+                            onMax = { onAmountChanged.invoke(maxAmount) },
+                            error = amount.toBigDecimal() > maxAmount.toBigDecimal()
+                        )
+                    }
+
                     Spacer(modifier = Modifier.height(16.dp))
-                }
 
-                if (!sendError.isNullOrEmpty()) {
-                    Spacer(modifier = Modifier.padding(end = 8.dp))
-                    Text(text = sendError, color = MaterialTheme.colors.error)
-                }
+                    if (unlockType == UnlockType.PASSWORD) {
+                        PaymentPasswordContent(
+                            pwd = paymentPassword,
+                            onValueChanged = { onPaymentPasswordChanged.invoke(it) },
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
 
-                GasFeeContent(
-                    fee = gasFee,
-                    arrivesTimes = arrivesIn,
-                    onChangeGasFee = onEditGasFee
-                )
+                    if (!sendError.isNullOrEmpty()) {
+                        Spacer(modifier = Modifier.padding(end = 8.dp))
+                        Text(text = sendError, color = MaterialTheme.colors.error)
+                    }
+
+                    GasFeeContent(
+                        fee = gasFee,
+                        arrivesTimes = arrivesIn,
+                        onChangeGasFee = onEditGasFee
+                    )
+                }
 
                 SendButton(
                     unlockType = unlockType,
@@ -202,9 +223,9 @@ private fun AddressContent(
 
 @Composable
 private fun TokenContent(
-    logoUri: String,
-    tokenName: String,
-    balance: String,
+    logoUri: String = "",
+    tokenName: String = "",
+    balance: String = "",
     onClick: () -> Unit
 ) {
     Row(
@@ -231,6 +252,46 @@ private fun TokenContent(
 }
 
 @Composable
+private fun CollectibleContent(
+    logoUri: String,
+    name: String,
+    collectionName: String,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick.invoke() },
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Image(
+            painter = rememberImagePainter(logoUri),
+            contentDescription = null,
+            modifier = Modifier.size(38.dp)
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = name,
+                style = MaterialTheme.typography.body1.copy(fontWeight = FontWeight.Bold)
+            )
+            Text(text = collectionName)
+        }
+        Icon(imageVector = Icons.Default.ArrowRight, contentDescription = null)
+    }
+}
+
+@Composable
+private fun CollectibleDisplayContent(
+    data: WalletCollectibleData
+) {
+    CollectibleCard(
+        modifier = Modifier.clip(RoundedCornerShape(12.dp)),
+        data = data
+    )
+}
+
+@Composable
 private fun AmountContent(
     amount: String,
     onValueChanged: (String) -> Unit,
@@ -253,7 +314,10 @@ private fun AmountContent(
                             shape = MaterialTheme.shapes.small
                         )
                     ) {
-                        Text(text = stringResource(R.string.scene_sendTransaction_send_btn_max), color = MaterialTheme.colors.primary)
+                        Text(
+                            text = stringResource(R.string.scene_sendTransaction_send_btn_max),
+                            color = MaterialTheme.colors.primary
+                        )
                     }
                     Spacer(modifier = Modifier.padding(end = 12.dp))
                 }
@@ -262,7 +326,10 @@ private fun AmountContent(
         )
         if (error) {
             Spacer(modifier = Modifier.padding(end = 8.dp))
-            Text(text = stringResource(R.string.scene_sendTransaction_send_amount_error), color = MaterialTheme.colors.error)
+            Text(
+                text = stringResource(R.string.scene_sendTransaction_send_amount_error),
+                color = MaterialTheme.colors.error
+            )
         }
     }
 }
@@ -312,12 +379,11 @@ private fun GasFeeContent(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun ColumnScope.SendButton(
+private fun SendButton(
     unlockType: UnlockType,
     onSend: (UnlockType) -> Unit,
     canConfirm: Boolean,
 ) {
-    Spacer(modifier = Modifier.weight(1f))
     when (unlockType) {
         UnlockType.BIOMETRIC -> {
             // TODO Biometrics Replace UI
@@ -329,7 +395,10 @@ private fun ColumnScope.SendButton(
                     painter = painterResource(id = R.drawable.ic_faceid_small),
                     contentDescription = null
                 )
-                Text(text = stringResource(R.string.scene_wallet_balance_btn_Send), modifier = Modifier.padding(start = 8.dp))
+                Text(
+                    text = stringResource(R.string.scene_wallet_balance_btn_Send),
+                    modifier = Modifier.padding(start = 8.dp)
+                )
             }
         }
         UnlockType.PASSWORD -> {
@@ -342,7 +411,10 @@ private fun ColumnScope.SendButton(
                     painter = painterResource(id = R.drawable.ic_upload_small),
                     contentDescription = null
                 )
-                Text(text = stringResource(R.string.scene_wallet_balance_btn_Send), modifier = Modifier.padding(start = 8.dp))
+                Text(
+                    text = stringResource(R.string.scene_wallet_balance_btn_Send),
+                    modifier = Modifier.padding(start = 8.dp)
+                )
             }
         }
     }

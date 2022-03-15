@@ -25,16 +25,22 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.dimension.maskbook.common.ext.navigateToHome
 import com.dimension.maskbook.common.gecko.WebContent
 import com.dimension.maskbook.common.gecko.WebContentController
+import com.dimension.maskbook.common.gecko.WebContentViewController
+import com.dimension.maskbook.common.route.CommonRoute
+import com.dimension.maskbook.common.route.Deeplinks
+import com.dimension.maskbook.common.ui.widget.AppBarHeight
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskScene
 import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
@@ -43,6 +49,7 @@ import com.dimension.maskbook.extension.export.model.Site
 import com.dimension.maskbook.extension.ext.site
 import com.dimension.maskbook.localization.R
 import org.koin.androidx.compose.get
+import kotlin.math.roundToInt
 
 @Composable
 fun WebContentScene(
@@ -50,37 +57,52 @@ fun WebContentScene(
 ) {
     val controller = get<WebContentController>()
     val canGoBack by controller.canGoBack.collectAsState(initial = false)
+    val state = rememberNestedScrollViewState()
+    val appbarHeight = with(LocalDensity.current) {
+        AppBarHeight.toPx()
+    }
+    val viewController = remember {
+        WebContentViewController(appbarHeight.roundToInt())
+    }
+    LaunchedEffect(state.offset) {
+        viewController.setVerticalClipping(state.offset.roundToInt())
+    }
     BackHandler(
         enabled = canGoBack
     ) {
         controller.goBack()
     }
     MaskScene {
-        MaskScaffold(
-            topBar = {
-                MaskSingleLineTopAppBar(
-                    title = {
-                        val url by controller.url.collectAsState(initial = "")
-                        val title = remember(url) {
-                            getTitleFromUrl(url)
-                        }
-                        Text(stringResource(title))
-                    },
-                    actions = {
-                        MaskIconButton(
-                            onClick = {
-                                navController.navigateToHome()
+        MaskScaffold {
+            NestedScrollView(
+                state = state,
+                header = {
+                    MaskSingleLineTopAppBar(
+                        title = {
+                            val url by controller.url.collectAsState(initial = "")
+                            val title = remember(url) {
+                                getTitleFromUrl(url)
                             }
-                        ) {
-                            Image(rememberImagePainter(R.drawable.mask), contentDescription = null)
+                            Text(stringResource(title))
+                        },
+                        actions = {
+                            MaskIconButton(
+                                onClick = {
+                                    navController.navigateToHome()
+                                }
+                            ) {
+                                Image(rememberImagePainter(R.drawable.mask), contentDescription = null)
+                            }
                         }
-                    }
-                )
-            },
-        ) {
-            WebContent(
-                modifier = Modifier.fillMaxSize(),
-                controller = controller
+                    )
+                },
+                content = {
+                    WebContent(
+                        modifier = Modifier.fillMaxSize(),
+                        controller = controller,
+                        viewController = viewController,
+                    )
+                }
             )
         }
     }

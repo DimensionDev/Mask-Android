@@ -99,7 +99,7 @@ fun SearchTokenScene(
                     contentPadding = ScaffoldPadding,
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
-                    items(tokens.filter { it.tokenData.name.contains(query, ignoreCase = true) }) {
+                    items(tokens) {
                         SearchResultItem(
                             modifier = Modifier.clickable {
                                 onSelect.invoke(it)

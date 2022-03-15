@@ -21,6 +21,7 @@
 package com.dimension.maskbook.common.gecko
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import mozilla.components.browser.state.helper.Target
 
@@ -28,11 +29,13 @@ import mozilla.components.browser.state.helper.Target
 fun WebContent(
     modifier: Modifier = Modifier,
     controller: WebContentController,
+    viewController: WebContentViewController = remember { WebContentViewController(0) },
 ) {
     GeckoContent(
         modifier = modifier,
         engine = controller.engine,
         target = Target.SelectedTab,
         store = controller.store,
+        controller = viewController,
     )
 }

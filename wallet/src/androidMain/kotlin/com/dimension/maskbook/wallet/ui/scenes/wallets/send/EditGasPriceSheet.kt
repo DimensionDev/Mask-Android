@@ -33,6 +33,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -76,6 +77,7 @@ fun EditGasPriceSheet(
     gasLimitError: String?,
     maxPriorityFeeError: String?,
     maxFeeError: String?,
+    loading: Boolean,
     canConfirm: Boolean,
     onConfirm: () -> Unit
 ) {
@@ -93,46 +95,55 @@ fun EditGasPriceSheet(
             var showAdvanced by remember {
                 mutableStateOf(false)
             }
-            Text(
-                text = "~$price",
-                style = MaterialTheme.typography.h4,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = "${stringResource(R.string.scene_sendTransaction_gasPrice_costFee)}$costFee $costFeeUnit",
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = arrivesIn, color = Color(0xFF60DFAB),
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-            Spacer(modifier = Modifier.height(20.dp))
-            Row(modifier = Modifier.fillMaxWidth()) {
-                SelectableButton(
-                    text = "Low",
-                    selected = mode == GasPriceEditMode.LOW,
-                    onSelect = { onSelectMode.invoke(GasPriceEditMode.LOW) },
-                    modifier = Modifier.weight(1f)
+            if (loading) {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(20.dp)
                 )
-                Spacer(modifier = Modifier.width(12.dp))
-                SelectableButton(
-                    text = "Medium",
-                    selected = mode == GasPriceEditMode.MEDIUM,
-                    onSelect = { onSelectMode.invoke(GasPriceEditMode.MEDIUM) },
-                    modifier = Modifier.weight(1f)
-                )
-                Spacer(modifier = Modifier.width(12.dp))
-                SelectableButton(
-                    text = "High",
-                    selected = mode == GasPriceEditMode.HIGH,
-                    onSelect = { onSelectMode.invoke(GasPriceEditMode.HIGH) },
-                    modifier = Modifier.weight(1f)
-                )
+            } else {
+                Column {
+                    Text(
+                        text = "~$price",
+                        style = MaterialTheme.typography.h4,
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "${stringResource(R.string.scene_sendTransaction_gasPrice_costFee)}$costFee $costFeeUnit",
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = arrivesIn, color = Color(0xFF60DFAB),
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
+                    Spacer(modifier = Modifier.height(20.dp))
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        SelectableButton(
+                            text = "Low",
+                            selected = mode == GasPriceEditMode.LOW,
+                            onSelect = { onSelectMode.invoke(GasPriceEditMode.LOW) },
+                            modifier = Modifier.weight(1f)
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        SelectableButton(
+                            text = "Medium",
+                            selected = mode == GasPriceEditMode.MEDIUM,
+                            onSelect = { onSelectMode.invoke(GasPriceEditMode.MEDIUM) },
+                            modifier = Modifier.weight(1f)
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        SelectableButton(
+                            text = "High",
+                            selected = mode == GasPriceEditMode.HIGH,
+                            onSelect = { onSelectMode.invoke(GasPriceEditMode.HIGH) },
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(20.dp))
+                }
             }
-            Spacer(modifier = Modifier.height(20.dp))
-
             TextButton(onClick = { showAdvanced = !showAdvanced }) {
                 Text(text = stringResource(R.string.scene_sendTransaction_gasPrice_advancedBtn))
                 Spacer(modifier = Modifier.width(10.dp))

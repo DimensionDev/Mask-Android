@@ -22,7 +22,6 @@ package com.dimension.maskbook.wallet
 
 import android.content.Context
 import android.net.Uri
-import androidx.compose.runtime.getValue
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.room.Room
@@ -53,6 +52,42 @@ import com.dimension.maskbook.wallet.repository.walletDataStore
 import com.dimension.maskbook.wallet.route.generatedRoute
 import com.dimension.maskbook.wallet.services.WalletServices
 import com.dimension.maskbook.wallet.ui.tab.WalletTabScreen
+import com.dimension.maskbook.wallet.usecase.address.AddContactUseCase
+import com.dimension.maskbook.wallet.usecase.address.AddContactUseCaseImpl
+import com.dimension.maskbook.wallet.usecase.address.AddRecentAddressUseCase
+import com.dimension.maskbook.wallet.usecase.address.AddRecentAddressUseCaseImpl
+import com.dimension.maskbook.wallet.usecase.address.GetAddressUseCase
+import com.dimension.maskbook.wallet.usecase.address.GetAddressUseCaseImpl
+import com.dimension.maskbook.wallet.usecase.address.GetContactsUseCase
+import com.dimension.maskbook.wallet.usecase.address.GetContactsUseCaseImpl
+import com.dimension.maskbook.wallet.usecase.address.GetEnsAddressUseCase
+import com.dimension.maskbook.wallet.usecase.address.GetEnsAddressUseCaseImpl
+import com.dimension.maskbook.wallet.usecase.address.GetRecentAddressUseCase
+import com.dimension.maskbook.wallet.usecase.address.GetRecentAddressUseCaseImpl
+import com.dimension.maskbook.wallet.usecase.chain.SetCurrentChainUseCase
+import com.dimension.maskbook.wallet.usecase.chain.SetCurrentChainUseCaseImpl
+import com.dimension.maskbook.wallet.usecase.collectible.GetWalletCollectibleCollectionsUseCase
+import com.dimension.maskbook.wallet.usecase.collectible.GetWalletCollectibleCollectionsUseCaseImpl
+import com.dimension.maskbook.wallet.usecase.collectible.GetWalletCollectibleUseCase
+import com.dimension.maskbook.wallet.usecase.collectible.GetWalletCollectibleUseCaseImpl
+import com.dimension.maskbook.wallet.usecase.collectible.SendWalletCollectibleUseCase
+import com.dimension.maskbook.wallet.usecase.collectible.SendWalletCollectibleUseCaseImpl
+import com.dimension.maskbook.wallet.usecase.gas.GetArrivesWithGasFeeUseCase
+import com.dimension.maskbook.wallet.usecase.gas.GetArrivesWithGasFeeUseCaseImpl
+import com.dimension.maskbook.wallet.usecase.gas.GetSuggestGasFeeUseCase
+import com.dimension.maskbook.wallet.usecase.gas.GetSuggestGasFeeUseCaseImpl
+import com.dimension.maskbook.wallet.usecase.password.VerifyPaymentPasswordUseCase
+import com.dimension.maskbook.wallet.usecase.password.VerifyPaymentPasswordUseCaseImpl
+import com.dimension.maskbook.wallet.usecase.token.GetWalletNativeTokenUseCase
+import com.dimension.maskbook.wallet.usecase.token.GetWalletNativeTokenUseCaseImpl
+import com.dimension.maskbook.wallet.usecase.token.GetWalletTokenByAddressUseCase
+import com.dimension.maskbook.wallet.usecase.token.GetWalletTokenByAddressUseCaseImpl
+import com.dimension.maskbook.wallet.usecase.token.GetWalletTokensUseCase
+import com.dimension.maskbook.wallet.usecase.token.GetWalletTokensUseCaseImpl
+import com.dimension.maskbook.wallet.usecase.token.SendTokenUseCase
+import com.dimension.maskbook.wallet.usecase.token.SendTokenUseCaseImpl
+import com.dimension.maskbook.wallet.usecase.token.SendTransactionUseCase
+import com.dimension.maskbook.wallet.usecase.token.SendTransactionUseCaseImpl
 import com.dimension.maskbook.wallet.viewmodel.WelcomeViewModel
 import com.dimension.maskbook.wallet.viewmodel.recovery.IdentityViewModel
 import com.dimension.maskbook.wallet.viewmodel.recovery.PrivateKeyViewModel
@@ -72,6 +107,7 @@ import com.dimension.maskbook.wallet.viewmodel.wallets.WalletConnectManagementVi
 import com.dimension.maskbook.wallet.viewmodel.wallets.WalletConnectViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.WalletManagementModalViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.collectible.CollectibleDetailViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.collectible.CollectiblesViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.create.CreateWalletRecoveryKeyViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.import.ImportWalletDerivationPathViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.import.ImportWalletKeystoreViewModel
@@ -85,9 +121,9 @@ import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletTransact
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.AddContactViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.GasFeeViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.SearchAddressViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.send.SearchTradableViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendConfirmViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendTokenDataViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendTokenViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.send.TransferDetailViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.Web3TransactionConfirmViewModel
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectServerManager
@@ -118,6 +154,7 @@ object WalletSetup : ModuleSetup {
                 .addMigrations(
                     RoomMigrations.MIGRATION_6_7,
                     RoomMigrations.MIGRATION_7_8,
+                    RoomMigrations.MIGRATION_8_9
                 )
                 .build()
         }
@@ -127,6 +164,7 @@ object WalletSetup : ModuleSetup {
         single { WalletTabScreen() } bind TabScreen::class
 
         provideRepository()
+        provideUseCase()
         provideViewModel()
         provideServices()
     }
@@ -206,8 +244,36 @@ private fun Module.provideRepository() {
     single<IWalletConnectRepository> { WalletConnectRepository(get(), get()) }
 }
 
+private fun Module.provideUseCase() {
+    // address
+    factory<GetEnsAddressUseCase> { GetEnsAddressUseCaseImpl(get()) }
+    factory<GetRecentAddressUseCase> { GetRecentAddressUseCaseImpl(get()) }
+    factory<GetContactsUseCase> { GetContactsUseCaseImpl(get()) }
+    factory<GetAddressUseCase> { GetAddressUseCaseImpl(get()) }
+    factory<AddRecentAddressUseCase> { AddRecentAddressUseCaseImpl(get()) }
+    factory<AddContactUseCase> { AddContactUseCaseImpl(get()) }
+
+    // chain
+    factory<SetCurrentChainUseCase> { SetCurrentChainUseCaseImpl(get()) }
+    // general
+    factory<VerifyPaymentPasswordUseCase> { VerifyPaymentPasswordUseCaseImpl(get()) }
+    // collectible
+    factory<GetWalletCollectibleCollectionsUseCase> { GetWalletCollectibleCollectionsUseCaseImpl(get(), get()) }
+    factory<GetWalletCollectibleUseCase> { GetWalletCollectibleUseCaseImpl(get()) }
+    factory<SendWalletCollectibleUseCase> { SendWalletCollectibleUseCaseImpl(get()) }
+    // Tokens
+    factory<GetWalletNativeTokenUseCase> { GetWalletNativeTokenUseCaseImpl(get()) }
+    factory<GetWalletTokenByAddressUseCase> { GetWalletTokenByAddressUseCaseImpl(get()) }
+    factory<GetWalletTokensUseCase> { GetWalletTokensUseCaseImpl(get()) }
+    factory<SendTokenUseCase> { SendTokenUseCaseImpl(get()) }
+    factory<SendTransactionUseCase> { SendTransactionUseCaseImpl(get()) }
+    // gas
+    factory<GetArrivesWithGasFeeUseCase> { GetArrivesWithGasFeeUseCaseImpl(get()) }
+    factory<GetSuggestGasFeeUseCase> { GetSuggestGasFeeUseCaseImpl(get()) }
+}
+
 private fun Module.provideViewModel() {
-    viewModel { (uri: Uri) -> RecoveryLocalViewModel(get(), uri, get<Context>().contentResolver) }
+    viewModel { (uri: Uri) -> RecoveryLocalViewModel(get(), uri, get<Context>().contentResolver, get()) }
     viewModel { (name: String) -> IdentityViewModel(get(), get(), name) }
     viewModel { PrivateKeyViewModel(get(), get()) }
     viewModel { (personaName: String) -> CreateIdentityViewModel(personaName, get(), get()) }
@@ -244,25 +310,31 @@ private fun Module.provideViewModel() {
     viewModel { WalletBackupViewModel(get(), get()) }
     viewModel { (id: String) -> WalletDeleteViewModel(id, get(), get()) }
     viewModel { WalletSwitchViewModel(get()) }
-    viewModel { SearchAddressViewModel(get(), get(), get()) }
+    viewModel { SearchAddressViewModel(get(), get(), get(), get()) }
     viewModel { (id: String) -> TokenDetailViewModel(id, get(), get(), get()) }
     viewModel { (initialGasLimit: Double) ->
         GasFeeViewModel(
             initialGasLimit = initialGasLimit,
             get(),
-            get()
+            get(),
+            get(),
+            get(),
         )
     }
-    viewModel { (toAddress: String) ->
-        SendTokenViewModel(
-            toAddress = toAddress,
+    viewModel { (tradableId: String) ->
+        TransferDetailViewModel(
+            tradableId = tradableId,
+            get(),
+            get(),
+            get(),
+            get(),
             get(),
             get(),
         )
     }
     viewModel { AddContactViewModel(get()) }
     viewModel { (toAddress: String) ->
-        SendConfirmViewModel(toAddress, get(), get())
+        SendConfirmViewModel(toAddress, get(), get(), get(), get())
     }
     viewModel { BiometricViewModel(get(), get()) }
     viewModel { WalletConnectManagementViewModel(get(), get()) }
@@ -277,9 +349,10 @@ private fun Module.provideViewModel() {
     }
     viewModel { UnlockWalletViewModel(get(), get()) }
     viewModel { BackUpPasswordViewModel(get(), get()) }
-    viewModel { (id: String) -> CollectibleDetailViewModel(id, get()) }
-    viewModel { (tokenAddress: String) -> SendTokenDataViewModel(tokenAddress, get(), get()) }
-    viewModel { (data: SendTokenConfirmData) -> Web3TransactionConfirmViewModel(data, get(), get(), get()) }
+    viewModel { (id: String) -> CollectibleDetailViewModel(id, get(), get(), get()) }
+    viewModel { CollectiblesViewModel(get(), get()) }
+    viewModel { (data: SendTokenConfirmData) -> Web3TransactionConfirmViewModel(data, get(), get(), get(), get(), get(), get()) }
+    viewModel { SearchTradableViewModel(get(), get()) }
 }
 
 private fun Module.provideServices() {

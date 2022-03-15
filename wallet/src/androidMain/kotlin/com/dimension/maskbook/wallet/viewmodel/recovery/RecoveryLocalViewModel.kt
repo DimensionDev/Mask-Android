@@ -26,14 +26,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.setting.export.BackupServices
+import com.dimension.maskbook.setting.export.SettingServices
 import com.dimension.maskbook.setting.export.model.BackupMeta
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 class RecoveryLocalViewModel(
     private val backupServices: BackupServices,
     private val uri: Uri,
     private val contentResolver: ContentResolver,
+    private val settingServices: SettingServices,
 ) : ViewModel() {
     enum class LoadState {
         Loading,
@@ -70,11 +73,14 @@ class RecoveryLocalViewModel(
 //            }
 //        } ?: return@launch
         try {
-
             contentResolver.openInputStream(uri)?.use {
                 json = it.bufferedReader().use { it.readText() }
                 _meta.value = backupServices.provideBackupMetaFromJson(json)
-                _loadState.value = LoadState.Success
+                if (settingServices.backupPassword.firstOrNull().isNullOrEmpty()) {
+                    _loadState.value = LoadState.Success
+                } else {
+                    _loadState.value = LoadState.RequirePassword
+                }
             } ?: run {
                 _loadState.value = LoadState.Failed
             }
@@ -103,14 +109,19 @@ class RecoveryLocalViewModel(
     }
 
     fun confirmPassword() = viewModelScope.launch {
-        _passwordError.value = false
-        try {
-            // TODO: decrypt bin file to json
-            _loadState.value = LoadState.Loading
-        } catch (e: Throwable) {
-            _loadState.value = LoadState.RequirePassword
+        if (settingServices.backupPassword.firstOrNull() == password.value) {
+            _loadState.value = LoadState.Success
+        } else {
             _passwordError.value = true
         }
+        // _passwordError.value = false
+        // try {
+        //     // TODO: decrypt bin file to json
+        //     _loadState.value = LoadState.Loading
+        // } catch (e: Throwable) {
+        //     _loadState.value = LoadState.RequirePassword
+        //     _passwordError.value = true
+        // }
     }
 
     fun restore() = viewModelScope.launch {

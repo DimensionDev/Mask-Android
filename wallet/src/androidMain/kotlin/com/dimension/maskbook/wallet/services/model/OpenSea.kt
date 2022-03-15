@@ -25,7 +25,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class OpenSeaAssetModel(
-    val assets: List<AssetElement>? = null
+    val assets: List<AssetElement>? = null,
+    val next: String? = null,
+    val previous: String? = null
 )
 
 @Serializable

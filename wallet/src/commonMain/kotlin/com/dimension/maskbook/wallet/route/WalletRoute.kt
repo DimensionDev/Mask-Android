@@ -110,7 +110,7 @@ expect object WalletRoute {
     }
 
     object SendTokenScene {
-        operator fun invoke(tokenAddress: String?): String
+        operator fun invoke(tradableId: String?): String
     }
 
     object UnlockWalletDialog {
@@ -150,8 +150,6 @@ expect object WalletRoute {
                 object RemoteBackupRecovery_RecoveryLocal {
                     operator fun invoke(uri: String): String
                 }
-
-                const val LocalBackup_PickFile: String
             }
 
             const val IdentityPersona: String

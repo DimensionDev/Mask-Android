@@ -42,16 +42,17 @@ data class DbCollectible(
     @Embedded(prefix = "creator_")
     val creator: DbCollectibleCreator,
     @Embedded(prefix = "collection_")
-    val collection: DbCollectibleCollection,
+    val collection: DbCollection,
     @Embedded(prefix = "contract_")
     val contract: DbCollectibleContract,
     @Embedded(prefix = "url_")
     val url: DbCollectibleUrl,
 )
 
-data class DbCollectibleCollection(
+data class DbCollection(
     val imageURL: String? = null,
     val name: String? = null,
+    val slug: String,
 )
 
 data class DbCollectibleCreator(
