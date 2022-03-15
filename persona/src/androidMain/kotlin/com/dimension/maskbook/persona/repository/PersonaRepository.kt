@@ -143,7 +143,7 @@ internal class PersonaRepository(
                 }?.let {
                     SocialProfile.parse(it)
                 }
-                if (profile != null) {
+                if (profile != null && !(socials.firstOrNull() ?: emptyList()).any { it.name == profile.userId && it.network == profile.network }) {
                     withContext(Dispatchers.Main) {
                         onDone.invoke(ConnectAccountData(personaId, profile))
                     }
