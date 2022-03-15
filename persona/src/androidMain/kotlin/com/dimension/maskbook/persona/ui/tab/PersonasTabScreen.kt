@@ -23,6 +23,7 @@ package com.dimension.maskbook.persona.ui.tab
 import android.net.Uri
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
+import androidx.navigation.navOptions
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.ui.LocalRootNavController
@@ -58,33 +59,21 @@ class PersonasTabScreen : TabScreen {
                 rootNavController.navigate(PersonaRoute.PersonaMenu)
             },
             onAddSocialClick = { persona, network ->
-                val platform = when (network) {
-                    Network.Twitter -> PlatformType.Twitter
-                    Network.Facebook -> PlatformType.Facebook
-                    else -> null // TODO support other network
-                }
-                if (platform == null) {
-                    rootNavController.navigate(PersonaRoute.SelectPlatform(persona.id))
-                } else {
+                network?.toPlatform()?.let {
                     connectSocial(
                         controller = rootNavController,
                         personaId = persona.id,
-                        platform = platform,
+                        platform = it,
                         repository = repository
                     )
-                }
+                } ?: rootNavController.navigate(PersonaRoute.SelectPlatform(persona.id))
             },
             onRemoveSocialClick = { persona, social ->
-                val platform = when (social.network) {
-                    Network.Twitter -> PlatformType.Twitter
-                    Network.Facebook -> PlatformType.Facebook
-                    else -> null // TODO support other network
-                }
-                if (platform != null) {
+                social.network.toPlatform()?.let {
                     rootNavController.navigate(
                         PersonaRoute.DisconnectSocial(
                             personaId = persona.id,
-                            platform = platform.name,
+                            platform = it.name,
                             socialId = social.id,
                             personaName = persona.name,
                             socialName = social.name,
@@ -92,6 +81,26 @@ class PersonasTabScreen : TabScreen {
                     )
                 }
             },
+            onSocialItemClick = { _, social ->
+                social.network.toPlatform()?.let {
+                    repository.setPlatform(it)
+                    rootNavController.navigate(
+                        Uri.parse(Deeplinks.Extension.Extension),
+                        navOptions {
+                            launchSingleTop = true
+                            popUpTo(CommonRoute.Main.Home.path) {
+                                inclusive = true
+                            }
+                        }
+                    )
+                }
+            }
         )
     }
+}
+
+private fun Network.toPlatform() = when (this) {
+    Network.Twitter -> PlatformType.Twitter
+    Network.Facebook -> PlatformType.Facebook
+    else -> null // TODO support other network
 }
