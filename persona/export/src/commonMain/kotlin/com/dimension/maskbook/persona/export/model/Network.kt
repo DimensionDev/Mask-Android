@@ -20,13 +20,18 @@
  */
 package com.dimension.maskbook.persona.export.model
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 enum class Network(val value: String) {
+    @SerialName("twitter.com")
     Twitter("twitter.com"),
+    @SerialName("facebook.com")
     Facebook("facebook.com"),
+    @SerialName("instagram.com")
     Instagram("instagram.com"),
+    @SerialName("minds.com")
     Minds("minds.com");
 
     companion object {
