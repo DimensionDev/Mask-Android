@@ -231,7 +231,7 @@ private inline fun <reified T> ExtensionMessage.decodeOptions(): T? {
     return params?.decodeJson<T>()
 }
 
-private inline fun <reified T> ExtensionMessage.responseSuccess(result: T): Boolean {
+private inline fun <reified T> ExtensionMessage.responseSuccess(result: T?): Boolean {
     responseRaw(
         SerializableExtensionResponseMessage(
             messageId = id.toString(),
@@ -246,5 +246,5 @@ private inline fun <reified T> ExtensionMessage.responseSuccess(result: T): Bool
 data class SerializableExtensionResponseMessage<T>(
     val messageId: String,
     val jsonrpc: String,
-    val result: T
+    val result: T?
 )
