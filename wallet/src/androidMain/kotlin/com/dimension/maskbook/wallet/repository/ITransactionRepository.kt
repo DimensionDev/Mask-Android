@@ -81,7 +81,11 @@ class TransactionRepository(
     }
 
     private suspend fun getTransactionByWalletAndChainType(walletData: WalletData, chainType: ChainType): List<TransactionData> {
-        val chainId = chainType.dbank
+        val chainId = try {
+            chainType.dbank
+        } catch (ignored: Throwable) {
+            return emptyList()
+        }
         val result =
             walletServices.debankServices.history(chainId, walletData.address.lowercase())
         return result.data?.historyList?.mapNotNull {
