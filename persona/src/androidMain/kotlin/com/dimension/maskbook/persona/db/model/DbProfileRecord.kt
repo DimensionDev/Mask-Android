@@ -30,7 +30,7 @@ import kotlinx.serialization.Serializable
 data class DbProfileRecord(
     @PrimaryKey val identifier: String,
     val nickname: String? = null,
-    val network: Network? = null,
+    var network: Network? = null,
     var createdAt: Long = 0,
     var updatedAt: Long = 0,
     val avatar: String? = null,

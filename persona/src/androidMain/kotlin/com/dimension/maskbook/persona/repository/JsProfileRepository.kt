@@ -28,6 +28,7 @@ import com.dimension.maskbook.persona.db.sql.asSqlQuery
 import com.dimension.maskbook.persona.db.sql.buildQueryProfileSql
 import com.dimension.maskbook.persona.db.sql.buildQueryProfilesSql
 import com.dimension.maskbook.persona.export.model.LinkedProfileDetailsState
+import com.dimension.maskbook.persona.export.model.Network
 import com.dimension.maskbook.persona.model.options.AttachProfileOptions
 import com.dimension.maskbook.persona.model.options.CreateProfileOptions
 import com.dimension.maskbook.persona.model.options.DeleteProfileOptions
@@ -41,7 +42,7 @@ class JsProfileRepository(database: PersonaDatabase) {
     private val profileDao = database.profileDao()
     private val linkedProfileDao = database.linkedProfileDao()
 
-    suspend fun createProfile(options: CreateProfileOptions): DbProfileRecord? {
+    suspend fun createProfile(options: CreateProfileOptions): DbProfileRecord {
         val newProfile = options.profile
         newProfile.createdAt = System.currentTimeMillis()
         newProfile.updatedAt = System.currentTimeMillis()
@@ -70,18 +71,16 @@ class JsProfileRepository(database: PersonaDatabase) {
     suspend fun updateProfile(options: UpdateProfileOptions): DbProfileRecord? {
         val oldProfile = profileDao.find(options.profile.identifier)
         val newProfile = options.profile
-
-        if (oldProfile == null) {
-            return if (options.options.createWhenNotExist) {
-                newProfile.createdAt = System.currentTimeMillis()
-                newProfile.updatedAt = System.currentTimeMillis()
-                profileDao.addWithResult(newProfile)
-            } else null
+        if (oldProfile != null) {
+            return oldProfile
         }
 
-        newProfile.createdAt = oldProfile.createdAt
-        newProfile.updatedAt = System.currentTimeMillis()
-        return profileDao.addWithResult(newProfile)
+        if (options.options.createWhenNotExist) {
+            newProfile.network = Network.withProfileIdentifier(newProfile.identifier)
+            return profileDao.addWithResult(newProfile)
+        }
+
+        return null
     }
 
     suspend fun deleteProfile(options: DeleteProfileOptions) {
