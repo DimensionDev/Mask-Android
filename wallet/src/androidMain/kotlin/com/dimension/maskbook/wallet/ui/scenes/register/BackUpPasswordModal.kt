@@ -20,7 +20,6 @@
  */
 package com.dimension.maskbook.wallet.ui.scenes.persona
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -44,7 +43,6 @@ import com.dimension.maskbook.wallet.R
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun BackUpPasswordModal(
-    biometricEnabled: Boolean,
     password: String,
     onPasswordChanged: (String) -> Unit,
     passwordValid: Boolean,
@@ -55,40 +53,35 @@ fun BackUpPasswordModal(
             modifier = Modifier
                 .animateContentSize(),
         ) {
-            // TODO Biometrics replace UI
             Text(
-                text = if (biometricEnabled) "Unlock with biometrics" else stringResource(R.string.scene_set_backup_password_backup_password),
+                text = stringResource(R.string.scene_set_backup_password_backup_password),
                 style = MaterialTheme.typography.h6,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
             Spacer(modifier = Modifier.height(8.dp))
-            AnimatedVisibility(visible = !biometricEnabled) {
-                Column {
-                    MaskPasswordInputField(
-                        value = password,
-                        onValueChange = onPasswordChanged,
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = if (password.isNotEmpty() && !passwordValid) {
-                            stringResource(R.string.scene_change_password_incorrect_password)
-                        } else "",
-                        color = Color.Red
-                    )
-                }
+            Column {
+                MaskPasswordInputField(
+                    value = password,
+                    onValueChange = onPasswordChanged,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = if (password.isNotEmpty() && !passwordValid) {
+                        stringResource(R.string.scene_change_password_incorrect_password)
+                    } else "",
+                    color = Color.Red
+                )
             }
             Spacer(modifier = Modifier.height(16.dp))
             Row {
                 PrimaryButton(
                     onClick = onConfirm,
                     modifier = Modifier.weight(1f),
-                    enabled = biometricEnabled || passwordValid,
+                    enabled = passwordValid,
                 ) {
                     Text(
-                        text = if (biometricEnabled) stringResource(R.string.scene_wallet_unlock_button) else stringResource(
-                            R.string.common_controls_next
-                        )
+                        text = stringResource(R.string.common_controls_next)
                     )
                 }
             }

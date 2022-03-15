@@ -890,40 +890,21 @@ fun BackUpPassword(
     @Path("target") target: String,
 ) {
     val viewModel = getViewModel<BackUpPasswordViewModel>()
-    val biometricEnable by viewModel.biometricEnabled.observeAsState(initial = false)
     val password by viewModel.password.observeAsState(initial = "")
     val passwordValid by viewModel.passwordValid.observeAsState(initial = false)
-    val context = LocalContext.current
     BackUpPasswordModal(
-        biometricEnabled = biometricEnable,
         password = password,
         onPasswordChanged = { viewModel.setPassword(it) },
         passwordValid = passwordValid,
         onConfirm = {
-            if (biometricEnable) {
-                viewModel.authenticate(
-                    context = context,
-                    onSuccess = {
-                        navController.navigate(
-                            target,
-                            navOptions {
-                                popUpTo(WalletRoute.BackUpPassword.path) {
-                                    inclusive = true
-                                }
-                            }
-                        )
+            navController.navigate(
+                target,
+                navOptions {
+                    popUpTo(WalletRoute.BackUpPassword.path) {
+                        inclusive = true
                     }
-                )
-            } else {
-                navController.navigate(
-                    target,
-                    navOptions {
-                        popUpTo(WalletRoute.BackUpPassword.path) {
-                            inclusive = true
-                        }
-                    }
-                )
-            }
+                }
+            )
         }
     )
 }
