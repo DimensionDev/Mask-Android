@@ -92,8 +92,8 @@ import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.repository.WCWallet
 import com.dimension.maskbook.wallet.route.WalletRoute
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.supportedChainType
-import com.dimension.maskbook.wallet.viewmodel.wallets.WalletConnectResult
-import com.dimension.maskbook.wallet.viewmodel.wallets.WalletConnectViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.walletconnect.WalletConnectResult
+import com.dimension.maskbook.wallet.viewmodel.wallets.walletconnect.WalletConnectViewModel
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
@@ -231,7 +231,7 @@ fun WalletConnectUnsupportedNetwork(
         icon = {
             Image(painterResource(R.drawable.ic_property_1_failed), contentDescription = null)
         },
-        text = {
+        title = {
             Text(stringResource(R.string.scene_wallet_connect_network_not_support, network))
         },
         buttons = {
