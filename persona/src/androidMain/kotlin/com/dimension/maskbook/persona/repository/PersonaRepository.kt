@@ -237,34 +237,19 @@ internal class PersonaRepository(
 
     override fun updatePersona(id: String, value: String) {
         scope.launch {
-            // jsMethod.updatePersonaInfo(id, value)
+            jsMethod.updatePersonaInfo(id, value)
             // refreshPersona()
         }
     }
 
-    override fun connectTwitter(personaId: String, userName: String) {
+    override fun connectProfile(personaId: String, userName: String) {
         scope.launch {
             jsMethod.connectProfile(Network.Twitter, personaId, userName)
             // refreshPersona()
         }
     }
 
-    override fun connectFacebook(personaId: String, userName: String) {
-        scope.launch {
-            jsMethod.connectProfile(Network.Facebook, personaId, userName)
-            // refreshPersona()
-        }
-    }
-
-    override fun disconnectTwitter(personaId: String, socialId: String) {
-        scope.launch {
-            jsMethod.disconnectProfile(socialId)
-            // refreshSocial()
-            // refreshPersona()
-        }
-    }
-
-    override fun disconnectFacebook(personaId: String, socialId: String) {
+    override fun disconnectProfile(personaId: String, socialId: String) {
         scope.launch {
             jsMethod.disconnectProfile(socialId)
             // refreshSocial()

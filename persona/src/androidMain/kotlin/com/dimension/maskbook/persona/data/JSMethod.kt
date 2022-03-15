@@ -78,18 +78,18 @@ internal class JSMethod(
     //     ) ?: emptyList()
     // }
 
-    // suspend fun updatePersonaInfo(
-    //     identifier: String,
-    //     nickname: String
-    // ) {
-    //     extensionServices.execute<Unit>(
-    //         "persona_updatePersonaInfo",
-    //         "identifier" to identifier,
-    //         "data" to mapOf(
-    //             "nickname" to nickname
-    //         )
-    //     )
-    // }
+    suspend fun updatePersonaInfo(
+        identifier: String,
+        nickname: String
+    ) {
+        extensionServices.execute<Unit>(
+            "persona_updatePersonaInfo",
+            "identifier" to identifier,
+            "data" to mapOf(
+                "nickname" to nickname
+            )
+        )
+    }
 
     // suspend fun removePersona(
     //     identifier: String

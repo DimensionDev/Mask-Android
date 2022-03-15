@@ -26,10 +26,7 @@ import com.dimension.maskbook.persona.repository.IPersonaRepository
 class DisconnectSocialViewModel(
     private val repository: IPersonaRepository,
 ) : ViewModel() {
-    fun disconnectTwitter(personaId: String, socialId: String) {
-        repository.disconnectTwitter(personaId, socialId)
-    }
-    fun disconnectFacebook(personaId: String, socialId: String) {
-        repository.disconnectFacebook(personaId, socialId)
+    fun disconnectProfile(personaId: String, socialId: String) {
+        repository.disconnectProfile(personaId, socialId)
     }
 }

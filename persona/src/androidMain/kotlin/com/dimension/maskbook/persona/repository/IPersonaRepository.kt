@@ -46,10 +46,8 @@ interface IPersonaRepository {
     // fun generateNewMnemonic(): List<String>
     fun logout()
     fun updatePersona(id: String, value: String)
-    fun connectTwitter(personaId: String, userName: String)
-    fun connectFacebook(personaId: String, userName: String)
-    fun disconnectTwitter(personaId: String, socialId: String)
-    fun disconnectFacebook(personaId: String, socialId: String)
+    fun connectProfile(personaId: String, userName: String)
+    fun disconnectProfile(personaId: String, socialId: String)
     suspend fun createPersonaFromMnemonic(value: List<String>, name: String)
     fun createPersonaFromPrivateKey(value: String)
     fun updateCurrentPersona(value: String)
