@@ -62,4 +62,8 @@ internal class ExtensionServicesImpl(
     override fun sendJSEventResponse(response: ExtensionResponseMessage) {
         messageChannel.sendResponseMessage(response)
     }
+
+    override fun sendJSEventResponseRaw(responseRaw: String) {
+        messageChannel.sendResponseMessageRaw(responseRaw)
+    }
 }

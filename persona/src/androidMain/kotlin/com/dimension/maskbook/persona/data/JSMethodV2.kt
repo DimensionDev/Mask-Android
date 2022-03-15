@@ -22,10 +22,10 @@ package com.dimension.maskbook.persona.data
 
 import android.util.Log
 import com.dimension.maskbook.common.ext.decodeJson
+import com.dimension.maskbook.common.ext.encodeJson
 import com.dimension.maskbook.common.ext.execute
 import com.dimension.maskbook.extension.export.ExtensionServices
 import com.dimension.maskbook.extension.export.model.ExtensionMessage
-import com.dimension.maskbook.extension.export.model.ExtensionResponseMessage
 import com.dimension.maskbook.persona.db.migrator.IndexedDBDataMigrator
 import com.dimension.maskbook.persona.db.migrator.model.IndexedDBAllRecord
 import com.dimension.maskbook.persona.model.options.AttachProfileOptions
@@ -56,6 +56,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
 
 class JSMethodV2(
     private val scope: CoroutineScope,
@@ -149,11 +150,11 @@ class JSMethodV2(
                 val options = message.decodeOptions<DeleteProfileOptions>() ?: return true
                 return message.responseSuccess(profileRepository.deleteProfile(options))
             }
-            "attachProfile" -> {
+            "attach_profile" -> {
                 val options = message.decodeOptions<AttachProfileOptions>() ?: return true
                 return message.responseSuccess(profileRepository.attachProfile(options))
             }
-            "detachProfile" -> {
+            "detach_profile" -> {
                 val options = message.decodeOptions<DetachProfileOptions>() ?: return true
                 return message.responseSuccess(profileRepository.detachProfile(options))
             }
@@ -230,14 +231,20 @@ private inline fun <reified T> ExtensionMessage.decodeOptions(): T? {
     return params?.decodeJson<T>()
 }
 
-private fun <T> ExtensionMessage.responseSuccess(result: T): Boolean {
-    response(
-        ExtensionResponseMessage.success(
-            messageId = id,
+private inline fun <reified T> ExtensionMessage.responseSuccess(result: T): Boolean {
+    responseRaw(
+        SerializableExtensionResponseMessage(
+            messageId = id.toString(),
             jsonrpc = "2.0",
-            payloadId = "",
             result = result,
-        )
+        ).encodeJson()
     )
     return true
 }
+
+@Serializable
+data class SerializableExtensionResponseMessage<T>(
+    val messageId: String,
+    val jsonrpc: String,
+    val result: T
+)

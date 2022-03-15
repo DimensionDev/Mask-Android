@@ -24,9 +24,14 @@ data class ExtensionMessage(
     val id: Any,
     val method: String,
     val params: String?,
-    private val onResponse: (ExtensionResponseMessage) -> Unit
+    private val onResponse: (ExtensionResponseMessage) -> Unit = {},
+    private val onResponseRaw: (String) -> Unit = {},
 ) {
     fun response(response: ExtensionResponseMessage) {
         onResponse.invoke(response)
+    }
+
+    fun responseRaw(jsonData: String) {
+        onResponseRaw.invoke(jsonData)
     }
 }

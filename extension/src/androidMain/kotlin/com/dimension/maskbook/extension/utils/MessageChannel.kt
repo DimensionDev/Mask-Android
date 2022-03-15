@@ -59,6 +59,10 @@ internal class MessageChannel(
         controller.sendMessage(JSONObject(message.toMap()))
     }
 
+    fun sendResponseMessageRaw(dataRaw: String) {
+        controller.sendMessage(JSONObject(dataRaw))
+    }
+
     suspend fun executeMessage(
         method: String,
         params: Map<String, Any> = emptyMap(),
@@ -116,9 +120,9 @@ internal class MessageChannel(
                             id = messageId,
                             method = method,
                             params = params,
-                        ) {
-                            sendResponseMessage(it)
-                        }
+                            onResponse = { sendResponseMessage(it) },
+                            onResponseRaw = { sendResponseMessageRaw(it) },
+                        )
                     }
                 }
                 _extensionMessage.trySend(
@@ -126,9 +130,9 @@ internal class MessageChannel(
                         id = messageId,
                         method = method,
                         params = params,
-                    ) {
-                        sendResponseMessage(it)
-                    }
+                        onResponse = { sendResponseMessage(it) },
+                        onResponseRaw = { sendResponseMessageRaw(it) },
+                    )
                 ).onFailure {
                     Log.w("MessageChannel", it)
                 }
