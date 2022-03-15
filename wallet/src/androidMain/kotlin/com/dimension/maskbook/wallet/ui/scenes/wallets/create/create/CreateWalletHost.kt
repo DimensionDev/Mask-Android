@@ -21,9 +21,6 @@
 package com.dimension.maskbook.wallet.ui.scenes.wallets.create.create
 
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -38,20 +35,20 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.dialog
 import com.dimension.maskbook.common.ext.observeAsState
-import com.dimension.maskbook.common.navHostAnimationDurationMillis
 import com.dimension.maskbook.common.ui.widget.MaskDialog
+import com.dimension.maskbook.common.ui.widget.RouteHost
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.repository.WalletCreateOrImportResult
 import com.dimension.maskbook.wallet.ui.scenes.register.createidentity.VerifyIdentityScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.common.Dialog
 import com.dimension.maskbook.wallet.viewmodel.wallets.create.CreateWalletRecoveryKeyViewModel
-import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import org.koin.androidx.compose.getViewModel
 
-@OptIn(ExperimentalAnimationApi::class)
+@OptIn(ExperimentalMaterialNavigationApi::class, ExperimentalAnimationApi::class)
 @Composable
 fun CreateWalletHost(
     wallet: String,
@@ -62,22 +59,9 @@ fun CreateWalletHost(
     val viewModel: CreateWalletRecoveryKeyViewModel = getViewModel()
     viewModel.setWallet(wallet)
     val result by viewModel.result.observeAsState(initial = null)
-    AnimatedNavHost(
+    RouteHost(
         navController = navController,
         startDestination = "Pharse",
-        route = "CreateWalletHost",
-        enterTransition = {
-            slideInHorizontally(initialOffsetX = { it }, animationSpec = tween(navHostAnimationDurationMillis))
-        },
-        exitTransition = {
-            slideOutHorizontally(targetOffsetX = { -it }, animationSpec = tween(navHostAnimationDurationMillis))
-        },
-        popEnterTransition = {
-            slideInHorizontally(initialOffsetX = { -it }, animationSpec = tween(navHostAnimationDurationMillis))
-        },
-        popExitTransition = {
-            slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween(navHostAnimationDurationMillis))
-        },
     ) {
         composable("Pharse") {
             val words by viewModel.words.observeAsState(initial = emptyList())

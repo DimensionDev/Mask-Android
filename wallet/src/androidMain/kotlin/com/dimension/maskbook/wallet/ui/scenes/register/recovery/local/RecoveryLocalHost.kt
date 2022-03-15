@@ -22,9 +22,6 @@ package com.dimension.maskbook.wallet.ui.scenes.register.recovery.local
 
 import android.net.Uri
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -38,7 +35,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -53,8 +49,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.dialog
 import androidx.navigation.plusAssign
 import com.dimension.maskbook.common.ext.observeAsState
-import com.dimension.maskbook.common.navHostAnimationDurationMillis
-import com.dimension.maskbook.common.ui.theme.modalScrimColor
 import com.dimension.maskbook.common.ui.widget.BackMetaDisplay
 import com.dimension.maskbook.common.ui.widget.MaskDialog
 import com.dimension.maskbook.common.ui.widget.MaskModal
@@ -62,6 +56,7 @@ import com.dimension.maskbook.common.ui.widget.MaskPasswordInputField
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskScene
 import com.dimension.maskbook.common.ui.widget.MaskTopAppBar
+import com.dimension.maskbook.common.ui.widget.RouteHost
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.common.ui.widget.button.MaskBackButton
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
@@ -69,11 +64,9 @@ import com.dimension.maskbook.common.ui.widget.button.SecondaryButton
 import com.dimension.maskbook.common.ui.widget.rememberMaskBottomSheetNavigator
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.viewmodel.recovery.RecoveryLocalViewModel
-import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
-import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 import com.google.accompanist.navigation.material.bottomSheet
 import kotlinx.coroutines.flow.distinctUntilChanged
 import org.koin.androidx.compose.getViewModel
@@ -90,8 +83,7 @@ fun RecoveryLocalHost(
     uri: Uri
 ) {
     val bottomSheetNavigator = rememberMaskBottomSheetNavigator()
-    val navController = rememberAnimatedNavController()
-    navController.navigatorProvider += bottomSheetNavigator
+    val navController = rememberAnimatedNavController(bottomSheetNavigator)
     val viewModel: RecoveryLocalViewModel = getViewModel {
         parametersOf(uri)
     }
@@ -131,135 +123,120 @@ fun RecoveryLocalHost(
             onBack.invoke()
         }
     }
-    ModalBottomSheetLayout(
-        bottomSheetNavigator,
-        sheetBackgroundColor = MaterialTheme.colors.background,
-        scrimColor = MaterialTheme.colors.modalScrimColor,
+    RouteHost(
+        bottomSheetNavigator = bottomSheetNavigator,
+        navController = navController,
+        startDestination = "Loading",
     ) {
-        AnimatedNavHost(
-            navController = navController,
-            startDestination = "Loading",
-            route = "RecoveryLocal",
-            enterTransition = {
-                slideInHorizontally(initialOffsetX = { it }, animationSpec = tween(navHostAnimationDurationMillis))
-            },
-            exitTransition = {
-                slideOutHorizontally(targetOffsetX = { -it }, animationSpec = tween(navHostAnimationDurationMillis))
-            },
-            popEnterTransition = {
-                slideInHorizontally(initialOffsetX = { -it }, animationSpec = tween(navHostAnimationDurationMillis))
-            },
-            popExitTransition = {
-                slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween(navHostAnimationDurationMillis))
-            },
-        ) {
-            bottomSheet("Password") {
-                val password by viewModel.password.observeAsState(initial = "")
-                val error by viewModel.passwordError.observeAsState(initial = false)
-                MaskModal {
-                    Column {
-                        Text(text = stringResource(R.string.scene_set_backup_password_backup_password))
+        bottomSheet("Password") {
+            val password by viewModel.password.observeAsState(initial = "")
+            val error by viewModel.passwordError.observeAsState(initial = false)
+            MaskModal {
+                Column {
+                    Text(text = stringResource(R.string.scene_set_backup_password_backup_password))
+                    Spacer(modifier = Modifier.height(8.dp))
+                    MaskPasswordInputField(
+                        modifier = Modifier.fillMaxWidth(),
+                        value = password,
+                        onValueChange = {
+                            viewModel.setPassword(it)
+                        },
+                    )
+                    if (error) {
                         Spacer(modifier = Modifier.height(8.dp))
-                        MaskPasswordInputField(
-                            modifier = Modifier.fillMaxWidth(),
-                            value = password,
-                            onValueChange = {
-                                viewModel.setPassword(it)
-                            },
+                        Text(
+                            text = stringResource(R.string.scene_restore_tip_incorrect_backup_password),
+                            color = Color.Red
                         )
-                        if (error) {
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(text = stringResource(R.string.scene_restore_tip_incorrect_backup_password), color = Color.Red)
-                        }
-                        Spacer(modifier = Modifier.height(16.dp))
-                        PrimaryButton(
-                            modifier = Modifier.fillMaxWidth(),
-                            onClick = { viewModel.confirmPassword() },
-                        ) {
-                            Text(text = stringResource(R.string.common_controls_next))
-                        }
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                    PrimaryButton(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = { viewModel.confirmPassword() },
+                    ) {
+                        Text(text = stringResource(R.string.common_controls_next))
                     }
                 }
             }
-            composable("Loading") {
-                ImportingScene(
-                    onBack = {
-                        onBack.invoke()
+        }
+        composable("Loading") {
+            ImportingScene(
+                onBack = {
+                    onBack.invoke()
+                }
+            )
+        }
+        dialog("Failed") {
+            MaskDialog(
+                onDismissRequest = {
+                },
+                title = {
+                    Text(text = stringResource(R.string.scene_restore_titles_unsupport_restore_data))
+                },
+                text = {
+                    Text(text = stringResource(R.string.scene_restore_check_unsupport_data))
+                },
+                buttons = {
+                    PrimaryButton(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = { onBack.invoke() },
+                    ) {
+                        Text(text = stringResource(R.string.common_controls_ok))
                     }
-                )
-            }
-            dialog("Failed") {
-                MaskDialog(
-                    onDismissRequest = {
-                    },
-                    title = {
-                        Text(text = stringResource(R.string.scene_restore_titles_unsupport_restore_data))
-                    },
-                    text = {
-                        Text(text = stringResource(R.string.scene_restore_check_unsupport_data))
-                    },
-                    buttons = {
-                        PrimaryButton(
-                            modifier = Modifier.fillMaxWidth(),
-                            onClick = { onBack.invoke() },
+                },
+                icon = {
+                    Image(
+                        painterResource(id = R.drawable.ic_property_1_failed),
+                        contentDescription = null
+                    )
+                }
+            )
+        }
+        composable("Success") {
+            ImportSuccessScene(
+                viewModel = viewModel,
+                onBack = {
+                    onBack.invoke()
+                },
+                onConfirm = {
+                    navController.navigate("Notification")
+                }
+            )
+        }
+        dialog("Notification") {
+            MaskDialog(
+                onDismissRequest = { },
+                icon = {
+                    Image(
+                        painterResource(id = R.drawable.ic_property_1_note),
+                        contentDescription = null
+                    )
+                },
+                text = {
+                    Text(text = stringResource(R.string.scene_restore_tip_remote_restore_succeed))
+                },
+                buttons = {
+                    Row {
+                        SecondaryButton(
+                            modifier = Modifier.weight(1f),
+                            onClick = {
+                                navController.popBackStack()
+                            }
                         ) {
-                            Text(text = stringResource(R.string.common_controls_ok))
+                            Text(text = stringResource(R.string.common_controls_cancel))
                         }
-                    },
-                    icon = {
-                        Image(
-                            painterResource(id = R.drawable.ic_property_1_failed),
-                            contentDescription = null
-                        )
-                    }
-                )
-            }
-            composable("Success") {
-                ImportSuccessScene(
-                    viewModel = viewModel,
-                    onBack = {
-                        onBack.invoke()
-                    },
-                    onConfirm = {
-                        navController.navigate("Notification")
-                    }
-                )
-            }
-            dialog("Notification") {
-                MaskDialog(
-                    onDismissRequest = { },
-                    icon = {
-                        Image(
-                            painterResource(id = R.drawable.ic_property_1_note),
-                            contentDescription = null
-                        )
-                    },
-                    text = {
-                        Text(text = stringResource(R.string.scene_restore_tip_remote_restore_succeed))
-                    },
-                    buttons = {
-                        Row {
-                            SecondaryButton(
-                                modifier = Modifier.weight(1f),
-                                onClick = {
-                                    navController.popBackStack()
-                                }
-                            ) {
-                                Text(text = stringResource(R.string.common_controls_cancel))
-                            }
-                            Spacer(modifier = Modifier.width(20.dp))
-                            PrimaryButton(
-                                modifier = Modifier.weight(1f),
-                                onClick = {
-                                    onConfirm.invoke()
-                                },
-                            ) {
-                                Text(text = stringResource(R.string.common_controls_confirm))
-                            }
+                        Spacer(modifier = Modifier.width(20.dp))
+                        PrimaryButton(
+                            modifier = Modifier.weight(1f),
+                            onClick = {
+                                onConfirm.invoke()
+                            },
+                        ) {
+                            Text(text = stringResource(R.string.common_controls_confirm))
                         }
                     }
-                )
-            }
+                }
+            )
         }
     }
 }

@@ -21,9 +21,6 @@
 package com.dimension.maskbook.wallet.ui.scenes.register.createidentity
 
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Text
@@ -34,19 +31,19 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.dialog
 import com.dimension.maskbook.common.ext.observeAsState
-import com.dimension.maskbook.common.navHostAnimationDurationMillis
 import com.dimension.maskbook.common.ui.widget.MaskDialog
+import com.dimension.maskbook.common.ui.widget.RouteHost
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ui.scenes.register.BackupIdentityScene
 import com.dimension.maskbook.wallet.viewmodel.register.CreateIdentityViewModel
-import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 
-@OptIn(ExperimentalAnimationApi::class)
+@OptIn(ExperimentalMaterialNavigationApi::class, ExperimentalAnimationApi::class)
 @Composable
 fun CreateIdentityHost(
     personaName: String,
@@ -57,22 +54,9 @@ fun CreateIdentityHost(
     val viewModel: CreateIdentityViewModel = getViewModel {
         parametersOf(personaName)
     }
-    AnimatedNavHost(
+    RouteHost(
         navController = navController,
         startDestination = "Backup",
-        route = "CreateIdentity",
-        enterTransition = {
-            slideInHorizontally(initialOffsetX = { it }, animationSpec = tween(navHostAnimationDurationMillis))
-        },
-        exitTransition = {
-            slideOutHorizontally(targetOffsetX = { -it }, animationSpec = tween(navHostAnimationDurationMillis))
-        },
-        popEnterTransition = {
-            slideInHorizontally(initialOffsetX = { -it }, animationSpec = tween(navHostAnimationDurationMillis))
-        },
-        popExitTransition = {
-            slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween(navHostAnimationDurationMillis))
-        },
     ) {
         composable("Backup") {
             val words by viewModel.words.observeAsState(emptyList())

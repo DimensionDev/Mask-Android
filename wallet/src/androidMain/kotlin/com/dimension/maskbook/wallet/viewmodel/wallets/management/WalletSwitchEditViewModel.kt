@@ -18,6 +18,20 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.common
+package com.dimension.maskbook.wallet.viewmodel.wallets.management
 
-const val IoScopeName = "IoScope"
+import androidx.lifecycle.ViewModel
+import com.dimension.maskbook.wallet.repository.IWalletRepository
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
+
+class WalletSwitchEditViewModel(
+    private val id: String,
+    private val repository: IWalletRepository,
+) : ViewModel() {
+    val wallet by lazy {
+        repository.wallets.map { wallets ->
+            wallets.firstOrNull { it.id == id }
+        }
+    }
+}

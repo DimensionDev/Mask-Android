@@ -21,19 +21,16 @@
 package com.dimension.maskbook.wallet.ui.scenes.wallets.create.import
 
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.dimension.maskbook.common.ext.encodeUrl
-import com.dimension.maskbook.common.navHostAnimationDurationMillis
-import com.google.accompanist.navigation.animation.AnimatedNavHost
+import com.dimension.maskbook.common.ui.widget.RouteHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 
-@OptIn(ExperimentalAnimationApi::class)
+@OptIn(ExperimentalMaterialNavigationApi::class, ExperimentalAnimationApi::class)
 @Composable
 fun ImportWalletHost(
     wallet: String,
@@ -41,22 +38,9 @@ fun ImportWalletHost(
     onBack: () -> Unit,
 ) {
     val navController = rememberAnimatedNavController()
-    AnimatedNavHost(
+    RouteHost(
         navController = navController,
         startDestination = "Import",
-        route = "ImportWalletHost",
-        enterTransition = {
-            slideInHorizontally(initialOffsetX = { it }, animationSpec = tween(navHostAnimationDurationMillis))
-        },
-        exitTransition = {
-            slideOutHorizontally(targetOffsetX = { -it }, animationSpec = tween(navHostAnimationDurationMillis))
-        },
-        popEnterTransition = {
-            slideInHorizontally(initialOffsetX = { -it }, animationSpec = tween(navHostAnimationDurationMillis))
-        },
-        popExitTransition = {
-            slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween(navHostAnimationDurationMillis))
-        },
     ) {
         composable("Import") {
             ImportWalletScene(

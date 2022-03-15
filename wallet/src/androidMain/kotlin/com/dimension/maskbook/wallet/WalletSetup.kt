@@ -116,6 +116,7 @@ import com.dimension.maskbook.wallet.viewmodel.wallets.import.ImportWalletPrivat
 import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletBackupViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletDeleteViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletRenameViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletSwitchEditViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletSwitchViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletTransactionHistoryViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.AddContactViewModel
@@ -353,6 +354,7 @@ private fun Module.provideViewModel() {
     viewModel { CollectiblesViewModel(get(), get()) }
     viewModel { (data: SendTokenConfirmData) -> Web3TransactionConfirmViewModel(data, get(), get(), get(), get(), get(), get()) }
     viewModel { SearchTradableViewModel(get(), get()) }
+    viewModel { (id: String) -> WalletSwitchEditViewModel(id, get()) }
 }
 
 private fun Module.provideServices() {

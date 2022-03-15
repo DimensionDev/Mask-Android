@@ -111,7 +111,7 @@ val supportedChainType = buildList {
 
 @Composable
 fun WalletSwitchSceneModal(
-    selectedWallet: WalletData,
+    selectedWallet: WalletData?,
     wallets: List<WalletData>,
     onWalletSelected: (WalletData) -> Unit,
     selectedChainType: ChainType,

@@ -65,8 +65,8 @@ import com.dimension.maskbook.wallet.ui.widget.TransactionHistoryList
 @Composable
 fun TokenDetailScene(
     onBack: () -> Unit,
-    tokenData: TokenData,
-    walletTokenData: WalletTokenData,
+    tokenData: TokenData?,
+    walletTokenData: WalletTokenData?,
     transactions: Map<DateType, List<TransactionData>>,
     onSpeedUp: (TransactionData) -> Unit,
     onCancel: (TransactionData) -> Unit,
@@ -88,41 +88,43 @@ fun TokenDetailScene(
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Surface(
-                    contentColor = contentColorFor(backgroundColor = Color(0XFF212E59)),
-                    color = Color(0XFF212E59),
-                    shape = MaterialTheme.shapes.medium,
-                    modifier = Modifier.padding(horizontal = 23.dp)
-                ) {
-                    Row(
-                        modifier = Modifier.padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically,
+                if (walletTokenData != null && tokenData != null) {
+                    Surface(
+                        contentColor = contentColorFor(backgroundColor = Color(0XFF212E59)),
+                        color = Color(0XFF212E59),
+                        shape = MaterialTheme.shapes.medium,
+                        modifier = Modifier.padding(horizontal = 23.dp)
                     ) {
-                        if (tokenData.logoURI != null) {
-                            Image(
-                                painter = rememberImagePainter(data = tokenData.logoURI),
-                                contentDescription = null,
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = tokenData.name,
-                            style = MaterialTheme.typography.subtitle2,
-                            modifier = Modifier.weight(1f),
-                            color = Color.White,
-                        )
-                        Column(
-                            horizontalAlignment = Alignment.End,
+                        Row(
+                            modifier = Modifier.padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically,
                         ) {
+                            if (tokenData.logoURI != null) {
+                                Image(
+                                    painter = rememberImagePainter(data = tokenData.logoURI),
+                                    contentDescription = null,
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                text = "${walletTokenData.count.humanizeToken()} ${tokenData.symbol}",
+                                text = tokenData.name,
+                                style = MaterialTheme.typography.subtitle2,
+                                modifier = Modifier.weight(1f),
                                 color = Color.White,
                             )
-                            Text(
-                                text = (walletTokenData.count * tokenData.price).humanizeDollar(),
-                                style = MaterialTheme.typography.h6,
-                                color = Color.White,
-                            )
+                            Column(
+                                horizontalAlignment = Alignment.End,
+                            ) {
+                                Text(
+                                    text = "${walletTokenData.count.humanizeToken()} ${tokenData.symbol}",
+                                    color = Color.White,
+                                )
+                                Text(
+                                    text = (walletTokenData.count * tokenData.price).humanizeDollar(),
+                                    style = MaterialTheme.typography.h6,
+                                    color = Color.White,
+                                )
+                            }
                         }
                     }
                 }

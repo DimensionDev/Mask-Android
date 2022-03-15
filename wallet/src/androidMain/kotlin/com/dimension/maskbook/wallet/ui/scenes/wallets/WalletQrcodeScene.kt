@@ -97,20 +97,25 @@ fun WalletQrcodeScene(
                                 .aspectRatio(1f)
                         ) {
                             val bitmap = remember(address) {
-                                val barcodeEncoder = BarcodeEncoder()
-                                barcodeEncoder.encodeBitmap(
-                                    address,
-                                    BarcodeFormat.QR_CODE,
-                                    400,
-                                    400
+                                if (address.isNotEmpty()) {
+                                    BarcodeEncoder().encodeBitmap(
+                                        address,
+                                        BarcodeFormat.QR_CODE,
+                                        400,
+                                        400
+                                    )
+                                } else {
+                                    null
+                                }
+                            }
+                            if (bitmap != null) {
+                                Image(
+                                    bitmap = bitmap.asImageBitmap(),
+                                    contentDescription = null,
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentScale = ContentScale.FillWidth,
                                 )
                             }
-                            Image(
-                                bitmap = bitmap.asImageBitmap(),
-                                contentDescription = null,
-                                modifier = Modifier.fillMaxSize(),
-                                contentScale = ContentScale.FillWidth,
-                            )
                         }
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
@@ -122,7 +127,10 @@ fun WalletQrcodeScene(
                         Box(
                             modifier = Modifier
                                 .padding(horizontal = 16.dp, vertical = 24.dp)
-                                .background(MaterialTheme.colors.surface, shape = MaterialTheme.shapes.medium)
+                                .background(
+                                    MaterialTheme.colors.surface,
+                                    shape = MaterialTheme.shapes.medium
+                                )
                                 .clip(MaterialTheme.shapes.medium)
                                 .padding(horizontal = 16.dp, vertical = 10.dp)
                                 .clickable {
