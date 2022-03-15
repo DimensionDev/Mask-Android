@@ -34,6 +34,7 @@ import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.repository.IWalletConnectRepository
 import com.dimension.maskbook.wallet.repository.IWalletRepository
 import com.dimension.maskbook.wallet.repository.WCWallet
+import com.dimension.maskbook.wallet.ui.scenes.wallets.management.supportedChainType
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -41,12 +42,18 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
+sealed class WalletConnectResult {
+    data class Success(val switchNetwork: Boolean = false) : WalletConnectResult()
+    data class UnSupportedNetwork(val network: ChainType) : WalletConnectResult()
+    object Failed : WalletConnectResult()
+}
+
 class WalletConnectViewModel(
     private val manager: WalletConnectClientManager,
     private val repository: IWalletConnectRepository,
     private val walletRepository: IWalletRepository,
     private val packageManager: PackageManager,
-    private val onResult: (success: Boolean, needToSwitchNetwork: Boolean) -> Unit,
+    private val onResult: (WalletConnectResult) -> Unit,
 ) : ViewModel() {
     val network =
         walletRepository.dWebData.map { it.chainType }.asStateIn(viewModelScope, ChainType.eth)
@@ -58,21 +65,32 @@ class WalletConnectViewModel(
     fun connect() {
         manager.connect(onResult = { success, responder ->
             viewModelScope.launch {
-                var needToSwitchNetwork = false
                 if (success) {
                     responder?.let {
-                        // save it
-                        val platform = walletRepository.dWebData.firstOrNull()?.coinPlatformType
-                            ?: CoinPlatformType.Ethereum
-                        repository.saveAccounts(responder = responder, platformType = platform)
-                            ?.let {
-                                walletRepository.setCurrentWallet(it)
+                        if (!supportedChainType.contains(it.chainType)) {
+                            // unsupported
+                            manager.disConnect(it.accounts.first())
+                            onResult.invoke(WalletConnectResult.UnSupportedNetwork(it.chainType))
+                        } else {
+                            // save it
+                            val platform = walletRepository.dWebData.firstOrNull()?.coinPlatformType
+                                ?: CoinPlatformType.Ethereum
+                            repository.saveAccounts(responder = responder, platformType = platform)
+                                ?.let {
+                                    walletRepository.setCurrentWallet(it)
+                                }
+                            val needToSwitchNetwork =
+                                walletRepository.currentWallet.firstOrNull()?.walletConnectChainType != network.value
+                            if (needToSwitchNetwork) {
+                                onResult.invoke(WalletConnectResult.Success(switchNetwork = needToSwitchNetwork))
+                            } else {
+                                onResult.invoke(WalletConnectResult.Success())
                             }
-                        needToSwitchNetwork =
-                            walletRepository.currentWallet.firstOrNull()?.walletConnectChainType != network.value
-                    }
+                        }
+                    } ?: onResult.invoke(WalletConnectResult.Failed)
+                } else {
+                    onResult.invoke(WalletConnectResult.Failed)
                 }
-                onResult.invoke(success, needToSwitchNetwork)
             }
         })
     }

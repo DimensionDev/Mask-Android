@@ -104,6 +104,7 @@ import com.dimension.maskbook.wallet.viewmodel.wallets.TouchIdEnableViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.UnlockWalletViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.WalletBalancesViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.WalletConnectManagementViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.WalletConnectResult
 import com.dimension.maskbook.wallet.viewmodel.wallets.WalletConnectViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.WalletManagementModalViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.collectible.CollectibleDetailViewModel
@@ -338,7 +339,7 @@ private fun Module.provideViewModel() {
     }
     viewModel { BiometricViewModel(get(), get()) }
     viewModel { WalletConnectManagementViewModel(get(), get()) }
-    viewModel { (onResult: (success: Boolean, needToSwitchNetwork: Boolean) -> Unit) ->
+    viewModel { (onResult: (WalletConnectResult) -> Unit) ->
         WalletConnectViewModel(
             get(),
             get(),
