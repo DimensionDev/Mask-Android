@@ -34,7 +34,6 @@ import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.common.CommonSetup
 import com.dimension.maskbook.common.navHostAnimationDurationMillis
 import com.dimension.maskbook.common.route
-import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.DeeplinkNavigateArgs
 import com.dimension.maskbook.common.route.Navigator
 import com.dimension.maskbook.common.route.RouteNavigateArgs
@@ -45,6 +44,7 @@ import com.dimension.maskbook.entry.EntrySetup
 import com.dimension.maskbook.entry.repository.EntryRepository
 import com.dimension.maskbook.entry.route.EntryRoute
 import com.dimension.maskbook.extension.ExtensionSetup
+import com.dimension.maskbook.extension.route.ExtensionRoute
 import com.dimension.maskbook.labs.LabsSetup
 import com.dimension.maskbook.persona.PersonaSetup
 import com.dimension.maskbook.persona.export.PersonaServices
@@ -150,7 +150,7 @@ private suspend fun getInitialRoute(): String {
     KoinPlatformTools.defaultContext().get().get<PersonaServices>().ensurePersonaDataLoaded()
     val persona = KoinPlatformTools.defaultContext().get().get<PersonaServices>().currentPersona.firstOrNull()
     return if (persona != null) {
-        CommonRoute.WebContent
+        ExtensionRoute.WebContent(null)
     } else {
         WalletRoute.Register.Init
     }

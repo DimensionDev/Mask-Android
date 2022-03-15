@@ -167,7 +167,7 @@ fun MainHost(
             ) {
                 tabs.elementAt(it).Content {
                     navController.navigate(
-                        Uri.parse(Deeplinks.Extension.Extension),
+                        Uri.parse(Deeplinks.WebContent(null)),
                         navOptions {
                             launchSingleTop = true
                             popUpTo(CommonRoute.Main.Home.path) {

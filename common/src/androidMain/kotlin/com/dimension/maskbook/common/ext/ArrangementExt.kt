@@ -18,26 +18,14 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.persona.ui.scenes.social
+package com.dimension.maskbook.common.ext
 
-import android.net.Uri
-import androidx.navigation.NavController
-import com.dimension.maskbook.common.route.Deeplinks
-import com.dimension.maskbook.persona.export.model.PlatformType
-import com.dimension.maskbook.persona.repository.IPersonaRepository
-import com.dimension.maskbook.persona.route.PersonaRoute
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.ui.unit.Dp
 
-fun connectSocial(
-    controller: NavController,
-    repository: IPersonaRepository,
-    personaId: String,
-    platform: PlatformType,
-) {
-    repository.beginConnectingProcess(
-        personaId = personaId,
-        platformType = platform,
-    ) {
-        controller.navigate(PersonaRoute.ConnectAccount(it.personaId, it.profile.toString()))
-    }
-    controller.navigate(Uri.parse(Deeplinks.WebContent(platform)))
+class SpaceBetweenWithSpace internal constructor(private val space: Dp) : Arrangement.HorizontalOrVertical by Arrangement.SpaceBetween {
+    override val spacing: Dp
+        get() = space
 }
+
+fun Arrangement.spaceBetween(spacing: Dp) = SpaceBetweenWithSpace(spacing)
