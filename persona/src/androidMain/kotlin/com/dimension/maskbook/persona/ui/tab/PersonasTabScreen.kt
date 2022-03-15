@@ -87,7 +87,8 @@ class PersonasTabScreen : TabScreen {
                     rootNavController.navigate(
                         Uri.parse(Deeplinks.Extension.Extension),
                         navOptions {
-                            popUpTo(route) {
+                            launchSingleTop = true
+                            popUpTo(CommonRoute.Main.Home.path) {
                                 inclusive = true
                             }
                         }
