@@ -208,7 +208,7 @@ fun SettingsScene(
                 }
                 SettingsDivider()
                 val email = persona?.email
-                if (email == null) {
+                if (email.isNullOrEmpty()) {
                     SettingsItem(
                         title = stringResource(R.string.scene_backup_backup_verify_field_email),
                         icon = R.drawable.ic_settings_email,
@@ -225,7 +225,7 @@ fun SettingsScene(
                 }
                 SettingsDivider()
                 val phone = persona?.phone
-                if (phone == null) {
+                if (phone.isNullOrEmpty()) {
                     SettingsItem(
                         title = stringResource(R.string.scene_setting_profile_phone_number),
                         icon = R.drawable.ic_settings_phone_number,
