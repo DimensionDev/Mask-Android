@@ -20,7 +20,6 @@
  */
 package com.dimension.maskbook.persona.data
 
-import android.util.Log
 import com.dimension.maskbook.common.ext.decodeJson
 import com.dimension.maskbook.common.ext.encodeJson
 import com.dimension.maskbook.common.ext.execute
@@ -51,7 +50,6 @@ import com.dimension.maskbook.persona.repository.JsPersonaRepository
 import com.dimension.maskbook.persona.repository.JsProfileRepository
 import com.dimension.maskbook.persona.repository.JsRelationRepository
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -86,9 +84,9 @@ class JSMethodV2(
                     subscribeWithProfile(it) ||
                     subscribeWithRelation(it) ||
                     subscribeWithAvatar(it) ||
-                    subscribeWithPost(it)
+                    subscribeWithPost(it) ||
+                    subscribeWithHelper(it)
             }
-            .catch { Log.w("JSMethodV2", it) }
             .launchIn(scope)
     }
 
@@ -221,6 +219,20 @@ class JSMethodV2(
             "updatePost" -> {
                 // message.params -> UpdatePostOptions
                 // return PostRecord[] ???
+            }
+        }
+        return false
+    }
+
+    // Helper
+
+    private fun subscribeWithHelper(message: ExtensionMessage): Boolean {
+        when (message.method) {
+            "notify_visible_detected_profile_changed" -> {
+                val detectedProfileIdentifiers = message.decodeOptions<List<String>>()
+                if (detectedProfileIdentifiers.isNullOrEmpty()) return true
+                preferenceRepository.setLastDetectProfileIdentifier(detectedProfileIdentifiers[0])
+                return true
             }
         }
         return false

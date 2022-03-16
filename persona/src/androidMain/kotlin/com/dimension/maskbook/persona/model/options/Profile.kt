@@ -68,8 +68,13 @@ data class DeleteProfileOptions(
 data class AttachProfileOptions(
     val personaIdentifier: String,
     val profileIdentifier: String,
-    val state: LinkedProfileDetailsState,
-)
+    val state: State,
+) {
+    @Serializable
+    data class State(
+        val connectionConfirmState: LinkedProfileDetailsState,
+    )
+}
 
 @Serializable
 data class DetachProfileOptions(

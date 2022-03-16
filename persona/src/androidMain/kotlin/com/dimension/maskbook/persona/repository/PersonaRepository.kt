@@ -20,9 +20,6 @@
  */
 package com.dimension.maskbook.persona.repository
 
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.common.ext.toSite
@@ -38,28 +35,27 @@ import com.dimension.maskbook.persona.export.model.SocialProfile
 import com.dimension.maskbook.persona.model.ContactData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.time.ExperimentalTime
 
-private val CurrentPersonaKey = stringPreferencesKey("current_persona")
-
 internal class PersonaRepository(
     private val scope: CoroutineScope,
-    private val dataStore: DataStore<Preferences>,
     private val jsMethod: JSMethod,
     private val extensionServices: ExtensionServices,
+    private val preferenceRepository: IPreferenceRepository,
     private val personaRepository: DbPersonaRepository,
     private val profileRepository: DbProfileRepository,
     private val relationRepository: DbRelationRepository,
@@ -69,12 +65,8 @@ internal class PersonaRepository(
 
     private var connectingJob: Job? = null
 
-    private val currentPersonaIdentifier = dataStore.data.map {
-        it[CurrentPersonaKey] ?: ""
-    }
-
     override val persona: Flow<List<PersonaData>> =
-        personaRepository.getListFlow().zip(dataStore.data) { list, data ->
+        personaRepository.getListFlow().zip(preferenceRepository.data) { list, data ->
             list.map { persona ->
                 val id = persona.identifier
                 val emailKey = stringPreferencesKey("${id}_email")
@@ -89,13 +81,16 @@ internal class PersonaRepository(
         }.asStateIn(scope, emptyList())
 
     override val currentPersona: Flow<PersonaData?> =
-        combine(currentPersonaIdentifier, persona) { personaIdentifier, persona ->
+        combine(
+            preferenceRepository.currentPersonaIdentifier,
+            persona,
+        ) { personaIdentifier, persona ->
             persona.find { it.id == personaIdentifier }
         }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override val socials: Flow<List<SocialData>>
-        get() = currentPersonaIdentifier.flatMapLatest { personaIdentifier ->
+        get() = preferenceRepository.currentPersonaIdentifier.flatMapLatest { personaIdentifier ->
             profileRepository.getSocialListFlow(
                 personaIdentifier = personaIdentifier,
             )
@@ -103,17 +98,11 @@ internal class PersonaRepository(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override val contacts: Flow<List<ContactData>>
-        get() = currentPersonaIdentifier.flatMapLatest { personaIdentifier ->
+        get() = preferenceRepository.currentPersonaIdentifier.flatMapLatest { personaIdentifier ->
             relationRepository.getContactListFlow(
                 personaIdentifier = personaIdentifier,
             )
         }
-
-    private val lastDetectProfile: Flow<SocialProfile?> =
-        extensionServices.subscribeJSEvent("notify_visible_detected_profile_changed")
-            .mapNotNull { it.params }
-            .map { SocialProfile.parse(it) }
-            .asStateIn(scope, null)
 
     override suspend fun hasPersona(): Boolean {
         return !personaRepository.isEmpty()
@@ -127,10 +116,16 @@ internal class PersonaRepository(
     ) {
         connectingJob?.cancel()
         extensionServices.setSite(platformType.toSite())
-        connectingJob = scope.launch {
-            val profile = lastDetectProfile.filterNotNull().first()
-            onDone.invoke(ConnectAccountData(personaId, profile))
-        }
+
+        connectingJob = preferenceRepository.lastDetectProfileIdentifier
+            .mapNotNull { SocialProfile.parse(it) }
+            .flowOn(Dispatchers.IO)
+            .onEach {
+                onDone.invoke(ConnectAccountData(personaId, it))
+                connectingJob?.cancel()
+            }
+            .flowOn(Dispatchers.Main)
+            .launchIn(scope)
     }
 
     override fun finishConnectingProcess(profile: SocialProfile, personaId: String) {
@@ -154,7 +149,7 @@ internal class PersonaRepository(
                 return@launch
             }
 
-            val identifier = currentPersonaIdentifier.firstOrNull()
+            val identifier = preferenceRepository.currentPersonaIdentifier.firstOrNull()
             if (!identifier.isNullOrEmpty() && personaRepository.contains(identifier)) {
                 return@launch
             }
@@ -167,10 +162,7 @@ internal class PersonaRepository(
     override fun saveEmailForCurrentPersona(value: String) {
         scope.launch {
             currentPersona.firstOrNull()?.let { personaData ->
-                val emailKey = stringPreferencesKey("${personaData.id}_email")
-                dataStore.edit {
-                    it[emailKey] = value
-                }
+                preferenceRepository.setPersonaEmail(personaData.id, value)
             }
         }
     }
@@ -178,10 +170,7 @@ internal class PersonaRepository(
     override fun savePhoneForCurrentPersona(value: String) {
         scope.launch {
             currentPersona.firstOrNull()?.let { personaData ->
-                val phoneKey = stringPreferencesKey("${personaData.id}_phone")
-                dataStore.edit {
-                    it[phoneKey] = value
-                }
+                preferenceRepository.setPersonaPhone(personaData.id, value)
             }
         }
     }
@@ -199,11 +188,7 @@ internal class PersonaRepository(
     // }
 
     override fun setCurrentPersona(id: String) {
-        scope.launch {
-            dataStore.edit {
-                it[CurrentPersonaKey] = id
-            }
-        }
+        preferenceRepository.setCurrentPersonaIdentifier(id)
     }
 
     override fun logout() {
@@ -220,12 +205,8 @@ internal class PersonaRepository(
 
     private suspend fun removePersona(id: String) {
         // jsMethod.removePersona(id)
-        val emailKey = stringPreferencesKey("${id}_email")
-        val phoneKey = stringPreferencesKey("${id}_phone")
-        dataStore.edit {
-            it[emailKey] = ""
-            it[phoneKey] = ""
-        }
+        preferenceRepository.setPersonaEmail(id, "")
+        preferenceRepository.setPersonaPhone(id, "")
     }
 
     override fun updatePersona(id: String, value: String) {

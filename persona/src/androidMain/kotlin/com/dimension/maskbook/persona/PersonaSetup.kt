@@ -80,8 +80,7 @@ object PersonaSetup : ModuleSetup {
         single {
             PersonaRepository(
                 get(named(IoScopeName)),
-                get<Context>().personaDataStore,
-                get(), get(),
+                get(), get(), get(),
                 get(), get(), get(),
             )
         } binds arrayOf(
@@ -90,7 +89,10 @@ object PersonaSetup : ModuleSetup {
             IContactsRepository::class,
         )
         single<IPreferenceRepository> {
-            PreferenceRepository(get<Context>().personaDataStore, get(named(IoScopeName)))
+            PreferenceRepository(
+                get<Context>().personaDataStore,
+                get(named(IoScopeName))
+            )
         }
 
         single { JSMethod(get()) }

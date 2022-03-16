@@ -25,12 +25,16 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
+private val CurrentPersonaKey = stringPreferencesKey("current_persona")
 private val ShouldShowEmptySocialTipDialog = booleanPreferencesKey("ShouldShowEmptySocialTipDialog")
 private val ShouldShowContactsTipDialog = booleanPreferencesKey("ShouldShowContactsTipDialog")
 private val IsMigratorIndexedDb = booleanPreferencesKey("IsMigratorIndexedDb")
@@ -40,6 +44,40 @@ class PreferenceRepository(
     private val dataStore: DataStore<Preferences>,
     private val ioScope: CoroutineScope,
 ) : IPreferenceRepository {
+
+    override val data: Flow<Preferences>
+        get() = dataStore.data
+
+    override val currentPersonaIdentifier: Flow<String>
+        get() = dataStore.data.map {
+            it[CurrentPersonaKey] ?: ""
+        }
+
+    override fun setCurrentPersonaIdentifier(identifier: String) {
+        ioScope.launch {
+            dataStore.edit {
+                it[CurrentPersonaKey] = identifier
+            }
+        }
+    }
+
+    override fun setPersonaEmail(personaIdentifier: String, email: String) {
+        ioScope.launch {
+            dataStore.edit {
+                val emailKey = stringPreferencesKey("${personaIdentifier}_email")
+                it[emailKey] = email
+            }
+        }
+    }
+
+    override fun setPersonaPhone(personaIdentifier: String, phone: String) {
+        ioScope.launch {
+            dataStore.edit {
+                val phoneKey = stringPreferencesKey("${personaIdentifier}_phone")
+                it[phoneKey] = phone
+            }
+        }
+    }
 
     override val shouldShowEmptySocialTipDialog: Flow<Boolean>
         get() = dataStore.data.map {
@@ -78,5 +116,13 @@ class PreferenceRepository(
                 it[IsMigratorIndexedDb] = bool
             }
         }
+    }
+
+    private val _lastDetectProfileIdentifier = MutableStateFlow("")
+    override val lastDetectProfileIdentifier: Flow<String> =
+        _lastDetectProfileIdentifier.asStateFlow()
+
+    override fun setLastDetectProfileIdentifier(identifier: String) {
+        _lastDetectProfileIdentifier.value = identifier.replace("\\", "")
     }
 }
