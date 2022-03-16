@@ -115,6 +115,8 @@
     <string name="scene_backup_backup_verify_title_phone">Cloud backup with Phone</string>
     <string name="scene_backup_restore_created_date">Create at</string>
     <string name="scene_backup_backup_verify_title_email">Cloud backup with Email</string>
+    <string name="scene_backup_remote_backup_no_backup_title">No cloud backup found</string>
+    <string name="scene_backup_remote_backup_no_backup_message">No cloud backup is found with this Email or phone number.</string>
     <string name="scene_backup_tips_email">Verification code has been sent by Email to </string>
     <string name="scene_backup_merge_to_local_title">Merge cloud backup</string>
     <string name="scene_backup_restored_contacts">Contacts</string>
