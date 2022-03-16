@@ -104,7 +104,7 @@ internal class MessageChannel(
         }
         if (messageId != null && queue.containsKey(messageId)) {
             queue.remove(messageId)?.trySend(result)
-        } else if (messageId != null) {
+        } else {
             val method = runCatching {
                 jsonObject.getString("method")
             }.getOrNull()
@@ -117,7 +117,7 @@ internal class MessageChannel(
                 if (subscription.any { it.first == method }) {
                     subscription.filter { it.first == method }.forEach { pair ->
                         pair.second.value = ExtensionMessage(
-                            id = messageId,
+                            id = messageId ?: "",
                             method = method,
                             params = params,
                             onResponse = { sendResponseMessage(it) },
@@ -127,7 +127,7 @@ internal class MessageChannel(
                 }
                 _extensionMessage.trySend(
                     ExtensionMessage(
-                        id = messageId,
+                        id = messageId ?: "",
                         method = method,
                         params = params,
                         onResponse = { sendResponseMessage(it) },
