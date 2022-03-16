@@ -22,21 +22,45 @@ package com.dimension.maskbook.persona.repository
 
 import com.dimension.maskbook.persona.db.PersonaDatabase
 import com.dimension.maskbook.persona.db.model.DbPersonaRecord
+import com.dimension.maskbook.persona.export.model.PersonaData
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class DbPersonaRepository(database: PersonaDatabase) {
     private val personaDao = database.personaDao()
 
-    // suspend fun findWithProfiles(personaIdentifier: String): DbPersonaWithProfiles? {
-    //     return personaDao.findWithProfiles(personaIdentifier)
-    // }
-
-    suspend fun getList(): List<DbPersonaRecord> {
-        return personaDao.getList()
+    suspend fun getPersona(personaIdentifier: String): PersonaData? {
+        return personaDao.find(personaIdentifier)?.toPersonaData()
     }
 
-    fun getListFlow(): Flow<List<DbPersonaRecord>> {
-        return personaDao.getListFlow()
+    fun getPersonaFlow(personaIdentifier: String): Flow<PersonaData?> {
+        return personaDao.getFlow(personaIdentifier).map {
+            it?.toPersonaData()
+        }
+    }
+
+    suspend fun getPersonaList(): List<PersonaData> {
+        return personaDao.findList().map {
+            it.toPersonaData()
+        }
+    }
+
+    fun getPersonaListFlow(): Flow<List<PersonaData>> {
+        return personaDao.getListFlow().map { list ->
+            list.map { it.toPersonaData() }
+        }
+    }
+
+    suspend fun updateEmail(personaIdentifier: String, email: String) {
+        personaDao.updateEmail(personaIdentifier, email)
+    }
+
+    suspend fun updatePhone(personaIdentifier: String, phone: String) {
+        personaDao.updatePhone(personaIdentifier, phone)
+    }
+
+    suspend fun updateNickName(personaIdentifier: String, name: String) {
+        personaDao.updateNickName(personaIdentifier, name)
     }
 
     suspend fun contains(personaIdentifier: String): Boolean {
@@ -46,4 +70,13 @@ class DbPersonaRepository(database: PersonaDatabase) {
     suspend fun isEmpty(): Boolean {
         return personaDao.count() == 0
     }
+}
+
+private fun DbPersonaRecord.toPersonaData(): PersonaData {
+    return PersonaData(
+        identifier = identifier,
+        name = nickname.orEmpty(),
+        email = email,
+        phone = phone,
+    )
 }

@@ -27,8 +27,6 @@ interface IPreferenceRepository {
     val data: Flow<Preferences>
     val currentPersonaIdentifier: Flow<String>
     fun setCurrentPersonaIdentifier(identifier: String)
-    fun setPersonaEmail(personaIdentifier: String, email: String)
-    fun setPersonaPhone(personaIdentifier: String, phone: String)
     val shouldShowEmptySocialTipDialog: Flow<Boolean>
     fun setShowEmptySocialTipDialog(bool: Boolean)
     val shouldShowContactsTipDialog: Flow<Boolean>

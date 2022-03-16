@@ -30,6 +30,7 @@ import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.persona.data.JSMethod
 import com.dimension.maskbook.persona.data.JSMethodV2
 import com.dimension.maskbook.persona.db.PersonaDatabase
+import com.dimension.maskbook.persona.db.RoomMigrations
 import com.dimension.maskbook.persona.db.migrator.IndexedDBDataMigrator
 import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.persona.export.model.ConnectAccountData
@@ -49,6 +50,7 @@ import com.dimension.maskbook.persona.repository.personaDataStore
 import com.dimension.maskbook.persona.ui.scenes.generatedRoute
 import com.dimension.maskbook.persona.ui.tab.PersonasTabScreen
 import com.dimension.maskbook.persona.viewmodel.ExportPrivateKeyViewModel
+import com.dimension.maskbook.persona.viewmodel.PersonaMenuViewModel
 import com.dimension.maskbook.persona.viewmodel.PersonaViewModel
 import com.dimension.maskbook.persona.viewmodel.RenamePersonaViewModel
 import com.dimension.maskbook.persona.viewmodel.SwitchPersonaViewModel
@@ -75,6 +77,9 @@ object PersonaSetup : ModuleSetup {
             Room.databaseBuilder(get(), PersonaDatabase::class.java, "maskbook_persona")
                 .setQueryExecutor(Dispatchers.IO.asExecutor())
                 .setTransactionExecutor(Dispatchers.IO.asExecutor())
+                .addMigrations(
+                    RoomMigrations.MIGRATION_1_2,
+                )
                 .build()
         }
         single {
@@ -118,8 +123,9 @@ object PersonaSetup : ModuleSetup {
 
         viewModel { PersonaViewModel(get(), get()) }
         viewModel { DisconnectSocialViewModel(get()) }
-        viewModel { SwitchPersonaViewModel(get()) }
-        viewModel { (personaId: String) -> RenamePersonaViewModel(get(), personaId) }
+        viewModel { SwitchPersonaViewModel(get(), get()) }
+        viewModel { PersonaMenuViewModel(get(), get()) }
+        viewModel { (personaId: String) -> RenamePersonaViewModel(get(), get(), personaId) }
         viewModel { ExportPrivateKeyViewModel(get()) }
         viewModel { PostViewModel(get(), get()) }
         viewModel { ContactsViewModel(get()) }

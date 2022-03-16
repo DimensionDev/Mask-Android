@@ -37,6 +37,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,7 +46,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.route.navigationComposeAnimComposable
 import com.dimension.maskbook.common.route.navigationComposeAnimComposablePackage
@@ -58,10 +58,10 @@ import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.common.ui.widget.button.MaskBackButton
 import com.dimension.maskbook.persona.R
-import com.dimension.maskbook.persona.repository.IPersonaRepository
 import com.dimension.maskbook.persona.route.PersonaRoute
-import com.dimension.maskbook.setting.export.SettingServices
+import com.dimension.maskbook.persona.viewmodel.PersonaMenuViewModel
 import org.koin.androidx.compose.get
+import org.koin.androidx.compose.getViewModel
 
 @NavGraphDestination(
     route = PersonaRoute.PersonaMenu,
@@ -73,12 +73,13 @@ fun PersonaMenuScene(
     navController: NavController,
     @Back onBack: () -> Unit,
 ) {
-    val currentPersona by get<IPersonaRepository>().currentPersona.observeAsState(initial = null)
-    val personaData = currentPersona ?: return
+    val viewModel = getViewModel<PersonaMenuViewModel>()
 
-    val repository = get<SettingServices>()
-    val backupPassword by repository.backupPassword.observeAsState(initial = "")
-    val paymentPassword by repository.paymentPassword.observeAsState(initial = "")
+    val currentPersona by viewModel.currentPersona.collectAsState()
+    val backupPassword by viewModel.backupPassword.collectAsState()
+    val paymentPassword by viewModel.paymentPassword.collectAsState()
+
+    val personaData = currentPersona ?: return
 
     MaskScene {
         MaskScaffold(
@@ -126,7 +127,7 @@ fun PersonaMenuScene(
                         modifier = Modifier.fillMaxWidth(),
                         elevation = 0.dp,
                         onClick = {
-                            navController.navigate(PersonaRoute.RenamePersona(personaData.id))
+                            navController.navigate(PersonaRoute.RenamePersona(personaData.identifier))
                         }
                     ) {
                         Row(

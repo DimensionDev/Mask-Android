@@ -46,6 +46,8 @@ class IndexedDBDataMigrator(private val database: PersonaDatabase) {
                     initialized = !persona.uninitialized,
                     updateAt = persona.updatedAt,
                     createAt = persona.createdAt,
+                    email = "",
+                    phone = "",
                 )
             )
             database.linkedProfileDao().insert(

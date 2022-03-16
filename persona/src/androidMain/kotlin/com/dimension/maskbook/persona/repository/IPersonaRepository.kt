@@ -27,7 +27,6 @@ import com.dimension.maskbook.persona.export.model.SocialProfile
 import kotlinx.coroutines.flow.Flow
 
 interface IPersonaRepository {
-    val persona: Flow<List<PersonaData>>
     val currentPersona: Flow<PersonaData?>
     suspend fun hasPersona(): Boolean
     fun beginConnectingProcess(
@@ -45,17 +44,16 @@ interface IPersonaRepository {
     fun setCurrentPersona(id: String)
     // fun generateNewMnemonic(): List<String>
     fun logout()
-    fun updatePersona(id: String, value: String)
+    fun updatePersona(id: String, nickname: String)
+    fun updateCurrentPersona(nickname: String)
     fun connectProfile(personaId: String, userName: String)
     fun disconnectProfile(personaId: String, socialId: String)
     suspend fun createPersonaFromMnemonic(value: List<String>, name: String)
     fun createPersonaFromPrivateKey(value: String)
-    fun updateCurrentPersona(value: String)
     suspend fun backupPrivateKey(id: String): String
     fun init()
     fun saveEmailForCurrentPersona(value: String)
     fun savePhoneForCurrentPersona(value: String)
-    // suspend fun refreshPersona()
     // suspend fun ensurePersonaDataLoaded()
     fun setPlatform(platformType: PlatformType)
 }

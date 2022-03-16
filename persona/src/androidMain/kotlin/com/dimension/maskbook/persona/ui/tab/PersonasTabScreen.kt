@@ -62,17 +62,17 @@ class PersonasTabScreen : TabScreen {
                 network?.toPlatform()?.let {
                     connectSocial(
                         controller = rootNavController,
-                        personaId = persona.id,
+                        personaId = persona.identifier,
                         platform = it,
                         repository = repository
                     )
-                } ?: rootNavController.navigate(PersonaRoute.SelectPlatform(persona.id))
+                } ?: rootNavController.navigate(PersonaRoute.SelectPlatform(persona.identifier))
             },
             onRemoveSocialClick = { persona, social ->
                 social.network.toPlatform()?.let {
                     rootNavController.navigate(
                         PersonaRoute.DisconnectSocial(
-                            personaId = persona.id,
+                            personaId = persona.identifier,
                             platform = it.name,
                             socialId = social.id,
                             personaName = persona.name,

@@ -20,8 +20,6 @@
  */
 package com.dimension.maskbook.persona.repository
 
-import androidx.datastore.preferences.core.stringPreferencesKey
-import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.common.ext.toSite
 import com.dimension.maskbook.extension.export.ExtensionServices
 import com.dimension.maskbook.persona.data.JSMethod
@@ -39,14 +37,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.time.ExperimentalTime
@@ -65,27 +61,10 @@ internal class PersonaRepository(
 
     private var connectingJob: Job? = null
 
-    override val persona: Flow<List<PersonaData>> =
-        personaRepository.getListFlow().zip(preferenceRepository.data) { list, data ->
-            list.map { persona ->
-                val id = persona.identifier
-                val emailKey = stringPreferencesKey("${id}_email")
-                val phoneKey = stringPreferencesKey("${id}_phone")
-                PersonaData(
-                    id = id,
-                    name = persona.nickname.orEmpty(),
-                    email = data[emailKey],
-                    phone = data[phoneKey]
-                )
-            }
-        }.asStateIn(scope, emptyList())
-
-    override val currentPersona: Flow<PersonaData?> =
-        combine(
-            preferenceRepository.currentPersonaIdentifier,
-            persona,
-        ) { personaIdentifier, persona ->
-            persona.find { it.id == personaIdentifier }
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override val currentPersona: Flow<PersonaData?>
+        get() = preferenceRepository.currentPersonaIdentifier.flatMapLatest {
+            personaRepository.getPersonaFlow(it)
         }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -154,7 +133,7 @@ internal class PersonaRepository(
                 return@launch
             }
 
-            val persona = personaRepository.getList().first()
+            val persona = personaRepository.getPersonaList().first()
             setCurrentPersona(persona.identifier)
         }
     }
@@ -162,7 +141,7 @@ internal class PersonaRepository(
     override fun saveEmailForCurrentPersona(value: String) {
         scope.launch {
             currentPersona.firstOrNull()?.let { personaData ->
-                preferenceRepository.setPersonaEmail(personaData.id, value)
+                personaRepository.updateEmail(personaData.identifier, value)
             }
         }
     }
@@ -170,7 +149,7 @@ internal class PersonaRepository(
     override fun savePhoneForCurrentPersona(value: String) {
         scope.launch {
             currentPersona.firstOrNull()?.let { personaData ->
-                preferenceRepository.setPersonaPhone(personaData.id, value)
+                personaRepository.updatePhone(personaData.identifier, value)
             }
         }
     }
@@ -194,47 +173,49 @@ internal class PersonaRepository(
     override fun logout() {
         scope.launch {
             val deletePersona = currentPersona.firstOrNull() ?: return@launch
-            val newCurrentPersona = persona.firstOrNull()?.firstOrNull { it.id != deletePersona.id }
+            val newCurrentPersona = personaRepository.getPersonaList()
+                .firstOrNull { it.identifier != deletePersona.identifier }
 
-            removePersona(deletePersona.id)
-
-            setCurrentPersona(newCurrentPersona?.id ?: "")
-            // refreshPersona()
+            removePersona(deletePersona.identifier)
+            setCurrentPersona(newCurrentPersona?.identifier ?: "")
         }
     }
 
     private suspend fun removePersona(id: String) {
-        // jsMethod.removePersona(id)
-        preferenceRepository.setPersonaEmail(id, "")
-        preferenceRepository.setPersonaPhone(id, "")
+        jsMethod.removePersona(id)
     }
 
-    override fun updatePersona(id: String, value: String) {
+    override fun updatePersona(id: String, nickname: String) {
         scope.launch {
-            jsMethod.updatePersonaInfo(id, value)
-            // refreshPersona()
+            personaRepository.updateNickName(id, nickname)
+            jsMethod.updatePersonaInfo(id, nickname)
+        }
+    }
+
+    override fun updateCurrentPersona(nickname: String) {
+        scope.launch {
+            val id = currentPersona.firstOrNull()?.identifier ?: return@launch
+            personaRepository.updateNickName(id, nickname)
+            jsMethod.updatePersonaInfo(id, nickname)
         }
     }
 
     override fun connectProfile(personaId: String, userName: String) {
         scope.launch {
             jsMethod.connectProfile(Network.Twitter, personaId, userName)
-            // refreshPersona()
         }
     }
 
     override fun disconnectProfile(personaId: String, socialId: String) {
         scope.launch {
             jsMethod.disconnectProfile(socialId)
-            // refreshSocial()
-            // refreshPersona()
         }
     }
 
     override suspend fun createPersonaFromMnemonic(value: List<String>, name: String) {
         withContext(scope.coroutineContext) {
             val mnemonic = value.joinToString(" ")
-            personaRepository.getList().forEach {
+            personaRepository.getPersonaList().forEach {
                 if (mnemonic == jsMethod.backupMnemonic(it.identifier)) throw PersonaAlreadyExitsError()
             }
             val persona = jsMethod.createPersonaByMnemonic(value.joinToString(" "), name, "")
@@ -244,15 +225,6 @@ internal class PersonaRepository(
     }
 
     override fun createPersonaFromPrivateKey(value: String) {
-    }
-
-    override fun updateCurrentPersona(value: String) {
-        // scope.launch {
-        //     _currentPersona.firstOrNull()?.let {
-        //         jsMethod.updatePersonaInfo(it, value)
-        //         refreshPersona()
-        //     }
-        // }
     }
 
     override suspend fun backupPrivateKey(id: String): String {

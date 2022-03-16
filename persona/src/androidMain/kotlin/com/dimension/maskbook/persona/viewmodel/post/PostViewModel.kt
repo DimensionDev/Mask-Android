@@ -35,7 +35,7 @@ class PostViewModel(
 ) : ViewModel() {
     val items = repository.posts
         .combine(personaRepository.currentPersona) { a: List<PostData>, b: PersonaData? ->
-            a.filter { it.personaId == b?.id }
+            a.filter { it.personaId == b?.identifier }
         }
         .asStateIn(viewModelScope, emptyList())
 }

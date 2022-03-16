@@ -47,7 +47,7 @@ import kotlinx.serialization.json.JsonObject
         DbLinkedProfileRecord::class,
         DbPostRecord::class,
     ],
-    version = 1,
+    version = 2,
 )
 @TypeConverters(
     JsonObjectConverter::class,

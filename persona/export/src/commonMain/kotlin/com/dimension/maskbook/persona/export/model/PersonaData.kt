@@ -21,8 +21,8 @@
 package com.dimension.maskbook.persona.export.model
 
 data class PersonaData(
-    val id: String,
+    val identifier: String,
     val name: String,
-    val email: String? = null,
-    val phone: String? = null,
+    val email: String,
+    val phone: String,
 )

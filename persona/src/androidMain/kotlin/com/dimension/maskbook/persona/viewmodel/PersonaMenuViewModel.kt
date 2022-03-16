@@ -24,14 +24,19 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.persona.repository.IPersonaRepository
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
+import com.dimension.maskbook.setting.export.SettingServices
 
-class ExportPrivateKeyViewModel(
+class PersonaMenuViewModel(
     private val repository: IPersonaRepository,
+    private val services: SettingServices,
 ) : ViewModel() {
-    val privateKey = repository.currentPersona
-        .mapNotNull { it }
-        .map { repository.backupPrivateKey(it.identifier) }
+
+    val currentPersona = repository.currentPersona
+        .asStateIn(viewModelScope, null)
+
+    val backupPassword = services.backupPassword
+        .asStateIn(viewModelScope, "")
+
+    val paymentPassword = services.paymentPassword
         .asStateIn(viewModelScope, "")
 }

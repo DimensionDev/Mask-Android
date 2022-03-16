@@ -61,24 +61,6 @@ class PreferenceRepository(
         }
     }
 
-    override fun setPersonaEmail(personaIdentifier: String, email: String) {
-        ioScope.launch {
-            dataStore.edit {
-                val emailKey = stringPreferencesKey("${personaIdentifier}_email")
-                it[emailKey] = email
-            }
-        }
-    }
-
-    override fun setPersonaPhone(personaIdentifier: String, phone: String) {
-        ioScope.launch {
-            dataStore.edit {
-                val phoneKey = stringPreferencesKey("${personaIdentifier}_phone")
-                it[phoneKey] = phone
-            }
-        }
-    }
-
     override val shouldShowEmptySocialTipDialog: Flow<Boolean>
         get() = dataStore.data.map {
             it[ShouldShowEmptySocialTipDialog] ?: true

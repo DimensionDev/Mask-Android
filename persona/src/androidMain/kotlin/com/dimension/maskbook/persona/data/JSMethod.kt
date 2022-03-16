@@ -91,14 +91,14 @@ internal class JSMethod(
         )
     }
 
-    // suspend fun removePersona(
-    //     identifier: String
-    // ) {
-    //     extensionServices.execute<Unit>(
-    //         "persona_removePersona",
-    //         "identifier" to identifier,
-    //     )
-    // }
+    suspend fun removePersona(
+        identifier: String
+    ) {
+        extensionServices.execute<Unit>(
+            "persona_removePersona",
+            "identifier" to identifier,
+        )
+    }
 
     suspend fun restoreFromJson(
         json: String

@@ -41,6 +41,9 @@ data class DbPersonaRecord(
     var hasLogout: Boolean? = null,
     var initialized: Boolean? = null,
     var avatar: String? = null,
+
+    var email: String,
+    var phone: String,
 ) {
     fun merge(record: DbPersonaRecord): DbPersonaRecord {
         if (record.mnemonic != null && record.mnemonic != mnemonic) mnemonic = record.mnemonic

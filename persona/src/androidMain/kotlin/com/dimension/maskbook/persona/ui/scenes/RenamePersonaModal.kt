@@ -26,12 +26,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.route.navigationComposeBottomSheet
 import com.dimension.maskbook.common.route.navigationComposeBottomSheetPackage
 import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
@@ -58,7 +58,7 @@ fun RenamePersonaModal(
     val viewModel = getViewModel<RenamePersonaViewModel> {
         parametersOf(personaId)
     }
-    val name by viewModel.name.observeAsState(initial = "")
+    val name by viewModel.name.collectAsState()
 
     MaskModal {
         Column {

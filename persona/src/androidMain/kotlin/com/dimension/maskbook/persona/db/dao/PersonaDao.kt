@@ -36,11 +36,14 @@ interface PersonaDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(persona: DbPersonaRecord)
 
+    @Query("DELETE FROM DbPersonaRecord WHERE identifier=:identifier")
+    suspend fun delete(identifier: String)
+
     @Query("SELECT * FROM DbPersonaRecord WHERE identifier=:identifier LIMIT 1")
     suspend fun find(identifier: String): DbPersonaRecord?
 
-    @Query("DELETE FROM DbPersonaRecord WHERE identifier=:identifier")
-    suspend fun delete(identifier: String)
+    @Query("SELECT * FROM DbPersonaRecord")
+    suspend fun findList(): List<DbPersonaRecord>
 
     @RawQuery
     suspend fun findRaw(query: SupportSQLiteQuery): DbPersonaRecord?
@@ -51,11 +54,20 @@ interface PersonaDao {
     // @Query("SELECT * FROM DbPersonaRecord WHERE identifier=:identifier LIMIT 1")
     // suspend fun findWithProfiles(identifier: String): DbPersonaWithProfiles?
 
-    @Query("SELECT * FROM DbPersonaRecord")
-    suspend fun getList(): List<DbPersonaRecord>
+    @Query("SELECT * FROM DbPersonaRecord WHERE identifier=:identifier LIMIT 1")
+    fun getFlow(identifier: String): Flow<DbPersonaRecord?>
 
     @Query("SELECT * FROM DbPersonaRecord")
     fun getListFlow(): Flow<List<DbPersonaRecord>>
+
+    @Query("UPDATE DbPersonaRecord SET nickname=:nickname WHERE identifier=:identifier")
+    suspend fun updateNickName(identifier: String, nickname: String)
+
+    @Query("UPDATE DbPersonaRecord SET email=:email WHERE identifier=:identifier")
+    suspend fun updateEmail(identifier: String, email: String)
+
+    @Query("UPDATE DbPersonaRecord SET phone=:phone WHERE identifier=:identifier")
+    suspend fun updatePhone(identifier: String, phone: String)
 
     @Query("SELECT COUNT(1) FROM DbPersonaRecord WHERE identifier=:identifier LIMIT 1")
     suspend fun count(identifier: String): Int
