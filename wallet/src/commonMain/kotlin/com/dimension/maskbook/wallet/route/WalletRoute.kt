@@ -109,8 +109,28 @@ expect object WalletRoute {
         operator fun invoke(wallet: String): String
     }
 
-    object SendTokenScene {
-        operator fun invoke(tradableId: String?): String
+    object Transfer {
+        const val Route: String
+        object SearchAddress {
+            operator fun invoke(tradableId: String?): String
+        }
+        const val ScanQrCode: String
+        object Send {
+            operator fun invoke(address: String, tradableId: String?): String
+        }
+        object SearchToken {
+            operator fun invoke(tradableId: String?): String
+        }
+        object SearchCollectibles {
+            operator fun invoke(tradableId: String?): String
+        }
+        const val EditGasFee: String
+        object AddContactSheet {
+            operator fun invoke(address: String): String
+        }
+        object SendConfirm {
+            operator fun invoke(address: String, amount: String, tradableId: String?): String
+        }
     }
 
     object UnlockWalletDialog {

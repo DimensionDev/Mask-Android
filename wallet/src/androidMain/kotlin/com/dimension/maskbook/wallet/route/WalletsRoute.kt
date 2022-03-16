@@ -52,7 +52,6 @@ import com.dimension.maskbook.common.route.navigationComposeDialogPackage
 import com.dimension.maskbook.common.routeProcessor.annotations.Back
 import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
 import com.dimension.maskbook.common.routeProcessor.annotations.Path
-import com.dimension.maskbook.common.routeProcessor.annotations.Query
 import com.dimension.maskbook.common.ui.notification.StringResNotificationEvent.Companion.show
 import com.dimension.maskbook.common.ui.widget.LocalInAppNotification
 import com.dimension.maskbook.common.ui.widget.MaskDialog
@@ -85,7 +84,6 @@ import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletSwitchAd
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletSwitchEditModal
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletSwitchSceneModal
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletTransactionHistoryScene
-import com.dimension.maskbook.wallet.ui.scenes.wallets.send.TransferHost
 import com.dimension.maskbook.wallet.ui.scenes.wallets.token.TokenDetailScene
 import com.dimension.maskbook.wallet.viewmodel.wallets.BackUpPasswordViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.BiometricViewModel
@@ -125,7 +123,7 @@ fun CollectibleDetail(
         onBack = onBack,
         onSend = {
             data?.let {
-                navController.navigate(WalletRoute.SendTokenScene(it.tradableId()))
+                navController.navigate(WalletRoute.Transfer.SearchAddress(it.tradableId()))
             }
         },
         onReceive = {
@@ -197,7 +195,7 @@ fun TokenDetail(
                 if (token.chainType != dWebData?.chainType) {
                     navController.navigate(WalletRoute.WalletNetworkSwitch(token.chainType.name))
                 } else {
-                    navController.navigate(WalletRoute.SendTokenScene(token.address))
+                    navController.navigate(WalletRoute.Transfer.SearchAddress(token.address))
                 }
             }
         },
@@ -826,23 +824,6 @@ fun ImportWallet(
             )
         },
         onBack = onBack,
-    )
-}
-
-@NavGraphDestination(
-    route = WalletRoute.SendTokenScene.path,
-    packageName = navigationComposeAnimComposablePackage,
-    functionName = navigationComposeAnimComposable,
-)
-@Composable
-fun SendTokenScene(
-    @Back onBack: () -> Unit,
-    @Query("tradableId") tradableId: String?,
-) {
-    TransferHost(
-        tradableId = tradableId?.let { if (it != "null") it else null }.orEmpty(),
-        onBack = onBack,
-        onDone = onBack,
     )
 }
 
