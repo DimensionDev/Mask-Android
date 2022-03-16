@@ -53,6 +53,7 @@ import com.dimension.maskbook.wallet.repository.walletDataStore
 import com.dimension.maskbook.wallet.route.WalletRoute
 import com.dimension.maskbook.wallet.route.generatedRoute
 import com.dimension.maskbook.wallet.services.WalletServices
+import com.dimension.maskbook.wallet.ui.scenes.register.createidentity.createIdentityRoute
 import com.dimension.maskbook.wallet.ui.scenes.wallets.send.transferRoute
 import com.dimension.maskbook.wallet.ui.tab.WalletTabScreen
 import com.dimension.maskbook.wallet.usecase.address.AddContactUseCase
@@ -155,6 +156,12 @@ object WalletSetup : ModuleSetup {
             route = WalletRoute.Transfer.Route
         ) {
             transferRoute(navController)
+        }
+        navigation(
+            startDestination = WalletRoute.Register.CreateIdentity.Backup.path,
+            route = WalletRoute.Register.CreateIdentity.Route
+        ) {
+            createIdentityRoute(navController)
         }
     }
 

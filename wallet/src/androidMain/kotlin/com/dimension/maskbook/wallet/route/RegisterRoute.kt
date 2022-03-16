@@ -45,7 +45,6 @@ import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ui.scenes.register.CreatePersonaModal
 import com.dimension.maskbook.wallet.ui.scenes.register.CreatePersonaScene
 import com.dimension.maskbook.wallet.ui.scenes.register.RegisterScene
-import com.dimension.maskbook.wallet.ui.scenes.register.createidentity.CreateIdentityHost
 import com.dimension.maskbook.wallet.ui.scenes.register.recovery.IdentityScene
 import com.dimension.maskbook.wallet.ui.scenes.register.recovery.PersonaAlreadyExitsDialog
 import com.dimension.maskbook.wallet.ui.scenes.register.recovery.PrivateKeyScene
@@ -79,34 +78,6 @@ fun RegisterInit(
 }
 
 @NavGraphDestination(
-    route = WalletRoute.Register.CreateIdentity.path,
-    packageName = navigationComposeAnimComposablePackage,
-    functionName = navigationComposeAnimComposable,
-)
-@Composable
-fun RegisterCreateIdentity(
-    navController: NavController,
-    @Back onBack: () -> Unit,
-    @Path("personaName") personaName: String,
-) {
-    CreateIdentityHost(
-        personaName = personaName,
-        onDone = {
-            navController.navigate(
-                Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona)),
-                navOptions = navOptions {
-                    launchSingleTop = true
-                    popUpTo(CommonRoute.Main.Home.path) {
-                        inclusive = false
-                    }
-                }
-            )
-        },
-        onBack = onBack,
-    )
-}
-
-@NavGraphDestination(
     route = WalletRoute.Register.WelcomeCreatePersona,
     deeplink = [
         Deeplinks.Wallet.Register.WelcomeCreatePersona,
@@ -122,7 +93,7 @@ fun WelcomeCreatePersona(
     CreatePersonaScene(
         onBack = onBack,
         onDone = { name ->
-            navController.navigate(WalletRoute.Register.CreateIdentity(name))
+            navController.navigate(WalletRoute.Register.CreateIdentity.Backup(name))
         }
     )
 }
@@ -141,7 +112,7 @@ fun CreatePersona(
 ) {
     CreatePersonaModal(
         onDone = { name ->
-            navController.navigate(WalletRoute.Register.CreateIdentity(name))
+            navController.navigate(WalletRoute.Register.CreateIdentity.Backup(name))
         }
     )
 }

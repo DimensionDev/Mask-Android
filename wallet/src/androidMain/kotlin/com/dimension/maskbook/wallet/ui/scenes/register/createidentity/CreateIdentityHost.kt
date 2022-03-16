@@ -20,7 +20,7 @@
  */
 package com.dimension.maskbook.wallet.ui.scenes.register.createidentity
 
-import androidx.compose.animation.ExperimentalAnimationApi
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Text
@@ -29,100 +29,146 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.compose.dialog
+import androidx.navigation.NavController
+import androidx.navigation.navOptions
+import com.dimension.maskbook.common.ext.getNestedNavigationViewModel
 import com.dimension.maskbook.common.ext.observeAsState
+import com.dimension.maskbook.common.route.CommonRoute
+import com.dimension.maskbook.common.route.Deeplinks
+import com.dimension.maskbook.common.route.navigationComposeAnimComposable
+import com.dimension.maskbook.common.route.navigationComposeAnimComposablePackage
+import com.dimension.maskbook.common.route.navigationComposeDialog
+import com.dimension.maskbook.common.route.navigationComposeDialogPackage
+import com.dimension.maskbook.common.routeProcessor.annotations.Back
+import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
+import com.dimension.maskbook.common.routeProcessor.annotations.Path
 import com.dimension.maskbook.common.ui.widget.MaskDialog
-import com.dimension.maskbook.common.ui.widget.RouteHost
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.wallet.R
+import com.dimension.maskbook.wallet.route.WalletRoute
 import com.dimension.maskbook.wallet.ui.scenes.register.BackupIdentityScene
 import com.dimension.maskbook.wallet.viewmodel.register.CreateIdentityViewModel
-import com.google.accompanist.navigation.animation.composable
-import com.google.accompanist.navigation.animation.rememberAnimatedNavController
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
-import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 
-@OptIn(ExperimentalMaterialNavigationApi::class, ExperimentalAnimationApi::class)
+private const val GeneratedRouteName = "createIdentityRoute"
+
+@NavGraphDestination(
+    route = WalletRoute.Register.CreateIdentity.Backup.path,
+    packageName = navigationComposeAnimComposablePackage,
+    functionName = navigationComposeAnimComposable,
+    generatedFunctionName = GeneratedRouteName
+)
 @Composable
-fun CreateIdentityHost(
-    personaName: String,
-    onDone: () -> Unit,
-    onBack: () -> Unit,
+fun BackupRoute(
+    navController: NavController,
+    @Path("personaName") personaName: String,
+    @Back onBack: () -> Unit
 ) {
-    val navController = rememberAnimatedNavController()
-    val viewModel: CreateIdentityViewModel = getViewModel {
-        parametersOf(personaName)
-    }
-    RouteHost(
-        navController = navController,
-        startDestination = "Backup",
-    ) {
-        composable("Backup") {
-            val words by viewModel.words.observeAsState(emptyList())
-            BackupIdentityScene(
-                words = words.map { it.word },
-                onRefreshWords = {
-                    viewModel.refreshWords()
-                },
-                onVerify = {
-                    navController.navigate("Verify")
-                },
-                onBack = onBack,
-            )
+    val viewModel: CreateIdentityViewModel = navController
+        .getNestedNavigationViewModel(WalletRoute.Register.CreateIdentity.Route) {
+            parametersOf(personaName)
         }
-        composable("Verify") {
-            val correct by viewModel.correct.observeAsState(initial = false)
-            val selectedWords by viewModel.selectedWords.observeAsState(initial = emptyList())
-            val wordsInRandomOrder by viewModel.wordsInRandomOrder.observeAsState(initial = emptyList())
-            VerifyIdentityScene(
-                words = wordsInRandomOrder,
-                onBack = {
-                    viewModel.clearWords()
-                    navController.popBackStack()
-                },
-                onClear = { viewModel.clearWords() },
-                onConfirm = {
-                    navController.navigate("Confirm")
-                },
-                onWordSelected = {
-                    viewModel.selectWord(it)
-                },
-                selectedWords = selectedWords,
-                correct = correct,
-                onWordDeselected = {
-                    viewModel.deselectWord(it)
-                }
-            )
+    val words by viewModel.words.observeAsState(emptyList())
+    BackupIdentityScene(
+        words = words.map { it.word },
+        onRefreshWords = {
+            viewModel.refreshWords()
+        },
+        onVerify = {
+            navController.navigate(WalletRoute.Register.CreateIdentity.Verify(personaName))
+        },
+        onBack = onBack,
+    )
+}
+
+@NavGraphDestination(
+    route = WalletRoute.Register.CreateIdentity.Verify.path,
+    packageName = navigationComposeAnimComposablePackage,
+    functionName = navigationComposeAnimComposable,
+    generatedFunctionName = GeneratedRouteName
+)
+@Composable
+fun VerifyRoute(
+    navController: NavController,
+    @Path("personaName") personaName: String,
+    @Back onBack: () -> Unit
+) {
+    val viewModel: CreateIdentityViewModel = navController
+        .getNestedNavigationViewModel(WalletRoute.Register.CreateIdentity.Route) {
+            parametersOf(personaName)
         }
-        dialog("Confirm") {
-            MaskDialog(
-                onDismissRequest = {
-                },
-                icon = {
-                    Image(
-                        painterResource(id = R.drawable.ic_property_1_snccess),
-                        contentDescription = null
+    val correct by viewModel.correct.observeAsState(initial = false)
+    val selectedWords by viewModel.selectedWords.observeAsState(initial = emptyList())
+    val wordsInRandomOrder by viewModel.wordsInRandomOrder.observeAsState(initial = emptyList())
+    VerifyIdentityScene(
+        words = wordsInRandomOrder,
+        onBack = {
+            viewModel.clearWords()
+            onBack.invoke()
+        },
+        onClear = { viewModel.clearWords() },
+        onConfirm = {
+            navController.navigate(WalletRoute.Register.CreateIdentity.Confirm(personaName))
+        },
+        onWordSelected = {
+            viewModel.selectWord(it)
+        },
+        selectedWords = selectedWords,
+        correct = correct,
+        onWordDeselected = {
+            viewModel.deselectWord(it)
+        }
+    )
+}
+
+@NavGraphDestination(
+    route = WalletRoute.Register.CreateIdentity.Confirm.path,
+    packageName = navigationComposeDialogPackage,
+    functionName = navigationComposeDialog,
+    generatedFunctionName = GeneratedRouteName
+)
+@Composable
+fun ConfirmRoute(
+    navController: NavController,
+    @Path("personaName") personaName: String,
+) {
+    val viewModel: CreateIdentityViewModel = navController
+        .getNestedNavigationViewModel(WalletRoute.Register.CreateIdentity.Route) {
+            parametersOf(personaName)
+        }
+    MaskDialog(
+        onDismissRequest = {
+        },
+        icon = {
+            Image(
+                painterResource(id = R.drawable.ic_property_1_snccess),
+                contentDescription = null
+            )
+        },
+        title = {
+            Text(text = stringResource(R.string.common_alert_identity_create_title))
+        },
+        text = {
+            Text(text = stringResource(R.string.common_alert_identity_create_description))
+        },
+        buttons = {
+            PrimaryButton(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = {
+                    viewModel.confirm()
+                    navController.navigate(
+                        Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona)),
+                        navOptions = navOptions {
+                            launchSingleTop = true
+                            popUpTo(CommonRoute.Main.Home.path) {
+                                inclusive = false
+                            }
+                        }
                     )
                 },
-                title = {
-                    Text(text = stringResource(R.string.common_alert_identity_create_title))
-                },
-                text = {
-                    Text(text = stringResource(R.string.common_alert_identity_create_description))
-                },
-                buttons = {
-                    PrimaryButton(
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = {
-                            viewModel.confirm()
-                            onDone.invoke()
-                        },
-                    ) {
-                        Text(text = stringResource(R.string.common_controls_done))
-                    }
-                },
-            )
-        }
-    }
+            ) {
+                Text(text = stringResource(R.string.common_controls_done))
+            }
+        },
+    )
 }
