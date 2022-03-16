@@ -102,7 +102,14 @@ expect object WalletRoute {
     const val MultiChainWalletDialog: String
 
     object CreateWallet {
-        operator fun invoke(wallet: String): String
+        const val Route: String
+        object Pharse {
+            operator fun invoke(wallet: String): String
+        }
+        object Verify {
+            operator fun invoke(wallet: String): String
+        }
+        const val Confirm: String
     }
 
     object ImportWallet {

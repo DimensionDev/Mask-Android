@@ -68,7 +68,6 @@ import com.dimension.maskbook.wallet.ui.scenes.wallets.collectible.CollectibleDe
 import com.dimension.maskbook.wallet.ui.scenes.wallets.common.MultiChainWalletDialog
 import com.dimension.maskbook.wallet.ui.scenes.wallets.create.CreateOrImportWalletScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.create.CreateType
-import com.dimension.maskbook.wallet.ui.scenes.wallets.create.create.CreateWalletHost
 import com.dimension.maskbook.wallet.ui.scenes.wallets.create.import.ImportWalletHost
 import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.LegalScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.password.BiometricsEnableScene
@@ -769,34 +768,6 @@ fun CreateOrImportWallet(
 @Composable
 fun MultiChainWalletDialogRoute() {
     MultiChainWalletDialog()
-}
-
-@NavGraphDestination(
-    route = WalletRoute.CreateWallet.path,
-    packageName = navigationComposeAnimComposablePackage,
-    functionName = navigationComposeAnimComposable,
-)
-@Composable
-fun CreateWallet(
-    navController: NavController,
-    @Back onBack: () -> Unit,
-    @Path("wallet") wallet: String,
-) {
-    CreateWalletHost(
-        wallet = wallet,
-        onDone = {
-            navController.navigate(
-                Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Wallet)),
-                navOptions = navOptions {
-                    launchSingleTop = true
-                    popUpTo(CommonRoute.Main.Home.path) {
-                        inclusive = false
-                    }
-                }
-            )
-        },
-        onBack = onBack,
-    )
 }
 
 @NavGraphDestination(

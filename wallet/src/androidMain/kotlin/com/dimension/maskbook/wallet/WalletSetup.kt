@@ -54,6 +54,7 @@ import com.dimension.maskbook.wallet.route.WalletRoute
 import com.dimension.maskbook.wallet.route.generatedRoute
 import com.dimension.maskbook.wallet.services.WalletServices
 import com.dimension.maskbook.wallet.ui.scenes.register.createidentity.createIdentityRoute
+import com.dimension.maskbook.wallet.ui.scenes.wallets.create.create.createWalletRoute
 import com.dimension.maskbook.wallet.ui.scenes.wallets.send.transferRoute
 import com.dimension.maskbook.wallet.ui.tab.WalletTabScreen
 import com.dimension.maskbook.wallet.usecase.address.AddContactUseCase
@@ -162,6 +163,12 @@ object WalletSetup : ModuleSetup {
             route = WalletRoute.Register.CreateIdentity.Route
         ) {
             createIdentityRoute(navController)
+        }
+        navigation(
+            startDestination = WalletRoute.CreateWallet.Pharse.path,
+            route = WalletRoute.CreateWallet.Route
+        ) {
+            createWalletRoute(navController)
         }
     }
 
@@ -331,7 +338,7 @@ private fun Module.provideViewModel() {
             get()
         )
     }
-    viewModel { CreateWalletRecoveryKeyViewModel(get()) }
+    viewModel { (wallet: String) -> CreateWalletRecoveryKeyViewModel(wallet, get()) }
     viewModel { SetUpPaymentPasswordViewModel(get()) }
     viewModel { TouchIdEnableViewModel() }
     viewModel { (wallet: String) -> ImportWalletKeystoreViewModel(wallet, get()) }

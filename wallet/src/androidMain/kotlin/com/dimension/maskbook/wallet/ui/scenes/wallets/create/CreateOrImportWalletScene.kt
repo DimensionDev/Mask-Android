@@ -138,7 +138,7 @@ fun CreateOrImportWalletScene(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
                         when (type) {
-                            CreateType.CREATE -> rootNavController.navigate(WalletRoute.CreateWallet(input))
+                            CreateType.CREATE -> rootNavController.navigate(WalletRoute.CreateWallet.Pharse(input))
                             CreateType.IMPORT -> rootNavController.navigate(WalletRoute.ImportWallet(input))
                         }
                     },
