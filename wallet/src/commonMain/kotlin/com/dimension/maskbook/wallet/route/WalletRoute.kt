@@ -113,7 +113,21 @@ expect object WalletRoute {
     }
 
     object ImportWallet {
-        operator fun invoke(wallet: String): String
+        object Import {
+            operator fun invoke(wallet: String): String
+        }
+        object Mnemonic {
+            operator fun invoke(wallet: String): String
+        }
+        object PrivateKey {
+            operator fun invoke(wallet: String): String
+        }
+        object Keystore {
+            operator fun invoke(wallet: String): String
+        }
+        object DerivationPath {
+            operator fun invoke(wallet: String, mnemonicCode: String): String
+        }
     }
 
     object Transfer {
