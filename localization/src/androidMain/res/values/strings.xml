@@ -471,7 +471,8 @@
     <string name="scene_social_title">Home</string>
     <string name="scene_social_error_fail_to_connect">Fail to connect the profile</string>
     <string name="scene_social_connected">Connected</string>
-    <string name="scene_social_login_in_notify">Please log in to Twitter first and we will guide you through the next steps to connect to Mask Network.</string>
+    <string name="scene_social_login_in_notify_twitter">Log in to Twitter to connect.</string>
+    <string name="scene_social_login_in_notify_facebook">Log in to Facebook to connect.</string>
     <string name="scene_social_profile_select_title">Select Username</string>
     <string name="scene_social_login_in_to_continue">Log in to continue</string>
     <string name="scene_social_connect_button_title">Connect</string>

@@ -48,7 +48,7 @@ expect object Deeplinks {
             const val CreatePersona: String
         }
     }
-    object Extension {
-        const val Extension: String
+    object WebContent {
+        operator fun invoke(site: String?): String
     }
 }

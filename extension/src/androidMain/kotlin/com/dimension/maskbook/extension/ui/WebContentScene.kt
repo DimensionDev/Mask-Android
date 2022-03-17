@@ -20,32 +20,45 @@
  */
 package com.dimension.maskbook.extension.ui
 
-import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.Icon
+import androidx.compose.material.LocalContentColor
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavController
-import androidx.navigation.navOptions
+import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import com.dimension.maskbook.common.gecko.WebContent
 import com.dimension.maskbook.common.gecko.WebContentController
 import com.dimension.maskbook.common.gecko.WebContentViewController
-import com.dimension.maskbook.common.route.CommonRoute
-import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.ui.widget.AppBarHeight
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskScene
 import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
 import com.dimension.maskbook.common.ui.widget.button.MaskIconButton
+import com.dimension.maskbook.common.ui.widget.button.clickable
 import com.dimension.maskbook.extension.export.model.Site
 import com.dimension.maskbook.extension.ext.site
 import com.dimension.maskbook.localization.R
@@ -54,7 +67,8 @@ import kotlin.math.roundToInt
 
 @Composable
 fun WebContentScene(
-    navController: NavController,
+    onPersonaClicked: () -> Unit,
+    site: Site?,
 ) {
     val controller = get<WebContentController>()
     val canGoBack by controller.canGoBack.collectAsState(initial = false)
@@ -78,30 +92,40 @@ fun WebContentScene(
             NestedScrollView(
                 state = state,
                 header = {
-                    MaskSingleLineTopAppBar(
-                        title = {
-                            val url by controller.url.collectAsState(initial = "")
-                            val title = remember(url) {
-                                getTitleFromUrl(url)
-                            }
-                            Text(stringResource(title))
-                        },
-                        actions = {
-                            MaskIconButton(
-                                onClick = {
-                                    navController.navigate(
-                                        Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona)),
-                                        navOptions {
-                                            launchSingleTop = true
-                                            popUpTo(CommonRoute.WebContent)
-                                        },
+                    Column {
+                        MaskSingleLineTopAppBar(
+                            title = {
+                                val url by controller.url.collectAsState(initial = "")
+                                val title = remember(url) {
+                                    getTitleFromUrl(url)
+                                }
+                                Text(stringResource(title))
+                            },
+                            actions = {
+                                MaskIconButton(
+                                    onClick = {
+                                        onPersonaClicked.invoke()
+                                    }
+                                ) {
+                                    Image(
+                                        rememberImagePainter(R.drawable.mask),
+                                        contentDescription = null
                                     )
                                 }
-                            ) {
-                                Image(rememberImagePainter(R.drawable.mask), contentDescription = null)
+                            }
+                        )
+                        site?.let {
+                            var showTips by rememberSaveable { mutableStateOf(true) }
+                            if (showTips) {
+                                PlatformTips(
+                                    it,
+                                    onClose = {
+                                        showTips = false
+                                    }
+                                )
                             }
                         }
-                    )
+                    }
                 },
                 content = {
                     WebContent(
@@ -110,6 +134,45 @@ fun WebContentScene(
                         viewController = viewController,
                     )
                 }
+            )
+        }
+    }
+}
+
+@Composable
+private fun PlatformTips(
+    site: Site,
+    onClose: () -> Unit,
+) {
+    val text = remember(site) {
+        when (site) {
+            Site.Twitter -> R.string.scene_social_login_in_notify_twitter
+            Site.Facebook -> R.string.scene_social_login_in_notify_facebook
+        }
+    }
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        color = Color(0xFFE5F2FF),
+        contentColor = Color(0xFF1D9BF0)
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(
+                    horizontal = 22.dp,
+                    vertical = 8.dp,
+                ),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = stringResource(text),
+                color = LocalContentColor.current,
+                modifier = Modifier.weight(1f),
+            )
+            Spacer(modifier = Modifier.width(20.dp))
+            Icon(
+                painter = painterResource(R.drawable.ic_close_square),
+                modifier = Modifier.size(24.dp).clickable { onClose.invoke() },
+                contentDescription = null,
             )
         }
     }

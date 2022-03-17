@@ -36,5 +36,4 @@ expect object CommonRoute {
             val Setting: String
         }
     }
-    const val WebContent: String
 }
