@@ -22,7 +22,6 @@ package com.dimension.maskbook.setting.ui.scenes.backup
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -39,6 +38,7 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -46,88 +46,105 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.dimension.maskbook.common.ext.getNestedNavigationViewModel
 import com.dimension.maskbook.common.ext.observeAsState
+import com.dimension.maskbook.common.route.navigationComposeAnimComposable
+import com.dimension.maskbook.common.route.navigationComposeAnimComposablePackage
+import com.dimension.maskbook.common.routeProcessor.annotations.Back
+import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
 import com.dimension.maskbook.common.ui.widget.MaskCard
 import com.dimension.maskbook.common.ui.widget.MaskPasswordInputField
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskScene
 import com.dimension.maskbook.common.ui.widget.MaskTopAppBar
 import com.dimension.maskbook.common.ui.widget.MetaItem
-import com.dimension.maskbook.common.ui.widget.RouteHost
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.common.ui.widget.button.MaskBackButton
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.common.ui.widget.button.clickable
 import com.dimension.maskbook.localization.R
+import com.dimension.maskbook.setting.route.SettingRoute
 import com.dimension.maskbook.setting.viewmodel.BackupLocalViewModel
-import com.google.accompanist.navigation.animation.composable
-import com.google.accompanist.navigation.animation.rememberAnimatedNavController
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import kotlinx.coroutines.flow.distinctUntilChanged
-import org.koin.androidx.compose.getViewModel
+import kotlinx.coroutines.flow.filter
 
-@OptIn(ExperimentalMaterialNavigationApi::class, ExperimentalAnimationApi::class)
+private const val GeneratedRouteName = "backupLocalRoute"
+
+@NavGraphDestination(
+    route = SettingRoute.BackupData.BackupLocal.Saving,
+    packageName = navigationComposeAnimComposablePackage,
+    functionName = navigationComposeAnimComposable,
+    generatedFunctionName = GeneratedRouteName,
+)
 @Composable
-fun BackupLocalHost(
-    onBack: () -> Unit,
-    onSuccess: () -> Unit,
-    onFailure: () -> Unit,
+fun BackupLocalSavingScene(
+    @Back onBack: () -> Unit,
+    navController: NavController,
 ) {
-    val viewModel: BackupLocalViewModel = getViewModel()
-    val navController = rememberAnimatedNavController()
-    val state by viewModel.state.observeAsState(initial = BackupLocalViewModel.State.Normal)
-    LaunchedEffect(Unit) {
+    val viewModel: BackupLocalViewModel = navController.getNestedNavigationViewModel(SettingRoute.BackupData.BackupLocal.Route)
+    val state by viewModel.state.collectAsState()
+    LaunchedEffect(state) {
         snapshotFlow { state }
             .distinctUntilChanged()
+            .filter { it != BackupLocalViewModel.State.Normal }
             .collect {
                 when (it) {
-                    BackupLocalViewModel.State.Normal -> Unit
-                    BackupLocalViewModel.State.Loading -> navController.navigate("Loading")
-                    BackupLocalViewModel.State.Failed -> onFailure.invoke()
-                    BackupLocalViewModel.State.Success -> onSuccess.invoke()
+                    BackupLocalViewModel.State.Failed -> {
+                        navController.navigate(SettingRoute.BackupData.BackupLocal.Failed) {
+                            popUpTo(SettingRoute.BackupData.BackupLocal.Saving) {
+                                inclusive = true
+                            }
+                        }
+                    }
+                    BackupLocalViewModel.State.Success -> {
+                        navController.navigate(SettingRoute.BackupData.BackupLocal.Success) {
+                            popUpTo(SettingRoute.BackupData.BackupLocal.Saving) {
+                                inclusive = true
+                            }
+                        }
+                    }
+                    else -> Unit
                 }
             }
     }
-    RouteHost(
-        navController = navController,
-        startDestination = "Main",
-    ) {
-        composable("Main") {
-            BackupLocalScene(onBack = onBack, viewModel = viewModel)
-        }
-        composable("Loading") {
-            MaskScene {
-                MaskScaffold(
-                    topBar = {
-                        MaskTopAppBar(
-                            navigationIcon = {
-                                MaskBackButton {
-                                    onBack.invoke()
-                                }
-                            }
-                        )
+    MaskScene {
+        MaskScaffold(
+            topBar = {
+                MaskTopAppBar(
+                    navigationIcon = {
+                        MaskBackButton {
+                            onBack.invoke()
+                        }
                     }
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center,
-                    ) {
-                        CircularProgressIndicator()
-                        Text(text = stringResource(R.string.common_loading))
-                    }
-                }
+                )
+            }
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+            ) {
+                CircularProgressIndicator()
+                Text(text = stringResource(R.string.common_loading))
             }
         }
     }
 }
 
+@NavGraphDestination(
+    route = SettingRoute.BackupData.BackupLocal.Backup,
+    packageName = navigationComposeAnimComposablePackage,
+    functionName = navigationComposeAnimComposable,
+    generatedFunctionName = GeneratedRouteName,
+)
 @Composable
 fun BackupLocalScene(
-    onBack: () -> Unit,
-    viewModel: BackupLocalViewModel,
+    @Back onBack: () -> Unit,
+    navController: NavController,
 ) {
+    val viewModel: BackupLocalViewModel = navController.getNestedNavigationViewModel(SettingRoute.BackupData.BackupLocal.Route)
     val meta by viewModel.meta.observeAsState(initial = null)
     val password by viewModel.password.observeAsState(initial = "")
     val backupPasswordValid by viewModel.backupPasswordValid.observeAsState(initial = false)
@@ -238,6 +255,11 @@ fun BackupLocalScene(
                     onResult = {
                         if (it != null) {
                             viewModel.save(it, withWallet)
+                            navController.navigate(SettingRoute.BackupData.BackupLocal.Saving) {
+                                popUpTo(SettingRoute.BackupData.BackupLocal.Backup) {
+                                    inclusive = true
+                                }
+                            }
                         }
                     },
                 )
