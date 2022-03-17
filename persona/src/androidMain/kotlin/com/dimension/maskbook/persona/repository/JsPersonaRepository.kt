@@ -35,19 +35,12 @@ import com.dimension.maskbook.persona.model.options.QueryPersonaOptions
 import com.dimension.maskbook.persona.model.options.QueryPersonasOptions
 import com.dimension.maskbook.persona.model.options.UpdatePersonaOptions
 
-class JsPersonaRepository(
-    database: PersonaDatabase,
-    private val preferenceRepository: IPreferenceRepository,
-) {
+class JsPersonaRepository(database: PersonaDatabase) {
 
     private val personaDao = database.personaDao()
 
     suspend fun createPersona(options: CreatePersonaOptions): DbPersonaRecord {
         val newPersona = IndexedDBDataMigrator.mapToDbPersonaRecord(options.persona)
-
-        // set current persona when create
-        preferenceRepository.setCurrentPersonaIdentifier(newPersona.identifier)
-
         return personaDao.addWithResult(newPersona)
     }
 

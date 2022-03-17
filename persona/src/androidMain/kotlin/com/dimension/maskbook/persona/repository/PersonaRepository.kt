@@ -134,7 +134,7 @@ internal class PersonaRepository(
             }
 
             val newCurrentPersona = personaRepository.getPersonaFirst()
-            preferenceRepository.setCurrentPersonaIdentifier(newCurrentPersona?.identifier.orEmpty())
+            setCurrentPersona(newCurrentPersona?.identifier.orEmpty())
         }
     }
 
@@ -154,15 +154,21 @@ internal class PersonaRepository(
         }
     }
 
+    override fun setCurrentPersona(id: String) {
+        scope.launch {
+            preferenceRepository.setCurrentPersonaIdentifier(id)
+            jsMethod.setCurrentPersonaIdentifier(id)
+        }
+    }
+
     override fun logout() {
         scope.launch {
             val deletePersona = currentPersona.firstOrNull() ?: return@launch
 
             personaRepository.deletePersona(deletePersona.identifier)
             val newCurrentPersona = personaRepository.getPersonaFirst()
-            preferenceRepository.setCurrentPersonaIdentifier(newCurrentPersona?.identifier.orEmpty())
+            setCurrentPersona(newCurrentPersona?.identifier.orEmpty())
 
-            // blocked
             jsMethod.removePersona(deletePersona.identifier)
         }
     }

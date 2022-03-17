@@ -104,12 +104,13 @@ object PersonaSetup : ModuleSetup {
             JSMethodV2(
                 get(named(IoScopeName)),
                 get(),
+                get(),
                 get(), get(),
                 get(), get(), get(),
             )
         }
 
-        single { JsPersonaRepository(get(), get()) }
+        single { JsPersonaRepository(get()) }
         single { JsProfileRepository(get()) }
         single { JsRelationRepository(get()) }
         single { DbPersonaRepository(get()) }
@@ -121,7 +122,7 @@ object PersonaSetup : ModuleSetup {
 
         viewModel { PersonaViewModel(get(), get()) }
         viewModel { DisconnectSocialViewModel(get()) }
-        viewModel { SwitchPersonaViewModel(get(), get(), get()) }
+        viewModel { SwitchPersonaViewModel(get(), get()) }
         viewModel { PersonaMenuViewModel(get(), get()) }
         viewModel { (personaId: String) -> RenamePersonaViewModel(get(), get(), personaId) }
         viewModel { ExportPrivateKeyViewModel(get()) }

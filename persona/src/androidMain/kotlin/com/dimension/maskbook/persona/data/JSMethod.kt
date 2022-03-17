@@ -175,6 +175,15 @@ internal class JSMethod(
         )
     }
 
+    suspend fun setCurrentPersonaIdentifier(
+        identifier: String
+    ) {
+        extensionServices.execute<Unit>(
+            "persona_setCurrentPersonaIdentifier",
+            "identifier" to identifier,
+        )
+    }
+
     // suspend fun queryProfiles(
     //     network: Network
     // ): List<Profile> {

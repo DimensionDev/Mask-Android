@@ -43,6 +43,7 @@ interface IPersonaRepository {
     fun cancelConnectingProcess()
     // fun generateNewMnemonic(): List<String>
     fun logout()
+    fun setCurrentPersona(id: String)
     fun updatePersona(id: String, nickname: String)
     fun updateCurrentPersona(nickname: String)
     fun connectProfile(personaId: String, userName: String)

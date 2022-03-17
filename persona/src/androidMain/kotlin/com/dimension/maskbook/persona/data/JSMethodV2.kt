@@ -46,6 +46,7 @@ import com.dimension.maskbook.persona.model.options.QueryRelationsOptions
 import com.dimension.maskbook.persona.model.options.UpdatePersonaOptions
 import com.dimension.maskbook.persona.model.options.UpdateProfileOptions
 import com.dimension.maskbook.persona.model.options.UpdateRelationOptions
+import com.dimension.maskbook.persona.repository.IPersonaRepository
 import com.dimension.maskbook.persona.repository.IPreferenceRepository
 import com.dimension.maskbook.persona.repository.JsPersonaRepository
 import com.dimension.maskbook.persona.repository.JsProfileRepository
@@ -60,6 +61,7 @@ import kotlinx.serialization.Serializable
 class JSMethodV2(
     private val scope: CoroutineScope,
     private val services: ExtensionServices,
+    private val appPersonaRepository: IPersonaRepository,
     private val database: PersonaDatabase,
     private val preferenceRepository: IPreferenceRepository,
     private val personaRepository: JsPersonaRepository,
@@ -97,6 +99,10 @@ class JSMethodV2(
         when (message.method) {
             "create_persona" -> {
                 val options = message.decodeOptions<CreatePersonaOptions>() ?: return true
+
+                // set
+                appPersonaRepository.setCurrentPersona(options.persona.identifier)
+
                 return message.responseSuccess(personaRepository.createPersona(options))
             }
             "query_persona" -> {
