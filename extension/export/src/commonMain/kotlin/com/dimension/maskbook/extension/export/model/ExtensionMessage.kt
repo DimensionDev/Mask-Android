@@ -22,6 +22,7 @@ package com.dimension.maskbook.extension.export.model
 
 data class ExtensionMessage(
     val id: Any,
+    val jsonrpc: String,
     val method: String,
     val params: String?,
     private val onResponse: (ExtensionResponseMessage) -> Unit = {},

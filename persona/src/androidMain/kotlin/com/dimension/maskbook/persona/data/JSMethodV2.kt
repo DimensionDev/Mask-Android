@@ -247,7 +247,7 @@ private inline fun <reified T> ExtensionMessage.responseSuccess(result: T?): Boo
     responseRaw(
         SerializableExtensionResponseMessage(
             messageId = id.toString(),
-            jsonrpc = "2.0",
+            jsonrpc = jsonrpc,
             result = result,
         ).encodeJson()
     )

@@ -118,11 +118,15 @@ internal class MessageChannel(
             }.getOrNull()?.toString()?.takeIf {
                 it != "null"
             }
+            val jsonrpc = kotlin.runCatching {
+                jsonObject.getString("jsonrpc")
+            }.getOrDefault("2.0")
             if (method != null) {
                 if (subscription.any { it.first == method }) {
                     subscription.filter { it.first == method }.forEach { pair ->
                         pair.second.value = ExtensionMessage(
                             id = messageId ?: "",
+                            jsonrpc = jsonrpc,
                             method = method,
                             params = params,
                             onResponse = { sendResponseMessage(it) },
@@ -132,6 +136,7 @@ internal class MessageChannel(
                 }
                 _extensionMessage.value = ExtensionMessage(
                     id = messageId ?: "",
+                    jsonrpc = jsonrpc,
                     method = method,
                     params = params,
                     onResponse = { sendResponseMessage(it) },
