@@ -86,7 +86,7 @@ class DbPersonaRepository(database: PersonaDatabase) {
     }
 
     suspend fun hasConnected(profileIdentifier: String): Boolean {
-        return linkedProfileDao.find(profileIdentifier) != null
+        return linkedProfileDao.count(profileIdentifier) > 0
     }
 }
 

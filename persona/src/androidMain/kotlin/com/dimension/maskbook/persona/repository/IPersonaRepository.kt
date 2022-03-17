@@ -41,7 +41,6 @@ interface IPersonaRepository {
     )
 
     fun cancelConnectingProcess()
-    // fun generateNewMnemonic(): List<String>
     fun logout()
     fun setCurrentPersona(id: String)
     fun updatePersona(id: String, nickname: String)
@@ -54,6 +53,5 @@ interface IPersonaRepository {
     fun init()
     fun saveEmailForCurrentPersona(value: String)
     fun savePhoneForCurrentPersona(value: String)
-    // suspend fun ensurePersonaDataLoaded()
     fun setPlatform(platformType: PlatformType)
 }

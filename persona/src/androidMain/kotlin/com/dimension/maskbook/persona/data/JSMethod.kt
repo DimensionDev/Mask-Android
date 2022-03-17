@@ -27,14 +27,6 @@ import com.dimension.maskbook.persona.export.model.Network
 internal class JSMethod(
     private val extensionServices: ExtensionServices,
 ) {
-    // suspend fun getCurrentDetectedProfile(): String? {
-    //     return extensionServices.execute("SNSAdaptor_getCurrentDetectedProfile")
-    // }
-
-    suspend fun getCurrentDetectedProfileDelegateToSNSAdaptor(): String? {
-        // return extensionServices.execute("getCurrentDetectedProfile_delegate_to_SNSAdaptor")
-        return null
-    }
 
     suspend fun createPersonaByMnemonic(
         mnemonic: String,
@@ -48,34 +40,6 @@ internal class JSMethod(
             "password" to password,
         )
     }
-
-    // suspend fun queryPersonas(
-    //     identifier: String?,
-    //     hasPrivateKey: Boolean
-    // ): List<Persona> {
-    //     return extensionServices.execute(
-    //         "persona_queryPersonas",
-    //         *listOfNotNull(
-    //             identifier?.let {
-    //                 "identifier" to identifier
-    //             },
-    //             "hasPrivateKey" to hasPrivateKey,
-    //         ).toTypedArray()
-    //     ) ?: emptyList()
-    // }
-
-    // suspend fun queryMyPersonas(
-    //     network: Network?,
-    // ): List<Persona> {
-    //     return extensionServices.execute(
-    //         "persona_queryMyPersonas",
-    //         *listOfNotNull(
-    //             network?.let {
-    //                 "network" to network.value
-    //             }
-    //         ).toTypedArray(),
-    //     ) ?: emptyList()
-    // }
 
     suspend fun updatePersonaInfo(
         identifier: String,
@@ -182,50 +146,4 @@ internal class JSMethod(
             "identifier" to identifier,
         )
     }
-
-    // suspend fun queryProfiles(
-    //     network: Network
-    // ): List<Profile> {
-    //     return extensionServices.execute(
-    //         "profile_queryProfiles",
-    //         "network" to network.value
-    //     ) ?: emptyList()
-    // }
-    //
-    // suspend fun queryMyProfile(
-    //     network: Network
-    // ): List<Profile> {
-    //     return extensionServices.execute(
-    //         "profile_queryMyProfiles",
-    //         "network" to network.value
-    //     ) ?: emptyList()
-    // }
-    //
-    // suspend fun updateProfileInfo(
-    //     identifier: String,
-    //     nickname: String?,
-    //     avatarURL: String?
-    // ) {
-    //     extensionServices.execute<Unit>(
-    //         "profile_updateProfileInfo",
-    //         "identifier" to identifier,
-    //         "data" to listOfNotNull(
-    //             nickname?.let {
-    //                 "nickname" to nickname
-    //             },
-    //             avatarURL?.let {
-    //                 "avatarURL" to avatarURL
-    //             },
-    //         ).toMap()
-    //     )
-    // }
-    //
-    // suspend fun removeProfile(
-    //     identifier: String
-    // ) {
-    //     extensionServices.execute<Unit>(
-    //         "profile_removeProfile",
-    //         "identifier" to identifier,
-    //     )
-    // }
 }

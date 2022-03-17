@@ -71,18 +71,14 @@ internal class PersonaRepository(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override val socials: Flow<List<SocialData>>
-        get() = preferenceRepository.currentPersonaIdentifier.flatMapLatest { personaIdentifier ->
-            profileRepository.getSocialListFlow(
-                personaIdentifier = personaIdentifier,
-            )
+        get() = preferenceRepository.currentPersonaIdentifier.flatMapLatest {
+            profileRepository.getSocialListFlow(it)
         }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override val contacts: Flow<List<ContactData>>
-        get() = preferenceRepository.currentPersonaIdentifier.flatMapLatest { personaIdentifier ->
-            relationRepository.getContactListFlow(
-                personaIdentifier = personaIdentifier,
-            )
+        get() = preferenceRepository.currentPersonaIdentifier.flatMapLatest {
+            relationRepository.getContactListFlow(it)
         }
 
     override suspend fun hasPersona(): Boolean {
@@ -114,16 +110,11 @@ internal class PersonaRepository(
     override fun finishConnectingProcess(profile: SocialProfile, personaId: String) {
         scope.launch {
             jsMethod.connectProfile(profile.network, personaId, profile.userId)
-            // refreshSocial()
-            // refreshPersona()
-
-            // platformSwitcher.launchDeeplink(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona))
         }
     }
 
     override fun cancelConnectingProcess() {
         connectingJob?.cancel()
-        // platformSwitcher.launchDeeplink(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona))
     }
 
     override fun init() {
@@ -220,10 +211,6 @@ internal class PersonaRepository(
     override suspend fun backupPrivateKey(id: String): String {
         return jsMethod.backupPrivateKey(id) ?: ""
     }
-
-    // override suspend fun ensurePersonaDataLoaded() {
-    //     _loaded.first { it }
-    // }
 
     override fun setPlatform(platformType: PlatformType) {
         extensionServices.setSite(platformType.toSite())

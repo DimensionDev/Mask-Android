@@ -43,9 +43,6 @@ interface RelationDao {
     @RawQuery
     suspend fun findListRaw(query: SupportSQLiteQuery): List<DbRelationRecord>
 
-    // @Query("SELECT * FROM DbRelationRecord WHERE profileIdentifier=:profileIdentifier LIMIT 1")
-    // suspend fun find(profileIdentifier: String): DbRelationRecord?
-
     @Query("SELECT * FROM DbRelationRecord WHERE personaIdentifier=:personaIdentifier AND profileIdentifier=:profileIdentifier LIMIT 1")
     suspend fun find(
         personaIdentifier: String,
