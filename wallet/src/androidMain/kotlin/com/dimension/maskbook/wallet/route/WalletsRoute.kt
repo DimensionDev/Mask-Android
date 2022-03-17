@@ -769,34 +769,6 @@ fun MultiChainWalletDialogRoute() {
     MultiChainWalletDialog()
 }
 
-// @NavGraphDestination(
-//     route = WalletRoute.ImportWallet.path,
-//     packageName = navigationComposeAnimComposablePackage,
-//     functionName = navigationComposeAnimComposable,
-// )
-// @Composable
-// fun ImportWallet(
-//     navController: NavController,
-//     @Back onBack: () -> Unit,
-//     @Path("wallet") wallet: String,
-// ) {
-//     ImportWalletHost(
-//         wallet = wallet,
-//         onDone = {
-//             navController.navigate(
-//                 Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Wallet)),
-//                 navOptions = navOptions {
-//                     launchSingleTop = true
-//                     popUpTo(CommonRoute.Main.Home.path) {
-//                         inclusive = false
-//                     }
-//                 }
-//             )
-//         },
-//         onBack = onBack,
-//     )
-// }
-
 @NavGraphDestination(
     route = WalletRoute.UnlockWalletDialog.path,
     packageName = navigationComposeDialogPackage,
