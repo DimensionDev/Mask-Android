@@ -20,17 +20,15 @@
  */
 package com.dimension.maskbook.extension.utils
 
-import android.util.Log
 import com.dimension.maskbook.common.gecko.WebContentController
 import com.dimension.maskbook.extension.export.model.ExtensionMessage
 import com.dimension.maskbook.extension.export.model.ExtensionResponseMessage
 import com.dimension.maskbook.extension.ext.toMap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.onFailure
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -45,8 +43,8 @@ internal class MessageChannel(
     private val queue = ConcurrentHashMap<String, Channel<String?>>()
     private val subscription = arrayListOf<Pair<String, MutableStateFlow<ExtensionMessage?>>>()
 
-    private val _extensionMessage = Channel<ExtensionMessage>(capacity = Channel.BUFFERED)
-    val extensionMessage: Flow<ExtensionMessage> = _extensionMessage.consumeAsFlow()
+    private val _extensionMessage = MutableStateFlow<ExtensionMessage?>(null)
+    val extensionMessage: Flow<ExtensionMessage> = _extensionMessage.asStateFlow().filterNotNull()
 
     fun startMessageCollect() {
         controller.message
@@ -125,17 +123,13 @@ internal class MessageChannel(
                         )
                     }
                 }
-                _extensionMessage.trySend(
-                    ExtensionMessage(
-                        id = messageId ?: "",
-                        method = method,
-                        params = params,
-                        onResponse = { sendResponseMessage(it) },
-                        onResponseRaw = { sendResponseMessageRaw(it) },
-                    )
-                ).onFailure {
-                    Log.w("MessageChannel", it)
-                }
+                _extensionMessage.value = ExtensionMessage(
+                    id = messageId ?: "",
+                    method = method,
+                    params = params,
+                    onResponse = { sendResponseMessage(it) },
+                    onResponseRaw = { sendResponseMessageRaw(it) },
+                )
             }
         }
     }
