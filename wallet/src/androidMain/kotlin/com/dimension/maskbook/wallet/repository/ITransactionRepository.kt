@@ -21,6 +21,8 @@
 package com.dimension.maskbook.wallet.repository
 
 import com.dimension.maskbook.common.ext.ifNullOrEmpty
+import com.dimension.maskbook.debankapi.model.ChainID
+import com.dimension.maskbook.debankapi.model.TokenDict
 import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.export.model.TokenData
 import com.dimension.maskbook.wallet.export.model.WalletCollectibleData
@@ -52,9 +54,14 @@ class TransactionRepository(
         walletData: WalletData,
         tokenData: TokenData
     ): List<TransactionData> {
+        val isNativeToken = walletRepository.getChainData(tokenData.chainType)
+            .firstOrNull()?.nativeToken?.address == tokenData.address
         return getTransactionByWalletAndChainType(
             walletData = walletData,
-            chainType = tokenData.chainType
+            chainType = tokenData.chainType,
+            getTokenId = {
+                it?.id ?: if (isNativeToken) tokenData.address else ""
+            }
         ).filter {
             it.tokenData.id == tokenData.address && it.tokenData.chainType == tokenData.chainType
         }
@@ -63,7 +70,11 @@ class TransactionRepository(
     override suspend fun getTransactionByWallet(walletData: WalletData): List<TransactionData> {
         val current =
             walletRepository.dWebData.firstOrNull()?.chainType ?: return emptyList()
-        return getTransactionByWalletAndChainType(walletData = walletData, chainType = current)
+        return getTransactionByWalletAndChainType(
+            walletData = walletData,
+            chainType = current,
+            getTokenId = { it?.innerId.ifNullOrEmpty { it?.id ?: "" } }
+        )
     }
 
     override suspend fun getTransactionByCollectible(
@@ -72,7 +83,8 @@ class TransactionRepository(
     ): List<TransactionData> {
         return getTransactionByWalletAndChainType(
             walletData = walletData,
-            chainType = collectible.chainType
+            chainType = collectible.chainType,
+            getTokenId = { it?.innerId ?: "" }
         ).filter {
             it.tokenData.chainType == collectible.chainType &&
                 it.tokenData.id == collectible.tokenId &&
@@ -80,7 +92,11 @@ class TransactionRepository(
         }
     }
 
-    private suspend fun getTransactionByWalletAndChainType(walletData: WalletData, chainType: ChainType): List<TransactionData> {
+    private suspend fun getTransactionByWalletAndChainType(
+        walletData: WalletData,
+        chainType: ChainType,
+        getTokenId: (token: TokenDict?) -> String
+    ): List<TransactionData> {
         val chainId = try {
             chainType.dbank
         } catch (ignored: Throwable) {
@@ -94,8 +110,8 @@ class TransactionRepository(
                 ?: it.sends?.firstOrNull()?.tokenID
             val tokenData = result.data?.tokenDict?.get(tokenId).let { token ->
                 TransactionTokenData(
-                    id = token?.innerId.ifNullOrEmpty { token?.id ?: "" },
-                    chainType = token?.chain?.name?.toChainType() ?: ChainType.unknown,
+                    id = getTokenId(token),
+                    chainType = token?.chain?.name?.let { ChainID.valueOf(it).chainType } ?: chainType,
                     symbol = token?.symbol.ifNullOrEmpty { token?.name ?: "" },
                     price = java.math.BigDecimal(token?.price ?: 0.0),
                     contractId = token?.contractId ?: ""

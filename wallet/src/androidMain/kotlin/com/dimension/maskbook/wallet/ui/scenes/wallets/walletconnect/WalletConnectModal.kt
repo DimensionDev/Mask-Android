@@ -18,7 +18,7 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.ui.scenes.wallets.management
+package com.dimension.maskbook.wallet.ui.scenes.wallets.walletconnect
 
 import android.content.ActivityNotFoundException
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -72,12 +72,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavType
+import androidx.navigation.compose.dialog
+import androidx.navigation.navArgument
 import androidx.navigation.navOptions
 import coil.compose.rememberImagePainter
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.ui.LocalRootNavController
 import com.dimension.maskbook.common.ui.notification.StringResNotificationEvent.Companion.show
 import com.dimension.maskbook.common.ui.widget.LocalInAppNotification
+import com.dimension.maskbook.common.ui.widget.MaskDialog
 import com.dimension.maskbook.common.ui.widget.MaskModal
 import com.dimension.maskbook.common.ui.widget.SinglelineText
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
@@ -87,7 +91,9 @@ import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.repository.WCWallet
 import com.dimension.maskbook.wallet.route.WalletRoute
-import com.dimension.maskbook.wallet.viewmodel.wallets.WalletConnectViewModel
+import com.dimension.maskbook.wallet.ui.scenes.wallets.management.supportedChainType
+import com.dimension.maskbook.wallet.viewmodel.wallets.walletconnect.WalletConnectResult
+import com.dimension.maskbook.wallet.viewmodel.wallets.walletconnect.WalletConnectViewModel
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
@@ -109,19 +115,21 @@ fun WalletConnectModal() {
     val navController = rememberAnimatedNavController()
     val rootNavController = LocalRootNavController.current
     val scope = rememberCoroutineScope()
-    val onResult: (success: Boolean, needToSwitchNetwork: Boolean) -> Unit = { success, switch ->
+    val onResult: (WalletConnectResult) -> Unit = { result ->
         scope.launch(Dispatchers.Main) {
-            if (success) {
-                if (switch) rootNavController.navigate(
-                    WalletRoute.WalletNetworkSwitchWarningDialog,
-                    navOptions {
-                        popUpTo(WalletRoute.SwitchWalletAddWalletConnect) {
-                            inclusive = true
+            when (result) {
+                is WalletConnectResult.Success -> {
+                    if (result.switchNetwork) rootNavController.navigate(
+                        WalletRoute.WalletNetworkSwitchWarningDialog,
+                        navOptions {
+                            popUpTo(WalletRoute.SwitchWalletAddWalletConnect) {
+                                inclusive = true
+                            }
                         }
-                    }
-                ) else rootNavController.popBackStack()
-            } else {
-                navController.navigate("WalletConnectFailed")
+                    ) else rootNavController.popBackStack()
+                }
+                is WalletConnectResult.UnSupportedNetwork -> navController.navigate("WalletConnectUnsupportedNetwork/${result.network}")
+                WalletConnectResult.Failed -> navController.navigate("WalletConnectFailed")
             }
         }
     }
@@ -191,9 +199,52 @@ fun WalletConnectModal() {
                         }
                     )
                 }
+
+                dialog(
+                    "WalletConnectUnsupportedNetwork/{network}",
+                    listOf(navArgument("network") { type = NavType.StringType })
+                ) {
+                    val network = it.arguments?.getString("network") ?: "unKnown"
+                    WalletConnectUnsupportedNetwork(
+                        onBack = {
+                            viewModel.retry()
+                            navController.popBackStack(
+                                route = "WalletConnectTypeSelect",
+                                inclusive = false
+                            )
+                        },
+                        network = network
+                    )
+                }
             }
         }
     }
+}
+
+@Composable
+fun WalletConnectUnsupportedNetwork(
+    onBack: () -> Unit,
+    network: String
+) {
+    MaskDialog(
+        onDismissRequest = onBack,
+        icon = {
+            Image(painterResource(R.drawable.ic_property_1_failed), contentDescription = null)
+        },
+        title = {
+            Text(stringResource(R.string.scene_wallet_connect_network_not_support, network))
+        },
+        buttons = {
+            PrimaryButton(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = {
+                    onBack.invoke()
+                }
+            ) {
+                Text(stringResource(R.string.common_controls_ok))
+            }
+        }
+    )
 }
 
 @Composable

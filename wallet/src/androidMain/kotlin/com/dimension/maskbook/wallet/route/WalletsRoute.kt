@@ -74,7 +74,6 @@ import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.password.Biometrics
 import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.password.SetUpPaymentPassword
 import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.password.TouchIdEnableScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.BackupWalletScene
-import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletConnectModal
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletDeleteDialog
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletManagementModal
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletNetworkSwitchWarningDialog
@@ -85,6 +84,7 @@ import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletSwitchSc
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletTransactionHistoryScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.send.TransferHost
 import com.dimension.maskbook.wallet.ui.scenes.wallets.token.TokenDetailScene
+import com.dimension.maskbook.wallet.ui.scenes.wallets.walletconnect.WalletConnectModal
 import com.dimension.maskbook.wallet.viewmodel.wallets.BackUpPasswordViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.BiometricViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.TokenDetailViewModel
@@ -831,7 +831,7 @@ fun SendTokenScene(
     @Query("tradableId") tradableId: String?,
 ) {
     TransferHost(
-        tradableId = tradableId?.let { if (it != "null") it else null }.orEmpty(),
+        tradableId = tradableId.orEmpty(),
         onBack = onBack,
         onDone = onBack,
     )

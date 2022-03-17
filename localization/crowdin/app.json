@@ -651,7 +651,10 @@
         },
         "social": {
             "login_in_to_continue": "Log in to continue",
-            "login_in_notify": "Please log in to Twitter first and we will guide you through the next steps to connect to Mask Network.",
+            "login_in_notify": {
+                "twitter": "Log in to Twitter to connect.",
+                "facebook": "Log in to Facebook to connect."
+            },
             "i_understand": "I understand",
             "title": "Home",
             "connect_button_title": "Connect",
