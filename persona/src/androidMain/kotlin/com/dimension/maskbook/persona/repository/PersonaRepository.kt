@@ -37,6 +37,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
@@ -97,6 +99,8 @@ internal class PersonaRepository(
         extensionServices.setSite(platformType.toSite())
 
         connectingJob = preferenceRepository.lastDetectProfileIdentifier
+            .filter { it.isNotEmpty() }
+            .filterNot { personaRepository.hasConnected(it) }
             .mapNotNull { SocialProfile.parse(it) }
             .flowOn(Dispatchers.IO)
             .onEach {

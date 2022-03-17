@@ -29,6 +29,7 @@ import kotlinx.coroutines.flow.map
 class DbPersonaRepository(database: PersonaDatabase) {
 
     private val personaDao = database.personaDao()
+    private val linkedProfileDao = database.linkedProfileDao()
 
     suspend fun deletePersona(personaIdentifier: String) {
         personaDao.delete(personaIdentifier)
@@ -82,6 +83,10 @@ class DbPersonaRepository(database: PersonaDatabase) {
 
     suspend fun isEmpty(): Boolean {
         return personaDao.count() == 0
+    }
+
+    suspend fun hasConnected(profileIdentifier: String): Boolean {
+        return linkedProfileDao.find(profileIdentifier) != null
     }
 }
 

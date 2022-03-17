@@ -28,7 +28,6 @@ class SocialProfile private constructor(
 ) {
     companion object {
         fun parse(profileIdentifier: String): SocialProfile? {
-            if (profileIdentifier.isEmpty()) return null
             val normalized = profileIdentifier.removePrefix(prefix = Prefix)
             val components = normalized.split("/")
             if (components.size != 2) {
