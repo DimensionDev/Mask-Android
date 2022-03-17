@@ -21,7 +21,6 @@
 package com.dimension.maskbook.wallet
 
 import android.content.Context
-import android.net.Uri
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -54,6 +53,7 @@ import com.dimension.maskbook.wallet.route.WalletRoute
 import com.dimension.maskbook.wallet.route.generatedRoute
 import com.dimension.maskbook.wallet.services.WalletServices
 import com.dimension.maskbook.wallet.ui.scenes.register.createidentity.createIdentityRoute
+import com.dimension.maskbook.wallet.ui.scenes.register.recovery.local.recoveryLocalRoute
 import com.dimension.maskbook.wallet.ui.scenes.wallets.create.create.createWalletRoute
 import com.dimension.maskbook.wallet.ui.scenes.wallets.send.transferRoute
 import com.dimension.maskbook.wallet.ui.tab.WalletTabScreen
@@ -169,6 +169,12 @@ object WalletSetup : ModuleSetup {
             route = WalletRoute.CreateWallet.Route
         ) {
             createWalletRoute(navController)
+        }
+        navigation(
+            startDestination = WalletRoute.Register.Recovery.LocalBackup.Loading.path,
+            route = WalletRoute.Register.Recovery.LocalBackup.Route,
+        ) {
+            recoveryLocalRoute(navController)
         }
     }
 
@@ -314,7 +320,7 @@ private fun Module.provideUseCase() {
 }
 
 private fun Module.provideViewModel() {
-    viewModel { (uri: Uri) ->
+    viewModel { (uri: String) ->
         RecoveryLocalViewModel(
             get(),
             uri,

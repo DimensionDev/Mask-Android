@@ -84,7 +84,7 @@ fun BackupLocalSavingScene(
 ) {
     val viewModel: BackupLocalViewModel = navController.getNestedNavigationViewModel(SettingRoute.BackupData.BackupLocal.Route)
     val state by viewModel.state.collectAsState()
-    LaunchedEffect(state) {
+    LaunchedEffect(Unit) {
         snapshotFlow { state }
             .distinctUntilChanged()
             .filter { it != BackupLocalViewModel.State.Normal }

@@ -197,9 +197,18 @@ expect object WalletRoute {
             }
 
             object LocalBackup {
-                object RemoteBackupRecovery_RecoveryLocal {
+                const val Route: String
+                object Loading {
                     operator fun invoke(uri: String): String
                 }
+                object Password {
+                    operator fun invoke(uri: String): String
+                }
+                const val Failed: String
+                object Success {
+                    operator fun invoke(uri: String): String
+                }
+                const val Notification: String
             }
 
             const val IdentityPersona: String
