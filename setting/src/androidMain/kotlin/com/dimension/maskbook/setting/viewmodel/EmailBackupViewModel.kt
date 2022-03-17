@@ -32,6 +32,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import org.koin.android.annotation.KoinViewModel
+import retrofit2.HttpException
 
 @KoinViewModel
 class EmailBackupViewModel(
@@ -54,7 +55,12 @@ class EmailBackupViewModel(
 
             Result.success(target)
         } catch (e: Throwable) {
-            Result.failure(e)
+            // code is correct but no backup data found
+            if (e is HttpException && e.code() == 404) {
+                Result.success(DownloadResponse(null, null, null, null))
+            } else {
+                Result.failure(e)
+            }
         } finally {
             _loading.value = false
         }
@@ -93,7 +99,12 @@ class PhoneBackupViewModel(
 
             Result.success(target)
         } catch (e: Throwable) {
-            Result.failure(e)
+            // code is correct but no backup data found
+            if (e is HttpException && e.code() == 404) {
+                Result.success(DownloadResponse(null, null, null, null))
+            } else {
+                Result.failure(e)
+            }
         } finally {
             _loading.value = false
         }
