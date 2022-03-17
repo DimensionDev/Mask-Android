@@ -63,22 +63,29 @@ internal class MessageChannel(
 
     suspend fun executeMessage(
         method: String,
+        isWait: Boolean = true,
         params: Map<String, Any> = emptyMap(),
     ): String? {
         val id = UUID.randomUUID().toString()
+        val message = JSONObject(
+            mapOf(
+                "id" to id,
+                "jsonrpc" to "2.0",
+                "method" to method,
+                "params" to JSONObject(params)
+            )
+        )
+
+        // some method will not return, don't receive
+        if (!isWait) {
+            controller.sendMessage(message)
+            return null
+        }
+
         val channel = Channel<String?>()
         try {
             queue[id] = channel
-            controller.sendMessage(
-                JSONObject(
-                    mapOf(
-                        "id" to id,
-                        "jsonrpc" to "2.0",
-                        "method" to method,
-                        "params" to JSONObject(params)
-                    )
-                )
-            )
+            controller.sendMessage(message)
             return channel.receive()
         } finally {
             channel.close()
