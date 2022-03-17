@@ -38,7 +38,7 @@ fun DbRelationRecord.toIndexedDBRelation(): IndexedDBRelation {
     return IndexedDBRelation(
         personaIdentifier = personaIdentifier,
         profileIdentifier = profileIdentifier,
-        favor = if (favor) 1 else 0,
+        favor = if (favor) 1 else -1,
         network = Network.withProfileIdentifier(profileIdentifier)?.value.orEmpty(),
     )
 }

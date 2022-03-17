@@ -18,20 +18,27 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.persona.model.options
+package com.dimension.maskbook.persona.db.sql
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import com.dimension.maskbook.persona.model.options.PageOptions
 
-@Serializable
-data class QueryAvatarOptions(
-    @SerialName("identifier")
-    val profileIdentifier: String,
-)
+private const val dbName = "DbPostRecord"
 
-@Serializable
-data class StoreAvatarOptions(
-    @SerialName("identifier")
-    val profileIdentifier: String,
-    val avatar: String,
-)
+fun buildQueryPostSql(
+    encryptBy: String? = null,
+    userIds: List<String>? = null,
+    network: String? = null,
+    pageOptions: PageOptions? = null
+) = buildString {
+    append("SELECT * FROM $dbName ")
+    buildWhereSql(
+        encryptBy = encryptBy,
+        userIds = userIds,
+        network = network,
+    ).let {
+        append("WHERE $it ")
+    }
+    pageOptions?.let {
+        append(it.asLimitSql())
+    }
+}

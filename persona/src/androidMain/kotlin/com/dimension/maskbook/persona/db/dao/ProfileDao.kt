@@ -49,6 +49,9 @@ interface ProfileDao {
     @Query("SELECT * FROM DbProfileRecord WHERE identifier=:identifier LIMIT 1")
     suspend fun find(identifier: String): DbProfileRecord?
 
+    @Query("UPDATE DbProfileRecord SET avatar=:avatar WHERE identifier=:identifier")
+    suspend fun updateAvatar(identifier: String, avatar: String)
+
     @Transaction
     @Query("SELECT * FROM DbProfileRecord WHERE identifier in (SELECT profileIdentifier FROM DbLinkedProfileRecord WHERE personaIdentifier=:personaIdentifier)")
     fun getListWithPersonaFlow(personaIdentifier: String): Flow<List<ProfileWithLinkedProfile>>

@@ -30,6 +30,7 @@ import com.dimension.maskbook.persona.db.migrator.IndexedDBDataMigrator
 import com.dimension.maskbook.persona.model.indexed.IndexedDBAllRecord
 import com.dimension.maskbook.persona.model.options.AttachProfileOptions
 import com.dimension.maskbook.persona.model.options.CreatePersonaOptions
+import com.dimension.maskbook.persona.model.options.CreatePostOptions
 import com.dimension.maskbook.persona.model.options.CreateProfileOptions
 import com.dimension.maskbook.persona.model.options.CreateRelationOptions
 import com.dimension.maskbook.persona.model.options.DeletePersonaOptions
@@ -37,18 +38,24 @@ import com.dimension.maskbook.persona.model.options.DeleteProfileOptions
 import com.dimension.maskbook.persona.model.options.DeleteRelationOptions
 import com.dimension.maskbook.persona.model.options.DetachProfileOptions
 import com.dimension.maskbook.persona.model.options.ParamOptions
+import com.dimension.maskbook.persona.model.options.QueryAvatarOptions
 import com.dimension.maskbook.persona.model.options.QueryPersonaByProfileOptions
 import com.dimension.maskbook.persona.model.options.QueryPersonaOptions
 import com.dimension.maskbook.persona.model.options.QueryPersonasOptions
+import com.dimension.maskbook.persona.model.options.QueryPostOptions
+import com.dimension.maskbook.persona.model.options.QueryPostsOptions
 import com.dimension.maskbook.persona.model.options.QueryProfileOptions
 import com.dimension.maskbook.persona.model.options.QueryProfilesOptions
 import com.dimension.maskbook.persona.model.options.QueryRelationsOptions
+import com.dimension.maskbook.persona.model.options.StoreAvatarOptions
 import com.dimension.maskbook.persona.model.options.UpdatePersonaOptions
+import com.dimension.maskbook.persona.model.options.UpdatePostOptions
 import com.dimension.maskbook.persona.model.options.UpdateProfileOptions
 import com.dimension.maskbook.persona.model.options.UpdateRelationOptions
 import com.dimension.maskbook.persona.repository.IPersonaRepository
 import com.dimension.maskbook.persona.repository.IPreferenceRepository
 import com.dimension.maskbook.persona.repository.JsPersonaRepository
+import com.dimension.maskbook.persona.repository.JsPostRepository
 import com.dimension.maskbook.persona.repository.JsProfileRepository
 import com.dimension.maskbook.persona.repository.JsRelationRepository
 import kotlinx.coroutines.CoroutineScope
@@ -67,6 +74,7 @@ class JSMethodV2(
     private val personaRepository: JsPersonaRepository,
     private val profileRepository: JsProfileRepository,
     private val relationRepository: JsRelationRepository,
+    private val postRepository: JsPostRepository,
 ) {
     fun startSubscribe() {
         scope.launch {
@@ -100,7 +108,7 @@ class JSMethodV2(
             "create_persona" -> {
                 val options = message.decodeOptions<CreatePersonaOptions>() ?: return true
 
-                // set
+                // set current persona when create
                 appPersonaRepository.setCurrentPersona(options.persona.identifier)
 
                 return message.responseSuccess(personaRepository.createPersona(options))
@@ -195,12 +203,12 @@ class JSMethodV2(
     private suspend fun subscribeWithAvatar(message: ExtensionMessage): Boolean {
         when (message.method) {
             "query_avatar" -> {
-                // message.params -> QueryAvatarOptions
-                // return String?
+                val options = message.decodeOptions<QueryAvatarOptions>() ?: return true
+                return message.responseSuccess(profileRepository.queryAvatar(options))
             }
-            "storeAvatar" -> {
-                // message.params -> StoreAvatarOptions
-                // return Unit
+            "store_avatar" -> {
+                val options = message.decodeOptions<StoreAvatarOptions>() ?: return true
+                return message.responseSuccess(profileRepository.storeAvatar(options))
             }
         }
         return false
@@ -211,20 +219,20 @@ class JSMethodV2(
     private suspend fun subscribeWithPost(message: ExtensionMessage): Boolean {
         when (message.method) {
             "create_post" -> {
-                // message.params -> CreatePostOptions
-                // return PostRecord?
+                val options = message.decodeOptions<CreatePostOptions>() ?: return true
+                return message.responseSuccess(postRepository.createPost(options))
             }
             "query_post" -> {
-                // message.params -> QueryPostOptions
-                // return PostRecord?
+                val options = message.decodeOptions<QueryPostOptions>() ?: return true
+                return message.responseSuccess(postRepository.queryPost(options))
             }
             "query_posts" -> {
-                // message.params -> QueryPostsOptions
-                // return PostRecord[]
+                val options = message.decodeOptions<QueryPostsOptions>() ?: return true
+                return message.responseSuccess(postRepository.queryPosts(options))
             }
-            "updatePost" -> {
-                // message.params -> UpdatePostOptions
-                // return PostRecord[] ???
+            "update_post" -> {
+                val options = message.decodeOptions<UpdatePostOptions>() ?: return true
+                return message.responseSuccess(postRepository.updatePost(options))
             }
         }
         return false
@@ -261,7 +269,7 @@ private inline fun <reified T> ExtensionMessage.responseSuccess(result: T?): Boo
 }
 
 @Serializable
-data class SerializableExtensionResponseMessage<T>(
+private data class SerializableExtensionResponseMessage<T>(
     val messageId: String,
     val jsonrpc: String,
     val result: T?

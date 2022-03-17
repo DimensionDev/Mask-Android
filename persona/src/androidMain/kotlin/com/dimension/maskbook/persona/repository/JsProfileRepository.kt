@@ -34,8 +34,10 @@ import com.dimension.maskbook.persona.model.options.AttachProfileOptions
 import com.dimension.maskbook.persona.model.options.CreateProfileOptions
 import com.dimension.maskbook.persona.model.options.DeleteProfileOptions
 import com.dimension.maskbook.persona.model.options.DetachProfileOptions
+import com.dimension.maskbook.persona.model.options.QueryAvatarOptions
 import com.dimension.maskbook.persona.model.options.QueryProfileOptions
 import com.dimension.maskbook.persona.model.options.QueryProfilesOptions
+import com.dimension.maskbook.persona.model.options.StoreAvatarOptions
 import com.dimension.maskbook.persona.model.options.UpdateProfileOptions
 
 class JsProfileRepository(database: PersonaDatabase) {
@@ -70,16 +72,17 @@ class JsProfileRepository(database: PersonaDatabase) {
         }
     }
 
-    suspend fun updateProfile(options: UpdateProfileOptions): IndexedDBProfile? {
+    suspend fun updateProfile(options: UpdateProfileOptions): IndexedDBProfile {
         val oldProfile = profileDao.find(options.profile.identifier)
-        val newProfile = options.profile.toDbProfileRecord()
         if (oldProfile != null) {
             return options.profile
         }
 
         if (options.options.createWhenNotExist) {
+            val newProfile = options.profile.toDbProfileRecord()
             newProfile.network = Network.withProfileIdentifier(newProfile.identifier)
             profileDao.insert(newProfile)
+            return newProfile.toIndexedDBProfile()
         }
 
         return options.profile
@@ -111,5 +114,13 @@ class JsProfileRepository(database: PersonaDatabase) {
         linkedProfileDao.delete(
             profileIdentifier = options.profileIdentifier,
         )
+    }
+
+    suspend fun queryAvatar(options: QueryAvatarOptions): String? {
+        return profileDao.find(options.profileIdentifier)?.avatar
+    }
+
+    suspend fun storeAvatar(options: StoreAvatarOptions) {
+        profileDao.updateAvatar(options.profileIdentifier, options.avatar)
     }
 }

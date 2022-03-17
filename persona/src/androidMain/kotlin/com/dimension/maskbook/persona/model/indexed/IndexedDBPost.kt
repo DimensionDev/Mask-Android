@@ -18,20 +18,20 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.persona.model.options
+package com.dimension.maskbook.persona.model.indexed
 
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonObject
 
 @Serializable
-data class QueryAvatarOptions(
-    @SerialName("identifier")
-    val profileIdentifier: String,
-)
-
-@Serializable
-data class StoreAvatarOptions(
-    @SerialName("identifier")
-    val profileIdentifier: String,
-    val avatar: String,
+class IndexedDBPost(
+    val postBy: String,
+    val identifier: String,
+    val postCryptoKey: JsonObject?,
+    val recipients: MutableMap<String, JsonObject>?,
+    val foundAt: Long,
+    val encryptBy: String?,
+    val url: String?,
+    val summary: String?,
+    val interestedMeta: MutableMap<String, JsonObject>?,
 )

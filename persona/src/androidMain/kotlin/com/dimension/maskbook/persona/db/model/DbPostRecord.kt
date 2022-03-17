@@ -22,20 +22,19 @@ package com.dimension.maskbook.persona.db.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import kotlinx.serialization.Serializable
+import com.dimension.maskbook.persona.export.model.Network
 import kotlinx.serialization.json.JsonObject
 
-@Serializable
 @Entity
 data class DbPostRecord(
     @PrimaryKey val identifier: String,
     val encryptBy: String?,
-    val postNetwork: String,
+    val postNetwork: Network,
     val postUserId: String,
     val postCryptoKeyRaw: JsonObject?,
     val url: String?,
     val summary: String?,
-    val recipientsRaw: JsonObject?,
-    val interestedMetaRaw: JsonObject?,
+    var recipientsRaw: MutableMap<String, JsonObject>?,
+    val interestedMetaRaw: MutableMap<String, JsonObject>?,
     val foundAt: Long,
 )

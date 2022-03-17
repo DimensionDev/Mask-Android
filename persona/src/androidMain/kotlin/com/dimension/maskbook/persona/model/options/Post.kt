@@ -20,13 +20,13 @@
  */
 package com.dimension.maskbook.persona.model.options
 
-import com.dimension.maskbook.persona.db.model.DbPostRecord
+import com.dimension.maskbook.persona.model.indexed.IndexedDBPost
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class CreatePostOptions(
-    val post: DbPostRecord,
+    val post: IndexedDBPost,
 )
 
 @Serializable
@@ -45,7 +45,7 @@ data class QueryPostsOptions(
 
 @Serializable
 data class UpdatePostOptions(
-    val post: DbPostRecord,
+    val post: IndexedDBPost,
     val options: Options,
 ) {
     @Serializable

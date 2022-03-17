@@ -41,6 +41,7 @@ import com.dimension.maskbook.persona.repository.IPersonaRepository
 import com.dimension.maskbook.persona.repository.IPreferenceRepository
 import com.dimension.maskbook.persona.repository.ISocialsRepository
 import com.dimension.maskbook.persona.repository.JsPersonaRepository
+import com.dimension.maskbook.persona.repository.JsPostRepository
 import com.dimension.maskbook.persona.repository.JsProfileRepository
 import com.dimension.maskbook.persona.repository.JsRelationRepository
 import com.dimension.maskbook.persona.repository.PersonaRepository
@@ -106,13 +107,14 @@ object PersonaSetup : ModuleSetup {
                 get(),
                 get(),
                 get(), get(),
-                get(), get(), get(),
+                get(), get(), get(), get(),
             )
         }
 
         single { JsPersonaRepository(get()) }
         single { JsProfileRepository(get()) }
         single { JsRelationRepository(get()) }
+        single { JsPostRepository(get()) }
         single { DbPersonaRepository(get()) }
         single { DbProfileRepository(get()) }
         single { DbRelationRepository(get()) }

@@ -28,6 +28,7 @@ import com.dimension.maskbook.common.ext.decodeJson
 import com.dimension.maskbook.common.ext.encodeJson
 import com.dimension.maskbook.persona.db.dao.LinkedProfileDao
 import com.dimension.maskbook.persona.db.dao.PersonaDao
+import com.dimension.maskbook.persona.db.dao.PostDao
 import com.dimension.maskbook.persona.db.dao.ProfileDao
 import com.dimension.maskbook.persona.db.dao.RelationDao
 import com.dimension.maskbook.persona.db.model.DbLinkedProfileRecord
@@ -53,12 +54,14 @@ import kotlinx.serialization.json.JsonObject
     JsonObjectConverter::class,
     LinkedProfileDetailsStateConverter::class,
     NetworkConverter::class,
+    MutableMapJsonObjectConverter::class,
 )
 abstract class PersonaDatabase : RoomDatabase() {
     abstract fun personaDao(): PersonaDao
     abstract fun profileDao(): ProfileDao
     abstract fun linkedProfileDao(): LinkedProfileDao
     abstract fun relationDao(): RelationDao
+    abstract fun postDao(): PostDao
 }
 
 internal class JsonObjectConverter {
@@ -94,5 +97,17 @@ internal class NetworkConverter {
     @TypeConverter
     fun toNetwork(value: String?): Network? {
         return Network.withHost(value)
+    }
+}
+
+internal class MutableMapJsonObjectConverter {
+    @TypeConverter
+    fun fromMutableMapJsonObject(value: MutableMap<String, JsonObject>?): String? {
+        return value?.encodeJson()
+    }
+
+    @TypeConverter
+    fun toMutableMapJsonObject(value: String?): MutableMap<String, JsonObject>? {
+        return value?.decodeJson()
     }
 }

@@ -18,20 +18,25 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.persona.model.options
+package com.dimension.maskbook.persona.db.dao
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.RawQuery
+import androidx.sqlite.db.SupportSQLiteQuery
+import com.dimension.maskbook.persona.db.model.DbPostRecord
 
-@Serializable
-data class QueryAvatarOptions(
-    @SerialName("identifier")
-    val profileIdentifier: String,
-)
+@Dao
+interface PostDao {
 
-@Serializable
-data class StoreAvatarOptions(
-    @SerialName("identifier")
-    val profileIdentifier: String,
-    val avatar: String,
-)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(post: DbPostRecord)
+
+    @Query("SELECT * FROM DbPostRecord WHERE identifier=:identifier LIMIT 1")
+    suspend fun find(identifier: String): DbPostRecord?
+
+    @RawQuery
+    suspend fun findListRaw(query: SupportSQLiteQuery): List<DbPostRecord>
+}

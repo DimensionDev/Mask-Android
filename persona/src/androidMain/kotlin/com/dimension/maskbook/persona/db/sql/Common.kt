@@ -42,6 +42,8 @@ internal fun buildWhereSql(
     initialized: Boolean? = null,
     network: String? = null,
     favor: Boolean? = null,
+    encryptBy: String? = null,
+    userIds: List<String>? = null,
 ): String {
     return listOfNotNull(
         if (!identifiers.isNullOrEmpty()) {
@@ -64,6 +66,12 @@ internal fun buildWhereSql(
         } else null,
         if (favor != null) {
             "favor = $favor"
+        } else null,
+        if (!encryptBy.isNullOrEmpty()) {
+            "encryptBy = '$encryptBy'"
+        } else null,
+        if (!userIds.isNullOrEmpty()) {
+            "postUserId in (${userIds.joinToString(",") { "'$it'" }})"
         } else null,
     ).joinToString(separator = " AND ")
 }
