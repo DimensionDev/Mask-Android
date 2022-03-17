@@ -29,6 +29,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import androidx.navigation.navOptions
+import com.dimension.maskbook.common.ext.navigate
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
@@ -88,19 +89,23 @@ fun RegisterCreateIdentity(
     navController: NavController,
     @Back onBack: () -> Unit,
     @Path("personaName") personaName: String,
+    @Path("isWelcome") isWelcome: Boolean,
 ) {
     CreateIdentityHost(
         personaName = personaName,
         onDone = {
-            navController.navigate(
-                Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona)),
-                navOptions = navOptions {
-                    launchSingleTop = true
+            navController.navigate(Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona))) {
+                launchSingleTop = true
+                if (isWelcome) {
+                    popUpTo(WalletRoute.Register.Init) {
+                        inclusive = true
+                    }
+                } else {
                     popUpTo(CommonRoute.Main.Home.path) {
                         inclusive = false
                     }
                 }
-            )
+            }
         },
         onBack = onBack,
     )
@@ -122,7 +127,7 @@ fun WelcomeCreatePersona(
     CreatePersonaScene(
         onBack = onBack,
         onDone = { name ->
-            navController.navigate(WalletRoute.Register.CreateIdentity(name))
+            navController.navigate(WalletRoute.Register.CreateIdentity(name, isWelcome = true))
         }
     )
 }
@@ -141,7 +146,7 @@ fun CreatePersona(
 ) {
     CreatePersonaModal(
         onDone = { name ->
-            navController.navigate(WalletRoute.Register.CreateIdentity(name))
+            navController.navigate(WalletRoute.Register.CreateIdentity(name, isWelcome = false))
         }
     )
 }

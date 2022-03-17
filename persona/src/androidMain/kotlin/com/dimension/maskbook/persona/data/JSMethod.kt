@@ -22,8 +22,8 @@ package com.dimension.maskbook.persona.data
 
 import com.dimension.maskbook.common.ext.execute
 import com.dimension.maskbook.extension.export.ExtensionServices
+import com.dimension.maskbook.persona.db.migrator.model.IndexedDBPersona
 import com.dimension.maskbook.persona.export.model.Network
-import com.dimension.maskbook.persona.export.model.Persona
 
 internal class JSMethod(
     private val extensionServices: ExtensionServices,
@@ -41,7 +41,7 @@ internal class JSMethod(
         mnemonic: String,
         nickname: String,
         password: String,
-    ): Persona? {
+    ): IndexedDBPersona? {
         return extensionServices.execute(
             "persona_createPersonaByMnemonic",
             "mnemonic" to mnemonic,

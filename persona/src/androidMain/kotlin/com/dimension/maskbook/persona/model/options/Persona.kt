@@ -20,13 +20,14 @@
  */
 package com.dimension.maskbook.persona.model.options
 
+import com.dimension.maskbook.persona.db.migrator.model.IndexedDBPersona
 import com.dimension.maskbook.persona.db.model.DbPersonaRecord
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class CreatePersonaOptions(
-    val persona: DbPersonaRecord,
+    val persona: IndexedDBPersona,
 )
 
 @Serializable

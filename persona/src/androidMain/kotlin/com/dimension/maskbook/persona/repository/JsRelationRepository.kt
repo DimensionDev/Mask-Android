@@ -22,6 +22,7 @@ package com.dimension.maskbook.persona.repository
 
 import com.dimension.maskbook.persona.db.PersonaDatabase
 import com.dimension.maskbook.persona.db.dao.RelationDao
+import com.dimension.maskbook.persona.db.migrator.IndexedDBDataMigrator
 import com.dimension.maskbook.persona.db.model.DbRelationRecord
 import com.dimension.maskbook.persona.db.sql.asSqlQuery
 import com.dimension.maskbook.persona.db.sql.buildQueryRelationsSql
@@ -33,10 +34,8 @@ import com.dimension.maskbook.persona.model.options.UpdateRelationOptions
 class JsRelationRepository(database: PersonaDatabase) {
     private val relationDao = database.relationDao()
 
-    suspend fun createRelation(options: CreateRelationOptions): DbRelationRecord? {
-        val newRelation = options.relation
-        newRelation.createdAt = System.currentTimeMillis()
-        newRelation.updatedAt = System.currentTimeMillis()
+    suspend fun createRelation(options: CreateRelationOptions): DbRelationRecord {
+        val newRelation = IndexedDBDataMigrator.mapToDbRelationRecord(options.relation)
         return relationDao.addWithResult(newRelation)
     }
 

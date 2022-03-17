@@ -120,7 +120,7 @@ class IndexedDBDataMigratorTest : PersonaDatabaseTest() {
     @Test
     fun test_indexedDb_migrator() = runTest {
         val records: IndexedDBAllRecord = recordsJson.decodeJson()
-        IndexedDBDataMigrator(db).migrate(records)
+        IndexedDBDataMigrator.migrate(db, records)
 
         val personaDao = db.personaDao()
         val persona = personaDao.find("ec_key:aaa/bbb")

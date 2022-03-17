@@ -22,34 +22,21 @@ package com.dimension.maskbook.persona.db.migrator
 
 import com.dimension.maskbook.persona.db.PersonaDatabase
 import com.dimension.maskbook.persona.db.migrator.model.IndexedDBAllRecord
+import com.dimension.maskbook.persona.db.migrator.model.IndexedDBPersona
+import com.dimension.maskbook.persona.db.migrator.model.IndexedDBProfile
+import com.dimension.maskbook.persona.db.migrator.model.IndexedDBRelation
 import com.dimension.maskbook.persona.db.model.DbLinkedProfileRecord
 import com.dimension.maskbook.persona.db.model.DbPersonaRecord
 import com.dimension.maskbook.persona.db.model.DbProfileRecord
 import com.dimension.maskbook.persona.db.model.DbRelationRecord
 import com.dimension.maskbook.persona.export.model.Network
 
-class IndexedDBDataMigrator(private val database: PersonaDatabase) {
-    suspend fun migrate(records: IndexedDBAllRecord) {
+object IndexedDBDataMigrator {
+
+    suspend fun migrate(database: PersonaDatabase, records: IndexedDBAllRecord) {
         val personas = records.personas
         for (persona in personas) {
-            database.personaDao().insert(
-                DbPersonaRecord(
-                    identifier = persona.identifier,
-                    mnemonic = persona.mnemonic?.words,
-                    path = persona.mnemonic?.parameter?.path,
-                    withPassword = persona.mnemonic?.parameter?.withPassword ?: false,
-                    publicKey = persona.publicKey,
-                    privateKey = persona.privateKey,
-                    localKey = persona.localKey,
-                    nickname = persona.nickname,
-                    hasLogout = persona.hasLogout,
-                    initialized = !persona.uninitialized,
-                    updateAt = persona.updatedAt,
-                    createAt = persona.createdAt,
-                    email = "",
-                    phone = "",
-                )
-            )
+            database.personaDao().insert(mapToDbPersonaRecord(persona))
             database.linkedProfileDao().insert(
                 persona.linkedProfiles.map { entry ->
                     DbLinkedProfileRecord(
@@ -64,27 +51,54 @@ class IndexedDBDataMigrator(private val database: PersonaDatabase) {
         val profiles = records.profiles
         database.profileDao().insert(
             profiles.map { profile ->
-                DbProfileRecord(
-                    identifier = profile.identifier,
-                    nickname = profile.nickname,
-                    network = Network.withProfileIdentifier(profile.identifier),
-                    updatedAt = profile.updatedAt,
-                    createdAt = profile.createdAt,
-                )
+                mapToDbProfileRecord(profile)
             }
         )
 
         val relations = records.relations
         database.relationDao().insert(
             relations.map { relation ->
-                DbRelationRecord(
-                    personaIdentifier = relation.personaIdentifier,
-                    profileIdentifier = relation.profileIdentifier,
-                    favor = relation.favor == 1,
-                    updatedAt = System.currentTimeMillis(),
-                    createdAt = System.currentTimeMillis(),
-                )
+                mapToDbRelationRecord(relation)
             }
+        )
+    }
+
+    fun mapToDbPersonaRecord(persona: IndexedDBPersona): DbPersonaRecord {
+        return DbPersonaRecord(
+            identifier = persona.identifier,
+            mnemonic = persona.mnemonic?.words,
+            path = persona.mnemonic?.parameter?.path,
+            withPassword = persona.mnemonic?.parameter?.withPassword ?: false,
+            publicKey = persona.publicKey,
+            privateKey = persona.privateKey,
+            localKey = persona.localKey,
+            nickname = persona.nickname,
+            hasLogout = persona.hasLogout,
+            initialized = !persona.uninitialized,
+            updateAt = persona.updatedAt,
+            createAt = persona.createdAt,
+            email = "",
+            phone = "",
+        )
+    }
+
+    fun mapToDbProfileRecord(profile: IndexedDBProfile): DbProfileRecord {
+        return DbProfileRecord(
+            identifier = profile.identifier,
+            nickname = profile.nickname,
+            network = Network.withProfileIdentifier(profile.identifier),
+            updatedAt = profile.updatedAt,
+            createdAt = profile.createdAt,
+        )
+    }
+
+    fun mapToDbRelationRecord(relation: IndexedDBRelation): DbRelationRecord {
+        return DbRelationRecord(
+            personaIdentifier = relation.personaIdentifier,
+            profileIdentifier = relation.profileIdentifier,
+            favor = relation.favor == 1,
+            updatedAt = System.currentTimeMillis(),
+            createdAt = System.currentTimeMillis(),
         )
     }
 }

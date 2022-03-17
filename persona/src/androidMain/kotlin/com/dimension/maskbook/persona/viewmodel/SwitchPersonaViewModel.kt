@@ -26,14 +26,21 @@ import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.persona.export.model.PersonaData
 import com.dimension.maskbook.persona.repository.DbPersonaRepository
 import com.dimension.maskbook.persona.repository.IPersonaRepository
+import com.dimension.maskbook.persona.repository.IPreferenceRepository
 
 class SwitchPersonaViewModel(
-    private val repository: IPersonaRepository,
-    personaRepository: DbPersonaRepository,
+    personaRepository: IPersonaRepository,
+    dbPersonaRepository: DbPersonaRepository,
+    private val preferenceRepository: IPreferenceRepository,
 ) : ViewModel() {
-    val items = personaRepository.getPersonaListFlow().asStateIn(viewModelScope, emptyList())
-    val current = repository.currentPersona.asStateIn(viewModelScope, null)
+
+    val items = dbPersonaRepository.getPersonaListFlow()
+        .asStateIn(viewModelScope, emptyList())
+
+    val current = personaRepository.currentPersona
+        .asStateIn(viewModelScope, null)
+
     fun switch(personaData: PersonaData) {
-        repository.setCurrentPersona(personaData.identifier)
+        preferenceRepository.setCurrentPersonaIdentifier(personaData.identifier)
     }
 }

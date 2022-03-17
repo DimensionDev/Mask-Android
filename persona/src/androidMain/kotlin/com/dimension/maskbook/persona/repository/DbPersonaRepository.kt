@@ -27,10 +27,19 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class DbPersonaRepository(database: PersonaDatabase) {
+
     private val personaDao = database.personaDao()
+
+    suspend fun deletePersona(personaIdentifier: String) {
+        personaDao.delete(personaIdentifier)
+    }
 
     suspend fun getPersona(personaIdentifier: String): PersonaData? {
         return personaDao.find(personaIdentifier)?.toPersonaData()
+    }
+
+    suspend fun getPersonaFirst(): PersonaData? {
+        return personaDao.findFirst()?.toPersonaData()
     }
 
     fun getPersonaFlow(personaIdentifier: String): Flow<PersonaData?> {
@@ -65,6 +74,10 @@ class DbPersonaRepository(database: PersonaDatabase) {
 
     suspend fun contains(personaIdentifier: String): Boolean {
         return personaDao.count(personaIdentifier) > 0
+    }
+
+    suspend fun containsMnemonic(mnemonic: String): Boolean {
+        return personaDao.countOfMnemonic(mnemonic) > 0
     }
 
     suspend fun isEmpty(): Boolean {

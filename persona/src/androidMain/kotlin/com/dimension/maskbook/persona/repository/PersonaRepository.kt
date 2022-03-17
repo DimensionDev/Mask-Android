@@ -133,8 +133,8 @@ internal class PersonaRepository(
                 return@launch
             }
 
-            val persona = personaRepository.getPersonaList().first()
-            setCurrentPersona(persona.identifier)
+            val newCurrentPersona = personaRepository.getPersonaFirst()
+            preferenceRepository.setCurrentPersonaIdentifier(newCurrentPersona?.identifier.orEmpty())
         }
     }
 
@@ -154,35 +154,17 @@ internal class PersonaRepository(
         }
     }
 
-    // private suspend fun refreshSocial() {
-    //     _twitter.value = jsMethod.queryProfiles(Network.Twitter)
-    //     _facebook.value = jsMethod.queryProfiles(Network.Facebook)
-    // }
-    //
-    // override suspend fun refreshPersona() {
-    //     _persona.value = jsMethod.queryMyPersonas(null)
-    //     if (_currentPersona.firstOrNull().isNullOrEmpty()) {
-    //         _persona.value.firstOrNull()?.identifier?.let { setCurrentPersona(it) }
-    //     }
-    // }
-
-    override fun setCurrentPersona(id: String) {
-        preferenceRepository.setCurrentPersonaIdentifier(id)
-    }
-
     override fun logout() {
         scope.launch {
             val deletePersona = currentPersona.firstOrNull() ?: return@launch
-            val newCurrentPersona = personaRepository.getPersonaList()
-                .firstOrNull { it.identifier != deletePersona.identifier }
 
-            removePersona(deletePersona.identifier)
-            setCurrentPersona(newCurrentPersona?.identifier ?: "")
+            personaRepository.deletePersona(deletePersona.identifier)
+            val newCurrentPersona = personaRepository.getPersonaFirst()
+            preferenceRepository.setCurrentPersonaIdentifier(newCurrentPersona?.identifier.orEmpty())
+
+            // blocked
+            jsMethod.removePersona(deletePersona.identifier)
         }
-    }
-
-    private suspend fun removePersona(id: String) {
-        jsMethod.removePersona(id)
     }
 
     override fun updatePersona(id: String, nickname: String) {
@@ -215,12 +197,10 @@ internal class PersonaRepository(
     override suspend fun createPersonaFromMnemonic(value: List<String>, name: String) {
         withContext(scope.coroutineContext) {
             val mnemonic = value.joinToString(" ")
-            personaRepository.getPersonaList().forEach {
-                if (mnemonic == jsMethod.backupMnemonic(it.identifier)) throw PersonaAlreadyExitsError()
+            if (personaRepository.containsMnemonic(mnemonic)) {
+                throw PersonaAlreadyExitsError()
             }
-            val persona = jsMethod.createPersonaByMnemonic(value.joinToString(" "), name, "")
-            // refreshPersona()
-            persona?.identifier?.let { setCurrentPersona(it) }
+            jsMethod.createPersonaByMnemonic(mnemonic, name, "")
         }
     }
 

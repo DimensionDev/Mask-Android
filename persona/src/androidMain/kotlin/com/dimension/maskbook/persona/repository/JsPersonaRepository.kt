@@ -22,6 +22,7 @@ package com.dimension.maskbook.persona.repository
 
 import com.dimension.maskbook.persona.db.PersonaDatabase
 import com.dimension.maskbook.persona.db.dao.PersonaDao
+import com.dimension.maskbook.persona.db.migrator.IndexedDBDataMigrator
 import com.dimension.maskbook.persona.db.model.DbPersonaRecord
 import com.dimension.maskbook.persona.db.sql.asSqlQuery
 import com.dimension.maskbook.persona.db.sql.buildQueryPersonaByProfileSql
@@ -34,14 +35,19 @@ import com.dimension.maskbook.persona.model.options.QueryPersonaOptions
 import com.dimension.maskbook.persona.model.options.QueryPersonasOptions
 import com.dimension.maskbook.persona.model.options.UpdatePersonaOptions
 
-class JsPersonaRepository(database: PersonaDatabase) {
+class JsPersonaRepository(
+    database: PersonaDatabase,
+    private val preferenceRepository: IPreferenceRepository,
+) {
 
     private val personaDao = database.personaDao()
 
-    suspend fun createPersona(options: CreatePersonaOptions): DbPersonaRecord? {
-        val newPersona = options.persona
-        newPersona.createAt = System.currentTimeMillis()
-        newPersona.updateAt = System.currentTimeMillis()
+    suspend fun createPersona(options: CreatePersonaOptions): DbPersonaRecord {
+        val newPersona = IndexedDBDataMigrator.mapToDbPersonaRecord(options.persona)
+
+        // set current persona when create
+        preferenceRepository.setCurrentPersonaIdentifier(newPersona.identifier)
+
         return personaDao.addWithResult(newPersona)
     }
 

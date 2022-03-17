@@ -121,7 +121,7 @@ expect object WalletRoute {
         const val Init: String
 
         object CreateIdentity {
-            operator fun invoke(personaName: String): String
+            operator fun invoke(personaName: String, isWelcome: Boolean): String
         }
 
         const val WelcomeCreatePersona: String

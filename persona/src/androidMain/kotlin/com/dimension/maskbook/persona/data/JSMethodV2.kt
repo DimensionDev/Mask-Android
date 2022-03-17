@@ -25,6 +25,7 @@ import com.dimension.maskbook.common.ext.encodeJson
 import com.dimension.maskbook.common.ext.execute
 import com.dimension.maskbook.extension.export.ExtensionServices
 import com.dimension.maskbook.extension.export.model.ExtensionMessage
+import com.dimension.maskbook.persona.db.PersonaDatabase
 import com.dimension.maskbook.persona.db.migrator.IndexedDBDataMigrator
 import com.dimension.maskbook.persona.db.migrator.model.IndexedDBAllRecord
 import com.dimension.maskbook.persona.model.options.AttachProfileOptions
@@ -59,7 +60,7 @@ import kotlinx.serialization.Serializable
 class JSMethodV2(
     private val scope: CoroutineScope,
     private val services: ExtensionServices,
-    private val indexedDBDataMigrator: IndexedDBDataMigrator,
+    private val database: PersonaDatabase,
     private val preferenceRepository: IPreferenceRepository,
     private val personaRepository: JsPersonaRepository,
     private val profileRepository: JsProfileRepository,
@@ -73,7 +74,7 @@ class JSMethodV2(
 
             val records: IndexedDBAllRecord? = services.execute("get_all_indexedDB_records")
             if (records != null) {
-                indexedDBDataMigrator.migrate(records)
+                IndexedDBDataMigrator.migrate(database, records)
                 preferenceRepository.setIsMigratorIndexedDb(true)
             }
         }
@@ -99,8 +100,7 @@ class JSMethodV2(
                 return message.responseSuccess(personaRepository.createPersona(options))
             }
             "query_persona" -> {
-                val options = message.decodeOptions<ParamOptions<QueryPersonaOptions>>()?.options
-                    ?: return true
+                val options = message.decodeOptions<QueryPersonaOptions>() ?: return true
                 return message.responseSuccess(personaRepository.queryPersona(options))
             }
             "query_persona_by_profile" -> {

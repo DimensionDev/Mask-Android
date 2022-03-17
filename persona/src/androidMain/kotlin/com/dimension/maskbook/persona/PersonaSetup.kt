@@ -31,7 +31,6 @@ import com.dimension.maskbook.persona.data.JSMethod
 import com.dimension.maskbook.persona.data.JSMethodV2
 import com.dimension.maskbook.persona.db.PersonaDatabase
 import com.dimension.maskbook.persona.db.RoomMigrations
-import com.dimension.maskbook.persona.db.migrator.IndexedDBDataMigrator
 import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.persona.export.model.ConnectAccountData
 import com.dimension.maskbook.persona.repository.DbPersonaRepository
@@ -110,8 +109,7 @@ object PersonaSetup : ModuleSetup {
             )
         }
 
-        single { IndexedDBDataMigrator(get()) }
-        single { JsPersonaRepository(get()) }
+        single { JsPersonaRepository(get(), get()) }
         single { JsProfileRepository(get()) }
         single { JsRelationRepository(get()) }
         single { DbPersonaRepository(get()) }
@@ -123,7 +121,7 @@ object PersonaSetup : ModuleSetup {
 
         viewModel { PersonaViewModel(get(), get()) }
         viewModel { DisconnectSocialViewModel(get()) }
-        viewModel { SwitchPersonaViewModel(get(), get()) }
+        viewModel { SwitchPersonaViewModel(get(), get(), get()) }
         viewModel { PersonaMenuViewModel(get(), get()) }
         viewModel { (personaId: String) -> RenamePersonaViewModel(get(), get(), personaId) }
         viewModel { ExportPrivateKeyViewModel(get()) }

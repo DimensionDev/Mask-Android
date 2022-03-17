@@ -85,10 +85,9 @@ fun CreatePersonaScene(
                 Spacer(modifier = Modifier.weight(1f))
                 PrimaryButton(
                     modifier = Modifier.fillMaxWidth(),
+                    enabled = name.isNotBlank(),
                     onClick = {
-                        if (name.isNotBlank()) {
-                            onDone.invoke(name)
-                        }
+                        onDone.invoke(name)
                     },
                 ) {
                     Text(text = stringResource(R.string.common_controls_next))

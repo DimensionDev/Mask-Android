@@ -20,13 +20,14 @@
  */
 package com.dimension.maskbook.persona.model.options
 
+import com.dimension.maskbook.persona.db.migrator.model.IndexedDBRelation
 import com.dimension.maskbook.persona.db.model.DbRelationRecord
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class CreateRelationOptions(
-    val relation: DbRelationRecord,
+    val relation: IndexedDBRelation,
 )
 
 @Serializable
