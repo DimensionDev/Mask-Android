@@ -275,9 +275,11 @@ fun SettingsChangeEmailSetup(
         emailValid = emailValid,
         onConfirm = {
             scope.launch {
-                viewModel.sendCodeNow(email).onSuccess {
-                    navController.navigate(SettingRoute.Settings_ChangeEmail.Settings_ChangeEmail_Setup_Code(email))
-                }
+                navController.navigate(
+                    SettingRoute.Settings_ChangeEmail.Settings_ChangeEmail_Setup_Code(
+                        email
+                    )
+                )
             }
         },
         buttonEnabled = loading,
@@ -435,13 +437,11 @@ fun SettingsChangeEmailChangeNew(
         emailValid = emailValid,
         onConfirm = {
             scope.launch {
-                viewModel.sendCodeNow(email).onSuccess {
-                    navController.navigate(
-                        SettingRoute.Settings_ChangeEmail.Settings_ChangeEmail_Change_New_Code(
-                            email
-                        )
+                navController.navigate(
+                    SettingRoute.Settings_ChangeEmail.Settings_ChangeEmail_Change_New_Code(
+                        email
                     )
-                }
+                )
             }
         },
         buttonEnabled = loading,
@@ -558,10 +558,11 @@ fun SettingsChangePhoneSetup(
         phoneValid = valid,
         onConfirm = {
             scope.launch {
-                val code = regionCode + phone
-                viewModel.sendCodeNow(code).onSuccess {
-                    navController.navigate(SettingRoute.Settings_ChangePhone.Settings_ChangePhone_Setup_Code(code))
-                }
+                navController.navigate(
+                    SettingRoute.Settings_ChangePhone.Settings_ChangePhone_Setup_Code(
+                        regionCode + phone
+                    )
+                )
             }
         },
         buttonEnabled = loading,
@@ -719,13 +720,11 @@ fun SettingsChangePhoneChangeNew(
         onConfirm = {
             scope.launch {
                 val code = regionCode + phone
-                viewModel.sendCodeNow(code).onSuccess {
-                    navController.navigate(
-                        SettingRoute.Settings_ChangePhone.Settings_ChangePhone_Change_New_Code(code)
-                    ) {
-                        popUpTo(CommonRoute.Main.Home.path) {
-                            inclusive = false
-                        }
+                navController.navigate(
+                    SettingRoute.Settings_ChangePhone.Settings_ChangePhone_Change_New_Code(code)
+                ) {
+                    popUpTo(CommonRoute.Main.Home.path) {
+                        inclusive = false
                     }
                 }
             }
