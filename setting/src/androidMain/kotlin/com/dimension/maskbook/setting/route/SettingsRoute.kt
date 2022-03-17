@@ -543,7 +543,6 @@ fun SettingsChangeEmailChangeSuccess(
 fun SettingsChangePhoneSetup(
     navController: NavController,
 ) {
-    val scope = rememberCoroutineScope()
 
     val viewModel = getViewModel<PhoneSetupViewModel>()
     val regionCode by viewModel.regionCode.observeAsState()
@@ -557,13 +556,11 @@ fun SettingsChangePhoneSetup(
         onPhoneChange = { viewModel.setValue(it) },
         phoneValid = valid,
         onConfirm = {
-            scope.launch {
-                navController.navigate(
-                    SettingRoute.Settings_ChangePhone.Settings_ChangePhone_Setup_Code(
-                        regionCode + phone
-                    )
+            navController.navigate(
+                SettingRoute.Settings_ChangePhone.Settings_ChangePhone_Setup_Code(
+                    regionCode + phone
                 )
-            }
+            )
         },
         buttonEnabled = loading,
         title = stringResource(R.string.scene_setting_bind_phone_number_title),

@@ -531,15 +531,23 @@ fun BackupSelectionEmail(
             scope.launch {
                 viewModel.verifyCodeNow(code, email, skipValidate = true)
                     .onSuccess { target ->
-                        navController.navigate(
-                            SettingRoute.BackupData.BackupData_BackupMerge(
+                        target.download_url?.let {
+                            navController.navigate(
+                                SettingRoute.BackupData.BackupData_BackupMerge(
+                                    "email",
+                                    email,
+                                    code,
+                                    download_url = target.download_url,
+                                    size = target.size,
+                                    uploaded_at = target.uploaded_at,
+                                    abstract = target.abstract
+                                ),
+                            )
+                        } ?: navController.navigate(
+                            SettingRoute.BackupData.BackupData_BackupCloud(
                                 "email",
                                 email,
                                 code,
-                                download_url = target.download_url,
-                                size = target.size,
-                                uploaded_at = target.uploaded_at,
-                                abstract = target.abstract,
                             ),
                         )
                     }
@@ -599,7 +607,6 @@ fun BackupSelectionPhone(
     val loading by viewModel.loading.observeAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.startCountDown()
         viewModel.sendCodeNow(phone)
     }
 
@@ -620,15 +627,23 @@ fun BackupSelectionPhone(
             scope.launch {
                 viewModel.verifyCodeNow(code = code, phone = phone, skipValidate = true)
                     .onSuccess { target ->
-                        navController.navigate(
-                            SettingRoute.BackupData.BackupData_BackupMerge(
+                        target.download_url?.let {
+                            navController.navigate(
+                                SettingRoute.BackupData.BackupData_BackupMerge(
+                                    "phone",
+                                    phone,
+                                    code,
+                                    download_url = target.download_url,
+                                    size = target.size,
+                                    uploaded_at = target.uploaded_at,
+                                    abstract = target.abstract
+                                ),
+                            )
+                        } ?: navController.navigate(
+                            SettingRoute.BackupData.BackupData_BackupCloud(
                                 "phone",
                                 phone,
                                 code,
-                                download_url = target.download_url,
-                                size = target.size,
-                                uploaded_at = target.uploaded_at,
-                                abstract = target.abstract
                             ),
                         )
                     }
