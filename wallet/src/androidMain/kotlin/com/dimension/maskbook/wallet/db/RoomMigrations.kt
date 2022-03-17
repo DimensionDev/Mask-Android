@@ -38,7 +38,7 @@ object RoomMigrations {
 
     val MIGRATION_8_9 get() = object : Migration(8, 9) {
         override fun migrate(database: SupportSQLiteDatabase) {
-            database.execSQL("ALTER TABLE DbCollectible ADD COLUMN `collection_slug` TEXT ")
+            database.execSQL("ALTER TABLE DbCollectible ADD COLUMN `collection_slug` TEXT DEFAULT '' NOT NULL")
         }
     }
 }

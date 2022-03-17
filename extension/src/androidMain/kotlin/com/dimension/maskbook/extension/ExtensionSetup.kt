@@ -20,19 +20,25 @@
  */
 package com.dimension.maskbook.extension
 
+import android.net.Uri
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import com.dimension.maskbook.common.IoScopeName
+import androidx.navigation.navOptions
 import com.dimension.maskbook.common.ModuleSetup
 import com.dimension.maskbook.common.gecko.WebContentController
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.extension.export.ExtensionServices
+import com.dimension.maskbook.extension.export.model.Site
 import com.dimension.maskbook.extension.repository.ExtensionRepository
+import com.dimension.maskbook.extension.route.ExtensionRoute
 import com.dimension.maskbook.extension.ui.WebContentScene
 import com.dimension.maskbook.extension.utils.MessageChannel
 import com.google.accompanist.navigation.animation.composable
@@ -44,9 +50,12 @@ object ExtensionSetup : ModuleSetup {
     @OptIn(ExperimentalAnimationApi::class)
     override fun NavGraphBuilder.route(navController: NavController) {
         composable(
-            route = CommonRoute.WebContent,
+            route = ExtensionRoute.WebContent.path,
             deepLinks = listOf(
-                navDeepLink { uriPattern = Deeplinks.Extension.Extension }
+                navDeepLink { uriPattern = Deeplinks.WebContent.path }
+            ),
+            arguments = listOf(
+                navArgument("site") { type = NavType.StringType; nullable = true }
             ),
             exitTransition = {
                 scaleOut(
@@ -60,8 +69,18 @@ object ExtensionSetup : ModuleSetup {
                 )
             }
         ) {
+            val site = it.arguments?.getString("site")?.let { Site.valueOf(it) }
             WebContentScene(
-                navController = navController,
+                onPersonaClicked = {
+                    navController.navigate(
+                        Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona)),
+                        navOptions {
+                            launchSingleTop = true
+                            popUpTo(ExtensionRoute.WebContent.path)
+                        },
+                    )
+                },
+                site = site,
             )
         }
     }

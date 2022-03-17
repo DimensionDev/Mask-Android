@@ -85,7 +85,7 @@ class PersonasTabScreen : TabScreen {
                 social.network.toPlatform()?.let {
                     repository.setPlatform(it)
                     rootNavController.navigate(
-                        Uri.parse(Deeplinks.Extension.Extension),
+                        Uri.parse(Deeplinks.WebContent(null)),
                         navOptions {
                             launchSingleTop = true
                             popUpTo(CommonRoute.Main.Home.path) {
