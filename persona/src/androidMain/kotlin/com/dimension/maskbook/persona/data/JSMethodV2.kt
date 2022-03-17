@@ -27,7 +27,7 @@ import com.dimension.maskbook.extension.export.ExtensionServices
 import com.dimension.maskbook.extension.export.model.ExtensionMessage
 import com.dimension.maskbook.persona.db.PersonaDatabase
 import com.dimension.maskbook.persona.db.migrator.IndexedDBDataMigrator
-import com.dimension.maskbook.persona.db.migrator.model.IndexedDBAllRecord
+import com.dimension.maskbook.persona.model.indexed.IndexedDBAllRecord
 import com.dimension.maskbook.persona.model.options.AttachProfileOptions
 import com.dimension.maskbook.persona.model.options.CreatePersonaOptions
 import com.dimension.maskbook.persona.model.options.CreateProfileOptions

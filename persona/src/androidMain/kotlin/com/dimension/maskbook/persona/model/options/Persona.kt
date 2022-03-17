@@ -20,8 +20,7 @@
  */
 package com.dimension.maskbook.persona.model.options
 
-import com.dimension.maskbook.persona.db.migrator.model.IndexedDBPersona
-import com.dimension.maskbook.persona.db.model.DbPersonaRecord
+import com.dimension.maskbook.persona.model.indexed.IndexedDBPersona
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -63,7 +62,7 @@ data class QueryPersonasOptions(
 
 @Serializable
 data class UpdatePersonaOptions(
-    val persona: DbPersonaRecord,
+    val persona: IndexedDBPersona,
     val options: Options,
 ) {
     @Serializable

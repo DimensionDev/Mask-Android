@@ -22,10 +22,8 @@ package com.dimension.maskbook.persona.db.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonObject
 
-@Serializable
 @Entity
 data class DbPersonaRecord(
     @PrimaryKey val identifier: String,

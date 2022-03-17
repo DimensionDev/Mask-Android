@@ -22,9 +22,7 @@ package com.dimension.maskbook.persona.db.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import kotlinx.serialization.Serializable
 
-@Serializable
 @Entity
 data class DbRelationRecord(
     @PrimaryKey(autoGenerate = true) val _id: Long = 0,

@@ -20,9 +20,8 @@
  */
 package com.dimension.maskbook.persona.model.options
 
-import com.dimension.maskbook.persona.db.migrator.model.IndexedDBProfile
-import com.dimension.maskbook.persona.db.model.DbProfileRecord
 import com.dimension.maskbook.persona.export.model.LinkedProfileDetailsState
+import com.dimension.maskbook.persona.model.indexed.IndexedDBProfile
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -51,7 +50,7 @@ data class QueryProfilesOptions(
 
 @Serializable
 data class UpdateProfileOptions(
-    val profile: DbProfileRecord,
+    val profile: IndexedDBProfile,
     val options: Options,
 ) {
     @Serializable

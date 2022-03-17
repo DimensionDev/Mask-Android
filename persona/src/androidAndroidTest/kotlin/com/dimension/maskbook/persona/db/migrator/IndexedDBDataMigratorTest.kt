@@ -22,8 +22,8 @@ package com.dimension.maskbook.persona.db.migrator
 
 import com.dimension.maskbook.common.ext.decodeJson
 import com.dimension.maskbook.persona.db.base.PersonaDatabaseTest
-import com.dimension.maskbook.persona.db.migrator.model.IndexedDBAllRecord
 import com.dimension.maskbook.persona.export.model.Network
+import com.dimension.maskbook.persona.model.indexed.IndexedDBAllRecord
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull

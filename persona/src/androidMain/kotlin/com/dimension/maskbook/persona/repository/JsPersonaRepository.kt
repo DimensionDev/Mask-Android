@@ -21,13 +21,13 @@
 package com.dimension.maskbook.persona.repository
 
 import com.dimension.maskbook.persona.db.PersonaDatabase
-import com.dimension.maskbook.persona.db.dao.PersonaDao
-import com.dimension.maskbook.persona.db.migrator.IndexedDBDataMigrator
-import com.dimension.maskbook.persona.db.model.DbPersonaRecord
+import com.dimension.maskbook.persona.db.migrator.mapper.toDbPersonaRecord
+import com.dimension.maskbook.persona.db.migrator.mapper.toIndexedDBPersona
 import com.dimension.maskbook.persona.db.sql.asSqlQuery
 import com.dimension.maskbook.persona.db.sql.buildQueryPersonaByProfileSql
 import com.dimension.maskbook.persona.db.sql.buildQueryPersonaSql
 import com.dimension.maskbook.persona.db.sql.buildQueryPersonasSql
+import com.dimension.maskbook.persona.model.indexed.IndexedDBPersona
 import com.dimension.maskbook.persona.model.options.CreatePersonaOptions
 import com.dimension.maskbook.persona.model.options.DeletePersonaOptions
 import com.dimension.maskbook.persona.model.options.QueryPersonaByProfileOptions
@@ -39,12 +39,13 @@ class JsPersonaRepository(database: PersonaDatabase) {
 
     private val personaDao = database.personaDao()
 
-    suspend fun createPersona(options: CreatePersonaOptions): DbPersonaRecord {
-        val newPersona = IndexedDBDataMigrator.mapToDbPersonaRecord(options.persona)
-        return personaDao.addWithResult(newPersona)
+    suspend fun createPersona(options: CreatePersonaOptions): IndexedDBPersona {
+        val newPersona = options.persona.toDbPersonaRecord()
+        personaDao.insert(newPersona)
+        return options.persona
     }
 
-    suspend fun queryPersona(options: QueryPersonaOptions): DbPersonaRecord? {
+    suspend fun queryPersona(options: QueryPersonaOptions): IndexedDBPersona? {
         val query = buildQueryPersonaSql(
             identifier = options.identifier,
             hasPrivateKey = options.hasPrivateKey,
@@ -52,10 +53,10 @@ class JsPersonaRepository(database: PersonaDatabase) {
             nameContains = options.nameContains,
             initialized = options.initialized,
         )
-        return personaDao.findRaw(query.asSqlQuery())
+        return personaDao.findRaw(query.asSqlQuery())?.toIndexedDBPersona()
     }
 
-    suspend fun queryPersonaByProfile(options: QueryPersonaByProfileOptions): DbPersonaRecord? {
+    suspend fun queryPersonaByProfile(options: QueryPersonaByProfileOptions): IndexedDBPersona? {
         val query = buildQueryPersonaByProfileSql(
             profileIdentifier = options.profileIdentifier,
             hasPrivateKey = options.hasPrivateKey,
@@ -63,10 +64,10 @@ class JsPersonaRepository(database: PersonaDatabase) {
             nameContains = options.nameContains,
             initialized = options.initialized,
         )
-        return personaDao.findRaw(query.asSqlQuery())
+        return personaDao.findRaw(query.asSqlQuery())?.toIndexedDBPersona()
     }
 
-    suspend fun queryPersonas(options: QueryPersonasOptions): List<DbPersonaRecord> {
+    suspend fun queryPersonas(options: QueryPersonasOptions): List<IndexedDBPersona> {
         val query = buildQueryPersonasSql(
             identifiers = options.identifiers,
             hasPrivateKey = options.hasPrivateKey,
@@ -75,18 +76,21 @@ class JsPersonaRepository(database: PersonaDatabase) {
             initialized = options.initialized,
             pageOptions = options.pageOptions,
         )
-        return personaDao.findListRaw(query.asSqlQuery())
+        return personaDao.findListRaw(query.asSqlQuery()).map {
+            it.toIndexedDBPersona()
+        }
     }
 
-    suspend fun updatePersona(options: UpdatePersonaOptions): DbPersonaRecord? {
+    suspend fun updatePersona(options: UpdatePersonaOptions): IndexedDBPersona? {
         val oldPersona = personaDao.find(options.persona.identifier)
-        val newPersona = options.persona
+        val newPersona = options.persona.toDbPersonaRecord()
 
         if (oldPersona == null) {
             return if (options.options.createWhenNotExist) {
                 newPersona.createAt = System.currentTimeMillis()
                 newPersona.updateAt = System.currentTimeMillis()
-                personaDao.addWithResult(newPersona)
+                personaDao.insert(newPersona)
+                options.persona
             } else null
         }
 
@@ -111,14 +115,11 @@ class JsPersonaRepository(database: PersonaDatabase) {
             }
             else -> oldPersona
         }
-        return personaDao.addWithResult(resultPersona)
+        personaDao.insert(resultPersona)
+        return options.persona
     }
 
     suspend fun deletePersona(options: DeletePersonaOptions) {
         personaDao.delete(options.identifier)
     }
-}
-
-private suspend fun PersonaDao.addWithResult(persona: DbPersonaRecord): DbPersonaRecord {
-    insert(persona) ; return persona
 }

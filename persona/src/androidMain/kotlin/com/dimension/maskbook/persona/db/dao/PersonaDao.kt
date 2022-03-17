@@ -25,8 +25,10 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.RawQuery
+import androidx.room.Transaction
 import androidx.sqlite.db.SupportSQLiteQuery
 import com.dimension.maskbook.persona.db.model.DbPersonaRecord
+import com.dimension.maskbook.persona.db.model.PersonaWithLinkedProfile
 // import com.dimension.maskbook.persona.db.model.DbPersonaWithProfiles
 import kotlinx.coroutines.flow.Flow
 
@@ -48,11 +50,13 @@ interface PersonaDao {
     @Query("SELECT * FROM DbPersonaRecord")
     suspend fun findList(): List<DbPersonaRecord>
 
+    @Transaction
     @RawQuery
-    suspend fun findRaw(query: SupportSQLiteQuery): DbPersonaRecord?
+    suspend fun findRaw(query: SupportSQLiteQuery): PersonaWithLinkedProfile?
 
+    @Transaction
     @RawQuery
-    suspend fun findListRaw(query: SupportSQLiteQuery): List<DbPersonaRecord>
+    suspend fun findListRaw(query: SupportSQLiteQuery): List<PersonaWithLinkedProfile>
 
     // @Query("SELECT * FROM DbPersonaRecord WHERE identifier=:identifier LIMIT 1")
     // suspend fun findWithProfiles(identifier: String): DbPersonaWithProfiles?

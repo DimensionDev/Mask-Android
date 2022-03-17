@@ -18,18 +18,27 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.persona.db.model
+package com.dimension.maskbook.persona.db.migrator.mapper
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
+import com.dimension.maskbook.persona.db.model.DbRelationRecord
 import com.dimension.maskbook.persona.export.model.Network
+import com.dimension.maskbook.persona.model.indexed.IndexedDBRelation
 
-@Entity
-data class DbProfileRecord(
-    @PrimaryKey val identifier: String,
-    val nickname: String? = null,
-    var network: Network? = null,
-    var createdAt: Long = 0,
-    var updatedAt: Long = 0,
-    val avatar: String? = null,
-)
+fun IndexedDBRelation.toDbRelationRecord(): DbRelationRecord {
+    return DbRelationRecord(
+        personaIdentifier = personaIdentifier,
+        profileIdentifier = profileIdentifier,
+        favor = favor == 1,
+        updatedAt = System.currentTimeMillis(),
+        createdAt = System.currentTimeMillis(),
+    )
+}
+
+fun DbRelationRecord.toIndexedDBRelation(): IndexedDBRelation {
+    return IndexedDBRelation(
+        personaIdentifier = personaIdentifier,
+        profileIdentifier = profileIdentifier,
+        favor = if (favor) 1 else 0,
+        network = Network.withProfileIdentifier(profileIdentifier)?.value.orEmpty(),
+    )
+}

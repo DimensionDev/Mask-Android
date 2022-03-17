@@ -18,17 +18,17 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.persona.db.migrator.model
+package com.dimension.maskbook.persona.db.model
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import androidx.room.Embedded
+import androidx.room.Relation
 
-@Serializable
-data class IndexedDBRelation(
-    @SerialName("linked")
-    val personaIdentifier: String,
-    @SerialName("profile")
-    val profileIdentifier: String,
-    val favor: Int,
-    val network: String,
+data class PersonaWithLinkedProfile(
+    @Embedded
+    val persona: DbPersonaRecord,
+    @Relation(
+        parentColumn = "identifier",
+        entityColumn = "personaIdentifier",
+    )
+    val linkedProfiles: List<DbLinkedProfileRecord>,
 )

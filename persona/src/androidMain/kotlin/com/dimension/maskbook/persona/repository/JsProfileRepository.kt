@@ -21,15 +21,15 @@
 package com.dimension.maskbook.persona.repository
 
 import com.dimension.maskbook.persona.db.PersonaDatabase
-import com.dimension.maskbook.persona.db.dao.ProfileDao
-import com.dimension.maskbook.persona.db.migrator.IndexedDBDataMigrator
+import com.dimension.maskbook.persona.db.migrator.mapper.toDbProfileRecord
+import com.dimension.maskbook.persona.db.migrator.mapper.toIndexedDBProfile
 import com.dimension.maskbook.persona.db.model.DbLinkedProfileRecord
-import com.dimension.maskbook.persona.db.model.DbProfileRecord
 import com.dimension.maskbook.persona.db.sql.asSqlQuery
 import com.dimension.maskbook.persona.db.sql.buildQueryProfileSql
 import com.dimension.maskbook.persona.db.sql.buildQueryProfilesSql
 import com.dimension.maskbook.persona.export.model.LinkedProfileDetailsState
 import com.dimension.maskbook.persona.export.model.Network
+import com.dimension.maskbook.persona.model.indexed.IndexedDBProfile
 import com.dimension.maskbook.persona.model.options.AttachProfileOptions
 import com.dimension.maskbook.persona.model.options.CreateProfileOptions
 import com.dimension.maskbook.persona.model.options.DeleteProfileOptions
@@ -43,43 +43,46 @@ class JsProfileRepository(database: PersonaDatabase) {
     private val profileDao = database.profileDao()
     private val linkedProfileDao = database.linkedProfileDao()
 
-    suspend fun createProfile(options: CreateProfileOptions): DbProfileRecord {
-        val newProfile = IndexedDBDataMigrator.mapToDbProfileRecord(options.profile)
-        return profileDao.addWithResult(newProfile)
+    suspend fun createProfile(options: CreateProfileOptions): IndexedDBProfile {
+        val newProfile = options.profile.toDbProfileRecord()
+        profileDao.insert(newProfile)
+        return options.profile
     }
 
-    suspend fun queryProfile(options: QueryProfileOptions): DbProfileRecord? {
+    suspend fun queryProfile(options: QueryProfileOptions): IndexedDBProfile? {
         val query = buildQueryProfileSql(
             identifier = options.identifier,
             network = options.network,
             nameContains = options.nameContains,
         )
-        return profileDao.findRaw(query.asSqlQuery())
+        return profileDao.findRaw(query.asSqlQuery())?.toIndexedDBProfile()
     }
 
-    suspend fun queryProfiles(options: QueryProfilesOptions): List<DbProfileRecord> {
+    suspend fun queryProfiles(options: QueryProfilesOptions): List<IndexedDBProfile> {
         val query = buildQueryProfilesSql(
             identifiers = options.identifiers,
             network = options.network,
             nameContains = options.nameContains,
             pageOptions = options.pageOptions,
         )
-        return profileDao.findListRaw(query.asSqlQuery())
+        return profileDao.findListRaw(query.asSqlQuery()).map {
+            it.toIndexedDBProfile()
+        }
     }
 
-    suspend fun updateProfile(options: UpdateProfileOptions): DbProfileRecord? {
+    suspend fun updateProfile(options: UpdateProfileOptions): IndexedDBProfile? {
         val oldProfile = profileDao.find(options.profile.identifier)
-        val newProfile = options.profile
+        val newProfile = options.profile.toDbProfileRecord()
         if (oldProfile != null) {
-            return oldProfile
+            return options.profile
         }
 
         if (options.options.createWhenNotExist) {
             newProfile.network = Network.withProfileIdentifier(newProfile.identifier)
-            return profileDao.addWithResult(newProfile)
+            profileDao.insert(newProfile)
         }
 
-        return null
+        return options.profile
     }
 
     suspend fun deleteProfile(options: DeleteProfileOptions) {
@@ -109,8 +112,4 @@ class JsProfileRepository(database: PersonaDatabase) {
             profileIdentifier = options.profileIdentifier,
         )
     }
-}
-
-private suspend fun ProfileDao.addWithResult(profile: DbProfileRecord): DbProfileRecord {
-    insert(profile) ; return profile
 }

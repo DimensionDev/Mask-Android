@@ -21,25 +21,27 @@
 package com.dimension.maskbook.persona.repository
 
 import com.dimension.maskbook.persona.db.PersonaDatabase
-import com.dimension.maskbook.persona.db.dao.RelationDao
-import com.dimension.maskbook.persona.db.migrator.IndexedDBDataMigrator
-import com.dimension.maskbook.persona.db.model.DbRelationRecord
+import com.dimension.maskbook.persona.db.migrator.mapper.toDbRelationRecord
+import com.dimension.maskbook.persona.db.migrator.mapper.toIndexedDBRelation
 import com.dimension.maskbook.persona.db.sql.asSqlQuery
 import com.dimension.maskbook.persona.db.sql.buildQueryRelationsSql
+import com.dimension.maskbook.persona.model.indexed.IndexedDBRelation
 import com.dimension.maskbook.persona.model.options.CreateRelationOptions
 import com.dimension.maskbook.persona.model.options.DeleteRelationOptions
 import com.dimension.maskbook.persona.model.options.QueryRelationsOptions
 import com.dimension.maskbook.persona.model.options.UpdateRelationOptions
 
 class JsRelationRepository(database: PersonaDatabase) {
+
     private val relationDao = database.relationDao()
 
-    suspend fun createRelation(options: CreateRelationOptions): DbRelationRecord {
-        val newRelation = IndexedDBDataMigrator.mapToDbRelationRecord(options.relation)
-        return relationDao.addWithResult(newRelation)
+    suspend fun createRelation(options: CreateRelationOptions): IndexedDBRelation {
+        val newRelation = options.relation.toDbRelationRecord()
+        relationDao.insert(newRelation)
+        return options.relation
     }
 
-    suspend fun queryRelations(options: QueryRelationsOptions): List<DbRelationRecord> {
+    suspend fun queryRelations(options: QueryRelationsOptions): List<IndexedDBRelation> {
         val query = buildQueryRelationsSql(
             personaIdentifier = options.personaIdentifier,
             network = options.network,
@@ -47,18 +49,15 @@ class JsRelationRepository(database: PersonaDatabase) {
             favor = options.favor,
             pageOptions = options.pageOptions,
         )
-        return relationDao.findListRaw(query.asSqlQuery())
+        return relationDao.findListRaw(query.asSqlQuery()).map {
+            it.toIndexedDBRelation()
+        }
     }
 
-    suspend fun updateRelation(options: UpdateRelationOptions): DbRelationRecord? {
-        val oldRelation = relationDao.find(
-            personaIdentifier = options.relation.personaIdentifier,
-            profileIdentifier = options.relation.profileIdentifier
-        )
-        val newRelation = options.relation
-        newRelation.createdAt = oldRelation?.createdAt ?: System.currentTimeMillis()
-        newRelation.updatedAt = System.currentTimeMillis()
-        return relationDao.addWithResult(newRelation)
+    suspend fun updateRelation(options: UpdateRelationOptions): IndexedDBRelation {
+        val newRelation = options.relation.toDbRelationRecord()
+        relationDao.insert(newRelation)
+        return options.relation
     }
 
     suspend fun deleteRelation(options: DeleteRelationOptions) {
@@ -67,8 +66,4 @@ class JsRelationRepository(database: PersonaDatabase) {
             profileIdentifier = options.profileIdentifier,
         )
     }
-}
-
-private suspend fun RelationDao.addWithResult(relation: DbRelationRecord): DbRelationRecord {
-    insert(relation) ; return relation
 }
