@@ -22,6 +22,7 @@ package com.dimension.maskbook.persona.ui.scenes.social
 
 import android.net.Uri
 import androidx.navigation.NavController
+import com.dimension.maskbook.common.ext.toSite
 import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.persona.export.model.PlatformType
 import com.dimension.maskbook.persona.repository.IPersonaRepository
@@ -39,5 +40,5 @@ fun connectSocial(
     ) {
         controller.navigate(PersonaRoute.ConnectAccount(it.personaId, it.profile.toString()))
     }
-    controller.navigate(Uri.parse(Deeplinks.Extension.Extension))
+    controller.navigate(Uri.parse(Deeplinks.WebContent(platform.toSite().name)))
 }

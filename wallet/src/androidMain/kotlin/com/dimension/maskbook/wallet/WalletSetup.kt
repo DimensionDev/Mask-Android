@@ -109,7 +109,6 @@ import com.dimension.maskbook.wallet.viewmodel.wallets.TouchIdEnableViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.UnlockWalletViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.WalletBalancesViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.WalletConnectManagementViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.WalletConnectViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.WalletManagementModalViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.collectible.CollectibleDetailViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.collectible.CollectiblesViewModel
@@ -131,6 +130,8 @@ import com.dimension.maskbook.wallet.viewmodel.wallets.send.SearchTradableViewMo
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendConfirmViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.TransferDetailViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.Web3TransactionConfirmViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.walletconnect.WalletConnectResult
+import com.dimension.maskbook.wallet.viewmodel.wallets.walletconnect.WalletConnectViewModel
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectServerManager
 import com.dimension.maskbook.wallet.walletconnect.v1.client.WalletConnectClientManagerV1
@@ -392,7 +393,7 @@ private fun Module.provideViewModel() {
     }
     viewModel { BiometricViewModel(get(), get()) }
     viewModel { WalletConnectManagementViewModel(get(), get()) }
-    viewModel { (onResult: (success: Boolean, needToSwitchNetwork: Boolean) -> Unit) ->
+    viewModel { (onResult: (WalletConnectResult) -> Unit) ->
         WalletConnectViewModel(
             get(),
             get(),
