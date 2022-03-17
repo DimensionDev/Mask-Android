@@ -28,10 +28,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import org.koin.android.annotation.KoinViewModel
+import org.koin.core.annotation.InjectedParam
 
+@KoinViewModel
 class RenamePersonaViewModel(
     private val repository: IPersonaRepository,
-    private val personaId: String,
+    @InjectedParam private val personaId: String,
 ) : ViewModel() {
     private val _name = MutableStateFlow("")
     val name = _name.asStateIn(viewModelScope, "")

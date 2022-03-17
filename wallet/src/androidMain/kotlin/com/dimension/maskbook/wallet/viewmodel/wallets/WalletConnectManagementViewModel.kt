@@ -26,7 +26,9 @@ import com.dimension.maskbook.wallet.export.model.WalletData
 import com.dimension.maskbook.wallet.repository.IWalletRepository
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager
 import kotlinx.coroutines.launch
+import org.koin.android.annotation.KoinViewModel
 
+@KoinViewModel
 class WalletConnectManagementViewModel(
     private val manager: WalletConnectClientManager,
     private val walletRepository: IWalletRepository

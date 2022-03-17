@@ -69,6 +69,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.koin.core.annotation.Single
 import org.web3j.abi.FunctionEncoder
 import org.web3j.abi.datatypes.Address
 import org.web3j.abi.datatypes.DynamicBytes
@@ -87,7 +88,7 @@ import kotlin.time.ExperimentalTime
 private val CurrentCoinPlatformTypeKey = stringPreferencesKey("coin_platform_type")
 private val CurrentWalletKey = stringPreferencesKey("current_wallet")
 private val ChainTypeKey = stringPreferencesKey("chain_type")
-val Context.walletDataStore: DataStore<Preferences> by preferencesDataStore(name = "wallet")
+private val Context.walletDataStore: DataStore<Preferences> by preferencesDataStore(name = "wallet")
 
 private fun Token.toDbToken(chainId: ChainID?) = DbToken(
     id = id ?: "",
@@ -100,13 +101,15 @@ private fun Token.toDbToken(chainId: ChainID?) = DbToken(
     price = BigDecimal(price ?: 0.0)
 )
 
+@Single(binds = [IWalletRepository::class])
 internal class WalletRepository(
-    private val dataStore: DataStore<Preferences>,
+    context: Context,
     private val database: AppDatabase,
     private val services: WalletServices,
     private val walletConnectManager: WalletConnectClientManager,
     private val jsMethod: JSMethod,
 ) : IWalletRepository {
+    private val dataStore: DataStore<Preferences> = context.walletDataStore
     private val tokenScope = CoroutineScope(Dispatchers.IO)
     private val scope = CoroutineScope(Dispatchers.IO)
 

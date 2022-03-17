@@ -25,7 +25,9 @@ import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.persona.export.model.PersonaData
 import com.dimension.maskbook.persona.repository.IPersonaRepository
+import org.koin.android.annotation.KoinViewModel
 
+@KoinViewModel
 class SwitchPersonaViewModel(
     private val repository: IPersonaRepository
 ) : ViewModel() {

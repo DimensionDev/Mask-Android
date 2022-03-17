@@ -42,7 +42,9 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.shareIn
+import org.koin.android.annotation.KoinViewModel
 
+@KoinViewModel
 class WalletBalancesViewModel(
     private val repository: IWalletRepository,
     private val collectibleRepository: ICollectibleRepository,

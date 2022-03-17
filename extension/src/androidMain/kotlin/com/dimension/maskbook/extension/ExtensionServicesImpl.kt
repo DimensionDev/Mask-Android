@@ -29,7 +29,9 @@ import com.dimension.maskbook.extension.utils.MessageChannel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapNotNull
+import org.koin.core.annotation.Single
 
+@Single(binds = [ExtensionServices::class])
 internal class ExtensionServicesImpl(
     private val repository: ExtensionRepository,
     private val messageChannel: MessageChannel,

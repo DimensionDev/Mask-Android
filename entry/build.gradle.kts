@@ -18,6 +18,7 @@ kotlin {
                 api(projects.extension)
                 implementation(projects.common.routeProcessor.annotations)
                 kspAndroid(projects.common.routeProcessor)
+                kspAndroid("io.insert-koin:koin-ksp-compiler:${Versions.Koin.ksp}")
             }
         }
 

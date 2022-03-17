@@ -21,6 +21,7 @@
 package com.dimension.maskbook.setting.repository
 
 import android.content.ContentResolver
+import android.content.Context
 import android.net.Uri
 import androidx.core.net.toUri
 import com.dimension.maskbook.common.okhttp.await
@@ -38,14 +39,18 @@ import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import org.koin.core.annotation.Single
 import java.io.File
 import java.util.UUID
 
+@Single
 class BackupRepository(
     private val backupServices: BackupServices,
-    private val cacheDir: File,
-    private val contentResolver: ContentResolver,
+    context: Context,
 ) {
+    private val cacheDir: File = context.cacheDir
+    private val contentResolver: ContentResolver = context.contentResolver
+
     suspend fun sendPhoneCode(phone: String) {
         backupServices.sendCode(
             SendCodeBody(

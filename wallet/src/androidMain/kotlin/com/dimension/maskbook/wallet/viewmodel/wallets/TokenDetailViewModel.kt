@@ -30,9 +30,12 @@ import com.dimension.maskbook.wallet.repository.IWalletRepository
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
+import org.koin.android.annotation.KoinViewModel
+import org.koin.core.annotation.InjectedParam
 
+@KoinViewModel
 class TokenDetailViewModel(
-    private val id: String,
+    @InjectedParam private val id: String,
     private val tokenRepository: ITokenRepository,
     private val transactionRepository: ITransactionRepository,
     private val walletRepository: IWalletRepository,

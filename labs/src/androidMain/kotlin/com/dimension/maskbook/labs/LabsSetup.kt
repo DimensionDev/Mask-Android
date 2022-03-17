@@ -20,47 +20,20 @@
  */
 package com.dimension.maskbook.labs
 
-import android.content.Context
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import com.dimension.maskbook.common.IoScopeName
 import com.dimension.maskbook.common.ModuleSetup
-import com.dimension.maskbook.common.ui.tab.TabScreen
-import com.dimension.maskbook.labs.data.JSMethod
-import com.dimension.maskbook.labs.repository.AppRepository
 import com.dimension.maskbook.labs.repository.IAppRepository
-import com.dimension.maskbook.labs.repository.IPreferenceRepository
-import com.dimension.maskbook.labs.repository.PreferenceRepository
-import com.dimension.maskbook.labs.repository.labsDataStore
 import com.dimension.maskbook.labs.ui.scenes.generatedRoute
-import com.dimension.maskbook.labs.ui.tab.LabsTabScreen
-import com.dimension.maskbook.labs.viewmodel.LabsViewModel
-import com.dimension.maskbook.labs.viewmodel.MarketTrendSettingsViewModel
-import com.dimension.maskbook.labs.viewmodel.PluginSettingsViewModel
-import org.koin.androidx.viewmodel.dsl.viewModel
-import org.koin.core.qualifier.named
-import org.koin.dsl.bind
-import org.koin.dsl.module
+import org.koin.core.annotation.ComponentScan
+import org.koin.core.annotation.Module
 import org.koin.mp.KoinPlatformTools
 
+@Module
+@ComponentScan
 object LabsSetup : ModuleSetup {
-
     override fun NavGraphBuilder.route(navController: NavController) {
         generatedRoute(navController)
-    }
-
-    override fun dependencyInject() = module {
-        single<IAppRepository> { AppRepository(get()) }
-        single<IPreferenceRepository> {
-            PreferenceRepository(get<Context>().labsDataStore, get(named(IoScopeName)))
-        }
-        single { JSMethod(get()) }
-
-        single { LabsTabScreen() } bind TabScreen::class
-
-        viewModel { LabsViewModel(get(), get()) }
-        viewModel { PluginSettingsViewModel(get(), get(), get()) }
-        viewModel { MarketTrendSettingsViewModel(get()) }
     }
 
     override fun onExtensionReady() {

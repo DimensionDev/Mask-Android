@@ -29,7 +29,9 @@ import com.dimension.maskbook.wallet.repository.IWalletRepository
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
+import org.koin.android.annotation.KoinViewModel
 
+@KoinViewModel
 class WalletSwitchViewModel(
     private val walletRepository: IWalletRepository
 ) : ViewModel() {

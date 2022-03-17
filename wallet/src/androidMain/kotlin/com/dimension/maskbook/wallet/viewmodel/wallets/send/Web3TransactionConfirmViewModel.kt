@@ -44,9 +44,12 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
+import org.koin.android.annotation.KoinViewModel
+import org.koin.core.annotation.InjectedParam
 
+@KoinViewModel
 class Web3TransactionConfirmViewModel(
-    private val data: SendTokenConfirmData,
+    @InjectedParam private val data: SendTokenConfirmData,
     private val setCurrentChainUseCase: SetCurrentChainUseCase,
     private val getWalletTokenByAddressUseCase: GetWalletTokenByAddressUseCase,
     private val getWalletNativeTokenUseCase: GetWalletNativeTokenUseCase,

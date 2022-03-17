@@ -29,6 +29,7 @@ import com.dimension.maskbook.wallet.export.model.WalletCollectibleData
 import com.dimension.maskbook.wallet.export.model.WalletData
 import com.dimension.maskbook.wallet.services.WalletServices
 import kotlinx.coroutines.flow.firstOrNull
+import org.koin.core.annotation.Single
 import kotlin.math.roundToLong
 
 interface ITransactionRepository {
@@ -45,6 +46,7 @@ interface ITransactionRepository {
     ): List<TransactionData>
 }
 
+@Single(binds = [ITransactionRepository::class])
 class TransactionRepository(
     private val walletRepository: IWalletRepository,
     private val walletServices: WalletServices,

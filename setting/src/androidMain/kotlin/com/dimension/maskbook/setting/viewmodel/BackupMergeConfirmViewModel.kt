@@ -28,11 +28,14 @@ import com.dimension.maskbook.setting.repository.ISettingsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import org.koin.android.annotation.KoinViewModel
+import org.koin.core.annotation.InjectedParam
 
+@KoinViewModel
 class BackupMergeConfirmViewModel(
     private val backupRepository: BackupRepository,
     private val settingsRepository: ISettingsRepository,
-    private val onDone: () -> Unit,
+    @InjectedParam private val onDone: () -> Unit,
 ) : ViewModel() {
     private val _loading = MutableStateFlow(false)
     val loading = _loading.asStateIn(viewModelScope, false)

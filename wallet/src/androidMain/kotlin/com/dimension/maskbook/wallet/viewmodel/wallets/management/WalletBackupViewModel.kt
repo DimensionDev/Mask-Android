@@ -25,7 +25,9 @@ import com.dimension.maskbook.setting.export.SettingServices
 import com.dimension.maskbook.wallet.repository.IWalletRepository
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.mapNotNull
+import org.koin.android.annotation.KoinViewModel
 
+@KoinViewModel
 class WalletBackupViewModel(
     private val repository: IWalletRepository,
     private val settingsRepository: SettingServices

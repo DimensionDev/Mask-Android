@@ -26,10 +26,13 @@ import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.persona.export.model.ConnectAccountData
 import com.dimension.maskbook.persona.repository.IPersonaRepository
 import kotlinx.coroutines.flow.MutableStateFlow
+import org.koin.android.annotation.KoinViewModel
+import org.koin.core.annotation.InjectedParam
 
+@KoinViewModel
 class UserNameModalViewModel(
     private val personaRepository: IPersonaRepository,
-    private val data: ConnectAccountData,
+    @InjectedParam private val data: ConnectAccountData,
 ) : ViewModel() {
     private val _userName = MutableStateFlow(data.profile.userId)
     val userName = _userName.asStateIn(viewModelScope, data.profile.userId)

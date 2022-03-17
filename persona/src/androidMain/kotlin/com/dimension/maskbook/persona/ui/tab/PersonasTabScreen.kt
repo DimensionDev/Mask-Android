@@ -36,7 +36,9 @@ import com.dimension.maskbook.persona.route.PersonaRoute
 import com.dimension.maskbook.persona.ui.scenes.PersonaScene
 import com.dimension.maskbook.persona.ui.scenes.social.connectSocial
 import org.koin.androidx.compose.get
+import org.koin.core.annotation.Single
 
+@Single(binds = [TabScreen::class])
 class PersonasTabScreen : TabScreen {
     override val route = CommonRoute.Main.Tabs.Persona
     override val title: Int = R.string.tab_personas

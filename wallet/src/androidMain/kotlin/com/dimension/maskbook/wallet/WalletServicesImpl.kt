@@ -24,7 +24,9 @@ import com.dimension.maskbook.wallet.export.WalletServices
 import com.dimension.maskbook.wallet.export.model.WalletData
 import com.dimension.maskbook.wallet.repository.IWalletRepository
 import kotlinx.coroutines.flow.Flow
+import org.koin.core.annotation.Single
 
+@Single(binds = [WalletServices::class])
 class WalletServicesImpl(
     private val walletRepository: IWalletRepository,
 ) : WalletServices {

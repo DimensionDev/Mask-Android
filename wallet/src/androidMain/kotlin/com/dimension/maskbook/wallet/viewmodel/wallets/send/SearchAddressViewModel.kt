@@ -39,6 +39,7 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import org.koin.android.annotation.KoinViewModel
 
 sealed class EnsData {
     object Loading : EnsData()
@@ -52,6 +53,7 @@ sealed class EnsData {
     ) : EnsData()
 }
 
+@KoinViewModel
 class SearchAddressViewModel(
     getRecentAddressUseCase: GetRecentAddressUseCase,
     getContactsUseCase: GetContactsUseCase,

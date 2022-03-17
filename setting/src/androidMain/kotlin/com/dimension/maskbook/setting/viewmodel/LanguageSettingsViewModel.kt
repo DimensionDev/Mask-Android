@@ -25,7 +25,9 @@ import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.setting.export.model.Language
 import com.dimension.maskbook.setting.repository.ISettingsRepository
+import org.koin.android.annotation.KoinViewModel
 
+@KoinViewModel
 class LanguageSettingsViewModel(
     private val repository: ISettingsRepository
 ) : ViewModel() {

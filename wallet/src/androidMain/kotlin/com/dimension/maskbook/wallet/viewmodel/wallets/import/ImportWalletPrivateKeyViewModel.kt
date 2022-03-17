@@ -30,9 +30,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import org.koin.android.annotation.KoinViewModel
+import org.koin.core.annotation.InjectedParam
 
+@KoinViewModel
 class ImportWalletPrivateKeyViewModel(
-    private val wallet: String,
+    @InjectedParam private val wallet: String,
     private val repository: IWalletRepository,
 ) : ViewModel() {
     private val _privateKey = MutableStateFlow("")

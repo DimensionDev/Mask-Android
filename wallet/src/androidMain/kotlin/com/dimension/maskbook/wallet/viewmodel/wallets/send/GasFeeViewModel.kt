@@ -41,10 +41,13 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
+import org.koin.android.annotation.KoinViewModel
+import org.koin.core.annotation.InjectedParam
 import java.math.BigDecimal
 
+@KoinViewModel
 class GasFeeViewModel(
-    initialGasLimit: Double = 21000.0,
+    @InjectedParam initialGasLimit: Double = 21000.0,
     private val getSuggestGasFeeUseCase: GetSuggestGasFeeUseCase,
     private val getArrivesWithGasFeeUseCase: GetArrivesWithGasFeeUseCase,
     private val getWalletNativeTokenUseCase: GetWalletNativeTokenUseCase,

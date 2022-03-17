@@ -28,9 +28,12 @@ import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.setting.export.BackupServices
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import org.koin.android.annotation.KoinViewModel
+import org.koin.core.annotation.InjectedParam
 
+@KoinViewModel
 class PhoneRemoteBackupRecoveryViewModel(
-    requestNavigate: (NavigateArgs) -> Unit,
+    @InjectedParam requestNavigate: (NavigateArgs) -> Unit,
     private val backupServices: BackupServices,
 ) : RemoteBackupRecoveryViewModelBase(
     requestNavigate
@@ -58,8 +61,9 @@ class PhoneRemoteBackupRecoveryViewModel(
     }
 }
 
+@KoinViewModel
 class EmailRemoteBackupRecoveryViewModel(
-    requestNavigate: (NavigateArgs) -> Unit,
+    @InjectedParam requestNavigate: (NavigateArgs) -> Unit,
     private val backupServices: BackupServices,
 ) : RemoteBackupRecoveryViewModelBase(
     requestNavigate

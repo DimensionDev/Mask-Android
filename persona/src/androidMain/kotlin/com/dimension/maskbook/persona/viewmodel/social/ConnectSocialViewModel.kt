@@ -27,12 +27,14 @@ import com.dimension.maskbook.persona.export.model.SocialData
 import com.dimension.maskbook.persona.repository.IPersonaRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import org.koin.android.annotation.KoinViewModel
 
 abstract class ConnectSocialViewModel : ViewModel() {
     abstract val items: Flow<List<SocialData>>
     abstract fun connect(data: SocialData, personaId: String)
 }
 
+@KoinViewModel
 class TwitterConnectSocialViewModel(
     private val repository: IPersonaRepository
 ) : ConnectSocialViewModel() {
@@ -45,6 +47,7 @@ class TwitterConnectSocialViewModel(
     }
 }
 
+@KoinViewModel
 class FaceBookConnectSocialViewModel(
     private val repository: IPersonaRepository
 ) : ConnectSocialViewModel() {

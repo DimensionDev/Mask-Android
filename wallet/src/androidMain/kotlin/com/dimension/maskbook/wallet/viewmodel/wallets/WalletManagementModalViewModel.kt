@@ -24,7 +24,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.wallet.repository.IWalletRepository
+import org.koin.android.annotation.KoinViewModel
 
+@KoinViewModel
 class WalletManagementModalViewModel(
     private val repository: IWalletRepository,
 ) : ViewModel() {

@@ -27,6 +27,7 @@ import com.dimension.maskbook.wallet.usecase.Result
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import org.koin.core.annotation.Factory
 
 interface GetWalletTokensUseCase {
     operator fun invoke(
@@ -35,6 +36,7 @@ interface GetWalletTokensUseCase {
     ): Flow<Result<List<WalletTokenData>>>
 }
 
+@Factory(binds = [GetWalletTokensUseCase::class])
 class GetWalletTokensUseCaseImpl(
     val repository: IWalletRepository,
 ) : GetWalletTokensUseCase {

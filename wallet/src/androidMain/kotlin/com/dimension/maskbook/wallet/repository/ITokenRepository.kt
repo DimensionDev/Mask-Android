@@ -25,6 +25,7 @@ import com.dimension.maskbook.wallet.db.model.DbToken
 import com.dimension.maskbook.wallet.export.model.TokenData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.mapNotNull
+import org.koin.core.annotation.Single
 
 fun TokenData.Companion.fromDb(data: DbToken) = with(data) {
     TokenData(
@@ -42,6 +43,7 @@ interface ITokenRepository {
     fun getTokenByAddress(id: String): Flow<TokenData>
 }
 
+@Single(binds = [ITokenRepository::class])
 class TokenRepository(
     private val database: AppDatabase,
 ) : ITokenRepository {

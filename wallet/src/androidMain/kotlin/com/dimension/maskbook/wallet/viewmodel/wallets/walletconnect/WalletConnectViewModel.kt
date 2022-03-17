@@ -21,6 +21,7 @@
 package com.dimension.maskbook.wallet.viewmodel.wallets.walletconnect
 
 import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.pm.PackageManager.MATCH_DEFAULT_ONLY
@@ -41,6 +42,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import org.koin.android.annotation.KoinViewModel
+import org.koin.core.annotation.InjectedParam
 
 sealed class WalletConnectResult {
     data class Success(val switchNetwork: Boolean = false) : WalletConnectResult()
@@ -48,13 +51,15 @@ sealed class WalletConnectResult {
     object Failed : WalletConnectResult()
 }
 
+@KoinViewModel
 class WalletConnectViewModel(
     private val manager: WalletConnectClientManager,
     private val repository: IWalletConnectRepository,
     private val walletRepository: IWalletRepository,
-    private val packageManager: PackageManager,
-    private val onResult: (WalletConnectResult) -> Unit,
+    context: Context,
+    @InjectedParam private val onResult: (WalletConnectResult) -> Unit,
 ) : ViewModel() {
+    private val packageManager: PackageManager = context.packageManager
     val network =
         walletRepository.dWebData.map { it.chainType }.asStateIn(viewModelScope, ChainType.eth)
 

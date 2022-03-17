@@ -25,7 +25,9 @@ import com.dimension.maskbook.extension.export.ExtensionServices
 import com.dimension.maskbook.persona.export.model.Network
 import com.dimension.maskbook.persona.export.model.Persona
 import com.dimension.maskbook.persona.export.model.Profile
+import org.koin.core.annotation.Single
 
+@Single
 internal class JSMethod(
     private val extensionServices: ExtensionServices,
 ) {

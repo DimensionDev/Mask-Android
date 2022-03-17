@@ -28,7 +28,9 @@ import com.dimension.maskbook.persona.model.PostData
 import com.dimension.maskbook.persona.repository.IPersonaRepository
 import com.dimension.maskbook.persona.repository.IPostRepository
 import kotlinx.coroutines.flow.combine
+import org.koin.android.annotation.KoinViewModel
 
+@KoinViewModel
 class PostViewModel(
     repository: IPostRepository,
     personaRepository: IPersonaRepository,

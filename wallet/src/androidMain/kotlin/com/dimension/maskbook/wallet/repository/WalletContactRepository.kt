@@ -28,6 +28,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import org.koin.core.annotation.Single
 import java.util.UUID
 
 data class SearchAddressData(
@@ -61,6 +62,7 @@ interface IWalletContactRepository {
     suspend fun addOrUpdate(address: String, name: String)
 }
 
+@Single(binds = [IWalletContactRepository::class])
 class WalletContactRepository(
     private val database: AppDatabase,
 ) : IWalletContactRepository {

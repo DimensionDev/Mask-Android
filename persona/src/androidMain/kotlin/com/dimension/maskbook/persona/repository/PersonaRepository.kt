@@ -20,6 +20,7 @@
  */
 package com.dimension.maskbook.persona.repository
 
+import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
@@ -54,18 +55,27 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.koin.core.annotation.Single
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
 
 private val CurrentPersonaKey = stringPreferencesKey("current_persona")
 
+@Single(
+    binds = [
+        IPersonaRepository::class,
+        ISocialsRepository::class,
+        IContactsRepository::class,
+    ]
+)
 internal class PersonaRepository(
-    private val dataStore: DataStore<Preferences>,
+    context: Context,
     private val jsMethod: JSMethod,
     private val extensionServices: ExtensionServices,
 ) : IPersonaRepository,
     ISocialsRepository,
     IContactsRepository {
+    private val dataStore: DataStore<Preferences> = context.personaDataStore
     private val _loaded = MutableStateFlow(false)
     private var connectingJob: Job? = null
     private val scope = CoroutineScope(Dispatchers.IO)
@@ -143,7 +153,11 @@ internal class PersonaRepository(
                 }?.let {
                     SocialProfile.parse(it)
                 }
-                if (profile != null && !(socials.firstOrNull() ?: emptyList()).any { it.name == profile.userId && it.network == profile.network }) {
+                if (profile != null && !(
+                    socials.firstOrNull()
+                        ?: emptyList()
+                    ).any { it.name == profile.userId && it.network == profile.network }
+                ) {
                     withContext(Dispatchers.Main) {
                         onDone.invoke(ConnectAccountData(personaId, profile))
                     }

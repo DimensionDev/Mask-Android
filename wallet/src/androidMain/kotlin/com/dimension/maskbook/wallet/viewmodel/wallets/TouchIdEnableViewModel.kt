@@ -21,7 +21,9 @@
 package com.dimension.maskbook.wallet.viewmodel.wallets
 
 import androidx.lifecycle.ViewModel
+import org.koin.android.annotation.KoinViewModel
 
+@KoinViewModel
 class TouchIdEnableViewModel : ViewModel() {
     fun enable(onEnable: () -> Unit) {
         /*TODO Logic: enable touch id unlock*/

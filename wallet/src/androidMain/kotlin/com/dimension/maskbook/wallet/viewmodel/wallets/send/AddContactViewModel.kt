@@ -28,7 +28,9 @@ import com.dimension.maskbook.wallet.usecase.address.AddContactUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import org.koin.android.annotation.KoinViewModel
 
+@KoinViewModel
 class AddContactViewModel(
     private val addContactUseCase: AddContactUseCase,
 ) : ViewModel() {

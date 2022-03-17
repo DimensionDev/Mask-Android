@@ -25,7 +25,9 @@ import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.setting.export.model.DataProvider
 import com.dimension.maskbook.setting.repository.ISettingsRepository
+import org.koin.android.annotation.KoinViewModel
 
+@KoinViewModel
 class DataSourceSettingsViewModel(
     private val repository: ISettingsRepository,
 ) : ViewModel() {

@@ -39,8 +39,10 @@ kotlin {
                 api("org.jetbrains.compose.ui:ui-tooling:${Versions.compose_jb}")
 
                 // Koin
-                api("io.insert-koin:koin-android:${Versions.koin}")
-                api("io.insert-koin:koin-androidx-compose:${Versions.koin}")
+                api("io.insert-koin:koin-android:${Versions.Koin.version}")
+                api("io.insert-koin:koin-androidx-compose:${Versions.Koin.version}")
+                api("io.insert-koin:koin-annotations:${Versions.Koin.ksp}")
+                kspAndroid("io.insert-koin:koin-ksp-compiler:${Versions.Koin.ksp}")
 
                 // Lifecycle
                 api("androidx.lifecycle:lifecycle-runtime-ktx:${Versions.lifecycle}")

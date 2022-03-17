@@ -27,7 +27,9 @@ import com.dimension.maskbook.setting.repository.ISettingsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
+import org.koin.android.annotation.KoinViewModel
 
+@KoinViewModel
 class BackupCloudViewModel(
     private val settingsRepository: ISettingsRepository,
 ) : ViewModel() {

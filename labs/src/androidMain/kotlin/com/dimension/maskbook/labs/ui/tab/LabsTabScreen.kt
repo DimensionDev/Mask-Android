@@ -28,7 +28,9 @@ import com.dimension.maskbook.labs.R
 import com.dimension.maskbook.labs.export.model.AppKey
 import com.dimension.maskbook.labs.route.LabsRoute
 import com.dimension.maskbook.labs.ui.scenes.LabsScene
+import org.koin.core.annotation.Single
 
+@Single(binds = [TabScreen::class])
 class LabsTabScreen : TabScreen {
     override val route = CommonRoute.Main.Tabs.Labs
     override val title: Int = R.string.tab_labs

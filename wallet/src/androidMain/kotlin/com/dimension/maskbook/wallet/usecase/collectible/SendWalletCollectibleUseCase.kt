@@ -26,6 +26,7 @@ import com.dimension.maskbook.wallet.repository.IWalletRepository
 import com.dimension.maskbook.wallet.usecase.Result
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import org.koin.core.annotation.Factory
 
 interface SendWalletCollectibleUseCase {
     operator fun invoke(
@@ -37,6 +38,7 @@ interface SendWalletCollectibleUseCase {
     ): Flow<Result<String>>
 }
 
+@Factory(binds = [SendWalletCollectibleUseCase::class])
 class SendWalletCollectibleUseCaseImpl(
     val repository: IWalletRepository,
 ) : SendWalletCollectibleUseCase {

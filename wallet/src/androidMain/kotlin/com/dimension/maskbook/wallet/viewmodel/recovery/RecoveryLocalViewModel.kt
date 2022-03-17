@@ -21,6 +21,7 @@
 package com.dimension.maskbook.wallet.viewmodel.recovery
 
 import android.content.ContentResolver
+import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -31,13 +32,17 @@ import com.dimension.maskbook.setting.export.model.BackupMeta
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
+import org.koin.android.annotation.KoinViewModel
+import org.koin.core.annotation.InjectedParam
 
+@KoinViewModel
 class RecoveryLocalViewModel(
     private val backupServices: BackupServices,
-    private val uri: Uri,
-    private val contentResolver: ContentResolver,
+    @InjectedParam private val uri: Uri,
+    context: Context,
     private val settingServices: SettingServices,
 ) : ViewModel() {
+    private val contentResolver: ContentResolver = context.contentResolver
     enum class LoadState {
         Loading,
         Failed,

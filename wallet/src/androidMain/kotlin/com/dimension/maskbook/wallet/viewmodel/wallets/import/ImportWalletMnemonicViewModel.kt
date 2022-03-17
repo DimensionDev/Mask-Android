@@ -30,10 +30,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import org.koin.android.annotation.KoinViewModel
+import org.koin.core.annotation.InjectedParam
 import java.util.UUID
 
+@KoinViewModel
 class ImportWalletMnemonicViewModel(
-    private val wallet: String,
+    @InjectedParam private val wallet: String,
     private val repository: IWalletRepository,
 ) : ViewModel() {
     private val _words = MutableStateFlow("")

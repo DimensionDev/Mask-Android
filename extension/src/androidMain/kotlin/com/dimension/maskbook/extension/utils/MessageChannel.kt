@@ -32,9 +32,11 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import org.json.JSONObject
+import org.koin.core.annotation.Single
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
+@Single
 internal class MessageChannel(
     private val controller: WebContentController
 ) {

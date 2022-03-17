@@ -25,10 +25,13 @@ import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.wallet.repository.IWalletRepository
 import kotlinx.coroutines.flow.MutableStateFlow
+import org.koin.android.annotation.KoinViewModel
+import org.koin.core.annotation.InjectedParam
 
+@KoinViewModel
 class WalletRenameViewModel(
-    private val walletId: String,
-    initialWalletName: String,
+    @InjectedParam private val walletId: String,
+    @InjectedParam initialWalletName: String,
     private val repository: IWalletRepository,
 ) : ViewModel() {
 

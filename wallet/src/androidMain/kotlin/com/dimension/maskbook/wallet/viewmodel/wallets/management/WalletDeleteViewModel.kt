@@ -29,9 +29,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
+import org.koin.android.annotation.KoinViewModel
+import org.koin.core.annotation.InjectedParam
 
+@KoinViewModel
 class WalletDeleteViewModel(
-    private val id: String,
+    @InjectedParam private val id: String,
     private val settingsRepository: SettingServices,
     private val walletRepository: IWalletRepository,
 ) : ViewModel() {

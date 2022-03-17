@@ -27,6 +27,7 @@ import com.dimension.maskbook.wallet.repository.IWalletRepository
 import com.dimension.maskbook.wallet.usecase.Result
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import org.koin.core.annotation.Factory
 
 interface SendTokenUseCase {
     operator fun invoke(
@@ -39,6 +40,7 @@ interface SendTokenUseCase {
     ): Flow<Result<String>>
 }
 
+@Factory(binds = [SendTokenUseCase::class])
 class SendTokenUseCaseImpl(
     val repository: IWalletRepository,
 ) : SendTokenUseCase {

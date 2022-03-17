@@ -26,7 +26,9 @@ import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.persona.repository.IPersonaRepository
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
+import org.koin.android.annotation.KoinViewModel
 
+@KoinViewModel
 class ExportPrivateKeyViewModel(
     private val repository: IPersonaRepository,
 ) : ViewModel() {

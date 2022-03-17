@@ -33,7 +33,9 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import org.koin.core.annotation.Single
 
+@Single
 internal class JSDataSource(
     private val jsMethod: JSMethod,
 ) {

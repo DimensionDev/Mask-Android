@@ -30,6 +30,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import org.koin.core.annotation.Factory
 
 interface SendTransactionUseCase {
     operator fun invoke(
@@ -43,6 +44,7 @@ interface SendTransactionUseCase {
     ): Flow<Result<String>>
 }
 
+@Factory(binds = [SendTransactionUseCase::class])
 class SendTransactionUseCaseImpl(
     val repository: IWalletRepository,
 ) : SendTransactionUseCase {

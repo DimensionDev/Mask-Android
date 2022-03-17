@@ -27,18 +27,22 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import org.koin.core.annotation.Single
 
 private val ShouldShowEmptySocialTipDialog = booleanPreferencesKey("ShouldShowEmptySocialTipDialog")
 private val ShouldShowContactsTipDialog = booleanPreferencesKey("ShouldShowContactsTipDialog")
-val Context.personaDataStore: DataStore<Preferences> by preferencesDataStore(name = "persona")
+internal val Context.personaDataStore: DataStore<Preferences> by preferencesDataStore(name = "persona")
 
+@Single(binds = [IPreferenceRepository::class])
 class PreferenceRepository(
-    private val dataStore: DataStore<Preferences>,
-    private val ioScope: CoroutineScope,
+    context: Context,
 ) : IPreferenceRepository {
+    private val dataStore: DataStore<Preferences> = context.personaDataStore
+    private val scope = CoroutineScope(Dispatchers.IO)
 
     override val shouldShowEmptySocialTipDialog: Flow<Boolean>
         get() = dataStore.data.map {
@@ -46,7 +50,7 @@ class PreferenceRepository(
         }
 
     override fun setShowEmptySocialTipDialog(bool: Boolean) {
-        ioScope.launch {
+        scope.launch {
             dataStore.edit {
                 it[ShouldShowEmptySocialTipDialog] = bool
             }
@@ -59,7 +63,7 @@ class PreferenceRepository(
         }
 
     override fun setShowContactsTipDialog(bool: Boolean) {
-        ioScope.launch {
+        scope.launch {
             dataStore.edit {
                 it[ShouldShowContactsTipDialog] = bool
             }

@@ -37,10 +37,13 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
+import org.koin.android.annotation.KoinViewModel
+import org.koin.core.annotation.InjectedParam
 
+@KoinViewModel
 class ImportWalletDerivationPathViewModel(
-    private val wallet: String,
-    private val mnemonicCode: List<String>,
+    @InjectedParam private val wallet: String,
+    @InjectedParam private val mnemonicCode: List<String>,
     private val walletRepository: IWalletRepository,
 ) : ViewModel() {
 

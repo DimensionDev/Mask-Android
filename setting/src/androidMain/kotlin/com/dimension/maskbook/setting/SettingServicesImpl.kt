@@ -29,12 +29,12 @@ import com.dimension.maskbook.setting.export.model.TradeProvider
 import com.dimension.maskbook.setting.repository.BackupRepository
 import com.dimension.maskbook.setting.repository.ISettingsRepository
 import kotlinx.coroutines.flow.Flow
+import org.koin.core.annotation.Single
 
+@Single(binds = [SettingServices::class])
 class SettingServicesImpl(
     private val settingsRepository: ISettingsRepository,
-    private val backupRepository: BackupRepository,
-) : SettingServices, BackupServices {
-
+) : SettingServices {
     override val biometricEnabled: Flow<Boolean>
         get() = settingsRepository.biometricEnabled
 
@@ -67,7 +67,13 @@ class SettingServicesImpl(
     override fun setShouldShowLegalScene(value: Boolean) {
         settingsRepository.setShouldShowLegalScene(value)
     }
+}
 
+@Single(binds = [BackupServices::class])
+class BackupServicesImpl(
+    private val settingsRepository: ISettingsRepository,
+    private val backupRepository: BackupRepository,
+) : BackupServices {
     override suspend fun restoreBackupFromJson(value: String) {
         settingsRepository.restoreBackupFromJson(value)
     }

@@ -26,7 +26,9 @@ import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.WalletIntroHost
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
+import org.koin.core.annotation.Single
 
+@Single(binds = [TabScreen::class])
 class WalletTabScreen : TabScreen {
     override val route = CommonRoute.Main.Tabs.Wallet
     override val title: Int = R.string.tab_wallet

@@ -33,7 +33,9 @@ import com.dimension.maskbook.setting.export.model.TradeProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import org.koin.core.annotation.Single
 
+@Single(binds = [ISettingsRepository::class])
 internal class SettingsRepository(
     private val personaServices: PersonaServices,
     private val settingDataSource: SettingDataSource,

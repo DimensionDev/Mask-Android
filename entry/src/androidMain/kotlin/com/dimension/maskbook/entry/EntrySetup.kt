@@ -20,31 +20,26 @@
  */
 package com.dimension.maskbook.entry
 
-import android.content.Context
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import com.dimension.maskbook.common.ModuleSetup
 import com.dimension.maskbook.common.route.Navigator
 import com.dimension.maskbook.entry.data.JSMethod
-import com.dimension.maskbook.entry.repository.EntryRepository
-import com.dimension.maskbook.entry.repository.entryDataStore
 import com.dimension.maskbook.entry.ui.scene.generatedRoute
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
-import org.koin.dsl.module
+import org.koin.core.annotation.ComponentScan
+import org.koin.core.annotation.Module
 import org.koin.mp.KoinPlatformTools
 
+@Module
+@ComponentScan
 object EntrySetup : ModuleSetup {
     override fun NavGraphBuilder.route(navController: NavController) {
         generatedRoute(navController)
-    }
-
-    override fun dependencyInject() = module {
-        single { EntryRepository(get<Context>().entryDataStore) }
-        single { JSMethod(get()) }
     }
 
     override fun onExtensionReady() {

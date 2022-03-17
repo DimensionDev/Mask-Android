@@ -27,7 +27,10 @@ object Versions {
     const val accompanist = "0.23.0"
     const val navigation = "2.4.1"
     const val lifecycle = "2.4.1"
-    const val koin = "3.1.4"
+    object Koin {
+        const val version = "3.2.0-beta-1"
+        const val ksp = "1.0.0-beta-1"
+    }
     const val coil = "1.4.0"
     const val datastore = "1.0.0"
     const val retrofit = "2.9.0"

@@ -31,13 +31,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import org.koin.core.annotation.Single
 
 private val ShouldShowEntryKey = booleanPreferencesKey("ShouldShowEntry")
-val Context.entryDataStore: DataStore<Preferences> by preferencesDataStore(name = "entry")
+private val Context.entryDataStore: DataStore<Preferences> by preferencesDataStore(name = "entry")
 
+@Single
 class EntryRepository(
-    private val dataStore: DataStore<Preferences>,
+    context: Context
 ) {
+    private val dataStore: DataStore<Preferences> = context.entryDataStore
     private val scope = CoroutineScope(Dispatchers.IO)
     val shouldShowEntry: Flow<Boolean>
         get() = dataStore.data.map {

@@ -25,11 +25,13 @@ import com.dimension.maskbook.wallet.repository.IWalletRepository
 import com.dimension.maskbook.wallet.usecase.Result
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import org.koin.core.annotation.Factory
 
 interface SetCurrentChainUseCase {
     operator fun invoke(chainType: ChainType): Flow<Result<Unit>>
 }
 
+@Factory(binds = [SetCurrentChainUseCase::class])
 class SetCurrentChainUseCaseImpl(
     private val repository: IWalletRepository
 ) : SetCurrentChainUseCase {

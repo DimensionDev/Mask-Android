@@ -27,7 +27,9 @@ import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.wallet.export.WalletServices
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
+import org.koin.android.annotation.KoinViewModel
 
+@KoinViewModel
 class PrivateKeyViewModel(
     private val personaServices: PersonaServices,
     private val walletServices: WalletServices,

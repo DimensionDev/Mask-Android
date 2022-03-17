@@ -30,7 +30,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import org.koin.android.annotation.KoinViewModel
 
+@KoinViewModel
 class WalletTransactionHistoryViewModel(
     private val repository: IWalletRepository,
     private val transactionRepository: ITransactionRepository,

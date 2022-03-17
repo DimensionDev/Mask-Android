@@ -34,7 +34,9 @@ import com.dimension.maskbook.wallet.paging.mediator.CollectibleMediator
 import com.dimension.maskbook.wallet.services.WalletServices
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import org.koin.core.annotation.Single
 
+@Single(binds = [ICollectibleRepository::class])
 class CollectibleRepository(
     private val database: AppDatabase,
     private val services: WalletServices,

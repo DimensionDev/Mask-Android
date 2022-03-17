@@ -31,11 +31,13 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import org.koin.core.annotation.Factory
 
 interface GetWalletCollectibleCollectionsUseCase {
     operator fun invoke(): Flow<Result<PagingData<WalletCollectibleCollectionData>>>
 }
 
+@Factory(binds = [GetWalletCollectibleCollectionsUseCase::class])
 class GetWalletCollectibleCollectionsUseCaseImpl(
     val repository: ICollectibleRepository,
     val walletRepository: IWalletRepository,

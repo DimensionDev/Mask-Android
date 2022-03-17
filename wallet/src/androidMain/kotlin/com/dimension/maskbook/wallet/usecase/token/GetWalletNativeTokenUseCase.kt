@@ -27,6 +27,7 @@ import com.dimension.maskbook.wallet.usecase.Result
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
+import org.koin.core.annotation.Factory
 import java.math.BigDecimal
 
 interface GetWalletNativeTokenUseCase {
@@ -34,6 +35,7 @@ interface GetWalletNativeTokenUseCase {
     operator fun invoke(chainType: ChainType? = null): Flow<Result<WalletTokenData>>
 }
 
+@Factory(binds = [GetWalletNativeTokenUseCase::class])
 class GetWalletNativeTokenUseCaseImpl(
     private val repository: IWalletRepository
 ) : GetWalletNativeTokenUseCase {

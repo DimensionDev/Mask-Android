@@ -26,11 +26,13 @@ import com.dimension.maskbook.wallet.usecase.Result
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
+import org.koin.core.annotation.Factory
 
 interface GetWalletCollectibleUseCase {
     operator fun invoke(id: String): Flow<Result<WalletCollectibleData>>
 }
 
+@Factory(binds = [GetWalletCollectibleUseCase::class])
 class GetWalletCollectibleUseCaseImpl(
     val repository: ICollectibleRepository,
 ) : GetWalletCollectibleUseCase {

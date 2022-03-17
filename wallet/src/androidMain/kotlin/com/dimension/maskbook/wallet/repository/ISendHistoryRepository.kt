@@ -30,6 +30,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
+import org.koin.core.annotation.Single
 import java.util.UUID
 
 interface ISendHistoryRepository {
@@ -39,6 +40,7 @@ interface ISendHistoryRepository {
     fun getOrCreateByAddress(address: String): Flow<SearchAddressData?>
 }
 
+@Single(binds = [ISendHistoryRepository::class])
 class SendHistoryRepository(
     private val database: AppDatabase,
 ) : ISendHistoryRepository {

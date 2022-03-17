@@ -32,6 +32,7 @@ import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager
 import com.dimension.maskbook.wallet.walletconnect.v1.BaseWalletConnectManager
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import org.koin.core.annotation.Single
 import org.komputing.khex.extensions.toNoPrefixHexString
 import org.walletconnect.Session
 import org.walletconnect.impls.FileWCSessionStore
@@ -40,6 +41,8 @@ import java.util.Random
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
+// V2 SDK support only provides the Responder implementation at the Beta stage
+@Single(binds = [WalletConnectClientManager::class])
 class WalletConnectClientManagerV1(private val context: Context) : BaseWalletConnectManager(), WalletConnectClientManager {
     private var config: Session.Config? = null
     private var session: Session? = null

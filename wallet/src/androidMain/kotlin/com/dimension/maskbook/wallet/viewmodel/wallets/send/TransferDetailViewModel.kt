@@ -39,10 +39,13 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
+import org.koin.android.annotation.KoinViewModel
+import org.koin.core.annotation.InjectedParam
 import java.math.BigDecimal
 
+@KoinViewModel
 class TransferDetailViewModel(
-    private val tradableId: String,
+    @InjectedParam private val tradableId: String,
     private val verifyPaymentPasswordUseCase: VerifyPaymentPasswordUseCase,
     private val getAddressUseCase: GetAddressUseCase,
     private val getWalletTokenByAddressUseCase: GetWalletTokenByAddressUseCase,

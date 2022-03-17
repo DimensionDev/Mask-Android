@@ -25,7 +25,9 @@ import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.persona.export.PersonaServices
 import kotlinx.coroutines.flow.MutableStateFlow
+import org.koin.android.annotation.KoinViewModel
 
+@KoinViewModel
 class WelcomeViewModel(
     private val personaServices: PersonaServices,
 ) : ViewModel() {

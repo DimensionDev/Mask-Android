@@ -32,16 +32,19 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import org.koin.core.annotation.Single
 
 private val PaymentPasswordKey = stringPreferencesKey("payment_password")
 private val BackupPasswordKey = stringPreferencesKey("backup_password")
 private val BiometricEnabledKey = booleanPreferencesKey("biometric_enabled")
 private val ShouldShowLegalSceneKey = booleanPreferencesKey("ShowLegalSceneKey")
-val Context.settingsDataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
+private val Context.settingsDataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
+@Single
 class SettingDataSource(
-    private val dataStore: DataStore<Preferences>,
+    context: Context,
 ) {
+    private val dataStore: DataStore<Preferences> = context.settingsDataStore
     private val scope = CoroutineScope(Dispatchers.IO)
     val biometricEnabled: Flow<Boolean>
         get() = dataStore.data.map {

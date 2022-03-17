@@ -30,7 +30,9 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.mapNotNull
+import org.koin.android.annotation.KoinViewModel
 
+@KoinViewModel
 class SearchTradableViewModel(
     getWalletTokensUseCase: GetWalletTokensUseCase,
     geCollectionsUseCase: GetWalletCollectibleCollectionsUseCase,

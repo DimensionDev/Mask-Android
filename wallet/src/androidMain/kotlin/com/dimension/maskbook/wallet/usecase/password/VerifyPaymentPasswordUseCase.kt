@@ -24,11 +24,13 @@ import com.dimension.maskbook.setting.export.SettingServices
 import com.dimension.maskbook.wallet.usecase.Result
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import org.koin.core.annotation.Factory
 
 interface VerifyPaymentPasswordUseCase {
     operator fun invoke(pwd: String): Flow<Result<Unit>>
 }
 
+@Factory(binds = [VerifyPaymentPasswordUseCase::class])
 class VerifyPaymentPasswordUseCaseImpl(
     val service: SettingServices
 ) : VerifyPaymentPasswordUseCase {

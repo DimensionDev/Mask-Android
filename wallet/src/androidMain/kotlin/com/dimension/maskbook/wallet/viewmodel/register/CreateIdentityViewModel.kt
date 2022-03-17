@@ -25,9 +25,12 @@ import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.wallet.repository.IWalletRepository
 import com.dimension.maskbook.wallet.viewmodel.base.BaseMnemonicPhraseViewModel
 import kotlinx.coroutines.launch
+import org.koin.android.annotation.KoinViewModel
+import org.koin.core.annotation.InjectedParam
 
+@KoinViewModel
 class CreateIdentityViewModel(
-    private val personaName: String,
+    @InjectedParam private val personaName: String,
     private val repository: IWalletRepository,
     private val personaServices: PersonaServices,
 ) : BaseMnemonicPhraseViewModel() {

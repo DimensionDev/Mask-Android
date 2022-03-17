@@ -28,7 +28,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import org.koin.core.annotation.Single
 
+@Single(binds = [IAppRepository::class])
 internal class AppRepository(
     private val jsMethod: JSMethod,
 ) : IAppRepository {

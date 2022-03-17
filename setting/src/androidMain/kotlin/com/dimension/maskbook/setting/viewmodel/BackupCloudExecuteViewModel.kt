@@ -26,7 +26,9 @@ import com.dimension.maskbook.setting.repository.BackupRepository
 import com.dimension.maskbook.setting.repository.ISettingsRepository
 import com.dimension.maskbook.setting.services.model.AccountType
 import kotlinx.coroutines.flow.firstOrNull
+import org.koin.android.annotation.KoinViewModel
 
+@KoinViewModel
 class BackupCloudExecuteViewModel(
     private val settingsRepository: ISettingsRepository,
     private val backupRepository: BackupRepository,

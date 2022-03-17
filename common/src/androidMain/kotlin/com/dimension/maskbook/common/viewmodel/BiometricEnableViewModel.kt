@@ -24,7 +24,9 @@ import android.content.Context
 import androidx.lifecycle.ViewModel
 import com.dimension.maskbook.common.util.BiometricAuthenticator
 import com.dimension.maskbook.setting.export.SettingServices
+import org.koin.android.annotation.KoinViewModel
 
+@KoinViewModel
 class BiometricEnableViewModel(
     private val biometricAuthenticator: BiometricAuthenticator,
     private val repository: SettingServices,

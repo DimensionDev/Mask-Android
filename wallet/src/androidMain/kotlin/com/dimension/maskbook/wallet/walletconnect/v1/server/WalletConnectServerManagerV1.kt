@@ -32,11 +32,13 @@ import com.dimension.maskbook.wallet.walletconnect.v1.WCSessionV1
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
+import org.koin.core.annotation.Single
 import org.walletconnect.Session
 import org.walletconnect.impls.FileWCSessionStore
 import org.walletconnect.impls.WCSessionStore
 import java.io.File
 
+@Single(binds = [WalletConnectServerManager::class])
 class WalletConnectServerManagerV1(private val context: Context) :
     BaseWalletConnectManager(),
     WalletConnectServerManager {

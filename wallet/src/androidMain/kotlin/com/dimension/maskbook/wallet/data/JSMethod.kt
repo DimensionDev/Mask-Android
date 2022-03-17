@@ -31,6 +31,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonPrimitive
+import org.koin.core.annotation.Single
 
 @Serializable
 data class SwitchBlockChainData(
@@ -60,6 +61,7 @@ data class JsonRpcPayload(
     }
 }
 
+@Single
 internal class JSMethod(
     private val extensionServices: ExtensionServices,
 ) {

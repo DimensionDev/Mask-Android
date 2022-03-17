@@ -27,7 +27,9 @@ import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.setting.repository.ISettingsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import org.koin.android.annotation.KoinViewModel
 
+@KoinViewModel
 class BackupPasswordSettingsViewModel(
     private val repository: ISettingsRepository,
 ) : ViewModel() {

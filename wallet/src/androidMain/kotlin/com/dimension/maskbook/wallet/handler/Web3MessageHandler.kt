@@ -43,6 +43,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
+import org.koin.core.annotation.Single
 import org.web3j.crypto.Credentials
 import org.web3j.crypto.Sign
 import org.web3j.crypto.Sign.SignatureData
@@ -51,6 +52,7 @@ import org.web3j.protocol.core.Response
 import org.web3j.utils.Numeric
 import java.nio.charset.Charset
 
+@Single
 internal class Web3MessageHandler(
     private val walletRepository: IWalletRepository,
 ) {

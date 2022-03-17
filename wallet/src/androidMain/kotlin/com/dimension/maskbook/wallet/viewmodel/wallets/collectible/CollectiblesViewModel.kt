@@ -29,7 +29,9 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.mapNotNull
+import org.koin.android.annotation.KoinViewModel
 
+@KoinViewModel
 class CollectiblesViewModel(
     private val repository: ICollectibleRepository,
     private val walletRepository: IWalletRepository,

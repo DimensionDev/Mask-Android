@@ -36,6 +36,7 @@ kotlin {
                 implementation("com.github.WalletConnect:kotlin-walletconnect-lib:${Versions.walletConnectV1}")
                 implementation("com.squareup.moshi:moshi:${Versions.moshi}")
                 implementation("com.github.komputing.khex:extensions:${Versions.khexExtension}")
+                kspAndroid("io.insert-koin:koin-ksp-compiler:${Versions.Koin.ksp}")
             }
         }
         val androidTest by getting {

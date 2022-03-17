@@ -22,7 +22,9 @@ package com.dimension.maskbook.labs.data
 
 import com.dimension.maskbook.common.ext.execute
 import com.dimension.maskbook.extension.export.ExtensionServices
+import org.koin.core.annotation.Single
 
+@Single
 internal class JSMethod(
     private val extensionServices: ExtensionServices,
 ) {

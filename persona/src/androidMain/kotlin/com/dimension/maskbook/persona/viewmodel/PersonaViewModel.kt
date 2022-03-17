@@ -28,7 +28,9 @@ import com.dimension.maskbook.persona.repository.ISocialsRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
+import org.koin.android.annotation.KoinViewModel
 
+@KoinViewModel
 class PersonaViewModel(
     private val personaRepository: IPersonaRepository,
     private val socialRepository: ISocialsRepository,

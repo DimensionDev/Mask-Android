@@ -20,83 +20,20 @@
  */
 package com.dimension.maskbook.persona
 
-import android.content.Context
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import com.dimension.maskbook.common.IoScopeName
 import com.dimension.maskbook.common.ModuleSetup
-import com.dimension.maskbook.common.ui.tab.TabScreen
-import com.dimension.maskbook.persona.data.JSMethod
-import com.dimension.maskbook.persona.export.PersonaServices
-import com.dimension.maskbook.persona.export.model.ConnectAccountData
-import com.dimension.maskbook.persona.repository.IContactsRepository
 import com.dimension.maskbook.persona.repository.IPersonaRepository
-import com.dimension.maskbook.persona.repository.IPreferenceRepository
-import com.dimension.maskbook.persona.repository.ISocialsRepository
-import com.dimension.maskbook.persona.repository.PersonaRepository
-import com.dimension.maskbook.persona.repository.PreferenceRepository
-import com.dimension.maskbook.persona.repository.personaDataStore
 import com.dimension.maskbook.persona.ui.scenes.generatedRoute
-import com.dimension.maskbook.persona.ui.tab.PersonasTabScreen
-import com.dimension.maskbook.persona.viewmodel.ExportPrivateKeyViewModel
-import com.dimension.maskbook.persona.viewmodel.PersonaViewModel
-import com.dimension.maskbook.persona.viewmodel.RenamePersonaViewModel
-import com.dimension.maskbook.persona.viewmodel.SwitchPersonaViewModel
-import com.dimension.maskbook.persona.viewmodel.contacts.ContactsViewModel
-import com.dimension.maskbook.persona.viewmodel.post.PostViewModel
-import com.dimension.maskbook.persona.viewmodel.social.DisconnectSocialViewModel
-import com.dimension.maskbook.persona.viewmodel.social.FaceBookConnectSocialViewModel
-import com.dimension.maskbook.persona.viewmodel.social.FacebookSocialViewModel
-import com.dimension.maskbook.persona.viewmodel.social.TwitterConnectSocialViewModel
-import com.dimension.maskbook.persona.viewmodel.social.TwitterSocialViewModel
-import org.koin.androidx.viewmodel.dsl.viewModel
-import org.koin.core.qualifier.named
-import org.koin.dsl.bind
-import org.koin.dsl.binds
-import org.koin.dsl.module
+import org.koin.core.annotation.ComponentScan
 import org.koin.mp.KoinPlatformTools
 
+@org.koin.core.annotation.Module
+@ComponentScan
 object PersonaSetup : ModuleSetup {
 
     override fun NavGraphBuilder.route(navController: NavController) {
         generatedRoute(navController)
-    }
-
-    override fun dependencyInject() = module {
-        single {
-            PersonaRepository(get<Context>().personaDataStore, get(), get())
-        } binds arrayOf(
-            IPersonaRepository::class,
-            ISocialsRepository::class,
-            IContactsRepository::class,
-        )
-        single<IPreferenceRepository> {
-            PreferenceRepository(get<Context>().personaDataStore, get(named(IoScopeName)))
-        }
-
-        single { JSMethod(get()) }
-
-        single<PersonaServices> { PersonaServicesImpl(get()) }
-        single { PersonasTabScreen() } bind TabScreen::class
-
-        viewModel { PersonaViewModel(get(), get()) }
-        viewModel { TwitterSocialViewModel(get()) }
-        viewModel { FacebookSocialViewModel(get()) }
-        viewModel { TwitterConnectSocialViewModel(get()) }
-        viewModel { FaceBookConnectSocialViewModel(get()) }
-        viewModel { DisconnectSocialViewModel(get()) }
-        viewModel { SwitchPersonaViewModel(get()) }
-        viewModel { (personaId: String) -> RenamePersonaViewModel(get(), personaId) }
-        viewModel { ExportPrivateKeyViewModel(get()) }
-        viewModel { PostViewModel(get(), get()) }
-        viewModel { ContactsViewModel(get()) }
-
-        viewModel { (data: ConnectAccountData) ->
-            com.dimension.maskbook.persona.viewmodel.social.UserNameModalViewModel(
-                get(),
-                data
-            )
-        }
     }
 
     override fun onExtensionReady() {

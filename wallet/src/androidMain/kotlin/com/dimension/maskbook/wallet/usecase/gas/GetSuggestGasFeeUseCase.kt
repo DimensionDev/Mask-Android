@@ -28,6 +28,7 @@ import com.dimension.maskbook.wallet.services.model.MaticGasFeeResponse
 import com.dimension.maskbook.wallet.usecase.Result
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import org.koin.core.annotation.Factory
 
 data class GasFeeData(
     val maxPriorityFeePerGas: Double,
@@ -108,6 +109,7 @@ interface GetSuggestGasFeeUseCase {
     operator fun invoke(chainType: ChainType?): Flow<Result<GasFeeModel>>
 }
 
+@Factory(binds = [GetSuggestGasFeeUseCase::class])
 class GetSuggestGasFeeUseCaseImpl(
     private val services: WalletServices,
 ) : GetSuggestGasFeeUseCase {

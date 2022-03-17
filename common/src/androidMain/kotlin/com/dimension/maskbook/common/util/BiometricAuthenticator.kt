@@ -27,7 +27,9 @@ import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
 import androidx.biometric.BiometricPrompt
 import androidx.fragment.app.FragmentActivity
 import com.dimension.maskbook.localization.R
+import org.koin.core.annotation.Single
 
+@Single
 class BiometricAuthenticator {
     fun canAuthenticate(context: Context): Boolean {
         return BiometricManager.from(context).canAuthenticate(BIOMETRIC_STRONG) == BiometricManager.BIOMETRIC_SUCCESS

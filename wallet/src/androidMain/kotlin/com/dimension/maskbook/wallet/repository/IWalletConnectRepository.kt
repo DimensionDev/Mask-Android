@@ -40,6 +40,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import org.koin.core.annotation.Single
 import java.util.UUID
 
 data class WCWallet(
@@ -95,6 +96,7 @@ interface IWalletConnectRepository {
     suspend fun saveAccounts(responder: WCResponder, platformType: CoinPlatformType): String?
 }
 
+@Single(binds = [IWalletConnectRepository::class])
 class WalletConnectRepository(
     private val walletServices: WalletServices,
     private val database: AppDatabase

@@ -24,6 +24,7 @@ import com.dimension.maskbook.wallet.services.WalletServices
 import com.dimension.maskbook.wallet.usecase.Result
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import org.koin.core.annotation.Factory
 
 interface GetArrivesWithGasFeeUseCase {
     operator fun invoke(
@@ -32,6 +33,7 @@ interface GetArrivesWithGasFeeUseCase {
     ): Flow<Result<Double>> // minutes
 }
 
+@Factory(binds = [GetArrivesWithGasFeeUseCase::class])
 class GetArrivesWithGasFeeUseCaseImpl(
     private val services: WalletServices,
 ) : GetArrivesWithGasFeeUseCase {

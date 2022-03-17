@@ -25,11 +25,13 @@ import com.dimension.maskbook.wallet.repository.IWalletRepository
 import com.dimension.maskbook.wallet.usecase.Result
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import org.koin.core.annotation.Factory
 
 interface GetEnsAddressUseCase {
     operator fun invoke(chainType: ChainType, ensName: String): Flow<Result<String>>
 }
 
+@Factory(binds = [GetEnsAddressUseCase::class])
 class GetEnsAddressUseCaseImpl(
     val repository: IWalletRepository
 ) : GetEnsAddressUseCase {

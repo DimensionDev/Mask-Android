@@ -34,16 +34,18 @@ import com.dimension.maskbook.common.ModuleSetup
 import com.dimension.maskbook.common.gecko.WebContentController
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
-import com.dimension.maskbook.extension.export.ExtensionServices
 import com.dimension.maskbook.extension.export.model.Site
-import com.dimension.maskbook.extension.repository.ExtensionRepository
 import com.dimension.maskbook.extension.route.ExtensionRoute
 import com.dimension.maskbook.extension.ui.WebContentScene
 import com.dimension.maskbook.extension.utils.MessageChannel
 import com.google.accompanist.navigation.animation.composable
+import org.koin.core.annotation.ComponentScan
+import org.koin.core.module.Module
 import org.koin.dsl.module
 import org.koin.mp.KoinPlatformTools
 
+@org.koin.core.annotation.Module
+@ComponentScan
 object ExtensionSetup : ModuleSetup {
     @OptIn(ExperimentalAnimationApi::class)
     override fun NavGraphBuilder.route(navController: NavController) {
@@ -83,11 +85,8 @@ object ExtensionSetup : ModuleSetup {
         }
     }
 
-    override fun dependencyInject() = module {
+    override fun dependencyInject(): Module = module {
         single { WebContentController(get()) }
-        single { ExtensionRepository(get()) }
-        single<ExtensionServices> { ExtensionServicesImpl(get(), get()) }
-        single { MessageChannel(get()) }
     }
 
     override fun onExtensionReady() {

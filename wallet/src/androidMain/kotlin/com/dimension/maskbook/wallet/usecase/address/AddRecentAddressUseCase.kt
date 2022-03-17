@@ -24,11 +24,13 @@ import com.dimension.maskbook.wallet.repository.ISendHistoryRepository
 import com.dimension.maskbook.wallet.usecase.Result
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import org.koin.core.annotation.Factory
 
 interface AddRecentAddressUseCase {
     operator fun invoke(address: String, name: String): Flow<Result<Unit>>
 }
 
+@Factory(binds = [AddRecentAddressUseCase::class])
 class AddRecentAddressUseCaseImpl(
     val repository: ISendHistoryRepository
 ) : AddRecentAddressUseCase {

@@ -33,9 +33,12 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.koin.android.annotation.KoinViewModel
+import org.koin.core.annotation.InjectedParam
 
+@KoinViewModel
 class ImportWalletKeystoreViewModel(
-    private val wallet: String,
+    @InjectedParam private val wallet: String,
     private val repository: IWalletRepository,
 ) : ViewModel() {
     private val _keystore = MutableStateFlow("")

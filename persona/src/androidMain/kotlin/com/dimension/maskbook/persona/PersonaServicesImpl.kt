@@ -25,7 +25,9 @@ import com.dimension.maskbook.persona.export.model.PersonaData
 import com.dimension.maskbook.persona.export.model.SocialProfile
 import com.dimension.maskbook.persona.repository.IPersonaRepository
 import kotlinx.coroutines.flow.Flow
+import org.koin.core.annotation.Single
 
+@Single(binds = [PersonaServices::class])
 class PersonaServicesImpl(
     private val personaRepository: IPersonaRepository
 ) : PersonaServices {

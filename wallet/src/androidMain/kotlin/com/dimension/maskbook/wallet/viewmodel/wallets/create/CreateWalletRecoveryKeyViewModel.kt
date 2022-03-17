@@ -29,8 +29,10 @@ import com.dimension.maskbook.wallet.viewmodel.base.BaseMnemonicPhraseViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
+import org.koin.android.annotation.KoinViewModel
 import java.util.UUID
 
+@KoinViewModel
 class CreateWalletRecoveryKeyViewModel(
     private val repository: IWalletRepository
 ) : BaseMnemonicPhraseViewModel() {

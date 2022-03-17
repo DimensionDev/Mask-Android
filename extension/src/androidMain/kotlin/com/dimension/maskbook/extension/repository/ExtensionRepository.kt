@@ -32,7 +32,9 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
+import org.koin.core.annotation.Single
 
+@Single
 @OptIn(InternalCoroutinesApi::class)
 class ExtensionRepository(
     private val controller: WebContentController,

@@ -33,6 +33,7 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
+import org.koin.ksp.generated.module
 
 class MaskApp : Application() {
     override fun onCreate() {
@@ -41,12 +42,19 @@ class MaskApp : Application() {
             androidLogger(if (BuildConfig.DEBUG) Level.ERROR else Level.NONE)
             androidContext(this@MaskApp)
             modules(
+                CommonSetup.module,
                 CommonSetup.dependencyInject(),
+                WalletSetup.module,
                 WalletSetup.dependencyInject(),
+                SettingSetup.module,
                 SettingSetup.dependencyInject(),
+                LabsSetup.module,
                 LabsSetup.dependencyInject(),
+                PersonaSetup.module,
                 PersonaSetup.dependencyInject(),
+                EntrySetup.module,
                 EntrySetup.dependencyInject(),
+                ExtensionSetup.module,
                 ExtensionSetup.dependencyInject(),
             )
         }

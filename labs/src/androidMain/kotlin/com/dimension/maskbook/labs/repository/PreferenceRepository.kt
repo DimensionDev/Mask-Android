@@ -27,17 +27,21 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import org.koin.core.annotation.Single
 
 private val ShouldShowPluginSettingsTipDialog = booleanPreferencesKey("ShouldShowPluginSettingsTipDialog")
-val Context.labsDataStore: DataStore<Preferences> by preferencesDataStore(name = "labs")
+private val Context.labsDataStore: DataStore<Preferences> by preferencesDataStore(name = "labs")
 
+@Single(binds = [IPreferenceRepository::class])
 class PreferenceRepository(
-    private val dataStore: DataStore<Preferences>,
-    private val ioScope: CoroutineScope,
+    context: Context,
 ) : IPreferenceRepository {
+    private val dataStore: DataStore<Preferences> = context.labsDataStore
+    private val scope = CoroutineScope(Dispatchers.IO)
 
     override val shouldShowPluginSettingsTipDialog: Flow<Boolean>
         get() = dataStore.data.map {
@@ -45,7 +49,7 @@ class PreferenceRepository(
         }
 
     override fun setShowPluginSettingsTipDialog(bool: Boolean) {
-        ioScope.launch {
+        scope.launch {
             dataStore.edit {
                 it[ShouldShowPluginSettingsTipDialog] = bool
             }

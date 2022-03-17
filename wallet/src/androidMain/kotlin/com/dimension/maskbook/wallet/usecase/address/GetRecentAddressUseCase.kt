@@ -25,11 +25,13 @@ import com.dimension.maskbook.wallet.repository.SearchAddressData
 import com.dimension.maskbook.wallet.usecase.Result
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import org.koin.core.annotation.Factory
 
 interface GetRecentAddressUseCase {
     operator fun invoke(filter: String = ""): Flow<Result<List<SearchAddressData>>>
 }
 
+@Factory(binds = [GetRecentAddressUseCase::class])
 class GetRecentAddressUseCaseImpl(
     val repository: ISendHistoryRepository
 ) : GetRecentAddressUseCase {

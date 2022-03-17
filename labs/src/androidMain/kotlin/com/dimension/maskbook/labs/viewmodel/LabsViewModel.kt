@@ -32,6 +32,7 @@ import com.dimension.maskbook.wallet.export.WalletServices
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import org.koin.android.annotation.KoinViewModel
 
 data class AppDisplayData(
     val key: AppKey,
@@ -76,6 +77,7 @@ private val displayDataList = listOf(
     ),
 )
 
+@KoinViewModel
 class LabsViewModel(
     private val repository: IAppRepository,
     private val walletRepository: WalletServices,

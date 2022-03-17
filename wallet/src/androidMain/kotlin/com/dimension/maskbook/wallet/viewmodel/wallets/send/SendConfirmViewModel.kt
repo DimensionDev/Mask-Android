@@ -35,9 +35,12 @@ import com.dimension.maskbook.wallet.usecase.token.SendTokenUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import org.koin.android.annotation.KoinViewModel
+import org.koin.core.annotation.InjectedParam
 
+@KoinViewModel
 class SendConfirmViewModel(
-    private val toAddress: String,
+    @InjectedParam private val toAddress: String,
     private val walletRepository: IWalletRepository,
     private val getAddressUseCase: GetAddressUseCase,
     private val sendTokenUseCase: SendTokenUseCase,

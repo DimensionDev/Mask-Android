@@ -18,6 +18,7 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 implementation(projects.common)
+                kspAndroid("io.insert-koin:koin-ksp-compiler:${Versions.Koin.ksp}")
             }
         }
         val androidTest by getting {

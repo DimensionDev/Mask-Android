@@ -30,11 +30,14 @@ import com.dimension.maskbook.wallet.export.WalletServices
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import org.koin.android.annotation.KoinViewModel
+import org.koin.core.annotation.InjectedParam
 
+@KoinViewModel
 class IdentityViewModel(
     private val personaServices: PersonaServices,
     private val walletServices: WalletServices,
-    private val name: String
+    @InjectedParam private val name: String
 ) : ViewModel() {
 
     private val _identity = MutableStateFlow("")

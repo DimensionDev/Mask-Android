@@ -31,7 +31,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
+import org.koin.android.annotation.KoinViewModel
 
+@KoinViewModel
 class EmailBackupViewModel(
     private val backupRepository: BackupRepository,
 ) : RemoteBackupRecoveryViewModelBase() {
@@ -63,6 +65,7 @@ class EmailBackupViewModel(
     }
 }
 
+@KoinViewModel
 class PhoneBackupViewModel(
     private val backupRepository: BackupRepository,
 ) : RemoteBackupRecoveryViewModelBase() {
