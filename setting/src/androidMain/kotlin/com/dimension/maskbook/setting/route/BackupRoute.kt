@@ -473,7 +473,9 @@ fun BackupDataBackupMerge(
                 Text(text = stringResource(R.string.common_controls_merge_and_back_up))
             }
             Spacer(modifier = Modifier.height(16.dp))
-            PrimaryButton(onClick = {
+            PrimaryButton(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = {
                 navController.navigate(SettingRoute.BackupData.BackupData_BackupCloud(type, value, code))
             }) {
                 Text(text = stringResource(R.string.common_controls_back_up))
