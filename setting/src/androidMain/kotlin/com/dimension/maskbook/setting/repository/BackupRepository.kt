@@ -26,12 +26,12 @@ import androidx.core.net.toUri
 import com.dimension.maskbook.common.okhttp.await
 import com.dimension.maskbook.setting.services.BackupServices
 import com.dimension.maskbook.setting.services.model.AccountType
-import com.dimension.maskbook.setting.services.model.DownloadResponse
 import com.dimension.maskbook.setting.services.model.Locale
 import com.dimension.maskbook.setting.services.model.Scenario
 import com.dimension.maskbook.setting.services.model.SendCodeBody
 import com.dimension.maskbook.setting.services.model.UploadBody
 import com.dimension.maskbook.setting.services.model.ValidateCodeBody
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
@@ -46,40 +46,59 @@ class BackupRepository(
     private val cacheDir: File,
     private val contentResolver: ContentResolver,
 ) {
+    private val scope = CoroutineScope(Dispatchers.IO)
     suspend fun sendPhoneCode(phone: String) {
-        backupServices.sendCode(
-            SendCodeBody(
-                account_type = AccountType.phone,
-                account = phone,
-                Scenario.backup,
-                Locale.en,
+        withContext(scope.coroutineContext) {
+            backupServices.sendCode(
+                SendCodeBody(
+                    account_type = AccountType.phone,
+                    account = phone,
+                    Scenario.backup,
+                    Locale.en,
+                )
             )
-        )
+        }
     }
 
     suspend fun sendEmailCode(email: String) {
-        backupServices.sendCode(
-            SendCodeBody(
-                account_type = AccountType.email,
-                account = email,
-                Scenario.backup,
-                Locale.en,
+        withContext(scope.coroutineContext) {
+            backupServices.sendCode(
+                SendCodeBody(
+                    account_type = AccountType.email,
+                    account = email,
+                    Scenario.backup,
+                    Locale.en,
+                )
             )
-        )
+        }
     }
 
     suspend fun validatePhoneCode(phone: String, code: String) {
-        backupServices.validateCode(
-            ValidateCodeBody(
-                code = code,
-                account = phone,
-                account_type = AccountType.phone,
+        withContext(scope.coroutineContext) {
+            backupServices.validateCode(
+                ValidateCodeBody(
+                    code = code,
+                    account = phone,
+                    account_type = AccountType.phone,
+                )
             )
-        )
+        }
     }
 
     suspend fun validateEmailCode(email: String, code: String) {
-        backupServices.validateCode(
+        withContext(scope.coroutineContext) {
+            backupServices.validateCode(
+                ValidateCodeBody(
+                    code = code,
+                    account = email,
+                    account_type = AccountType.email,
+                )
+            )
+        }
+    }
+
+    suspend fun getBackupInformationByEmail(email: String, code: String) = withContext(scope.coroutineContext) {
+        backupServices.download(
             ValidateCodeBody(
                 code = code,
                 account = email,
@@ -88,18 +107,8 @@ class BackupRepository(
         )
     }
 
-    suspend fun getBackupInformationByEmail(email: String, code: String): DownloadResponse {
-        return backupServices.download(
-            ValidateCodeBody(
-                code = code,
-                account = email,
-                account_type = AccountType.email,
-            )
-        )
-    }
-
-    suspend fun getBackupInformationByPhone(phone: String, code: String): DownloadResponse {
-        return backupServices.download(
+    suspend fun getBackupInformationByPhone(phone: String, code: String) = withContext(scope.coroutineContext) {
+        backupServices.download(
             ValidateCodeBody(
                 code = code,
                 account = phone,
@@ -108,7 +117,7 @@ class BackupRepository(
         )
     }
 
-    suspend fun downloadBackupWithEmail(email: String, code: String): Uri {
+    suspend fun downloadBackupWithEmail(email: String, code: String) = withContext(scope.coroutineContext) {
         val response = backupServices.download(
             ValidateCodeBody(
                 code = code,
@@ -117,10 +126,10 @@ class BackupRepository(
             )
         )
         requireNotNull(response.download_url)
-        return downloadFile(response.download_url).toUri()
+        downloadFile(response.download_url).toUri()
     }
 
-    suspend fun downloadBackupWithPhone(phone: String, code: String): Uri {
+    suspend fun downloadBackupWithPhone(phone: String, code: String) = withContext(scope.coroutineContext) {
         val response = backupServices.download(
             ValidateCodeBody(
                 code = code,
@@ -129,10 +138,10 @@ class BackupRepository(
             )
         )
         requireNotNull(response.download_url)
-        return downloadFile(response.download_url).toUri()
+        downloadFile(response.download_url).toUri()
     }
 
-    suspend fun downloadFile(url: String): File {
+    suspend fun downloadFile(url: String) = withContext(scope.coroutineContext) {
         val stream = OkHttpClient.Builder()
             .build()
             .newCall(
@@ -147,7 +156,7 @@ class BackupRepository(
             ?.byteStream().let {
                 requireNotNull(it)
             }
-        return File(cacheDir, UUID.randomUUID().toString()).apply {
+        File(cacheDir, UUID.randomUUID().toString()).apply {
             createNewFile()
             writeBytes(stream.readBytes())
         }
@@ -159,7 +168,7 @@ class BackupRepository(
         account: String,
         abstract: String,
         content: String,
-    ) = withContext(Dispatchers.IO) {
+    ) = withContext(scope.coroutineContext) {
         val response = backupServices.upload(
             UploadBody(
                 code = code,
