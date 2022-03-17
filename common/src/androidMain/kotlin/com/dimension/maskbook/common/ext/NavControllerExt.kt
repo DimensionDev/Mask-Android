@@ -31,17 +31,8 @@ fun NavController.navigate(uri: Uri, builder: NavOptionsBuilder.() -> Unit) {
     navigate(uri, navOptions(builder))
 }
 
-fun NavController.navigateToHome(initialRoute: String = CommonRoute.Main.Tabs.Persona) {
-    navigate(Uri.parse(Deeplinks.Main.Home(initialRoute))) {
-        launchSingleTop = true
-        popUpTo(CommonRoute.WebContent) {
-            inclusive = false
-        }
-    }
-}
-
-fun NavController.navigateToExtension() {
-    navigate(Uri.parse(Deeplinks.Extension.Extension)) {
+fun NavController.navigateToExtension(site: String? = null) {
+    navigate(Uri.parse(Deeplinks.WebContent(site))) {
         launchSingleTop = true
         popUpTo(CommonRoute.Main.Home.path) {
             inclusive = true

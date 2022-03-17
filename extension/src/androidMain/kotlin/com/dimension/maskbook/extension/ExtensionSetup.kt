@@ -30,8 +30,8 @@ import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import com.dimension.maskbook.common.IoScopeName
-import androidx.navigation.navOptions
 import com.dimension.maskbook.common.ModuleSetup
+import com.dimension.maskbook.common.ext.navigate
 import com.dimension.maskbook.common.gecko.WebContentController
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
@@ -72,13 +72,12 @@ object ExtensionSetup : ModuleSetup {
             val site = it.arguments?.getString("site")?.let { Site.valueOf(it) }
             WebContentScene(
                 onPersonaClicked = {
-                    navController.navigate(
-                        Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona)),
-                        navOptions {
-                            launchSingleTop = true
-                            popUpTo(ExtensionRoute.WebContent.path)
-                        },
-                    )
+                    navController.navigate(Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona))) {
+                        launchSingleTop = true
+                        popUpTo(ExtensionRoute.WebContent.path) {
+                            inclusive = false
+                        }
+                    }
                 },
                 site = site,
             )
