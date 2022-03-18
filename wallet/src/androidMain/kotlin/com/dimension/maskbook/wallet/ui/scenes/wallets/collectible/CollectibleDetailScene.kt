@@ -47,6 +47,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.common.model.DateType
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
+import com.dimension.maskbook.common.ui.widget.MaskScene
 import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.common.ui.widget.button.MaskBackButton
@@ -59,7 +60,7 @@ import com.dimension.maskbook.wallet.ui.widget.TransactionHistoryList
 
 @Composable
 fun CollectibleDetailScene(
-    data: WalletCollectibleData,
+    data: WalletCollectibleData?,
     transactions: Map<DateType, List<TransactionData>>,
     onSpeedUp: (TransactionData) -> Unit,
     onCancel: (TransactionData) -> Unit,
@@ -67,79 +68,83 @@ fun CollectibleDetailScene(
     onSend: () -> Unit,
     onReceive: () -> Unit,
 ) {
-    MaskScaffold(
-        topBar = {
-            MaskSingleLineTopAppBar(
-                navigationIcon = {
-                    MaskBackButton(
-                        onBack = onBack,
-                    )
-                }
-            )
-        }
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(ScaffoldPadding)
+    MaskScene {
+        MaskScaffold(
+            topBar = {
+                MaskSingleLineTopAppBar(
+                    navigationIcon = {
+                        MaskBackButton(
+                            onBack = onBack,
+                        )
+                    }
+                )
+            }
         ) {
             Column(
-                modifier = Modifier.fillMaxWidth()
-                    .weight(1f),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(ScaffoldPadding)
             ) {
                 Column(
-                    modifier = Modifier.background(
-                        color = MaterialTheme.colors.surface,
-                        shape = RoundedCornerShape(12.dp)
-                    ).clip(RoundedCornerShape(12.dp)),
-                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxWidth()
+                        .weight(1f),
                 ) {
-                    CollectibleCard(data = data)
-                    data.name.takeIf { it.isNotEmpty() }?.let {
-                        Text(text = data.name, modifier = Modifier.padding(15.dp))
+                    Column(
+                        modifier = Modifier.background(
+                            color = MaterialTheme.colors.surface,
+                            shape = RoundedCornerShape(12.dp)
+                        ).clip(RoundedCornerShape(12.dp)),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        if (data != null) {
+                            CollectibleCard(data = data)
+                            data.name.takeIf { it.isNotEmpty() }?.let {
+                                Text(text = data.name, modifier = Modifier.padding(15.dp))
+                            }
+                        }
+                    }
+
+                    // Transaction
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        TransactionHistoryList(
+                            transactions = transactions,
+                            onSpeedUp = onSpeedUp,
+                            onCancel = onCancel
+                        )
                     }
                 }
-
-                // Transaction
-                Box(modifier = Modifier.fillMaxSize()) {
-                    TransactionHistoryList(
-                        transactions = transactions,
-                        onSpeedUp = onSpeedUp,
-                        onCancel = onCancel
-                    )
-                }
-            }
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                PrimaryButton(
-                    modifier = Modifier.weight(1f),
-                    onClick = { onSend.invoke() },
-                    elevation = ButtonDefaults.elevation(defaultElevation = 0.dp),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = Color(0XFFFFB915))
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Icon(painterResource(id = R.drawable.upload), contentDescription = null)
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = stringResource(R.string.scene_wallet_balance_btn_Send),
-                        maxLines = 1
-                    )
-                }
-                PrimaryButton(
-                    modifier = Modifier.weight(1f),
-                    onClick = { onReceive.invoke() },
-                    elevation = ButtonDefaults.elevation(defaultElevation = 0.dp),
-                ) {
-                    Icon(
-                        painterResource(id = R.drawable.download),
-                        contentDescription = null
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = stringResource(R.string.scene_wallet_balance_btn_receive),
-                        maxLines = 1
-                    )
+                    PrimaryButton(
+                        modifier = Modifier.weight(1f),
+                        onClick = { onSend.invoke() },
+                        elevation = ButtonDefaults.elevation(defaultElevation = 0.dp),
+                        colors = ButtonDefaults.buttonColors(backgroundColor = Color(0XFFFFB915))
+                    ) {
+                        Icon(painterResource(id = R.drawable.upload), contentDescription = null)
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = stringResource(R.string.scene_wallet_balance_btn_Send),
+                            maxLines = 1
+                        )
+                    }
+                    PrimaryButton(
+                        modifier = Modifier.weight(1f),
+                        onClick = { onReceive.invoke() },
+                        elevation = ButtonDefaults.elevation(defaultElevation = 0.dp),
+                    ) {
+                        Icon(
+                            painterResource(id = R.drawable.download),
+                            contentDescription = null
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = stringResource(R.string.scene_wallet_balance_btn_receive),
+                            maxLines = 1
+                        )
+                    }
                 }
             }
         }

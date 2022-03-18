@@ -60,7 +60,6 @@ import com.dimension.maskbook.common.ui.widget.button.MaskBackButton
 import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.route.PersonaRoute
 import com.dimension.maskbook.persona.viewmodel.PersonaMenuViewModel
-import org.koin.androidx.compose.get
 import org.koin.androidx.compose.getViewModel
 
 @NavGraphDestination(
@@ -79,8 +78,6 @@ fun PersonaMenuScene(
     val backupPassword by viewModel.backupPassword.collectAsState()
     val paymentPassword by viewModel.paymentPassword.collectAsState()
 
-    val personaData = currentPersona ?: return
-
     MaskScene {
         MaskScaffold(
             topBar = {
@@ -89,7 +86,7 @@ fun PersonaMenuScene(
                         MaskBackButton(onBack = onBack)
                     },
                     title = {
-                        Text(text = personaData.name)
+                        Text(text = currentPersona?.name ?: "")
                     }
                 )
             }
@@ -127,7 +124,9 @@ fun PersonaMenuScene(
                         modifier = Modifier.fillMaxWidth(),
                         elevation = 0.dp,
                         onClick = {
-                            navController.navigate(PersonaRoute.RenamePersona(personaData.identifier))
+                            currentPersona?.let {
+                                navController.navigate(PersonaRoute.RenamePersona(it.identifier))
+                            }
                         }
                     ) {
                         Row(

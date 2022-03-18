@@ -20,11 +20,6 @@
  */
 package com.dimension.maskbook.wallet.ui.scenes.register.recovery.local
 
-import android.net.Uri
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -38,10 +33,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -50,11 +46,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.compose.dialog
+import androidx.navigation.NavController
 import androidx.navigation.plusAssign
+import com.dimension.maskbook.common.ext.getNestedNavigationViewModel
 import com.dimension.maskbook.common.ext.observeAsState
-import com.dimension.maskbook.common.navHostAnimationDurationMillis
-import com.dimension.maskbook.common.ui.theme.modalScrimColor
+import com.dimension.maskbook.common.route.navigationComposeAnimComposable
+import com.dimension.maskbook.common.route.navigationComposeAnimComposablePackage
+import com.dimension.maskbook.common.route.navigationComposeBottomSheet
+import com.dimension.maskbook.common.route.navigationComposeBottomSheetPackage
+import com.dimension.maskbook.common.route.navigationComposeDialog
+import com.dimension.maskbook.common.route.navigationComposeDialogPackage
+import com.dimension.maskbook.common.routeProcessor.annotations.Back
+import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
+import com.dimension.maskbook.common.routeProcessor.annotations.Path
 import com.dimension.maskbook.common.ui.widget.BackMetaDisplay
 import com.dimension.maskbook.common.ui.widget.MaskDialog
 import com.dimension.maskbook.common.ui.widget.MaskModal
@@ -66,210 +70,171 @@ import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.common.ui.widget.button.MaskBackButton
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.common.ui.widget.button.SecondaryButton
-import com.dimension.maskbook.common.ui.widget.rememberMaskBottomSheetNavigator
 import com.dimension.maskbook.wallet.R
+import com.dimension.maskbook.wallet.route.WalletRoute
 import com.dimension.maskbook.wallet.viewmodel.recovery.RecoveryLocalViewModel
-import com.google.accompanist.navigation.animation.AnimatedNavHost
-import com.google.accompanist.navigation.animation.composable
-import com.google.accompanist.navigation.animation.rememberAnimatedNavController
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
-import com.google.accompanist.navigation.material.ModalBottomSheetLayout
-import com.google.accompanist.navigation.material.bottomSheet
 import kotlinx.coroutines.flow.distinctUntilChanged
-import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 
-@OptIn(
-    ExperimentalAnimationApi::class,
-    ExperimentalMaterialNavigationApi::class,
+private const val GeneratedRouteName = "recoveryLocalRoute"
+
+@NavGraphDestination(
+    route = WalletRoute.Register.Recovery.LocalBackup.Failed,
+    packageName = navigationComposeDialogPackage,
+    functionName = navigationComposeDialog,
+    generatedFunctionName = GeneratedRouteName
 )
 @Composable
-fun RecoveryLocalHost(
-    onConfirm: () -> Unit,
-    onBack: () -> Unit,
-    uri: Uri
+fun ImportFailedDialog(
+    navController: NavController,
 ) {
-    val bottomSheetNavigator = rememberMaskBottomSheetNavigator()
-    val navController = rememberAnimatedNavController()
-    navController.navigatorProvider += bottomSheetNavigator
-    val viewModel: RecoveryLocalViewModel = getViewModel {
-        parametersOf(uri)
-    }
-    val loadState by viewModel.loadState.observeAsState(initial = RecoveryLocalViewModel.LoadState.Loading)
-    LaunchedEffect(Unit) {
-        snapshotFlow { loadState }
-            .distinctUntilChanged()
-            .collect {
-                when (it) {
-                    RecoveryLocalViewModel.LoadState.Loading -> {
-                        if (navController.currentDestination?.route != "Loading") {
-                            navController.navigate("Loading") {
-                                popUpTo("Loading") {
-                                    inclusive = true
-                                }
+    MaskDialog(
+        onDismissRequest = {
+        },
+        title = {
+            Text(text = stringResource(R.string.scene_restore_titles_unsupport_restore_data))
+        },
+        text = {
+            Text(text = stringResource(R.string.scene_restore_check_unsupport_data))
+        },
+        buttons = {
+            PrimaryButton(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = {
+                    navController.popBackStack()
+                },
+            ) {
+                Text(text = stringResource(R.string.common_controls_ok))
+            }
+        },
+        icon = {
+            Image(
+                painterResource(id = R.drawable.ic_property_1_failed),
+                contentDescription = null
+            )
+        }
+    )
+}
+
+@NavGraphDestination(
+    route = WalletRoute.Register.Recovery.LocalBackup.Notification,
+    packageName = navigationComposeDialogPackage,
+    functionName = navigationComposeDialog,
+    generatedFunctionName = GeneratedRouteName
+)
+@Composable
+fun ImportNotificationDialog(
+    navController: NavController,
+) {
+    MaskDialog(
+        onDismissRequest = { },
+        icon = {
+            Image(
+                painterResource(id = R.drawable.ic_property_1_note),
+                contentDescription = null
+            )
+        },
+        text = {
+            Text(text = stringResource(R.string.scene_restore_tip_remote_restore_succeed))
+        },
+        buttons = {
+            Row {
+                SecondaryButton(
+                    modifier = Modifier.weight(1f),
+                    onClick = {
+                        navController.popBackStack()
+                    }
+                ) {
+                    Text(text = stringResource(R.string.common_controls_cancel))
+                }
+                Spacer(modifier = Modifier.width(20.dp))
+                PrimaryButton(
+                    modifier = Modifier.weight(1f),
+                    onClick = {
+                        navController.navigate(WalletRoute.Register.Recovery.Complected) {
+                            popUpTo(WalletRoute.Register.Init) {
+                                inclusive = true
                             }
                         }
-                    }
-                    RecoveryLocalViewModel.LoadState.Failed -> navController.navigate("Failed") {
-                        popUpTo("Loading") {
-                            inclusive = true
-                        }
-                    }
-                    RecoveryLocalViewModel.LoadState.Success -> navController.navigate("Success") {
-                        popUpTo("Loading") {
-                            inclusive = true
-                        }
-                    }
-                    RecoveryLocalViewModel.LoadState.RequirePassword -> {
-                        navController.navigate("Password")
-                    }
+                    },
+                ) {
+                    Text(text = stringResource(R.string.common_controls_confirm))
                 }
             }
-    }
-    LaunchedEffect(bottomSheetNavigator.navigatorSheetState.isVisible) {
-        if (loadState == RecoveryLocalViewModel.LoadState.RequirePassword && !bottomSheetNavigator.navigatorSheetState.isVisible) {
-            onBack.invoke()
+        }
+    )
+}
+
+@NavGraphDestination(
+    route = WalletRoute.Register.Recovery.LocalBackup.Password.path,
+    packageName = navigationComposeBottomSheetPackage,
+    functionName = navigationComposeBottomSheet,
+    generatedFunctionName = GeneratedRouteName
+)
+@Composable
+fun ImportPasswordModal(
+    @Path("uri") uri: String,
+    navController: NavController,
+) {
+    DisposableEffect(Unit) {
+        onDispose {
+            navController.popBackStack(
+                WalletRoute.Register.Recovery.LocalBackup.Loading.path,
+                inclusive = true,
+            )
         }
     }
-    ModalBottomSheetLayout(
-        bottomSheetNavigator,
-        sheetBackgroundColor = MaterialTheme.colors.background,
-        scrimColor = MaterialTheme.colors.modalScrimColor,
-    ) {
-        AnimatedNavHost(
-            navController = navController,
-            startDestination = "Loading",
-            route = "RecoveryLocal",
-            enterTransition = {
-                slideInHorizontally(initialOffsetX = { it }, animationSpec = tween(navHostAnimationDurationMillis))
-            },
-            exitTransition = {
-                slideOutHorizontally(targetOffsetX = { -it }, animationSpec = tween(navHostAnimationDurationMillis))
-            },
-            popEnterTransition = {
-                slideInHorizontally(initialOffsetX = { -it }, animationSpec = tween(navHostAnimationDurationMillis))
-            },
-            popExitTransition = {
-                slideOutHorizontally(targetOffsetX = { it }, animationSpec = tween(navHostAnimationDurationMillis))
-            },
-        ) {
-            bottomSheet("Password") {
-                val password by viewModel.password.observeAsState(initial = "")
-                val error by viewModel.passwordError.observeAsState(initial = false)
-                MaskModal {
-                    Column {
-                        Text(text = stringResource(R.string.scene_set_backup_password_backup_password))
-                        Spacer(modifier = Modifier.height(8.dp))
-                        MaskPasswordInputField(
-                            modifier = Modifier.fillMaxWidth(),
-                            value = password,
-                            onValueChange = {
-                                viewModel.setPassword(it)
-                            },
-                        )
-                        if (error) {
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(text = stringResource(R.string.scene_restore_tip_incorrect_backup_password), color = Color.Red)
-                        }
-                        Spacer(modifier = Modifier.height(16.dp))
-                        PrimaryButton(
-                            modifier = Modifier.fillMaxWidth(),
-                            onClick = { viewModel.confirmPassword() },
-                        ) {
-                            Text(text = stringResource(R.string.common_controls_next))
-                        }
-                    }
-                }
-            }
-            composable("Loading") {
-                ImportingScene(
-                    onBack = {
-                        onBack.invoke()
-                    }
+    val viewModel: RecoveryLocalViewModel = navController
+        .getNestedNavigationViewModel(WalletRoute.Register.Recovery.LocalBackup.Route) {
+            parametersOf(uri)
+        }
+    val password by viewModel.password.observeAsState(initial = "")
+    val error by viewModel.passwordError.observeAsState(initial = false)
+    MaskModal {
+        Column {
+            Text(text = stringResource(R.string.scene_set_backup_password_backup_password))
+            Spacer(modifier = Modifier.height(8.dp))
+            MaskPasswordInputField(
+                modifier = Modifier.fillMaxWidth(),
+                value = password,
+                onValueChange = {
+                    viewModel.setPassword(it)
+                },
+            )
+            if (error) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = stringResource(R.string.scene_restore_tip_incorrect_backup_password),
+                    color = Color.Red
                 )
             }
-            dialog("Failed") {
-                MaskDialog(
-                    onDismissRequest = {
-                    },
-                    title = {
-                        Text(text = stringResource(R.string.scene_restore_titles_unsupport_restore_data))
-                    },
-                    text = {
-                        Text(text = stringResource(R.string.scene_restore_check_unsupport_data))
-                    },
-                    buttons = {
-                        PrimaryButton(
-                            modifier = Modifier.fillMaxWidth(),
-                            onClick = { onBack.invoke() },
-                        ) {
-                            Text(text = stringResource(R.string.common_controls_ok))
-                        }
-                    },
-                    icon = {
-                        Image(
-                            painterResource(id = R.drawable.ic_property_1_failed),
-                            contentDescription = null
-                        )
-                    }
-                )
-            }
-            composable("Success") {
-                ImportSuccessScene(
-                    viewModel = viewModel,
-                    onBack = {
-                        onBack.invoke()
-                    },
-                    onConfirm = {
-                        navController.navigate("Notification")
-                    }
-                )
-            }
-            dialog("Notification") {
-                MaskDialog(
-                    onDismissRequest = { },
-                    icon = {
-                        Image(
-                            painterResource(id = R.drawable.ic_property_1_note),
-                            contentDescription = null
-                        )
-                    },
-                    text = {
-                        Text(text = stringResource(R.string.scene_restore_tip_remote_restore_succeed))
-                    },
-                    buttons = {
-                        Row {
-                            SecondaryButton(
-                                modifier = Modifier.weight(1f),
-                                onClick = {
-                                    navController.popBackStack()
-                                }
-                            ) {
-                                Text(text = stringResource(R.string.common_controls_cancel))
-                            }
-                            Spacer(modifier = Modifier.width(20.dp))
-                            PrimaryButton(
-                                modifier = Modifier.weight(1f),
-                                onClick = {
-                                    onConfirm.invoke()
-                                },
-                            ) {
-                                Text(text = stringResource(R.string.common_controls_confirm))
-                            }
-                        }
-                    }
-                )
+            Spacer(modifier = Modifier.height(16.dp))
+            PrimaryButton(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = { viewModel.confirmPassword() },
+            ) {
+                Text(text = stringResource(R.string.common_controls_next))
             }
         }
     }
 }
 
+@NavGraphDestination(
+    route = WalletRoute.Register.Recovery.LocalBackup.Success.path,
+    packageName = navigationComposeAnimComposablePackage,
+    functionName = navigationComposeAnimComposable,
+    generatedFunctionName = GeneratedRouteName
+)
 @Composable
 fun ImportSuccessScene(
-    onConfirm: () -> Unit,
-    onBack: () -> Unit,
-    viewModel: RecoveryLocalViewModel,
+    @Back onBack: () -> Unit,
+    @Path("uri") uri: String,
+    navController: NavController,
 ) {
+    val viewModel: RecoveryLocalViewModel = navController
+        .getNestedNavigationViewModel(WalletRoute.Register.Recovery.LocalBackup.Route) {
+            parametersOf(uri)
+        }
     val meta by viewModel.meta.observeAsState(initial = null)
     MaskScene {
         MaskScaffold(
@@ -300,7 +265,7 @@ fun ImportSuccessScene(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
                         viewModel.restore()
-                        onConfirm.invoke()
+                        navController.navigate(WalletRoute.Register.Recovery.LocalBackup.Notification)
                     }
                 ) {
                     Text(text = stringResource(R.string.scene_restore_buttonTitles_backup))
@@ -310,10 +275,53 @@ fun ImportSuccessScene(
     }
 }
 
+@NavGraphDestination(
+    route = WalletRoute.Register.Recovery.LocalBackup.Loading.path,
+    packageName = navigationComposeAnimComposablePackage,
+    functionName = navigationComposeAnimComposable,
+    generatedFunctionName = GeneratedRouteName
+)
 @Composable
 fun ImportingScene(
-    onBack: () -> Unit
+    @Back onBack: () -> Unit,
+    @Path("uri") uri: String,
+    navController: NavController,
 ) {
+    val viewModel: RecoveryLocalViewModel = navController
+        .getNestedNavigationViewModel(WalletRoute.Register.Recovery.LocalBackup.Route) {
+            parametersOf(uri)
+        }
+    val state by viewModel.loadState.collectAsState()
+    LaunchedEffect(Unit) {
+        snapshotFlow { state }
+            .distinctUntilChanged()
+            .collect {
+                when (it) {
+                    RecoveryLocalViewModel.LoadState.Failed -> navController.navigate(WalletRoute.Register.Recovery.LocalBackup.Failed) {
+                        popUpTo(WalletRoute.Register.Recovery.LocalBackup.Loading.path) {
+                            inclusive = true
+                        }
+                    }
+                    RecoveryLocalViewModel.LoadState.Success -> navController.navigate(
+                        WalletRoute.Register.Recovery.LocalBackup.Success(
+                            uri
+                        )
+                    ) {
+                        popUpTo(WalletRoute.Register.Recovery.LocalBackup.Loading.path) {
+                            inclusive = true
+                        }
+                    }
+                    RecoveryLocalViewModel.LoadState.RequirePassword -> {
+                        navController.navigate(
+                            WalletRoute.Register.Recovery.LocalBackup.Password(
+                                uri
+                            )
+                        )
+                    }
+                    else -> Unit
+                }
+            }
+    }
     MaskScene {
         MaskScaffold(
             topBar = {

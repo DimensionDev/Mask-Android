@@ -81,7 +81,7 @@ import com.dimension.maskbook.wallet.ui.widget.CollectibleCard
 @Composable
 fun TransferDetailScene(
     onBack: () -> Unit,
-    addressData: SearchAddressData,
+    addressData: SearchAddressData?,
     onAddContact: () -> Unit,
     data: TradableData?,
     balance: BigDecimal,
@@ -120,13 +120,15 @@ fun TransferDetailScene(
                 Column(modifier = Modifier.weight(1f)) {
                     Text(text = stringResource(R.string.scene_sendTransaction_send_Label_To))
                     Spacer(modifier = Modifier.height(10.dp))
-                    AddressContent(
-                        name = addressData.name
-                            .ifNullOrEmpty { addressData.ens }
-                            .ifNullOrEmpty { addressData.address },
-                        isContact = addressData.isContact,
-                        onAddContact = onAddContact
-                    )
+                    if (addressData != null) {
+                        AddressContent(
+                            name = addressData.name
+                                .ifNullOrEmpty { addressData.ens }
+                                .ifNullOrEmpty { addressData.address },
+                            isContact = addressData.isContact,
+                            onAddContact = onAddContact
+                        )
+                    }
                     Spacer(modifier = Modifier.height(20.dp))
 
                     when (data) {

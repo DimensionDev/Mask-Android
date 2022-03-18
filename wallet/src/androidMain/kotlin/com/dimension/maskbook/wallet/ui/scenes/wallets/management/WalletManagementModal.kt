@@ -46,7 +46,7 @@ import com.dimension.maskbook.wallet.export.model.WalletData
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun WalletManagementModal(
-    walletData: WalletData,
+    walletData: WalletData?,
     onRename: () -> Unit,
     onBackup: () -> Unit,
     onTransactionHistory: () -> Unit,
@@ -56,7 +56,7 @@ fun WalletManagementModal(
     MaskModal(
         title = {
             MiddleEllipsisText(
-                text = walletData.address,
+                text = walletData?.address.orEmpty(),
                 modifier = Modifier.fillMaxWidth(0.5f)
             )
         }
@@ -71,10 +71,10 @@ fun WalletManagementModal(
                     Text(text = stringResource(R.string.scene_wallet_edit_item_rename))
                 },
                 trailing = {
-                    Text(text = walletData.name)
+                    Text(text = walletData?.name.orEmpty())
                 }
             )
-            if (!walletData.fromWalletConnect) {
+            if (walletData != null && !walletData.fromWalletConnect) {
                 WalletManagementItem(
                     onClick = onBackup,
                     icon = R.drawable.ic_back_up,
@@ -90,7 +90,7 @@ fun WalletManagementModal(
                     Text(text = stringResource(R.string.scene_wallet_detail_wallet_items_history))
                 },
             )
-            if (walletData.fromWalletConnect) {
+            if (walletData != null && walletData.fromWalletConnect) {
                 WalletManagementItem(
                     onClick = onDisconnect,
                     icon = R.drawable.ic_disconnect,

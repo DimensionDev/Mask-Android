@@ -88,7 +88,7 @@ fun WalletIntroHost() {
                 rootNavController.navigate(WalletRoute.WalletQrcode(currentDWebData.chainType.name))
             },
             onSendClicked = {
-                rootNavController.navigate(WalletRoute.SendTokenScene(null))
+                rootNavController.navigate(WalletRoute.Transfer.SearchAddress(null))
             },
             sceneType = sceneType,
             onSceneTypeChanged = {

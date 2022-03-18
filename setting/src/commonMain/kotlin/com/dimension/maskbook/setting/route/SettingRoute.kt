@@ -120,8 +120,12 @@ expect object SettingRoute {
         }
         const val BackupSelection: String
         const val Password: String
-        const val BackupLocalHost: String
-        const val BackupLocalFailure: String
-        const val BackupLocalSuccess: String
+        object BackupLocal {
+            const val Route: String
+            const val Backup: String
+            const val Saving: String
+            const val Success: String
+            const val Failed: String
+        }
     }
 }

@@ -46,7 +46,7 @@ import com.dimension.maskbook.wallet.export.model.WalletData
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun WalletDeleteDialog(
-    walletData: WalletData,
+    walletData: WalletData?,
     biometricEnabled: Boolean,
     password: String,
     onPasswordChanged: (String) -> Unit,
@@ -61,7 +61,7 @@ fun WalletDeleteDialog(
         onDismissRequest = onBack,
         icon = {
             NameImage(
-                name = walletData.name,
+                name = walletData?.name.orEmpty(),
                 modifier = Modifier.size(36.dp),
             )
         },
@@ -70,7 +70,7 @@ fun WalletDeleteDialog(
         },
         text = {
             Column {
-                Text(text = walletData.address)
+                Text(text = walletData?.address.orEmpty())
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(text = stringResource(R.string.scene_wallet_delete_content))
             }

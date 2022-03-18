@@ -111,7 +111,7 @@ fun RegisterRecoveryRemoteBackupRecoveryRemoteBackupRecoveryEmailCode(
                 WalletRoute.Register.Recovery.RemoteBackupRecovery.RemoteBackupRecovery_NoBackup
             )
             RemoteBackupRecoveryViewModelBase.NavigateTarget.RestoreBackup -> navController.navigate(
-                WalletRoute.Register.Recovery.LocalBackup.RemoteBackupRecovery_RecoveryLocal(it.value)
+                WalletRoute.Register.Recovery.LocalBackup.Loading(it.value)
             )
             else -> Unit
         }
@@ -225,7 +225,7 @@ fun RegisterRecoveryRemoteBackupRecoveryRemoteBackupRecoveryPhoneCode(
                 WalletRoute.Register.Recovery.RemoteBackupRecovery.RemoteBackupRecovery_NoBackup
             )
             RemoteBackupRecoveryViewModelBase.NavigateTarget.RestoreBackup -> navController.navigate(
-                WalletRoute.Register.Recovery.LocalBackup.RemoteBackupRecovery_RecoveryLocal(it.value)
+                WalletRoute.Register.Recovery.LocalBackup.Loading(it.value)
             )
             else -> Unit
         }
