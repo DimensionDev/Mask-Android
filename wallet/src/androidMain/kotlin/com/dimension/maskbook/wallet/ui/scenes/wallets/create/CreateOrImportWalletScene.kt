@@ -43,7 +43,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.dimension.maskbook.common.ui.LocalRootNavController
+import androidx.navigation.NavController
 import com.dimension.maskbook.common.ui.widget.MaskDialog
 import com.dimension.maskbook.common.ui.widget.MaskInputField
 import com.dimension.maskbook.common.ui.widget.MaskListItem
@@ -59,6 +59,7 @@ import com.dimension.maskbook.wallet.route.WalletRoute
 
 @Composable
 fun CreateOrImportWalletScene(
+    navController: NavController,
     onBack: () -> Unit,
     type: CreateType
 ) {
@@ -72,7 +73,6 @@ fun CreateOrImportWalletScene(
                 )
             }
         ) {
-            val rootNavController = LocalRootNavController.current
             var input by remember {
                 mutableStateOf("")
             }
@@ -107,7 +107,7 @@ fun CreateOrImportWalletScene(
                         trailing = {
                             MaskIconButton(
                                 onClick = {
-                                    rootNavController.navigate(WalletRoute.MultiChainWalletDialog)
+                                    navController.navigate(WalletRoute.MultiChainWalletDialog)
                                 }
                             ) {
                                 Image(
@@ -138,8 +138,8 @@ fun CreateOrImportWalletScene(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
                         when (type) {
-                            CreateType.CREATE -> rootNavController.navigate(WalletRoute.CreateWallet.Pharse(input))
-                            CreateType.IMPORT -> rootNavController.navigate(WalletRoute.ImportWallet.Import(input))
+                            CreateType.CREATE -> navController.navigate(WalletRoute.CreateWallet.Pharse(input))
+                            CreateType.IMPORT -> navController.navigate(WalletRoute.ImportWallet.Import(input))
                         }
                     },
                     enabled = input.isNotEmpty()

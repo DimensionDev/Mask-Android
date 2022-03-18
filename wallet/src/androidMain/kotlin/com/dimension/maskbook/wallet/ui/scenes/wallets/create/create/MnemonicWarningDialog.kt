@@ -27,7 +27,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import com.dimension.maskbook.common.ui.LocalRootNavController
 import com.dimension.maskbook.common.ui.widget.MaskDialog
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.wallet.R
@@ -54,34 +53,6 @@ fun MnemonicWarningDialog(onDismissRequest: () -> Unit) {
                 onClick = { onDismissRequest.invoke() },
             ) {
                 Text(text = stringResource(R.string.common_controls_ok))
-            }
-        }
-    )
-}
-
-@Composable
-fun MnemonicScreenShotsWarningDialog() {
-    val rootNavController = LocalRootNavController.current
-    MaskDialog(
-        onDismissRequest = { rootNavController.popBackStack() },
-        title = {
-            Text(text = stringResource(R.string.common_alert_recovery_key_warning_title))
-        },
-        text = {
-            Text(text = "Simply taking a screenshot of mnemonic phrase is not safe.")
-        },
-        icon = {
-            Image(
-                painter = painterResource(id = R.drawable.ic_property_1_note),
-                contentDescription = null
-            )
-        },
-        buttons = {
-            PrimaryButton(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = { rootNavController.popBackStack() },
-            ) {
-                Text(text = stringResource(R.string.common_controls_i_understand))
             }
         }
     )
