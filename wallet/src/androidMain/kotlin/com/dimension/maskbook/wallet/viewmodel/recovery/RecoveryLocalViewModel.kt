@@ -34,7 +34,7 @@ import kotlinx.coroutines.launch
 
 class RecoveryLocalViewModel(
     private val backupServices: BackupServices,
-    private val uri: Uri,
+    private val uri: String,
     private val contentResolver: ContentResolver,
     private val settingServices: SettingServices,
 ) : ViewModel() {
@@ -73,7 +73,7 @@ class RecoveryLocalViewModel(
 //            }
 //        } ?: return@launch
         try {
-            contentResolver.openInputStream(uri)?.use {
+            contentResolver.openInputStream(Uri.parse(uri))?.use {
                 json = it.bufferedReader().use { it.readText() }
                 _meta.value = backupServices.provideBackupMetaFromJson(json)
                 if (settingServices.backupPassword.firstOrNull().isNullOrEmpty()) {

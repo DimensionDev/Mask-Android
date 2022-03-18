@@ -25,7 +25,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import androidx.navigation.navOptions
@@ -45,13 +44,11 @@ import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ui.scenes.register.CreatePersonaModal
 import com.dimension.maskbook.wallet.ui.scenes.register.CreatePersonaScene
 import com.dimension.maskbook.wallet.ui.scenes.register.RegisterScene
-import com.dimension.maskbook.wallet.ui.scenes.register.createidentity.CreateIdentityHost
 import com.dimension.maskbook.wallet.ui.scenes.register.recovery.IdentityScene
 import com.dimension.maskbook.wallet.ui.scenes.register.recovery.PersonaAlreadyExitsDialog
 import com.dimension.maskbook.wallet.ui.scenes.register.recovery.PrivateKeyScene
 import com.dimension.maskbook.wallet.ui.scenes.register.recovery.RecoveryComplectedScene
 import com.dimension.maskbook.wallet.ui.scenes.register.recovery.RecoveryHomeScene
-import com.dimension.maskbook.wallet.ui.scenes.register.recovery.local.RecoveryLocalHost
 import com.dimension.maskbook.wallet.viewmodel.recovery.IdentityViewModel
 import com.dimension.maskbook.wallet.viewmodel.recovery.PrivateKeyViewModel
 import org.koin.androidx.compose.getViewModel
@@ -79,34 +76,6 @@ fun RegisterInit(
 }
 
 @NavGraphDestination(
-    route = WalletRoute.Register.CreateIdentity.path,
-    packageName = navigationComposeAnimComposablePackage,
-    functionName = navigationComposeAnimComposable,
-)
-@Composable
-fun RegisterCreateIdentity(
-    navController: NavController,
-    @Back onBack: () -> Unit,
-    @Path("personaName") personaName: String,
-) {
-    CreateIdentityHost(
-        personaName = personaName,
-        onDone = {
-            navController.navigate(
-                Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona)),
-                navOptions = navOptions {
-                    launchSingleTop = true
-                    popUpTo(CommonRoute.Main.Home.path) {
-                        inclusive = false
-                    }
-                }
-            )
-        },
-        onBack = onBack,
-    )
-}
-
-@NavGraphDestination(
     route = WalletRoute.Register.WelcomeCreatePersona,
     deeplink = [
         Deeplinks.Wallet.Register.WelcomeCreatePersona,
@@ -122,7 +91,7 @@ fun WelcomeCreatePersona(
     CreatePersonaScene(
         onBack = onBack,
         onDone = { name ->
-            navController.navigate(WalletRoute.Register.CreateIdentity(name))
+            navController.navigate(WalletRoute.Register.CreateIdentity.Backup(name))
         }
     )
 }
@@ -141,7 +110,7 @@ fun CreatePersona(
 ) {
     CreatePersonaModal(
         onDone = { name ->
-            navController.navigate(WalletRoute.Register.CreateIdentity(name))
+            navController.navigate(WalletRoute.Register.CreateIdentity.Backup(name))
         }
     )
 }
@@ -164,7 +133,7 @@ fun RegisterRecoveryHome(
         onResult = {
             if (it != null) {
                 navController.navigate(
-                    WalletRoute.Register.Recovery.LocalBackup.RemoteBackupRecovery_RecoveryLocal(it.toString())
+                    WalletRoute.Register.Recovery.LocalBackup.Loading(it.toString())
                 )
             }
         },
@@ -182,31 +151,6 @@ fun RegisterRecoveryHome(
         },
         onRemoteBackup = {
             navController.navigate(WalletRoute.Register.Recovery.RemoteBackupRecovery.RemoteBackupRecovery_Email)
-        }
-    )
-}
-
-@NavGraphDestination(
-    route = WalletRoute.Register.Recovery.LocalBackup.RemoteBackupRecovery_RecoveryLocal.path,
-    packageName = navigationComposeAnimComposablePackage,
-    functionName = navigationComposeAnimComposable,
-)
-@Composable
-fun RecoveryLocalBackupRemoteBackupRecoveryRecoveryLocal(
-    navController: NavController,
-    @Back onBack: () -> Unit,
-    @Path("uri") uriString: String,
-) {
-    val uri = remember(uriString) { Uri.parse(uriString) }
-    RecoveryLocalHost(
-        uri = uri,
-        onBack = onBack,
-        onConfirm = {
-            navController.navigate(WalletRoute.Register.Recovery.Complected) {
-                popUpTo(WalletRoute.Register.Init) {
-                    inclusive = true
-                }
-            }
         }
     )
 }

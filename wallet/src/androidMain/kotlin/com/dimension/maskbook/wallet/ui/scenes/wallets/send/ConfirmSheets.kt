@@ -79,8 +79,8 @@ fun ApproveConfirmSheet(
 
 @Composable
 fun SendConfirmSheet(
-    addressData: SearchAddressData,
-    tokenData: TradableData,
+    addressData: SearchAddressData?,
+    tokenData: TradableData?,
     sendPrice: String,
     gasFee: String,
     total: String,
@@ -143,8 +143,8 @@ fun SignatureRequestSignSheet(
 @Composable
 private fun ConfirmSheet(
     title: String,
-    addressData: SearchAddressData,
-    tradableData: TradableData,
+    addressData: SearchAddressData?,
+    tradableData: TradableData?,
     sendPrice: String,
     gasFee: String,
     total: String,
@@ -183,24 +183,25 @@ private fun ConfirmSheet(
 
 @Composable
 private fun ColumnScope.AddressAndTokenContent(
-    addressData: SearchAddressData,
-    tradableData: TradableData,
+    addressData: SearchAddressData?,
+    tradableData: TradableData?,
     sendPrice: String
 ) {
     Text(
-        text = addressData.name ?: addressData.ens ?: "",
+        text = addressData?.name ?: addressData?.ens ?: "",
         style = MaterialTheme.typography.subtitle1,
         modifier = Modifier.align(Alignment.CenterHorizontally)
     )
     Spacer(modifier = Modifier.height(8.dp))
     Text(
-        text = addressData.address,
+        text = addressData?.address.orEmpty(),
         modifier = Modifier.align(Alignment.CenterHorizontally)
     )
     Spacer(modifier = Modifier.height(20.dp))
     when (tradableData) {
         is WalletTokenData -> TokenContent(tokenData = tradableData.tokenData, sendPrice = sendPrice)
         is WalletCollectibleData -> CollectibleContent(collectibleData = tradableData)
+        else -> Unit
     }
 }
 

@@ -21,7 +21,7 @@
 package com.dimension.maskbook.wallet
 
 import android.content.Context
-import android.net.Uri
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.room.Room
@@ -49,8 +49,13 @@ import com.dimension.maskbook.wallet.repository.WalletConnectRepository
 import com.dimension.maskbook.wallet.repository.WalletContactRepository
 import com.dimension.maskbook.wallet.repository.WalletRepository
 import com.dimension.maskbook.wallet.repository.walletDataStore
+import com.dimension.maskbook.wallet.route.WalletRoute
 import com.dimension.maskbook.wallet.route.generatedRoute
 import com.dimension.maskbook.wallet.services.WalletServices
+import com.dimension.maskbook.wallet.ui.scenes.register.createidentity.createIdentityRoute
+import com.dimension.maskbook.wallet.ui.scenes.register.recovery.local.recoveryLocalRoute
+import com.dimension.maskbook.wallet.ui.scenes.wallets.create.create.createWalletRoute
+import com.dimension.maskbook.wallet.ui.scenes.wallets.send.transferRoute
 import com.dimension.maskbook.wallet.ui.tab.WalletTabScreen
 import com.dimension.maskbook.wallet.usecase.address.AddContactUseCase
 import com.dimension.maskbook.wallet.usecase.address.AddContactUseCaseImpl
@@ -115,6 +120,7 @@ import com.dimension.maskbook.wallet.viewmodel.wallets.import.ImportWalletPrivat
 import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletBackupViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletDeleteViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletRenameViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletSwitchEditViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletSwitchViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletTransactionHistoryViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.AddContactViewModel
@@ -130,6 +136,7 @@ import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectServerManager
 import com.dimension.maskbook.wallet.walletconnect.v1.client.WalletConnectClientManagerV1
 import com.dimension.maskbook.wallet.walletconnect.v1.server.WalletConnectServerManagerV1
+import com.google.accompanist.navigation.animation.navigation
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asExecutor
@@ -143,8 +150,33 @@ import com.dimension.maskbook.wallet.export.WalletServices as ExportWalletServic
 
 object WalletSetup : ModuleSetup {
 
+    @OptIn(ExperimentalAnimationApi::class)
     override fun NavGraphBuilder.route(navController: NavController) {
         generatedRoute(navController)
+        navigation(
+            startDestination = WalletRoute.Transfer.SearchAddress.path,
+            route = WalletRoute.Transfer.Route
+        ) {
+            transferRoute(navController)
+        }
+        navigation(
+            startDestination = WalletRoute.Register.CreateIdentity.Backup.path,
+            route = WalletRoute.Register.CreateIdentity.Route
+        ) {
+            createIdentityRoute(navController)
+        }
+        navigation(
+            startDestination = WalletRoute.CreateWallet.Pharse.path,
+            route = WalletRoute.CreateWallet.Route
+        ) {
+            createWalletRoute(navController)
+        }
+        navigation(
+            startDestination = WalletRoute.Register.Recovery.LocalBackup.Loading.path,
+            route = WalletRoute.Register.Recovery.LocalBackup.Route,
+        ) {
+            recoveryLocalRoute(navController)
+        }
     }
 
     override fun dependencyInject() = module {
@@ -188,13 +220,15 @@ private fun initEvent() {
             launch {
                 get<JSMethod>().switchBlockChain().collect { data ->
                     if (data.coinId != null) {
-                        val platform = CoinPlatformType.values().firstOrNull { it.coinId == data.coinId }
+                        val platform =
+                            CoinPlatformType.values().firstOrNull { it.coinId == data.coinId }
                         if (platform != null) {
                             get<IWalletRepository>().setActiveCoinPlatformType(platform)
                         }
                     }
                     if (data.networkId != null) {
-                        val chainType = ChainType.values().firstOrNull { it.chainId == data.networkId }
+                        val chainType =
+                            ChainType.values().firstOrNull { it.chainId == data.networkId }
                         if (chainType != null) {
                             get<IWalletRepository>().setChainType(chainType, false)
                         }
@@ -234,7 +268,15 @@ private fun Module.provideRepository() {
     single<WalletConnectServerManager> {
         WalletConnectServerManagerV1(get())
     }
-    single<IWalletRepository> { WalletRepository(get<Context>().walletDataStore, get(), get(), get(), get()) }
+    single<IWalletRepository> {
+        WalletRepository(
+            get<Context>().walletDataStore,
+            get(),
+            get(),
+            get(),
+            get()
+        )
+    }
     single { JSMethod(get()) }
     single { Web3MessageHandler(get()) }
     single<ICollectibleRepository> { CollectibleRepository(get(), get()) }
@@ -259,7 +301,12 @@ private fun Module.provideUseCase() {
     // general
     factory<VerifyPaymentPasswordUseCase> { VerifyPaymentPasswordUseCaseImpl(get()) }
     // collectible
-    factory<GetWalletCollectibleCollectionsUseCase> { GetWalletCollectibleCollectionsUseCaseImpl(get(), get()) }
+    factory<GetWalletCollectibleCollectionsUseCase> {
+        GetWalletCollectibleCollectionsUseCaseImpl(
+            get(),
+            get()
+        )
+    }
     factory<GetWalletCollectibleUseCase> { GetWalletCollectibleUseCaseImpl(get()) }
     factory<SendWalletCollectibleUseCase> { SendWalletCollectibleUseCaseImpl(get()) }
     // Tokens
@@ -274,7 +321,14 @@ private fun Module.provideUseCase() {
 }
 
 private fun Module.provideViewModel() {
-    viewModel { (uri: Uri) -> RecoveryLocalViewModel(get(), uri, get<Context>().contentResolver, get()) }
+    viewModel { (uri: String) ->
+        RecoveryLocalViewModel(
+            get(),
+            uri,
+            get<Context>().contentResolver,
+            get()
+        )
+    }
     viewModel { (name: String) -> IdentityViewModel(get(), get(), name) }
     viewModel { PrivateKeyViewModel(get(), get()) }
     viewModel { (personaName: String) -> CreateIdentityViewModel(personaName, get(), get()) }
@@ -291,7 +345,7 @@ private fun Module.provideViewModel() {
             get()
         )
     }
-    viewModel { CreateWalletRecoveryKeyViewModel(get()) }
+    viewModel { (wallet: String) -> CreateWalletRecoveryKeyViewModel(wallet, get()) }
     viewModel { SetUpPaymentPasswordViewModel(get()) }
     viewModel { TouchIdEnableViewModel() }
     viewModel { (wallet: String) -> ImportWalletKeystoreViewModel(wallet, get()) }
@@ -352,8 +406,19 @@ private fun Module.provideViewModel() {
     viewModel { BackUpPasswordViewModel(get(), get()) }
     viewModel { (id: String) -> CollectibleDetailViewModel(id, get(), get(), get()) }
     viewModel { CollectiblesViewModel(get(), get()) }
-    viewModel { (data: SendTokenConfirmData) -> Web3TransactionConfirmViewModel(data, get(), get(), get(), get(), get(), get()) }
+    viewModel { (data: SendTokenConfirmData) ->
+        Web3TransactionConfirmViewModel(
+            data,
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get()
+        )
+    }
     viewModel { SearchTradableViewModel(get(), get()) }
+    viewModel { (id: String) -> WalletSwitchEditViewModel(id, get()) }
 }
 
 private fun Module.provideServices() {

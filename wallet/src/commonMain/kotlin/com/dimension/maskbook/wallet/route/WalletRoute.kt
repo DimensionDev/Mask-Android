@@ -102,15 +102,56 @@ expect object WalletRoute {
     const val MultiChainWalletDialog: String
 
     object CreateWallet {
-        operator fun invoke(wallet: String): String
+        const val Route: String
+        object Pharse {
+            operator fun invoke(wallet: String): String
+        }
+        object Verify {
+            operator fun invoke(wallet: String): String
+        }
+        const val Confirm: String
     }
 
     object ImportWallet {
-        operator fun invoke(wallet: String): String
+        object Import {
+            operator fun invoke(wallet: String): String
+        }
+        object Mnemonic {
+            operator fun invoke(wallet: String): String
+        }
+        object PrivateKey {
+            operator fun invoke(wallet: String): String
+        }
+        object Keystore {
+            operator fun invoke(wallet: String): String
+        }
+        object DerivationPath {
+            operator fun invoke(wallet: String, mnemonicCode: String): String
+        }
     }
 
-    object SendTokenScene {
-        operator fun invoke(tradableId: String?): String
+    object Transfer {
+        const val Route: String
+        object SearchAddress {
+            operator fun invoke(tradableId: String?): String
+        }
+        const val ScanQrCode: String
+        object Send {
+            operator fun invoke(address: String, tradableId: String?): String
+        }
+        object SearchToken {
+            operator fun invoke(tradableId: String?): String
+        }
+        object SearchCollectibles {
+            operator fun invoke(tradableId: String?): String
+        }
+        const val EditGasFee: String
+        object AddContactSheet {
+            operator fun invoke(address: String): String
+        }
+        object SendConfirm {
+            operator fun invoke(address: String, amount: String, tradableId: String?): String
+        }
     }
 
     object UnlockWalletDialog {
@@ -121,7 +162,16 @@ expect object WalletRoute {
         const val Init: String
 
         object CreateIdentity {
-            operator fun invoke(personaName: String): String
+            const val Route: String
+            object Backup {
+                operator fun invoke(personaName: String): String
+            }
+            object Verify {
+                operator fun invoke(personaName: String): String
+            }
+            object Confirm {
+                operator fun invoke(personaName: String): String
+            }
         }
 
         const val WelcomeCreatePersona: String
@@ -147,9 +197,18 @@ expect object WalletRoute {
             }
 
             object LocalBackup {
-                object RemoteBackupRecovery_RecoveryLocal {
+                const val Route: String
+                object Loading {
                     operator fun invoke(uri: String): String
                 }
+                object Password {
+                    operator fun invoke(uri: String): String
+                }
+                const val Failed: String
+                object Success {
+                    operator fun invoke(uri: String): String
+                }
+                const val Notification: String
             }
 
             const val IdentityPersona: String

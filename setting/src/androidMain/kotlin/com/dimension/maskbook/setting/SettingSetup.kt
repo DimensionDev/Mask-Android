@@ -23,9 +23,11 @@ package com.dimension.maskbook.setting
 import android.content.Context
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.navigation
 import com.dimension.maskbook.common.ModuleSetup
 import com.dimension.maskbook.common.retrofit.retrofit
 import com.dimension.maskbook.common.ui.tab.TabScreen
+import com.dimension.maskbook.setting.SettingSetup.route
 import com.dimension.maskbook.setting.data.JSDataSource
 import com.dimension.maskbook.setting.data.JSMethod
 import com.dimension.maskbook.setting.data.SettingDataSource
@@ -34,8 +36,10 @@ import com.dimension.maskbook.setting.export.SettingServices
 import com.dimension.maskbook.setting.repository.BackupRepository
 import com.dimension.maskbook.setting.repository.ISettingsRepository
 import com.dimension.maskbook.setting.repository.SettingsRepository
+import com.dimension.maskbook.setting.route.SettingRoute
 import com.dimension.maskbook.setting.route.generatedRoute
 import com.dimension.maskbook.setting.services.BackupServices
+import com.dimension.maskbook.setting.ui.scenes.backup.backupLocalRoute
 import com.dimension.maskbook.setting.ui.tab.SettingsTabScreen
 import com.dimension.maskbook.setting.viewmodel.AppearanceSettingsViewModel
 import com.dimension.maskbook.setting.viewmodel.BackupCloudExecuteViewModel
@@ -58,6 +62,12 @@ import org.koin.mp.KoinPlatformTools
 object SettingSetup : ModuleSetup {
     override fun NavGraphBuilder.route(navController: NavController) {
         generatedRoute(navController)
+        navigation(
+            startDestination = SettingRoute.BackupData.BackupLocal.Backup,
+            route = SettingRoute.BackupData.BackupLocal.Route,
+        ) {
+            backupLocalRoute(navController)
+        }
     }
 
     override fun dependencyInject() = module {

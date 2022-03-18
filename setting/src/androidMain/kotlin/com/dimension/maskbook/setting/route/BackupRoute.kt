@@ -74,7 +74,6 @@ import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.setting.repository.ISettingsRepository
 import com.dimension.maskbook.setting.ui.scenes.PhoneCodeInputModal
 import com.dimension.maskbook.setting.ui.scenes.backup.BackupCloudScene
-import com.dimension.maskbook.setting.ui.scenes.backup.BackupLocalHost
 import com.dimension.maskbook.setting.ui.scenes.backup.BackupPasswordInputModal
 import com.dimension.maskbook.setting.ui.scenes.backup.BackupSelectionModal
 import com.dimension.maskbook.setting.viewmodel.BackupCloudExecuteViewModel
@@ -696,7 +695,7 @@ fun BackupSelection(
     val persona by repository.currentPersona.observeAsState(initial = null)
     BackupSelectionModal(
         onLocal = {
-            navController.navigate(SettingRoute.BackupData.BackupLocalHost)
+            navController.navigate(SettingRoute.BackupData.BackupLocal.Backup)
         },
         onRemote = {
             val email = persona?.email
@@ -730,7 +729,7 @@ fun BackupDataPassword(
             password = it
         },
         onNext = {
-            navController.navigate(SettingRoute.BackupData.BackupLocalHost) {
+            navController.navigate(SettingRoute.BackupData.BackupLocal.Backup) {
                 popUpTo(SettingRoute.BackupData.Password) {
                     inclusive = true
                 }
@@ -741,37 +740,7 @@ fun BackupDataPassword(
 }
 
 @NavGraphDestination(
-    route = SettingRoute.BackupData.BackupLocalHost,
-    packageName = navigationComposeBottomSheetPackage,
-    functionName = navigationComposeBottomSheet,
-)
-@Composable
-fun BackupDataBackupLocalHost(
-    navController: NavController,
-) {
-    BackupLocalHost(
-        onBack = {
-            navController.popBackStack()
-        },
-        onFailure = {
-            navController.navigate(SettingRoute.BackupData.BackupLocalFailure) {
-                popUpTo(SettingRoute.BackupData.BackupLocalHost) {
-                    inclusive = true
-                }
-            }
-        },
-        onSuccess = {
-            navController.navigate(SettingRoute.BackupData.BackupLocalSuccess) {
-                popUpTo(SettingRoute.BackupData.BackupLocalHost) {
-                    inclusive = true
-                }
-            }
-        }
-    )
-}
-
-@NavGraphDestination(
-    route = SettingRoute.BackupData.BackupLocalFailure,
+    route = SettingRoute.BackupData.BackupLocal.Failed,
     packageName = navigationComposeDialogPackage,
     functionName = navigationComposeDialog,
 )
@@ -792,7 +761,7 @@ fun BackupDataBackupLocalFailure(
 }
 
 @NavGraphDestination(
-    route = SettingRoute.BackupData.BackupLocalSuccess,
+    route = SettingRoute.BackupData.BackupLocal.Success,
     packageName = navigationComposeDialogPackage,
     functionName = navigationComposeDialog,
 )

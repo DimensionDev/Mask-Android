@@ -74,12 +74,10 @@ fun PersonaMenuScene(
     @Back onBack: () -> Unit,
 ) {
     val currentPersona by get<IPersonaRepository>().currentPersona.observeAsState(initial = null)
-    val personaData = currentPersona ?: return
 
     val repository = get<SettingServices>()
     val backupPassword by repository.backupPassword.observeAsState(initial = "")
     val paymentPassword by repository.paymentPassword.observeAsState(initial = "")
-
     MaskScene {
         MaskScaffold(
             topBar = {
@@ -88,7 +86,7 @@ fun PersonaMenuScene(
                         MaskBackButton(onBack = onBack)
                     },
                     title = {
-                        Text(text = personaData.name)
+                        Text(text = currentPersona?.name ?: "")
                     }
                 )
             }
@@ -126,7 +124,9 @@ fun PersonaMenuScene(
                         modifier = Modifier.fillMaxWidth(),
                         elevation = 0.dp,
                         onClick = {
-                            navController.navigate(PersonaRoute.RenamePersona(personaData.id))
+                            currentPersona?.let {
+                                navController.navigate(PersonaRoute.RenamePersona(it.id))
+                            }
                         }
                     ) {
                         Row(

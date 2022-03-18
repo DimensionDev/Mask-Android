@@ -22,24 +22,16 @@ package com.dimension.maskbook.entry.ui
 
 import android.net.Uri
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.foundation.shape.CornerSize
-import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.common.CommonSetup
-import com.dimension.maskbook.common.navHostAnimationDurationMillis
 import com.dimension.maskbook.common.route
 import com.dimension.maskbook.common.route.DeeplinkNavigateArgs
 import com.dimension.maskbook.common.route.Navigator
 import com.dimension.maskbook.common.route.RouteNavigateArgs
 import com.dimension.maskbook.common.ui.LocalRootNavController
-import com.dimension.maskbook.common.ui.theme.modalScrimColor
-import com.dimension.maskbook.common.ui.widget.rememberMaskBottomSheetNavigator
+import com.dimension.maskbook.common.ui.widget.RouteHost
 import com.dimension.maskbook.entry.EntrySetup
 import com.dimension.maskbook.entry.repository.EntryRepository
 import com.dimension.maskbook.entry.route.EntryRoute
@@ -51,10 +43,8 @@ import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.setting.SettingSetup
 import com.dimension.maskbook.wallet.WalletSetup
 import com.dimension.maskbook.wallet.route.WalletRoute
-import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
-import com.google.accompanist.navigation.material.ModalBottomSheetLayout
 import kotlinx.coroutines.flow.firstOrNull
 import org.koin.mp.KoinPlatformTools
 
@@ -63,8 +53,7 @@ import org.koin.mp.KoinPlatformTools
 fun Router(
     startDestination: String,
 ) {
-    val bottomSheetNavigator = rememberMaskBottomSheetNavigator()
-    val navController = rememberAnimatedNavController(bottomSheetNavigator)
+    val navController = rememberAnimatedNavController()
     LaunchedEffect(Unit) {
         val initialRoute = getInitialRoute()
         navController.navigate(initialRoute) {
@@ -84,59 +73,17 @@ fun Router(
         }
     }
     CompositionLocalProvider(LocalRootNavController provides navController) {
-        ModalBottomSheetLayout(
-            bottomSheetNavigator,
-            sheetBackgroundColor = MaterialTheme.colors.background,
-            sheetShape = MaterialTheme.shapes.large.copy(
-                bottomStart = CornerSize(0.dp),
-                bottomEnd = CornerSize(0.dp),
-            ),
-            scrimColor = MaterialTheme.colors.modalScrimColor,
+        RouteHost(
+            navController = navController,
+            startDestination = startDestination,
         ) {
-            AnimatedNavHost(
-                navController = navController,
-                startDestination = startDestination,
-                enterTransition = {
-                    slideInHorizontally(
-                        initialOffsetX = { it },
-                        animationSpec = tween(
-                            navHostAnimationDurationMillis
-                        )
-                    )
-                },
-                exitTransition = {
-                    slideOutHorizontally(
-                        targetOffsetX = { -it },
-                        animationSpec = tween(
-                            navHostAnimationDurationMillis
-                        )
-                    )
-                },
-                popEnterTransition = {
-                    slideInHorizontally(
-                        initialOffsetX = { -it },
-                        animationSpec = tween(
-                            navHostAnimationDurationMillis
-                        )
-                    )
-                },
-                popExitTransition = {
-                    slideOutHorizontally(
-                        targetOffsetX = { it },
-                        animationSpec = tween(
-                            navHostAnimationDurationMillis
-                        )
-                    )
-                },
-            ) {
-                CommonSetup.route(this, navController = navController)
-                EntrySetup.route(this, navController = navController)
-                WalletSetup.route(this, navController = navController)
-                LabsSetup.route(this, navController = navController)
-                PersonaSetup.route(this, navController = navController)
-                SettingSetup.route(this, navController = navController)
-                ExtensionSetup.route(this, navController = navController)
-            }
+            CommonSetup.route(this, navController = navController)
+            EntrySetup.route(this, navController = navController)
+            WalletSetup.route(this, navController = navController)
+            LabsSetup.route(this, navController = navController)
+            PersonaSetup.route(this, navController = navController)
+            SettingSetup.route(this, navController = navController)
+            ExtensionSetup.route(this, navController = navController)
         }
     }
 }
@@ -148,7 +95,8 @@ private suspend fun getInitialRoute(): String {
         return EntryRoute.Intro
     }
     KoinPlatformTools.defaultContext().get().get<PersonaServices>().ensurePersonaDataLoaded()
-    val persona = KoinPlatformTools.defaultContext().get().get<PersonaServices>().currentPersona.firstOrNull()
+    val persona =
+        KoinPlatformTools.defaultContext().get().get<PersonaServices>().currentPersona.firstOrNull()
     return if (persona != null) {
         ExtensionRoute.WebContent(null)
     } else {
