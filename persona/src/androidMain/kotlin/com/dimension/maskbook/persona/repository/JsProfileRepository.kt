@@ -83,7 +83,6 @@ class JsProfileRepository(database: PersonaDatabase) {
             val newProfile = options.profile.toDbProfileRecord()
             newProfile.network = Network.withProfileIdentifier(newProfile.identifier)
             profileDao.insert(newProfile)
-            return newProfile.toIndexedDBProfile()
         }
 
         return options.profile

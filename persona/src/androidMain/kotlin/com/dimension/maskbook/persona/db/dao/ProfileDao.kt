@@ -40,11 +40,13 @@ interface ProfileDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(profile: List<DbProfileRecord>)
 
+    @Transaction
     @RawQuery
-    suspend fun findRaw(query: SupportSQLiteQuery): DbProfileRecord?
+    suspend fun findRaw(query: SupportSQLiteQuery): ProfileWithLinkedProfile?
 
+    @Transaction
     @RawQuery
-    suspend fun findListRaw(query: SupportSQLiteQuery): List<DbProfileRecord>
+    suspend fun findListRaw(query: SupportSQLiteQuery): List<ProfileWithLinkedProfile>
 
     @Query("SELECT * FROM DbProfileRecord WHERE identifier=:identifier LIMIT 1")
     suspend fun find(identifier: String): DbProfileRecord?

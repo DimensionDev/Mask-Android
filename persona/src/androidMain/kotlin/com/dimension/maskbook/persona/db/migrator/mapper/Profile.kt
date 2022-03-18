@@ -21,6 +21,7 @@
 package com.dimension.maskbook.persona.db.migrator.mapper
 
 import com.dimension.maskbook.persona.db.model.DbProfileRecord
+import com.dimension.maskbook.persona.db.model.ProfileWithLinkedProfile
 import com.dimension.maskbook.persona.export.model.Network
 import com.dimension.maskbook.persona.model.indexed.IndexedDBProfile
 
@@ -34,12 +35,12 @@ fun IndexedDBProfile.toDbProfileRecord(): DbProfileRecord {
     )
 }
 
-fun DbProfileRecord.toIndexedDBProfile(): IndexedDBProfile {
+fun ProfileWithLinkedProfile.toIndexedDBProfile(): IndexedDBProfile {
     return IndexedDBProfile(
-        identifier = identifier,
-        nickname = nickname,
-        linkedPersona = null,
-        updatedAt = updatedAt,
-        createdAt = createdAt,
+        identifier = profile.identifier,
+        nickname = profile.nickname,
+        linkedPersona = linkedProfile?.personaIdentifier,
+        updatedAt = profile.updatedAt,
+        createdAt = profile.createdAt,
     )
 }
