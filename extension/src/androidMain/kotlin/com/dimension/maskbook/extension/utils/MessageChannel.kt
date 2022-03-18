@@ -27,9 +27,9 @@ import com.dimension.maskbook.extension.ext.toMap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import org.json.JSONObject
@@ -43,12 +43,11 @@ internal class MessageChannel(
     private val queue = ConcurrentHashMap<String, Channel<String?>>()
     private val subscription = arrayListOf<Pair<String, MutableStateFlow<ExtensionMessage?>>>()
 
-    private val _extensionMessage = MutableStateFlow<ExtensionMessage?>(null)
-    val extensionMessage: Flow<ExtensionMessage> = _extensionMessage.asStateFlow().filterNotNull()
+    private val _extensionMessage = MutableSharedFlow<ExtensionMessage>(extraBufferCapacity = 50)
+    val extensionMessage: Flow<ExtensionMessage> = _extensionMessage.asSharedFlow()
 
     fun startMessageCollect() {
         controller.message
-            .filterNotNull()
             .onEach { onMessage(it) }
             .launchIn(scope)
     }
@@ -134,13 +133,15 @@ internal class MessageChannel(
                         )
                     }
                 }
-                _extensionMessage.value = ExtensionMessage(
-                    id = messageId ?: "",
-                    jsonrpc = jsonrpc,
-                    method = method,
-                    params = params,
-                    onResponse = { sendResponseMessage(it) },
-                    onResponseRaw = { sendResponseMessageRaw(it) },
+                _extensionMessage.tryEmit(
+                    ExtensionMessage(
+                        id = messageId ?: "",
+                        jsonrpc = jsonrpc,
+                        method = method,
+                        params = params,
+                        onResponse = { sendResponseMessage(it) },
+                        onResponseRaw = { sendResponseMessageRaw(it) },
+                    )
                 )
             }
         }
