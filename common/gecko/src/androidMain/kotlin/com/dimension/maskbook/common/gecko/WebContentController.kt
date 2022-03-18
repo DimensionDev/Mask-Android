@@ -131,9 +131,13 @@ class WebContentController(
         }
 
         override fun onPortMessage(message: Any, port: Port) {
-            if (message is JSONObject) {
-                Log.i(TAG, "onPortMessage: $message")
-                _message.tryEmit(message)
+            when (message) {
+                is JSONObject -> message
+                is String -> JSONObject(message)
+                else -> null
+            }?.let {
+                Log.i(TAG, "onPortMessage: $it")
+                _message.tryEmit(it)
             }
         }
     }
@@ -184,6 +188,6 @@ class WebContentController(
 
     fun sendMessage(message: JSONObject) {
         Log.i(TAG, "sendMessage: $message")
-        _port?.postMessage(message)
+        _port?.postMessage(JSONObject(mapOf("result" to message.toString())))
     }
 }

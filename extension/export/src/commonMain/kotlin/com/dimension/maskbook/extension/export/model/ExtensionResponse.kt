@@ -21,35 +21,13 @@
 package com.dimension.maskbook.extension.export.model
 
 sealed interface ExtensionResponse {
-    val id: Any
+    val id: ExtensionId
     val jsonrpc: String
-    fun toMap(): Map<String, Any?>
 }
 
-internal data class ErrorResult(
-    override val id: Any,
+@kotlinx.serialization.Serializable
+data class ExtensionResponseMessage<T>(
+    override val id: ExtensionId,
     override val jsonrpc: String,
-    val error: String,
-) : ExtensionResponse {
-    override fun toMap(): Map<String, Any?> {
-        return mapOf(
-            "error" to error,
-            "id" to id,
-            "jsonrpc" to jsonrpc,
-        )
-    }
-}
-
-internal data class SuccessResult<T>(
-    override val id: Any,
-    override val jsonrpc: String,
-    val result: T?
-) : ExtensionResponse {
-    override fun toMap(): Map<String, Any?> {
-        return mapOf(
-            "result" to result,
-            "id" to id,
-            "jsonrpc" to jsonrpc,
-        )
-    }
-}
+    val result: T
+) : ExtensionResponse

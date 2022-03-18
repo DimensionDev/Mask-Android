@@ -24,7 +24,7 @@ import com.dimension.maskbook.common.ext.decodeJson
 import com.dimension.maskbook.common.ext.encodeBase64
 import com.dimension.maskbook.common.ext.encodeJson
 import com.dimension.maskbook.common.route.Navigator
-import com.dimension.maskbook.extension.export.model.ExtensionResponseMessage
+import com.dimension.maskbook.extension.export.model.ExtensionResponse
 import com.dimension.maskbook.wallet.data.Web3Request
 import com.dimension.maskbook.wallet.db.model.CoinPlatformType
 import com.dimension.maskbook.wallet.ext.normalized
@@ -63,14 +63,14 @@ internal class Web3MessageHandler(
                     "getRPCurl" -> {
                         walletRepository.dWebData.firstOrNull()?.chainType?.endpoint?.let {
                             request.message.response(
-                                ExtensionResponseMessage.success(request, mapOf("rpcURL" to it))
+                                Web3SendResponse.success(request, mapOf("rpcURL" to it))
                             )
                         }
                     }
                     "eth_coinbase" -> {
                         val address = walletRepository.currentWallet.firstOrNull()?.address ?: ""
                         request.message.response(
-                            ExtensionResponseMessage.success(
+                            Web3SendResponse.success(
                                 request,
                                 mapOf("coinbase" to address)
                             )
@@ -79,7 +79,7 @@ internal class Web3MessageHandler(
                     "eth_getAccounts", "eth_accounts" -> {
                         val address = walletRepository.currentWallet.firstOrNull()?.address
                         request.message.response(
-                            ExtensionResponseMessage.success(
+                            Web3SendResponse.success(
                                 request,
                                 listOfNotNull(address)
                             )
@@ -89,7 +89,7 @@ internal class Web3MessageHandler(
                         val data = payload.params.firstOrNull()?.toString()
                             ?.decodeJson<SendTransactionData>()?.let {
                                 SendTokenConfirmData(
-                                    it, request.id, request.payload._id, request.payload.jsonrpc
+                                    it, request.id, request.payload.id, request.payload.jsonrpc
                                 )
                             }?.encodeJson()?.encodeBase64() ?: return@launch
                         Navigator.navigate(WalletRoute.SendTokenConfirm(data))
@@ -114,7 +114,7 @@ internal class Web3MessageHandler(
                         val signature = getSignature(data)
                         val hex = Numeric.toHexString(signature)
                         request.message.response(
-                            ExtensionResponseMessage.success(
+                            Web3SendResponse.success(
                                 request,
                                 listOfNotNull(hex)
                             )
@@ -138,14 +138,14 @@ internal class Web3MessageHandler(
                             val result = response?.result
                             if (result == null) {
                                 request.message.response(
-                                    ExtensionResponseMessage.error(
+                                    Web3SendResponse.error(
                                         request,
                                         "No response"
                                     )
                                 )
                             } else {
                                 request.message.response(
-                                    ExtensionResponseMessage.success(
+                                    Web3SendResponse.success(
                                         request,
                                         when (result) {
                                             is NullNode -> null
@@ -165,7 +165,7 @@ internal class Web3MessageHandler(
                         } catch (e: Throwable) {
                             e.printStackTrace()
                             request.message.response(
-                                ExtensionResponseMessage.error(
+                                Web3SendResponse.error(
                                     request,
                                     e.message ?: "error"
                                 )
@@ -178,7 +178,7 @@ internal class Web3MessageHandler(
     }
 }
 
-private fun <T> ExtensionResponseMessage.Companion.success(request: Web3Request, result: T?): ExtensionResponseMessage {
+private fun <T> Web3SendResponse.Companion.success(request: Web3Request, result: T?): ExtensionResponse {
     requireNotNull(request.payload)
     return success(
         messageId = request.id,
@@ -188,7 +188,7 @@ private fun <T> ExtensionResponseMessage.Companion.success(request: Web3Request,
     )
 }
 
-private fun ExtensionResponseMessage.Companion.error(request: Web3Request, error: String): ExtensionResponseMessage {
+private fun Web3SendResponse.Companion.error(request: Web3Request, error: String): ExtensionResponse {
     requireNotNull(request.payload)
     return error(
         messageId = request.id,

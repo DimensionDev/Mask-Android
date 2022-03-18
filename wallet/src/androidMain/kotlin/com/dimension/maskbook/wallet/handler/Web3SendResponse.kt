@@ -18,20 +18,34 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.extension.export.model
+package com.dimension.maskbook.wallet.handler
 
-data class ExtensionResponseMessage(
-    val id: Any,
-    val jsonrpc: String,
-    val result: ExtensionResponse
-) {
+import com.dimension.maskbook.extension.export.model.ExtensionId
+import com.dimension.maskbook.extension.export.model.ExtensionResponse
+import com.dimension.maskbook.extension.export.model.ExtensionResponseMessage
+
+class Web3SendResponse {
+    @kotlinx.serialization.Serializable
+    data class ErrorResult(
+        val id: ExtensionId,
+        val jsonrpc: String,
+        val error: String,
+    )
+
+    @kotlinx.serialization.Serializable
+    data class SuccessResult<T>(
+        val id: ExtensionId,
+        val jsonrpc: String,
+        val result: T?
+    )
+
     companion object {
         fun <T> success(
-            messageId: Any,
+            messageId: ExtensionId,
             jsonrpc: String,
-            payloadId: Any,
+            payloadId: ExtensionId,
             result: T?
-        ): ExtensionResponseMessage {
+        ): ExtensionResponse {
             return ExtensionResponseMessage(
                 id = messageId,
                 jsonrpc = jsonrpc,
@@ -44,11 +58,11 @@ data class ExtensionResponseMessage(
         }
 
         fun error(
-            messageId: Any,
+            messageId: ExtensionId,
             jsonrpc: String,
-            payloadId: Any,
+            payloadId: ExtensionId,
             error: String
-        ): ExtensionResponseMessage {
+        ): ExtensionResponse {
             return ExtensionResponseMessage(
                 id = messageId,
                 jsonrpc = jsonrpc,

@@ -20,10 +20,11 @@
  */
 package com.dimension.maskbook.extension.utils
 
+import com.dimension.maskbook.common.ext.encodeJson
 import com.dimension.maskbook.common.gecko.WebContentController
+import com.dimension.maskbook.extension.export.model.ExtensionId
 import com.dimension.maskbook.extension.export.model.ExtensionMessage
-import com.dimension.maskbook.extension.export.model.ExtensionResponseMessage
-import com.dimension.maskbook.extension.ext.toMap
+import com.dimension.maskbook.extension.export.model.ExtensionResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -52,12 +53,8 @@ internal class MessageChannel(
             .launchIn(scope)
     }
 
-    fun sendResponseMessage(message: ExtensionResponseMessage) {
-        controller.sendMessage(JSONObject(message.toMap()))
-    }
-
-    fun sendResponseMessageRaw(dataRaw: String) {
-        controller.sendMessage(JSONObject(dataRaw))
+    fun sendResponseMessage(message: ExtensionResponse) {
+        controller.sendMessage(JSONObject(message.encodeJson()))
     }
 
     suspend fun executeMessage(
@@ -124,23 +121,21 @@ internal class MessageChannel(
                 if (subscription.any { it.first == method }) {
                     subscription.filter { it.first == method }.forEach { pair ->
                         pair.second.value = ExtensionMessage(
-                            id = messageId ?: "",
+                            id = ExtensionId.fromAny(messageId),
                             jsonrpc = jsonrpc,
                             method = method,
                             params = params,
                             onResponse = { sendResponseMessage(it) },
-                            onResponseRaw = { sendResponseMessageRaw(it) },
                         )
                     }
                 }
                 _extensionMessage.tryEmit(
                     ExtensionMessage(
-                        id = messageId ?: "",
+                        id = ExtensionId.fromAny(messageId),
                         jsonrpc = jsonrpc,
                         method = method,
                         params = params,
                         onResponse = { sendResponseMessage(it) },
-                        onResponseRaw = { sendResponseMessageRaw(it) },
                     )
                 )
             }
