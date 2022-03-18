@@ -72,13 +72,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.dialog
 import androidx.navigation.navArgument
 import androidx.navigation.navOptions
 import coil.compose.rememberImagePainter
 import com.dimension.maskbook.common.ext.observeAsState
-import com.dimension.maskbook.common.ui.LocalRootNavController
 import com.dimension.maskbook.common.ui.notification.StringResNotificationEvent.Companion.show
 import com.dimension.maskbook.common.ui.widget.LocalInAppNotification
 import com.dimension.maskbook.common.ui.widget.MaskDialog
@@ -111,9 +111,8 @@ enum class WalletConnectType {
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
-fun WalletConnectModal() {
+fun WalletConnectModal(rootNavController: NavController) {
     val navController = rememberAnimatedNavController()
-    val rootNavController = LocalRootNavController.current
     val scope = rememberCoroutineScope()
     val onResult: (WalletConnectResult) -> Unit = { result ->
         scope.launch(Dispatchers.Main) {

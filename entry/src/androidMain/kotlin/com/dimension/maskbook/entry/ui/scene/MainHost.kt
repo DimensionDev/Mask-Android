@@ -164,9 +164,12 @@ fun MainHost(
                 count = tabs.size,
                 state = pagerState,
             ) {
-                tabs.elementAt(it).Content {
-                    navController.navigateToExtension(null)
-                }
+                tabs.elementAt(it).Content(
+                    navController = navController,
+                    onBack = {
+                        navController.navigateToExtension(null)
+                    }
+                )
             }
         }
     }

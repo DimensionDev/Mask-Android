@@ -24,9 +24,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.navigation.NavController
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.dimension.maskbook.common.ext.observeAsState
-import com.dimension.maskbook.common.ui.LocalRootNavController
 import com.dimension.maskbook.wallet.route.WalletRoute
 import com.dimension.maskbook.wallet.ui.scenes.wallets.create.CreateType
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletBalancesScene
@@ -36,9 +36,8 @@ import org.koin.androidx.compose.getViewModel
 
 @ExperimentalMaterialNavigationApi
 @Composable
-fun WalletIntroHost() {
+fun WalletIntroHost(navController: NavController) {
     val clipboardManager = LocalClipboardManager.current
-    val rootNavController = LocalRootNavController.current
     val viewModel = getViewModel<WalletBalancesViewModel>()
     val collectible = viewModel.collectible.collectAsLazyPagingItems()
     val dWebData by viewModel.dWebData.observeAsState()
@@ -56,13 +55,13 @@ fun WalletIntroHost() {
     if (currentWallet == null) {
         WalletIntroScene(
             onCreate = {
-                rootNavController.navigate(WalletRoute.WalletIntroHostLegal(CreateType.CREATE.name))
+                navController.navigate(WalletRoute.WalletIntroHostLegal(CreateType.CREATE.name))
             },
             onImport = {
-                rootNavController.navigate(WalletRoute.WalletIntroHostLegal(CreateType.IMPORT.name))
+                navController.navigate(WalletRoute.WalletIntroHostLegal(CreateType.IMPORT.name))
             },
             onConnect = {
-                rootNavController.navigate(WalletRoute.SwitchWalletAddWalletConnect)
+                navController.navigate(WalletRoute.SwitchWalletAddWalletConnect)
             }
         )
     } else if (currentDWebData != null) {
@@ -76,19 +75,19 @@ fun WalletIntroHost() {
                 viewModel.setCurrentWallet(it)
             },
             onWalletMenuClicked = {
-                rootNavController.navigate(WalletRoute.WalletBalancesMenu)
+                navController.navigate(WalletRoute.WalletBalancesMenu)
             },
             onWalletSwitchClicked = {
-                rootNavController.navigate(WalletRoute.SwitchWallet)
+                navController.navigate(WalletRoute.SwitchWallet)
             },
             onTokenDetailClicked = {
-                rootNavController.navigate(WalletRoute.TokenDetail(it.address))
+                navController.navigate(WalletRoute.TokenDetail(it.address))
             },
             onReceiveClicked = {
-                rootNavController.navigate(WalletRoute.WalletQrcode(currentDWebData.chainType.name))
+                navController.navigate(WalletRoute.WalletQrcode(currentDWebData.chainType.name))
             },
             onSendClicked = {
-                rootNavController.navigate(WalletRoute.Transfer.SearchAddress(null))
+                navController.navigate(WalletRoute.Transfer.SearchAddress(null))
             },
             sceneType = sceneType,
             onSceneTypeChanged = {
@@ -96,7 +95,7 @@ fun WalletIntroHost() {
             },
             walletChainType = currentDWebData.chainType,
             onCollectibleDetailClicked = {
-                rootNavController.navigate(WalletRoute.CollectibleDetail(it.id))
+                navController.navigate(WalletRoute.CollectibleDetail(it.id))
             },
             displayChainType = displayChainType,
             onDisplayChainTypeClicked = {
