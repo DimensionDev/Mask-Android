@@ -38,6 +38,8 @@ import com.dimension.maskbook.persona.model.options.UpdatePersonaOptions
 class JsPersonaRepository(database: PersonaDatabase) {
 
     private val personaDao = database.personaDao()
+    private val linkedProfileDao = database.linkedProfileDao()
+    private val relationDao = database.relationDao()
 
     suspend fun createPersona(options: CreatePersonaOptions): IndexedDBPersona {
         val newPersona = options.persona.toDbPersonaRecord()
@@ -47,7 +49,7 @@ class JsPersonaRepository(database: PersonaDatabase) {
 
     suspend fun queryPersona(options: QueryPersonaOptions): IndexedDBPersona? {
         val query = buildQueryPersonaSql(
-            identifier = options.identifier,
+            identifier = options.personaIdentifier,
             hasPrivateKey = options.hasPrivateKey,
             includeLogout = options.includeLogout,
             nameContains = options.nameContains,
@@ -69,7 +71,7 @@ class JsPersonaRepository(database: PersonaDatabase) {
 
     suspend fun queryPersonas(options: QueryPersonasOptions): List<IndexedDBPersona> {
         val query = buildQueryPersonasSql(
-            identifiers = options.identifiers,
+            identifiers = options.personaIdentifiers,
             hasPrivateKey = options.hasPrivateKey,
             includeLogout = options.includeLogout,
             nameContains = options.nameContains,
@@ -120,6 +122,8 @@ class JsPersonaRepository(database: PersonaDatabase) {
     }
 
     suspend fun deletePersona(options: DeletePersonaOptions) {
-        personaDao.delete(options.identifier)
+        personaDao.delete(options.personaIdentifier)
+        linkedProfileDao.deleteWithPersona(options.personaIdentifier)
+        relationDao.deleteWithPersona(options.personaIdentifier)
     }
 }

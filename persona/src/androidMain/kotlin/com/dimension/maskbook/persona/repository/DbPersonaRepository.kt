@@ -30,9 +30,12 @@ class DbPersonaRepository(database: PersonaDatabase) {
 
     private val personaDao = database.personaDao()
     private val linkedProfileDao = database.linkedProfileDao()
+    private val relationDao = database.relationDao()
 
     suspend fun deletePersona(personaIdentifier: String) {
         personaDao.delete(personaIdentifier)
+        linkedProfileDao.deleteWithPersona(personaIdentifier)
+        relationDao.deleteWithPersona(personaIdentifier)
     }
 
     suspend fun getPersona(personaIdentifier: String): PersonaData? {

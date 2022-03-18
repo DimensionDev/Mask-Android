@@ -61,8 +61,11 @@ interface RelationDao {
     )
 
     @Query("DELETE FROM DbRelationRecord WHERE personaIdentifier=:personaIdentifier AND profileIdentifier=:profileIdentifier")
-    suspend fun delete(
-        personaIdentifier: String,
-        profileIdentifier: String,
-    )
+    suspend fun delete(personaIdentifier: String, profileIdentifier: String)
+
+    @Query("DELETE FROM DbRelationRecord WHERE personaIdentifier=:personaIdentifier")
+    suspend fun deleteWithPersona(personaIdentifier: String)
+
+    @Query("DELETE FROM DbRelationRecord WHERE profileIdentifier=:profileIdentifier")
+    suspend fun deleteWithProfile(profileIdentifier: String)
 }

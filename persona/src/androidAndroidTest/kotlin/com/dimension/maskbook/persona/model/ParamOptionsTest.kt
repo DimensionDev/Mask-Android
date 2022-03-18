@@ -34,6 +34,6 @@ class ParamOptionsTest {
         val json = "{\"options\":{\"identifier\":\"person:twitter.com/aaa\"}}"
         val options = json.decodeJson<ParamOptions<QueryProfileOptions>>().options
         assertNotNull(options)
-        assertEquals(options.identifier, "person:twitter.com/aaa")
+        assertEquals(options.profileIdentifier, "person:twitter.com/aaa")
     }
 }

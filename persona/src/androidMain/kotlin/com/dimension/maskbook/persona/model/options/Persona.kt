@@ -31,7 +31,8 @@ data class CreatePersonaOptions(
 
 @Serializable
 data class QueryPersonaOptions(
-    val identifier: String,
+    @SerialName("identifier")
+    val personaIdentifier: String,
     val hasPrivateKey: Boolean? = null,
     val includeLogout: Boolean? = null,
     val nameContains: String? = null,
@@ -51,7 +52,8 @@ data class QueryPersonaByProfileOptions(
 
 @Serializable
 data class QueryPersonasOptions(
-    val identifiers: List<String>? = null,
+    @SerialName("identifiers")
+    val personaIdentifiers: List<String>? = null,
     val hasPrivateKey: Boolean? = null,
     val includeLogout: Boolean? = null,
     val nameContains: String? = null,
@@ -76,7 +78,8 @@ data class UpdatePersonaOptions(
 
 @Serializable
 data class DeletePersonaOptions(
-    val identifier: String,
+    @SerialName("identifier")
+    val personaIdentifier: String,
     val options: Options,
 ) {
     @Serializable

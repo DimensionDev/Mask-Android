@@ -32,7 +32,8 @@ data class CreateProfileOptions(
 
 @Serializable
 data class QueryProfileOptions(
-    val identifier: String,
+    @SerialName("identifier")
+    val profileIdentifier: String,
     val network: String? = null,
     val nameContains: String? = null,
     // val pageOption: PageOptions? = null,
@@ -40,7 +41,8 @@ data class QueryProfileOptions(
 
 @Serializable
 data class QueryProfilesOptions(
-    val identifiers: List<String>? = null,
+    @SerialName("identifiers")
+    val profileIdentifiers: List<String>? = null,
     val hasLinkedPersona: Boolean = false,
     val network: String? = null,
     val nameContains: String? = null,
@@ -61,7 +63,8 @@ data class UpdateProfileOptions(
 
 @Serializable
 data class DeleteProfileOptions(
-    val identifier: String,
+    @SerialName("identifier")
+    val profileIdentifier: String,
 )
 
 @Serializable

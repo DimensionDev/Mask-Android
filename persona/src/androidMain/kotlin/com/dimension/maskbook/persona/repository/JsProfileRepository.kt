@@ -44,6 +44,7 @@ class JsProfileRepository(database: PersonaDatabase) {
 
     private val profileDao = database.profileDao()
     private val linkedProfileDao = database.linkedProfileDao()
+    private val relationDao = database.relationDao()
 
     suspend fun createProfile(options: CreateProfileOptions): IndexedDBProfile {
         val newProfile = options.profile.toDbProfileRecord()
@@ -53,7 +54,7 @@ class JsProfileRepository(database: PersonaDatabase) {
 
     suspend fun queryProfile(options: QueryProfileOptions): IndexedDBProfile? {
         val query = buildQueryProfileSql(
-            identifier = options.identifier,
+            identifier = options.profileIdentifier,
             network = options.network,
             nameContains = options.nameContains,
         )
@@ -62,7 +63,7 @@ class JsProfileRepository(database: PersonaDatabase) {
 
     suspend fun queryProfiles(options: QueryProfilesOptions): List<IndexedDBProfile> {
         val query = buildQueryProfilesSql(
-            identifiers = options.identifiers,
+            identifiers = options.profileIdentifiers,
             network = options.network,
             nameContains = options.nameContains,
             pageOptions = options.pageOptions,
@@ -89,7 +90,9 @@ class JsProfileRepository(database: PersonaDatabase) {
     }
 
     suspend fun deleteProfile(options: DeleteProfileOptions) {
-        profileDao.delete(options.identifier)
+        profileDao.delete(options.profileIdentifier)
+        linkedProfileDao.deleteWithProfile(options.profileIdentifier)
+        relationDao.deleteWithProfile(options.profileIdentifier)
     }
 
     suspend fun attachProfile(options: AttachProfileOptions) {
@@ -111,9 +114,7 @@ class JsProfileRepository(database: PersonaDatabase) {
     }
 
     suspend fun detachProfile(options: DetachProfileOptions) {
-        linkedProfileDao.delete(
-            profileIdentifier = options.profileIdentifier,
-        )
+        linkedProfileDao.deleteWithProfile(options.profileIdentifier)
     }
 
     suspend fun queryAvatar(options: QueryAvatarOptions): String? {

@@ -53,7 +53,10 @@ interface LinkedProfileDao {
     suspend fun delete(personaIdentifier: String, profileIdentifier: String)
 
     @Query("DELETE FROM DbLinkedProfileRecord WHERE profileIdentifier=:profileIdentifier")
-    suspend fun delete(profileIdentifier: String)
+    suspend fun deleteWithProfile(profileIdentifier: String)
+
+    @Query("DELETE FROM DbLinkedProfileRecord WHERE personaIdentifier=:personaIdentifier")
+    suspend fun deleteWithPersona(personaIdentifier: String)
 
     @Query("SELECT COUNT(1) FROM DbLinkedProfileRecord WHERE profileIdentifier=:profileIdentifier LIMIT 1")
     suspend fun count(profileIdentifier: String): Int
