@@ -32,6 +32,7 @@ import com.dimension.maskbook.wallet.ui.scenes.wallets.create.CreateType
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletBalancesScene
 import com.dimension.maskbook.wallet.viewmodel.wallets.WalletBalancesViewModel
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import org.koin.androidx.compose.getViewModel
 
 @ExperimentalMaterialNavigationApi
@@ -66,6 +67,9 @@ fun WalletIntroHost() {
             }
         )
     } else if (currentDWebData != null) {
+        val swipeRefreshState = rememberSwipeRefreshState(false)
+        val refreshing by viewModel.refreshingWallet.observeAsState()
+        swipeRefreshState.isRefreshing = refreshing
         WalletBalancesScene(
             wallets = wallets,
             currentWallet = currentWallet,
@@ -110,6 +114,10 @@ fun WalletIntroHost() {
                 )
             },
             collectible = collectible,
+            refreshState = swipeRefreshState,
+            onWalletRefresh = {
+                viewModel.refreshWallet()
+            }
         )
     }
 }

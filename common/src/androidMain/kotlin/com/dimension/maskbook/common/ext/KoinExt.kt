@@ -54,3 +54,12 @@ inline fun <reified T : ViewModel> NavController.getNestedNavigationViewModel(
         scope.getViewModel(qualifier, { owner }, parameters)
     }
 }
+
+@OptIn(KoinInternalApi::class)
+inline fun <reified T> get(
+    scope: Scope = GlobalContext.get().scopeRegistry.rootScope,
+    qualifier: Qualifier? = null,
+    noinline parameters: ParametersDefinition? = null
+): T {
+    return scope.get(qualifier, parameters)
+}

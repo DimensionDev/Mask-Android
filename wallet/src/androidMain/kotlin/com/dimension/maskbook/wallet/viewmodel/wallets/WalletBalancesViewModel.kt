@@ -24,6 +24,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.common.ext.asStateIn
+import com.dimension.maskbook.common.ext.onFinished
 import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.export.model.TokenData
 import com.dimension.maskbook.wallet.export.model.WalletData
@@ -32,6 +33,7 @@ import com.dimension.maskbook.wallet.ext.humanizeDollar
 import com.dimension.maskbook.wallet.repository.ICollectibleRepository
 import com.dimension.maskbook.wallet.repository.IWalletRepository
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.BalancesSceneType
+import com.dimension.maskbook.wallet.usecase.RefreshWalletUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -42,10 +44,12 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.launch
 
 class WalletBalancesViewModel(
     private val repository: IWalletRepository,
     private val collectibleRepository: ICollectibleRepository,
+    private val refreshWalletUseCase: RefreshWalletUseCase,
 ) : ViewModel() {
     val wallets by lazy {
         repository.wallets.asStateIn(viewModelScope, emptyList())
@@ -77,6 +81,15 @@ class WalletBalancesViewModel(
 
     fun setCurrentDisplayChainType(displayChainType: ChainType?) {
         _displayChainType.value = displayChainType
+    }
+
+    private val _refreshingWallet = MutableStateFlow(false)
+    val refreshingWallet = _refreshingWallet.asStateIn(viewModelScope)
+    fun refreshWallet() {
+        _refreshingWallet.value = true
+        viewModelScope.launch {
+            refreshWalletUseCase().onFinished { _refreshingWallet.value = false }
+        }
     }
 
     private val chainTokenData = _displayChainType.map {

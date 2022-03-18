@@ -83,6 +83,7 @@ import com.dimension.maskbook.wallet.usecase.gas.GetSuggestGasFeeUseCase
 import com.dimension.maskbook.wallet.usecase.gas.GetSuggestGasFeeUseCaseImpl
 import com.dimension.maskbook.wallet.usecase.password.VerifyPaymentPasswordUseCase
 import com.dimension.maskbook.wallet.usecase.password.VerifyPaymentPasswordUseCaseImpl
+import com.dimension.maskbook.wallet.usecase.refreshWalletUseCase
 import com.dimension.maskbook.wallet.usecase.token.GetWalletNativeTokenUseCase
 import com.dimension.maskbook.wallet.usecase.token.GetWalletNativeTokenUseCaseImpl
 import com.dimension.maskbook.wallet.usecase.token.GetWalletTokenByAddressUseCase
@@ -318,6 +319,8 @@ private fun Module.provideUseCase() {
     // gas
     factory<GetArrivesWithGasFeeUseCase> { GetArrivesWithGasFeeUseCaseImpl(get()) }
     factory<GetSuggestGasFeeUseCase> { GetSuggestGasFeeUseCaseImpl(get()) }
+    // wallet
+    factory { refreshWalletUseCase }
 }
 
 private fun Module.provideViewModel() {
@@ -360,7 +363,7 @@ private fun Module.provideViewModel() {
     }
     viewModel { WalletTransactionHistoryViewModel(get(), get()) }
     viewModel { (id: String, name: String) -> WalletRenameViewModel(id, name, get()) }
-    viewModel { WalletBalancesViewModel(get(), get()) }
+    viewModel { WalletBalancesViewModel(get(), get(), get()) }
     viewModel { WalletManagementModalViewModel(get()) }
     viewModel { WalletBackupViewModel(get(), get()) }
     viewModel { (id: String) -> WalletDeleteViewModel(id, get(), get()) }

@@ -116,9 +116,7 @@ internal class WalletRepository(
             refreshChainData()
             while (true) {
                 delay(12.seconds)
-                refreshCurrentWalletToken()
-                refreshCurrentWalletCollectibles()
-                refreshNativeTokens()
+                refreshWallet()
             }
         }
     }
@@ -849,6 +847,14 @@ internal class WalletRepository(
                     chainType = ChainType.valueOf(it.chain.name)
                 )
             }
+        }
+    }
+
+    override suspend fun refreshWallet() {
+        withContext(tokenScope.coroutineContext) {
+            refreshCurrentWalletToken()
+            refreshCurrentWalletCollectibles()
+            refreshNativeTokens()
         }
     }
 }
