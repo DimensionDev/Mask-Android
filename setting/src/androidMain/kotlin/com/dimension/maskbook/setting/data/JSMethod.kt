@@ -32,7 +32,7 @@ internal class JSMethod(
 ) {
     suspend fun getTrendingDataSource(): DataProvider {
         return extensionService.execute<Int>("settings_getTrendingDataSource").let { result ->
-            DataProvider.values().first { it.value == result }
+            DataProvider.values().firstOrNull { it.value == result } ?: DataProvider.COIN_GECKO
         }
     }
 
