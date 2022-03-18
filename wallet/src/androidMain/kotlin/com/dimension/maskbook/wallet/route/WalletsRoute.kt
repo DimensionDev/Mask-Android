@@ -230,8 +230,12 @@ fun SwitchWalletAdd(
     functionName = navigationComposeBottomSheet,
 )
 @Composable
-fun SwitchWalletAddWalletConnect() {
-    WalletConnectModal()
+fun SwitchWalletAddWalletConnect(
+    navController: NavController,
+) {
+    WalletConnectModal(
+        rootNavController = navController,
+    )
 }
 
 @NavGraphDestination(
@@ -749,11 +753,13 @@ fun WalletIntroHostTouchIdEnableSuccess(
 )
 @Composable
 fun CreateOrImportWallet(
+    navController: NavController,
     @Back onBack: () -> Unit,
     @Path("type") typeString: String,
 ) {
     val type = remember(typeString) { CreateType.valueOf(typeString) }
     CreateOrImportWalletScene(
+        navController = navController,
         onBack = onBack,
         type = type,
     )
@@ -765,8 +771,12 @@ fun CreateOrImportWallet(
     functionName = navigationComposeDialog,
 )
 @Composable
-fun MultiChainWalletDialogRoute() {
-    MultiChainWalletDialog()
+fun MultiChainWalletDialogRoute(
+    @Back onBack: () -> Unit,
+) {
+    MultiChainWalletDialog(
+        onBack = onBack,
+    )
 }
 
 @NavGraphDestination(

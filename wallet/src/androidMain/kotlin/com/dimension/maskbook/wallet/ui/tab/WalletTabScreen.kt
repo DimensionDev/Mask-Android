@@ -21,6 +21,7 @@
 package com.dimension.maskbook.wallet.ui.tab
 
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavController
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.wallet.R
@@ -34,7 +35,7 @@ class WalletTabScreen : TabScreen {
 
     @OptIn(ExperimentalMaterialNavigationApi::class)
     @Composable
-    override fun Content(onBack: () -> Unit) {
-        WalletIntroHost()
+    override fun Content(navController: NavController, onBack: () -> Unit) {
+        WalletIntroHost(navController)
     }
 }

@@ -21,6 +21,7 @@
 package com.dimension.maskbook.setting.ui.tab
 
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavController
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.setting.R
@@ -32,7 +33,10 @@ class SettingsTabScreen : TabScreen {
     override val icon: Int = R.drawable.ic_settings
 
     @Composable
-    override fun Content(onBack: () -> Unit) {
-        SettingsScene(onBack = onBack)
+    override fun Content(navController: NavController, onBack: () -> Unit) {
+        SettingsScene(
+            navController = navController,
+            onBack = onBack,
+        )
     }
 }

@@ -165,17 +165,20 @@ fun MainHost(
                 count = tabs.size,
                 state = pagerState,
             ) {
-                tabs.elementAt(it).Content {
-                    navController.navigate(
-                        Uri.parse(Deeplinks.WebContent(null)),
-                        navOptions {
-                            launchSingleTop = true
-                            popUpTo(CommonRoute.Main.Home.path) {
-                                inclusive = true
-                            }
-                        },
-                    )
-                }
+                tabs.elementAt(it).Content(
+                    navController = navController,
+                    onBack = {
+                        navController.navigate(
+                            Uri.parse(Deeplinks.WebContent(null)),
+                            navOptions {
+                                launchSingleTop = true
+                                popUpTo(CommonRoute.Main.Home.path) {
+                                    inclusive = true
+                                }
+                            },
+                        )
+                    }
+                )
             }
         }
     }

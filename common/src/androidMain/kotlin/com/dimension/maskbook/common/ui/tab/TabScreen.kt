@@ -21,6 +21,7 @@
 package com.dimension.maskbook.common.ui.tab
 
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavController
 
 interface TabScreen {
 
@@ -31,5 +32,5 @@ interface TabScreen {
     val icon: Int
 
     @Composable
-    fun Content(onBack: () -> Unit)
+    fun Content(navController: NavController, onBack: () -> Unit)
 }

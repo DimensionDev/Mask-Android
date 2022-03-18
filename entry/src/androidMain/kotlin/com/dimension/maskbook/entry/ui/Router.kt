@@ -23,14 +23,12 @@ package com.dimension.maskbook.entry.ui
 import android.net.Uri
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import com.dimension.maskbook.common.CommonSetup
 import com.dimension.maskbook.common.route
 import com.dimension.maskbook.common.route.DeeplinkNavigateArgs
 import com.dimension.maskbook.common.route.Navigator
 import com.dimension.maskbook.common.route.RouteNavigateArgs
-import com.dimension.maskbook.common.ui.LocalRootNavController
 import com.dimension.maskbook.common.ui.widget.RouteHost
 import com.dimension.maskbook.entry.EntrySetup
 import com.dimension.maskbook.entry.repository.EntryRepository
@@ -72,19 +70,17 @@ fun Router(
             }
         }
     }
-    CompositionLocalProvider(LocalRootNavController provides navController) {
-        RouteHost(
-            navController = navController,
-            startDestination = startDestination,
-        ) {
-            CommonSetup.route(this, navController = navController)
-            EntrySetup.route(this, navController = navController)
-            WalletSetup.route(this, navController = navController)
-            LabsSetup.route(this, navController = navController)
-            PersonaSetup.route(this, navController = navController)
-            SettingSetup.route(this, navController = navController)
-            ExtensionSetup.route(this, navController = navController)
-        }
+    RouteHost(
+        navController = navController,
+        startDestination = startDestination,
+    ) {
+        CommonSetup.route(this, navController = navController)
+        EntrySetup.route(this, navController = navController)
+        WalletSetup.route(this, navController = navController)
+        LabsSetup.route(this, navController = navController)
+        PersonaSetup.route(this, navController = navController)
+        SettingSetup.route(this, navController = navController)
+        ExtensionSetup.route(this, navController = navController)
     }
 }
 
