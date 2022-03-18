@@ -167,10 +167,10 @@ expect object WalletRoute {
                 operator fun invoke(personaName: String, isWelcome: Boolean): String
             }
             object Verify {
-                operator fun invoke(personaName: String): String
+                operator fun invoke(personaName: String, isWelcome: Boolean): String
             }
             object Confirm {
-                operator fun invoke(personaName: String): String
+                operator fun invoke(personaName: String, isWelcome: Boolean): String
             }
         }
 
