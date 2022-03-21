@@ -20,21 +20,15 @@
  */
 package com.dimension.maskbook.persona.db.sql
 
-import android.util.Log
 import androidx.sqlite.db.SimpleSQLiteQuery
 import androidx.sqlite.db.SupportSQLiteQuery
 import com.dimension.maskbook.persona.model.options.PageOptions
 
-internal fun String.asSqlQuery(): SupportSQLiteQuery {
-    Log.i("JSMethodV2", this)
-    return SimpleSQLiteQuery(this)
-}
-
-internal fun PageOptions.asLimitSql(): String {
-    return "LIMIT $pageOffset OFFSET ${pageSize * pageOffset}"
-}
-
-internal fun buildWhereSql(
+internal fun buildQuerySql(
+    dbName: String,
+    identifier: String? = null,
+    personaIdentifier: String? = null,
+    profileIdentifier: String? = null,
     identifiers: List<String>? = null,
     hasPrivateKey: Boolean? = null,
     includeLogout: Boolean? = null,
@@ -44,8 +38,66 @@ internal fun buildWhereSql(
     favor: Boolean? = null,
     encryptBy: String? = null,
     userIds: List<String>? = null,
-): String {
+    pageOptions: PageOptions? = PageOptions.ONE,
+): SupportSQLiteQuery {
+    val query = StringBuilder("SELECT * FROM $dbName")
+    val args = mutableListOf<Any>()
+    buildWhereSql(
+        args = args,
+        identifier = identifier,
+        personaIdentifier = personaIdentifier,
+        profileIdentifier = profileIdentifier,
+        identifiers = identifiers,
+        hasPrivateKey = hasPrivateKey,
+        includeLogout = includeLogout,
+        nameContains = nameContains,
+        initialized = initialized,
+        network = network,
+        favor = favor,
+        encryptBy = encryptBy,
+        userIds = userIds,
+    )?.let {
+        query.append(" WHERE $it")
+    }
+    if (pageOptions === PageOptions.ONE) {
+        query.append(" LIMIT 1")
+    } else if (pageOptions != null) {
+        query.append(" ${pageOptions.asLimitSql()}")
+    }
+    return SimpleSQLiteQuery(query.toString(), args.toTypedArray())
+}
+
+private fun buildWhereSql(
+    args: MutableList<Any>,
+    identifier: String? = null,
+    personaIdentifier: String? = null,
+    profileIdentifier: String? = null,
+    identifiers: List<String>? = null,
+    hasPrivateKey: Boolean? = null,
+    includeLogout: Boolean? = null,
+    nameContains: String? = null,
+    initialized: Boolean? = null,
+    network: String? = null,
+    favor: Boolean? = null,
+    encryptBy: String? = null,
+    userIds: List<String>? = null,
+): String? {
     return listOfNotNull(
+        if (!identifier.isNullOrEmpty()) {
+            args.add(identifier)
+            "identifier = :identifier"
+        } else null,
+        if (!personaIdentifier.isNullOrEmpty()) {
+            args.add(personaIdentifier)
+            "personaIdentifier = :personaIdentifier"
+        } else null,
+        if (!profileIdentifier.isNullOrEmpty()) {
+            args.add(profileIdentifier)
+            "identifier in " +
+                "(SELECT personaIdentifier FROM DbLinkedProfileRecord WHERE " +
+                "profileIdentifier = :profileIdentifier " +
+                "LIMIT 1) "
+        } else null,
         if (!identifiers.isNullOrEmpty()) {
             "identifier in (${identifiers.joinToString(",") { "'$it'" }})"
         } else null,
@@ -53,25 +105,35 @@ internal fun buildWhereSql(
             "privateKeyRaw IS NOT NULL"
         } else null,
         if (includeLogout != null && includeLogout == false) {
-            "hasLogout = 0"
+            args.add(false)
+            "hasLogout = :hasLogout"
         } else null,
         if (!nameContains.isNullOrEmpty()) {
-            "nickname LIKE '%$nameContains%'"
+            args.add(nameContains)
+            "nickname LIKE '%:nameContains%'"
         } else null,
         if (initialized != null) {
-            "initialized = $initialized"
+            args.add(initialized)
+            "initialized = :initialized"
         } else null,
         if (!network.isNullOrEmpty()) {
-            "network = '$network'"
+            args.add(network)
+            "network = :network"
         } else null,
         if (favor != null) {
-            "favor = $favor"
+            args.add(favor)
+            "favor = :favor"
         } else null,
         if (!encryptBy.isNullOrEmpty()) {
-            "encryptBy = '$encryptBy'"
+            args.add(encryptBy)
+            "encryptBy = :encryptBy"
         } else null,
         if (!userIds.isNullOrEmpty()) {
             "postUserId in (${userIds.joinToString(",") { "'$it'" }})"
         } else null,
-    ).joinToString(separator = " AND ")
+    ).joinToString(separator = " AND ").takeIf { it.isNotEmpty() }
+}
+
+private fun PageOptions.asLimitSql(): String {
+    return "LIMIT $pageOffset OFFSET ${pageSize * pageOffset}"
 }

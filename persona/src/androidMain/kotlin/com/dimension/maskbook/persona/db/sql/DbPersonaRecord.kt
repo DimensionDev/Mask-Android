@@ -30,18 +30,14 @@ fun buildQueryPersonaSql(
     includeLogout: Boolean? = null,
     nameContains: String? = null,
     initialized: Boolean? = null,
-) = buildString {
-    append("SELECT * FROM $dbName WHERE identifier = '$identifier' ")
-    buildWhereSql(
-        hasPrivateKey = hasPrivateKey,
-        includeLogout = includeLogout,
-        nameContains = nameContains,
-        initialized = initialized,
-    ).let {
-        append("$it ")
-    }
-    append("LIMIT 1")
-}
+) = buildQuerySql(
+    dbName = dbName,
+    identifier = identifier,
+    hasPrivateKey = hasPrivateKey,
+    includeLogout = includeLogout,
+    nameContains = nameContains,
+    initialized = initialized,
+)
 
 fun buildQueryPersonaByProfileSql(
     profileIdentifier: String,
@@ -49,23 +45,14 @@ fun buildQueryPersonaByProfileSql(
     includeLogout: Boolean? = null,
     nameContains: String? = null,
     initialized: Boolean? = null,
-) = buildString {
-    append(
-        "SELECT * FROM $dbName WHERE identifier in " +
-            "(SELECT personaIdentifier FROM DbLinkedProfileRecord WHERE " +
-            "profileIdentifier = '$profileIdentifier' " +
-            "LIMIT 1) "
-    )
-    buildWhereSql(
-        hasPrivateKey = hasPrivateKey,
-        includeLogout = includeLogout,
-        nameContains = nameContains,
-        initialized = initialized,
-    ).let {
-        append("$it ")
-    }
-    append("LIMIT 1")
-}
+) = buildQuerySql(
+    dbName = dbName,
+    profileIdentifier = profileIdentifier,
+    hasPrivateKey = hasPrivateKey,
+    includeLogout = includeLogout,
+    nameContains = nameContains,
+    initialized = initialized,
+)
 
 fun buildQueryPersonasSql(
     identifiers: List<String>? = null,
@@ -74,18 +61,12 @@ fun buildQueryPersonasSql(
     nameContains: String? = null,
     initialized: Boolean? = null,
     pageOptions: PageOptions? = null,
-) = buildString {
-    append("SELECT * FROM $dbName ")
-    buildWhereSql(
-        identifiers = identifiers,
-        hasPrivateKey = hasPrivateKey,
-        includeLogout = includeLogout,
-        nameContains = nameContains,
-        initialized = initialized,
-    ).let {
-        append("WHERE $it ")
-    }
-    pageOptions?.let {
-        append(it.asLimitSql())
-    }
-}
+) = buildQuerySql(
+    dbName = dbName,
+    identifiers = identifiers,
+    hasPrivateKey = hasPrivateKey,
+    includeLogout = includeLogout,
+    nameContains = nameContains,
+    initialized = initialized,
+    pageOptions = pageOptions,
+)

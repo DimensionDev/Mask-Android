@@ -26,4 +26,8 @@ import kotlinx.serialization.Serializable
 data class PageOptions(
     val pageSize: Int,
     val pageOffset: Int,
-)
+) {
+    companion object {
+        val ONE = PageOptions(1, 0)
+    }
+}

@@ -22,7 +22,6 @@ package com.dimension.maskbook.persona.db
 
 import com.dimension.maskbook.persona.db.base.PersonaDatabaseTest
 import com.dimension.maskbook.persona.db.dao.PersonaDao
-import com.dimension.maskbook.persona.db.sql.asSqlQuery
 import com.dimension.maskbook.persona.db.sql.buildQueryPersonasSql
 import com.dimension.maskbook.persona.mock.model.mockDbPersonaRecord
 import com.dimension.maskbook.persona.model.options.PageOptions
@@ -88,7 +87,7 @@ class DbPersonaRecordTest : PersonaDatabaseTest() {
             includeLogout = false,
             pageOptions = PageOptions(0, 2)
         )
-        var list = personaDao.findListRaw(query.asSqlQuery())
+        var list = personaDao.findListRaw(query)
         assertEquals(list.size, 2)
         assert(list.any { it.persona == persona1 })
         assert(list.any { it.persona == persona3 })
@@ -97,7 +96,7 @@ class DbPersonaRecordTest : PersonaDatabaseTest() {
             includeLogout = false,
             pageOptions = PageOptions(1, 2)
         )
-        list = personaDao.findListRaw(query.asSqlQuery())
+        list = personaDao.findListRaw(query)
         assertEquals(list.size, 1)
         assert(list.any { it.persona == persona4 })
 
@@ -105,8 +104,19 @@ class DbPersonaRecordTest : PersonaDatabaseTest() {
             hasPrivateKey = true,
             pageOptions = PageOptions(0, 2)
         )
-        list = personaDao.findListRaw(query.asSqlQuery())
+        list = personaDao.findListRaw(query)
         assertEquals(list.size, 1)
+        assert(list.any { it.persona == persona3 })
+
+        query = buildQueryPersonasSql(
+            identifiers = listOf(
+                "person:twitter.com/findRaw1",
+                "person:twitter.com/findRaw3",
+            ),
+        )
+        list = personaDao.findListRaw(query)
+        assertEquals(list.size, 2)
+        assert(list.any { it.persona == persona1 })
         assert(list.any { it.persona == persona3 })
     }
 

@@ -30,16 +30,11 @@ fun buildQueryRelationsSql(
     nameContains: String? = null,
     favor: Boolean? = null,
     pageOptions: PageOptions? = null,
-) = buildString {
-    append("SELECT * FROM $dbName WHERE personaIdentifier='$personaIdentifier' ")
-    buildWhereSql(
-        network = network,
-        nameContains = nameContains,
-        favor = favor
-    ).let {
-        append("$it ")
-    }
-    pageOptions?.let {
-        append(it.asLimitSql())
-    }
-}
+) = buildQuerySql(
+    dbName = dbName,
+    personaIdentifier = personaIdentifier,
+    network = network,
+    nameContains = nameContains,
+    favor = favor,
+    pageOptions = pageOptions,
+)

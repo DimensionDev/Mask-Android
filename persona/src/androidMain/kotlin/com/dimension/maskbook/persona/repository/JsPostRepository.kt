@@ -23,7 +23,6 @@ package com.dimension.maskbook.persona.repository
 import com.dimension.maskbook.persona.db.PersonaDatabase
 import com.dimension.maskbook.persona.db.migrator.mapper.toDbPostRecord
 import com.dimension.maskbook.persona.db.migrator.mapper.toIndexedDBPost
-import com.dimension.maskbook.persona.db.sql.asSqlQuery
 import com.dimension.maskbook.persona.db.sql.buildQueryPostSql
 import com.dimension.maskbook.persona.model.indexed.IndexedDBPost
 import com.dimension.maskbook.persona.model.options.CreatePostOptions
@@ -52,7 +51,7 @@ class JsPostRepository(database: PersonaDatabase) {
             network = options.network,
             pageOptions = options.pageOptions,
         )
-        return postDao.findListRaw(query.asSqlQuery()).map {
+        return postDao.findListRaw(query).map {
             it.toIndexedDBPost()
         }
     }
