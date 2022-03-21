@@ -20,10 +20,15 @@
  */
 package com.dimension.maskbook.wallet.usecase
 
-import com.dimension.maskbook.wallet.repository.IWalletRepository
+import com.dimension.maskbook.setting.export.SettingServices
+import kotlinx.coroutines.flow.firstOrNull
 
-class RefreshWalletUseCase(
-    private val repository: IWalletRepository
+class VerifyPaymentPasswordUseCase(
+    private val service: SettingServices
 ) {
-    suspend operator fun invoke() = runCatching { repository.refreshWallet() }
+    suspend operator fun invoke(pwd: String) = runCatching {
+        service.paymentPassword.firstOrNull()?.let {
+            if (it.isNotEmpty() && it == pwd) Unit else throw Error()
+        } ?: throw Error()
+    }
 }
