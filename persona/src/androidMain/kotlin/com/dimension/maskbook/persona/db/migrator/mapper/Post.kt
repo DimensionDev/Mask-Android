@@ -30,7 +30,7 @@ fun IndexedDBPost.toDbPostRecord(): DbPostRecord {
         encryptBy = encryptBy,
         postNetwork = Network.withProfileIdentifier(identifier) ?: Network.Twitter,
         postUserId = postBy,
-        postCryptoKeyRaw = postCryptoKey,
+        postCryptoKey = postCryptoKey,
         url = url,
         summary = summary,
         recipientsRaw = recipients,
@@ -43,7 +43,7 @@ fun DbPostRecord.toIndexedDBPost(): IndexedDBPost {
     return IndexedDBPost(
         postBy = postUserId,
         identifier = identifier,
-        postCryptoKey = postCryptoKeyRaw,
+        postCryptoKey = postCryptoKey,
         recipients = recipientsRaw,
         foundAt = foundAt,
         encryptBy = encryptBy,

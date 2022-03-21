@@ -51,7 +51,12 @@ abstract class BaseDaoTest<DB : RoomDatabase> {
         db = Room.inMemoryDatabaseBuilder(context, getDBClass())
             .setTransactionExecutor(testDispatcher.asExecutor())
             .setQueryExecutor(testDispatcher.asExecutor())
+            .onDatabaseBuilder()
             .build()
+    }
+
+    open fun RoomDatabase.Builder<DB>.onDatabaseBuilder(): RoomDatabase.Builder<DB> {
+        return this
     }
 
     @After

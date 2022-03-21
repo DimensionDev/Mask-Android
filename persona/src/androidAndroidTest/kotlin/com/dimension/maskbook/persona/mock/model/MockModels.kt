@@ -30,6 +30,7 @@ import org.jetbrains.annotations.TestOnly
 fun mockDbPersonaRecord(
     identifier: String,
     nickname: String,
+    mnemonic: String = "this is words",
     hasLogout: Boolean = false,
     privateKey: JsonObject? = JsonObject(
         mapOf(
@@ -47,7 +48,7 @@ fun mockDbPersonaRecord(
     identifier = identifier,
     nickname = nickname,
     hasLogout = hasLogout,
-    mnemonic = "this is words",
+    mnemonic = mnemonic,
     publicKey = JsonObject(
         mapOf(
             "key_ops" to JsonArray(

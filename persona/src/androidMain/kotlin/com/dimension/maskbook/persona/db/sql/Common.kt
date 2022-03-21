@@ -50,10 +50,10 @@ internal fun buildWhereSql(
             "identifier in (${identifiers.joinToString(",") { "'$it'" }})"
         } else null,
         if (hasPrivateKey != null) {
-            "privateKey IS NOT NULL"
+            "privateKeyRaw IS NOT NULL"
         } else null,
         if (includeLogout != null && includeLogout == false) {
-            "hasLogout = false"
+            "hasLogout = 0"
         } else null,
         if (!nameContains.isNullOrEmpty()) {
             "nickname LIKE '%$nameContains%'"

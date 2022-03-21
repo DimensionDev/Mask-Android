@@ -20,18 +20,30 @@
  */
 package com.dimension.maskbook.persona.db.model
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
+import com.dimension.maskbook.persona.db.EncryptJsonObjectConverter
+import com.dimension.maskbook.persona.db.EncryptStringConverter
 import kotlinx.serialization.json.JsonObject
 
 @Entity
 data class DbPersonaRecord(
     @PrimaryKey val identifier: String,
+    @TypeConverters(EncryptStringConverter::class)
+    @ColumnInfo(name = "mnemonicRaw", typeAffinity = ColumnInfo.BLOB)
     var mnemonic: String? = null,
     var path: String? = null,
     var withPassword: Boolean? = null,
+    @TypeConverters(EncryptJsonObjectConverter::class)
+    @ColumnInfo(name = "publicKeyRaw", typeAffinity = ColumnInfo.BLOB)
     var publicKey: JsonObject? = null,
+    @TypeConverters(EncryptJsonObjectConverter::class)
+    @ColumnInfo(name = "privateKeyRaw", typeAffinity = ColumnInfo.BLOB)
     var privateKey: JsonObject? = null,
+    @TypeConverters(EncryptJsonObjectConverter::class)
+    @ColumnInfo(name = "localKeyRaw", typeAffinity = ColumnInfo.BLOB)
     var localKey: JsonObject? = null,
     var nickname: String? = null,
     var createAt: Long = 0,
@@ -40,8 +52,8 @@ data class DbPersonaRecord(
     var initialized: Boolean? = null,
     var avatar: String? = null,
 
-    var email: String,
-    var phone: String,
+    var email: String = "",
+    var phone: String = "",
 ) {
     fun merge(record: DbPersonaRecord): DbPersonaRecord {
         if (record.mnemonic != null && record.mnemonic != mnemonic) mnemonic = record.mnemonic

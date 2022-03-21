@@ -27,7 +27,6 @@ import com.dimension.maskbook.persona.db.sql.buildQueryPersonasSql
 import com.dimension.maskbook.persona.mock.model.mockDbPersonaRecord
 import com.dimension.maskbook.persona.model.options.PageOptions
 import kotlin.test.Test
-import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
@@ -91,8 +90,8 @@ class DbPersonaRecordTest : PersonaDatabaseTest() {
         )
         var list = personaDao.findListRaw(query.asSqlQuery())
         assertEquals(list.size, 2)
-        assertContains(list, persona1)
-        assertContains(list, persona3)
+        assert(list.any { it.persona == persona1 })
+        assert(list.any { it.persona == persona3 })
 
         query = buildQueryPersonasSql(
             includeLogout = false,
@@ -100,7 +99,7 @@ class DbPersonaRecordTest : PersonaDatabaseTest() {
         )
         list = personaDao.findListRaw(query.asSqlQuery())
         assertEquals(list.size, 1)
-        assertContains(list, persona4)
+        assert(list.any { it.persona == persona4 })
 
         query = buildQueryPersonasSql(
             hasPrivateKey = true,
@@ -108,6 +107,21 @@ class DbPersonaRecordTest : PersonaDatabaseTest() {
         )
         list = personaDao.findListRaw(query.asSqlQuery())
         assertEquals(list.size, 1)
-        assertContains(list, persona3)
+        assert(list.any { it.persona == persona3 })
+    }
+
+    @Test
+    fun test_find_mnemonic() = runTest {
+        val persona1 = mockDbPersonaRecord(
+            identifier = "person:twitter.com/findMnemonic1",
+            nickname = "findMnemonic1",
+            mnemonic = "findMnemonic1",
+            hasLogout = false,
+            privateKey = null,
+        )
+        personaDao.insert(persona1)
+
+        val list = personaDao.findList()
+        assertNotNull(list.find { it.mnemonic == "findMnemonic1" })
     }
 }

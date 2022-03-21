@@ -20,8 +20,29 @@
  */
 package com.dimension.maskbook.persona.db.base
 
+import android.content.Context
+import androidx.room.RoomDatabase
+import androidx.test.core.app.ApplicationProvider
+import com.dimension.maskbook.common.manager.KeyStoreManager
+import com.dimension.maskbook.persona.db.EncryptJsonObjectConverter
+import com.dimension.maskbook.persona.db.EncryptStringConverter
 import com.dimension.maskbook.persona.db.PersonaDatabase
 
 abstract class PersonaDatabaseTest : BaseDaoTest<PersonaDatabase>() {
+
+    protected lateinit var keyStoreManager: KeyStoreManager
+
+    override fun onCreateDb() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        keyStoreManager = KeyStoreManager(context)
+
+        super.onCreateDb()
+    }
+
+    override fun RoomDatabase.Builder<PersonaDatabase>.onDatabaseBuilder(): RoomDatabase.Builder<PersonaDatabase> {
+        return addTypeConverter(EncryptStringConverter(keyStoreManager))
+            .addTypeConverter(EncryptJsonObjectConverter(keyStoreManager))
+    }
+
     override fun getDBClass() = PersonaDatabase::class.java
 }
