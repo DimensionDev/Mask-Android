@@ -20,11 +20,9 @@
  */
 package com.dimension.maskbook.extension.utils
 
-import com.dimension.maskbook.common.ext.encodeJson
 import com.dimension.maskbook.common.gecko.WebContentController
 import com.dimension.maskbook.extension.export.model.ExtensionId
 import com.dimension.maskbook.extension.export.model.ExtensionMessage
-import com.dimension.maskbook.extension.export.model.ExtensionResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -33,6 +31,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.serialization.ExperimentalSerializationApi
 import org.json.JSONObject
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
@@ -53,8 +52,9 @@ internal class MessageChannel(
             .launchIn(scope)
     }
 
-    fun sendResponseMessage(message: ExtensionResponse) {
-        controller.sendMessage(JSONObject(message.encodeJson()))
+    @OptIn(ExperimentalSerializationApi::class)
+    fun sendResponseMessage(map: Map<String, Any>) {
+        controller.sendMessage(JSONObject(map))
     }
 
     suspend fun executeMessage(

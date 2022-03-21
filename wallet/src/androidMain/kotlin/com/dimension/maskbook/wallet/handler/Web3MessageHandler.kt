@@ -24,7 +24,6 @@ import com.dimension.maskbook.common.ext.decodeJson
 import com.dimension.maskbook.common.ext.encodeBase64
 import com.dimension.maskbook.common.ext.encodeJson
 import com.dimension.maskbook.common.route.Navigator
-import com.dimension.maskbook.extension.export.model.ExtensionResponse
 import com.dimension.maskbook.wallet.data.Web3Request
 import com.dimension.maskbook.wallet.db.model.CoinPlatformType
 import com.dimension.maskbook.wallet.ext.normalized
@@ -178,7 +177,7 @@ internal class Web3MessageHandler(
     }
 }
 
-private fun <T> Web3SendResponse.Companion.success(request: Web3Request, result: T?): ExtensionResponse {
+private fun <T> Web3SendResponse.Companion.success(request: Web3Request, result: T?): Map<String, Any> {
     requireNotNull(request.payload)
     return success(
         messageId = request.id,
@@ -188,7 +187,7 @@ private fun <T> Web3SendResponse.Companion.success(request: Web3Request, result:
     )
 }
 
-private fun Web3SendResponse.Companion.error(request: Web3Request, error: String): ExtensionResponse {
+private fun Web3SendResponse.Companion.error(request: Web3Request, error: String): Map<String, Any> {
     requireNotNull(request.payload)
     return error(
         messageId = request.id,

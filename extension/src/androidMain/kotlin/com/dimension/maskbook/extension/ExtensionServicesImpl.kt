@@ -22,7 +22,6 @@ package com.dimension.maskbook.extension
 
 import com.dimension.maskbook.extension.export.ExtensionServices
 import com.dimension.maskbook.extension.export.model.ExtensionMessage
-import com.dimension.maskbook.extension.export.model.ExtensionResponse
 import com.dimension.maskbook.extension.export.model.Site
 import com.dimension.maskbook.extension.repository.ExtensionRepository
 import com.dimension.maskbook.extension.utils.MessageChannel
@@ -59,7 +58,7 @@ internal class ExtensionServicesImpl(
     override val extensionMessage: Flow<ExtensionMessage>
         get() = messageChannel.extensionMessage
 
-    override fun sendJSEventResponse(response: ExtensionResponse) {
-        messageChannel.sendResponseMessage(response)
+    override fun sendJSEventResponse(map: Map<String, Any>) {
+        messageChannel.sendResponseMessage(map)
     }
 }

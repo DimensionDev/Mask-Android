@@ -22,9 +22,10 @@ package com.dimension.maskbook.persona.data
 
 import com.dimension.maskbook.common.ext.decodeJson
 import com.dimension.maskbook.common.ext.execute
+import com.dimension.maskbook.common.ext.toNullableResultMap
 import com.dimension.maskbook.extension.export.ExtensionServices
 import com.dimension.maskbook.extension.export.model.ExtensionMessage
-import com.dimension.maskbook.extension.export.model.ExtensionResponseMessage
+import com.dimension.maskbook.extension.export.model.ExtensionResponse
 import com.dimension.maskbook.persona.db.PersonaDatabase
 import com.dimension.maskbook.persona.db.migrator.IndexedDBDataMigrator
 import com.dimension.maskbook.persona.model.indexed.IndexedDBAllRecord
@@ -256,13 +257,13 @@ private inline fun <reified T> ExtensionMessage.decodeOptions(): T? {
     return params?.decodeJson<T>()
 }
 
-private inline fun <reified T> ExtensionMessage.responseSuccess(result: T?): Boolean {
+private inline fun <reified T : Any> ExtensionMessage.responseSuccess(result: T?): Boolean {
     response(
-        ExtensionResponseMessage(
+        ExtensionResponse(
             id = id,
             jsonrpc = jsonrpc,
             result = result,
-        )
+        ).toNullableResultMap()
     )
     return true
 }

@@ -79,6 +79,7 @@ kotlin {
 
                 // serialization
                 api("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.Kotlin.serialization}")
+                api("org.jetbrains.kotlinx:kotlinx-serialization-properties:${Versions.Kotlin.serialization}")
 
                 // sqlite
                 api("androidx.room:room-runtime:${Versions.Androidx.room}")

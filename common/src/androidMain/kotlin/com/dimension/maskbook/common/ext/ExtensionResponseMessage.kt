@@ -18,11 +18,19 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.extension.export.model
+package com.dimension.maskbook.common.ext
 
-@kotlinx.serialization.Serializable
-data class ExtensionResponse<T>(
-    val id: ExtensionId,
-    val jsonrpc: String,
-    val result: T
-)
+import com.dimension.maskbook.extension.export.model.ExtensionResponse
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.properties.Properties
+import kotlinx.serialization.properties.encodeToMap
+
+@OptIn(ExperimentalSerializationApi::class)
+inline fun <reified T : Any> ExtensionResponse<T?>.toNullableResultMap(): Map<String, Any> {
+    return Properties.encodeToMap(this)
+}
+
+@OptIn(ExperimentalSerializationApi::class)
+inline fun <reified T : Any> ExtensionResponse<T>.toResultMap(): Map<String, Any> {
+    return Properties.encodeToMap(this)
+}
