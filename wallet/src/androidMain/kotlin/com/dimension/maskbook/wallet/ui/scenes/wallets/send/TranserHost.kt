@@ -182,6 +182,7 @@ fun SendRoute(
 
     val arrives by gasFeeViewModel.arrives.observeAsState(initial = "")
     val gasUsdTotal by gasFeeViewModel.gasUsdTotal.observeAsState(initial = BigDecimal.ZERO)
+    val gasTotal by gasFeeViewModel.gasTotal.observeAsState(initial = BigDecimal.ZERO)
 
     val selectTradable by transferDetailViewModel.selectedTradable.collectAsState(null)
 
@@ -196,6 +197,7 @@ fun SendRoute(
     val canConfirm by transferDetailViewModel.canConfirm.observeAsState()
     val balance by transferDetailViewModel.balance.observeAsState()
     val maxAmount by transferDetailViewModel.maxAmount.observeAsState()
+    transferDetailViewModel.setGasTotal(gasTotal = gasTotal)
 
     TransferDetailScene(
         onBack = onBack,

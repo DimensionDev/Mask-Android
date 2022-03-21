@@ -37,6 +37,7 @@ import com.dimension.maskbook.wallet.usecase.GetWalletNativeTokenUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
@@ -56,7 +57,9 @@ class GasFeeViewModel(
     // native token on current chain
     @OptIn(ExperimentalCoroutinesApi::class)
     private val nativeToken by lazy {
-        getWalletNativeToken(chainType.value).map {
+        chainType.flatMapLatest {
+            getWalletNativeToken(it)
+        }.map {
             it?.tokenData
         }
     }
@@ -71,7 +74,6 @@ class GasFeeViewModel(
     val loadingState = _loadingState.asStateIn(viewModelScope)
 
     private val _suggestGasFee = MutableStateFlow(GasFeeModel())
-    val suggestGasFee = _suggestGasFee.asStateIn(viewModelScope, GasFeeModel())
 
     init {
         refreshSuggestGasFee()
@@ -96,7 +98,7 @@ class GasFeeViewModel(
 
     private val _maxPriorityFeePerGas = MutableStateFlow(-1.0)
     val maxPriorityFeePerGas =
-        combine(_maxPriorityFeePerGas, suggestGasFee, _gasPriceEditMode) { max, suggest, mode ->
+        combine(_maxPriorityFeePerGas, _suggestGasFee, _gasPriceEditMode) { max, suggest, mode ->
             if (max != -1.0) {
                 max
             } else {
@@ -115,7 +117,7 @@ class GasFeeViewModel(
 
     private val _maxFeePerGas = MutableStateFlow(-1.0)
     val maxFeePerGas =
-        combine(_maxFeePerGas, suggestGasFee, _gasPriceEditMode) { max, suggest, mode ->
+        combine(_maxFeePerGas, _suggestGasFee, _gasPriceEditMode) { max, suggest, mode ->
             if (max != -1.0) {
                 max
             } else {
@@ -155,7 +157,7 @@ class GasFeeViewModel(
     val arrives = combine(maxFeePerGas, maxPriorityFeePerGas) { maxFee, maxPriorityFee ->
         GasFeeData(maxFeePerGas = maxFee, maxPriorityFeePerGas = maxPriorityFee)
     }.map { gasFee ->
-        getArrivesWithGasFee(gasFee = gasFee, suggestGasFee = suggestGasFee.value).getOrNull()
+        getArrivesWithGasFee(gasFee = gasFee, suggestGasFee = _suggestGasFee.value).getOrNull()
     }.mapNotNull {
         it?.humanizeMinutes()
     }.asStateIn(viewModelScope, "")

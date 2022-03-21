@@ -41,7 +41,7 @@ import kotlinx.coroutines.flow.mapNotNull
 import java.math.BigDecimal
 
 class TransferDetailViewModel(
-    private val tradableId: String,
+    private val tradableId: String?,
     private val verifyPaymentPassword: VerifyPaymentPasswordUseCase,
     private val getAddress: GetAddressUseCase,
     private val getWalletTokenByAddress: GetWalletTokenByAddressUseCase,
@@ -125,7 +125,7 @@ class TransferDetailViewModel(
     private val walletTokenData by lazy {
         combine(
             _walletTokenData,
-            getWalletTokenByAddress(tradableId),
+            getWalletTokenByAddress(tradableId.orEmpty()),
             nativeToken
         ) { select, default, native ->
             select ?: default ?: native
@@ -136,7 +136,7 @@ class TransferDetailViewModel(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private val collectibleData by lazy {
-        combine(_collectibleData, getWalletCollectible(tradableId)) { select, default ->
+        combine(_collectibleData, getWalletCollectible(tradableId.orEmpty())) { select, default ->
             select ?: default
         }.asStateIn(viewModelScope, null)
     }
@@ -171,5 +171,9 @@ class TransferDetailViewModel(
                 is WalletTokenData -> amount <= maxAmount
             }
         }.asStateIn(viewModelScope, false)
+    }
+
+    fun setGasTotal(gasTotal: BigDecimal) {
+        _gasTotal.value = gasTotal
     }
 }
