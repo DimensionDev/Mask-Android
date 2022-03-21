@@ -23,14 +23,13 @@ package com.dimension.maskbook.wallet.viewmodel.wallets.send
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
-import com.dimension.maskbook.wallet.usecase.Result
-import com.dimension.maskbook.wallet.usecase.address.AddContactUseCase
+import com.dimension.maskbook.common.ext.onFinished
+import com.dimension.maskbook.wallet.usecase.AddContactUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class AddContactViewModel(
-    private val addContactUseCase: AddContactUseCase,
+    private val addContact: AddContactUseCase,
 ) : ViewModel() {
     private val _name = MutableStateFlow("")
     val name = _name.asStateIn(viewModelScope, "")
@@ -42,19 +41,14 @@ class AddContactViewModel(
     val loadingState = _loadingState.asStateIn(viewModelScope)
 
     fun confirm(name: String, address: String, onResult: (success: Boolean) -> Unit) {
+        _loadingState.value = true
         viewModelScope.launch {
-            addContactUseCase(name = name, address = address).collect {
-                when (it) {
-                    is Result.Failed -> {
-                        onResult.invoke(false)
-                        _loadingState.value = false
-                    }
-                    is Result.Loading -> _loadingState.value = true
-                    is Result.Success -> {
-                        onResult.invoke(true)
-                        _loadingState.value = false
-                    }
-                }
+            addContact(name = name, address = address).onSuccess {
+                onResult.invoke(true)
+            }.onFailure {
+                onResult.invoke(false)
+            }.onFinished {
+                _loadingState.value = false
             }
         }
     }

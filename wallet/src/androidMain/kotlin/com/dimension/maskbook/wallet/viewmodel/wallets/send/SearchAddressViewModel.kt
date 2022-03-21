@@ -25,19 +25,17 @@ import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.Validator
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.wallet.export.model.ChainType
-import com.dimension.maskbook.wallet.usecase.Result
-import com.dimension.maskbook.wallet.usecase.address.AddRecentAddressUseCase
-import com.dimension.maskbook.wallet.usecase.address.GetContactsUseCase
-import com.dimension.maskbook.wallet.usecase.address.GetEnsAddressUseCase
-import com.dimension.maskbook.wallet.usecase.address.GetRecentAddressUseCase
+import com.dimension.maskbook.wallet.usecase.AddRecentAddressUseCase
+import com.dimension.maskbook.wallet.usecase.GetContactsUseCase
+import com.dimension.maskbook.wallet.usecase.GetEnsAddressUseCase
+import com.dimension.maskbook.wallet.usecase.GetRecentAddressUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 
 sealed class EnsData {
@@ -53,10 +51,10 @@ sealed class EnsData {
 }
 
 class SearchAddressViewModel(
-    getRecentAddressUseCase: GetRecentAddressUseCase,
-    getContactsUseCase: GetContactsUseCase,
-    getEnsAddressUseCase: GetEnsAddressUseCase,
-    private val addRecentAddressUseCase: AddRecentAddressUseCase,
+    getRecentAddress: GetRecentAddressUseCase,
+    getContacts: GetContactsUseCase,
+    getEnsAddress: GetEnsAddressUseCase,
+    private val addRecentAddress: AddRecentAddressUseCase,
 ) : ViewModel() {
 
     private val _input = MutableStateFlow("")
@@ -64,24 +62,12 @@ class SearchAddressViewModel(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val recent = _input.flatMapLatest {
-        getRecentAddressUseCase(filter = it)
-            .map { result ->
-                when (result) {
-                    is Result.Success -> result.value
-                    else -> emptyList()
-                }
-            }
+        getRecentAddress(filter = it)
     }.asStateIn(viewModelScope, emptyList())
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val contacts = _input.flatMapLatest {
-        getContactsUseCase(filter = it)
-            .map { result ->
-                when (result) {
-                    is Result.Success -> result.value
-                    else -> emptyList()
-                }
-            }
+        getContacts(filter = it)
     }.asStateIn(viewModelScope, emptyList())
 
     private val _selectEnsData = MutableStateFlow<EnsData.Success?>(null)
@@ -91,17 +77,16 @@ class SearchAddressViewModel(
     val ensData = input.debounce(400)
         .filter { _selectEnsData.value == null && input.value.isNotEmpty() }
         .flatMapLatest { name ->
-            getEnsAddressUseCase(chainType = ChainType.eth, ensName = name)
-                .map { result ->
-                    when (result) {
-                        is Result.Failed -> EnsData.Failure(result.cause)
-                        is Result.Loading -> EnsData.Loading
-                        is Result.Success -> EnsData.Success(
-                            name = name,
-                            address = result.value
-                        )
+            flow {
+                emit(EnsData.Loading)
+                getEnsAddress(chainType = ChainType.eth, ensName = name)
+                    .onSuccess {
+                        emit(EnsData.Success(name = name, address = it))
                     }
-                }
+                    .onFailure {
+                        emit(EnsData.Failure(it))
+                    }
+            }
         }.asStateIn(viewModelScope, null)
 
     val canConfirm = combine(_selectEnsData, input) { ens, input ->
@@ -124,10 +109,7 @@ class SearchAddressViewModel(
 
     fun addSendHistory(address: String, name: String) {
         viewModelScope.launch {
-            addRecentAddressUseCase(
-                address = address,
-                name = name
-            ).collect()
+            addRecentAddress(address = address, name = name)
         }
     }
 }

@@ -23,21 +23,20 @@ package com.dimension.maskbook.wallet.viewmodel.wallets.send
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
+import com.dimension.maskbook.common.ext.onFinished
 import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.ext.gwei
 import com.dimension.maskbook.wallet.ext.humanizeMinutes
 import com.dimension.maskbook.wallet.repository.GasPriceEditMode
 import com.dimension.maskbook.wallet.repository.IWalletRepository
-import com.dimension.maskbook.wallet.usecase.Result
-import com.dimension.maskbook.wallet.usecase.gas.GasFeeData
-import com.dimension.maskbook.wallet.usecase.gas.GasFeeModel
-import com.dimension.maskbook.wallet.usecase.gas.GetArrivesWithGasFeeUseCase
-import com.dimension.maskbook.wallet.usecase.gas.GetSuggestGasFeeUseCase
-import com.dimension.maskbook.wallet.usecase.token.GetWalletNativeTokenUseCase
+import com.dimension.maskbook.wallet.usecase.GasFeeData
+import com.dimension.maskbook.wallet.usecase.GasFeeModel
+import com.dimension.maskbook.wallet.usecase.GetArrivesWithGasFeeUseCase
+import com.dimension.maskbook.wallet.usecase.GetSuggestGasFeeUseCase
+import com.dimension.maskbook.wallet.usecase.GetWalletNativeTokenUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
@@ -45,9 +44,9 @@ import java.math.BigDecimal
 
 class GasFeeViewModel(
     initialGasLimit: Double = 21000.0,
-    private val getSuggestGasFeeUseCase: GetSuggestGasFeeUseCase,
-    private val getArrivesWithGasFeeUseCase: GetArrivesWithGasFeeUseCase,
-    private val getWalletNativeTokenUseCase: GetWalletNativeTokenUseCase,
+    private val getSuggestGasFee: GetSuggestGasFeeUseCase,
+    private val getArrivesWithGasFee: GetArrivesWithGasFeeUseCase,
+    private val getWalletNativeToken: GetWalletNativeTokenUseCase,
     private val walletRepository: IWalletRepository,
 ) : ViewModel() {
     private val chainType = walletRepository.currentChain.mapNotNull {
@@ -57,11 +56,8 @@ class GasFeeViewModel(
     // native token on current chain
     @OptIn(ExperimentalCoroutinesApi::class)
     private val nativeToken by lazy {
-        getWalletNativeTokenUseCase().map {
-            when (it) {
-                is Result.Success -> it.value.tokenData
-                else -> null
-            }
+        getWalletNativeToken(chainType.value).map {
+            it?.tokenData
         }
     }
 
@@ -83,23 +79,11 @@ class GasFeeViewModel(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     fun refreshSuggestGasFee() {
+        _loadingState.value = true
         viewModelScope.launch {
-            chainType.flatMapLatest {
-                getSuggestGasFeeUseCase(it)
-            }.collect {
-                when (it) {
-                    is Result.Failed -> {
-                        _loadingState.value = false
-                    }
-                    is Result.Loading -> {
-                        _loadingState.value = true
-                    }
-                    is Result.Success -> {
-                        _loadingState.value = false
-                        _suggestGasFee.value = it.value
-                    }
-                }
-            }
+            getSuggestGasFee(chainType.value)
+                .onSuccess { _suggestGasFee.value = it }
+                .onFinished { _loadingState.value = false }
         }
     }
 
@@ -170,14 +154,9 @@ class GasFeeViewModel(
     @OptIn(ExperimentalCoroutinesApi::class)
     val arrives = combine(maxFeePerGas, maxPriorityFeePerGas) { maxFee, maxPriorityFee ->
         GasFeeData(maxFeePerGas = maxFee, maxPriorityFeePerGas = maxPriorityFee)
-    }.flatMapLatest { gasFee ->
-        suggestGasFee.flatMapLatest {
-            getArrivesWithGasFeeUseCase(gasFee = gasFee, suggestGasFee = it)
-        }
+    }.map { gasFee ->
+        getArrivesWithGasFee(gasFee = gasFee, suggestGasFee = suggestGasFee.value).getOrNull()
     }.mapNotNull {
-        when (it) {
-            is Result.Success -> it.value.humanizeMinutes()
-            else -> null
-        }
+        it?.humanizeMinutes()
     }.asStateIn(viewModelScope, "")
 }

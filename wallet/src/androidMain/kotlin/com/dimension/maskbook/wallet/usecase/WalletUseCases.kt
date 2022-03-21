@@ -20,16 +20,10 @@
  */
 package com.dimension.maskbook.wallet.usecase
 
-import com.dimension.maskbook.common.ext.get
 import com.dimension.maskbook.wallet.repository.IWalletRepository
 
-typealias RefreshWalletUseCase = suspend () -> kotlin.Result<Unit>
-// TODO Mimao try to find a way to use function directly and suitable for unit test
-val refreshWalletUseCase: RefreshWalletUseCase get() = {
-    try {
-        get<IWalletRepository>().refreshWallet()
-        kotlin.Result.success(Unit)
-    } catch (e: Throwable) {
-        kotlin.Result.failure(e)
-    }
+class RefreshWalletUseCase(
+    private val repository: IWalletRepository
+) {
+    suspend operator fun invoke() = runCatching { repository.refreshWallet() }
 }

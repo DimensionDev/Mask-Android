@@ -1,39 +1,17 @@
-/*
- *  Mask-Android
- *
- *  Copyright (C) 2022  DimensionDev and Contributors
- *
- *  This file is part of Mask-Android.
- *
- *  Mask-Android is free software: you can redistribute it and/or modify
- *  it under the terms of the GNU Affero General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  Mask-Android is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU Affero General Public License for more details.
- *
- *  You should have received a copy of the GNU Affero General Public License
- *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
- */
-package com.dimension.maskbook.wallet.usecase.gas
+package com.dimension.maskbook.wallet.usecase
 
 import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.services.WalletServices
 import com.dimension.maskbook.wallet.services.model.EthGasFee
 import com.dimension.maskbook.wallet.services.model.EthGasFeeResponse
 import com.dimension.maskbook.wallet.services.model.MaticGasFeeResponse
-import com.dimension.maskbook.wallet.usecase.Result
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 
 data class GasFeeData(
     val maxPriorityFeePerGas: Double,
     val maxFeePerGas: Double,
 ) {
     val total get() = maxPriorityFeePerGas + maxFeePerGas
+
     companion object {
         fun fromEthGasFee(data: EthGasFee?) = GasFeeData(
             maxFeePerGas = data?.suggestedMaxFeePerGas?.toDoubleOrNull() ?: 0.0,
@@ -104,36 +82,47 @@ class GasFeeModel {
     }
 }
 
-interface GetSuggestGasFeeUseCase {
-    operator fun invoke(chainType: ChainType?): Flow<Result<GasFeeModel>>
+class GetSuggestGasFeeUseCase(
+    private val services: WalletServices,
+) {
+    suspend operator fun invoke(chainType: ChainType?) = runCatching {
+        when (chainType) {
+            ChainType.eth -> GasFeeModel(
+                services.gasServices.ethGasFee()
+            )
+            ChainType.polygon -> GasFeeModel(
+                services.gasServices.maticGasFee()
+            )
+            ChainType.bsc -> GasFeeModel(5.0)
+            ChainType.arbitrum -> GasFeeModel(
+                3.0
+            )
+            ChainType.xdai -> GasFeeModel(3.0)
+            else -> GasFeeModel(5.0)
+        }
+    }
+
 }
 
-class GetSuggestGasFeeUseCaseImpl(
+class GetArrivesWithGasFeeUseCase(
     private val services: WalletServices,
-) : GetSuggestGasFeeUseCase {
-    override fun invoke(chainType: ChainType?): Flow<Result<GasFeeModel>> {
-        return flow {
-            emit(Result.Loading())
-            runCatching {
-                when (chainType) {
-                    ChainType.eth -> GasFeeModel(
-                        services.gasServices.ethGasFee()
-                    )
-                    ChainType.polygon -> GasFeeModel(
-                        services.gasServices.maticGasFee()
-                    )
-                    ChainType.bsc -> GasFeeModel(5.0)
-                    ChainType.arbitrum -> GasFeeModel(
-                        3.0
-                    )
-                    ChainType.xdai -> GasFeeModel(3.0)
-                    else -> GasFeeModel(5.0)
+) {
+    private val unKnow = -1.0
+    suspend operator fun invoke(gasFee: GasFeeData, suggestGasFee: GasFeeModel) = runCatching {
+        with(services.gasServices.ethGas()) {
+            if (safeLowWait != null && fastestWait != null && fastWait != null && avgWait != null) {
+                when {
+                    gasFee.total > suggestGasFee.high.total -> fastestWait
+                    gasFee.total >= suggestGasFee.high.total -> fastWait
+                    gasFee.total >= suggestGasFee.medium.total -> avgWait
+                    gasFee.total >= suggestGasFee.low.total -> safeLowWait
+                    else -> unKnow
                 }
-            }.onSuccess {
-                emit(Result.Success(it))
-            }.onFailure {
-                emit(Result.Failed(it))
+            } else {
+                unKnow
             }
+        }.let {
+            if (it == unKnow) throw Error("Can't get arrives  with give gas fee:${gasFee.total}") else it
         }
     }
 }
