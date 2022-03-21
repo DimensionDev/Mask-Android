@@ -20,24 +20,26 @@
  */
 package com.dimension.maskbook.common.manager
 
+import android.content.Context
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.runner.RunWith
 import kotlin.test.Test
+import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 
 @RunWith(AndroidJUnit4::class)
-class KeystoreManagerTest {
+class KeyStoreManagerTest {
 
     @Test
     fun test_bytes_encrypted() {
-        val appContext = InstrumentationRegistry.getInstrumentation().targetContext
+        val context = ApplicationProvider.getApplicationContext<Context>()
         val data = "this is data"
 
-        val keystoreCrypto1 = KeystoreManager(appContext)
+        val keystoreCrypto1 = KeyStoreManager(context)
         val encrypted = keystoreCrypto1.encryptData(data.toByteArray())
 
-        val keystoreCrypto2 = KeystoreManager(appContext)
+        val keystoreCrypto2 = KeyStoreManager(context)
         val decrypted = keystoreCrypto2.decryptData(encrypted)
 
         assertEquals(data, String(decrypted))
@@ -45,15 +47,33 @@ class KeystoreManagerTest {
 
     @Test
     fun test_string_encrypted() {
-        val appContext = InstrumentationRegistry.getInstrumentation().targetContext
+        val context = ApplicationProvider.getApplicationContext<Context>()
         val data = "this is data"
 
-        val keystoreCrypto1 = KeystoreManager(appContext)
+        val keystoreCrypto1 = KeyStoreManager(context)
         val encryptedBase64 = keystoreCrypto1.encryptDataBase64(data)
 
-        val keystoreCrypto2 = KeystoreManager(appContext)
+        val keystoreCrypto2 = KeyStoreManager(context)
         val decrypted = keystoreCrypto2.decryptDataBase64(encryptedBase64)
 
         assertEquals(data, decrypted)
+    }
+
+    @Test
+    fun test_large_string_encrypted() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val data = stringOfLength(800).toByteArray()
+
+        val keystoreCrypto1 = KeyStoreManager(context)
+        val encrypted = keystoreCrypto1.encryptData(data)
+
+        val keystoreCrypto2 = KeyStoreManager(context)
+        val decrypted = keystoreCrypto2.decryptData(encrypted)
+
+        assertContentEquals(data, decrypted)
+    }
+
+    private fun stringOfLength(length: Int): String {
+        return String(CharArray(length) { 'a' })
     }
 }

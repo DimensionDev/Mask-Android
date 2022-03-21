@@ -20,9 +20,9 @@
  */
 package com.dimension.maskbook.common.manager
 
-expect class KeystoreManager {
+expect class KeyStoreManager {
 
-    fun encryptData(dataDecrypted: ByteArray): ByteArray
+    fun encryptData(plainText: ByteArray): ByteArray
 
-    fun decryptData(dataEncrypted: ByteArray): ByteArray
+    fun decryptData(cipherText: ByteArray): ByteArray
 }

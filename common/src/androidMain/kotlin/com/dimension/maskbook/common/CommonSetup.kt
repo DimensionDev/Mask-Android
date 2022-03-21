@@ -22,7 +22,7 @@ package com.dimension.maskbook.common
 
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import com.dimension.maskbook.common.manager.KeystoreManager
+import com.dimension.maskbook.common.manager.KeyStoreManager
 import com.dimension.maskbook.common.util.BiometricAuthenticator
 import com.dimension.maskbook.common.util.coroutineExceptionHandler
 import com.dimension.maskbook.common.viewmodel.BiometricEnableViewModel
@@ -42,7 +42,7 @@ object CommonSetup : ModuleSetup {
             CoroutineScope(SupervisorJob() + Dispatchers.IO + coroutineExceptionHandler)
         }
         single { BiometricAuthenticator() }
-        single { KeystoreManager(get()) }
+        single { KeyStoreManager(get()) }
 
         viewModel { BiometricEnableViewModel(get(), get()) }
     }
