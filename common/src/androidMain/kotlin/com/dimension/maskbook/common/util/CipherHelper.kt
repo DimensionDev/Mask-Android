@@ -146,7 +146,7 @@ class CipherHelperBelowM(
 
 private fun Cipher.doFinalSplit(input: ByteArray, segmentSize: Int): ByteArray {
     val inputLen = input.size
-    if (inputLen < segmentSize) {
+    if (inputLen <= segmentSize) {
         return doFinal(input)
     }
 

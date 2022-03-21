@@ -40,6 +40,7 @@ actual class KeyStoreManager(private val context: Context) {
         }
     }
 
+    // samsung's cipher is not thread safe
     private val cipherHelper by lazy {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             CipherHelperAboveM(androidKeyStore, defaultKeySize)
@@ -57,10 +58,12 @@ actual class KeyStoreManager(private val context: Context) {
         }
     }
 
+    @Synchronized
     actual fun encryptData(plainText: ByteArray): ByteArray {
         return cipherHelper.encrypt(plainText, keyPair.public)
     }
 
+    @Synchronized
     actual fun decryptData(cipherText: ByteArray): ByteArray {
         return cipherHelper.decrypt(cipherText, keyPair.private)
     }
