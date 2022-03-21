@@ -18,38 +18,11 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.common.ext
+package com.dimension.maskbook.common.manager
 
-import android.util.Base64
+expect class KeystoreManager {
 
-fun ByteArray.encodeBase64(): ByteArray {
-    return Base64.encode(this, Base64.DEFAULT)
-}
+    fun encryptData(dataDecrypted: ByteArray): ByteArray
 
-fun ByteArray.encodeBase64String(): String {
-    return String(encodeBase64())
-}
-
-fun ByteArray.decodeBase64(): ByteArray {
-    return Base64.decode(this, Base64.DEFAULT)
-}
-
-fun ByteArray.decodeBase64String(): String {
-    return String(decodeBase64())
-}
-
-fun String.encodeBase64Bytes(): ByteArray {
-    return toByteArray().encodeBase64()
-}
-
-fun String.encodeBase64(): String {
-    return String(encodeBase64Bytes())
-}
-
-fun String.decodeBase64Bytes(): ByteArray {
-    return toByteArray().decodeBase64()
-}
-
-fun String.decodeBase64(): String {
-    return String(decodeBase64Bytes())
+    fun decryptData(dataEncrypted: ByteArray): ByteArray
 }
