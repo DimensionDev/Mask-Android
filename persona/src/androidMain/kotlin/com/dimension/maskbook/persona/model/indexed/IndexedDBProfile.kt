@@ -25,8 +25,8 @@ import kotlinx.serialization.json.JsonObject
 
 @Serializable
 data class IndexedDBProfile(
-    val nickname: String?,
     val identifier: String,
+    val nickname: String? = null,
     val linkedPersona: String? = null,
     val localKey: JsonObject? = null,
     val updatedAt: Long = 0,
