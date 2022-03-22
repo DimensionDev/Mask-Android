@@ -31,7 +31,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.serialization.ExperimentalSerializationApi
 import org.json.JSONObject
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
@@ -51,7 +50,6 @@ internal class MessageChannel(
             .launchIn(scope)
     }
 
-    @OptIn(ExperimentalSerializationApi::class)
     fun sendResponseMessage(map: Map<String, Any>) {
         controller.sendMessage(JSONObject(map))
     }

@@ -91,7 +91,7 @@ class JSMethodV2(
             }
         }
 
-        services.extensionMessage
+        services.subscribeJSEvent(*methods)
             .onEach {
                 subscribeWithPersona(it) ||
                     subscribeWithProfile(it) ||
@@ -107,7 +107,7 @@ class JSMethodV2(
 
     private suspend fun subscribeWithPersona(message: ExtensionMessage): Boolean {
         when (message.method) {
-            "create_persona" -> {
+            createPersona -> {
                 val options = message.decodeOptions<CreatePersonaOptions>() ?: return true
 
                 // set current persona when create
@@ -115,23 +115,23 @@ class JSMethodV2(
 
                 return message.responseSuccess(personaRepository.createPersona(options))
             }
-            "query_persona" -> {
+            queryPersona -> {
                 val options = message.decodeOptions<QueryPersonaOptions>() ?: return true
                 return message.responseSuccess(personaRepository.queryPersona(options))
             }
-            "query_persona_by_profile" -> {
+            queryPersonaByProfile -> {
                 val options = message.decodeOptions<ParamOptions<QueryPersonaByProfileOptions>>()?.options ?: return true
                 return message.responseSuccess(personaRepository.queryPersonaByProfile(options))
             }
-            "query_personas" -> {
+            queryPersonas -> {
                 val options = message.decodeOptions<QueryPersonasOptions>() ?: return true
                 return message.responseSuccess(personaRepository.queryPersonas(options))
             }
-            "update_persona" -> {
+            updatePersona -> {
                 val options = message.decodeOptions<UpdatePersonaOptions>() ?: return true
                 return message.responseSuccess(personaRepository.updatePersona(options))
             }
-            "delete_persona" -> {
+            deletePersona -> {
                 val options = message.decodeOptions<DeletePersonaOptions>() ?: return true
                 return message.responseSuccess(personaRepository.deletePersona(options))
             }
@@ -143,32 +143,32 @@ class JSMethodV2(
 
     private suspend fun subscribeWithProfile(message: ExtensionMessage): Boolean {
         when (message.method) {
-            "create_profile" -> {
+            createProfile -> {
                 val options = message.decodeOptions<CreateProfileOptions>() ?: return true
                 return message.responseSuccess(profileRepository.createProfile(options))
             }
-            "query_profile" -> {
+            queryProfile -> {
                 val options = message.decodeOptions<ParamOptions<QueryProfileOptions>>()?.options
                     ?: return true
                 return message.responseSuccess(profileRepository.queryProfile(options))
             }
-            "query_profiles" -> {
+            queryProfiles -> {
                 val options = message.decodeOptions<QueryProfilesOptions>() ?: return true
                 return message.responseSuccess(profileRepository.queryProfiles(options))
             }
-            "update_profile" -> {
+            updateProfile -> {
                 val options = message.decodeOptions<UpdateProfileOptions>() ?: return true
                 return message.responseSuccess(profileRepository.updateProfile(options))
             }
-            "delete_profile" -> {
+            deleteProfile -> {
                 val options = message.decodeOptions<DeleteProfileOptions>() ?: return true
                 return message.responseSuccess(profileRepository.deleteProfile(options))
             }
-            "attach_profile" -> {
+            attachProfile -> {
                 val options = message.decodeOptions<AttachProfileOptions>() ?: return true
                 return message.responseSuccess(profileRepository.attachProfile(options))
             }
-            "detach_profile" -> {
+            detachProfile -> {
                 val options = message.decodeOptions<DetachProfileOptions>() ?: return true
                 return message.responseSuccess(profileRepository.detachProfile(options))
             }
@@ -180,19 +180,19 @@ class JSMethodV2(
 
     private suspend fun subscribeWithRelation(message: ExtensionMessage): Boolean {
         when (message.method) {
-            "create_relation" -> {
+            createRelation -> {
                 val options = message.decodeOptions<CreateRelationOptions>() ?: return true
                 return message.responseSuccess(relationRepository.createRelation(options))
             }
-            "query_relations" -> {
+            queryRelations -> {
                 val options = message.decodeOptions<QueryRelationsOptions>() ?: return true
                 return message.responseSuccess(relationRepository.queryRelations(options))
             }
-            "update_relation" -> {
+            updateRelation -> {
                 val options = message.decodeOptions<UpdateRelationOptions>() ?: return true
                 return message.responseSuccess(relationRepository.updateRelation(options))
             }
-            "delete_relation" -> {
+            deleteRelation -> {
                 val options = message.decodeOptions<DeleteRelationOptions>() ?: return true
                 return message.responseSuccess(relationRepository.deleteRelation(options))
             }
@@ -204,11 +204,11 @@ class JSMethodV2(
 
     private suspend fun subscribeWithAvatar(message: ExtensionMessage): Boolean {
         when (message.method) {
-            "query_avatar" -> {
+            queryAvatar -> {
                 val options = message.decodeOptions<QueryAvatarOptions>() ?: return true
                 return message.responseSuccess(profileRepository.queryAvatar(options))
             }
-            "store_avatar" -> {
+            storeAvatar -> {
                 val options = message.decodeOptions<StoreAvatarOptions>() ?: return true
                 return message.responseSuccess(profileRepository.storeAvatar(options))
             }
@@ -220,19 +220,19 @@ class JSMethodV2(
 
     private suspend fun subscribeWithPost(message: ExtensionMessage): Boolean {
         when (message.method) {
-            "create_post" -> {
+            createPost -> {
                 val options = message.decodeOptions<CreatePostOptions>() ?: return true
                 return message.responseSuccess(postRepository.createPost(options))
             }
-            "query_post" -> {
+            queryPost -> {
                 val options = message.decodeOptions<QueryPostOptions>() ?: return true
                 return message.responseSuccess(postRepository.queryPost(options))
             }
-            "query_posts" -> {
+            queryPosts -> {
                 val options = message.decodeOptions<QueryPostsOptions>() ?: return true
                 return message.responseSuccess(postRepository.queryPosts(options))
             }
-            "update_post" -> {
+            updatePost -> {
                 val options = message.decodeOptions<UpdatePostOptions>() ?: return true
                 return message.responseSuccess(postRepository.updatePost(options))
             }
@@ -244,7 +244,7 @@ class JSMethodV2(
 
     private fun subscribeWithHelper(message: ExtensionMessage): Boolean {
         when (message.method) {
-            "notify_visible_detected_profile_changed" -> {
+            notifyVisibleDetectedProfileChanged -> {
                 val detectedProfileIdentifiers = message.decodeOptions<List<String>>()
                 if (detectedProfileIdentifiers.isNullOrEmpty()) return true
                 preferenceRepository.setLastDetectProfileIdentifier(detectedProfileIdentifiers[0])
@@ -252,6 +252,47 @@ class JSMethodV2(
             }
         }
         return false
+    }
+
+    companion object {
+        private const val createPersona = "create_persona"
+        private const val queryPersona = "query_persona"
+        private const val queryPersonaByProfile = "query_persona_by_profile"
+        private const val queryPersonas = "query_personas"
+        private const val updatePersona = "update_persona"
+        private const val deletePersona = "delete_persona"
+
+        private const val createProfile = "create_profile"
+        private const val queryProfile = "query_profile"
+        private const val queryProfiles = "query_profiles"
+        private const val updateProfile = "update_profile"
+        private const val deleteProfile = "delete_profile"
+        private const val attachProfile = "attach_profile"
+        private const val detachProfile = "detach_profile"
+
+        private const val createRelation = "create_relation"
+        private const val queryRelations = "query_relations"
+        private const val updateRelation = "update_relation"
+        private const val deleteRelation = "delete_relation"
+
+        private const val queryAvatar = "query_avatar"
+        private const val storeAvatar = "store_avatar"
+
+        private const val createPost = "create_post"
+        private const val queryPost = "query_post"
+        private const val queryPosts = "query_posts"
+        private const val updatePost = "update_post"
+
+        private const val notifyVisibleDetectedProfileChanged = "notify_visible_detected_profile_changed"
+
+        private val methods = arrayOf(
+            createPersona, queryPersona, queryPersonaByProfile, queryPersonas, updatePersona, deletePersona,
+            createProfile, queryProfile, queryProfiles, updateProfile, deleteProfile, attachProfile, detachProfile,
+            createRelation, queryRelations, updateRelation, deleteRelation,
+            queryAvatar, storeAvatar,
+            createPost, queryPost, queryPosts, updatePost,
+            notifyVisibleDetectedProfileChanged,
+        )
     }
 }
 

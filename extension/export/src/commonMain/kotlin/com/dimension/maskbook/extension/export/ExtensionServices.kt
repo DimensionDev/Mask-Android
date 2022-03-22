@@ -31,6 +31,5 @@ interface ExtensionServices {
     suspend fun ensureExtensionActive()
     suspend fun runJSMethod(method: String, isWait: Boolean, vararg args: Pair<String, Any>): String?
     fun sendJSEventResponse(map: Map<String, Any>)
-    val extensionMessage: Flow<ExtensionMessage>
     fun subscribeJSEvent(vararg method: String): Flow<ExtensionMessage>
 }

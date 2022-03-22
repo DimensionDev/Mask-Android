@@ -55,9 +55,6 @@ internal class ExtensionServicesImpl(
         return messageChannel.subscribeMessage(*method).mapNotNull { it }
     }
 
-    override val extensionMessage: Flow<ExtensionMessage>
-        get() = messageChannel.extensionMessage
-
     override fun sendJSEventResponse(map: Map<String, Any>) {
         messageChannel.sendResponseMessage(map)
     }
