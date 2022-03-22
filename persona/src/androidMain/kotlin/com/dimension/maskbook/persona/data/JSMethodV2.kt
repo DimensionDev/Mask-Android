@@ -120,7 +120,7 @@ class JSMethodV2(
                 return message.responseSuccess(personaRepository.queryPersona(options))
             }
             "query_persona_by_profile" -> {
-                val options = message.decodeOptions<QueryPersonaByProfileOptions>() ?: return true
+                val options = message.decodeOptions<ParamOptions<QueryPersonaByProfileOptions>>()?.options ?: return true
                 return message.responseSuccess(personaRepository.queryPersonaByProfile(options))
             }
             "query_personas" -> {

@@ -27,11 +27,11 @@ import kotlinx.serialization.json.JsonObject
 class IndexedDBPost(
     val postBy: String,
     val identifier: String,
-    val postCryptoKey: JsonObject?,
-    val recipients: MutableMap<String, JsonObject>?,
+    val postCryptoKey: JsonObject? = null,
+    val recipients: MutableMap<String, JsonObject>? = null,
     val foundAt: Long,
-    val encryptBy: String?,
-    val url: String?,
-    val summary: String?,
-    val interestedMeta: MutableMap<String, JsonObject>?,
+    val encryptBy: String? = null,
+    val url: String? = null,
+    val summary: String? = null,
+    val interestedMeta: MutableMap<String, JsonObject>? = null,
 )
