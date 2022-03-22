@@ -21,11 +21,11 @@
 package com.dimension.maskbook.persona.data
 
 import com.dimension.maskbook.common.ext.decodeJson
+import com.dimension.maskbook.common.ext.encodeMap
 import com.dimension.maskbook.common.ext.execute
-import com.dimension.maskbook.common.ext.toNullableResultMap
 import com.dimension.maskbook.extension.export.ExtensionServices
 import com.dimension.maskbook.extension.export.model.ExtensionMessage
-import com.dimension.maskbook.extension.export.model.ExtensionResponse
+import com.dimension.maskbook.extension.export.model.buildExtensionResponse
 import com.dimension.maskbook.persona.db.PersonaDatabase
 import com.dimension.maskbook.persona.db.migrator.IndexedDBDataMigrator
 import com.dimension.maskbook.persona.model.indexed.IndexedDBAllRecord
@@ -259,11 +259,42 @@ private inline fun <reified T> ExtensionMessage.decodeOptions(): T? {
 
 private inline fun <reified T : Any> ExtensionMessage.responseSuccess(result: T?): Boolean {
     response(
-        ExtensionResponse(
+        buildExtensionResponse(
+            id = id,
+            jsonrpc = jsonrpc,
+            result = result?.encodeMap(),
+        )
+    )
+    return true
+}
+private inline fun <reified T : Any> ExtensionMessage.responseSuccess(result: List<T>): Boolean {
+    response(
+        buildExtensionResponse(
+            id = id,
+            jsonrpc = jsonrpc,
+            result = result.map { it.encodeMap() },
+        )
+    )
+    return true
+}
+private fun ExtensionMessage.responseSuccess(result: Unit): Boolean {
+    response(
+        buildExtensionResponse(
             id = id,
             jsonrpc = jsonrpc,
             result = result,
-        ).toNullableResultMap()
+        )
+    )
+    return true
+}
+
+private fun ExtensionMessage.responseSuccess(result: String?): Boolean {
+    response(
+        buildExtensionResponse(
+            id = id,
+            jsonrpc = jsonrpc,
+            result = result,
+        )
     )
     return true
 }

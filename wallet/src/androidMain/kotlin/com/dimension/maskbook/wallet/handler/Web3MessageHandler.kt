@@ -23,10 +23,10 @@ package com.dimension.maskbook.wallet.handler
 import com.dimension.maskbook.common.ext.decodeJson
 import com.dimension.maskbook.common.ext.encodeBase64
 import com.dimension.maskbook.common.ext.encodeJson
+import com.dimension.maskbook.common.ext.normalized
 import com.dimension.maskbook.common.route.Navigator
 import com.dimension.maskbook.wallet.data.Web3Request
 import com.dimension.maskbook.wallet.db.model.CoinPlatformType
-import com.dimension.maskbook.wallet.ext.normalized
 import com.dimension.maskbook.wallet.repository.IWalletRepository
 import com.dimension.maskbook.wallet.repository.SendTokenConfirmData
 import com.dimension.maskbook.wallet.repository.SendTransactionData
@@ -177,7 +177,7 @@ internal class Web3MessageHandler(
     }
 }
 
-private fun <T> Web3SendResponse.Companion.success(request: Web3Request, result: T?): Map<String, Any> {
+private inline fun <reified T : Any> Web3SendResponse.Companion.success(request: Web3Request, result: T?): Map<String, Any> {
     requireNotNull(request.payload)
     return success(
         messageId = request.id,

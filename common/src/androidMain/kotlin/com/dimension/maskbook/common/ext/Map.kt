@@ -21,14 +21,14 @@
 package com.dimension.maskbook.common.ext
 
 import kotlinx.serialization.ExperimentalSerializationApi
-import kotlinx.serialization.properties.Properties
-import kotlinx.serialization.properties.decodeFromMap
-import kotlinx.serialization.properties.encodeToMap
+import kotlinx.serialization.json.decodeFromJsonElement
+import kotlinx.serialization.json.encodeToJsonElement
 
 @OptIn(ExperimentalSerializationApi::class)
-inline fun <reified T> T.toMap(): Map<String, Any> =
-    Properties.encodeToMap(this)
+@Suppress("UNCHECKED_CAST")
+inline fun <reified T : Any> T.encodeMap(): Map<String, Any> =
+    JSON.encodeToJsonElement(this).normalized as Map<String, Any>
 
 @OptIn(ExperimentalSerializationApi::class)
-inline fun <reified T> Map<String, Any>.fromMap(): T =
-    Properties.decodeFromMap(this)
+inline fun <reified T : Any> Map<String, Any>.decodeMap(): T =
+    JSON.decodeFromJsonElement(this.toJsonObject())

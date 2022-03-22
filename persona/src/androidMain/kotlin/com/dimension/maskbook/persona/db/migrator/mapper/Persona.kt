@@ -24,6 +24,7 @@ import com.dimension.maskbook.persona.db.model.DbLinkedProfileRecord
 import com.dimension.maskbook.persona.db.model.DbPersonaRecord
 import com.dimension.maskbook.persona.db.model.PersonaWithLinkedProfile
 import com.dimension.maskbook.persona.model.indexed.IndexedDBPersona
+import com.dimension.maskbook.persona.model.indexed.IndexedDBPersona.Key.Companion.fromJsonObject
 
 fun IndexedDBPersona.toDbPersonaRecord(): DbPersonaRecord {
     return DbPersonaRecord(
@@ -31,9 +32,9 @@ fun IndexedDBPersona.toDbPersonaRecord(): DbPersonaRecord {
         mnemonic = mnemonic?.words,
         path = mnemonic?.parameter?.path,
         withPassword = mnemonic?.parameter?.withPassword ?: false,
-        publicKey = publicKey,
-        privateKey = privateKey,
-        localKey = localKey,
+        publicKey = publicKey?.toJsonObject(),
+        privateKey = privateKey?.toJsonObject(),
+        localKey = localKey?.toJsonObject(),
         nickname = nickname,
         hasLogout = hasLogout,
         initialized = !uninitialized,
@@ -64,9 +65,9 @@ fun PersonaWithLinkedProfile.toIndexedDBPersona(): IndexedDBPersona {
                 withPassword = persona.withPassword ?: false,
             )
         ),
-        publicKey = persona.publicKey,
-        privateKey = persona.privateKey,
-        localKey = persona.localKey,
+        publicKey = persona.publicKey?.fromJsonObject(),
+        privateKey = persona.privateKey?.fromJsonObject(),
+        localKey = persona.localKey?.fromJsonObject(),
         nickname = persona.nickname,
         hasLogout = persona.hasLogout ?: false,
         uninitialized = persona.initialized?.not() ?: false,

@@ -20,9 +20,9 @@
  */
 package com.dimension.maskbook.wallet.handler
 
-import com.dimension.maskbook.common.ext.toResultMap
+import com.dimension.maskbook.common.ext.encodeMap
 import com.dimension.maskbook.extension.export.model.ExtensionId
-import com.dimension.maskbook.extension.export.model.ExtensionResponse
+import com.dimension.maskbook.extension.export.model.buildExtensionResponse
 
 class Web3SendResponse {
     @kotlinx.serialization.Serializable
@@ -32,42 +32,35 @@ class Web3SendResponse {
         val error: String,
     )
 
-    @kotlinx.serialization.Serializable
-    data class SuccessResult<T>(
-        val id: ExtensionId,
-        val jsonrpc: String,
-        val result: T?
-    )
-
     companion object {
-        fun <T> success(
+        inline fun <reified T : Any> success(
             messageId: ExtensionId,
             jsonrpc: String,
             payloadId: ExtensionId,
             result: T?
-        ) = ExtensionResponse(
+        ) = buildExtensionResponse(
             id = messageId,
             jsonrpc = jsonrpc,
-            result = SuccessResult(
+            result = buildExtensionResponse(
                 id = payloadId,
                 jsonrpc = jsonrpc,
                 result = result
             )
-        ).toResultMap()
+        )
 
         fun error(
             messageId: ExtensionId,
             jsonrpc: String,
             payloadId: ExtensionId,
             error: String
-        ) = ExtensionResponse(
+        ) = buildExtensionResponse(
             id = messageId,
             jsonrpc = jsonrpc,
             result = ErrorResult(
                 id = payloadId,
                 jsonrpc = jsonrpc,
                 error = error,
-            )
-        ).toResultMap()
+            ).encodeMap()
+        )
     }
 }

@@ -20,9 +20,19 @@
  */
 package com.dimension.maskbook.extension.export.model
 
-@kotlinx.serialization.Serializable
-data class ExtensionResponse<T>(
-    val id: ExtensionId,
-    val jsonrpc: String,
-    val result: T
-)
+// @kotlinx.serialization.Serializable
+// data class ExtensionResponse<T>(
+//     val id: ExtensionId,
+//     val jsonrpc: String,
+//     val result: T
+// )
+
+inline fun <reified T : Any> buildExtensionResponse(
+    id: ExtensionId,
+    jsonrpc: String,
+    result: T?,
+): Map<String, Any> = mapOf(
+    "id" to id.value,
+    "jsonrpc" to jsonrpc,
+    "result" to result
+).mapNotNull { if (it.value == null) null else it.key to it.value!! }.toMap()

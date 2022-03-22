@@ -37,6 +37,8 @@ class ExtensionId internal constructor(
     internal val intId: Int? = null,
     internal val stringId: String? = null,
 ) {
+    val value: Any?
+        get() = intId ?: stringId
     override fun toString(): String {
         if (intId != null) {
             return intId.toString()
