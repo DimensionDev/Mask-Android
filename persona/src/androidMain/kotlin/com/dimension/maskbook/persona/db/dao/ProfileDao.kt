@@ -55,7 +55,7 @@ interface ProfileDao {
     suspend fun updateAvatar(identifier: String, avatar: String)
 
     @Transaction
-    @Query("SELECT * FROM DbProfileRecord WHERE identifier in (SELECT profileIdentifier FROM DbLinkedProfileRecord WHERE personaIdentifier=:personaIdentifier)")
+    @Query("SELECT * FROM ProfileWithLinkedProfile WHERE personaIdentifier=:personaIdentifier")
     fun getListWithPersonaFlow(personaIdentifier: String): Flow<List<ProfileWithLinkedProfile>>
 
     @Query("DELETE FROM DbProfileRecord WHERE identifier=:identifier")

@@ -20,15 +20,33 @@
  */
 package com.dimension.maskbook.persona.db.model
 
-import androidx.room.Embedded
-import androidx.room.Relation
+import androidx.room.ColumnInfo
+import androidx.room.DatabaseView
+import androidx.room.TypeConverters
+import com.dimension.maskbook.persona.db.EncryptJsonObjectConverter
+import com.dimension.maskbook.persona.export.model.LinkedProfileDetailsState
+import com.dimension.maskbook.persona.export.model.Network
+import kotlinx.serialization.json.JsonObject
 
+@DatabaseView(
+    "SELECT profile.identifier, profile.nickname, profile.network, profile.avatar, " +
+        "profile.updatedAt, profile.createdAt, " +
+        "link.personaIdentifier, link.state, " +
+        "persona.localKeyRaw " +
+        "FROM DbProfileRecord profile " +
+        "INNER JOIN DbLinkedProfileRecord link ON link.profileIdentifier=profile.identifier " +
+        "INNER JOIN DbPersonaRecord persona ON persona.identifier=link.personaIdentifier"
+)
 data class ProfileWithLinkedProfile(
-    @Embedded
-    val profile: DbProfileRecord,
-    @Relation(
-        parentColumn = "identifier",
-        entityColumn = "profileIdentifier",
-    )
-    val linkedProfile: DbLinkedProfileRecord?,
+    val identifier: String,
+    val nickname: String? = null,
+    val network: Network? = null,
+    val avatar: String? = null,
+    val createdAt: Long = 0,
+    val updatedAt: Long = 0,
+    val personaIdentifier: String = "",
+    val state: LinkedProfileDetailsState = LinkedProfileDetailsState.Pending,
+    @TypeConverters(EncryptJsonObjectConverter::class)
+    @ColumnInfo(name = "localKeyRaw", typeAffinity = ColumnInfo.BLOB)
+    val localKey: JsonObject? = null,
 )

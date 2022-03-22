@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 3,
-    "identityHash": "452a4a84875b9c91828fedaaec4577dc",
+    "version": 5,
+    "identityHash": "145d423a4c00a4ff1d2a6891a939235f",
     "entities": [
       {
         "tableName": "DbPersonaRecord",
@@ -344,10 +344,19 @@
         "foreignKeys": []
       }
     ],
-    "views": [],
+    "views": [
+      {
+        "viewName": "ProfileWithLinkedProfile",
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT profile.identifier, profile.nickname, profile.network, profile.avatar, profile.updatedAt, profile.createdAt, link.personaIdentifier, link.state, persona.localKeyRaw FROM DbProfileRecord profile INNER JOIN DbLinkedProfileRecord link ON link.profileIdentifier=profile.identifier INNER JOIN DbPersonaRecord persona ON persona.identifier=link.personaIdentifier"
+      },
+      {
+        "viewName": "RelationWithProfile",
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT relation.personaIdentifier, relation.profileIdentifier, relation.favor, relation.updatedAt, relation.createdAt, profile.nickname, profile.network, link.personaIdentifier as linkedPersona, link.state FROM DbRelationRecord as relation INNER JOIN DbProfileRecord as profile ON profile.identifier=relation.profileIdentifier INNER JOIN DbLinkedProfileRecord as link ON link.profileIdentifier=relation.profileIdentifier"
+      }
+    ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '452a4a84875b9c91828fedaaec4577dc')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '145d423a4c00a4ff1d2a6891a939235f')"
     ]
   }
 }

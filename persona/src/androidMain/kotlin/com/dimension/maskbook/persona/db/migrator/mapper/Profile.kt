@@ -37,10 +37,11 @@ fun IndexedDBProfile.toDbProfileRecord(): DbProfileRecord {
 
 fun ProfileWithLinkedProfile.toIndexedDBProfile(): IndexedDBProfile {
     return IndexedDBProfile(
-        identifier = profile.identifier,
-        nickname = profile.nickname,
-        linkedPersona = linkedProfile?.personaIdentifier,
-        updatedAt = profile.updatedAt,
-        createdAt = profile.createdAt,
+        identifier = identifier,
+        nickname = nickname,
+        linkedPersona = personaIdentifier,
+        localKey = localKey,
+        updatedAt = updatedAt,
+        createdAt = createdAt,
     )
 }
