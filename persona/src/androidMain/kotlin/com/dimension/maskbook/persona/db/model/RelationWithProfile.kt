@@ -20,20 +20,27 @@
  */
 package com.dimension.maskbook.persona.db.model
 
-import androidx.room.Embedded
-import androidx.room.Relation
+import androidx.room.DatabaseView
+import com.dimension.maskbook.persona.export.model.LinkedProfileDetailsState
+import com.dimension.maskbook.persona.export.model.Network
 
+@DatabaseView(
+    "SELECT relation.personaIdentifier, relation.profileIdentifier, relation.favor, " +
+        "relation.updatedAt, relation.createdAt, " +
+        "profile.nickname, profile.network, " +
+        "link.personaIdentifier as linkedPersona, link.state " +
+        "FROM DbRelationRecord as relation " +
+        "INNER JOIN DbProfileRecord as profile ON profile.identifier=relation.profileIdentifier " +
+        "INNER JOIN DbLinkedProfileRecord as link ON link.profileIdentifier=relation.profileIdentifier"
+)
 data class RelationWithProfile(
-    @Embedded
-    val relation: DbRelationRecord,
-    @Relation(
-        parentColumn = "profileIdentifier",
-        entityColumn = "identifier",
-    )
-    val profile: DbProfileRecord,
-    @Relation(
-        parentColumn = "profileIdentifier",
-        entityColumn = "profileIdentifier",
-    )
-    val linkedProfile: DbLinkedProfileRecord?,
+    val personaIdentifier: String,
+    val profileIdentifier: String,
+    val favor: Boolean,
+    val createdAt: Long,
+    val updatedAt: Long,
+    val nickname: String? = null,
+    val network: Network? = null,
+    val linkedPersona: String = "",
+    val state: LinkedProfileDetailsState = LinkedProfileDetailsState.Pending,
 )

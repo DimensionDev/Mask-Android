@@ -25,7 +25,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.RawQuery
-import androidx.room.Transaction
 import androidx.sqlite.db.SupportSQLiteQuery
 import com.dimension.maskbook.persona.db.model.DbRelationRecord
 import com.dimension.maskbook.persona.db.model.RelationWithProfile
@@ -49,8 +48,7 @@ interface RelationDao {
         profileIdentifier: String,
     ): DbRelationRecord?
 
-    @Transaction
-    @Query("SELECT * FROM DbRelationRecord WHERE personaIdentifier=:personaIdentifier")
+    @Query("SELECT * FROM RelationWithProfile WHERE personaIdentifier=:personaIdentifier")
     fun getListFlow(personaIdentifier: String): Flow<List<RelationWithProfile>>
 
     @Query("UPDATE DbRelationRecord SET favor=:favor WHERE personaIdentifier=:personaIdentifier AND profileIdentifier=:profileIdentifier")

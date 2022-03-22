@@ -22,7 +22,6 @@ package com.dimension.maskbook.persona.repository
 
 import com.dimension.maskbook.persona.db.PersonaDatabase
 import com.dimension.maskbook.persona.db.model.RelationWithProfile
-import com.dimension.maskbook.persona.export.model.LinkedProfileDetailsState
 import com.dimension.maskbook.persona.export.model.Network
 import com.dimension.maskbook.persona.model.ContactData
 import kotlinx.coroutines.flow.Flow
@@ -45,10 +44,10 @@ class DbRelationRepository(database: PersonaDatabase) {
 
 fun RelationWithProfile.toContactData(): ContactData {
     return ContactData(
-        id = profile.identifier,
-        name = profile.nickname.orEmpty(),
-        personaId = relation.personaIdentifier,
-        linkedPersona = linkedProfile?.state == LinkedProfileDetailsState.Confirmed,
-        network = profile.network ?: Network.Twitter,
+        id = profileIdentifier,
+        name = nickname.orEmpty(),
+        personaId = personaIdentifier,
+        linkedPersona = state.isLinked(),
+        network = network ?: Network.Twitter,
     )
 }

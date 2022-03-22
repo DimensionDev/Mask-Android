@@ -38,6 +38,7 @@ import com.dimension.maskbook.persona.db.model.DbPersonaRecord
 import com.dimension.maskbook.persona.db.model.DbPostRecord
 import com.dimension.maskbook.persona.db.model.DbProfileRecord
 import com.dimension.maskbook.persona.db.model.DbRelationRecord
+import com.dimension.maskbook.persona.db.model.RelationWithProfile
 import com.dimension.maskbook.persona.export.model.LinkedProfileDetailsState
 import com.dimension.maskbook.persona.export.model.Network
 import kotlinx.serialization.json.JsonObject
@@ -50,7 +51,10 @@ import kotlinx.serialization.json.JsonObject
         DbLinkedProfileRecord::class,
         DbPostRecord::class,
     ],
-    version = 3,
+    views = [
+        RelationWithProfile::class,
+    ],
+    version = 4,
 )
 @TypeConverters(
     JsonObjectConverter::class,

@@ -32,4 +32,8 @@ enum class LinkedProfileDetailsState {
 
     @SerialName("denied")
     Denied;
+
+    fun isLinked(): Boolean {
+        return this === Confirmed
+    }
 }
