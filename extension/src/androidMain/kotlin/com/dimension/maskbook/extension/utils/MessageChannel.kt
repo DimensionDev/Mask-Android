@@ -21,17 +21,17 @@
 package com.dimension.maskbook.extension.utils
 
 import com.dimension.maskbook.common.gecko.WebContentController
+import com.dimension.maskbook.extension.export.model.ExtensionId
 import com.dimension.maskbook.extension.export.model.ExtensionMessage
-import com.dimension.maskbook.extension.export.model.ExtensionResponseMessage
-import com.dimension.maskbook.extension.ext.toMap
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.serialization.ExperimentalSerializationApi
 import org.json.JSONObject
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
@@ -41,7 +41,6 @@ internal class MessageChannel(
     private val scope: CoroutineScope,
 ) {
     private val queue = ConcurrentHashMap<String, Channel<String?>>()
-    private val subscription = arrayListOf<Pair<String, MutableStateFlow<ExtensionMessage?>>>()
 
     private val _extensionMessage = MutableSharedFlow<ExtensionMessage>(extraBufferCapacity = 50)
     val extensionMessage: Flow<ExtensionMessage> = _extensionMessage.asSharedFlow()
@@ -52,12 +51,9 @@ internal class MessageChannel(
             .launchIn(scope)
     }
 
-    fun sendResponseMessage(message: ExtensionResponseMessage) {
-        controller.sendMessage(JSONObject(message.toMap()))
-    }
-
-    fun sendResponseMessageRaw(dataRaw: String) {
-        controller.sendMessage(JSONObject(dataRaw))
+    @OptIn(ExperimentalSerializationApi::class)
+    fun sendResponseMessage(map: Map<String, Any>) {
+        controller.sendMessage(JSONObject(map))
     }
 
     suspend fun executeMessage(
@@ -91,10 +87,8 @@ internal class MessageChannel(
         }
     }
 
-    fun subscribeMessage(method: String): Flow<ExtensionMessage?> {
-        val flow = MutableStateFlow<ExtensionMessage?>(null)
-        subscription.add(method to flow)
-        return flow
+    fun subscribeMessage(vararg method: String): Flow<ExtensionMessage?> {
+        return _extensionMessage.filter { it.method in method }
     }
 
     private fun onMessage(jsonObject: JSONObject) {
@@ -121,26 +115,13 @@ internal class MessageChannel(
                 jsonObject.getString("jsonrpc")
             }.getOrDefault("2.0")
             if (method != null) {
-                if (subscription.any { it.first == method }) {
-                    subscription.filter { it.first == method }.forEach { pair ->
-                        pair.second.value = ExtensionMessage(
-                            id = messageId ?: "",
-                            jsonrpc = jsonrpc,
-                            method = method,
-                            params = params,
-                            onResponse = { sendResponseMessage(it) },
-                            onResponseRaw = { sendResponseMessageRaw(it) },
-                        )
-                    }
-                }
                 _extensionMessage.tryEmit(
                     ExtensionMessage(
-                        id = messageId ?: "",
+                        id = ExtensionId.fromAny(messageId),
                         jsonrpc = jsonrpc,
                         method = method,
                         params = params,
                         onResponse = { sendResponseMessage(it) },
-                        onResponseRaw = { sendResponseMessageRaw(it) },
                     )
                 )
             }

@@ -21,7 +21,6 @@
 package com.dimension.maskbook.extension.export
 
 import com.dimension.maskbook.extension.export.model.ExtensionMessage
-import com.dimension.maskbook.extension.export.model.ExtensionResponseMessage
 import com.dimension.maskbook.extension.export.model.Site
 import kotlinx.coroutines.flow.Flow
 
@@ -31,8 +30,7 @@ interface ExtensionServices {
     val isExtensionActive: Flow<Boolean>
     suspend fun ensureExtensionActive()
     suspend fun runJSMethod(method: String, isWait: Boolean, vararg args: Pair<String, Any>): String?
-    fun sendJSEventResponse(response: ExtensionResponseMessage)
-    fun sendJSEventResponseRaw(responseRaw: String)
+    fun sendJSEventResponse(map: Map<String, Any>)
     val extensionMessage: Flow<ExtensionMessage>
-    fun subscribeJSEvent(method: String): Flow<ExtensionMessage>
+    fun subscribeJSEvent(vararg method: String): Flow<ExtensionMessage>
 }

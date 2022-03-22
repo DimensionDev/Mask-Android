@@ -21,18 +21,13 @@
 package com.dimension.maskbook.extension.export.model
 
 data class ExtensionMessage(
-    val id: Any,
+    val id: ExtensionId,
     val jsonrpc: String,
     val method: String,
     val params: String?,
-    private val onResponse: (ExtensionResponseMessage) -> Unit = {},
-    private val onResponseRaw: (String) -> Unit = {},
+    private val onResponse: (Map<String, Any>) -> Unit = {},
 ) {
-    fun response(response: ExtensionResponseMessage) {
-        onResponse.invoke(response)
-    }
-
-    fun responseRaw(jsonData: String) {
-        onResponseRaw.invoke(jsonData)
+    fun response(message: Map<String, Any>) {
+        onResponse.invoke(message)
     }
 }

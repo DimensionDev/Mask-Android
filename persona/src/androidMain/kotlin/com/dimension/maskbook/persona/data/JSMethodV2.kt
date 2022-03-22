@@ -20,11 +20,13 @@
  */
 package com.dimension.maskbook.persona.data
 
+import com.dimension.maskbook.common.ext.JSON
 import com.dimension.maskbook.common.ext.decodeJson
-import com.dimension.maskbook.common.ext.encodeJson
 import com.dimension.maskbook.common.ext.execute
+import com.dimension.maskbook.common.ext.normalized
 import com.dimension.maskbook.extension.export.ExtensionServices
 import com.dimension.maskbook.extension.export.model.ExtensionMessage
+import com.dimension.maskbook.extension.export.model.buildExtensionResponse
 import com.dimension.maskbook.persona.db.PersonaDatabase
 import com.dimension.maskbook.persona.db.migrator.IndexedDBDataMigrator
 import com.dimension.maskbook.persona.model.indexed.IndexedDBAllRecord
@@ -63,7 +65,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.encodeToJsonElement
 
 class JSMethodV2(
     private val scope: CoroutineScope,
@@ -257,20 +259,17 @@ private inline fun <reified T> ExtensionMessage.decodeOptions(): T? {
     return params?.decodeJson<T>()
 }
 
-private inline fun <reified T> ExtensionMessage.responseSuccess(result: T?): Boolean {
-    responseRaw(
-        SerializableExtensionResponseMessage(
-            messageId = id.toString(),
+private inline fun <reified T : Any> ExtensionMessage.responseSuccess(result: T?): Boolean {
+    response(
+        buildExtensionResponse(
+            id = id,
             jsonrpc = jsonrpc,
-            result = result,
-        ).encodeJson()
+            result = wrapResult(result),
+        )
     )
     return true
 }
 
-@Serializable
-private data class SerializableExtensionResponseMessage<T>(
-    val messageId: String,
-    val jsonrpc: String,
-    val result: T?
-)
+private inline fun <reified T : Any> wrapResult(result: T?): Any? {
+    return JSON.encodeToJsonElement(result).normalized
+}

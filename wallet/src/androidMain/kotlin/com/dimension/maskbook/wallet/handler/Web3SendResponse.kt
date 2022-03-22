@@ -18,46 +18,41 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.extension.export.model
+package com.dimension.maskbook.wallet.handler
 
-data class ExtensionResponseMessage(
-    val id: Any,
-    val jsonrpc: String,
-    val result: ExtensionResponse
-) {
+import com.dimension.maskbook.extension.export.model.ExtensionId
+import com.dimension.maskbook.extension.export.model.buildExtensionResponse
+
+class Web3SendResponse {
     companion object {
-        fun <T> success(
-            messageId: Any,
+        inline fun <reified T : Any> success(
+            messageId: ExtensionId,
             jsonrpc: String,
-            payloadId: Any,
+            payloadId: ExtensionId,
             result: T?
-        ): ExtensionResponseMessage {
-            return ExtensionResponseMessage(
-                id = messageId,
+        ) = buildExtensionResponse(
+            id = messageId,
+            jsonrpc = jsonrpc,
+            result = buildExtensionResponse(
+                id = payloadId,
                 jsonrpc = jsonrpc,
-                result = SuccessResult(
-                    id = payloadId,
-                    jsonrpc = jsonrpc,
-                    result = result
-                )
+                result = result
             )
-        }
+        )
 
         fun error(
-            messageId: Any,
+            messageId: ExtensionId,
             jsonrpc: String,
-            payloadId: Any,
+            payloadId: ExtensionId,
             error: String
-        ): ExtensionResponseMessage {
-            return ExtensionResponseMessage(
-                id = messageId,
-                jsonrpc = jsonrpc,
-                result = ErrorResult(
-                    id = payloadId,
-                    jsonrpc = jsonrpc,
-                    error = error,
-                )
+        ) = buildExtensionResponse(
+            id = messageId,
+            jsonrpc = jsonrpc,
+            result = mapOf(
+                "id" to payloadId.value,
+                "jsonrpc" to jsonrpc,
+                "error" to error
             )
-        }
+        )
     }
 }
