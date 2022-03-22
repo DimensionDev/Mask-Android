@@ -29,7 +29,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
@@ -66,6 +68,7 @@ import com.dimension.maskbook.wallet.ui.scenes.wallets.UnlockWalletDialog
 import com.dimension.maskbook.wallet.ui.scenes.wallets.WalletQrcodeScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.collectible.CollectibleDetailScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.common.MultiChainWalletDialog
+import com.dimension.maskbook.wallet.ui.scenes.wallets.common.WalletIntroHostLegalDispatcher
 import com.dimension.maskbook.wallet.ui.scenes.wallets.create.CreateOrImportWalletScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.create.CreateType
 import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.LegalScene
@@ -214,12 +217,14 @@ fun TokenDetail(
 fun SwitchWalletAdd(
     navController: NavController,
 ) {
+    var type by remember { mutableStateOf<String?>(null) }
+    WalletIntroHostLegalDispatcher(navController, type)
     WalletSwitchAddModal(
         onCreate = {
-            navController.navigate(WalletRoute.WalletIntroHostLegal(CreateType.CREATE.name))
+            type = CreateType.CREATE.name
         },
         onImport = {
-            navController.navigate(WalletRoute.WalletIntroHostLegal(CreateType.IMPORT.name))
+            type = CreateType.IMPORT.name
         },
     )
 }
