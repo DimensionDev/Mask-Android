@@ -38,7 +38,6 @@ data class IndexedDBPersona(
     val createdAt: Long = 0,
     val updatedAt: Long = 0,
 ) {
-
     @Serializable
     data class LinkedProfileDetails(
         val connectionConfirmState: LinkedProfileDetailsState
