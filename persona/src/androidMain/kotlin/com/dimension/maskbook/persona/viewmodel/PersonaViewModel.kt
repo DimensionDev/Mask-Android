@@ -23,6 +23,7 @@ package com.dimension.maskbook.persona.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
+import com.dimension.maskbook.persona.export.model.PersonaData
 import com.dimension.maskbook.persona.repository.IPersonaRepository
 import com.dimension.maskbook.persona.repository.ISocialsRepository
 import kotlinx.coroutines.Dispatchers
@@ -38,6 +39,10 @@ class PersonaViewModel(
         personaRepository.currentPersona
             .asStateIn(viewModelScope, null)
     }
+    val personaList by lazy {
+        personaRepository.personaList
+            .asStateIn(viewModelScope, null)
+    }
 
     val socialList by lazy {
         socialRepository.socials
@@ -50,5 +55,9 @@ class PersonaViewModel(
     }
 
     private fun loadPersona() = viewModelScope.launch {
+    }
+
+    fun setCurrentPersona(it: PersonaData) {
+        personaRepository.setCurrentPersona(it.identifier)
     }
 }

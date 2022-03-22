@@ -69,6 +69,9 @@ internal class PersonaRepository(
             personaRepository.getPersonaFlow(it)
         }
 
+    override val personaList: Flow<List<PersonaData>>
+        get() = personaRepository.getPersonaListFlow()
+
     @OptIn(ExperimentalCoroutinesApi::class)
     override val socials: Flow<List<SocialData>>
         get() = preferenceRepository.currentPersonaIdentifier.flatMapLatest {

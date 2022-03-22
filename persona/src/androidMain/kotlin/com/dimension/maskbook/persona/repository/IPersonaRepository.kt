@@ -28,6 +28,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface IPersonaRepository {
     val currentPersona: Flow<PersonaData?>
+    val personaList: Flow<List<PersonaData>>
     suspend fun hasPersona(): Boolean
     fun beginConnectingProcess(
         personaId: String,

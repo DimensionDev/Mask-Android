@@ -21,37 +21,27 @@
 package com.dimension.maskbook.persona.ui.scenes
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.dimension.maskbook.common.ui.widget.TipMessageDialog
 import com.dimension.maskbook.common.ui.widget.button.MaskGridButton
 import com.dimension.maskbook.common.ui.widget.itemsGridIndexed
 import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.export.model.Network
 import com.dimension.maskbook.persona.model.icon
 import com.dimension.maskbook.persona.model.title
-import com.dimension.maskbook.persona.repository.IPreferenceRepository
-import org.koin.androidx.compose.get
 
 private class ConnectData(
     val enable: Boolean,
@@ -77,54 +67,29 @@ private val showList = listOf(
     )
 )
 
-@Composable
-fun EmptySocialScene(
+fun LazyListScope.EmptySocialScene(
     onItemClick: (Network) -> Unit
 ) {
-    val preferenceRepository = get<IPreferenceRepository>()
-    val shouldShowEmptySocialTipDialog by preferenceRepository.shouldShowEmptySocialTipDialog.collectAsState(initial = false)
-
-    Box(Modifier.fillMaxSize()) {
-        LazyColumn(
-            contentPadding = PaddingValues(
-                horizontal = PersonaEmptySceneDefaults.contentHorizontalPadding,
-                vertical = PersonaEmptySceneDefaults.contentVerticalPadding,
-            ),
-            verticalArrangement = Arrangement.spacedBy(PersonaEmptySceneDefaults.itemPadding),
-        ) {
-            item {
-                Text(
-                    text = stringResource(R.string.scene_persona_empty_connect_social),
-                    style = MaterialTheme.typography.h5,
-                )
-            }
-            itemsGridIndexed(
-                data = showList,
-                spacing = PersonaEmptySceneDefaults.itemPadding,
-                rowSize = 3,
-            ) { _, item ->
-                ConnectItem(
-                    item = item,
-                    onItemClick = { onItemClick(item.network) }
-                )
-            }
-        }
-        if (shouldShowEmptySocialTipDialog) {
-            TipMessageDialog(
-                modifier = Modifier
-                    .padding(horizontal = 22.5f.dp, vertical = 24.dp)
-                    .align(Alignment.BottomCenter),
-                onClose = {
-                    preferenceRepository.setShowEmptySocialTipDialog(false)
-                },
-                text = {
-                    Text(
-                        text = stringResource(R.string.scene_persona_empty_message_tips),
-                        color = Color.White,
-                    )
-                }
-            )
-        }
+    item {
+        Text(
+            modifier = Modifier.padding(horizontal = 20.dp),
+            text = stringResource(R.string.scene_persona_empty_connect_social),
+            style = MaterialTheme.typography.h5,
+        )
+    }
+    item {
+        Spacer(Modifier.height(PersonaEmptySceneDefaults.itemPadding))
+    }
+    itemsGridIndexed(
+        data = showList,
+        spacing = PersonaEmptySceneDefaults.itemPadding,
+        rowSize = 3,
+        padding = 20.dp,
+    ) { _, item ->
+        ConnectItem(
+            item = item,
+            onItemClick = { onItemClick(item.network) }
+        )
     }
 }
 

@@ -20,35 +20,69 @@
  */
 package com.dimension.maskbook.persona.ui.scenes
 
+import android.content.Intent
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ContentAlpha
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Tab
 import androidx.compose.material.TabRow
 import androidx.compose.material.TabRowDefaults
 import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material.Text
+import androidx.compose.material.contentColorFor
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.lerp
+import androidx.compose.ui.zIndex
+import com.dimension.maskbook.common.ui.widget.MaskCard
+import com.dimension.maskbook.common.ui.widget.MaskListItem
+import com.dimension.maskbook.common.ui.widget.TipMessageDialog
+import com.dimension.maskbook.common.ui.widget.button.MaskIconButton
+import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.export.model.Network
+import com.dimension.maskbook.persona.export.model.PersonaData
 import com.dimension.maskbook.persona.export.model.SocialData
+import com.dimension.maskbook.persona.repository.IPreferenceRepository
 import com.dimension.maskbook.persona.ui.scenes.contacts.ContactsScene
 import com.dimension.maskbook.persona.ui.scenes.post.PostScene
 import com.dimension.maskbook.persona.ui.scenes.social.SocialScene
+import com.dimension.maskbook.persona.viewmodel.contacts.ContactsViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.calculateCurrentOffsetForPage
 import com.google.accompanist.pager.rememberPagerState
-import kotlinx.coroutines.launch
+import org.koin.androidx.compose.get
+import org.koin.androidx.compose.getViewModel
+import kotlin.math.absoluteValue
 
 private enum class PersonaInfoData(val title: String) {
     Social(
@@ -67,80 +101,279 @@ private val items = listOf(
     PersonaInfoData.Contacts,
 )
 
-@OptIn(ExperimentalPagerApi::class)
+@OptIn(ExperimentalPagerApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun PersonaInfoScene(
     socialList: List<SocialData>,
+    currentPersona: PersonaData?,
+    personaList: List<PersonaData>,
+    onCurrentPersonaChanged: (PersonaData) -> Unit,
+    onPersonaNameClick: () -> Unit,
     onAddSocialClick: (Network?) -> Unit,
     onSocialItemClick: (SocialData, isEditing: Boolean) -> Unit,
 ) {
-    if (socialList.isEmpty()) {
-        EmptySocialScene(
-            onItemClick = { onAddSocialClick(it) }
-        )
-        return
+    Box(
+        modifier = Modifier.fillMaxSize(),
+    ) {
+        var searchOnly by remember { mutableStateOf(false) }
+        var selectedScene by remember { mutableStateOf(PersonaInfoData.Social) }
+        var isEditing by rememberSaveable { mutableStateOf(false) }
+        val finalSocialList = remember(socialList) {
+            listOf(null) + socialList
+        }
+        LaunchedEffect(currentPersona) {
+            isEditing = false
+            selectedScene = PersonaInfoData.Social
+        }
+
+        val context = LocalContext.current
+
+        val viewModel: ContactsViewModel = getViewModel()
+        val contactItems by viewModel.items.collectAsState()
+        val searchInput by viewModel.input.collectAsState()
+
+        fun onInvite() {
+            context.startActivity(
+                Intent().apply {
+                    action = Intent.ACTION_SEND
+                    putExtra(
+                        Intent.EXTRA_TEXT,
+                        "${context.resources.getText(R.string.scene_share_shareLink)}\nhttps://mask.io/download-links/"
+                    )
+                    type = "text/plain"
+                }
+            )
+        }
+
+        LazyColumn {
+            if (!searchOnly) {
+                item {
+                    PersonaHeader(
+                        currentPersona,
+                        personaList,
+                        onCurrentPersonaChanged,
+                        onPersonaNameClick,
+                    )
+                }
+            }
+            if (socialList.isEmpty()) {
+                EmptySocialScene(
+                    onItemClick = { onAddSocialClick(it) }
+                )
+            } else {
+                if (!searchOnly) {
+
+                    stickyHeader {
+                        TabRow(
+                            modifier = Modifier
+                                .padding(horizontal = 20.dp)
+                                .clip(RoundedCornerShape(8.dp)),
+                            selectedTabIndex = items.indexOf(selectedScene),
+                            backgroundColor = MaterialTheme.colors.onBackground.copy(alpha = 0.04f),
+                            divider = {
+                                TabRowDefaults.Divider(thickness = 0.dp)
+                            },
+                            indicator = { tabPositions ->
+                                Box(
+                                    Modifier
+                                        .tabIndicatorOffset(tabPositions[items.indexOf(selectedScene)])
+                                        .fillMaxSize()
+                                        .padding(4.dp)
+                                        .zIndex(-1f),
+                                ) {
+                                    Spacer(
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .background(
+                                                color = MaterialTheme.colors.surface,
+                                                shape = RoundedCornerShape(8.dp)
+                                            )
+                                    )
+                                }
+                            },
+                            tabs = {
+                                items.forEach { data ->
+                                    Tab(
+                                        selected = data == selectedScene,
+                                        text = { Text(data.title) },
+                                        onClick = {
+                                            selectedScene = data
+                                        },
+                                        selectedContentColor = MaterialTheme.colors.primary,
+                                        unselectedContentColor = MaterialTheme.colors.onBackground.copy(
+                                            alpha = ContentAlpha.medium
+                                        ),
+                                    )
+                                }
+                            }
+                        )
+                    }
+                }
+                when (selectedScene) {
+                    PersonaInfoData.Social -> {
+                        SocialScene(
+                            socialList = finalSocialList,
+                            isEditing = isEditing,
+                            setIsEditing = { isEditing = it },
+                            onAddSocialClick = { onAddSocialClick(null) },
+                            onItemClick = onSocialItemClick,
+                        )
+                    }
+                    PersonaInfoData.Contacts -> {
+                        ContactsScene(
+                            items = contactItems,
+                            input = searchInput,
+                            onSearchInputChanged = { viewModel.onInputChanged(it) },
+                            onInvite = { onInvite() },
+                            onSearchFocusChanged = { searchOnly = it }
+                        )
+                    }
+                    PersonaInfoData.Post -> {
+                        item {
+                            PostScene()
+                        }
+                    }
+                }
+            }
+        }
+
+        val preferenceRepository = get<IPreferenceRepository>()
+        val shouldShowEmptySocialTipDialog by preferenceRepository.shouldShowEmptySocialTipDialog.collectAsState(initial = false)
+
+        if (shouldShowEmptySocialTipDialog && selectedScene == PersonaInfoData.Social) {
+            TipMessageDialog(
+                modifier = Modifier
+                    .padding(horizontal = 22.5f.dp, vertical = 24.dp)
+                    .align(Alignment.BottomCenter),
+                onClose = {
+                    preferenceRepository.setShowEmptySocialTipDialog(false)
+                },
+                text = {
+                    Text(
+                        text = stringResource(R.string.scene_persona_empty_message_tips),
+                        color = Color.White,
+                    )
+                }
+            )
+        }
+
+        val shouldShowContactsTipDialog by preferenceRepository.shouldShowContactsTipDialog.collectAsState(initial = false)
+
+        if (shouldShowContactsTipDialog && selectedScene == PersonaInfoData.Contacts) {
+            TipMessageDialog(
+                modifier = Modifier
+                    .padding(horizontal = 22.5f.dp, vertical = 24.dp)
+                    .align(Alignment.BottomCenter),
+                onClose = {
+                    preferenceRepository.setShowContactsTipDialog(false)
+                },
+                text = {
+                    Text(
+                        text = stringResource(R.string.scene_persona_contacts_message_tips),
+                        color = Color.White,
+                    )
+                }
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalPagerApi::class)
+@Composable
+private fun PersonaHeader(
+    currentPersona: PersonaData?,
+    personaList: List<PersonaData>,
+    onCurrentPersonaChanged: (PersonaData) -> Unit,
+    onPersonaNameClick: () -> Unit,
+) {
+    val pagerState = rememberPagerState()
+    LaunchedEffect(personaList, currentPersona, pagerState.pageCount) {
+        if (pagerState.pageCount > 0) {
+            pagerState.scrollToPage(
+                minOf(
+                    pagerState.pageCount - 1,
+                    personaList.indexOf(currentPersona).coerceAtLeast(0)
+                )
+            )
+        }
+    }
+    LaunchedEffect(pagerState.currentPage) {
+        if (personaList.isNotEmpty()) {
+            onCurrentPersonaChanged.invoke(personaList[pagerState.currentPage])
+        }
     }
 
-    val pagerState = rememberPagerState()
-    val scope = rememberCoroutineScope()
-    Column {
-        TabRow(
-            modifier = Modifier.shadow(16.dp, clip = false),
-            selectedTabIndex = pagerState.currentPage,
-            backgroundColor = MaterialTheme.colors.background,
-            divider = {
-                TabRowDefaults.Divider(thickness = 0.dp)
-            },
-            indicator = { tabPositions ->
-                Box(
-                    Modifier
-                        .tabIndicatorOffset(tabPositions[pagerState.currentPage])
-                        .height(15.dp), // 12(bottomPadding) + 3(height)
-                    contentAlignment = Alignment.TopCenter,
-                ) {
-                    Spacer(
-                        modifier = Modifier
-                            .fillMaxWidth(0.1f)
-                            .height(3.dp)
-                            .background(
-                                color = MaterialTheme.colors.primary,
-                                shape = CircleShape,
-                            )
-                    )
+    val selectBackgroundColor = MaterialTheme.colors.primary
+    val unSelectBackgroundColor = MaterialTheme.colors.primary
+    val selectContentColor = contentColorFor(selectBackgroundColor)
+    val unSelectContentColor = contentColorFor(unSelectBackgroundColor)
+
+    HorizontalPager(
+        state = pagerState,
+        count = personaList.size,
+        contentPadding = PaddingValues(20.dp),
+    ) { page ->
+        var backgroundColor by remember { mutableStateOf(selectBackgroundColor) }
+        var contentColor by remember { mutableStateOf(selectContentColor) }
+        MaskCard(
+            modifier = Modifier
+                .graphicsLayer {
+                    val pageOffset = calculateCurrentOffsetForPage(page).absoluteValue
+                    lerp(
+                        start = 0.9f,
+                        stop = 1f,
+                        fraction = 1f - pageOffset.coerceIn(0f, 1f)
+                    ).also { scale ->
+                        scaleX = scale
+                        scaleY = scale
+                    }
+                    lerp(
+                        start = unSelectBackgroundColor,
+                        stop = selectBackgroundColor,
+                        fraction = 1f - pageOffset.coerceIn(0f, 1f)
+                    ).also { color ->
+                        backgroundColor = color
+                    }
+                    lerp(
+                        start = unSelectContentColor,
+                        stop = selectContentColor,
+                        fraction = 1f - pageOffset.coerceIn(0f, 1f)
+                    ).also { color ->
+                        contentColor = color
+                    }
                 }
-            },
-            tabs = {
-                items.forEachIndexed { index, data ->
-                    Tab(
-                        selected = index == pagerState.currentPage,
-                        text = { Text(data.title) },
-                        onClick = {
-                            scope.launch {
-                                pagerState.scrollToPage(index)
-                            }
-                        },
-                        selectedContentColor = MaterialTheme.colors.primary,
-                        unselectedContentColor = MaterialTheme.colors.onBackground.copy(
-                            alpha = ContentAlpha.medium
-                        ),
-                        modifier = Modifier.height(56.dp),
+                .fillMaxWidth(),
+            backgroundColor = backgroundColor,
+            elevation = 0.dp,
+            contentColor = contentColor,
+        ) {
+            val item = personaList.getOrNull(page)
+            MaskListItem(
+                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 16.dp),
+                text = {
+                    Text(text = item?.name ?: "", style = MaterialTheme.typography.button)
+                },
+                secondaryText = {
+                    Text(
+                        text = item?.identifier ?: "",
+                        style = MaterialTheme.typography.body2,
+                        maxLines = 2,
+                        color = contentColor,
                     )
+                },
+                icon = {
+                    Icon(
+                        Icons.Default.AccountCircle,
+                        contentDescription = null,
+                        modifier = Modifier.size(56.dp),
+                    )
+                },
+                trailing = {
+                    MaskIconButton(onClick = onPersonaNameClick) {
+                        Icon(Icons.Default.MoreHoriz, contentDescription = null)
+                    }
                 }
-            }
-        )
-        HorizontalPager(
-            count = items.size,
-            state = pagerState,
-        ) { page ->
-            when (items[page]) {
-                PersonaInfoData.Social -> SocialScene(
-                    socialList = socialList,
-                    onAddSocialClick = { onAddSocialClick(null) },
-                    onItemClick = onSocialItemClick,
-                )
-                PersonaInfoData.Contacts -> ContactsScene()
-                PersonaInfoData.Post -> PostScene()
-            }
+            )
         }
     }
 }
