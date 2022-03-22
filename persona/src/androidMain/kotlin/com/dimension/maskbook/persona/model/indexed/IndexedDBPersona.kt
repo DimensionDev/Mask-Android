@@ -20,10 +20,7 @@
  */
 package com.dimension.maskbook.persona.model.indexed
 
-import com.dimension.maskbook.common.ext.decodeJson
-import com.dimension.maskbook.common.ext.encodeJson
 import com.dimension.maskbook.persona.export.model.LinkedProfileDetailsState
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonObject
 
@@ -32,38 +29,15 @@ data class IndexedDBPersona(
     val identifier: String,
     val linkedProfiles: Map<String, LinkedProfileDetails>,
     val nickname: String? = null,
-    val privateKey: Key? = null,
-    val publicKey: Key? = null,
-    val localKey: Key? = null,
+    val privateKey: JsonObject? = null,
+    val publicKey: JsonObject? = null,
+    val localKey: JsonObject? = null,
     val mnemonic: Mnemonic? = null,
     val hasLogout: Boolean = false,
     val uninitialized: Boolean = false,
     val createdAt: Long = 0,
     val updatedAt: Long = 0,
 ) {
-
-    @Serializable
-    data class Key(
-        val crv: String? = null,
-        val ext: Boolean? = null,
-        val x: String? = null,
-        val y: String? = null,
-        @SerialName("key_ops")
-        val keyOps: List<String>? = null,
-        val kty: String? = null,
-        val d: String? = null,
-        val alg: String? = null,
-        val k: String? = null,
-    ) {
-        companion object {
-            fun JsonObject.fromJsonObject(): Key {
-                return this.toString().decodeJson()
-            }
-        }
-        fun toJsonObject(): JsonObject {
-            return this.encodeJson().decodeJson()
-        }
-    }
 
     @Serializable
     data class LinkedProfileDetails(

@@ -20,13 +20,6 @@
  */
 package com.dimension.maskbook.extension.export.model
 
-// @kotlinx.serialization.Serializable
-// data class ExtensionResponse<T>(
-//     val id: ExtensionId,
-//     val jsonrpc: String,
-//     val result: T
-// )
-
 inline fun <reified T : Any> buildExtensionResponse(
     id: ExtensionId,
     jsonrpc: String,

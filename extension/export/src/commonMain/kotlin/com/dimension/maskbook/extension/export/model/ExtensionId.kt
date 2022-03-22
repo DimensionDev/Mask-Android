@@ -45,7 +45,7 @@ class ExtensionId internal constructor(
         } else if (stringId != null) {
             return stringId
         }
-        return ""
+        return "null"
     }
 
     companion object {
