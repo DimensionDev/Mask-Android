@@ -29,16 +29,10 @@ fun buildQueryPostSql(
     userIds: List<String>? = null,
     network: String? = null,
     pageOptions: PageOptions? = null
-) = buildString {
-    append("SELECT * FROM $dbName ")
-    buildWhereSql(
-        encryptBy = encryptBy,
-        userIds = userIds,
-        network = network,
-    ).let {
-        append("WHERE $it ")
-    }
-    pageOptions?.let {
-        append(it.asLimitSql())
-    }
-}
+) = buildQuerySql(
+    dbName = dbName,
+    encryptBy = encryptBy,
+    userIds = userIds,
+    network = network,
+    pageOptions = pageOptions,
+)

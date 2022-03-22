@@ -75,9 +75,6 @@ interface PersonaDao {
     @Query("SELECT COUNT(1) FROM DbPersonaRecord WHERE identifier=:identifier LIMIT 1")
     suspend fun count(identifier: String): Int
 
-    @Query("SELECT COUNT(1) FROM DbPersonaRecord WHERE mnemonic=:mnemonic LIMIT 1")
-    suspend fun countOfMnemonic(mnemonic: String): Int
-
     @Query("SELECT COUNT(1) FROM DbPersonaRecord LIMIT 1")
     suspend fun count(): Int
 }

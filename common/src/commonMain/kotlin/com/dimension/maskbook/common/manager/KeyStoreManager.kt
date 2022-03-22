@@ -18,16 +18,11 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.persona.db
+package com.dimension.maskbook.common.manager
 
-import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
+expect class KeyStoreManager {
 
-object RoomMigrations {
-    val MIGRATION_1_2 get() = object : Migration(1, 2) {
-        override fun migrate(database: SupportSQLiteDatabase) {
-            database.execSQL("ALTER TABLE DbPersonaRecord ADD COLUMN `email` TEXT DEFAULT '' NOT NULL")
-            database.execSQL("ALTER TABLE DbPersonaRecord ADD COLUMN `phone` TEXT DEFAULT '' NOT NULL")
-        }
-    }
+    fun encryptData(plainText: ByteArray): ByteArray
+
+    fun decryptData(cipherText: ByteArray): ByteArray
 }

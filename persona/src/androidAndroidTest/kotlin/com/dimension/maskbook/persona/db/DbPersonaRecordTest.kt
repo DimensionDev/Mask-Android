@@ -22,12 +22,10 @@ package com.dimension.maskbook.persona.db
 
 import com.dimension.maskbook.persona.db.base.PersonaDatabaseTest
 import com.dimension.maskbook.persona.db.dao.PersonaDao
-import com.dimension.maskbook.persona.db.sql.asSqlQuery
 import com.dimension.maskbook.persona.db.sql.buildQueryPersonasSql
 import com.dimension.maskbook.persona.mock.model.mockDbPersonaRecord
 import com.dimension.maskbook.persona.model.options.PageOptions
 import kotlin.test.Test
-import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
@@ -89,25 +87,51 @@ class DbPersonaRecordTest : PersonaDatabaseTest() {
             includeLogout = false,
             pageOptions = PageOptions(0, 2)
         )
-        var list = personaDao.findListRaw(query.asSqlQuery())
+        var list = personaDao.findListRaw(query)
         assertEquals(list.size, 2)
-        assertContains(list, persona1)
-        assertContains(list, persona3)
+        assert(list.any { it.persona == persona1 })
+        assert(list.any { it.persona == persona3 })
 
         query = buildQueryPersonasSql(
             includeLogout = false,
             pageOptions = PageOptions(1, 2)
         )
-        list = personaDao.findListRaw(query.asSqlQuery())
+        list = personaDao.findListRaw(query)
         assertEquals(list.size, 1)
-        assertContains(list, persona4)
+        assert(list.any { it.persona == persona4 })
 
         query = buildQueryPersonasSql(
             hasPrivateKey = true,
             pageOptions = PageOptions(0, 2)
         )
-        list = personaDao.findListRaw(query.asSqlQuery())
+        list = personaDao.findListRaw(query)
         assertEquals(list.size, 1)
-        assertContains(list, persona3)
+        assert(list.any { it.persona == persona3 })
+
+        query = buildQueryPersonasSql(
+            identifiers = listOf(
+                "person:twitter.com/findRaw1",
+                "person:twitter.com/findRaw3",
+            ),
+        )
+        list = personaDao.findListRaw(query)
+        assertEquals(list.size, 2)
+        assert(list.any { it.persona == persona1 })
+        assert(list.any { it.persona == persona3 })
+    }
+
+    @Test
+    fun test_find_mnemonic() = runTest {
+        val persona1 = mockDbPersonaRecord(
+            identifier = "person:twitter.com/findMnemonic1",
+            nickname = "findMnemonic1",
+            mnemonic = "findMnemonic1",
+            hasLogout = false,
+            privateKey = null,
+        )
+        personaDao.insert(persona1)
+
+        val list = personaDao.findList()
+        assertNotNull(list.find { it.mnemonic == "findMnemonic1" })
     }
 }

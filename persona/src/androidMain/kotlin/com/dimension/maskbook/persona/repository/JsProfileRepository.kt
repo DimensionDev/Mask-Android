@@ -24,7 +24,6 @@ import com.dimension.maskbook.persona.db.PersonaDatabase
 import com.dimension.maskbook.persona.db.migrator.mapper.toDbProfileRecord
 import com.dimension.maskbook.persona.db.migrator.mapper.toIndexedDBProfile
 import com.dimension.maskbook.persona.db.model.DbLinkedProfileRecord
-import com.dimension.maskbook.persona.db.sql.asSqlQuery
 import com.dimension.maskbook.persona.db.sql.buildQueryProfileSql
 import com.dimension.maskbook.persona.db.sql.buildQueryProfilesSql
 import com.dimension.maskbook.persona.export.model.LinkedProfileDetailsState
@@ -58,7 +57,7 @@ class JsProfileRepository(database: PersonaDatabase) {
             network = options.network,
             nameContains = options.nameContains,
         )
-        return profileDao.findRaw(query.asSqlQuery())?.toIndexedDBProfile()
+        return profileDao.findRaw(query)?.toIndexedDBProfile()
     }
 
     suspend fun queryProfiles(options: QueryProfilesOptions): List<IndexedDBProfile> {
@@ -68,7 +67,7 @@ class JsProfileRepository(database: PersonaDatabase) {
             nameContains = options.nameContains,
             pageOptions = options.pageOptions,
         )
-        return profileDao.findListRaw(query.asSqlQuery()).map {
+        return profileDao.findListRaw(query).map {
             it.toIndexedDBProfile()
         }
     }

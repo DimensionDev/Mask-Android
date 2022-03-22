@@ -23,7 +23,6 @@ package com.dimension.maskbook.persona.repository
 import com.dimension.maskbook.persona.db.PersonaDatabase
 import com.dimension.maskbook.persona.db.migrator.mapper.toDbPersonaRecord
 import com.dimension.maskbook.persona.db.migrator.mapper.toIndexedDBPersona
-import com.dimension.maskbook.persona.db.sql.asSqlQuery
 import com.dimension.maskbook.persona.db.sql.buildQueryPersonaByProfileSql
 import com.dimension.maskbook.persona.db.sql.buildQueryPersonaSql
 import com.dimension.maskbook.persona.db.sql.buildQueryPersonasSql
@@ -55,7 +54,7 @@ class JsPersonaRepository(database: PersonaDatabase) {
             nameContains = options.nameContains,
             initialized = options.initialized,
         )
-        return personaDao.findRaw(query.asSqlQuery())?.toIndexedDBPersona()
+        return personaDao.findRaw(query)?.toIndexedDBPersona()
     }
 
     suspend fun queryPersonaByProfile(options: QueryPersonaByProfileOptions): IndexedDBPersona? {
@@ -66,7 +65,7 @@ class JsPersonaRepository(database: PersonaDatabase) {
             nameContains = options.nameContains,
             initialized = options.initialized,
         )
-        return personaDao.findRaw(query.asSqlQuery())?.toIndexedDBPersona()
+        return personaDao.findRaw(query)?.toIndexedDBPersona()
     }
 
     suspend fun queryPersonas(options: QueryPersonasOptions): List<IndexedDBPersona> {
@@ -78,7 +77,7 @@ class JsPersonaRepository(database: PersonaDatabase) {
             initialized = options.initialized,
             pageOptions = options.pageOptions,
         )
-        return personaDao.findListRaw(query.asSqlQuery()).map {
+        return personaDao.findListRaw(query).map {
             it.toIndexedDBPersona()
         }
     }

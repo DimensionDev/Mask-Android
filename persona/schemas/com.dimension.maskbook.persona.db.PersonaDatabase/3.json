@@ -1,12 +1,12 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 1,
-    "identityHash": "f40a1e1fa54ff653fa5cf333729682a1",
+    "version": 3,
+    "identityHash": "452a4a84875b9c91828fedaaec4577dc",
     "entities": [
       {
         "tableName": "DbPersonaRecord",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`identifier` TEXT NOT NULL, `mnemonic` TEXT, `path` TEXT, `withPassword` INTEGER, `publicKey` TEXT, `privateKey` TEXT, `localKey` TEXT, `nickname` TEXT, `createAt` INTEGER NOT NULL, `updateAt` INTEGER NOT NULL, `hasLogout` INTEGER, `initialized` INTEGER, `avatar` TEXT, PRIMARY KEY(`identifier`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`identifier` TEXT NOT NULL, `mnemonicRaw` BLOB, `path` TEXT, `withPassword` INTEGER, `publicKeyRaw` BLOB, `privateKeyRaw` BLOB, `localKeyRaw` BLOB, `nickname` TEXT, `createAt` INTEGER NOT NULL, `updateAt` INTEGER NOT NULL, `hasLogout` INTEGER, `initialized` INTEGER, `avatar` TEXT, `email` TEXT NOT NULL, `phone` TEXT NOT NULL, PRIMARY KEY(`identifier`))",
         "fields": [
           {
             "fieldPath": "identifier",
@@ -16,8 +16,8 @@
           },
           {
             "fieldPath": "mnemonic",
-            "columnName": "mnemonic",
-            "affinity": "TEXT",
+            "columnName": "mnemonicRaw",
+            "affinity": "BLOB",
             "notNull": false
           },
           {
@@ -34,20 +34,20 @@
           },
           {
             "fieldPath": "publicKey",
-            "columnName": "publicKey",
-            "affinity": "TEXT",
+            "columnName": "publicKeyRaw",
+            "affinity": "BLOB",
             "notNull": false
           },
           {
             "fieldPath": "privateKey",
-            "columnName": "privateKey",
-            "affinity": "TEXT",
+            "columnName": "privateKeyRaw",
+            "affinity": "BLOB",
             "notNull": false
           },
           {
             "fieldPath": "localKey",
-            "columnName": "localKey",
-            "affinity": "TEXT",
+            "columnName": "localKeyRaw",
+            "affinity": "BLOB",
             "notNull": false
           },
           {
@@ -85,6 +85,18 @@
             "columnName": "avatar",
             "affinity": "TEXT",
             "notNull": false
+          },
+          {
+            "fieldPath": "email",
+            "columnName": "email",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "phone",
+            "columnName": "phone",
+            "affinity": "TEXT",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -259,7 +271,7 @@
       },
       {
         "tableName": "DbPostRecord",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`identifier` TEXT NOT NULL, `encryptBy` TEXT, `postNetwork` TEXT NOT NULL, `postUserId` TEXT NOT NULL, `postCryptoKeyRaw` TEXT, `url` TEXT, `summary` TEXT, `recipientsRaw` TEXT, `interestedMetaRaw` TEXT, `foundAt` INTEGER NOT NULL, PRIMARY KEY(`identifier`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`identifier` TEXT NOT NULL, `encryptBy` TEXT, `postNetwork` TEXT NOT NULL, `postUserId` TEXT NOT NULL, `postCryptoKeyRaw` BLOB, `url` TEXT, `summary` TEXT, `recipientsRaw` TEXT, `interestedMetaRaw` TEXT, `foundAt` INTEGER NOT NULL, PRIMARY KEY(`identifier`))",
         "fields": [
           {
             "fieldPath": "identifier",
@@ -286,9 +298,9 @@
             "notNull": true
           },
           {
-            "fieldPath": "postCryptoKeyRaw",
+            "fieldPath": "postCryptoKey",
             "columnName": "postCryptoKeyRaw",
-            "affinity": "TEXT",
+            "affinity": "BLOB",
             "notNull": false
           },
           {
@@ -335,7 +347,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f40a1e1fa54ff653fa5cf333729682a1')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '452a4a84875b9c91828fedaaec4577dc')"
     ]
   }
 }

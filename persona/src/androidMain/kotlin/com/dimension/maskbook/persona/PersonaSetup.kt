@@ -29,8 +29,9 @@ import com.dimension.maskbook.common.ModuleSetup
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.persona.data.JSMethod
 import com.dimension.maskbook.persona.data.JSMethodV2
+import com.dimension.maskbook.persona.db.EncryptJsonObjectConverter
+import com.dimension.maskbook.persona.db.EncryptStringConverter
 import com.dimension.maskbook.persona.db.PersonaDatabase
-import com.dimension.maskbook.persona.db.RoomMigrations
 import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.persona.export.model.ConnectAccountData
 import com.dimension.maskbook.persona.repository.DbPersonaRepository
@@ -77,9 +78,9 @@ object PersonaSetup : ModuleSetup {
             Room.databaseBuilder(get(), PersonaDatabase::class.java, "maskbook_persona")
                 .setQueryExecutor(Dispatchers.IO.asExecutor())
                 .setTransactionExecutor(Dispatchers.IO.asExecutor())
-                .addMigrations(
-                    RoomMigrations.MIGRATION_1_2,
-                )
+                .fallbackToDestructiveMigration()
+                .addTypeConverter(EncryptStringConverter(get()))
+                .addTypeConverter(EncryptJsonObjectConverter(get()))
                 .build()
         }
         single {

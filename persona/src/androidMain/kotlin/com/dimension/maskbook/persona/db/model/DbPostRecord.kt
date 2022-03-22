@@ -20,8 +20,11 @@
  */
 package com.dimension.maskbook.persona.db.model
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
+import com.dimension.maskbook.persona.db.EncryptJsonObjectConverter
 import com.dimension.maskbook.persona.export.model.Network
 import kotlinx.serialization.json.JsonObject
 
@@ -31,7 +34,9 @@ data class DbPostRecord(
     val encryptBy: String?,
     val postNetwork: Network,
     val postUserId: String,
-    val postCryptoKeyRaw: JsonObject?,
+    @TypeConverters(EncryptJsonObjectConverter::class)
+    @ColumnInfo(name = "postCryptoKeyRaw", typeAffinity = ColumnInfo.BLOB)
+    val postCryptoKey: JsonObject?,
     val url: String?,
     val summary: String?,
     var recipientsRaw: MutableMap<String, JsonObject>?,

@@ -23,7 +23,6 @@ package com.dimension.maskbook.persona.repository
 import com.dimension.maskbook.persona.db.PersonaDatabase
 import com.dimension.maskbook.persona.db.migrator.mapper.toDbRelationRecord
 import com.dimension.maskbook.persona.db.migrator.mapper.toIndexedDBRelation
-import com.dimension.maskbook.persona.db.sql.asSqlQuery
 import com.dimension.maskbook.persona.db.sql.buildQueryRelationsSql
 import com.dimension.maskbook.persona.model.indexed.IndexedDBRelation
 import com.dimension.maskbook.persona.model.options.CreateRelationOptions
@@ -49,7 +48,7 @@ class JsRelationRepository(database: PersonaDatabase) {
             favor = options.favor,
             pageOptions = options.pageOptions,
         )
-        return relationDao.findListRaw(query.asSqlQuery()).map {
+        return relationDao.findListRaw(query).map {
             it.toIndexedDBRelation()
         }
     }

@@ -28,32 +28,22 @@ fun buildQueryProfileSql(
     identifier: String,
     network: String? = null,
     nameContains: String? = null,
-) = buildString {
-    append("SELECT * FROM $dbName WHERE identifier = '$identifier' ")
-    buildWhereSql(
-        network = network,
-        nameContains = nameContains,
-    ).let {
-        append("$it ")
-    }
-    append("LIMIT 1")
-}
+) = buildQuerySql(
+    dbName = dbName,
+    identifier = identifier,
+    network = network,
+    nameContains = nameContains,
+)
 
 fun buildQueryProfilesSql(
     identifiers: List<String>? = null,
     network: String? = null,
     nameContains: String? = null,
     pageOptions: PageOptions? = null,
-) = buildString {
-    append("SELECT * FROM $dbName ")
-    buildWhereSql(
-        identifiers = identifiers,
-        network = network,
-        nameContains = nameContains,
-    ).let {
-        append("WHERE $it ")
-    }
-    pageOptions?.let {
-        append(it.asLimitSql())
-    }
-}
+) = buildQuerySql(
+    dbName = dbName,
+    identifiers = identifiers,
+    network = network,
+    nameContains = nameContains,
+    pageOptions = pageOptions,
+)

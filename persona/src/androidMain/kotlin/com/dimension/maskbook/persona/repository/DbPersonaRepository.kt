@@ -81,7 +81,7 @@ class DbPersonaRepository(database: PersonaDatabase) {
     }
 
     suspend fun containsMnemonic(mnemonic: String): Boolean {
-        return personaDao.countOfMnemonic(mnemonic) > 0
+        return personaDao.findList().any { it.mnemonic == mnemonic }
     }
 
     suspend fun isEmpty(): Boolean {

@@ -21,11 +21,13 @@
 package com.dimension.maskbook.persona.db
 
 import androidx.room.Database
+import androidx.room.ProvidedTypeConverter
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
 import com.dimension.maskbook.common.ext.decodeJson
 import com.dimension.maskbook.common.ext.encodeJson
+import com.dimension.maskbook.common.manager.KeyStoreManager
 import com.dimension.maskbook.persona.db.dao.LinkedProfileDao
 import com.dimension.maskbook.persona.db.dao.PersonaDao
 import com.dimension.maskbook.persona.db.dao.PostDao
@@ -48,13 +50,15 @@ import kotlinx.serialization.json.JsonObject
         DbLinkedProfileRecord::class,
         DbPostRecord::class,
     ],
-    version = 2,
+    version = 3,
 )
 @TypeConverters(
     JsonObjectConverter::class,
     LinkedProfileDetailsStateConverter::class,
     NetworkConverter::class,
     MutableMapJsonObjectConverter::class,
+    EncryptStringConverter::class,
+    EncryptJsonObjectConverter::class,
 )
 abstract class PersonaDatabase : RoomDatabase() {
     abstract fun personaDao(): PersonaDao
@@ -109,5 +113,43 @@ internal class MutableMapJsonObjectConverter {
     @TypeConverter
     fun toMutableMapJsonObject(value: String?): MutableMap<String, JsonObject>? {
         return value?.decodeJson()
+    }
+}
+
+@ProvidedTypeConverter
+class EncryptStringConverter(
+    private val keyStoreManager: KeyStoreManager,
+) {
+    @TypeConverter
+    fun fromEncryptString(value: String?): ByteArray? {
+        return value
+            ?.toByteArray()
+            ?.let { keyStoreManager.encryptData(it) }
+    }
+
+    @TypeConverter
+    fun toEncryptString(value: ByteArray?): String? {
+        return value
+            ?.let { keyStoreManager.decryptData(it) }
+            ?.let { String(it) }
+    }
+}
+
+@ProvidedTypeConverter
+class EncryptJsonObjectConverter(
+    private val keyStoreManager: KeyStoreManager,
+) {
+    @TypeConverter
+    fun fromJsonObject(jsonObject: JsonObject?): ByteArray? {
+        return jsonObject
+            ?.encodeJson()
+            ?.let { keyStoreManager.encryptData(it.toByteArray()) }
+    }
+
+    @TypeConverter
+    fun toJsonObject(value: ByteArray?): JsonObject? {
+        return value
+            ?.let { String(keyStoreManager.decryptData(it)) }
+            ?.decodeJson()
     }
 }
