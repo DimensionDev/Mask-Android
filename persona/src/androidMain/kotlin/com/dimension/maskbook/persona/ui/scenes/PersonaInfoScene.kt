@@ -162,7 +162,6 @@ fun PersonaInfoScene(
                 )
             } else {
                 if (!searchOnly) {
-
                     stickyHeader {
                         TabRow(
                             modifier = Modifier
@@ -238,25 +237,6 @@ fun PersonaInfoScene(
         }
 
         val preferenceRepository = get<IPreferenceRepository>()
-        val shouldShowEmptySocialTipDialog by preferenceRepository.shouldShowEmptySocialTipDialog.collectAsState(initial = false)
-
-        if (shouldShowEmptySocialTipDialog && selectedScene == PersonaInfoData.Social) {
-            TipMessageDialog(
-                modifier = Modifier
-                    .padding(horizontal = 22.5f.dp, vertical = 24.dp)
-                    .align(Alignment.BottomCenter),
-                onClose = {
-                    preferenceRepository.setShowEmptySocialTipDialog(false)
-                },
-                text = {
-                    Text(
-                        text = stringResource(R.string.scene_persona_empty_message_tips),
-                        color = Color.White,
-                    )
-                }
-            )
-        }
-
         val shouldShowContactsTipDialog by preferenceRepository.shouldShowContactsTipDialog.collectAsState(initial = false)
 
         if (shouldShowContactsTipDialog && selectedScene == PersonaInfoData.Contacts) {

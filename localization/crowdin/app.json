@@ -524,7 +524,7 @@
         },
         "persona_empty": {
             "connect_social": "Connect Social accounts",
-            "message_tips": "Select the social account to connect your persona. Enjoy a web 3.0 social expereince."
+            "message_tips": "Connect persona to social media below"
         },
         "wallet_balance": {
             "btn_swap": "Swap",

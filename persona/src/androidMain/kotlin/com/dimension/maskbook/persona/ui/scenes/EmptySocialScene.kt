@@ -80,6 +80,16 @@ fun LazyListScope.EmptySocialScene(
     item {
         Spacer(Modifier.height(PersonaEmptySceneDefaults.itemPadding))
     }
+    item {
+        Text(
+            modifier = Modifier.padding(horizontal = 20.dp),
+            text = stringResource(R.string.scene_persona_empty_message_tips),
+            style = MaterialTheme.typography.caption,
+        )
+    }
+    item {
+        Spacer(Modifier.height(PersonaEmptySceneDefaults.itemPadding))
+    }
     itemsGridIndexed(
         data = showList,
         spacing = PersonaEmptySceneDefaults.itemPadding,

@@ -139,7 +139,6 @@ fun ContactsEmptyScene(
     }
 }
 
-@Composable
 fun LazyListScope.ContactsScene(
     items: List<ContactData>,
     onItemClick: (ContactData) -> Unit,
