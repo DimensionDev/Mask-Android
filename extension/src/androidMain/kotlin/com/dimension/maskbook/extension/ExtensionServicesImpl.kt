@@ -51,8 +51,8 @@ internal class ExtensionServicesImpl(
         return messageChannel.executeMessage(method, isWait, args.toMap())
     }
 
-    override fun subscribeJSEvent(method: String): Flow<ExtensionMessage> {
-        return messageChannel.subscribeMessage(method).mapNotNull { it }
+    override fun subscribeJSEvent(vararg method: String): Flow<ExtensionMessage> {
+        return messageChannel.subscribeMessage(*method).mapNotNull { it }
     }
 
     override val extensionMessage: Flow<ExtensionMessage>
