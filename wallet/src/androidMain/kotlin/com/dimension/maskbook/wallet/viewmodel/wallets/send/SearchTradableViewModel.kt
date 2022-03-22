@@ -23,17 +23,15 @@ package com.dimension.maskbook.wallet.viewmodel.wallets.send
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
-import com.dimension.maskbook.wallet.usecase.Result
-import com.dimension.maskbook.wallet.usecase.collectible.GetWalletCollectibleCollectionsUseCase
-import com.dimension.maskbook.wallet.usecase.token.GetWalletTokensUseCase
+import com.dimension.maskbook.wallet.usecase.GetWalletCollectibleCollectionsUseCase
+import com.dimension.maskbook.wallet.usecase.GetWalletTokensUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.mapNotNull
 
 class SearchTradableViewModel(
-    getWalletTokensUseCase: GetWalletTokensUseCase,
-    geCollectionsUseCase: GetWalletCollectibleCollectionsUseCase,
+    getWalletTokens: GetWalletTokensUseCase,
+    geCollections: GetWalletCollectibleCollectionsUseCase,
 ) : ViewModel() {
     private val _query = MutableStateFlow("")
     val query = _query.asStateIn(viewModelScope)
@@ -43,23 +41,15 @@ class SearchTradableViewModel(
     }
 
     val walletTokens by lazy {
-        combine(query, getWalletTokensUseCase()) { q, result ->
-            when (result) {
-                is Result.Success -> result.value.filter {
-                    if (q.isNotEmpty()) it.tokenData.name.contains(q, ignoreCase = true) else true
-                }
-                else -> emptyList()
+        combine(query, getWalletTokens()) { q, result ->
+            result.filter {
+                if (q.isNotEmpty()) it.tokenData.name.contains(q, ignoreCase = true) else true
             }
         }.asStateIn(viewModelScope, emptyList())
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val walletCollectibleCollections by lazy {
-        geCollectionsUseCase().mapNotNull {
-            when (it) {
-                is Result.Success -> it.value
-                else -> null
-            }
-        }
+        geCollections()
     }
 }

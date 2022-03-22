@@ -24,34 +24,32 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.common.ext.asStateIn
+import com.dimension.maskbook.common.ext.onFinished
 import com.dimension.maskbook.extension.export.ExtensionServices
 import com.dimension.maskbook.extension.export.model.ExtensionResponseMessage
 import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.ext.hexWei
 import com.dimension.maskbook.wallet.repository.SendTokenConfirmData
-import com.dimension.maskbook.wallet.usecase.Result
-import com.dimension.maskbook.wallet.usecase.address.GetAddressUseCase
-import com.dimension.maskbook.wallet.usecase.chain.SetCurrentChainUseCase
-import com.dimension.maskbook.wallet.usecase.token.GetWalletNativeTokenUseCase
-import com.dimension.maskbook.wallet.usecase.token.GetWalletTokenByAddressUseCase
-import com.dimension.maskbook.wallet.usecase.token.SendTransactionUseCase
+import com.dimension.maskbook.wallet.usecase.GetAddressUseCase
+import com.dimension.maskbook.wallet.usecase.GetWalletNativeTokenUseCase
+import com.dimension.maskbook.wallet.usecase.GetWalletTokenByAddressUseCase
+import com.dimension.maskbook.wallet.usecase.SendTransactionUseCase
+import com.dimension.maskbook.wallet.usecase.SetCurrentChainUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 
 class Web3TransactionConfirmViewModel(
     private val data: SendTokenConfirmData,
-    private val setCurrentChainUseCase: SetCurrentChainUseCase,
-    private val getWalletTokenByAddressUseCase: GetWalletTokenByAddressUseCase,
-    private val getWalletNativeTokenUseCase: GetWalletNativeTokenUseCase,
-    private val getAddressUseCase: GetAddressUseCase,
-    private val sendTransactionUseCase: SendTransactionUseCase,
+    private val setCurrentChain: SetCurrentChainUseCase,
+    private val getWalletTokenByAddress: GetWalletTokenByAddressUseCase,
+    private val getWalletNativeToken: GetWalletNativeTokenUseCase,
+    private val getAddress: GetAddressUseCase,
+    private val sendTransaction: SendTransactionUseCase,
     private val extensionServices: ExtensionServices,
 ) : ViewModel() {
 
@@ -61,7 +59,7 @@ class Web3TransactionConfirmViewModel(
 
     init {
         viewModelScope.launch {
-            setCurrentChainUseCase(chainType).collect()
+            setCurrentChain(chainType)
         }
     }
 
@@ -74,9 +72,10 @@ class Web3TransactionConfirmViewModel(
         maxPriorityFee: Double,
         onResult: (success: Boolean) -> Unit
     ) {
+        _loadingState.value = true
         data.data.to?.let { address ->
             viewModelScope.launch {
-                sendTransactionUseCase(
+                sendTransaction(
                     amount = amount.value,
                     address = address,
                     chainType = chainType,
@@ -84,33 +83,28 @@ class Web3TransactionConfirmViewModel(
                     maxFee = maxFee,
                     maxPriorityFee = maxPriorityFee,
                     data = data.data.data ?: "",
-                ).collect {
-                    when (it) {
-                        is Result.Failed -> {
-                            extensionServices.sendJSEventResponse(
-                                ExtensionResponseMessage.error(
-                                    data.messageId,
-                                    data.jsonrpc,
-                                    data.payloadId,
-                                    it.cause.message ?: "Failed to send transaction"
-                                )
-                            )
-                            onResult.invoke(false)
-                        }
-                        is Result.Loading -> _loadingState.value = true
-                        is Result.Success -> {
-                            extensionServices.sendJSEventResponse(
-                                ExtensionResponseMessage.success(
-                                    data.messageId,
-                                    data.jsonrpc,
-                                    data.payloadId,
-                                    it
-                                )
-                            )
-                            onResult.invoke(true)
-                        }
-                    }
-                    if (it !is Result.Loading) _loadingState.value = false
+                ).onSuccess {
+                    extensionServices.sendJSEventResponse(
+                        ExtensionResponseMessage.success(
+                            data.messageId,
+                            data.jsonrpc,
+                            data.payloadId,
+                            it
+                        )
+                    )
+                    onResult.invoke(true)
+                }.onFailure {
+                    extensionServices.sendJSEventResponse(
+                        ExtensionResponseMessage.error(
+                            data.messageId,
+                            data.jsonrpc,
+                            data.payloadId,
+                            it.cause?.message ?: "Failed to send transaction"
+                        )
+                    )
+                    onResult.invoke(false)
+                }.onFinished {
+                    _loadingState.value = false
                 }
             }
         }
@@ -122,21 +116,13 @@ class Web3TransactionConfirmViewModel(
             .mapNotNull { it }
             .flatMapLatest {
                 combine(
-                    getWalletTokenByAddressUseCase(it),
-                    getWalletNativeTokenUseCase(chainType)
+                    getWalletTokenByAddress(it),
+                    getWalletNativeToken(chainType)
                 ) { token, native ->
-                    when {
-                        token is Result.Success -> {
-                            token.value.tokenData
-                        }
-                        native is Result.Success -> {
-                            native.value.tokenData
-                        }
-                        else -> {
-                            null
-                        }
-                    }
+                    token ?: native
                 }
+            }.mapNotNull {
+                it?.tokenData
             }.asStateIn(viewModelScope, null)
     }
 
@@ -149,12 +135,7 @@ class Web3TransactionConfirmViewModel(
         }.mapNotNull {
             it
         }.flatMapLatest {
-            getAddressUseCase(address = it, addIfNotExists = true)
-        }.map {
-            when (it) {
-                is Result.Success -> it.value
-                else -> null
-            }
+            getAddress(address = it, addIfNotExists = true)
         }.asStateIn(viewModelScope, null)
     }
 

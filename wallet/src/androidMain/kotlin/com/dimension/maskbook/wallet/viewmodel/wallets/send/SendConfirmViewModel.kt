@@ -24,14 +24,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.common.ext.asStateIn
+import com.dimension.maskbook.common.ext.onFinished
 import com.dimension.maskbook.wallet.export.model.TradableData
 import com.dimension.maskbook.wallet.export.model.WalletCollectibleData
 import com.dimension.maskbook.wallet.export.model.WalletTokenData
 import com.dimension.maskbook.wallet.repository.IWalletRepository
-import com.dimension.maskbook.wallet.usecase.Result
-import com.dimension.maskbook.wallet.usecase.address.GetAddressUseCase
-import com.dimension.maskbook.wallet.usecase.collectible.SendWalletCollectibleUseCase
-import com.dimension.maskbook.wallet.usecase.token.SendTokenUseCase
+import com.dimension.maskbook.wallet.usecase.GetAddressUseCase
+import com.dimension.maskbook.wallet.usecase.SendTokenUseCase
+import com.dimension.maskbook.wallet.usecase.SendWalletCollectibleUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -39,9 +39,9 @@ import kotlinx.coroutines.launch
 class SendConfirmViewModel(
     private val toAddress: String,
     private val walletRepository: IWalletRepository,
-    private val getAddressUseCase: GetAddressUseCase,
-    private val sendTokenUseCase: SendTokenUseCase,
-    private val sendWalletCollectibleUseCase: SendWalletCollectibleUseCase,
+    private val getAddress: GetAddressUseCase,
+    private val sendToken: SendTokenUseCase,
+    private val sendWalletCollectible: SendWalletCollectibleUseCase,
 ) : ViewModel() {
     private val _loadingState = MutableStateFlow(false)
     val loadingState = _loadingState.asStateIn(viewModelScope)
@@ -55,9 +55,10 @@ class SendConfirmViewModel(
         onDone: () -> Unit,
         onFailed: () -> Unit
     ) {
+        _loadingState.value = true
         viewModelScope.launch {
             when (tradableData) {
-                is WalletTokenData -> sendTokenUseCase(
+                is WalletTokenData -> sendToken(
                     amount = amount,
                     address = toAddress,
                     tokenData = tradableData.tokenData,
@@ -65,25 +66,19 @@ class SendConfirmViewModel(
                     maxFee = maxFee,
                     maxPriorityFee = maxPriorityFee,
                 )
-                is WalletCollectibleData -> sendWalletCollectibleUseCase(
+                is WalletCollectibleData -> sendWalletCollectible(
                     address = toAddress,
                     collectible = tradableData,
                     gasLimit = gasLimit,
                     maxFee = maxFee,
                     maxPriorityFee = maxPriorityFee,
                 )
-            }.collect {
-                when (it) {
-                    is Result.Failed -> {
-                        _loadingState.value = false
-                        onFailed.invoke()
-                    }
-                    is Result.Loading -> _loadingState.value = true
-                    is Result.Success -> {
-                        _loadingState.value = false
-                        onDone.invoke()
-                    }
-                }
+            }.onSuccess {
+                onDone.invoke()
+            }.onFailure {
+                onFailed.invoke()
+            }.onFinished {
+                _loadingState.value = false
             }
         }
     }
@@ -93,13 +88,8 @@ class SendConfirmViewModel(
     }
 
     val addressData by lazy {
-        getAddressUseCase(toAddress)
-            .map {
-                when (it) {
-                    is Result.Success -> it.value
-                    else -> null
-                }
-            }.asStateIn(viewModelScope, null)
+        getAddress(toAddress)
+            .asStateIn(viewModelScope, null)
     }
 
     val deepLink = walletRepository.currentWallet.map {

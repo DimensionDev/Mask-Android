@@ -74,44 +74,44 @@ open class BaseCollectibleMediator<Value : Any>(
     private fun mapToDbCollectible(element: AssetElement): DbCollectible {
         return DbCollectible(
             _id = "${element.assetContract?.address}@${element.tokenID}",
-            name = element.name ?: "",
+            name = element.name.orEmpty(),
             description = element.description,
             walletId = walletId,
             chainType = ChainType.eth, // TODO: 2022/1/17
             id = element.id ?: 0L,
-            tokenId = element.tokenID ?: "",
+            tokenId = element.tokenID.orEmpty(),
             externalLink = element.externalLink,
             permalink = element.permalink,
             creator = with(element.creator) {
                 DbCollectibleCreator(
-                    userName = this?.user?.username ?: "",
-                    profileImgURL = this?.profileImgURL ?: "",
-                    address = this?.address ?: "",
-                    config = this?.config ?: "",
+                    userName = this?.user?.username.orEmpty(),
+                    profileImgURL = this?.profileImgURL.orEmpty(),
+                    address = this?.address.orEmpty(),
+                    config = this?.config.orEmpty(),
                 )
             },
             collection = with(element.collection) {
                 DbCollection(
-                    imageURL = this?.imageURL ?: "",
-                    name = this?.name ?: "",
-                    slug = this?.slug ?: ""
+                    imageURL = this?.imageURL.orEmpty(),
+                    name = this?.name.orEmpty(),
+                    slug = this?.slug.orEmpty()
                 )
             },
             contract = with(element.assetContract) {
                 DbCollectibleContract(
-                    address = this?.address ?: "",
-                    imageUrl = this?.imageURL ?: "",
-                    name = this?.name ?: "",
-                    symbol = this?.symbol ?: "",
+                    address = this?.address.orEmpty(),
+                    imageUrl = this?.imageURL.orEmpty(),
+                    name = this?.name.orEmpty(),
+                    symbol = this?.symbol.orEmpty(),
                 )
             },
             url = DbCollectibleUrl(
-                imageURL = element.imageURL,
-                imagePreviewURL = element.imagePreviewURL,
-                imageThumbnailURL = element.imageThumbnailURL,
-                imageOriginalURL = element.imageOriginalURL,
-                animationURL = element.animationURL,
-                animationOriginalURL = element.animationOriginalURL,
+                imageURL = element.imageURL.orEmpty(),
+                imagePreviewURL = element.imagePreviewURL.orEmpty(),
+                imageThumbnailURL = element.imageThumbnailURL.orEmpty(),
+                imageOriginalURL = element.imageOriginalURL.orEmpty(),
+                animationURL = element.animationURL.orEmpty(),
+                animationOriginalURL = element.animationOriginalURL.orEmpty(),
             )
         )
     }
