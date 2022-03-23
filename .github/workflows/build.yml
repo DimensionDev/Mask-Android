@@ -25,8 +25,8 @@ jobs:
         run: ./gradlew spotlessCheck
 
   connected-android-test:
+    needs: build
     runs-on: macos-latest
-    needs: spotless-check
     timeout-minutes: 60
 
     strategy:
@@ -70,6 +70,7 @@ jobs:
           script: |
             adb logcat > logcat.txt &
             ./gradlew connectedCheck
+
       - name: Upload logs
         if: always()
         uses: actions/upload-artifact@v2
@@ -85,7 +86,7 @@ jobs:
           path: "**/build/outputs/**/connected/**/*.xml"
 
   build:
-    needs: spotless-check
+    needs: connected-android-test
     runs-on: ubuntu-latest
 
     steps:
@@ -114,9 +115,6 @@ jobs:
           node-version: '16'
       - name: Fetch maskbook
         run: ./.github/fetch_maskbook.sh
-
-      - name: Build with Gradle
-        run: ./gradlew assemble --stacktrace
 
       - name: Upload build outputs
         uses: actions/upload-artifact@v2
