@@ -25,7 +25,6 @@ jobs:
         run: ./gradlew spotlessCheck
 
   connected-android-test:
-    needs: build
     runs-on: macos-latest
     timeout-minutes: 60
 
