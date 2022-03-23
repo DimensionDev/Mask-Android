@@ -51,6 +51,17 @@ class WalletBalancesViewModel(
     private val collectibleRepository: ICollectibleRepository,
     private val refreshWalletUseCase: RefreshWalletUseCase,
 ) : ViewModel() {
+
+    init {
+        viewModelScope.launch {
+            repository.currentChain.collect { chain ->
+                chain?.let {
+                    _displayChainType.value = it.chainType
+                }
+            }
+        }
+    }
+
     val wallets by lazy {
         repository.wallets.asStateIn(viewModelScope, emptyList())
     }
