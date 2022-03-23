@@ -524,7 +524,7 @@
         },
         "persona_empty": {
             "connect_social": "Connect Social accounts",
-            "message_tips": "Connect persona to social media below"
+            "message_tips": "Connect persona to social networks below"
         },
         "wallet_balance": {
             "btn_swap": "Swap",

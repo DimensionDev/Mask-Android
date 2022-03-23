@@ -341,7 +341,7 @@
     <string name="scene_wallet_delete_placeholder">Password</string>
     <string name="scene_wallet_delete_title">Delete wallet</string>
     <string name="scene_wallet_delete_content">Are you sure you want to delete this wallet? Your wallet cannot be recoverd without seed phrase.</string>
-    <string name="scene_persona_empty_message_tips">Connect persona to social media below</string>
+    <string name="scene_persona_empty_message_tips">Connect persona to social networks below</string>
     <string name="scene_persona_empty_connect_social">Connect Social accounts</string>
     <string name="scene_biometry_id_biometry_lockout">Authentication was not successful because there were too many failed %s attempts and %s is now locked. Passcode is required to unlock %s.</string>
     <string name="scene_biometry_id_biometry_not_available">Mask need your Authentication of %s. Please go to Setting -&gt; Mask Network to open</string>
