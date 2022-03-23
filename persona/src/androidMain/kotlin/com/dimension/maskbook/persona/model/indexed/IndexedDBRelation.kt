@@ -30,5 +30,5 @@ data class IndexedDBRelation(
     @SerialName("profile")
     val profileIdentifier: String,
     val favor: Int,
-    val network: String,
+    val network: String? = null,
 )

@@ -47,7 +47,8 @@ fun RelationWithProfile.toContactData(): ContactData {
         id = profileIdentifier,
         name = nickname.orEmpty(),
         personaId = personaIdentifier,
-        linkedPersona = state.isLinked(),
+        avatar = avatar.orEmpty(),
+        linkedPersona = state?.isLinked() == true,
         network = network ?: Network.Twitter,
     )
 }

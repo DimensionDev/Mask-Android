@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 5,
-    "identityHash": "145d423a4c00a4ff1d2a6891a939235f",
+    "version": 6,
+    "identityHash": "17b17747dca4ffd56916cb3a58d43cb3",
     "entities": [
       {
         "tableName": "DbPersonaRecord",
@@ -351,12 +351,12 @@
       },
       {
         "viewName": "RelationWithProfile",
-        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT relation.personaIdentifier, relation.profileIdentifier, relation.favor, relation.updatedAt, relation.createdAt, profile.nickname, profile.network, link.personaIdentifier as linkedPersona, link.state FROM DbRelationRecord as relation INNER JOIN DbProfileRecord as profile ON profile.identifier=relation.profileIdentifier INNER JOIN DbLinkedProfileRecord as link ON link.profileIdentifier=relation.profileIdentifier"
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT relation.personaIdentifier, relation.profileIdentifier, relation.favor, relation.updatedAt, relation.createdAt, profile.nickname, profile.avatar, profile.network, link.personaIdentifier as linkedPersona, link.state FROM DbRelationRecord relation INNER JOIN DbProfileRecord profile ON profile.identifier=relation.profileIdentifier LEFT OUTER JOIN DbLinkedProfileRecord link ON link.profileIdentifier=relation.profileIdentifier"
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '145d423a4c00a4ff1d2a6891a939235f')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '17b17747dca4ffd56916cb3a58d43cb3')"
     ]
   }
 }
