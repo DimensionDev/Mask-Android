@@ -34,7 +34,7 @@ import com.dimension.maskbook.persona.model.options.QueryPersonaOptions
 import com.dimension.maskbook.persona.model.options.QueryPersonasOptions
 import com.dimension.maskbook.persona.model.options.UpdatePersonaOptions
 
-class JsPersonaRepository(database: PersonaDatabase) {
+class JsPersonaDataSource(database: PersonaDatabase) {
 
     private val personaDao = database.personaDao()
     private val linkedProfileDao = database.linkedProfileDao()

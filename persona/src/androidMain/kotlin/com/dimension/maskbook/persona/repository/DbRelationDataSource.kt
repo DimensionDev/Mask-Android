@@ -27,7 +27,7 @@ import com.dimension.maskbook.persona.model.ContactData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class DbRelationRepository(database: PersonaDatabase) {
+class DbRelationDataSource(database: PersonaDatabase) {
 
     private val relationDao = database.relationDao()
 

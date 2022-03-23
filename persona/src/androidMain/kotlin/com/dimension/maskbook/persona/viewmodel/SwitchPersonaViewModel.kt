@@ -24,15 +24,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.persona.export.model.PersonaData
-import com.dimension.maskbook.persona.repository.DbPersonaRepository
+import com.dimension.maskbook.persona.repository.DbPersonaDataSource
 import com.dimension.maskbook.persona.repository.IPersonaRepository
 
 class SwitchPersonaViewModel(
     private val personaRepository: IPersonaRepository,
-    dbPersonaRepository: DbPersonaRepository,
+    personaDataSource: DbPersonaDataSource,
 ) : ViewModel() {
 
-    val items = dbPersonaRepository.getPersonaListFlow()
+    val items = personaDataSource.getPersonaListFlow()
         .asStateIn(viewModelScope, emptyList())
 
     val current = personaRepository.currentPersona

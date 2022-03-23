@@ -30,7 +30,7 @@ import com.dimension.maskbook.persona.model.options.QueryPostOptions
 import com.dimension.maskbook.persona.model.options.QueryPostsOptions
 import com.dimension.maskbook.persona.model.options.UpdatePostOptions
 
-class JsPostRepository(database: PersonaDatabase) {
+class JsPostDataSource(database: PersonaDatabase) {
 
     private val postDao = database.postDao()
 

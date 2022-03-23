@@ -56,10 +56,10 @@ import com.dimension.maskbook.persona.model.options.UpdateProfileOptions
 import com.dimension.maskbook.persona.model.options.UpdateRelationOptions
 import com.dimension.maskbook.persona.repository.IPersonaRepository
 import com.dimension.maskbook.persona.repository.IPreferenceRepository
-import com.dimension.maskbook.persona.repository.JsPersonaRepository
-import com.dimension.maskbook.persona.repository.JsPostRepository
-import com.dimension.maskbook.persona.repository.JsProfileRepository
-import com.dimension.maskbook.persona.repository.JsRelationRepository
+import com.dimension.maskbook.persona.repository.JsPersonaDataSource
+import com.dimension.maskbook.persona.repository.JsPostDataSource
+import com.dimension.maskbook.persona.repository.JsProfileDataSource
+import com.dimension.maskbook.persona.repository.JsRelationDataSource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
@@ -73,10 +73,10 @@ class JSMethodV2(
     private val appPersonaRepository: IPersonaRepository,
     private val database: PersonaDatabase,
     private val preferenceRepository: IPreferenceRepository,
-    private val personaRepository: JsPersonaRepository,
-    private val profileRepository: JsProfileRepository,
-    private val relationRepository: JsRelationRepository,
-    private val postRepository: JsPostRepository,
+    private val personaDataSource: JsPersonaDataSource,
+    private val profileDataSource: JsProfileDataSource,
+    private val relationDataSource: JsRelationDataSource,
+    private val postDataSource: JsPostDataSource,
 ) {
     fun startSubscribe() {
         scope.launch {
@@ -113,27 +113,27 @@ class JSMethodV2(
                 // set current persona when create
                 appPersonaRepository.setCurrentPersona(options.persona.identifier)
 
-                return message.responseSuccess(personaRepository.createPersona(options))
+                return message.responseSuccess(personaDataSource.createPersona(options))
             }
             queryPersona -> {
                 val options = message.decodeOptions<QueryPersonaOptions>() ?: return true
-                return message.responseSuccess(personaRepository.queryPersona(options))
+                return message.responseSuccess(personaDataSource.queryPersona(options))
             }
             queryPersonaByProfile -> {
                 val options = message.decodeOptions<ParamOptions<QueryPersonaByProfileOptions>>()?.options ?: return true
-                return message.responseSuccess(personaRepository.queryPersonaByProfile(options))
+                return message.responseSuccess(personaDataSource.queryPersonaByProfile(options))
             }
             queryPersonas -> {
                 val options = message.decodeOptions<QueryPersonasOptions>() ?: return true
-                return message.responseSuccess(personaRepository.queryPersonas(options))
+                return message.responseSuccess(personaDataSource.queryPersonas(options))
             }
             updatePersona -> {
                 val options = message.decodeOptions<UpdatePersonaOptions>() ?: return true
-                return message.responseSuccess(personaRepository.updatePersona(options))
+                return message.responseSuccess(personaDataSource.updatePersona(options))
             }
             deletePersona -> {
                 val options = message.decodeOptions<DeletePersonaOptions>() ?: return true
-                return message.responseSuccess(personaRepository.deletePersona(options))
+                return message.responseSuccess(personaDataSource.deletePersona(options))
             }
         }
         return false
@@ -145,32 +145,32 @@ class JSMethodV2(
         when (message.method) {
             createProfile -> {
                 val options = message.decodeOptions<CreateProfileOptions>() ?: return true
-                return message.responseSuccess(profileRepository.createProfile(options))
+                return message.responseSuccess(profileDataSource.createProfile(options))
             }
             queryProfile -> {
                 val options = message.decodeOptions<ParamOptions<QueryProfileOptions>>()?.options
                     ?: return true
-                return message.responseSuccess(profileRepository.queryProfile(options))
+                return message.responseSuccess(profileDataSource.queryProfile(options))
             }
             queryProfiles -> {
                 val options = message.decodeOptions<QueryProfilesOptions>() ?: return true
-                return message.responseSuccess(profileRepository.queryProfiles(options))
+                return message.responseSuccess(profileDataSource.queryProfiles(options))
             }
             updateProfile -> {
                 val options = message.decodeOptions<UpdateProfileOptions>() ?: return true
-                return message.responseSuccess(profileRepository.updateProfile(options))
+                return message.responseSuccess(profileDataSource.updateProfile(options))
             }
             deleteProfile -> {
                 val options = message.decodeOptions<DeleteProfileOptions>() ?: return true
-                return message.responseSuccess(profileRepository.deleteProfile(options))
+                return message.responseSuccess(profileDataSource.deleteProfile(options))
             }
             attachProfile -> {
                 val options = message.decodeOptions<AttachProfileOptions>() ?: return true
-                return message.responseSuccess(profileRepository.attachProfile(options))
+                return message.responseSuccess(profileDataSource.attachProfile(options))
             }
             detachProfile -> {
                 val options = message.decodeOptions<DetachProfileOptions>() ?: return true
-                return message.responseSuccess(profileRepository.detachProfile(options))
+                return message.responseSuccess(profileDataSource.detachProfile(options))
             }
         }
         return false
@@ -182,19 +182,19 @@ class JSMethodV2(
         when (message.method) {
             createRelation -> {
                 val options = message.decodeOptions<CreateRelationOptions>() ?: return true
-                return message.responseSuccess(relationRepository.createRelation(options))
+                return message.responseSuccess(relationDataSource.createRelation(options))
             }
             queryRelations -> {
                 val options = message.decodeOptions<QueryRelationsOptions>() ?: return true
-                return message.responseSuccess(relationRepository.queryRelations(options))
+                return message.responseSuccess(relationDataSource.queryRelations(options))
             }
             updateRelation -> {
                 val options = message.decodeOptions<UpdateRelationOptions>() ?: return true
-                return message.responseSuccess(relationRepository.updateRelation(options))
+                return message.responseSuccess(relationDataSource.updateRelation(options))
             }
             deleteRelation -> {
                 val options = message.decodeOptions<DeleteRelationOptions>() ?: return true
-                return message.responseSuccess(relationRepository.deleteRelation(options))
+                return message.responseSuccess(relationDataSource.deleteRelation(options))
             }
         }
         return false
@@ -206,11 +206,11 @@ class JSMethodV2(
         when (message.method) {
             queryAvatar -> {
                 val options = message.decodeOptions<QueryAvatarOptions>() ?: return true
-                return message.responseSuccess(profileRepository.queryAvatar(options))
+                return message.responseSuccess(profileDataSource.queryAvatar(options))
             }
             storeAvatar -> {
                 val options = message.decodeOptions<StoreAvatarOptions>() ?: return true
-                return message.responseSuccess(profileRepository.storeAvatar(options))
+                return message.responseSuccess(profileDataSource.storeAvatar(options))
             }
         }
         return false
@@ -222,19 +222,19 @@ class JSMethodV2(
         when (message.method) {
             createPost -> {
                 val options = message.decodeOptions<CreatePostOptions>() ?: return true
-                return message.responseSuccess(postRepository.createPost(options))
+                return message.responseSuccess(postDataSource.createPost(options))
             }
             queryPost -> {
                 val options = message.decodeOptions<QueryPostOptions>() ?: return true
-                return message.responseSuccess(postRepository.queryPost(options))
+                return message.responseSuccess(postDataSource.queryPost(options))
             }
             queryPosts -> {
                 val options = message.decodeOptions<QueryPostsOptions>() ?: return true
-                return message.responseSuccess(postRepository.queryPosts(options))
+                return message.responseSuccess(postDataSource.queryPosts(options))
             }
             updatePost -> {
                 val options = message.decodeOptions<UpdatePostOptions>() ?: return true
-                return message.responseSuccess(postRepository.updatePost(options))
+                return message.responseSuccess(postDataSource.updatePost(options))
             }
         }
         return false

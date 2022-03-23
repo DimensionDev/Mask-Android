@@ -54,9 +54,9 @@ internal class PersonaRepository(
     private val jsMethod: JSMethod,
     private val extensionServices: ExtensionServices,
     private val preferenceRepository: IPreferenceRepository,
-    private val personaRepository: DbPersonaRepository,
-    private val profileRepository: DbProfileRepository,
-    private val relationRepository: DbRelationRepository,
+    private val personaDataSource: DbPersonaDataSource,
+    private val profileDataSource: DbProfileDataSource,
+    private val relationDataSource: DbRelationDataSource,
 ) : IPersonaRepository,
     ISocialsRepository,
     IContactsRepository {
@@ -66,23 +66,23 @@ internal class PersonaRepository(
     @OptIn(ExperimentalCoroutinesApi::class)
     override val currentPersona: Flow<PersonaData?>
         get() = preferenceRepository.currentPersonaIdentifier.flatMapLatest {
-            personaRepository.getPersonaFlow(it)
+            personaDataSource.getPersonaFlow(it)
         }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override val socials: Flow<List<SocialData>>
         get() = preferenceRepository.currentPersonaIdentifier.flatMapLatest {
-            profileRepository.getSocialListFlow(it)
+            profileDataSource.getSocialListFlow(it)
         }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override val contacts: Flow<List<ContactData>>
         get() = preferenceRepository.currentPersonaIdentifier.flatMapLatest {
-            relationRepository.getContactListFlow(it)
+            relationDataSource.getContactListFlow(it)
         }
 
     override suspend fun hasPersona(): Boolean {
-        return !personaRepository.isEmpty()
+        return !personaDataSource.isEmpty()
     }
 
     @OptIn(DelicateCoroutinesApi::class, ExperimentalTime::class)
@@ -96,7 +96,7 @@ internal class PersonaRepository(
 
         connectingJob = preferenceRepository.lastDetectProfileIdentifier
             .filter { it.isNotEmpty() }
-            .filterNot { personaRepository.hasConnected(it) }
+            .filterNot { personaDataSource.hasConnected(it) }
             .mapNotNull { SocialProfile.parse(it) }
             .flowOn(Dispatchers.IO)
             .onEach {
@@ -119,16 +119,16 @@ internal class PersonaRepository(
 
     override fun init() {
         scope.launch {
-            if (personaRepository.isEmpty()) {
+            if (personaDataSource.isEmpty()) {
                 return@launch
             }
 
             val identifier = preferenceRepository.currentPersonaIdentifier.firstOrNull()
-            if (!identifier.isNullOrEmpty() && personaRepository.contains(identifier)) {
+            if (!identifier.isNullOrEmpty() && personaDataSource.contains(identifier)) {
                 return@launch
             }
 
-            val newCurrentPersona = personaRepository.getPersonaFirst()
+            val newCurrentPersona = personaDataSource.getPersonaFirst()
             setCurrentPersona(newCurrentPersona?.identifier.orEmpty())
         }
     }
@@ -136,7 +136,7 @@ internal class PersonaRepository(
     override fun saveEmailForCurrentPersona(value: String) {
         scope.launch {
             currentPersona.firstOrNull()?.let { personaData ->
-                personaRepository.updateEmail(personaData.identifier, value)
+                personaDataSource.updateEmail(personaData.identifier, value)
             }
         }
     }
@@ -144,7 +144,7 @@ internal class PersonaRepository(
     override fun savePhoneForCurrentPersona(value: String) {
         scope.launch {
             currentPersona.firstOrNull()?.let { personaData ->
-                personaRepository.updatePhone(personaData.identifier, value)
+                personaDataSource.updatePhone(personaData.identifier, value)
             }
         }
     }
@@ -160,8 +160,8 @@ internal class PersonaRepository(
         scope.launch {
             val deletePersona = currentPersona.firstOrNull() ?: return@launch
 
-            personaRepository.deletePersona(deletePersona.identifier)
-            val newCurrentPersona = personaRepository.getPersonaFirst()
+            personaDataSource.deletePersona(deletePersona.identifier)
+            val newCurrentPersona = personaDataSource.getPersonaFirst()
             setCurrentPersona(newCurrentPersona?.identifier.orEmpty())
 
             jsMethod.removePersona(deletePersona.identifier)
@@ -170,7 +170,7 @@ internal class PersonaRepository(
 
     override fun updatePersona(id: String, nickname: String) {
         scope.launch {
-            personaRepository.updateNickName(id, nickname)
+            personaDataSource.updateNickName(id, nickname)
             jsMethod.updatePersonaInfo(id, nickname)
         }
     }
@@ -178,7 +178,7 @@ internal class PersonaRepository(
     override fun updateCurrentPersona(nickname: String) {
         scope.launch {
             val id = currentPersona.firstOrNull()?.identifier ?: return@launch
-            personaRepository.updateNickName(id, nickname)
+            personaDataSource.updateNickName(id, nickname)
             jsMethod.updatePersonaInfo(id, nickname)
         }
     }
@@ -198,7 +198,7 @@ internal class PersonaRepository(
     override suspend fun createPersonaFromMnemonic(value: List<String>, name: String) {
         withContext(scope.coroutineContext) {
             val mnemonic = value.joinToString(" ")
-            if (personaRepository.containsMnemonic(mnemonic)) {
+            if (personaDataSource.containsMnemonic(mnemonic)) {
                 throw PersonaAlreadyExitsError()
             }
             jsMethod.createPersonaByMnemonic(mnemonic, name, "")

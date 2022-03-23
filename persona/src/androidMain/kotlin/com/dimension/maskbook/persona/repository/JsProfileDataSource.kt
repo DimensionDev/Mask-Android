@@ -40,7 +40,7 @@ import com.dimension.maskbook.persona.model.options.QueryProfilesOptions
 import com.dimension.maskbook.persona.model.options.StoreAvatarOptions
 import com.dimension.maskbook.persona.model.options.UpdateProfileOptions
 
-class JsProfileRepository(database: PersonaDatabase) {
+class JsProfileDataSource(database: PersonaDatabase) {
 
     private val profileDao = database.profileDao()
     private val linkedProfileDao = database.linkedProfileDao()

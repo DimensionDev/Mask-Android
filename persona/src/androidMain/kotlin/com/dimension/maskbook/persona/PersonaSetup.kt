@@ -34,17 +34,17 @@ import com.dimension.maskbook.persona.db.EncryptStringConverter
 import com.dimension.maskbook.persona.db.PersonaDatabase
 import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.persona.export.model.ConnectAccountData
-import com.dimension.maskbook.persona.repository.DbPersonaRepository
-import com.dimension.maskbook.persona.repository.DbProfileRepository
-import com.dimension.maskbook.persona.repository.DbRelationRepository
+import com.dimension.maskbook.persona.repository.DbPersonaDataSource
+import com.dimension.maskbook.persona.repository.DbProfileDataSource
+import com.dimension.maskbook.persona.repository.DbRelationDataSource
 import com.dimension.maskbook.persona.repository.IContactsRepository
 import com.dimension.maskbook.persona.repository.IPersonaRepository
 import com.dimension.maskbook.persona.repository.IPreferenceRepository
 import com.dimension.maskbook.persona.repository.ISocialsRepository
-import com.dimension.maskbook.persona.repository.JsPersonaRepository
-import com.dimension.maskbook.persona.repository.JsPostRepository
-import com.dimension.maskbook.persona.repository.JsProfileRepository
-import com.dimension.maskbook.persona.repository.JsRelationRepository
+import com.dimension.maskbook.persona.repository.JsPersonaDataSource
+import com.dimension.maskbook.persona.repository.JsPostDataSource
+import com.dimension.maskbook.persona.repository.JsProfileDataSource
+import com.dimension.maskbook.persona.repository.JsRelationDataSource
 import com.dimension.maskbook.persona.repository.PersonaRepository
 import com.dimension.maskbook.persona.repository.PreferenceRepository
 import com.dimension.maskbook.persona.repository.personaDataStore
@@ -112,13 +112,13 @@ object PersonaSetup : ModuleSetup {
             )
         }
 
-        single { JsPersonaRepository(get()) }
-        single { JsProfileRepository(get()) }
-        single { JsRelationRepository(get()) }
-        single { JsPostRepository(get()) }
-        single { DbPersonaRepository(get()) }
-        single { DbProfileRepository(get()) }
-        single { DbRelationRepository(get()) }
+        single { JsPersonaDataSource(get()) }
+        single { JsProfileDataSource(get()) }
+        single { JsRelationDataSource(get()) }
+        single { JsPostDataSource(get()) }
+        single { DbPersonaDataSource(get()) }
+        single { DbProfileDataSource(get()) }
+        single { DbRelationDataSource(get()) }
 
         single<PersonaServices> { PersonaServicesImpl(get()) }
         single { PersonasTabScreen() } bind TabScreen::class

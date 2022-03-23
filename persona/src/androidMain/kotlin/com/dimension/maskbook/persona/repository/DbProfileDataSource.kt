@@ -27,7 +27,7 @@ import com.dimension.maskbook.persona.export.model.SocialData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class DbProfileRepository(database: PersonaDatabase) {
+class DbProfileDataSource(database: PersonaDatabase) {
 
     private val profileDao = database.profileDao()
 

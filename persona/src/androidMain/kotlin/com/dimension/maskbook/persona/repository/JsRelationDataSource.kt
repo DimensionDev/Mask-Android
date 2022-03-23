@@ -30,7 +30,7 @@ import com.dimension.maskbook.persona.model.options.DeleteRelationOptions
 import com.dimension.maskbook.persona.model.options.QueryRelationsOptions
 import com.dimension.maskbook.persona.model.options.UpdateRelationOptions
 
-class JsRelationRepository(database: PersonaDatabase) {
+class JsRelationDataSource(database: PersonaDatabase) {
 
     private val relationDao = database.relationDao()
 
