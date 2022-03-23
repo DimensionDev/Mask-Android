@@ -30,6 +30,7 @@ import com.dimension.maskbook.common.route.DeeplinkNavigateArgs
 import com.dimension.maskbook.common.route.Navigator
 import com.dimension.maskbook.common.route.RouteNavigateArgs
 import com.dimension.maskbook.common.ui.widget.RouteHost
+import com.dimension.maskbook.common.ui.widget.rememberMaskBottomSheetNavigator
 import com.dimension.maskbook.entry.EntrySetup
 import com.dimension.maskbook.entry.repository.EntryRepository
 import com.dimension.maskbook.entry.route.EntryRoute
@@ -51,7 +52,8 @@ import org.koin.mp.KoinPlatformTools
 fun Router(
     startDestination: String,
 ) {
-    val navController = rememberAnimatedNavController()
+    val bottomSheetNavigator = rememberMaskBottomSheetNavigator()
+    val navController = rememberAnimatedNavController(bottomSheetNavigator)
     LaunchedEffect(Unit) {
         val initialRoute = getInitialRoute()
         navController.navigate(initialRoute) {
@@ -71,6 +73,7 @@ fun Router(
         }
     }
     RouteHost(
+        bottomSheetNavigator = bottomSheetNavigator,
         navController = navController,
         startDestination = startDestination,
     ) {
