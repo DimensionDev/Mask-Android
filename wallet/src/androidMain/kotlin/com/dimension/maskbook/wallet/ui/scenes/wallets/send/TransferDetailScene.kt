@@ -57,7 +57,6 @@ import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.common.ext.humanizeDollar
 import com.dimension.maskbook.common.ext.humanizeToken
 import com.dimension.maskbook.common.ext.ifNullOrEmpty
-import com.dimension.maskbook.common.ext.toBigDecimalInputStr
 import com.dimension.maskbook.common.ui.widget.MaskDecimalInputField
 import com.dimension.maskbook.common.ui.widget.MaskPasswordInputField
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
@@ -153,9 +152,7 @@ fun TransferDetailScene(
                         is WalletCollectibleData -> CollectibleDisplayContent(data = data)
                         else -> AmountContent(
                             amount = amount,
-                            onValueChanged = { value ->
-                                onAmountChanged(value.toBigDecimalInputStr())
-                            },
+                            onValueChanged = onAmountChanged,
                             onMax = { onAmountChanged.invoke(maxAmount) },
                             error = amount.toBigDecimal() > maxAmount.toBigDecimal()
                         )
