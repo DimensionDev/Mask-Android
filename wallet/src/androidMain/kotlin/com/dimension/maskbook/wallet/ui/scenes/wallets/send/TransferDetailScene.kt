@@ -74,6 +74,7 @@ import com.dimension.maskbook.wallet.export.model.WalletCollectibleData
 import com.dimension.maskbook.wallet.export.model.WalletTokenData
 import com.dimension.maskbook.wallet.ext.humanizeDollar
 import com.dimension.maskbook.wallet.ext.humanizeToken
+import com.dimension.maskbook.wallet.ext.toBigDecimalInputStr
 import com.dimension.maskbook.wallet.repository.SearchAddressData
 import com.dimension.maskbook.wallet.repository.UnlockType
 import com.dimension.maskbook.wallet.ui.widget.CollectibleCard
@@ -154,10 +155,8 @@ fun TransferDetailScene(
                         is WalletCollectibleData -> CollectibleDisplayContent(data = data)
                         else -> AmountContent(
                             amount = amount,
-                            onValueChanged = {
-                                if (it.toBigDecimalOrNull() != null) {
-                                    onAmountChanged.invoke(it)
-                                }
+                            onValueChanged = { value ->
+                                onAmountChanged(value.toBigDecimalInputStr())
                             },
                             onMax = { onAmountChanged.invoke(maxAmount) },
                             error = amount.toBigDecimal() > maxAmount.toBigDecimal()
@@ -325,6 +324,7 @@ private fun AmountContent(
                 }
             },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            stopMovingCursorWhenDelete = "0"
         )
         if (error) {
             Spacer(modifier = Modifier.padding(end = 8.dp))

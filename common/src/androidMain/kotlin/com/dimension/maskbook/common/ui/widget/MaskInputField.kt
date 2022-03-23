@@ -44,6 +44,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -76,12 +77,20 @@ fun MaskInputField(
     maxLines: Int = Int.MAX_VALUE,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     shape: Shape = MaterialTheme.shapes.small,
+    stopMovingCursorWhenDelete: String? = null,
     colors: TextFieldColors = maskInputColors()
 ) {
     var textFieldValueState by remember { mutableStateOf(TextFieldValue(text = value)) }
     val textFieldValue = textFieldValueState.copy(text = value)
     TextField(
-        value = textFieldValue,
+        value = stopMovingCursorWhenDelete?.takeIf {
+            textFieldValue.text == it
+        }?.let {
+            textFieldValue.copy(
+                text = textFieldValue.text,
+                selection = TextRange(textFieldValue.text.length)
+            )
+        } ?: textFieldValue,
         onValueChange = {
             textFieldValueState = it
             if (value != it.text) {
@@ -175,7 +184,10 @@ fun MaskPasswordInputField(
         },
         isError = isError,
         visualTransformation = if (visibility || !enableVisibilitySwitch) VisualTransformation.None else PasswordVisualTransformation(),
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = imeAction),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Password,
+            imeAction = imeAction
+        ),
         keyboardActions = realKeyboardActions,
         singleLine = singleLine,
         maxLines = maxLines,

@@ -55,6 +55,12 @@ fun BigDecimal.humanizeToken(): String {
     }
 }
 
+fun String.toBigDecimalInputStr(default: String = "0") = this.toBigDecimalOrNull()?.let {
+    if (this.contains(".") && !it.toString()
+        .contains(".")
+    ) this else it.toString()
+} ?: default
+
 fun BigDecimal.humanizeDollar(): String {
     return "$" + when {
         this > BigDecimal.valueOf(0.01) -> {
