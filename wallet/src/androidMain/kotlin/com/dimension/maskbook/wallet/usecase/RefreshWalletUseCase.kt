@@ -18,31 +18,12 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.usecase.chain
+package com.dimension.maskbook.wallet.usecase
 
-import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.repository.IWalletRepository
-import com.dimension.maskbook.wallet.usecase.Result
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 
-interface SetCurrentChainUseCase {
-    operator fun invoke(chainType: ChainType): Flow<Result<Unit>>
-}
-
-class SetCurrentChainUseCaseImpl(
+class RefreshWalletUseCase(
     private val repository: IWalletRepository
-) : SetCurrentChainUseCase {
-    override fun invoke(chainType: ChainType): Flow<Result<Unit>> {
-        return flow {
-            emit(Result.Loading())
-            runCatching {
-                repository.setChainType(networkType = chainType)
-            }.onSuccess {
-                emit(Result.Success(Unit))
-            }.onFailure {
-                emit(Result.Failed(it))
-            }
-        }
-    }
+) {
+    suspend operator fun invoke() = runCatching { repository.refreshWallet() }
 }

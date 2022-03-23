@@ -23,17 +23,17 @@ package com.dimension.maskbook.wallet.viewmodel.wallets.send
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
+import com.dimension.maskbook.common.ext.onFinished
 import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.ext.gwei
 import com.dimension.maskbook.wallet.ext.humanizeMinutes
 import com.dimension.maskbook.wallet.repository.GasPriceEditMode
 import com.dimension.maskbook.wallet.repository.IWalletRepository
-import com.dimension.maskbook.wallet.usecase.Result
-import com.dimension.maskbook.wallet.usecase.gas.GasFeeData
-import com.dimension.maskbook.wallet.usecase.gas.GasFeeModel
-import com.dimension.maskbook.wallet.usecase.gas.GetArrivesWithGasFeeUseCase
-import com.dimension.maskbook.wallet.usecase.gas.GetSuggestGasFeeUseCase
-import com.dimension.maskbook.wallet.usecase.token.GetWalletNativeTokenUseCase
+import com.dimension.maskbook.wallet.usecase.GasFeeData
+import com.dimension.maskbook.wallet.usecase.GasFeeModel
+import com.dimension.maskbook.wallet.usecase.GetArrivesWithGasFeeUseCase
+import com.dimension.maskbook.wallet.usecase.GetSuggestGasFeeUseCase
+import com.dimension.maskbook.wallet.usecase.GetWalletNativeTokenUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -45,9 +45,9 @@ import java.math.BigDecimal
 
 class GasFeeViewModel(
     initialGasLimit: Double = 21000.0,
-    private val getSuggestGasFeeUseCase: GetSuggestGasFeeUseCase,
-    private val getArrivesWithGasFeeUseCase: GetArrivesWithGasFeeUseCase,
-    private val getWalletNativeTokenUseCase: GetWalletNativeTokenUseCase,
+    private val getSuggestGasFee: GetSuggestGasFeeUseCase,
+    private val getArrivesWithGasFee: GetArrivesWithGasFeeUseCase,
+    private val getWalletNativeToken: GetWalletNativeTokenUseCase,
     private val walletRepository: IWalletRepository,
 ) : ViewModel() {
     private val chainType = walletRepository.currentChain.mapNotNull {
@@ -57,11 +57,10 @@ class GasFeeViewModel(
     // native token on current chain
     @OptIn(ExperimentalCoroutinesApi::class)
     private val nativeToken by lazy {
-        getWalletNativeTokenUseCase().map {
-            when (it) {
-                is Result.Success -> it.value.tokenData
-                else -> null
-            }
+        chainType.flatMapLatest {
+            getWalletNativeToken(it)
+        }.map {
+            it?.tokenData
         }
     }
 
@@ -75,7 +74,6 @@ class GasFeeViewModel(
     val loadingState = _loadingState.asStateIn(viewModelScope)
 
     private val _suggestGasFee = MutableStateFlow(GasFeeModel())
-    val suggestGasFee = _suggestGasFee.asStateIn(viewModelScope, GasFeeModel())
 
     init {
         refreshSuggestGasFee()
@@ -83,23 +81,11 @@ class GasFeeViewModel(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     fun refreshSuggestGasFee() {
+        _loadingState.value = true
         viewModelScope.launch {
-            chainType.flatMapLatest {
-                getSuggestGasFeeUseCase(it)
-            }.collect {
-                when (it) {
-                    is Result.Failed -> {
-                        _loadingState.value = false
-                    }
-                    is Result.Loading -> {
-                        _loadingState.value = true
-                    }
-                    is Result.Success -> {
-                        _loadingState.value = false
-                        _suggestGasFee.value = it.value
-                    }
-                }
-            }
+            getSuggestGasFee(chainType.value)
+                .onSuccess { _suggestGasFee.value = it }
+                .onFinished { _loadingState.value = false }
         }
     }
 
@@ -112,7 +98,7 @@ class GasFeeViewModel(
 
     private val _maxPriorityFeePerGas = MutableStateFlow(-1.0)
     val maxPriorityFeePerGas =
-        combine(_maxPriorityFeePerGas, suggestGasFee, _gasPriceEditMode) { max, suggest, mode ->
+        combine(_maxPriorityFeePerGas, _suggestGasFee, _gasPriceEditMode) { max, suggest, mode ->
             if (max != -1.0) {
                 max
             } else {
@@ -131,7 +117,7 @@ class GasFeeViewModel(
 
     private val _maxFeePerGas = MutableStateFlow(-1.0)
     val maxFeePerGas =
-        combine(_maxFeePerGas, suggestGasFee, _gasPriceEditMode) { max, suggest, mode ->
+        combine(_maxFeePerGas, _suggestGasFee, _gasPriceEditMode) { max, suggest, mode ->
             if (max != -1.0) {
                 max
             } else {
@@ -170,14 +156,9 @@ class GasFeeViewModel(
     @OptIn(ExperimentalCoroutinesApi::class)
     val arrives = combine(maxFeePerGas, maxPriorityFeePerGas) { maxFee, maxPriorityFee ->
         GasFeeData(maxFeePerGas = maxFee, maxPriorityFeePerGas = maxPriorityFee)
-    }.flatMapLatest { gasFee ->
-        suggestGasFee.flatMapLatest {
-            getArrivesWithGasFeeUseCase(gasFee = gasFee, suggestGasFee = it)
-        }
+    }.map { gasFee ->
+        getArrivesWithGasFee(gasFee = gasFee, suggestGasFee = _suggestGasFee.value).getOrNull()
     }.mapNotNull {
-        when (it) {
-            is Result.Success -> it.value.humanizeMinutes()
-            else -> null
-        }
+        it?.humanizeMinutes()
     }.asStateIn(viewModelScope, "")
 }

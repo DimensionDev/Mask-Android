@@ -18,38 +18,46 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.usecase.collectible
+package com.dimension.maskbook.wallet.usecase
 
-import com.dimension.maskbook.common.ext.ifNullOrEmpty
 import com.dimension.maskbook.wallet.export.model.WalletCollectibleData
+import com.dimension.maskbook.wallet.repository.ICollectibleRepository
 import com.dimension.maskbook.wallet.repository.IWalletRepository
-import com.dimension.maskbook.wallet.usecase.Result
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
-interface SendWalletCollectibleUseCase {
-    operator fun invoke(
-        address: String,
-        collectible: WalletCollectibleData,
-        gasLimit: Double,
-        maxFee: Double,
-        maxPriorityFee: Double,
-    ): Flow<Result<String>>
+class GetWalletCollectibleCollectionsUseCase(
+    val repository: ICollectibleRepository,
+    val walletRepository: IWalletRepository,
+) {
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    operator fun invoke() = walletRepository.currentWallet.filterNotNull().flatMapLatest {
+        repository.getCollectibleCollectionsByWallet(it)
+    }
 }
 
-class SendWalletCollectibleUseCaseImpl(
-    val repository: IWalletRepository,
-) : SendWalletCollectibleUseCase {
-    private val result = MutableStateFlow<Result<String>>(Result.Loading())
-    override fun invoke(
+class GetWalletCollectibleUseCase(
+    val repository: ICollectibleRepository,
+) {
+    operator fun invoke(id: String) = repository.getCollectibleById(id)
+}
+
+class SendWalletCollectibleUseCase(
+    private val repository: IWalletRepository,
+) {
+    suspend operator fun invoke(
         address: String,
         collectible: WalletCollectibleData,
         gasLimit: Double,
         maxFee: Double,
         maxPriorityFee: Double
-    ): Flow<Result<String>> {
-        try {
-            result.value = Result.Loading()
+    ) = runCatching {
+        suspendCoroutine<String> { continuation ->
             repository.sendCollectibleWithCurrentWallet(
                 address = address,
                 collectible = collectible,
@@ -57,15 +65,12 @@ class SendWalletCollectibleUseCaseImpl(
                 maxFee = maxFee,
                 maxPriorityFee = maxPriorityFee,
                 onError = {
-                    result.value = Result.Failed(it)
+                    continuation.resumeWithException(it)
                 },
                 onDone = {
-                    result.value = Result.Success(it.ifNullOrEmpty { "" })
+                    continuation.resume(it.orEmpty())
                 }
             )
-        } catch (e: Throwable) {
-            result.value = Result.Failed(e)
         }
-        return result
     }
 }

@@ -20,8 +20,15 @@
  */
 package com.dimension.maskbook.wallet.usecase
 
-sealed class Result<T> {
-    class Loading<T> : Result<T>()
-    class Success<T>(val value: T) : Result<T>()
-    class Failed<T>(val cause: Throwable) : Result<T>()
+import com.dimension.maskbook.setting.export.SettingServices
+import kotlinx.coroutines.flow.firstOrNull
+
+class VerifyPaymentPasswordUseCase(
+    private val service: SettingServices
+) {
+    suspend operator fun invoke(pwd: String) = runCatching {
+        service.paymentPassword.firstOrNull()?.let {
+            if (it.isNotEmpty() && it == pwd) Unit else throw Error()
+        } ?: throw Error()
+    }
 }
