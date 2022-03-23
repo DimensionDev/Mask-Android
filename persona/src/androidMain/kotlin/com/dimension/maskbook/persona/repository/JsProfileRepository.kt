@@ -21,6 +21,7 @@
 package com.dimension.maskbook.persona.repository
 
 import com.dimension.maskbook.persona.db.PersonaDatabase
+import com.dimension.maskbook.persona.db.migrator.mapper.toDbLinkedProfileRecord
 import com.dimension.maskbook.persona.db.migrator.mapper.toDbProfileRecord
 import com.dimension.maskbook.persona.db.migrator.mapper.toIndexedDBProfile
 import com.dimension.maskbook.persona.db.model.DbLinkedProfileRecord
@@ -46,6 +47,10 @@ class JsProfileRepository(database: PersonaDatabase) {
     private val relationDao = database.relationDao()
 
     suspend fun createProfile(options: CreateProfileOptions): IndexedDBProfile {
+        options.profile.toDbLinkedProfileRecord()?.let {
+            linkedProfileDao.insert(it)
+        }
+
         val newProfile = options.profile.toDbProfileRecord()
         profileDao.insert(newProfile)
         return options.profile
@@ -73,6 +78,10 @@ class JsProfileRepository(database: PersonaDatabase) {
     }
 
     suspend fun updateProfile(options: UpdateProfileOptions): IndexedDBProfile {
+        options.profile.toDbLinkedProfileRecord()?.let {
+            linkedProfileDao.insert(it)
+        }
+
         val oldProfile = profileDao.find(options.profile.identifier)
         if (oldProfile != null) {
             return options.profile

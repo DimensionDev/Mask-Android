@@ -21,6 +21,7 @@
 package com.dimension.maskbook.persona.db.migrator
 
 import com.dimension.maskbook.persona.db.PersonaDatabase
+import com.dimension.maskbook.persona.db.migrator.mapper.toDbLinkedProfileRecord
 import com.dimension.maskbook.persona.db.migrator.mapper.toDbPersonaRecord
 import com.dimension.maskbook.persona.db.migrator.mapper.toDbProfileRecord
 import com.dimension.maskbook.persona.db.migrator.mapper.toDbRelationRecord
@@ -39,6 +40,9 @@ object IndexedDBDataMigrator {
         val profiles = records.profiles
         database.profileDao().insert(
             profiles.map { profile ->
+                profile.toDbLinkedProfileRecord()?.let {
+                    database.linkedProfileDao().insert(it)
+                }
                 profile.toDbProfileRecord()
             }
         )
