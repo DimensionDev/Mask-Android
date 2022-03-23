@@ -55,7 +55,7 @@ internal class ExtensionServicesImpl(
         return messageChannel.subscribeMessage(*method).mapNotNull { it }
     }
 
-    override fun sendJSEventResponse(map: Map<String, Any>) {
+    override fun sendJSEventResponse(map: Map<String, Any?>) {
         messageChannel.sendResponseMessage(map)
     }
 }

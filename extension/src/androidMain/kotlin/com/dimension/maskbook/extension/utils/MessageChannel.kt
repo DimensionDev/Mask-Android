@@ -50,7 +50,7 @@ internal class MessageChannel(
             .launchIn(scope)
     }
 
-    fun sendResponseMessage(map: Map<String, Any>) {
+    fun sendResponseMessage(map: Map<String, Any?>) {
         controller.sendMessage(JSONObject(map))
     }
 

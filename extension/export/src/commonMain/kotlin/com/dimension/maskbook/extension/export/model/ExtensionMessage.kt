@@ -25,9 +25,9 @@ data class ExtensionMessage(
     val jsonrpc: String,
     val method: String,
     val params: String?,
-    private val onResponse: (Map<String, Any>) -> Unit = {},
+    private val onResponse: (Map<String, Any?>) -> Unit = {},
 ) {
-    fun response(message: Map<String, Any>) {
+    fun response(message: Map<String, Any?>) {
         onResponse.invoke(message)
     }
 }

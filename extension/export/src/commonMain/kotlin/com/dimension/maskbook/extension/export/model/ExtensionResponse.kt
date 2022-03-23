@@ -24,8 +24,8 @@ inline fun <reified T : Any> buildExtensionResponse(
     id: ExtensionId,
     jsonrpc: String,
     result: T?,
-): Map<String, Any> = mapOf(
+): Map<String, Any?> = mapOf(
     "id" to id.value,
     "jsonrpc" to jsonrpc,
     "result" to result
-).mapNotNull { if (it.value == null) null else it.key to it.value!! }.toMap()
+).map { it.key to it.value }.toMap()
