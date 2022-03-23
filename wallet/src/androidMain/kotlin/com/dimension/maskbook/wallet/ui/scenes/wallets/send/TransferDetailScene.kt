@@ -300,7 +300,6 @@ private fun AmountContent(
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(text = stringResource(R.string.scene_sendTransaction_send_label_Amount))
         Spacer(modifier = Modifier.height(8.dp))
-        // TODO mimao can't present 0.
         MaskDecimalInputField(
             modifier = Modifier.fillMaxWidth(),
             decimalValue = amount.toBigDecimal(),

@@ -85,8 +85,8 @@ fun MaskDecimalInputField(
     val textFieldValue = textFieldValueState.copy(
         text = decimalValue.toString().trimTrailingZero().let {
             when (it) {
-                zero -> zero
                 textFieldValueState.text.trimTrailingZero() -> textFieldValueState.text
+                zero -> zero
                 else -> it
             }
         }
