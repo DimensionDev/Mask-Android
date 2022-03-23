@@ -18,7 +18,7 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.ext
+package com.dimension.maskbook.common.ext
 
 import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import kotlin.time.Duration.Companion.minutes
@@ -83,7 +83,7 @@ fun String.fromHexString(): BigDecimal {
     return substringAfter("0x").toLong(16).toBigDecimal()
 }
 
-private fun String.trimTrailingZero(): String {
+fun String.trimTrailingZero(): String {
     return if (indexOf(".") < 0) {
         this
     } else {

@@ -37,7 +37,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -52,12 +51,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import com.dimension.maskbook.common.bigDecimal.BigDecimal
+import com.dimension.maskbook.common.ext.humanizeDollar
+import com.dimension.maskbook.common.ext.humanizeToken
 import com.dimension.maskbook.common.ext.ifNullOrEmpty
-import com.dimension.maskbook.common.ui.widget.MaskInputField
+import com.dimension.maskbook.common.ext.toBigDecimalInputStr
+import com.dimension.maskbook.common.ui.widget.MaskDecimalInputField
 import com.dimension.maskbook.common.ui.widget.MaskPasswordInputField
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskScene
@@ -72,9 +73,6 @@ import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.export.model.TradableData
 import com.dimension.maskbook.wallet.export.model.WalletCollectibleData
 import com.dimension.maskbook.wallet.export.model.WalletTokenData
-import com.dimension.maskbook.wallet.ext.humanizeDollar
-import com.dimension.maskbook.wallet.ext.humanizeToken
-import com.dimension.maskbook.wallet.ext.toBigDecimalInputStr
 import com.dimension.maskbook.wallet.repository.SearchAddressData
 import com.dimension.maskbook.wallet.repository.UnlockType
 import com.dimension.maskbook.wallet.ui.widget.CollectibleCard
@@ -302,10 +300,11 @@ private fun AmountContent(
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(text = stringResource(R.string.scene_sendTransaction_send_label_Amount))
         Spacer(modifier = Modifier.height(8.dp))
-        MaskInputField(
+        // TODO mimao can't present 0.
+        MaskDecimalInputField(
             modifier = Modifier.fillMaxWidth(),
-            value = amount,
-            onValueChange = onValueChanged,
+            decimalValue = amount.toBigDecimal(),
+            onValueChange = { onValueChanged(it.toString()) },
             trailingIcon = {
                 Row {
                     TextButton(
@@ -323,8 +322,6 @@ private fun AmountContent(
                     Spacer(modifier = Modifier.padding(end = 12.dp))
                 }
             },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            stopMovingCursorWhenDelete = "0"
         )
         if (error) {
             Spacer(modifier = Modifier.padding(end = 8.dp))

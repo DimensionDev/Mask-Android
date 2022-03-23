@@ -54,8 +54,79 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.common.R
+import com.dimension.maskbook.common.ext.trimTrailingZero
 import com.dimension.maskbook.common.ui.theme.MaskTheme
 import com.dimension.maskbook.common.ui.widget.button.MaskIconButton
+import java.math.BigDecimal
+
+@Composable
+fun MaskDecimalInputField(
+    modifier: Modifier = Modifier,
+    decimalValue: BigDecimal = BigDecimal.ZERO,
+    onValueChange: (BigDecimal) -> Unit,
+    enabled: Boolean = true,
+    readOnly: Boolean = false,
+    textStyle: TextStyle = MaterialTheme.typography.h5,
+    label: @Composable (() -> Unit)? = null,
+    placeholder: @Composable (() -> Unit)? = null,
+    leadingIcon: @Composable (() -> Unit)? = null,
+    trailingIcon: @Composable (() -> Unit)? = null,
+    isError: Boolean = false,
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+    keyboardActions: KeyboardActions = KeyboardActions(),
+    singleLine: Boolean = false,
+    maxLines: Int = Int.MAX_VALUE,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    shape: Shape = MaterialTheme.shapes.small,
+    colors: TextFieldColors = maskInputColors()
+) {
+    val zero = "0"
+    var textFieldValueState by remember { mutableStateOf(TextFieldValue(text = decimalValue.toString())) }
+    val textFieldValue = textFieldValueState.copy(
+        text = decimalValue.toString().trimTrailingZero().let {
+            when (it) {
+                zero -> zero
+                textFieldValueState.text.trimTrailingZero() -> textFieldValueState.text
+                else -> it
+            }
+        }
+    )
+    TextField(
+        value = textFieldValue.text.takeIf {
+            it == zero
+        }?.let {
+            textFieldValue.copy(
+                text = textFieldValue.text,
+                selection = TextRange(textFieldValue.text.length)
+            )
+        } ?: textFieldValue,
+        onValueChange = {
+            textFieldValueState = it
+            onValueChange(it.text.toBigDecimalOrNull() ?: BigDecimal.ZERO)
+        },
+        modifier = modifier,
+        enabled = enabled,
+        readOnly = readOnly,
+        textStyle = textStyle,
+        label = label,
+        placeholder = placeholder?.let {
+            {
+                ProvideTextStyle(MaterialTheme.typography.subtitle2, placeholder)
+            }
+        },
+        leadingIcon = leadingIcon,
+        trailingIcon = trailingIcon,
+        isError = isError,
+        visualTransformation = visualTransformation,
+        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+        keyboardActions = keyboardActions,
+        singleLine = singleLine,
+        maxLines = maxLines,
+        interactionSource = interactionSource,
+        shape = shape,
+        colors = colors
+    )
+}
 
 @Composable
 fun MaskInputField(
@@ -77,20 +148,12 @@ fun MaskInputField(
     maxLines: Int = Int.MAX_VALUE,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     shape: Shape = MaterialTheme.shapes.small,
-    stopMovingCursorWhenDelete: String? = null,
     colors: TextFieldColors = maskInputColors()
 ) {
     var textFieldValueState by remember { mutableStateOf(TextFieldValue(text = value)) }
     val textFieldValue = textFieldValueState.copy(text = value)
     TextField(
-        value = stopMovingCursorWhenDelete?.takeIf {
-            textFieldValue.text == it
-        }?.let {
-            textFieldValue.copy(
-                text = textFieldValue.text,
-                selection = TextRange(textFieldValue.text.length)
-            )
-        } ?: textFieldValue,
+        value = textFieldValue,
         onValueChange = {
             textFieldValueState = it
             if (value != it.text) {
