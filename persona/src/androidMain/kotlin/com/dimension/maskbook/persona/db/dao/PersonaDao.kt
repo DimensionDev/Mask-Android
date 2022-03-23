@@ -72,6 +72,9 @@ interface PersonaDao {
     @Query("UPDATE DbPersonaRecord SET phone=:phone WHERE identifier=:identifier")
     suspend fun updatePhone(identifier: String, phone: String)
 
+    @Query("UPDATE DbPersonaRecord SET avatar=:avatar WHERE identifier=:identifier")
+    suspend fun updateAvatar(identifier: String, avatar: String?)
+
     @Query("SELECT COUNT(1) FROM DbPersonaRecord WHERE identifier=:identifier LIMIT 1")
     suspend fun count(identifier: String): Int
 

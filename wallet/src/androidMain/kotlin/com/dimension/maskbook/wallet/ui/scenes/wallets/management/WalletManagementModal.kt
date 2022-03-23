@@ -20,26 +20,19 @@
  */
 package com.dimension.maskbook.wallet.ui.scenes.wallets.management
 
-import androidx.annotation.DrawableRes
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.dimension.maskbook.common.ext.applyTextStyle
-import com.dimension.maskbook.common.ui.widget.MaskListItem
 import com.dimension.maskbook.common.ui.widget.MaskModal
 import com.dimension.maskbook.common.ui.widget.MiddleEllipsisText
-import com.dimension.maskbook.common.ui.widget.button.MaskButton
+import com.dimension.maskbook.common.ui.widget.button.MaskListButton
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.export.model.WalletData
 
@@ -64,7 +57,7 @@ fun WalletManagementModal(
         Column(
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            WalletManagementItem(
+            MaskListButton(
                 onClick = onRename,
                 icon = R.drawable.ic_rename_wallet,
                 text = {
@@ -75,7 +68,7 @@ fun WalletManagementModal(
                 }
             )
             if (walletData != null && !walletData.fromWalletConnect) {
-                WalletManagementItem(
+                MaskListButton(
                     onClick = onBackup,
                     icon = R.drawable.ic_back_up,
                     text = {
@@ -83,7 +76,7 @@ fun WalletManagementModal(
                     },
                 )
             }
-            WalletManagementItem(
+            MaskListButton(
                 onClick = onTransactionHistory,
                 icon = R.drawable.ic_transaction_history,
                 text = {
@@ -91,7 +84,7 @@ fun WalletManagementModal(
                 },
             )
             if (walletData != null && walletData.fromWalletConnect) {
-                WalletManagementItem(
+                MaskListButton(
                     onClick = onDisconnect,
                     icon = R.drawable.ic_disconnect,
                     text = {
@@ -102,7 +95,7 @@ fun WalletManagementModal(
                     },
                 )
             } else {
-                WalletManagementItem(
+                MaskListButton(
                     onClick = onDelete,
                     icon = R.drawable.ic_delete_wallet,
                     text = {
@@ -114,27 +107,5 @@ fun WalletManagementModal(
                 )
             }
         }
-    }
-}
-
-@Composable
-private fun WalletManagementItem(
-    onClick: () -> Unit,
-    @DrawableRes icon: Int,
-    text: @Composable (() -> Unit),
-    trailing: @Composable (() -> Unit)? = null,
-) {
-    MaskButton(onClick = onClick) {
-        MaskListItem(
-            icon = {
-                Image(
-                    painter = painterResource(icon),
-                    contentDescription = null,
-                    modifier = Modifier.size(32.dp),
-                )
-            },
-            text = text,
-            trailing = applyTextStyle(MaterialTheme.typography.h5, trailing),
-        )
     }
 }

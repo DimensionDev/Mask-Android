@@ -53,6 +53,8 @@ fun PersonaScene(
     onAddSocialClick: (PersonaData, Network?) -> Unit,
     onRemoveSocialClick: (PersonaData, SocialData) -> Unit,
     onSocialItemClick: (PersonaData, SocialData) -> Unit,
+    onAddPersonaAvatar: () -> Unit,
+    onPersonaAvatarClick: () -> Unit,
 ) {
     val viewModel: PersonaViewModel = getViewModel()
     val currentPersona by viewModel.currentPersona.collectAsState()
@@ -107,6 +109,13 @@ fun PersonaScene(
                 onPersonaNameClick = onPersonaNameClick,
                 onCurrentPersonaChanged = {
                     viewModel.setCurrentPersona(it)
+                },
+                onAvatarClick = {
+                    if (currentPersona?.avatar.isNullOrEmpty()) {
+                        onAddPersonaAvatar()
+                    } else {
+                        onPersonaAvatarClick()
+                    }
                 }
             )
         }

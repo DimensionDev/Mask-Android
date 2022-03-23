@@ -55,6 +55,7 @@ import com.dimension.maskbook.persona.viewmodel.PersonaMenuViewModel
 import com.dimension.maskbook.persona.viewmodel.PersonaViewModel
 import com.dimension.maskbook.persona.viewmodel.RenamePersonaViewModel
 import com.dimension.maskbook.persona.viewmodel.SwitchPersonaViewModel
+import com.dimension.maskbook.persona.viewmodel.avatar.SetAvatarViewModel
 import com.dimension.maskbook.persona.viewmodel.contacts.ContactsViewModel
 import com.dimension.maskbook.persona.viewmodel.post.PostViewModel
 import com.dimension.maskbook.persona.viewmodel.social.DisconnectSocialViewModel
@@ -131,6 +132,8 @@ object PersonaSetup : ModuleSetup {
         viewModel { ExportPrivateKeyViewModel(get()) }
         viewModel { PostViewModel(get(), get()) }
         viewModel { ContactsViewModel(get()) }
+
+        viewModel { SetAvatarViewModel(get()) }
 
         viewModel { (data: ConnectAccountData) ->
             com.dimension.maskbook.persona.viewmodel.social.UserNameModalViewModel(

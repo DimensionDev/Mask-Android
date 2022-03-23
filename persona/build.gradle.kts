@@ -25,6 +25,7 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 kspAndroid("androidx.room:room-compiler:${Versions.Androidx.room}")
+                implementation("com.github.dhaval2404:imagepicker:2.1")
             }
         }
         val androidTest by getting {

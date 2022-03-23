@@ -91,6 +91,10 @@ class DbPersonaRepository(database: PersonaDatabase) {
     suspend fun hasConnected(profileIdentifier: String): Boolean {
         return linkedProfileDao.count(profileIdentifier) > 0
     }
+
+    suspend fun updateAvatar(identifier: String, avatar: String?) {
+        personaDao.updateAvatar(identifier, avatar)
+    }
 }
 
 private fun DbPersonaRecord.toPersonaData(): PersonaData {
@@ -99,5 +103,6 @@ private fun DbPersonaRecord.toPersonaData(): PersonaData {
         name = nickname.orEmpty(),
         email = email,
         phone = phone,
+        avatar = avatar,
     )
 }

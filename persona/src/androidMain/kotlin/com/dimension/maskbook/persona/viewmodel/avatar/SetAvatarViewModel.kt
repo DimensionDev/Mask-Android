@@ -18,12 +18,21 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.persona.export.model
+package com.dimension.maskbook.persona.viewmodel.avatar
 
-data class PersonaData(
-    val identifier: String,
-    val name: String,
-    val email: String,
-    val phone: String,
-    val avatar: String?,
-)
+import android.net.Uri
+import androidx.lifecycle.ViewModel
+import com.dimension.maskbook.persona.repository.IPersonaRepository
+import kotlinx.coroutines.flow.map
+
+class SetAvatarViewModel(
+    private val repository: IPersonaRepository,
+) : ViewModel() {
+    val currentAvatar by lazy {
+        repository.currentPersona.map { it?.avatar }
+    }
+
+    fun setAvatar(avatar: Uri) {
+        repository.setAvatarForCurrentPersona(avatar)
+    }
+}

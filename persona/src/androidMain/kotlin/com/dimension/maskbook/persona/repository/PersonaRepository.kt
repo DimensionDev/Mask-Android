@@ -20,6 +20,7 @@
  */
 package com.dimension.maskbook.persona.repository
 
+import android.net.Uri
 import com.dimension.maskbook.common.ext.toSite
 import com.dimension.maskbook.extension.export.ExtensionServices
 import com.dimension.maskbook.persona.data.JSMethod
@@ -217,5 +218,13 @@ internal class PersonaRepository(
 
     override fun setPlatform(platformType: PlatformType) {
         extensionServices.setSite(platformType.toSite())
+    }
+
+    override fun setAvatarForCurrentPersona(avatar: Uri?) {
+        scope.launch {
+            currentPersona.firstOrNull()?.let { personaData ->
+                personaRepository.updateAvatar(personaData.identifier, avatar?.toString())
+            }
+        }
     }
 }

@@ -22,6 +22,7 @@ package com.dimension.maskbook.persona.ui.scenes
 
 import android.content.Intent
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -31,6 +32,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
@@ -63,10 +65,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import androidx.compose.ui.zIndex
+import coil.compose.rememberImagePainter
 import com.dimension.maskbook.common.ui.widget.MaskCard
 import com.dimension.maskbook.common.ui.widget.MaskListItem
 import com.dimension.maskbook.common.ui.widget.TipMessageDialog
 import com.dimension.maskbook.common.ui.widget.button.MaskIconButton
+import com.dimension.maskbook.common.ui.widget.button.clickable
 import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.export.model.Network
 import com.dimension.maskbook.persona.export.model.PersonaData
@@ -111,6 +115,7 @@ fun PersonaInfoScene(
     onPersonaNameClick: () -> Unit,
     onAddSocialClick: (Network?) -> Unit,
     onSocialItemClick: (SocialData, isEditing: Boolean) -> Unit,
+    onAvatarClick: () -> Unit,
 ) {
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -153,6 +158,7 @@ fun PersonaInfoScene(
                         personaList,
                         onCurrentPersonaChanged,
                         onPersonaNameClick,
+                        onAvatarClick,
                     )
                 }
             }
@@ -265,6 +271,7 @@ private fun PersonaHeader(
     personaList: List<PersonaData>,
     onCurrentPersonaChanged: (PersonaData) -> Unit,
     onPersonaNameClick: () -> Unit,
+    onAvatarClick: () -> Unit,
 ) {
     val pagerState = rememberPagerState()
     LaunchedEffect(personaList, currentPersona, pagerState.pageCount) {
@@ -342,11 +349,29 @@ private fun PersonaHeader(
                     )
                 },
                 icon = {
-                    Icon(
-                        Icons.Default.AccountCircle,
-                        contentDescription = null,
-                        modifier = Modifier.size(56.dp),
-                    )
+                    if (item == null || item.avatar.isNullOrEmpty()) {
+                        Icon(
+                            Icons.Default.AccountCircle,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(56.dp)
+                                .clip(CircleShape)
+                                .clickable {
+                                    onAvatarClick.invoke()
+                                },
+                        )
+                    } else {
+                        Image(
+                            rememberImagePainter(item.avatar),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(56.dp)
+                                .clip(CircleShape)
+                                .clickable {
+                                    onAvatarClick.invoke()
+                                },
+                        )
+                    }
                 },
                 trailing = {
                     MaskIconButton(onClick = onPersonaNameClick) {

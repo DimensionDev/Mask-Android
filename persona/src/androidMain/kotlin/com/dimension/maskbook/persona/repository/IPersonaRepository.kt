@@ -20,6 +20,7 @@
  */
 package com.dimension.maskbook.persona.repository
 
+import android.net.Uri
 import com.dimension.maskbook.persona.export.model.ConnectAccountData
 import com.dimension.maskbook.persona.export.model.PersonaData
 import com.dimension.maskbook.persona.export.model.PlatformType
@@ -55,4 +56,5 @@ interface IPersonaRepository {
     fun saveEmailForCurrentPersona(value: String)
     fun savePhoneForCurrentPersona(value: String)
     fun setPlatform(platformType: PlatformType)
+    fun setAvatarForCurrentPersona(avatar: Uri?)
 }
