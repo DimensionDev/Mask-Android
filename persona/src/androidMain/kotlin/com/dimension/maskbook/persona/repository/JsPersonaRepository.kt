@@ -88,8 +88,8 @@ class JsPersonaRepository(database: PersonaDatabase) {
 
         if (oldPersona == null) {
             return if (options.options.createWhenNotExist) {
-                newPersona.createAt = System.currentTimeMillis()
-                newPersona.updateAt = System.currentTimeMillis()
+                newPersona.createdAt = System.currentTimeMillis()
+                newPersona.updatedAt = System.currentTimeMillis()
                 personaDao.insert(newPersona)
                 options.persona
             } else null
@@ -107,11 +107,11 @@ class JsPersonaRepository(database: PersonaDatabase) {
 
         val resultPersona = when (options.options.linkedProfileMergePolicy) {
             0 -> {
-                newPersona.createAt = oldPersona.createAt
+                newPersona.createdAt = oldPersona.createdAt
                 newPersona
             }
             1 -> {
-                oldPersona.updateAt = System.currentTimeMillis()
+                oldPersona.updatedAt = System.currentTimeMillis()
                 oldPersona.merge(newPersona)
             }
             else -> oldPersona

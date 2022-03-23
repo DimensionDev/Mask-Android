@@ -20,7 +20,10 @@
  */
 package com.dimension.maskbook.persona.mock.model
 
+import com.dimension.maskbook.persona.db.model.DbLinkedProfileRecord
 import com.dimension.maskbook.persona.db.model.DbPersonaRecord
+import com.dimension.maskbook.persona.db.model.DbRelationRecord
+import com.dimension.maskbook.persona.export.model.LinkedProfileDetailsState
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -73,6 +76,32 @@ fun mockDbPersonaRecord(
             "k" to JsonPrimitive("123"),
         )
     ),
-    createAt = 1646386534519,
-    updateAt = 1646386534519,
+    createdAt = 1646386534519,
+    updatedAt = 1646386534519,
+)
+
+@TestOnly
+fun mockDbRelationRecord(
+    personaIdentifier: String,
+    profileIdentifier: String,
+    favor: Boolean = false,
+) = DbRelationRecord(
+    personaIdentifier = personaIdentifier,
+    profileIdentifier = profileIdentifier,
+    favor = favor,
+    createdAt = 1646386534519,
+    updatedAt = 1646386534519,
+)
+
+@TestOnly
+fun mockDbLinkedProfileRecord(
+    personaIdentifier: String,
+    profileIdentifier: String,
+    state: LinkedProfileDetailsState = LinkedProfileDetailsState.Confirmed,
+) = DbLinkedProfileRecord(
+    personaIdentifier = personaIdentifier,
+    profileIdentifier = profileIdentifier,
+    state = state,
+    createdAt = 1646386534519,
+    updatedAt = 1646386534519,
 )

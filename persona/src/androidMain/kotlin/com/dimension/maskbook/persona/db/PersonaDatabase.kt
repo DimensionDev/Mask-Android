@@ -56,7 +56,7 @@ import kotlinx.serialization.json.JsonObject
         ProfileWithLinkedProfile::class,
         RelationWithProfile::class,
     ],
-    version = 6,
+    version = 7,
 )
 @TypeConverters(
     JsonObjectConverter::class,

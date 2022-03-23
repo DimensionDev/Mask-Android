@@ -48,6 +48,9 @@ interface RelationDao {
         profileIdentifier: String,
     ): DbRelationRecord?
 
+    @Query("SELECT * FROM DbRelationRecord WHERE personaIdentifier=:personaIdentifier")
+    suspend fun findList(personaIdentifier: String): List<DbRelationRecord>
+
     @Query("SELECT * FROM RelationWithProfile WHERE personaIdentifier=:personaIdentifier")
     fun getListFlow(personaIdentifier: String): Flow<List<RelationWithProfile>>
 

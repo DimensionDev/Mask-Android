@@ -1,12 +1,12 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 6,
-    "identityHash": "17b17747dca4ffd56916cb3a58d43cb3",
+    "version": 7,
+    "identityHash": "abdd31cad553bbc6d8201d2971ef7076",
     "entities": [
       {
         "tableName": "DbPersonaRecord",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`identifier` TEXT NOT NULL, `mnemonicRaw` BLOB, `path` TEXT, `withPassword` INTEGER, `publicKeyRaw` BLOB, `privateKeyRaw` BLOB, `localKeyRaw` BLOB, `nickname` TEXT, `createAt` INTEGER NOT NULL, `updateAt` INTEGER NOT NULL, `hasLogout` INTEGER, `initialized` INTEGER, `avatar` TEXT, `email` TEXT NOT NULL, `phone` TEXT NOT NULL, PRIMARY KEY(`identifier`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`identifier` TEXT NOT NULL, `mnemonicRaw` BLOB, `path` TEXT, `withPassword` INTEGER, `publicKeyRaw` BLOB, `privateKeyRaw` BLOB, `localKeyRaw` BLOB, `nickname` TEXT, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, `hasLogout` INTEGER, `initialized` INTEGER, `avatar` TEXT, `email` TEXT NOT NULL, `phone` TEXT NOT NULL, PRIMARY KEY(`identifier`))",
         "fields": [
           {
             "fieldPath": "identifier",
@@ -57,14 +57,14 @@
             "notNull": false
           },
           {
-            "fieldPath": "createAt",
-            "columnName": "createAt",
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "updateAt",
-            "columnName": "updateAt",
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -205,7 +205,18 @@
           ],
           "autoGenerate": true
         },
-        "indices": [],
+        "indices": [
+          {
+            "name": "index_DbRelationRecord_personaIdentifier_profileIdentifier",
+            "unique": true,
+            "columnNames": [
+              "personaIdentifier",
+              "profileIdentifier"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_DbRelationRecord_personaIdentifier_profileIdentifier` ON `${TABLE_NAME}` (`personaIdentifier`, `profileIdentifier`)"
+          }
+        ],
         "foreignKeys": []
       },
       {
@@ -258,13 +269,13 @@
         "indices": [
           {
             "name": "index_DbLinkedProfileRecord_personaIdentifier_profileIdentifier",
-            "unique": false,
+            "unique": true,
             "columnNames": [
               "personaIdentifier",
               "profileIdentifier"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_DbLinkedProfileRecord_personaIdentifier_profileIdentifier` ON `${TABLE_NAME}` (`personaIdentifier`, `profileIdentifier`)"
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_DbLinkedProfileRecord_personaIdentifier_profileIdentifier` ON `${TABLE_NAME}` (`personaIdentifier`, `profileIdentifier`)"
           }
         ],
         "foreignKeys": []
@@ -356,7 +367,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '17b17747dca4ffd56916cb3a58d43cb3')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'abdd31cad553bbc6d8201d2971ef7076')"
     ]
   }
 }

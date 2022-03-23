@@ -42,6 +42,9 @@ interface LinkedProfileDao {
     @Query("SELECT * FROM DbLinkedProfileRecord WHERE profileIdentifier=:profileIdentifier LIMIT 1")
     suspend fun find(profileIdentifier: String): DbLinkedProfileRecord?
 
+    @Query("SELECT * FROM DbLinkedProfileRecord WHERE personaIdentifier=:personaIdentifier")
+    suspend fun findList(personaIdentifier: String): List<DbLinkedProfileRecord>
+
     @Query("UPDATE DbLinkedProfileRecord SET state=:state WHERE personaIdentifier=:personaIdentifier AND profileIdentifier=:profileIdentifier")
     suspend fun updateFavor(
         personaIdentifier: String,

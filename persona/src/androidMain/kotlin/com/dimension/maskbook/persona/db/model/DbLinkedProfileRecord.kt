@@ -32,7 +32,7 @@ import com.dimension.maskbook.persona.export.model.LinkedProfileDetailsState
                 "personaIdentifier",
                 "profileIdentifier",
             ],
-            unique = false
+            unique = true
         )
     ],
 )
