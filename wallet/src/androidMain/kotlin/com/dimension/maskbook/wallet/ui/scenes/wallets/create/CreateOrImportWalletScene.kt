@@ -44,6 +44,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.dimension.maskbook.common.ui.widget.HorizontalScenePadding
 import com.dimension.maskbook.common.ui.widget.MaskDialog
 import com.dimension.maskbook.common.ui.widget.MaskInputField
 import com.dimension.maskbook.common.ui.widget.MaskListItem
@@ -78,7 +79,7 @@ fun CreateOrImportWalletScene(
             }
             Column(
                 modifier = Modifier
-                    .padding(horizontal = 23.dp)
+                    .padding(horizontal = HorizontalScenePadding)
                     .verticalScroll(rememberScrollState())
                     .fillMaxSize(),
             ) {

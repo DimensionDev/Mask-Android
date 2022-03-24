@@ -40,6 +40,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
+import com.dimension.maskbook.common.ui.widget.HorizontalScenePadding
 import com.dimension.maskbook.common.ui.widget.MaskDialog
 import com.dimension.maskbook.common.ui.widget.MaskModal
 import com.dimension.maskbook.common.ui.widget.MaskPasswordInputField
@@ -60,7 +61,7 @@ fun UnlockWalletDialog(
     MaskDialog(
         // workaround for https://issuetracker.google.com/issues/194911971
         properties = DialogProperties(usePlatformDefaultWidth = false),
-        modifier = Modifier.padding(horizontal = 23.dp),
+        modifier = Modifier.padding(horizontal = HorizontalScenePadding),
         onDismissRequest = onBack,
         title = {
             Text(text = stringResource(R.string.scene_wallet_unlock_title))
