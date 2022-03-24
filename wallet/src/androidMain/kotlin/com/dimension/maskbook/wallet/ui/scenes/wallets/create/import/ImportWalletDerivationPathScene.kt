@@ -104,7 +104,8 @@ fun ImportWalletDerivationPathScene(
     @Path("wallet") wallet: String,
     @Path("mnemonicCode") codeString: String,
 ) {
-    val code = codeString.split(" ")
+    // "word1+word2+word3+word5..."
+    val code = codeString.split("+")
     val viewModel = getViewModel<ImportWalletDerivationPathViewModel> {
         parametersOf(wallet, code)
     }
