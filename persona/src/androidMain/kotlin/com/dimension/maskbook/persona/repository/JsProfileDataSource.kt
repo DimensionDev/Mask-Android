@@ -20,6 +20,7 @@
  */
 package com.dimension.maskbook.persona.repository
 
+import com.dimension.maskbook.common.manager.ImageLoaderManager
 import com.dimension.maskbook.persona.db.PersonaDatabase
 import com.dimension.maskbook.persona.db.migrator.mapper.toDbLinkedProfileRecord
 import com.dimension.maskbook.persona.db.migrator.mapper.toDbProfileRecord
@@ -40,7 +41,10 @@ import com.dimension.maskbook.persona.model.options.QueryProfilesOptions
 import com.dimension.maskbook.persona.model.options.StoreAvatarOptions
 import com.dimension.maskbook.persona.model.options.UpdateProfileOptions
 
-class JsProfileDataSource(database: PersonaDatabase) {
+class JsProfileDataSource(
+    database: PersonaDatabase,
+    private val imageLoaderManager: ImageLoaderManager,
+) {
 
     private val profileDao = database.profileDao()
     private val linkedProfileDao = database.linkedProfileDao()
@@ -126,6 +130,7 @@ class JsProfileDataSource(database: PersonaDatabase) {
 
     suspend fun queryAvatar(options: QueryAvatarOptions): String? {
         return profileDao.find(options.profileIdentifier)?.avatar
+            ?.let { imageLoaderManager.convertUrlToBase64(it) }
     }
 
     suspend fun storeAvatar(options: StoreAvatarOptions) {

@@ -113,7 +113,7 @@ object PersonaSetup : ModuleSetup {
         }
 
         single { JsPersonaDataSource(get()) }
-        single { JsProfileDataSource(get()) }
+        single { JsProfileDataSource(get(), get()) }
         single { JsRelationDataSource(get()) }
         single { JsPostDataSource(get()) }
         single { DbPersonaDataSource(get()) }
