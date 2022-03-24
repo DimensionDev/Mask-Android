@@ -39,6 +39,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -51,15 +52,30 @@ class WalletBalancesViewModel(
     private val collectibleRepository: ICollectibleRepository,
     private val refreshWalletUseCase: RefreshWalletUseCase,
 ) : ViewModel() {
+
+    init {
+        viewModelScope.launch {
+            repository.currentChain
+                .distinctUntilChanged()
+                .collect { chain ->
+                    chain?.let {
+                        _displayChainType.value = it.chainType
+                    }
+                }
+        }
+    }
+
     val wallets by lazy {
         repository.wallets.asStateIn(viewModelScope, emptyList())
     }
     val currentWallet by lazy {
         repository.currentWallet.asStateIn(viewModelScope, null)
     }
+
     @OptIn(ExperimentalCoroutinesApi::class)
     val collectible by lazy {
-        currentWallet.mapNotNull { it }.flatMapLatest { collectibleRepository.getCollectibleCollectionsByWallet(it) }
+        currentWallet.mapNotNull { it }
+            .flatMapLatest { collectibleRepository.getCollectibleCollectionsByWallet(it) }
     }
     val dWebData by lazy {
         repository.dWebData.asStateIn(viewModelScope, null)
