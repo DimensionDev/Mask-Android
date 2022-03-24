@@ -32,6 +32,9 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.dimension.maskbook.common.ext.decodeBase64
 import com.dimension.maskbook.common.ext.decodeJson
+import com.dimension.maskbook.common.ext.fromHexString
+import com.dimension.maskbook.common.ext.humanizeDollar
+import com.dimension.maskbook.common.ext.humanizeToken
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.route.navigationComposeBottomSheet
 import com.dimension.maskbook.common.route.navigationComposeBottomSheetPackage
@@ -39,9 +42,6 @@ import com.dimension.maskbook.common.routeProcessor.annotations.Back
 import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
 import com.dimension.maskbook.common.routeProcessor.annotations.Path
 import com.dimension.maskbook.wallet.export.model.WalletTokenData
-import com.dimension.maskbook.wallet.ext.fromHexString
-import com.dimension.maskbook.wallet.ext.humanizeDollar
-import com.dimension.maskbook.wallet.ext.humanizeToken
 import com.dimension.maskbook.wallet.repository.GasPriceEditMode
 import com.dimension.maskbook.wallet.repository.SendTokenConfirmData
 import com.dimension.maskbook.wallet.route.WalletRoute

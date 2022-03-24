@@ -51,7 +51,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.dimension.maskbook.common.ui.widget.MaskInputField
+import com.dimension.maskbook.common.ui.widget.MaskDecimalInputField
 import com.dimension.maskbook.common.ui.widget.MaskModal
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.common.ui.widget.button.clickable
@@ -203,9 +203,11 @@ private fun CustomContent(
                 text = stringResource(R.string.scene_sendTransaction_gasPrice_gasLimit),
             )
             Spacer(modifier = Modifier.height(8.dp))
-            MaskInputField(
-                value = gasLimit,
-                onValueChange = onGasLimitChanged,
+            MaskDecimalInputField(
+                decimalValue = gasLimit.toBigDecimal(),
+                onValueChange = {
+                    onGasLimitChanged.invoke(it.toString())
+                },
                 modifier = Modifier.fillMaxWidth(),
             )
             if (!gasLimitError.isNullOrEmpty()) {
@@ -221,9 +223,9 @@ private fun CustomContent(
                 Text(text = "~$maxPriorityFeePrice")
             }
             Spacer(modifier = Modifier.height(8.dp))
-            MaskInputField(
-                value = maxPriorityFee,
-                onValueChange = onMaxPriorityFeeChanged,
+            MaskDecimalInputField(
+                decimalValue = maxPriorityFee.toBigDecimal(),
+                onValueChange = { onMaxPriorityFeeChanged.invoke(it.toString()) },
                 modifier = Modifier.fillMaxWidth(),
             )
             if (!maxPriorityFeeError.isNullOrEmpty()) {
@@ -239,9 +241,9 @@ private fun CustomContent(
                 Text(text = "~$maxFeePrice")
             }
             Spacer(modifier = Modifier.height(8.dp))
-            MaskInputField(
-                value = maxFee,
-                onValueChange = onMaxFeeChanged,
+            MaskDecimalInputField(
+                decimalValue = maxFee.toBigDecimal(),
+                onValueChange = { onMaxFeeChanged.invoke(it.toString()) },
                 modifier = Modifier.fillMaxWidth(),
             )
             if (!maxFeeError.isNullOrEmpty()) {
