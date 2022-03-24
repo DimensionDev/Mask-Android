@@ -41,11 +41,11 @@ class JsRelationDataSource(database: PersonaDatabase) {
         return options.relation
     }
 
-    suspend fun queryRelation(options: QueryRelationOptions): IndexedDBRelation? {
+    suspend fun queryRelation(options: QueryRelationOptions): List<IndexedDBRelation> {
         return relationDao.find(
             personaIdentifier = options.personaIdentifier,
             profileIdentifier = options.profileIdentifier
-        )?.toIndexedDBRelation()
+        ).map { it.toIndexedDBRelation() }
     }
 
     suspend fun queryRelations(options: QueryRelationsOptions): List<IndexedDBRelation> {

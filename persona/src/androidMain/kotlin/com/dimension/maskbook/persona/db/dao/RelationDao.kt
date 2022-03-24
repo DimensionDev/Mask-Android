@@ -42,11 +42,11 @@ interface RelationDao {
     @RawQuery
     suspend fun findListRaw(query: SupportSQLiteQuery): List<DbRelationRecord>
 
-    @Query("SELECT * FROM DbRelationRecord WHERE personaIdentifier=:personaIdentifier AND profileIdentifier=:profileIdentifier LIMIT 1")
+    @Query("SELECT * FROM DbRelationRecord WHERE personaIdentifier=:personaIdentifier AND profileIdentifier=:profileIdentifier")
     suspend fun find(
         personaIdentifier: String,
         profileIdentifier: String,
-    ): DbRelationRecord?
+    ): List<DbRelationRecord>
 
     @Query("SELECT * FROM DbRelationRecord WHERE personaIdentifier=:personaIdentifier")
     suspend fun findList(personaIdentifier: String): List<DbRelationRecord>
