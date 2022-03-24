@@ -46,6 +46,7 @@ import com.dimension.maskbook.wallet.db.model.DbWalletBalance
 import com.dimension.maskbook.wallet.db.model.DbWalletToken
 import com.dimension.maskbook.wallet.db.model.WalletSource
 import com.dimension.maskbook.wallet.export.model.ChainType
+import com.dimension.maskbook.wallet.export.model.CollectibleContractSchema
 import com.dimension.maskbook.wallet.export.model.DbWalletBalanceType
 import com.dimension.maskbook.wallet.export.model.TokenData
 import com.dimension.maskbook.wallet.export.model.WalletCollectibleData
@@ -66,7 +67,6 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.web3j.abi.FunctionEncoder
@@ -633,6 +633,13 @@ internal class WalletRepository(
         )
     }
 
+    /**
+     * currently support ERC721 and ERC1155, ERC1155 can transfer multiple token in one transaction
+     * ERC721:safeTransferFrom(address _from, address _to, uint256 _tokenId, bytes data)
+     * ERC1155:safeTransferFrom(address _from, address _to, uint256 _id, uint256 _value, bytes data)
+     * _value: transfer amount, normally one
+     * data: additional data, normally empty
+     */
     override fun sendCollectibleWithCurrentWallet(
         address: String,
         collectible: WalletCollectibleData,
@@ -644,17 +651,27 @@ internal class WalletRepository(
     ) {
         scope.launch {
             currentWallet.firstOrNull()?.let { wallet ->
-                val data = Function(
-                    "safeTransferFrom",
-                    listOf(
+                val data = when (collectible.contract.schema) {
+                    CollectibleContractSchema.ERC721 -> listOf(
                         Address(wallet.address), // from
                         Address(address), // to
-                        Uint256(collectible.tokenId.toBigInteger()), // token id
-                        Uint256(BigInteger.valueOf(1)), // transfer amount
-                        DynamicBytes(byteArrayOf()) // additional dat， normally empty
-                    ),
-                    listOf(),
-                ).let {
+                        Uint256(collectible.tokenId.toBigInteger()),
+                        DynamicBytes(byteArrayOf())
+                    )
+                    CollectibleContractSchema.ERC1155 -> listOf(
+                        Address(wallet.address), // from
+                        Address(address), // to
+                        Uint256(collectible.tokenId.toBigInteger()),
+                        Uint256(BigInteger.valueOf(1)),
+                        DynamicBytes(byteArrayOf())
+                    )
+                }.let {
+                    Function(
+                        "safeTransferFrom",
+                        it,
+                        listOf()
+                    )
+                }.let {
                     FunctionEncoder.encode(it)
                 }
                 transactionWithCurrentWalletAndChainType(

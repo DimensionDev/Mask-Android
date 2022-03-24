@@ -93,7 +93,8 @@ fun WalletCollectibleData.Companion.fromDb(data: DbCollectible) = with(data) {
             address = contract.address,
             imageUrl = contract.imageUrl,
             name = contract.name,
-            symbol = contract.symbol
+            symbol = contract.symbol,
+            schema = contract.schema,
         ),
         collection = WalletCollectibleCollectionData.fromDb(this)
     )
