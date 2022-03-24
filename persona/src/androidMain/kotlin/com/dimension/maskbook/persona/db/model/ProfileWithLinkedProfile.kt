@@ -34,8 +34,8 @@ import kotlinx.serialization.json.JsonObject
         "link.personaIdentifier, link.state, " +
         "persona.localKeyRaw " +
         "FROM DbProfileRecord profile " +
-        "INNER JOIN DbLinkedProfileRecord link ON link.profileIdentifier=profile.identifier " +
-        "INNER JOIN DbPersonaRecord persona ON persona.identifier=link.personaIdentifier"
+        "LEFT OUTER JOIN DbLinkedProfileRecord link ON link.profileIdentifier=profile.identifier " +
+        "LEFT OUTER JOIN DbPersonaRecord persona ON persona.identifier=link.personaIdentifier"
 )
 data class ProfileWithLinkedProfile(
     val identifier: String,
@@ -44,8 +44,8 @@ data class ProfileWithLinkedProfile(
     val avatar: String? = null,
     val createdAt: Long = 0,
     val updatedAt: Long = 0,
-    val personaIdentifier: String = "",
-    val state: LinkedProfileDetailsState = LinkedProfileDetailsState.Pending,
+    val personaIdentifier: String? = null,
+    val state: LinkedProfileDetailsState? = null,
     @TypeConverters(EncryptJsonObjectConverter::class)
     @ColumnInfo(name = "localKeyRaw", typeAffinity = ColumnInfo.BLOB)
     val localKey: JsonObject? = null,

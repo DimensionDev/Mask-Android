@@ -49,6 +49,6 @@ private fun ProfileWithLinkedProfile.toSocialData(): SocialData {
         avatar = avatar.orEmpty(),
         network = network ?: Network.Twitter,
         personaId = personaIdentifier,
-        linkedPersona = state.isLinked(),
+        linkedPersona = state?.isLinked() ?: false,
     )
 }

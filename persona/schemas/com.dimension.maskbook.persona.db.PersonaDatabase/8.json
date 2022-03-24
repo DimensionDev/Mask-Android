@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 7,
-    "identityHash": "abdd31cad553bbc6d8201d2971ef7076",
+    "version": 8,
+    "identityHash": "0c4e3be1c321d8bb7ff7175bca35b391",
     "entities": [
       {
         "tableName": "DbPersonaRecord",
@@ -358,7 +358,7 @@
     "views": [
       {
         "viewName": "ProfileWithLinkedProfile",
-        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT profile.identifier, profile.nickname, profile.network, profile.avatar, profile.updatedAt, profile.createdAt, link.personaIdentifier, link.state, persona.localKeyRaw FROM DbProfileRecord profile INNER JOIN DbLinkedProfileRecord link ON link.profileIdentifier=profile.identifier INNER JOIN DbPersonaRecord persona ON persona.identifier=link.personaIdentifier"
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT profile.identifier, profile.nickname, profile.network, profile.avatar, profile.updatedAt, profile.createdAt, link.personaIdentifier, link.state, persona.localKeyRaw FROM DbProfileRecord profile LEFT OUTER JOIN DbLinkedProfileRecord link ON link.profileIdentifier=profile.identifier LEFT OUTER JOIN DbPersonaRecord persona ON persona.identifier=link.personaIdentifier"
       },
       {
         "viewName": "RelationWithProfile",
@@ -367,7 +367,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'abdd31cad553bbc6d8201d2971ef7076')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0c4e3be1c321d8bb7ff7175bca35b391')"
     ]
   }
 }
