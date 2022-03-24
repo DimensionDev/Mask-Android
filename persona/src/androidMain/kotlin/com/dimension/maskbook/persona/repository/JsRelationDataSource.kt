@@ -27,6 +27,7 @@ import com.dimension.maskbook.persona.db.sql.buildQueryRelationsSql
 import com.dimension.maskbook.persona.model.indexed.IndexedDBRelation
 import com.dimension.maskbook.persona.model.options.CreateRelationOptions
 import com.dimension.maskbook.persona.model.options.DeleteRelationOptions
+import com.dimension.maskbook.persona.model.options.QueryRelationOptions
 import com.dimension.maskbook.persona.model.options.QueryRelationsOptions
 import com.dimension.maskbook.persona.model.options.UpdateRelationOptions
 
@@ -38,6 +39,13 @@ class JsRelationDataSource(database: PersonaDatabase) {
         val newRelation = options.relation.toDbRelationRecord()
         relationDao.insert(newRelation)
         return options.relation
+    }
+
+    suspend fun queryRelation(options: QueryRelationOptions): IndexedDBRelation? {
+        return relationDao.find(
+            personaIdentifier = options.personaIdentifier,
+            profileIdentifier = options.profileIdentifier
+        )?.toIndexedDBRelation()
     }
 
     suspend fun queryRelations(options: QueryRelationsOptions): List<IndexedDBRelation> {

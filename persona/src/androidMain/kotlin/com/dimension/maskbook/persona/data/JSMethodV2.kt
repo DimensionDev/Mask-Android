@@ -48,6 +48,7 @@ import com.dimension.maskbook.persona.model.options.QueryPostOptions
 import com.dimension.maskbook.persona.model.options.QueryPostsOptions
 import com.dimension.maskbook.persona.model.options.QueryProfileOptions
 import com.dimension.maskbook.persona.model.options.QueryProfilesOptions
+import com.dimension.maskbook.persona.model.options.QueryRelationOptions
 import com.dimension.maskbook.persona.model.options.QueryRelationsOptions
 import com.dimension.maskbook.persona.model.options.StoreAvatarOptions
 import com.dimension.maskbook.persona.model.options.UpdatePersonaOptions
@@ -184,6 +185,10 @@ class JSMethodV2(
                 val options = message.decodeOptions<CreateRelationOptions>() ?: return true
                 return message.responseSuccess(relationDataSource.createRelation(options))
             }
+            queryRelation -> {
+                val options = message.decodeOptions<QueryRelationOptions>() ?: return true
+                return message.responseSuccess(relationDataSource.queryRelation(options))
+            }
             queryRelations -> {
                 val options = message.decodeOptions<QueryRelationsOptions>() ?: return true
                 return message.responseSuccess(relationDataSource.queryRelations(options))
@@ -271,6 +276,7 @@ class JSMethodV2(
         private const val detachProfile = "detach_profile"
 
         private const val createRelation = "create_relation"
+        private const val queryRelation = "query_relation"
         private const val queryRelations = "query_relations"
         private const val updateRelation = "update_relation"
         private const val deleteRelation = "delete_relation"
@@ -288,7 +294,7 @@ class JSMethodV2(
         private val methods = arrayOf(
             createPersona, queryPersona, queryPersonaByProfile, queryPersonas, updatePersona, deletePersona,
             createProfile, queryProfile, queryProfiles, updateProfile, deleteProfile, attachProfile, detachProfile,
-            createRelation, queryRelations, updateRelation, deleteRelation,
+            createRelation, queryRelation, queryRelations, updateRelation, deleteRelation,
             queryAvatar, storeAvatar,
             createPost, queryPost, queryPosts, updatePost,
             notifyVisibleDetectedProfileChanged,
