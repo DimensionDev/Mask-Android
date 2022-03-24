@@ -41,6 +41,7 @@ import coil.compose.rememberImagePainter
 import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.common.ext.humanizeDollar
 import com.dimension.maskbook.common.ext.humanizeToken
+import com.dimension.maskbook.common.ui.widget.HorizontalScenePadding
 import com.dimension.maskbook.common.ui.widget.MaskInputField
 import com.dimension.maskbook.common.ui.widget.MaskListItem
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
@@ -81,7 +82,7 @@ fun SearchTokenScene(
                     value = query,
                     onValueChange = onQueryChanged,
                     modifier = Modifier.fillMaxWidth()
-                        .padding(horizontal = 23.dp),
+                        .padding(horizontal = HorizontalScenePadding),
                     leadingIcon = {
                         Image(
                             painter = painterResource(id = R.drawable.ic_search),

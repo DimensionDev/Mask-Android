@@ -112,7 +112,7 @@ private object MaskModalDefaults {
 
 val ModalPadding = PaddingValues(
     top = 0.dp,
-    start = 24.dp,
-    end = 24.dp,
+    start = HorizontalScenePadding,
+    end = HorizontalScenePadding,
     bottom = 0.dp,
 )

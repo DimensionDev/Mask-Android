@@ -72,26 +72,20 @@ fun WalletIntroScene(
             ) {
                 Text(text = stringResource(R.string.common_controls_create_wallet))
             }
-            ButtonSpacing()
+            Spacer(modifier = Modifier.height(16.dp))
             PrimaryButton(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = onImport,
             ) {
                 Text(text = stringResource(R.string.common_controls_import_wallet))
             }
-            ButtonSpacing()
+            Spacer(modifier = Modifier.height(16.dp))
             PrimaryButton(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = onConnect,
             ) {
                 Text(text = stringResource(R.string.scene_wallet_connect_wallet_connect))
             }
-            ButtonSpacing()
         }
     }
-}
-
-@Composable
-private fun ButtonSpacing() {
-    Spacer(modifier = Modifier.height(16.dp))
 }

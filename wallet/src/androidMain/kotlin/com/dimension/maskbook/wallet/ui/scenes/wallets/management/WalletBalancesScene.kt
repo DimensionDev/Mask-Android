@@ -77,6 +77,7 @@ import com.dimension.maskbook.common.ui.theme.moreColor
 import com.dimension.maskbook.common.ui.widget.MaskListItem
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
+import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.common.ui.widget.button.MaskButton
 import com.dimension.maskbook.common.ui.widget.button.MaskIconCardButton
 import com.dimension.maskbook.wallet.R
@@ -170,7 +171,7 @@ fun WalletBalancesScene(
             SwipeRefresh(refreshState, onRefresh = onWalletRefresh) {
 
                 LazyColumn(
-                    contentPadding = PaddingValues(horizontal = 22.dp, vertical = 24.dp),
+                    contentPadding = ScaffoldPadding,
                     verticalArrangement = Arrangement.spacedBy(12.dp),
                 ) {
                     item {

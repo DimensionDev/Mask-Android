@@ -58,6 +58,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.common.ui.widget.CircleCheckbox
+import com.dimension.maskbook.common.ui.widget.HorizontalScenePadding
 import com.dimension.maskbook.common.ui.widget.MaskListItem
 import com.dimension.maskbook.common.ui.widget.MaskModal
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
@@ -164,7 +165,7 @@ fun WalletSwitchSceneModal(
         ) { innerPadding ->
             LazyColumn(
                 modifier = Modifier.padding(innerPadding),
-                contentPadding = PaddingValues(horizontal = 22.dp, vertical = 16.dp),
+                contentPadding = PaddingValues(horizontal = HorizontalScenePadding, vertical = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 items(wallets) { wallet ->
@@ -266,7 +267,7 @@ private fun SupportChainTypeList(
     onChainTypeSelected: (ChainType) -> Unit
 ) {
     LazyRow(
-        contentPadding = PaddingValues(horizontal = 22.dp),
+        contentPadding = PaddingValues(horizontal = HorizontalScenePadding),
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         items(supportedChainType) { item ->
@@ -346,7 +347,7 @@ private fun WalletSwitchListItem(
 private fun WalletSwitchBottomBar(
     onClick: () -> Unit
 ) {
-    Column(Modifier.padding(horizontal = 23.dp, vertical = 20.dp)) {
+    Column(Modifier.padding(horizontal = HorizontalScenePadding, vertical = 20.dp)) {
         MaskButton(
             onClick = onClick,
             colors = ButtonDefaults.buttonColors(

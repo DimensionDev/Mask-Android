@@ -50,6 +50,7 @@ import coil.compose.rememberImagePainter
 import com.dimension.maskbook.common.ext.humanizeDollar
 import com.dimension.maskbook.common.ext.humanizeToken
 import com.dimension.maskbook.common.model.DateType
+import com.dimension.maskbook.common.ui.widget.HorizontalScenePadding
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskScene
 import com.dimension.maskbook.common.ui.widget.MaskTopAppBar
@@ -93,7 +94,7 @@ fun TokenDetailScene(
                         contentColor = contentColorFor(backgroundColor = Color(0XFF212E59)),
                         color = Color(0XFF212E59),
                         shape = MaterialTheme.shapes.medium,
-                        modifier = Modifier.padding(horizontal = 23.dp)
+                        modifier = Modifier.padding(horizontal = HorizontalScenePadding)
                     ) {
                         Row(
                             modifier = Modifier.padding(16.dp),
@@ -140,7 +141,7 @@ fun TokenDetailScene(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 23.dp),
+                            .padding(horizontal = HorizontalScenePadding),
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         PrimaryButton(

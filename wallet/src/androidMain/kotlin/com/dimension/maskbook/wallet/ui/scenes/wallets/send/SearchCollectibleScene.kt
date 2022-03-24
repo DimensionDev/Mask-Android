@@ -37,6 +37,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.items
+import com.dimension.maskbook.common.ui.widget.HorizontalScenePadding
 import com.dimension.maskbook.common.ui.widget.MaskInputField
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskScene
@@ -75,7 +76,7 @@ fun SearchCollectibleScene(
                     value = query,
                     onValueChange = onQueryChanged,
                     modifier = Modifier.fillMaxWidth()
-                        .padding(horizontal = 23.dp),
+                        .padding(horizontal = HorizontalScenePadding),
                     leadingIcon = {
                         Image(
                             painter = painterResource(id = R.drawable.ic_search),
