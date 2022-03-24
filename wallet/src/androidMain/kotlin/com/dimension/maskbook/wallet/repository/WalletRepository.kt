@@ -79,6 +79,7 @@ import org.web3j.ens.EnsResolver
 import org.web3j.protocol.Web3j
 import org.web3j.protocol.http.HttpService
 import org.web3j.tx.RawTransactionManager
+import java.math.BigInteger
 import java.util.UUID
 import kotlin.math.pow
 import kotlin.time.Duration.Companion.seconds
@@ -648,8 +649,9 @@ internal class WalletRepository(
                     listOf(
                         Address(wallet.address), // from
                         Address(address), // to
-                        Uint256(collectible.tokenId.toBigInteger()),
-                        DynamicBytes(byteArrayOf())
+                        Uint256(collectible.tokenId.toBigInteger()), // token id
+                        Uint256(BigInteger.valueOf(1)), // transfer amount
+                        DynamicBytes(byteArrayOf()) // additional dat， normally empty
                     ),
                     listOf(),
                 ).let {
