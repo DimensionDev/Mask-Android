@@ -32,6 +32,7 @@ import com.dimension.maskbook.wallet.db.model.DbCollectibleCreator
 import com.dimension.maskbook.wallet.db.model.DbCollectibleUrl
 import com.dimension.maskbook.wallet.db.model.DbCollection
 import com.dimension.maskbook.wallet.export.model.ChainType
+import com.dimension.maskbook.wallet.export.model.CollectibleContractSchema
 import com.dimension.maskbook.wallet.services.OpenSeaServices
 import com.dimension.maskbook.wallet.services.model.AssetElement
 
@@ -103,6 +104,13 @@ open class BaseCollectibleMediator<Value : Any>(
                     imageUrl = this?.imageURL.orEmpty(),
                     name = this?.name.orEmpty(),
                     symbol = this?.symbol.orEmpty(),
+                    schema = this?.schemaName?.let {
+                        try {
+                            CollectibleContractSchema.valueOf(it)
+                        } catch (e: Throwable) {
+                            null
+                        }
+                    } ?: CollectibleContractSchema.ERC721
                 )
             },
             url = DbCollectibleUrl(

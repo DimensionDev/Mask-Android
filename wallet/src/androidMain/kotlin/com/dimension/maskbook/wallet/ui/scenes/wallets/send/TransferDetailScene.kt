@@ -154,7 +154,7 @@ fun TransferDetailScene(
                             amount = amount,
                             onValueChanged = onAmountChanged,
                             onMax = { onAmountChanged.invoke(maxAmount) },
-                            error = amount.toBigDecimal() > maxAmount.toBigDecimal()
+                            error = amount.toBigDecimalOrNull() ?: BigDecimal.ZERO > maxAmount.toBigDecimalOrNull() ?: BigDecimal.ZERO
                         )
                     }
 
