@@ -21,7 +21,7 @@
 package com.dimension.maskbook.persona.repository
 
 import com.dimension.maskbook.persona.db.PersonaDatabase
-import com.dimension.maskbook.persona.db.model.RelationWithProfile
+import com.dimension.maskbook.persona.db.model.RelationWithLinkedProfile
 import com.dimension.maskbook.persona.export.model.Network
 import com.dimension.maskbook.persona.model.ContactData
 import kotlinx.coroutines.flow.Flow
@@ -42,13 +42,13 @@ class DbRelationDataSource(database: PersonaDatabase) {
     }
 }
 
-fun RelationWithProfile.toContactData(): ContactData {
+fun RelationWithLinkedProfile.toContactData(): ContactData {
     return ContactData(
-        id = profileIdentifier,
-        name = nickname.orEmpty(),
-        personaId = personaIdentifier,
-        avatar = avatar.orEmpty(),
-        linkedPersona = state?.isLinked() == true,
-        network = network ?: Network.Twitter,
+        id = relation.profileIdentifier,
+        name = relation.nickname.orEmpty(),
+        personaId = relation.personaIdentifier,
+        avatar = relation.avatar.orEmpty(),
+        linkedPersona = links.any { it.state.isLinked() },
+        network = relation.network ?: Network.Twitter,
     )
 }

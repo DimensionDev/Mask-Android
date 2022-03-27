@@ -109,8 +109,8 @@ private fun buildWhereSql(
             "hasLogout = :hasLogout"
         } else null,
         if (!nameContains.isNullOrEmpty()) {
-            args.add(nameContains)
-            "nickname LIKE '%:nameContains%'"
+            args.add("%$nameContains%")
+            "nickname LIKE :nameContains"
         } else null,
         if (initialized != null) {
             args.add(initialized)

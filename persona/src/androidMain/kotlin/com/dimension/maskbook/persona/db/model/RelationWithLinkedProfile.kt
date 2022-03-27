@@ -18,23 +18,17 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.persona.db.sql
+package com.dimension.maskbook.persona.db.model
 
-import com.dimension.maskbook.persona.model.options.PageOptions
+import androidx.room.Embedded
+import androidx.room.Relation
 
-private const val dbName = "ViewRelationDetail"
-
-fun buildQueryRelationsSql(
-    personaIdentifier: String? = null,
-    network: String? = null,
-    nameContains: String? = null,
-    favor: Boolean? = null,
-    pageOptions: PageOptions? = null,
-) = buildQuerySql(
-    dbName = dbName,
-    personaIdentifier = personaIdentifier,
-    network = network,
-    nameContains = nameContains,
-    favor = favor,
-    pageOptions = pageOptions,
+data class RelationWithLinkedProfile(
+    @Embedded
+    val relation: ViewRelationDetail,
+    @Relation(
+        parentColumn = "profileIdentifier",
+        entityColumn = "profileIdentifier",
+    )
+    val links: List<DbLinkedProfileRecord>,
 )

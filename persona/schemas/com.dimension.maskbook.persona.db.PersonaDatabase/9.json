@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 8,
-    "identityHash": "0c4e3be1c321d8bb7ff7175bca35b391",
+    "version": 9,
+    "identityHash": "01e16f242eafce0632c5bba4dd9ad92a",
     "entities": [
       {
         "tableName": "DbPersonaRecord",
@@ -357,17 +357,17 @@
     ],
     "views": [
       {
-        "viewName": "ProfileWithLinkedProfile",
-        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT profile.identifier, profile.nickname, profile.network, profile.avatar, profile.updatedAt, profile.createdAt, link.personaIdentifier, link.state, persona.localKeyRaw FROM DbProfileRecord profile LEFT OUTER JOIN DbLinkedProfileRecord link ON link.profileIdentifier=profile.identifier LEFT OUTER JOIN DbPersonaRecord persona ON persona.identifier=link.personaIdentifier"
+        "viewName": "ViewRelationDetail",
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT relation.personaIdentifier, relation.profileIdentifier, relation.favor, profile.nickname, profile.avatar, profile.network FROM DbRelationRecord relation INNER JOIN DbProfileRecord profile ON profile.identifier=relation.profileIdentifier"
       },
       {
-        "viewName": "RelationWithProfile",
-        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT relation.personaIdentifier, relation.profileIdentifier, relation.favor, relation.updatedAt, relation.createdAt, profile.nickname, profile.avatar, profile.network, link.personaIdentifier as linkedPersona, link.state FROM DbRelationRecord relation INNER JOIN DbProfileRecord profile ON profile.identifier=relation.profileIdentifier LEFT OUTER JOIN DbLinkedProfileRecord link ON link.profileIdentifier=relation.profileIdentifier"
+        "viewName": "ViewLinkedProfileWithKey",
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT link.personaIdentifier, link.profileIdentifier, link.state, persona.publicKeyRaw, persona.privateKeyRaw, persona.localKeyRaw FROM DbLinkedProfileRecord link LEFT OUTER JOIN DbPersonaRecord persona on persona.identifier=link.personaIdentifier"
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0c4e3be1c321d8bb7ff7175bca35b391')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '01e16f242eafce0632c5bba4dd9ad92a')"
     ]
   }
 }

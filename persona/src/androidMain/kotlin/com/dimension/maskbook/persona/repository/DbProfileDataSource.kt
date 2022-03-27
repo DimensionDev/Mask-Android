@@ -43,12 +43,13 @@ class DbProfileDataSource(database: PersonaDatabase) {
 }
 
 private fun ProfileWithLinkedProfile.toSocialData(): SocialData {
+    val link = links.firstOrNull { it.state.isLinked() }
     return SocialData(
-        id = identifier,
-        name = nickname.orEmpty(),
-        avatar = avatar.orEmpty(),
-        network = network ?: Network.Twitter,
-        personaId = personaIdentifier,
-        linkedPersona = state?.isLinked() ?: false,
+        id = profile.identifier,
+        name = profile.nickname.orEmpty(),
+        avatar = profile.avatar.orEmpty(),
+        network = profile.network ?: Network.Twitter,
+        personaId = link?.personaIdentifier,
+        linkedPersona = link != null,
     )
 }

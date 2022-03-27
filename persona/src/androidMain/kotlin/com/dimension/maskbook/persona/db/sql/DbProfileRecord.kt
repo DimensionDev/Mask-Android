@@ -22,7 +22,7 @@ package com.dimension.maskbook.persona.db.sql
 
 import com.dimension.maskbook.persona.model.options.PageOptions
 
-private const val dbName = "ProfileWithLinkedProfile"
+private const val dbName = "DbProfileRecord"
 
 fun buildQueryProfileSql(
     identifier: String,

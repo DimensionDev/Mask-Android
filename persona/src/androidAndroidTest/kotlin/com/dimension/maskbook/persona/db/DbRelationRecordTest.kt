@@ -21,18 +21,25 @@
 package com.dimension.maskbook.persona.db
 
 import com.dimension.maskbook.persona.db.base.PersonaDatabaseTest
+import com.dimension.maskbook.persona.db.dao.ProfileDao
 import com.dimension.maskbook.persona.db.dao.RelationDao
+import com.dimension.maskbook.persona.db.sql.buildQueryRelationsSql
+import com.dimension.maskbook.persona.export.model.Network
+import com.dimension.maskbook.persona.mock.model.mockDbProfileRecord
 import com.dimension.maskbook.persona.mock.model.mockDbRelationRecord
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class DbRelationRecordTest : PersonaDatabaseTest() {
 
     private lateinit var relationDao: RelationDao
+    private lateinit var profileDao: ProfileDao
 
     override fun onCreateDb() {
         super.onCreateDb()
         relationDao = db.relationDao()
+        profileDao = db.profileDao()
     }
 
     @Test
@@ -57,5 +64,52 @@ class DbRelationRecordTest : PersonaDatabaseTest() {
 
         val list = relationDao.findList("person:twitter.com/AAA")
         assertEquals(list.size, 2)
+    }
+
+    @Test
+    fun test_query_relations_sql() = runTest {
+        val sqlProfile1 = mockDbProfileRecord(
+            identifier = "sql_profile1",
+            nickname = "sql_profile1",
+            network = Network.Minds,
+        )
+        val sqlProfile2 = mockDbProfileRecord(
+            identifier = "sql_profile2",
+            nickname = "sql_profile2",
+        )
+        profileDao.insert(sqlProfile1)
+        profileDao.insert(sqlProfile2)
+
+        val relation1 = mockDbRelationRecord(
+            personaIdentifier = "person:twitter.com/sql1",
+            profileIdentifier = "sql_profile1",
+        )
+        val relation2 = mockDbRelationRecord(
+            personaIdentifier = "person:twitter.com/sql2",
+            profileIdentifier = "sql_profile2",
+        )
+        relationDao.insert(relation1)
+        relationDao.insert(relation2)
+
+        var query = buildQueryRelationsSql(
+            personaIdentifier = "person:twitter.com/sql1"
+        )
+        var list = relationDao.findListRaw(query)
+        assertEquals(list.size, 1)
+        assertEquals(list[0].profileIdentifier, "sql_profile1")
+
+        query = buildQueryRelationsSql(
+            nameContains = "sql_",
+        )
+        list = relationDao.findListRaw(query)
+        assertEquals(list.size, 2)
+        assertTrue { list.any { it.profileIdentifier == "sql_profile1" } }
+        assertTrue { list.any { it.profileIdentifier == "sql_profile2" } }
+
+        query = buildQueryRelationsSql(
+            network = Network.Minds.value,
+        )
+        list = relationDao.findListRaw(query)
+        assertTrue { list.any { it.profileIdentifier == "sql_profile1" } }
     }
 }

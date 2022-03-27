@@ -47,12 +47,13 @@ fun IndexedDBProfile.toDbLinkedProfileRecord(): DbLinkedProfileRecord? {
 }
 
 fun ProfileWithLinkedProfile.toIndexedDBProfile(): IndexedDBProfile {
+    val link = links.firstOrNull { it.state.isLinked() }
     return IndexedDBProfile(
-        identifier = identifier,
-        nickname = nickname,
-        linkedPersona = personaIdentifier,
-        localKey = localKey,
-        updatedAt = updatedAt,
-        createdAt = createdAt,
+        identifier = profile.identifier,
+        nickname = profile.nickname,
+        linkedPersona = link?.personaIdentifier,
+        localKey = link?.localKey,
+        updatedAt = profile.updatedAt,
+        createdAt = profile.createdAt,
     )
 }
