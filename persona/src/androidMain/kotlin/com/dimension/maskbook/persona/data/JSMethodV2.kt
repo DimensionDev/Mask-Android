@@ -71,8 +71,8 @@ import kotlinx.serialization.json.encodeToJsonElement
 class JSMethodV2(
     private val scope: CoroutineScope,
     private val services: ExtensionServices,
-    private val appPersonaRepository: IPersonaRepository,
     private val database: PersonaDatabase,
+    private val personaRepository: IPersonaRepository,
     private val preferenceRepository: IPreferenceRepository,
     private val personaDataSource: JsPersonaDataSource,
     private val profileDataSource: JsProfileDataSource,
@@ -111,8 +111,11 @@ class JSMethodV2(
             createPersona -> {
                 val options = message.decodeOptions<CreatePersonaOptions>() ?: return true
 
-                // set current persona when create
-                appPersonaRepository.setCurrentPersona(options.persona.identifier)
+                // set current persona when usr create
+                // ps: persona created by user will have privateKey
+                if (options.persona.privateKey != null) {
+                    personaRepository.setCurrentPersona(options.persona.identifier)
+                }
 
                 return message.responseSuccess(personaDataSource.createPersona(options))
             }
