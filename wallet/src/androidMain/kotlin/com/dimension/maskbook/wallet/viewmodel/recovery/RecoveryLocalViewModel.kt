@@ -35,6 +35,7 @@ import kotlinx.coroutines.launch
 class RecoveryLocalViewModel(
     private val backupServices: BackupServices,
     private val uri: String,
+    private val account: String?,
     private val contentResolver: ContentResolver,
     private val settingServices: SettingServices,
 ) : ViewModel() {
@@ -64,64 +65,50 @@ class RecoveryLocalViewModel(
     }
 
     private fun loading() = viewModelScope.launch {
-//        val projection = arrayOf(MediaStore.MediaColumns.DISPLAY_NAME)
-//        val fileName = contentResolver.query(uri, projection, null, null, null)?.use { metaCursor ->
-//            if (metaCursor.moveToFirst()) {
-//                metaCursor.getString(0)
-//            } else {
-//                null
-//            }
-//        } ?: return@launch
-        try {
-            contentResolver.openInputStream(Uri.parse(uri))?.use {
-                json = it.bufferedReader().use { it.readText() }
-                _meta.value = backupServices.provideBackupMetaFromJson(json)
-                if (settingServices.backupPassword.firstOrNull().isNullOrEmpty()) {
-                    _loadState.value = LoadState.Success
-                } else {
-                    _loadState.value = LoadState.RequirePassword
+        if (account != null) {
+            _loadState.value = LoadState.RequirePassword
+        } else {
+            try {
+                contentResolver.openInputStream(Uri.parse(uri))?.use {
+                    json = it.bufferedReader().use { it.readText() }
+                    _meta.value = backupServices.provideBackupMetaFromJson(json)
+                    if (settingServices.backupPassword.firstOrNull().isNullOrEmpty()) {
+                        _loadState.value = LoadState.Success
+                    } else {
+                        _loadState.value = LoadState.RequirePassword
+                    }
+                } ?: run {
+                    _loadState.value = LoadState.Failed
                 }
-            } ?: run {
+            } catch (e: Throwable) {
+                e.printStackTrace()
                 _loadState.value = LoadState.Failed
             }
-
-//            when {
-//                fileName.endsWith(".bin", ignoreCase = true) -> {
-//                    _loadState.value = LoadState.RequirePassword
-//                }
-//                fileName.endsWith(".json", ignoreCase = true) -> {
-//                    contentResolver.openInputStream(uri)?.use {
-//                        json = it.bufferedReader().use { it.readText() }
-//                        _meta.value = repository.provideBackupMetaFromJson(json)
-//                        _loadState.value = LoadState.Success
-//                    } ?: run {
-//                        _loadState.value = LoadState.Failed
-//                    }
-//                }
-//                else -> {
-//                    throw UnsupportedOperationException()
-//                }
-//            }
-        } catch (e: Throwable) {
-            e.printStackTrace()
-            _loadState.value = LoadState.Failed
         }
     }
 
     fun confirmPassword() = viewModelScope.launch {
-        if (settingServices.backupPassword.firstOrNull() == password.value) {
-            _loadState.value = LoadState.Success
+        if (account != null) {
+            try {
+                json = contentResolver.openInputStream(Uri.parse(uri))?.use {
+                    backupServices.decryptBackup(_password.value, account, it.readBytes())
+                } ?: run {
+                    _loadState.value = LoadState.Failed
+                    return@launch
+                }
+                _meta.value = backupServices.provideBackupMetaFromJson(json)
+            } catch (e: Throwable) {
+                e.printStackTrace()
+                _passwordError.value = true
+                _loadState.value = LoadState.RequirePassword
+            }
         } else {
-            _passwordError.value = true
+            if (settingServices.backupPassword.firstOrNull() == password.value) {
+                _loadState.value = LoadState.Success
+            } else {
+                _passwordError.value = true
+            }
         }
-        // _passwordError.value = false
-        // try {
-        //     // TODO: decrypt bin file to json
-        //     _loadState.value = LoadState.Loading
-        // } catch (e: Throwable) {
-        //     _loadState.value = LoadState.RequirePassword
-        //     _passwordError.value = true
-        // }
     }
 
     fun restore() = viewModelScope.launch {

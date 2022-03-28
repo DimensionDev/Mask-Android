@@ -306,10 +306,11 @@ private fun Module.provideUseCase() {
 }
 
 private fun Module.provideViewModel() {
-    viewModel { (uri: String) ->
+    viewModel { (uri: String, account: String?) ->
         RecoveryLocalViewModel(
             get(),
             uri,
+            account,
             get<Context>().contentResolver,
             get()
         )

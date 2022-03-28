@@ -24,6 +24,7 @@ import android.content.ContentResolver
 import android.net.Uri
 import androidx.core.net.toUri
 import com.dimension.maskbook.common.okhttp.await
+import com.dimension.maskbook.setting.model.RemoteBackupData
 import com.dimension.maskbook.setting.services.BackupServices
 import com.dimension.maskbook.setting.services.model.AccountType
 import com.dimension.maskbook.setting.services.model.Locale
@@ -39,7 +40,13 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
+import java.security.SecureRandom
 import java.util.UUID
+import javax.crypto.Cipher
+import javax.crypto.SecretKeyFactory
+import javax.crypto.spec.IvParameterSpec
+import javax.crypto.spec.PBEKeySpec
+import javax.crypto.spec.SecretKeySpec
 
 class BackupRepository(
     private val backupServices: BackupServices,
@@ -115,6 +122,33 @@ class BackupRepository(
                 account_type = AccountType.phone,
             )
         )
+    }
+
+    suspend fun encryptBackup(password: String, account: String, content: String): ByteArray {
+        val factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
+        val computedPassword = account.lowercase() + password
+        val iv = SecureRandom().generateSeed(16)
+        val spec = PBEKeySpec(computedPassword.toCharArray(), iv, 10000, 32)
+        val key = SecretKeySpec(factory.generateSecret(spec).encoded, "AES")
+        val cipher = Cipher.getInstance("AES/GCM/NoPadding")
+        cipher.init(Cipher.ENCRYPT_MODE, key)
+        val encrypted = cipher.doFinal(content.toByteArray(Charsets.UTF_8))
+        return RemoteBackupData(
+            pbkdf2IV = iv,
+            paramIV = cipher.parameters.getParameterSpec(IvParameterSpec::class.java).iv,
+            encrypted = encrypted,
+        ).toByteArray()
+    }
+
+    suspend fun decryptBackup(password: String, account: String, data: ByteArray): String {
+        val factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
+        val computedPassword = account.lowercase() + password
+        val remoteBackupData = RemoteBackupData.fromByteArray(data)
+        val spec = PBEKeySpec(computedPassword.toCharArray(), remoteBackupData.pbkdf2IV, 10000, 32)
+        val key = SecretKeySpec(factory.generateSecret(spec).encoded, "AES")
+        val cipher = Cipher.getInstance("AES/GCM/NoPadding")
+        cipher.init(Cipher.DECRYPT_MODE, key, IvParameterSpec(remoteBackupData.paramIV))
+        return String(cipher.doFinal(remoteBackupData.encrypted), Charsets.UTF_8)
     }
 
     suspend fun downloadBackupWithEmail(email: String, code: String) = withContext(scope.coroutineContext) {

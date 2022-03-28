@@ -99,4 +99,12 @@ class SettingServicesImpl(
     override suspend fun sendEmailCode(email: String) {
         backupRepository.sendEmailCode(email)
     }
+
+    override suspend fun decryptBackup(password: String, account: String, data: ByteArray): String {
+        return backupRepository.decryptBackup(password, account, data)
+    }
+
+    override suspend fun encryptBackup(password: String, account: String, content: String): ByteArray {
+        return backupRepository.encryptBackup(password, account, content)
+    }
 }
