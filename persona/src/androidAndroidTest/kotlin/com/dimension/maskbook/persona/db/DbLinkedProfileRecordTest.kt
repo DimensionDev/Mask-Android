@@ -22,17 +22,21 @@ package com.dimension.maskbook.persona.db
 
 import com.dimension.maskbook.persona.db.base.PersonaDatabaseTest
 import com.dimension.maskbook.persona.db.dao.LinkedProfileDao
+import com.dimension.maskbook.persona.db.dao.PersonaDao
 import com.dimension.maskbook.persona.mock.model.mockDbLinkedProfileRecord
+import com.dimension.maskbook.persona.mock.model.mockDbPersonaRecord
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class DbLinkedProfileRecordTest : PersonaDatabaseTest() {
 
     private lateinit var linkedProfileDao: LinkedProfileDao
+    private lateinit var personaDao: PersonaDao
 
     override fun onCreateDb() {
         super.onCreateDb()
         linkedProfileDao = db.linkedProfileDao()
+        personaDao = db.personaDao()
     }
 
     @Test
@@ -57,5 +61,33 @@ class DbLinkedProfileRecordTest : PersonaDatabaseTest() {
 
         val list = linkedProfileDao.findList("person:twitter.com/AAA")
         assertEquals(list.size, 2)
+    }
+
+    @Test
+    fun test_query_links() = runTest {
+        val personaRemote = mockDbPersonaRecord(
+            identifier = "query_link_remote_user",
+            privateKey = null,
+        )
+        val personaLocal = mockDbPersonaRecord(
+            identifier = "query_link_local_user",
+        )
+        personaDao.insert(personaRemote)
+        personaDao.insert(personaLocal)
+
+        val link1 = mockDbLinkedProfileRecord(
+            personaIdentifier = "person:twitter.com/query_link_local_user",
+            profileIdentifier = "query_link1",
+        )
+        val link2 = mockDbLinkedProfileRecord(
+            personaIdentifier = "person:twitter.com/query_link_remote_user",
+            profileIdentifier = "query_link1",
+        )
+        linkedProfileDao.insert(link1)
+        linkedProfileDao.insert(link2)
+
+        val list = linkedProfileDao.findListWithProfile("query_link1")
+        assertEquals(list.size, 2)
+        assertEquals(list[0].personaIdentifier, "person:twitter.com/query_link_local_user")
     }
 }

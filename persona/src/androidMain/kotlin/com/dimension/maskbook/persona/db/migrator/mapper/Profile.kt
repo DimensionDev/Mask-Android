@@ -47,7 +47,9 @@ fun IndexedDBProfile.toDbLinkedProfileRecord(): DbLinkedProfileRecord? {
 }
 
 fun ProfileWithLinkedProfile.toIndexedDBProfile(): IndexedDBProfile {
-    val link = links.firstOrNull { it.state.isLinked() }
+    val link = links.asSequence()
+        .sortedBy { it.localKey == null }
+        .firstOrNull { it.state.isLinked() }
     return IndexedDBProfile(
         identifier = profile.identifier,
         nickname = profile.nickname,

@@ -24,6 +24,7 @@ import com.dimension.maskbook.persona.db.model.DbLinkedProfileRecord
 import com.dimension.maskbook.persona.db.model.DbPersonaRecord
 import com.dimension.maskbook.persona.db.model.DbProfileRecord
 import com.dimension.maskbook.persona.db.model.DbRelationRecord
+import com.dimension.maskbook.persona.db.model.ViewLinkedProfileWithKey
 import com.dimension.maskbook.persona.export.model.LinkedProfileDetailsState
 import com.dimension.maskbook.persona.export.model.Network
 import kotlinx.serialization.json.JsonArray
@@ -34,7 +35,7 @@ import org.jetbrains.annotations.TestOnly
 @TestOnly
 fun mockDbPersonaRecord(
     identifier: String,
-    nickname: String,
+    nickname: String? = null,
     mnemonic: String = "this is words",
     hasLogout: Boolean = false,
     privateKey: JsonObject? = JsonObject(
@@ -121,4 +122,21 @@ fun mockDbLinkedProfileRecord(
     state = state,
     createdAt = 1646386534519,
     updatedAt = 1646386534519,
+)
+
+@TestOnly
+fun mockViewLinkedProfileWithKey(
+    personaIdentifier: String,
+    profileIdentifier: String,
+    state: LinkedProfileDetailsState = LinkedProfileDetailsState.Confirmed,
+    publicKey: JsonObject? = null,
+    privateKey: JsonObject? = null,
+    localKey: JsonObject? = null,
+) = ViewLinkedProfileWithKey(
+    personaIdentifier = personaIdentifier,
+    profileIdentifier = profileIdentifier,
+    state = state,
+    publicKey = publicKey,
+    privateKey = privateKey,
+    localKey = localKey,
 )

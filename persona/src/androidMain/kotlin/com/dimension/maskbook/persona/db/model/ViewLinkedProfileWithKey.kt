@@ -39,10 +39,10 @@ data class ViewLinkedProfileWithKey(
     val state: LinkedProfileDetailsState,
     @TypeConverters(EncryptJsonObjectConverter::class)
     @ColumnInfo(name = "publicKeyRaw", typeAffinity = ColumnInfo.BLOB)
-    var publicKey: JsonObject? = null,
+    val publicKey: JsonObject? = null,
     @TypeConverters(EncryptJsonObjectConverter::class)
     @ColumnInfo(name = "privateKeyRaw", typeAffinity = ColumnInfo.BLOB)
-    var privateKey: JsonObject? = null,
+    val privateKey: JsonObject? = null,
     @TypeConverters(EncryptJsonObjectConverter::class)
     @ColumnInfo(name = "localKeyRaw", typeAffinity = ColumnInfo.BLOB)
     val localKey: JsonObject? = null,

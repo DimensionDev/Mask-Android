@@ -30,5 +30,5 @@ data class PersonaWithLinkedProfile(
         parentColumn = "identifier",
         entityColumn = "personaIdentifier",
     )
-    val linkedProfiles: List<DbLinkedProfileRecord>,
+    val links: List<DbLinkedProfileRecord>,
 )

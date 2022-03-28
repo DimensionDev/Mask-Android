@@ -72,7 +72,7 @@ fun PersonaWithLinkedProfile.toIndexedDBPersona(): IndexedDBPersona {
         uninitialized = persona.initialized?.not() ?: false,
         updatedAt = persona.updatedAt,
         createdAt = persona.createdAt,
-        linkedProfiles = linkedProfiles.associate {
+        linkedProfiles = links.associate {
             it.profileIdentifier to IndexedDBPersona.LinkedProfileDetails(it.state)
         },
     )

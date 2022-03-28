@@ -25,6 +25,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.dimension.maskbook.persona.db.model.DbLinkedProfileRecord
+import com.dimension.maskbook.persona.db.model.ViewLinkedProfileWithKey
 import com.dimension.maskbook.persona.export.model.LinkedProfileDetailsState
 
 @Dao
@@ -39,11 +40,11 @@ interface LinkedProfileDao {
     @Query("SELECT * FROM DbLinkedProfileRecord WHERE personaIdentifier=:personaIdentifier AND profileIdentifier=:profileIdentifier LIMIT 1")
     suspend fun find(personaIdentifier: String, profileIdentifier: String): DbLinkedProfileRecord?
 
-    @Query("SELECT * FROM DbLinkedProfileRecord WHERE profileIdentifier=:profileIdentifier LIMIT 1")
-    suspend fun find(profileIdentifier: String): DbLinkedProfileRecord?
-
     @Query("SELECT * FROM DbLinkedProfileRecord WHERE personaIdentifier=:personaIdentifier")
     suspend fun findList(personaIdentifier: String): List<DbLinkedProfileRecord>
+
+    @Query("SELECT * FROM ViewLinkedProfileWithKey WHERE profileIdentifier=:profileIdentifier ORDER BY privateKeyRaw")
+    suspend fun findListWithProfile(profileIdentifier: String): List<ViewLinkedProfileWithKey>
 
     @Query("UPDATE DbLinkedProfileRecord SET state=:state WHERE personaIdentifier=:personaIdentifier AND profileIdentifier=:profileIdentifier")
     suspend fun updateFavor(
@@ -61,6 +62,6 @@ interface LinkedProfileDao {
     @Query("DELETE FROM DbLinkedProfileRecord WHERE personaIdentifier=:personaIdentifier")
     suspend fun deleteWithPersona(personaIdentifier: String)
 
-    @Query("SELECT COUNT(1) FROM DbLinkedProfileRecord WHERE profileIdentifier=:profileIdentifier LIMIT 1")
+    @Query("SELECT COUNT(1) FROM ViewLinkedProfileWithKey WHERE profileIdentifier=:profileIdentifier AND privateKeyRaw IS NOT NULL")
     suspend fun count(profileIdentifier: String): Int
 }

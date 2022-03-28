@@ -94,9 +94,8 @@ private fun buildWhereSql(
         if (!profileIdentifier.isNullOrEmpty()) {
             args.add(profileIdentifier)
             "identifier in " +
-                "(SELECT personaIdentifier FROM DbLinkedProfileRecord WHERE " +
-                "profileIdentifier = :profileIdentifier " +
-                "LIMIT 1) "
+                "(SELECT profileIdentifier FROM ViewLinkedProfileWithKey WHERE " +
+                "personaIdentifier=:personaIdentifier ORDER BY privateKeyRaw)"
         } else null,
         if (!identifiers.isNullOrEmpty()) {
             "identifier in (${identifiers.joinToString(",") { "'$it'" }})"
