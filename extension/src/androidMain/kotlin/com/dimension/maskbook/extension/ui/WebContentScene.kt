@@ -54,6 +54,7 @@ import com.dimension.maskbook.common.gecko.WebContent
 import com.dimension.maskbook.common.gecko.WebContentController
 import com.dimension.maskbook.common.gecko.WebContentViewController
 import com.dimension.maskbook.common.ui.widget.AppBarHeight
+import com.dimension.maskbook.common.ui.widget.HorizontalScenePadding
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskScene
 import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
@@ -158,7 +159,7 @@ private fun PlatformTips(
         Row(
             modifier = Modifier
                 .padding(
-                    horizontal = 22.dp,
+                    horizontal = HorizontalScenePadding,
                     vertical = 8.dp,
                 ),
             verticalAlignment = Alignment.CenterVertically,

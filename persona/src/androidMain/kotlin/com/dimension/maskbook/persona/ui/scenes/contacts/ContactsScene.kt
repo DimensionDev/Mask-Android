@@ -53,6 +53,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
+import com.dimension.maskbook.common.ui.widget.HorizontalScenePadding
 import com.dimension.maskbook.common.ui.widget.MaskListItem
 import com.dimension.maskbook.common.ui.widget.MaskSearchInput
 import com.dimension.maskbook.common.ui.widget.NameImage
@@ -115,7 +116,7 @@ fun ContactsScene() {
 
     Box {
         Column(
-            modifier = Modifier.padding(horizontal = 23.dp),
+            modifier = Modifier.padding(horizontal = HorizontalScenePadding),
         ) {
             Spacer(Modifier.height(24.dp))
             MaskSearchInput(

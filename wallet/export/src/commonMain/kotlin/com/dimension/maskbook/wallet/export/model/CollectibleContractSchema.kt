@@ -20,39 +20,10 @@
  */
 package com.dimension.maskbook.wallet.export.model
 
-data class WalletCollectibleCollectionData(
-    val slug: String,
-    val name: String,
-    val imageUrl: String,
-    val walletId: String,
-    val chainType: ChainType,
-) {
-    companion object
+import kotlinx.serialization.Serializable
+
+@Serializable
+enum class CollectibleContractSchema {
+    ERC721,
+    ERC1155
 }
-
-data class WalletCollectibleData(
-    val id: String,
-    val chainType: ChainType,
-    val icon: String,
-    val name: String,
-    val tokenId: String,
-    val link: String,
-    val previewUrl: String?,
-    val imageUrl: String?,
-    val videoUrl: String?,
-    val contract: WalletCollectibleContract,
-    val collection: WalletCollectibleCollectionData
-) : TradableData {
-    override fun tradableId() = id
-    override fun network() = chainType
-
-    companion object
-}
-
-data class WalletCollectibleContract(
-    val address: String,
-    val imageUrl: String,
-    val name: String,
-    val symbol: String,
-    val schema: CollectibleContractSchema
-)

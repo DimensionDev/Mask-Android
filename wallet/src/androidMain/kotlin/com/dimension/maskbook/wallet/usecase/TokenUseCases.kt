@@ -131,22 +131,27 @@ class GetWalletNativeTokenUseCase(
     private val repository: IWalletRepository
 ) {
     operator fun invoke(chainType: ChainType? = null) = flow {
-        val currentChain = repository.currentChain.firstOrNull()
-        val token = if (chainType == null || chainType == currentChain?.chainType) {
-            currentChain?.nativeToken
-        } else {
-            repository.getChainData(chainType).firstOrNull()?.nativeToken
-        }
-        token?.let { nativeToken ->
-            repository.currentWallet.firstOrNull()?.tokens?.first {
-                it.tokenAddress == nativeToken.address
-            } ?: WalletTokenData(
-                count = BigDecimal.ZERO,
-                tokenAddress = nativeToken.address,
-                tokenData = nativeToken
-            )
-        }.let {
-            emit(it)
+        try {
+            val currentChain = repository.currentChain.firstOrNull()
+            val token = if (chainType == null || chainType == currentChain?.chainType) {
+                currentChain?.nativeToken
+            } else {
+                repository.getChainData(chainType).firstOrNull()?.nativeToken
+            }
+            token?.let { nativeToken ->
+                repository.currentWallet.firstOrNull()?.tokens?.firstOrNull {
+                    it.tokenAddress == nativeToken.address
+                } ?: WalletTokenData(
+                    count = BigDecimal.ZERO,
+                    tokenAddress = nativeToken.address,
+                    tokenData = nativeToken
+                )
+            }.let {
+                emit(it)
+            }
+        } catch (e: Throwable) {
+            e.printStackTrace()
+            emit(null)
         }
     }
 }

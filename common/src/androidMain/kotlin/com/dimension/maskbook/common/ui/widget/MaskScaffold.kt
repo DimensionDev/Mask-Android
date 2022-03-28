@@ -82,16 +82,18 @@ fun MaskScaffold(
     )
 }
 
+val HorizontalScenePadding = 20.dp
+
 val ScaffoldPadding = PaddingValues(
-    top = 24.dp,
-    start = 24.dp,
-    end = 24.dp,
-    bottom = 24.dp,
+    top = 20.dp,
+    start = HorizontalScenePadding,
+    end = HorizontalScenePadding,
+    bottom = 20.dp,
 )
 
 val TabScaffoldPadding = PaddingValues(
     top = 12.dp,
-    start = 24.dp,
-    end = 24.dp,
+    start = HorizontalScenePadding,
+    end = HorizontalScenePadding,
     bottom = 24.dp,
 )
