@@ -34,6 +34,4 @@ interface PersonaServices {
     fun cancelConnectingProcess()
     fun saveEmailForCurrentPersona(value: String)
     fun savePhoneForCurrentPersona(value: String)
-    // suspend fun refreshPersonaData()
-    // suspend fun ensurePersonaDataLoaded()
 }
