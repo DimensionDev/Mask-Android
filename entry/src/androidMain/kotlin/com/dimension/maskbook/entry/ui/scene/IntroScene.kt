@@ -202,6 +202,7 @@ fun IntroScene(
                             fontWeight = FontWeight.W600,
                             fontSize = 18.sp,
                             lineHeight = 21.6.sp,
+                            color = Color.Black.copy(alpha = 0.5f)
                         )
                     }
                 } else {

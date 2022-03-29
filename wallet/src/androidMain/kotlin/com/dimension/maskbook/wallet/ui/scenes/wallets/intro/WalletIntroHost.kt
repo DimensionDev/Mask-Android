@@ -22,12 +22,16 @@ package com.dimension.maskbook.wallet.ui.scenes.wallets.intro
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.navigation.NavController
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.wallet.route.WalletRoute
+import com.dimension.maskbook.wallet.ui.scenes.wallets.common.WalletIntroHostLegalDispatcher
 import com.dimension.maskbook.wallet.ui.scenes.wallets.create.CreateType
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletBalancesScene
 import com.dimension.maskbook.wallet.viewmodel.wallets.WalletBalancesViewModel
@@ -54,12 +58,14 @@ fun WalletIntroHost(navController: NavController) {
     val currentDWebData = dWebData
 
     if (currentWallet == null) {
+        var type by remember { mutableStateOf<String?>(null) }
+        WalletIntroHostLegalDispatcher(navController, type)
         WalletIntroScene(
             onCreate = {
-                navController.navigate(WalletRoute.WalletIntroHostLegal(CreateType.CREATE.name))
+                type = "${CreateType.CREATE.name} ${System.currentTimeMillis()}"
             },
             onImport = {
-                navController.navigate(WalletRoute.WalletIntroHostLegal(CreateType.IMPORT.name))
+                type = "${CreateType.IMPORT.name} ${System.currentTimeMillis()}"
             },
             onConnect = {
                 navController.navigate(WalletRoute.SwitchWalletAddWalletConnect)
