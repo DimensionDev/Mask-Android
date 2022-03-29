@@ -32,20 +32,25 @@ import com.dimension.maskbook.setting.services.model.Scenario
 import com.dimension.maskbook.setting.services.model.SendCodeBody
 import com.dimension.maskbook.setting.services.model.UploadBody
 import com.dimension.maskbook.setting.services.model.ValidateCodeBody
+import com.ensarsarajcic.kotlinx.serialization.msgpack.MsgPack
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.builtins.serializer
+import kotlinx.serialization.decodeFromByteArray
+import kotlinx.serialization.encodeToByteArray
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import org.bouncycastle.crypto.digests.SHA256Digest
+import org.bouncycastle.crypto.generators.PKCS5S2ParametersGenerator
+import org.bouncycastle.crypto.params.KeyParameter
 import java.io.File
 import java.security.SecureRandom
 import java.util.UUID
 import javax.crypto.Cipher
-import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.IvParameterSpec
-import javax.crypto.spec.PBEKeySpec
 import javax.crypto.spec.SecretKeySpec
 
 class BackupRepository(
@@ -124,15 +129,16 @@ class BackupRepository(
         )
     }
 
-    suspend fun encryptBackup(password: String, account: String, content: String): ByteArray {
-        val factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
+    suspend fun encryptBackup(password: String, account: String, content: Map<String, Any>): ByteArray {
         val computedPassword = account.lowercase() + password
         val iv = SecureRandom().generateSeed(16)
-        val spec = PBEKeySpec(computedPassword.toCharArray(), iv, 10000, 32)
-        val key = SecretKeySpec(factory.generateSecret(spec).encoded, "AES")
+        val gen = PKCS5S2ParametersGenerator(SHA256Digest())
+        gen.init(MsgPack.encodeToByteArray(String.serializer(), computedPassword), iv, 10000)
+        val derivedKey = gen.generateDerivedParameters(256) as KeyParameter
+        val key = SecretKeySpec(derivedKey.key, "AES")
         val cipher = Cipher.getInstance("AES/GCM/NoPadding")
         cipher.init(Cipher.ENCRYPT_MODE, key)
-        val encrypted = cipher.doFinal(content.toByteArray(Charsets.UTF_8))
+        val encrypted = cipher.doFinal(MsgPack.encodeToByteArray(content))
         return RemoteBackupData(
             pbkdf2IV = iv,
             paramIV = cipher.parameters.getParameterSpec(IvParameterSpec::class.java).iv,
@@ -140,15 +146,16 @@ class BackupRepository(
         ).toByteArray()
     }
 
-    suspend fun decryptBackup(password: String, account: String, data: ByteArray): String {
-        val factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256")
+    suspend fun decryptBackup(password: String, account: String, data: ByteArray): Map<String, Any> {
         val computedPassword = account.lowercase() + password
         val remoteBackupData = RemoteBackupData.fromByteArray(data)
-        val spec = PBEKeySpec(computedPassword.toCharArray(), remoteBackupData.pbkdf2IV, 10000, 32)
-        val key = SecretKeySpec(factory.generateSecret(spec).encoded, "AES")
+        val gen = PKCS5S2ParametersGenerator(SHA256Digest())
+        gen.init(MsgPack.encodeToByteArray(String.serializer(), computedPassword), remoteBackupData.pbkdf2IV, 10000)
+        val derivedKey = gen.generateDerivedParameters(256) as KeyParameter
+        val key = SecretKeySpec(derivedKey.key, "AES")
         val cipher = Cipher.getInstance("AES/GCM/NoPadding")
         cipher.init(Cipher.DECRYPT_MODE, key, IvParameterSpec(remoteBackupData.paramIV))
-        return String(cipher.doFinal(remoteBackupData.encrypted), Charsets.UTF_8)
+        return cipher.doFinal(remoteBackupData.encrypted).let { MsgPack.decodeFromByteArray(it) }
     }
 
     suspend fun downloadBackupWithEmail(email: String, code: String) = withContext(scope.coroutineContext) {

@@ -25,6 +25,8 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
+import com.dimension.maskbook.common.ext.encodeJson
+import com.dimension.maskbook.common.ext.toJsonObject
 import com.dimension.maskbook.setting.export.BackupServices
 import com.dimension.maskbook.setting.export.SettingServices
 import com.dimension.maskbook.setting.export.model.BackupMeta
@@ -88,10 +90,11 @@ class RecoveryLocalViewModel(
     }
 
     fun confirmPassword() = viewModelScope.launch {
+        _loadState.value = LoadState.Loading
         if (account != null) {
             try {
                 json = contentResolver.openInputStream(Uri.parse(uri))?.use {
-                    backupServices.decryptBackup(_password.value, account, it.readBytes())
+                    backupServices.decryptBackup(_password.value, account, it.readBytes()).toJsonObject().encodeJson()
                 } ?: run {
                     _loadState.value = LoadState.Failed
                     return@launch

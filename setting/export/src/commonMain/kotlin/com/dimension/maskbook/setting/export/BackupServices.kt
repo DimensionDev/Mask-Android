@@ -31,6 +31,6 @@ interface BackupServices {
     suspend fun validateEmailCode(email: String, code: String)
     suspend fun sendPhoneCode(phone: String)
     suspend fun sendEmailCode(email: String)
-    suspend fun decryptBackup(password: String, account: String, data: ByteArray): String
-    suspend fun encryptBackup(password: String, account: String, content: String): ByteArray
+    suspend fun decryptBackup(password: String, account: String, data: ByteArray): Map<String, Any>
+    suspend fun encryptBackup(password: String, account: String, content: Map<String, Any>): ByteArray
 }
