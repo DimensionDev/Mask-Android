@@ -21,6 +21,7 @@
 package com.dimension.maskbook.persona.repository
 
 import com.dimension.maskbook.persona.db.PersonaDatabase
+import com.dimension.maskbook.persona.db.model.DbProfileRecord
 import com.dimension.maskbook.persona.db.model.ProfileWithLinkedProfile
 import com.dimension.maskbook.persona.export.model.Network
 import com.dimension.maskbook.persona.export.model.SocialData
@@ -31,15 +32,28 @@ class DbProfileDataSource(database: PersonaDatabase) {
 
     private val profileDao = database.profileDao()
 
-    fun getSocialListFlow(
-        personaIdentifier: String,
-    ): Flow<List<SocialData>> {
+    fun getSocialFlow(profileIdentifier: String): Flow<SocialData?> {
+        return profileDao.getFlow(profileIdentifier).map { it?.toSocialData() }
+    }
+
+    fun getSocialListFlow(personaIdentifier: String): Flow<List<SocialData>> {
         return profileDao.getListWithPersonaFlow(personaIdentifier).map { list ->
             list.map { profile ->
                 profile.toSocialData()
             }
         }
     }
+}
+
+private fun DbProfileRecord.toSocialData(): SocialData {
+    return SocialData(
+        id = identifier,
+        name = nickname.orEmpty(),
+        avatar = avatar.orEmpty(),
+        network = network ?: Network.Twitter,
+        personaId = null,
+        linkedPersona = false,
+    )
 }
 
 private fun ProfileWithLinkedProfile.toSocialData(): SocialData {

@@ -22,7 +22,6 @@ package com.dimension.maskbook.persona.data
 
 import com.dimension.maskbook.common.ext.execute
 import com.dimension.maskbook.extension.export.ExtensionServices
-import com.dimension.maskbook.persona.export.model.Network
 
 internal class JSMethod(
     private val extensionServices: ExtensionServices,
@@ -82,13 +81,12 @@ internal class JSMethod(
     }
 
     suspend fun connectProfile(
-        network: Network,
         personaIdentifier: String,
-        userName: String,
+        profileIdentifier: String,
     ) {
         extensionServices.execute<Unit>(
             "persona_connectProfile",
-            "profileIdentifier" to "person:${network.value}/$userName",
+            "profileIdentifier" to profileIdentifier,
             "personaIdentifier" to personaIdentifier,
         )
     }

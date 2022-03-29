@@ -33,7 +33,7 @@ import com.dimension.maskbook.persona.db.EncryptJsonObjectConverter
 import com.dimension.maskbook.persona.db.EncryptStringConverter
 import com.dimension.maskbook.persona.db.PersonaDatabase
 import com.dimension.maskbook.persona.export.PersonaServices
-import com.dimension.maskbook.persona.export.model.ConnectAccountData
+import com.dimension.maskbook.persona.model.SocialProfile
 import com.dimension.maskbook.persona.repository.DbPersonaDataSource
 import com.dimension.maskbook.persona.repository.DbProfileDataSource
 import com.dimension.maskbook.persona.repository.DbRelationDataSource
@@ -58,6 +58,7 @@ import com.dimension.maskbook.persona.viewmodel.SwitchPersonaViewModel
 import com.dimension.maskbook.persona.viewmodel.contacts.ContactsViewModel
 import com.dimension.maskbook.persona.viewmodel.post.PostViewModel
 import com.dimension.maskbook.persona.viewmodel.social.DisconnectSocialViewModel
+import com.dimension.maskbook.persona.viewmodel.social.UserNameModalViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asExecutor
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -131,13 +132,7 @@ object PersonaSetup : ModuleSetup {
         viewModel { ExportPrivateKeyViewModel(get()) }
         viewModel { PostViewModel(get(), get()) }
         viewModel { ContactsViewModel(get()) }
-
-        viewModel { (data: ConnectAccountData) ->
-            com.dimension.maskbook.persona.viewmodel.social.UserNameModalViewModel(
-                get(),
-                data
-            )
-        }
+        viewModel { (socialProfile: SocialProfile) -> UserNameModalViewModel(get(), socialProfile) }
     }
 
     override fun onExtensionReady() {

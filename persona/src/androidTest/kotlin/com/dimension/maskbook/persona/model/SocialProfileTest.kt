@@ -18,10 +18,9 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.persona.export
+package com.dimension.maskbook.persona.model
 
 import com.dimension.maskbook.persona.export.model.Network
-import com.dimension.maskbook.persona.export.model.SocialProfile
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull

@@ -22,5 +22,5 @@ package com.dimension.maskbook.persona.export.model
 
 data class ConnectAccountData(
     val personaId: String,
-    val profile: SocialProfile,
+    val profile: SocialData,
 )

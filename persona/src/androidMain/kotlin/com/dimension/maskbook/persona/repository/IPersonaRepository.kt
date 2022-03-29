@@ -23,7 +23,6 @@ package com.dimension.maskbook.persona.repository
 import com.dimension.maskbook.persona.export.model.ConnectAccountData
 import com.dimension.maskbook.persona.export.model.PersonaData
 import com.dimension.maskbook.persona.export.model.PlatformType
-import com.dimension.maskbook.persona.export.model.SocialProfile
 import kotlinx.coroutines.flow.Flow
 
 interface IPersonaRepository {
@@ -34,19 +33,12 @@ interface IPersonaRepository {
         platformType: PlatformType,
         onDone: (ConnectAccountData) -> Unit,
     )
-
-    fun finishConnectingProcess(
-        profile: SocialProfile,
-        personaId: String,
-    )
-
-    fun cancelConnectingProcess()
     fun logout()
     fun setCurrentPersona(id: String)
     fun updatePersona(id: String, nickname: String)
     fun updateCurrentPersona(nickname: String)
-    fun connectProfile(personaId: String, userName: String)
-    fun disconnectProfile(personaId: String, socialId: String)
+    fun connectProfile(personaId: String, profileId: String)
+    fun disconnectProfile(personaId: String, profileId: String)
     suspend fun createPersonaFromMnemonic(value: List<String>, name: String)
     fun createPersonaFromPrivateKey(value: String)
     suspend fun backupPrivateKey(id: String): String

@@ -23,21 +23,26 @@ package com.dimension.maskbook.persona.viewmodel.social
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
-import com.dimension.maskbook.persona.export.model.ConnectAccountData
+import com.dimension.maskbook.persona.model.SocialProfile
 import com.dimension.maskbook.persona.repository.IPersonaRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class UserNameModalViewModel(
     private val personaRepository: IPersonaRepository,
-    private val data: ConnectAccountData,
+    private val socialProfile: SocialProfile,
 ) : ViewModel() {
-    private val _userName = MutableStateFlow(data.profile.userId)
-    val userName = _userName.asStateIn(viewModelScope, data.profile.userId)
+
+    private val _userName = MutableStateFlow(socialProfile.userId)
+    val userName = _userName.asStateIn(viewModelScope, socialProfile.userId)
+
     fun setUserName(value: String) {
         _userName.value = value
     }
 
-    fun done(name: String) {
-        personaRepository.finishConnectingProcess(data.profile.copy(userId = name), data.personaId)
+    fun done(personaId: String, profileName: String) {
+        personaRepository.connectProfile(
+            personaId,
+            socialProfile.copy(userId = profileName).toString(),
+        )
     }
 }

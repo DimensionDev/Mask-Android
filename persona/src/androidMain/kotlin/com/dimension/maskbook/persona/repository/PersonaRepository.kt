@@ -25,29 +25,24 @@ import com.dimension.maskbook.extension.export.ExtensionServices
 import com.dimension.maskbook.persona.data.JSMethod
 import com.dimension.maskbook.persona.export.error.PersonaAlreadyExitsError
 import com.dimension.maskbook.persona.export.model.ConnectAccountData
-import com.dimension.maskbook.persona.export.model.Network
 import com.dimension.maskbook.persona.export.model.PersonaData
 import com.dimension.maskbook.persona.export.model.PlatformType
 import com.dimension.maskbook.persona.export.model.SocialData
-import com.dimension.maskbook.persona.export.model.SocialProfile
 import com.dimension.maskbook.persona.model.ContactData
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNot
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlin.time.ExperimentalTime
 
 internal class PersonaRepository(
     private val scope: CoroutineScope,
@@ -85,7 +80,7 @@ internal class PersonaRepository(
         return !personaDataSource.isEmpty()
     }
 
-    @OptIn(DelicateCoroutinesApi::class, ExperimentalTime::class)
+    @OptIn(ExperimentalCoroutinesApi::class)
     override fun beginConnectingProcess(
         personaId: String,
         platformType: PlatformType,
@@ -95,9 +90,10 @@ internal class PersonaRepository(
         extensionServices.setSite(platformType.toSite())
 
         connectingJob = preferenceRepository.lastDetectProfileIdentifier
-            .filter { it.isNotEmpty() }
+            .filterNot { it.isEmpty() }
             .filterNot { personaDataSource.hasConnected(it) }
-            .mapNotNull { SocialProfile.parse(it) }
+            .flatMapLatest { profileDataSource.getSocialFlow(it) }
+            .filterNotNull()
             .flowOn(Dispatchers.IO)
             .onEach {
                 onDone.invoke(ConnectAccountData(personaId, it))
@@ -105,16 +101,6 @@ internal class PersonaRepository(
             }
             .flowOn(Dispatchers.Main)
             .launchIn(scope)
-    }
-
-    override fun finishConnectingProcess(profile: SocialProfile, personaId: String) {
-        scope.launch {
-            jsMethod.connectProfile(profile.network, personaId, profile.userId)
-        }
-    }
-
-    override fun cancelConnectingProcess() {
-        connectingJob?.cancel()
     }
 
     override fun init() {
@@ -183,15 +169,15 @@ internal class PersonaRepository(
         }
     }
 
-    override fun connectProfile(personaId: String, userName: String) {
+    override fun connectProfile(personaId: String, profileId: String) {
         scope.launch {
-            jsMethod.connectProfile(Network.Twitter, personaId, userName)
+            jsMethod.connectProfile(personaId, profileId)
         }
     }
 
-    override fun disconnectProfile(personaId: String, socialId: String) {
+    override fun disconnectProfile(personaId: String, profileId: String) {
         scope.launch {
-            jsMethod.disconnectProfile(socialId)
+            jsMethod.disconnectProfile(profileId)
         }
     }
 
