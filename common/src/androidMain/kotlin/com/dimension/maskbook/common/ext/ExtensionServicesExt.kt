@@ -23,7 +23,8 @@ package com.dimension.maskbook.common.ext
 import com.dimension.maskbook.extension.export.ExtensionServices
 
 suspend inline fun <reified T : Any> ExtensionServices.execute(method: String, vararg args: Pair<String, Any>): T? {
-    val result = runJSMethod(method, *args)
+    val isWait = T::class != Unit::class
+    val result = runJSMethod(method, isWait, *args) ?: return null
     return when (T::class) {
         Short::class -> result.toShortOrNull() as T?
         Int::class -> result.toIntOrNull() as T?
@@ -32,7 +33,6 @@ suspend inline fun <reified T : Any> ExtensionServices.execute(method: String, v
         Double::class -> result.toDoubleOrNull() as T?
         Boolean::class -> result.toBooleanStrictOrNull() as T?
         String::class -> result as T?
-        Unit::class -> Unit as T?
         else -> result.decodeJson() as T?
     }
 }

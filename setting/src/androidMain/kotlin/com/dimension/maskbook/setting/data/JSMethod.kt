@@ -26,35 +26,13 @@ import com.dimension.maskbook.setting.export.model.Appearance
 import com.dimension.maskbook.setting.export.model.BackupPreview
 import com.dimension.maskbook.setting.export.model.DataProvider
 import com.dimension.maskbook.setting.export.model.Language
-import com.dimension.maskbook.setting.export.model.NetworkType
-import com.dimension.maskbook.setting.export.model.TradeProvider
 
 internal class JSMethod(
     private val extensionService: ExtensionServices
 ) {
-    suspend fun getNetworkTraderProvider(networkType: NetworkType): TradeProvider {
-        return extensionService.execute<Int>(
-            "setting_getNetworkTraderProvider",
-            "network" to networkType.name
-        ).let { result ->
-            TradeProvider.values().first { it.value == result }
-        }
-    }
-
-    suspend fun setNetworkTraderProvider(
-        networkType: NetworkType,
-        tradeProvider: TradeProvider
-    ) {
-        extensionService.execute<Unit>(
-            "setting_setNetworkTraderProvider",
-            "network" to networkType.name,
-            "provider" to tradeProvider.ordinal,
-        )
-    }
-
     suspend fun getTrendingDataSource(): DataProvider {
         return extensionService.execute<Int>("settings_getTrendingDataSource").let { result ->
-            DataProvider.values().first { it.value == result }
+            DataProvider.values().firstOrNull { it.value == result } ?: DataProvider.COIN_GECKO
         }
     }
 

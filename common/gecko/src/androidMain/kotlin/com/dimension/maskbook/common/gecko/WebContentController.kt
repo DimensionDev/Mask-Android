@@ -25,6 +25,7 @@ import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import androidx.fragment.app.FragmentActivity
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.mapNotNull
@@ -114,8 +115,10 @@ class WebContentController(
     private val sessionUseCases by lazy {
         SessionUseCases(store)
     }
-    private val _message = MutableStateFlow<JSONObject?>(null)
+
+    private val _message = MutableSharedFlow<JSONObject>(extraBufferCapacity = 50)
     val message = _message.asSharedFlow()
+
     private val messageHandler = object : MessageHandler {
         override fun onPortConnected(port: Port) {
             _port = port
@@ -128,9 +131,13 @@ class WebContentController(
         }
 
         override fun onPortMessage(message: Any, port: Port) {
-            if (message is JSONObject) {
-                Log.i(TAG, "onPortMessage: $message")
-                _message.value = message
+            when (message) {
+                is JSONObject -> message
+                is String -> JSONObject(message)
+                else -> null
+            }?.let {
+                Log.i(TAG, "onPortMessage: $it")
+                _message.tryEmit(it)
             }
         }
     }
@@ -181,6 +188,6 @@ class WebContentController(
 
     fun sendMessage(message: JSONObject) {
         Log.i(TAG, "sendMessage: $message")
-        _port?.postMessage(message)
+        _port?.postMessage(JSONObject(mapOf("result" to message.toString())))
     }
 }

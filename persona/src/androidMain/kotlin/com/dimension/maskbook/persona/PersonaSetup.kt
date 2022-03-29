@@ -23,12 +23,24 @@ package com.dimension.maskbook.persona
 import android.content.Context
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import androidx.room.Room
 import com.dimension.maskbook.common.IoScopeName
 import com.dimension.maskbook.common.ModuleSetup
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.persona.data.JSMethod
+import com.dimension.maskbook.persona.data.JSMethodV2
+import com.dimension.maskbook.persona.datasource.DbPersonaDataSource
+import com.dimension.maskbook.persona.datasource.DbProfileDataSource
+import com.dimension.maskbook.persona.datasource.DbRelationDataSource
+import com.dimension.maskbook.persona.datasource.JsPersonaDataSource
+import com.dimension.maskbook.persona.datasource.JsPostDataSource
+import com.dimension.maskbook.persona.datasource.JsProfileDataSource
+import com.dimension.maskbook.persona.datasource.JsRelationDataSource
+import com.dimension.maskbook.persona.db.EncryptJsonObjectConverter
+import com.dimension.maskbook.persona.db.EncryptStringConverter
+import com.dimension.maskbook.persona.db.PersonaDatabase
 import com.dimension.maskbook.persona.export.PersonaServices
-import com.dimension.maskbook.persona.export.model.ConnectAccountData
+import com.dimension.maskbook.persona.model.SocialProfile
 import com.dimension.maskbook.persona.repository.IContactsRepository
 import com.dimension.maskbook.persona.repository.IPersonaRepository
 import com.dimension.maskbook.persona.repository.IPreferenceRepository
@@ -39,16 +51,16 @@ import com.dimension.maskbook.persona.repository.personaDataStore
 import com.dimension.maskbook.persona.ui.scenes.generatedRoute
 import com.dimension.maskbook.persona.ui.tab.PersonasTabScreen
 import com.dimension.maskbook.persona.viewmodel.ExportPrivateKeyViewModel
+import com.dimension.maskbook.persona.viewmodel.PersonaMenuViewModel
 import com.dimension.maskbook.persona.viewmodel.PersonaViewModel
 import com.dimension.maskbook.persona.viewmodel.RenamePersonaViewModel
 import com.dimension.maskbook.persona.viewmodel.SwitchPersonaViewModel
 import com.dimension.maskbook.persona.viewmodel.contacts.ContactsViewModel
 import com.dimension.maskbook.persona.viewmodel.post.PostViewModel
 import com.dimension.maskbook.persona.viewmodel.social.DisconnectSocialViewModel
-import com.dimension.maskbook.persona.viewmodel.social.FaceBookConnectSocialViewModel
-import com.dimension.maskbook.persona.viewmodel.social.FacebookSocialViewModel
-import com.dimension.maskbook.persona.viewmodel.social.TwitterConnectSocialViewModel
-import com.dimension.maskbook.persona.viewmodel.social.TwitterSocialViewModel
+import com.dimension.maskbook.persona.viewmodel.social.UserNameModalViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.asExecutor
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
@@ -64,42 +76,67 @@ object PersonaSetup : ModuleSetup {
 
     override fun dependencyInject() = module {
         single {
-            PersonaRepository(get<Context>().personaDataStore, get(), get())
+            Room.databaseBuilder(get(), PersonaDatabase::class.java, "maskbook_persona")
+                .setQueryExecutor(Dispatchers.IO.asExecutor())
+                .setTransactionExecutor(Dispatchers.IO.asExecutor())
+                .fallbackToDestructiveMigration()
+                .addTypeConverter(EncryptStringConverter(get()))
+                .addTypeConverter(EncryptJsonObjectConverter(get()))
+                .build()
+        }
+        single {
+            PersonaRepository(
+                get(named(IoScopeName)),
+                get(), get(), get(),
+                get(), get(), get(),
+            )
         } binds arrayOf(
             IPersonaRepository::class,
             ISocialsRepository::class,
             IContactsRepository::class,
         )
         single<IPreferenceRepository> {
-            PreferenceRepository(get<Context>().personaDataStore, get(named(IoScopeName)))
+            PreferenceRepository(
+                get<Context>().personaDataStore,
+                get(named(IoScopeName))
+            )
         }
 
         single { JSMethod(get()) }
+        single {
+            JSMethodV2(
+                get(named(IoScopeName)),
+                get(),
+                get(),
+                get(), get(),
+                get(), get(), get(), get(),
+            )
+        }
+
+        single { JsPersonaDataSource(get()) }
+        single { JsProfileDataSource(get(), get()) }
+        single { JsRelationDataSource(get()) }
+        single { JsPostDataSource(get()) }
+        single { DbPersonaDataSource(get()) }
+        single { DbProfileDataSource(get()) }
+        single { DbRelationDataSource(get()) }
 
         single<PersonaServices> { PersonaServicesImpl(get()) }
         single { PersonasTabScreen() } bind TabScreen::class
 
         viewModel { PersonaViewModel(get(), get()) }
-        viewModel { TwitterSocialViewModel(get()) }
-        viewModel { FacebookSocialViewModel(get()) }
-        viewModel { TwitterConnectSocialViewModel(get()) }
-        viewModel { FaceBookConnectSocialViewModel(get()) }
         viewModel { DisconnectSocialViewModel(get()) }
-        viewModel { SwitchPersonaViewModel(get()) }
-        viewModel { (personaId: String) -> RenamePersonaViewModel(get(), personaId) }
+        viewModel { SwitchPersonaViewModel(get(), get()) }
+        viewModel { PersonaMenuViewModel(get(), get()) }
+        viewModel { (personaId: String) -> RenamePersonaViewModel(get(), get(), personaId) }
         viewModel { ExportPrivateKeyViewModel(get()) }
         viewModel { PostViewModel(get(), get()) }
         viewModel { ContactsViewModel(get()) }
-
-        viewModel { (data: ConnectAccountData) ->
-            com.dimension.maskbook.persona.viewmodel.social.UserNameModalViewModel(
-                get(),
-                data
-            )
-        }
+        viewModel { (socialProfile: SocialProfile) -> UserNameModalViewModel(get(), socialProfile) }
     }
 
     override fun onExtensionReady() {
         KoinPlatformTools.defaultContext().get().get<IPersonaRepository>().init()
+        KoinPlatformTools.defaultContext().get().get<JSMethodV2>().startSubscribe()
     }
 }

@@ -26,9 +26,9 @@ import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.common.ext.onFinished
 import com.dimension.maskbook.extension.export.ExtensionServices
-import com.dimension.maskbook.extension.export.model.ExtensionResponseMessage
 import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.ext.hexWei
+import com.dimension.maskbook.wallet.handler.Web3SendResponse
 import com.dimension.maskbook.wallet.repository.SendTokenConfirmData
 import com.dimension.maskbook.wallet.usecase.GetAddressUseCase
 import com.dimension.maskbook.wallet.usecase.GetWalletNativeTokenUseCase
@@ -85,7 +85,7 @@ class Web3TransactionConfirmViewModel(
                     data = data.data.data ?: "",
                 ).onSuccess {
                     extensionServices.sendJSEventResponse(
-                        ExtensionResponseMessage.success(
+                        Web3SendResponse.success(
                             data.messageId,
                             data.jsonrpc,
                             data.payloadId,
@@ -95,7 +95,7 @@ class Web3TransactionConfirmViewModel(
                     onResult.invoke(true)
                 }.onFailure {
                     extensionServices.sendJSEventResponse(
-                        ExtensionResponseMessage.error(
+                        Web3SendResponse.error(
                             data.messageId,
                             data.jsonrpc,
                             data.payloadId,
@@ -141,7 +141,7 @@ class Web3TransactionConfirmViewModel(
 
     fun cancel() {
         extensionServices.sendJSEventResponse(
-            ExtensionResponseMessage.error(
+            Web3SendResponse.error(
                 data.messageId,
                 data.jsonrpc,
                 data.payloadId,

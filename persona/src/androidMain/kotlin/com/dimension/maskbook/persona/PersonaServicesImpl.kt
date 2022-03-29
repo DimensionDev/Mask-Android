@@ -22,15 +22,19 @@ package com.dimension.maskbook.persona
 
 import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.persona.export.model.PersonaData
-import com.dimension.maskbook.persona.export.model.SocialProfile
 import com.dimension.maskbook.persona.repository.IPersonaRepository
 import kotlinx.coroutines.flow.Flow
 
 class PersonaServicesImpl(
-    private val personaRepository: IPersonaRepository
+    private val personaRepository: IPersonaRepository,
 ) : PersonaServices {
+
     override val currentPersona: Flow<PersonaData?>
         get() = personaRepository.currentPersona
+
+    override suspend fun hasPersona(): Boolean {
+        return personaRepository.hasPersona()
+    }
 
     override fun updateCurrentPersona(value: String) {
         personaRepository.updateCurrentPersona(value)
@@ -44,12 +48,8 @@ class PersonaServicesImpl(
         personaRepository.createPersonaFromPrivateKey(value)
     }
 
-    override fun finishConnectingProcess(profile: SocialProfile, personaId: String) {
-        personaRepository.finishConnectingProcess(profile, personaId)
-    }
-
-    override fun cancelConnectingProcess() {
-        personaRepository.cancelConnectingProcess()
+    override fun connectProfile(personaId: String, profileId: String) {
+        personaRepository.connectProfile(personaId, profileId)
     }
 
     override fun saveEmailForCurrentPersona(value: String) {
@@ -58,13 +58,5 @@ class PersonaServicesImpl(
 
     override fun savePhoneForCurrentPersona(value: String) {
         personaRepository.savePhoneForCurrentPersona(value)
-    }
-
-    override suspend fun refreshPersonaData() {
-        personaRepository.refreshPersona()
-    }
-
-    override suspend fun ensurePersonaDataLoaded() {
-        personaRepository.ensurePersonaDataLoaded()
     }
 }

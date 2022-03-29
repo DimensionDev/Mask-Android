@@ -91,7 +91,7 @@ fun WelcomeCreatePersona(
     CreatePersonaScene(
         onBack = onBack,
         onDone = { name ->
-            navController.navigate(WalletRoute.Register.CreateIdentity.Backup(name))
+            navController.navigate(WalletRoute.Register.CreateIdentity.Backup(name, isWelcome = true))
         }
     )
 }
@@ -110,7 +110,7 @@ fun CreatePersona(
 ) {
     CreatePersonaModal(
         onDone = { name ->
-            navController.navigate(WalletRoute.Register.CreateIdentity.Backup(name))
+            navController.navigate(WalletRoute.Register.CreateIdentity.Backup(name, isWelcome = false))
         }
     )
 }

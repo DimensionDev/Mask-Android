@@ -32,6 +32,6 @@ class ExportPrivateKeyViewModel(
 ) : ViewModel() {
     val privateKey = repository.currentPersona
         .mapNotNull { it }
-        .map { repository.backupPrivateKey(it.id) }
+        .map { repository.backupPrivateKey(it.identifier) }
         .asStateIn(viewModelScope, "")
 }

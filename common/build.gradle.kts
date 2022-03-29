@@ -81,9 +81,22 @@ kotlin {
                 // serialization
                 api("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.Kotlin.serialization}")
 
+                // sqlite
+                api("androidx.room:room-runtime:${Versions.Androidx.room}")
+                api("androidx.room:room-ktx:${Versions.Androidx.room}")
+
                 api("org.web3j:core:${Versions.web3j}")
 
                 api("joda-time:joda-time:${Versions.jodaTime}")
+            }
+        }
+        val androidAndroidTest by getting {
+            dependencies {
+                implementation("androidx.arch.core:core-testing:2.1.0")
+                implementation("androidx.test:core:1.4.0")
+                implementation("androidx.test:runner:1.4.0")
+                implementation("androidx.test.ext:junit-ktx:1.1.3")
+                implementation("androidx.test.espresso:espresso-core:3.4.0")
             }
         }
     }

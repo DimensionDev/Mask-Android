@@ -23,43 +23,27 @@ package com.dimension.maskbook.persona.repository
 import com.dimension.maskbook.persona.export.model.ConnectAccountData
 import com.dimension.maskbook.persona.export.model.PersonaData
 import com.dimension.maskbook.persona.export.model.PlatformType
-import com.dimension.maskbook.persona.export.model.SocialData
-import com.dimension.maskbook.persona.export.model.SocialProfile
 import kotlinx.coroutines.flow.Flow
 
 interface IPersonaRepository {
-    val twitter: Flow<List<SocialData>>
-    val facebook: Flow<List<SocialData>>
-    val persona: Flow<List<PersonaData>>
     val currentPersona: Flow<PersonaData?>
+    suspend fun hasPersona(): Boolean
     fun beginConnectingProcess(
         personaId: String,
         platformType: PlatformType,
         onDone: (ConnectAccountData) -> Unit,
     )
-
-    fun finishConnectingProcess(
-        profile: SocialProfile,
-        personaId: String,
-    )
-
-    fun cancelConnectingProcess()
-    fun setCurrentPersona(id: String)
-    // fun generateNewMnemonic(): List<String>
     fun logout()
-    fun updatePersona(id: String, value: String)
-    fun connectTwitter(personaId: String, userName: String)
-    fun connectFacebook(personaId: String, userName: String)
-    fun disconnectTwitter(personaId: String, socialId: String)
-    fun disconnectFacebook(personaId: String, socialId: String)
+    fun setCurrentPersona(id: String)
+    fun updatePersona(id: String, nickname: String)
+    fun updateCurrentPersona(nickname: String)
+    fun connectProfile(personaId: String, profileId: String)
+    fun disconnectProfile(personaId: String, profileId: String)
     suspend fun createPersonaFromMnemonic(value: List<String>, name: String)
     fun createPersonaFromPrivateKey(value: String)
-    fun updateCurrentPersona(value: String)
     suspend fun backupPrivateKey(id: String): String
     fun init()
     fun saveEmailForCurrentPersona(value: String)
     fun savePhoneForCurrentPersona(value: String)
-    suspend fun refreshPersona()
-    suspend fun ensurePersonaDataLoaded()
     fun setPlatform(platformType: PlatformType)
 }

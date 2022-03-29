@@ -23,14 +23,13 @@ package com.dimension.maskbook.wallet.data
 import com.dimension.maskbook.common.ext.decodeJson
 import com.dimension.maskbook.common.ext.execute
 import com.dimension.maskbook.extension.export.ExtensionServices
+import com.dimension.maskbook.extension.export.model.ExtensionId
 import com.dimension.maskbook.extension.export.model.ExtensionMessage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonArray
-import kotlinx.serialization.json.JsonPrimitive
 
 @Serializable
 data class SwitchBlockChainData(
@@ -39,7 +38,7 @@ data class SwitchBlockChainData(
 )
 
 data class Web3Request(
-    val id: String,
+    val id: ExtensionId,
     val payload: JsonRpcPayload?,
     val message: ExtensionMessage,
 )
@@ -49,16 +48,8 @@ data class JsonRpcPayload(
     val jsonrpc: String,
     val method: String,
     val params: JsonArray,
-    @SerialName("id")
-    val _id: JsonPrimitive,
-) {
-    @kotlinx.serialization.Transient
-    val id: Any = when {
-//        _id == null -> null
-        _id.isString -> _id.toString()
-        else -> _id.content.toInt()
-    }
-}
+    val id: ExtensionId,
+)
 
 internal class JSMethod(
     private val extensionServices: ExtensionServices,
@@ -78,10 +69,10 @@ internal class JSMethod(
     }
 
     fun web3Event(): Flow<Web3Request> {
-        return extensionServices.subscribeJSEvent("sendJsonString").map {
+        return extensionServices.subscribeJSEvent("send").map {
             Web3Request(
-                it.id.toString(),
-                it.params?.decodeJson<List<String>>()?.firstOrNull()?.decodeJson<JsonRpcPayload>(),
+                it.id,
+                it.params?.decodeJson<JsonRpcPayload>(),
                 it
             )
         }

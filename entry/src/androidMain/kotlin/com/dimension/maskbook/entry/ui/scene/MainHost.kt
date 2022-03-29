@@ -20,7 +20,6 @@
  */
 package com.dimension.maskbook.entry.ui.scene
 
-import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -53,8 +52,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.navOptions
 import com.dimension.maskbook.common.ext.getAll
+import com.dimension.maskbook.common.ext.navigateToExtension
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.route.navigationComposeModalComposable
@@ -168,15 +167,7 @@ fun MainHost(
                 tabs.elementAt(it).Content(
                     navController = navController,
                     onBack = {
-                        navController.navigate(
-                            Uri.parse(Deeplinks.WebContent(null)),
-                            navOptions {
-                                launchSingleTop = true
-                                popUpTo(CommonRoute.Main.Home.path) {
-                                    inclusive = true
-                                }
-                            },
-                        )
+                        navController.navigateToExtension(null)
                     }
                 )
             }

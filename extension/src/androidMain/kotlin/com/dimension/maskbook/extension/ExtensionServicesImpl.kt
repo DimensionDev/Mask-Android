@@ -22,7 +22,6 @@ package com.dimension.maskbook.extension
 
 import com.dimension.maskbook.extension.export.ExtensionServices
 import com.dimension.maskbook.extension.export.model.ExtensionMessage
-import com.dimension.maskbook.extension.export.model.ExtensionResponseMessage
 import com.dimension.maskbook.extension.export.model.Site
 import com.dimension.maskbook.extension.repository.ExtensionRepository
 import com.dimension.maskbook.extension.utils.MessageChannel
@@ -48,19 +47,15 @@ internal class ExtensionServicesImpl(
         isExtensionActive.first { it }
     }
 
-    override suspend fun runJSMethod(method: String, vararg args: Pair<String, Any>): String {
-        return messageChannel.execute<String>(method, args.toMap()).orEmpty()
+    override suspend fun runJSMethod(method: String, isWait: Boolean, vararg args: Pair<String, Any>): String? {
+        return messageChannel.executeMessage(method, isWait, args.toMap())
     }
 
-    suspend inline fun <reified T : Any> execute(method: String, vararg args: Pair<String, Any>): T? {
-        return messageChannel.execute(method, args.toMap())
+    override fun subscribeJSEvent(vararg method: String): Flow<ExtensionMessage> {
+        return messageChannel.subscribeMessage(*method).mapNotNull { it }
     }
 
-    override fun subscribeJSEvent(method: String): Flow<ExtensionMessage> {
-        return messageChannel.subscribeMessage(method).mapNotNull { it }
-    }
-
-    override fun sendJSEventResponse(response: ExtensionResponseMessage) {
-        messageChannel.sendResponseMessage(response)
+    override fun sendJSEventResponse(map: Map<String, Any?>) {
+        messageChannel.sendResponseMessage(map)
     }
 }

@@ -20,11 +20,21 @@
  */
 package com.dimension.maskbook.persona.repository
 
+import androidx.datastore.preferences.core.Preferences
 import kotlinx.coroutines.flow.Flow
 
 interface IPreferenceRepository {
+    val data: Flow<Preferences>
+    val currentPersonaIdentifier: Flow<String>
+    fun setCurrentPersonaIdentifier(identifier: String)
     val shouldShowEmptySocialTipDialog: Flow<Boolean>
     fun setShowEmptySocialTipDialog(bool: Boolean)
     val shouldShowContactsTipDialog: Flow<Boolean>
     fun setShowContactsTipDialog(bool: Boolean)
+
+    val isMigratorIndexedDb: Flow<Boolean>
+    fun setIsMigratorIndexedDb(bool: Boolean)
+
+    val lastDetectProfileIdentifier: Flow<String>
+    fun setLastDetectProfileIdentifier(identifier: String)
 }

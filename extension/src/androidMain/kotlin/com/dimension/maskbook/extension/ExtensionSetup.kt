@@ -29,8 +29,9 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
-import androidx.navigation.navOptions
+import com.dimension.maskbook.common.IoScopeName
 import com.dimension.maskbook.common.ModuleSetup
+import com.dimension.maskbook.common.ext.navigate
 import com.dimension.maskbook.common.gecko.WebContentController
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
@@ -41,6 +42,7 @@ import com.dimension.maskbook.extension.route.ExtensionRoute
 import com.dimension.maskbook.extension.ui.WebContentScene
 import com.dimension.maskbook.extension.utils.MessageChannel
 import com.google.accompanist.navigation.animation.composable
+import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import org.koin.mp.KoinPlatformTools
 
@@ -70,13 +72,12 @@ object ExtensionSetup : ModuleSetup {
             val site = it.arguments?.getString("site")?.let { Site.valueOf(it) }
             WebContentScene(
                 onPersonaClicked = {
-                    navController.navigate(
-                        Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona)),
-                        navOptions {
-                            launchSingleTop = true
-                            popUpTo(ExtensionRoute.WebContent.path)
-                        },
-                    )
+                    navController.navigate(Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona))) {
+                        launchSingleTop = true
+                        popUpTo(ExtensionRoute.WebContent.path) {
+                            inclusive = false
+                        }
+                    }
                 },
                 site = site,
             )
@@ -87,7 +88,7 @@ object ExtensionSetup : ModuleSetup {
         single { WebContentController(get()) }
         single { ExtensionRepository(get()) }
         single<ExtensionServices> { ExtensionServicesImpl(get(), get()) }
-        single { MessageChannel(get()) }
+        single { MessageChannel(get(), get(named(IoScopeName))) }
     }
 
     override fun onExtensionReady() {

@@ -52,6 +52,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import coil.compose.rememberImagePainter
 import com.dimension.maskbook.common.ui.widget.HorizontalScenePadding
 import com.dimension.maskbook.common.ui.widget.MaskListItem
 import com.dimension.maskbook.common.ui.widget.MaskSearchInput
@@ -199,10 +200,18 @@ fun ContactsScene(
                 MaskListItem(
                     icon = {
                         Box(contentAlignment = Alignment.BottomEnd) {
-                            NameImage(
-                                name = item.name,
-                                modifier = Modifier.size(38.dp),
-                            )
+                            if (item.avatar.isEmpty()) {
+                                NameImage(
+                                    name = item.name,
+                                    modifier = Modifier.size(38.dp),
+                                )
+                            } else {
+                                Image(
+                                    painter = rememberImagePainter(item.avatar),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(38.dp).clip(shape = CircleShape),
+                                )
+                            }
                             Image(
                                 painter = painterResource(item.network.icon),
                                 contentDescription = null,

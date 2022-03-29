@@ -20,9 +20,34 @@
  */
 package com.dimension.maskbook.persona.export.model
 
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+@Serializable
 enum class Network(val value: String) {
+    @SerialName("twitter.com")
     Twitter("twitter.com"),
+    @SerialName("facebook.com")
     Facebook("facebook.com"),
+    @SerialName("instagram.com")
     Instagram("instagram.com"),
-    Minds("minds.com"),
+    @SerialName("minds.com")
+    Minds("minds.com");
+
+    companion object {
+        fun withHost(host: String?) = when (host) {
+            "twitter.com" -> Twitter
+            "facebook.com" -> Facebook
+            "instagram.com" -> Instagram
+            "minds.com" -> Minds
+            else -> null
+        }
+
+        fun withProfileIdentifier(profileIdentifier: String): Network? {
+            if (!profileIdentifier.startsWith("person:")) return null
+            val endIndex = profileIdentifier.lastIndexOf('/')
+            if (endIndex == -1) return null
+            return withHost(profileIdentifier.substring(7, endIndex))
+        }
+    }
 }

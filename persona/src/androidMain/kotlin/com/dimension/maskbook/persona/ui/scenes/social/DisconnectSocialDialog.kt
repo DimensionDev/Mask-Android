@@ -96,12 +96,12 @@ fun DisconnectSocialDialog(
                     onClick = {
                         when (PlatformType.valueOf(platform)) {
                             PlatformType.Twitter ->
-                                viewModel.disconnectTwitter(
+                                viewModel.disconnectProfile(
                                     personaId = personaId,
                                     socialId = socialId
                                 )
                             PlatformType.Facebook ->
-                                viewModel.disconnectFacebook(
+                                viewModel.disconnectProfile(
                                     personaId = personaId,
                                     socialId = socialId
                                 )

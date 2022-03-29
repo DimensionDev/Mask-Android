@@ -20,87 +20,73 @@
  */
 package com.dimension.maskbook.extension.utils
 
-import com.dimension.maskbook.common.ext.decodeJson
 import com.dimension.maskbook.common.gecko.WebContentController
+import com.dimension.maskbook.extension.export.model.ExtensionId
 import com.dimension.maskbook.extension.export.model.ExtensionMessage
-import com.dimension.maskbook.extension.export.model.ExtensionResponseMessage
-import com.dimension.maskbook.extension.ext.toMap
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.json.JSONObject
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
 internal class MessageChannel(
-    private val controller: WebContentController
+    private val controller: WebContentController,
+    private val scope: CoroutineScope,
 ) {
-    private val scope = CoroutineScope(Dispatchers.IO)
     private val queue = ConcurrentHashMap<String, Channel<String?>>()
-    private val subscription = arrayListOf<Pair<String, MutableStateFlow<ExtensionMessage?>>>()
+
+    private val _extensionMessage = MutableSharedFlow<ExtensionMessage>(extraBufferCapacity = 50)
+    val extensionMessage: Flow<ExtensionMessage> = _extensionMessage.asSharedFlow()
 
     fun startMessageCollect() {
-        scope.launch {
-            controller.message.collect {
-                if (it != null) {
-                    onMessage(it)
-                }
-            }
-        }
+        controller.message
+            .onEach { onMessage(it) }
+            .launchIn(scope)
     }
 
-    fun sendResponseMessage(message: ExtensionResponseMessage) {
-        controller.sendMessage(JSONObject(message.toMap()))
+    fun sendResponseMessage(map: Map<String, Any?>) {
+        controller.sendMessage(JSONObject(map))
     }
 
-    suspend inline fun <reified T : Any> execute(
+    suspend fun executeMessage(
         method: String,
-        params: Map<String, Any> = emptyMap()
-    ): T? {
-        val result = executeMessage(method, params)
-        return when (T::class) {
-            Short::class -> result?.toShortOrNull() as T?
-            Int::class -> result?.toIntOrNull() as T?
-            Long::class -> result?.toLongOrNull() as T?
-            Float::class -> result?.toFloatOrNull() as T?
-            Double::class -> result?.toDoubleOrNull() as T?
-            Boolean::class -> result?.toBooleanStrictOrNull() as T?
-            String::class -> result as T?
-            else -> result?.decodeJson() as T?
-        }
-    }
-
-    private suspend fun executeMessage(
-        method: String,
+        isWait: Boolean = true,
         params: Map<String, Any> = emptyMap(),
     ): String? {
         val id = UUID.randomUUID().toString()
+        val message = JSONObject(
+            mapOf(
+                "id" to id,
+                "jsonrpc" to "2.0",
+                "method" to method,
+                "params" to JSONObject(params)
+            )
+        )
+
+        // some method will not return, don't receive
+        if (!isWait) {
+            controller.sendMessage(message)
+            return null
+        }
+
         val channel = Channel<String?>()
         try {
             queue[id] = channel
-            controller.sendMessage(
-                JSONObject(
-                    mapOf(
-                        "id" to id,
-                        "jsonrpc" to "2.0",
-                        "method" to method,
-                        "params" to JSONObject(params)
-                    )
-                )
-            )
+            controller.sendMessage(message)
             return channel.receive()
         } finally {
             channel.close()
         }
     }
 
-    fun subscribeMessage(method: String): Flow<ExtensionMessage?> {
-        val flow = MutableStateFlow<ExtensionMessage?>(null)
-        subscription.add(method to flow)
-        return flow
+    fun subscribeMessage(vararg method: String): Flow<ExtensionMessage?> {
+        return _extensionMessage.filter { it.method in method }
     }
 
     private fun onMessage(jsonObject: JSONObject) {
@@ -114,7 +100,7 @@ internal class MessageChannel(
         }
         if (messageId != null && queue.containsKey(messageId)) {
             queue.remove(messageId)?.trySend(result)
-        } else if (messageId != null) {
+        } else {
             val method = runCatching {
                 jsonObject.getString("method")
             }.getOrNull()
@@ -123,15 +109,19 @@ internal class MessageChannel(
             }.getOrNull()?.toString()?.takeIf {
                 it != "null"
             }
-            if (method != null && subscription.any { it.first == method }) {
-                subscription.filter { it.first == method }.forEach { pair ->
-                    pair.second.value = ExtensionMessage(
-                        messageId,
-                        params,
-                    ) {
-                        sendResponseMessage(it)
-                    }
-                }
+            val jsonrpc = kotlin.runCatching {
+                jsonObject.getString("jsonrpc")
+            }.getOrDefault("2.0")
+            if (method != null) {
+                _extensionMessage.tryEmit(
+                    ExtensionMessage(
+                        id = ExtensionId.fromAny(messageId),
+                        jsonrpc = jsonrpc,
+                        method = method,
+                        params = params,
+                        onResponse = { sendResponseMessage(it) },
+                    )
+                )
             }
         }
     }

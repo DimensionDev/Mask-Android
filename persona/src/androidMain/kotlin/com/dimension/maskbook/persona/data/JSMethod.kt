@@ -22,60 +22,22 @@ package com.dimension.maskbook.persona.data
 
 import com.dimension.maskbook.common.ext.execute
 import com.dimension.maskbook.extension.export.ExtensionServices
-import com.dimension.maskbook.persona.export.model.Network
-import com.dimension.maskbook.persona.export.model.Persona
-import com.dimension.maskbook.persona.export.model.Profile
 
 internal class JSMethod(
     private val extensionServices: ExtensionServices,
 ) {
-    suspend fun getCurrentDetectedProfile(): String? {
-        return extensionServices.execute("SNSAdaptor_getCurrentDetectedProfile")
-    }
-
-    suspend fun getCurrentDetectedProfileDelegateToSNSAdaptor(): String? {
-        return extensionServices.execute("getCurrentDetectedProfile_delegate_to_SNSAdaptor")
-    }
 
     suspend fun createPersonaByMnemonic(
         mnemonic: String,
         nickname: String,
         password: String,
-    ): Persona? {
-        return extensionServices.execute(
+    ) {
+        extensionServices.execute<Unit>(
             "persona_createPersonaByMnemonic",
             "mnemonic" to mnemonic,
             "nickname" to nickname,
             "password" to password,
         )
-    }
-
-    suspend fun queryPersonas(
-        identifier: String?,
-        hasPrivateKey: Boolean
-    ): List<Persona> {
-        return extensionServices.execute(
-            "persona_queryPersonas",
-            *listOfNotNull(
-                identifier?.let {
-                    "identifier" to identifier
-                },
-                "hasPrivateKey" to hasPrivateKey,
-            ).toTypedArray()
-        ) ?: emptyList()
-    }
-
-    suspend fun queryMyPersonas(
-        network: Network?,
-    ): List<Persona> {
-        return extensionServices.execute(
-            "persona_queryMyPersonas",
-            *listOfNotNull(
-                network?.let {
-                    "network" to network.value
-                }
-            ).toTypedArray(),
-        ) ?: emptyList()
     }
 
     suspend fun updatePersonaInfo(
@@ -119,13 +81,12 @@ internal class JSMethod(
     }
 
     suspend fun connectProfile(
-        network: Network,
         personaIdentifier: String,
-        userName: String,
+        profileIdentifier: String,
     ) {
         extensionServices.execute<Unit>(
             "persona_connectProfile",
-            "profileIdentifier" to "person:${network.value}/$userName",
+            "profileIdentifier" to profileIdentifier,
             "personaIdentifier" to personaIdentifier,
         )
     }
@@ -175,48 +136,11 @@ internal class JSMethod(
         )
     }
 
-    suspend fun queryProfiles(
-        network: Network
-    ): List<Profile> {
-        return extensionServices.execute(
-            "profile_queryProfiles",
-            "network" to network.value
-        ) ?: emptyList()
-    }
-
-    suspend fun queryMyProfile(
-        network: Network
-    ): List<Profile> {
-        return extensionServices.execute(
-            "profile_queryMyProfiles",
-            "network" to network.value
-        ) ?: emptyList()
-    }
-
-    suspend fun updateProfileInfo(
-        identifier: String,
-        nickname: String?,
-        avatarURL: String?
-    ) {
-        extensionServices.execute<Unit>(
-            "profile_updateProfileInfo",
-            "identifier" to identifier,
-            "data" to listOfNotNull(
-                nickname?.let {
-                    "nickname" to nickname
-                },
-                avatarURL?.let {
-                    "avatarURL" to avatarURL
-                },
-            ).toMap()
-        )
-    }
-
-    suspend fun removeProfile(
+    suspend fun setCurrentPersonaIdentifier(
         identifier: String
     ) {
         extensionServices.execute<Unit>(
-            "profile_removeProfile",
+            "persona_setCurrentPersonaIdentifier",
             "identifier" to identifier,
         )
     }

@@ -30,6 +30,7 @@ import com.dimension.maskbook.common.route.DeeplinkNavigateArgs
 import com.dimension.maskbook.common.route.Navigator
 import com.dimension.maskbook.common.route.RouteNavigateArgs
 import com.dimension.maskbook.common.ui.widget.RouteHost
+import com.dimension.maskbook.common.ui.widget.rememberMaskBottomSheetNavigator
 import com.dimension.maskbook.entry.BuildConfig
 import com.dimension.maskbook.entry.EntrySetup
 import com.dimension.maskbook.entry.repository.EntryRepository
@@ -52,7 +53,8 @@ import org.koin.mp.KoinPlatformTools
 fun Router(
     startDestination: String,
 ) {
-    val navController = rememberAnimatedNavController()
+    val bottomSheetNavigator = rememberMaskBottomSheetNavigator()
+    val navController = rememberAnimatedNavController(bottomSheetNavigator)
     LaunchedEffect(Unit) {
         val initialRoute = getInitialRoute()
         navController.navigate(initialRoute) {
@@ -72,6 +74,7 @@ fun Router(
         }
     }
     RouteHost(
+        bottomSheetNavigator = bottomSheetNavigator,
         navController = navController,
         startDestination = startDestination,
     ) {
@@ -94,10 +97,8 @@ private suspend fun getInitialRoute(): String {
     if (shouldShowEntry) {
         return EntryRoute.Intro
     }
-    KoinPlatformTools.defaultContext().get().get<PersonaServices>().ensurePersonaDataLoaded()
-    val persona =
-        KoinPlatformTools.defaultContext().get().get<PersonaServices>().currentPersona.firstOrNull()
-    return if (persona != null) {
+    val hasPersona = KoinPlatformTools.defaultContext().get().get<PersonaServices>().hasPersona()
+    return if (hasPersona) {
         ExtensionRoute.WebContent(null)
     } else {
         WalletRoute.Register.Init

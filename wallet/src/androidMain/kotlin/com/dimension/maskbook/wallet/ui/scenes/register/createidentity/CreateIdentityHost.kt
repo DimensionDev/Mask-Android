@@ -30,8 +30,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
-import androidx.navigation.navOptions
 import com.dimension.maskbook.common.ext.getNestedNavigationViewModel
+import com.dimension.maskbook.common.ext.navigate
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
@@ -62,6 +62,7 @@ private const val GeneratedRouteName = "createIdentityRoute"
 fun BackupRoute(
     navController: NavController,
     @Path("personaName") personaName: String,
+    @Path("isWelcome") isWelcome: Boolean,
     @Back onBack: () -> Unit
 ) {
     val viewModel: CreateIdentityViewModel = navController
@@ -75,7 +76,7 @@ fun BackupRoute(
             viewModel.refreshWords()
         },
         onVerify = {
-            navController.navigate(WalletRoute.Register.CreateIdentity.Verify(personaName))
+            navController.navigate(WalletRoute.Register.CreateIdentity.Verify(personaName, isWelcome))
         },
         onBack = onBack,
     )
@@ -91,6 +92,7 @@ fun BackupRoute(
 fun VerifyRoute(
     navController: NavController,
     @Path("personaName") personaName: String,
+    @Path("isWelcome") isWelcome: Boolean,
     @Back onBack: () -> Unit
 ) {
     val viewModel: CreateIdentityViewModel = navController
@@ -108,7 +110,7 @@ fun VerifyRoute(
         },
         onClear = { viewModel.clearWords() },
         onConfirm = {
-            navController.navigate(WalletRoute.Register.CreateIdentity.Confirm(personaName))
+            navController.navigate(WalletRoute.Register.CreateIdentity.Confirm(personaName, isWelcome))
         },
         onWordSelected = {
             viewModel.selectWord(it)
@@ -131,6 +133,7 @@ fun VerifyRoute(
 fun ConfirmRoute(
     navController: NavController,
     @Path("personaName") personaName: String,
+    @Path("isWelcome") isWelcome: Boolean,
 ) {
     val viewModel: CreateIdentityViewModel = navController
         .getNestedNavigationViewModel(WalletRoute.Register.CreateIdentity.Route) {
@@ -156,15 +159,18 @@ fun ConfirmRoute(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {
                     viewModel.confirm()
-                    navController.navigate(
-                        Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona)),
-                        navOptions = navOptions {
-                            launchSingleTop = true
+                    navController.navigate(Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona))) {
+                        launchSingleTop = true
+                        if (isWelcome) {
+                            popUpTo(WalletRoute.Register.Init) {
+                                inclusive = true
+                            }
+                        } else {
                             popUpTo(CommonRoute.Main.Home.path) {
                                 inclusive = false
                             }
                         }
-                    )
+                    }
                 },
             ) {
                 Text(text = stringResource(R.string.common_controls_done))

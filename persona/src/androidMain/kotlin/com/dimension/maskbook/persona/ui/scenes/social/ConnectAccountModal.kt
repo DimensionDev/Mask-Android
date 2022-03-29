@@ -21,19 +21,28 @@
 package com.dimension.maskbook.persona.ui.scenes.social
 
 import android.net.Uri
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import coil.compose.rememberImagePainter
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.route.navigationComposeBottomSheet
@@ -44,8 +53,7 @@ import com.dimension.maskbook.common.ui.widget.MaskInputField
 import com.dimension.maskbook.common.ui.widget.MaskModal
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.persona.R
-import com.dimension.maskbook.persona.export.model.ConnectAccountData
-import com.dimension.maskbook.persona.export.model.SocialProfile
+import com.dimension.maskbook.persona.model.SocialProfile
 import com.dimension.maskbook.persona.route.PersonaRoute
 import com.dimension.maskbook.persona.viewmodel.social.UserNameModalViewModel
 import org.koin.androidx.compose.getViewModel
@@ -60,16 +68,38 @@ import org.koin.core.parameter.parametersOf
 fun ConnectAccountModal(
     navController: NavController,
     @Path("personaId") personaId: String,
-    @Path("profile") profile: String
+    @Path("profileId") profileId: String,
+    @Path("avatar") avatar: String,
 ) {
-    val socialProfile = remember(profile) { SocialProfile.parse(profile) } ?: return
+    val socialProfile = remember(profileId) { SocialProfile.parse(profileId) } ?: return
     val viewModel = getViewModel<UserNameModalViewModel> {
-        parametersOf(ConnectAccountData(personaId, socialProfile))
+        parametersOf(socialProfile)
     }
     val name by viewModel.userName.collectAsState()
     MaskModal(
         title = {
-            Text(text = stringResource(R.string.scene_social_connect_to_mask_network))
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Image(
+                        painter = rememberImagePainter(avatar),
+                        contentDescription = null,
+                        modifier = Modifier.size(48.dp).clip(CircleShape),
+                    )
+                    Spacer(Modifier.width(18.dp))
+                    Image(
+                        painter = painterResource(R.drawable.ic_connect_account_more),
+                        contentDescription = null,
+                    )
+                    Spacer(Modifier.width(18.dp))
+                    Image(
+                        painter = painterResource(R.drawable.mask),
+                        contentDescription = null,
+                        modifier = Modifier.size(48.dp),
+                    )
+                }
+                Spacer(Modifier.height(20.dp))
+                Text(text = stringResource(R.string.scene_social_connect_to_mask_network))
+            }
         }
     ) {
         Column {
@@ -82,7 +112,7 @@ fun ConnectAccountModal(
             PrimaryButton(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {
-                    viewModel.done(name)
+                    viewModel.done(personaId, name)
                     navController.navigate(Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona)))
                 },
             ) {

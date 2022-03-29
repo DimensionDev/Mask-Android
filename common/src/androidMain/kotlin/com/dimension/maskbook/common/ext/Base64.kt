@@ -22,14 +22,34 @@ package com.dimension.maskbook.common.ext
 
 import android.util.Base64
 
+fun ByteArray.encodeBase64(): ByteArray {
+    return Base64.encode(this, Base64.DEFAULT)
+}
+
+fun ByteArray.encodeBase64String(): String {
+    return String(encodeBase64())
+}
+
+fun ByteArray.decodeBase64(): ByteArray {
+    return Base64.decode(this, Base64.DEFAULT)
+}
+
+fun ByteArray.decodeBase64String(): String {
+    return String(decodeBase64())
+}
+
+fun String.encodeBase64Bytes(): ByteArray {
+    return toByteArray().encodeBase64()
+}
+
 fun String.encodeBase64(): String {
-    Base64.encode(toByteArray(), Base64.DEFAULT).let {
-        return String(it)
-    }
+    return String(encodeBase64Bytes())
+}
+
+fun String.decodeBase64Bytes(): ByteArray {
+    return toByteArray().decodeBase64()
 }
 
 fun String.decodeBase64(): String {
-    Base64.decode(toByteArray(), Base64.DEFAULT).let {
-        return String(it)
-    }
+    return String(decodeBase64Bytes())
 }

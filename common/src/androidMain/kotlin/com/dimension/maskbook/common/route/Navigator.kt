@@ -21,8 +21,8 @@
 package com.dimension.maskbook.common.route
 
 import com.dimension.maskbook.common.ui.notification.Event
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 
 sealed interface NavigateArgs
 
@@ -30,14 +30,14 @@ class DeeplinkNavigateArgs(val url: String) : NavigateArgs
 class RouteNavigateArgs(val route: String) : NavigateArgs
 
 object Navigator {
-    private val _navigateEvent = MutableStateFlow<Event<NavigateArgs>?>(null)
-    val navigateEvent = _navigateEvent.mapNotNull { it }
+    private val _navigateEvent = MutableSharedFlow<Event<NavigateArgs>>(extraBufferCapacity = 10)
+    val navigateEvent = _navigateEvent.asSharedFlow()
 
     fun navigate(route: String) {
-        _navigateEvent.value = Event(RouteNavigateArgs(route))
+        _navigateEvent.tryEmit(Event(RouteNavigateArgs(route)))
     }
 
     fun deeplink(url: String) {
-        _navigateEvent.value = Event(DeeplinkNavigateArgs(url))
+        _navigateEvent.tryEmit(Event(DeeplinkNavigateArgs(url)))
     }
 }

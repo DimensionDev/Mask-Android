@@ -24,6 +24,7 @@ import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.common.ext.ifNullOrEmpty
 import com.dimension.maskbook.common.okhttp.okHttpClient
 import com.dimension.maskbook.debankapi.model.ChainID
+import com.dimension.maskbook.extension.export.model.ExtensionId
 import com.dimension.maskbook.wallet.db.model.CoinPlatformType
 import com.dimension.maskbook.wallet.db.model.DbCollectible
 import com.dimension.maskbook.wallet.db.model.DbWalletTokenTokenWithWallet
@@ -38,7 +39,6 @@ import com.dimension.maskbook.wallet.export.model.WalletData
 import com.dimension.maskbook.wallet.export.model.WalletTokenData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonPrimitive
 import org.web3j.protocol.http.HttpService
 
 data class WalletCreateOrImportResult(
@@ -213,8 +213,8 @@ data class DWebData(
 @Serializable
 data class SendTokenConfirmData(
     val data: SendTransactionData,
-    val messageId: String,
-    val payloadId: JsonPrimitive,
+    val messageId: ExtensionId,
+    val payloadId: ExtensionId,
     val jsonrpc: String,
 )
 

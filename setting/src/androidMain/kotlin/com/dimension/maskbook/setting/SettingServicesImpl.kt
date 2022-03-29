@@ -24,8 +24,6 @@ import com.dimension.maskbook.setting.export.BackupServices
 import com.dimension.maskbook.setting.export.SettingServices
 import com.dimension.maskbook.setting.export.model.Appearance
 import com.dimension.maskbook.setting.export.model.BackupMeta
-import com.dimension.maskbook.setting.export.model.NetworkType
-import com.dimension.maskbook.setting.export.model.TradeProvider
 import com.dimension.maskbook.setting.repository.BackupRepository
 import com.dimension.maskbook.setting.repository.ISettingsRepository
 import kotlinx.coroutines.flow.Flow
@@ -46,18 +44,11 @@ class SettingServicesImpl(
     override val backupPassword: Flow<String>
         get() = settingsRepository.backupPassword
 
-    override val tradeProvider: Flow<Map<NetworkType, TradeProvider>>
-        get() = settingsRepository.tradeProvider
-
     override val shouldShowLegalScene: Flow<Boolean>
         get() = settingsRepository.shouldShowLegalScene
 
     override fun setBiometricEnabled(value: Boolean) {
         settingsRepository.setBiometricEnabled(value)
-    }
-
-    override fun setTradeProvider(networkType: NetworkType, tradeProvider: TradeProvider) {
-        settingsRepository.setTradeProvider(networkType, tradeProvider)
     }
 
     override fun setPaymentPassword(value: String) {

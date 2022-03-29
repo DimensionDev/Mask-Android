@@ -23,8 +23,6 @@ kotlin {
                 implementation(projects.common.okhttp)
                 implementation(projects.common.bigDecimal)
 
-                api("androidx.room:room-runtime:${Versions.Androidx.room}")
-                api("androidx.room:room-ktx:${Versions.Androidx.room}")
                 kspAndroid("androidx.room:room-compiler:${Versions.Androidx.room}")
 
                 implementation("androidx.room:room-paging:${Versions.Androidx.room}")
@@ -40,9 +38,6 @@ kotlin {
         }
         val androidTest by getting {
             dependencies {
-                implementation("junit:junit:4.13.2")
-                implementation("androidx.test.ext:junit:1.1.3")
-                implementation("androidx.test.espresso:espresso-core:3.4.0")
             }
         }
     }

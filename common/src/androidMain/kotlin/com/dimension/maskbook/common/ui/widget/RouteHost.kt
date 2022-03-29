@@ -27,7 +27,6 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -49,12 +48,6 @@ fun RouteHost(
     startDestination: String,
     builder: NavGraphBuilder.() -> Unit
 ) {
-    DisposableEffect(bottomSheetNavigator, navController) {
-        if (!navController.navigatorProvider.navigators.containsValue(bottomSheetNavigator)) {
-            navController.navigatorProvider.addNavigator(bottomSheetNavigator)
-        }
-        onDispose { }
-    }
     ModalBottomSheetLayout(
         bottomSheetNavigator,
         sheetBackgroundColor = MaterialTheme.colors.background,
