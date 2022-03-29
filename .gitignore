@@ -9,5 +9,5 @@ build/
 mozilla-central
 \.settings/
 
-app/src/main/assets/web_extensions/Maskbook/
+**/assets/web_extensions/Maskbook/
 Maskbook.zip

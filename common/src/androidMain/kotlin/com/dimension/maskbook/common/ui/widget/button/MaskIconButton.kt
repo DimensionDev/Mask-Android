@@ -32,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -39,6 +40,7 @@ fun MaskIconButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    size: Dp = MaskIconButtonDefaults.defaultSize,
     content: @Composable () -> Unit
 ) {
     Box(
@@ -47,7 +49,7 @@ fun MaskIconButton(
                 onClick = onClick,
                 enabled = enabled,
                 role = Role.Button,
-            ).size(MaskIconButtonDefaults.defaultSize),
+            ).size(size),
         contentAlignment = Alignment.Center
     ) {
         content.invoke()
@@ -59,6 +61,7 @@ fun MaskIconCardButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
+    size: Dp = MaskIconButtonDefaults.defaultSize,
     content: @Composable () -> Unit
 ) {
     Box(
@@ -70,7 +73,7 @@ fun MaskIconCardButton(
                 enabled = enabled,
                 role = Role.Button,
             )
-            .size(MaskIconButtonDefaults.defaultSize),
+            .size(size),
         contentAlignment = Alignment.Center
     ) {
         val contentAlpha = if (enabled) 1f else ContentAlpha.disabled

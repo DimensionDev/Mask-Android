@@ -21,6 +21,7 @@
 package com.dimension.maskbook.wallet.repository
 
 import com.dimension.maskbook.common.bigDecimal.BigDecimal
+import com.dimension.maskbook.common.ext.ifNullOrEmpty
 import com.dimension.maskbook.common.okhttp.okHttpClient
 import com.dimension.maskbook.debankapi.model.ChainID
 import com.dimension.maskbook.wallet.db.model.CoinPlatformType
@@ -30,10 +31,14 @@ import com.dimension.maskbook.wallet.db.model.DbWalletTokenWithToken
 import com.dimension.maskbook.wallet.db.model.WalletSource
 import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.export.model.TokenData
+import com.dimension.maskbook.wallet.export.model.WalletCollectibleCollectionData
+import com.dimension.maskbook.wallet.export.model.WalletCollectibleContract
+import com.dimension.maskbook.wallet.export.model.WalletCollectibleData
 import com.dimension.maskbook.wallet.export.model.WalletData
 import com.dimension.maskbook.wallet.export.model.WalletTokenData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonPrimitive
 import org.web3j.protocol.http.HttpService
 
 data class WalletCreateOrImportResult(
@@ -73,41 +78,37 @@ fun WalletTokenData.Companion.fromDb(data: DbWalletTokenWithToken) = with(data) 
     )
 }
 
-data class WalletCollectibleData(
-    val id: String,
-    val chainType: ChainType,
-    val icon: String?,
-    val name: String,
-    val items: List<WalletCollectibleItemData>,
-) {
-    companion object {
-        fun fromDb(data: DbCollectible) = with(data) {
-            WalletCollectibleData(
-                id = _id,
-                chainType = chainType,
-                icon = this.collection.imageURL,
-                name = collection.name ?: name,
-                items = listOf(
-                    WalletCollectibleItemData(
-                        id = _id,
-                        link = this.permalink ?: this.externalLink ?: "",
-                        imageUrl = this.url.imageURL ?: this.url.imageOriginalURL ?: "",
-                        previewUrl = this.url.imagePreviewURL ?: this.url.imageThumbnailURL ?: "",
-                        videoUrl = this.url.animationOriginalURL ?: this.url.animationURL ?: "",
-                    )
-                ),
-            )
-        }
-    }
+fun WalletCollectibleData.Companion.fromDb(data: DbCollectible) = with(data) {
+    WalletCollectibleData(
+        id = _id,
+        chainType = chainType,
+        name = name,
+        icon = collection.imageURL.ifNullOrEmpty { url.imagePreviewURL ?: "" },
+        tokenId = tokenId,
+        link = permalink ?: externalLink ?: "",
+        imageUrl = url.imageURL ?: url.imageOriginalURL ?: "",
+        previewUrl = url.imagePreviewURL ?: url.imageThumbnailURL ?: "",
+        videoUrl = url.animationOriginalURL ?: url.animationURL ?: "",
+        contract = WalletCollectibleContract(
+            address = contract.address,
+            imageUrl = contract.imageUrl,
+            name = contract.name,
+            symbol = contract.symbol,
+            schema = contract.schema,
+        ),
+        collection = WalletCollectibleCollectionData.fromDb(this)
+    )
 }
 
-data class WalletCollectibleItemData(
-    val id: String,
-    val link: String,
-    val previewUrl: String?,
-    val imageUrl: String?,
-    val videoUrl: String?,
-)
+fun WalletCollectibleCollectionData.Companion.fromDb(data: DbCollectible) = with(data) {
+    WalletCollectibleCollectionData(
+        slug = collection.slug,
+        name = collection.name ?: "",
+        imageUrl = collection.imageURL ?: "",
+        walletId = walletId,
+        chainType = chainType
+    )
+}
 
 enum class TransactionType {
     Swap,
@@ -132,7 +133,15 @@ data class TransactionData(
     val message: String,
     val createdAt: Long,
     val updatedAt: Long,
-    val tokenData: TokenData,
+    val tokenData: TransactionTokenData,
+)
+
+data class TransactionTokenData(
+    val id: String,
+    val contractId: String,
+    val symbol: String,
+    val price: BigDecimal,
+    val chainType: ChainType
 )
 
 data class SearchAddressResult(
@@ -201,12 +210,12 @@ data class DWebData(
     val chainType: ChainType,
 )
 
+@Serializable
 data class SendTokenConfirmData(
     val data: SendTransactionData,
-    val id: Any,
-    val onDone: (String?) -> Unit,
-    val onCancel: () -> Unit,
-    val onError: (Throwable) -> Unit,
+    val messageId: String,
+    val payloadId: JsonPrimitive,
+    val jsonrpc: String,
 )
 
 data class ChainData(
@@ -257,14 +266,32 @@ interface IWalletRepository {
     val wallets: Flow<List<WalletData>>
     val currentWallet: Flow<WalletData?>
     val currentChain: Flow<ChainData?>
+    suspend fun getChainTokenData(chainType: ChainType): ChainData?
     fun setCurrentWallet(walletData: WalletData?)
     fun setCurrentWallet(walletId: String)
     fun generateNewMnemonic(): List<String>
     suspend fun createWallet(mnemonic: List<String>, name: String, platformType: CoinPlatformType)
-    suspend fun importWallet(mnemonicCode: List<String>, name: String, path: List<String>, platformType: CoinPlatformType)
-    suspend fun importWallet(name: String, keyStore: String, password: String, platformType: CoinPlatformType)
+    suspend fun importWallet(
+        mnemonicCode: List<String>,
+        name: String,
+        path: List<String>,
+        platformType: CoinPlatformType
+    )
+
+    suspend fun importWallet(
+        name: String,
+        keyStore: String,
+        password: String,
+        platformType: CoinPlatformType
+    )
+
     suspend fun importWallet(name: String, privateKey: String, platformType: CoinPlatformType)
-    suspend fun getKeyStore(walletData: WalletData, platformType: CoinPlatformType, paymentPassword: String): String
+    suspend fun getKeyStore(
+        walletData: WalletData,
+        platformType: CoinPlatformType,
+        paymentPassword: String
+    ): String
+
     suspend fun getPrivateKey(walletData: WalletData, platformType: CoinPlatformType): String
     suspend fun getTotalBalance(address: String): Double
     fun deleteCurrentWallet()
@@ -281,6 +308,7 @@ interface IWalletRepository {
         onDone: (String?) -> Unit = {},
         onError: (Throwable) -> Unit = {},
     )
+
     fun sendTokenWithCurrentWallet(
         amount: BigDecimal,
         address: String,
@@ -292,7 +320,18 @@ interface IWalletRepository {
         onDone: (String?) -> Unit = {},
         onError: (Throwable) -> Unit = {},
     )
-    fun sendTokenWithCurrentWalletAndChainType(
+
+    fun sendCollectibleWithCurrentWallet(
+        address: String,
+        collectible: WalletCollectibleData,
+        gasLimit: Double,
+        maxFee: Double,
+        maxPriorityFee: Double,
+        onDone: (String?) -> Unit = {},
+        onError: (Throwable) -> Unit = {},
+    )
+
+    fun transactionWithCurrentWalletAndChainType(
         amount: BigDecimal,
         address: String,
         chainType: ChainType,
@@ -303,8 +342,11 @@ interface IWalletRepository {
         onDone: (String?) -> Unit,
         onError: (Throwable) -> Unit
     )
+
     fun validatePrivateKey(privateKey: String): Boolean
     fun validateMnemonic(mnemonic: String): Boolean
     fun validateKeystore(keyStore: String): Boolean
     suspend fun getEnsAddress(chainType: ChainType, name: String): String
+    suspend fun getChainData(chainType: ChainType): Flow<ChainData?>
+    suspend fun refreshWallet()
 }

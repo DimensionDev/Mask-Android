@@ -22,6 +22,8 @@ package com.dimension.maskbook.common.route
 
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.runtime.Composable
 import androidx.navigation.NamedNavArgument
@@ -38,6 +40,9 @@ const val navigationComposeDialog = "dialog"
 const val navigationComposeAnimComposablePackage = "com.dimension.maskbook.common.route"
 const val navigationComposeAnimComposable = "composable"
 
+const val navigationComposeModalComposablePackage = "com.dimension.maskbook.common.route"
+const val navigationComposeModalComposable = "modalComposable"
+
 const val navigationComposeBottomSheetPackage = "com.dimension.maskbook.common.route"
 const val navigationComposeBottomSheet = "bottomSheet"
 
@@ -53,6 +58,29 @@ fun NavGraphBuilder.composable(
         arguments = arguments,
         deepLinks = deepLinks,
         content = content,
+    )
+}
+
+@OptIn(ExperimentalAnimationApi::class)
+fun NavGraphBuilder.modalComposable(
+    route: String,
+    arguments: List<NamedNavArgument> = emptyList(),
+    deepLinks: List<NavDeepLink> = emptyList(),
+    content: @Composable AnimatedVisibilityScope.(NavBackStackEntry) -> Unit
+) {
+    composable(
+        route = route,
+        arguments = arguments,
+        deepLinks = deepLinks,
+        content = content,
+        enterTransition = {
+            slideInVertically { it }
+        },
+        exitTransition = null,
+        popEnterTransition = null,
+        popExitTransition = {
+            slideOutVertically { it }
+        },
     )
 }
 

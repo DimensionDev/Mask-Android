@@ -17,29 +17,22 @@ kotlin {
         }
         val androidMain by getting {
             dependencies {
-
-                implementation("androidx.navigation:navigation-ui-ktx:${Versions.navigation}")
-                implementation("androidx.navigation:navigation-compose:${Versions.navigation}")
-
-                implementation("io.github.dimensiondev:maskwalletcore:${Versions.maskWalletCore}")
-
                 implementation(projects.debankapi)
                 implementation(projects.common)
                 implementation(projects.common.retrofit)
                 implementation(projects.common.okhttp)
                 implementation(projects.common.bigDecimal)
 
-                implementation("androidx.compose.runtime:runtime-livedata:${Versions.Androidx.livedata}")
                 api("androidx.room:room-runtime:${Versions.Androidx.room}")
                 api("androidx.room:room-ktx:${Versions.Androidx.room}")
                 kspAndroid("androidx.room:room-compiler:${Versions.Androidx.room}")
+
                 implementation("androidx.room:room-paging:${Versions.Androidx.room}")
-                implementation("androidx.core:core-ktx:${Versions.Androidx.core}")
-                implementation("androidx.appcompat:appcompat:${Versions.Androidx.appcompat}")
                 implementation("androidx.paging:paging-runtime-ktx:${Versions.Androidx.paging}")
                 implementation("androidx.paging:paging-compose:${Versions.Androidx.pagingCompose}")
+
+                implementation("io.github.dimensiondev:maskwalletcore:${Versions.maskWalletCore}")
                 implementation("com.journeyapps:zxing-android-embedded:${Versions.zxing}")
-                implementation("com.google.android.material:material:${Versions.material}")
                 implementation("com.github.WalletConnect:kotlin-walletconnect-lib:${Versions.walletConnectV1}")
                 implementation("com.squareup.moshi:moshi:${Versions.moshi}")
                 implementation("com.github.komputing.khex:extensions:${Versions.khexExtension}")

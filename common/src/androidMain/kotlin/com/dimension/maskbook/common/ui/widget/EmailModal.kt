@@ -159,7 +159,7 @@ fun EmailCodeInputModal(
                 onClick = {
                     onVerify()
                 },
-                enabled = code.isNotEmpty() && !buttonEnabled && codeValid,
+                enabled = code.isNotEmpty() && !buttonEnabled,
             ) {
                 Text(text = stringResource(R.string.common_controls_confirm))
             }

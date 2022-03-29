@@ -39,6 +39,7 @@ import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.buildCodeBlock
 import com.squareup.kotlinpoet.ksp.KotlinPoetKspPreview
 import com.squareup.kotlinpoet.ksp.toClassName
@@ -47,6 +48,7 @@ import com.squareup.kotlinpoet.ksp.writeTo
 import com.squareup.kotlinpoet.withIndent
 
 private val navControllerType = ClassName("androidx.navigation", "NavController")
+private val navBackStackEntryType = ClassName("androidx.navigation", "NavBackStackEntry")
 private const val navControllerName = "controller"
 
 @OptIn(KotlinPoetKspPreview::class, KspExperimental::class)
@@ -68,13 +70,17 @@ internal class RouteGraphProcessor(
             }
         }
 
-        val actualSymbols = symbols - ret.toSet()
-        actualSymbols.groupBy {
+        if (ret.isNotEmpty()) {
+            // skip this processing round and return the symbols
+            return symbols
+        }
+
+        symbols.groupBy {
             it.getAnnotationsByType(NavGraphDestination::class).first().generatedFunctionName
         }.forEach { (name, items) ->
             generateRoute(items, name)
         }
-        return ret
+        return emptyList()
     }
 
     private fun generateRoute(data: List<KSFunctionDeclaration>, generatedFunctionName: String) {
@@ -93,6 +99,7 @@ internal class RouteGraphProcessor(
             .also { fileBuilder ->
                 fileBuilder.addFunction(
                     FunSpec.builder(generatedFunctionName)
+                        .addModifiers(KModifier.INTERNAL)
                         .receiver(ClassName("androidx.navigation", "NavGraphBuilder"))
                         .addParameter(
                             navControllerName,
@@ -101,7 +108,10 @@ internal class RouteGraphProcessor(
                         .also { builder ->
                             data.forEach { ksFunctionDeclaration ->
                                 if (packageName != ksFunctionDeclaration.packageName) {
-                                    fileBuilder.addImport(ksFunctionDeclaration.packageName.asString(), ksFunctionDeclaration.simpleName.asString())
+                                    fileBuilder.addImport(
+                                        ksFunctionDeclaration.packageName.asString(),
+                                        ksFunctionDeclaration.simpleName.asString()
+                                    )
                                 }
                                 val annotation =
                                     ksFunctionDeclaration.getAnnotationsByType(
@@ -207,6 +217,12 @@ internal class RouteGraphProcessor(
                                                             navControllerName
                                                         )
                                                     }
+                                                    it.type.toTypeName() == navBackStackEntryType -> {
+                                                        addStatement(
+                                                            "%N = it,",
+                                                            it.name?.asString() ?: "",
+                                                        )
+                                                    }
                                                     it.isAnnotationPresent(Query::class) || it.isAnnotationPresent(Path::class) -> {
                                                         addStatement(
                                                             "%N = %N,",
@@ -216,7 +232,7 @@ internal class RouteGraphProcessor(
                                                     }
                                                     it.isAnnotationPresent(Back::class) -> {
                                                         addStatement(
-                                                            "%N = { %N.navigateUp() },",
+                                                            "%N = { %N.popBackStack() },",
                                                             it.name?.asString() ?: "",
                                                             navControllerName
                                                         )

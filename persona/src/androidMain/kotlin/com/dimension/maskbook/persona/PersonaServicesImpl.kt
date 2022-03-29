@@ -36,7 +36,7 @@ class PersonaServicesImpl(
         personaRepository.updateCurrentPersona(value)
     }
 
-    override fun createPersonaFromMnemonic(value: List<String>, name: String) {
+    override suspend fun createPersonaFromMnemonic(value: List<String>, name: String) {
         personaRepository.createPersonaFromMnemonic(value, name)
     }
 
@@ -60,7 +60,11 @@ class PersonaServicesImpl(
         personaRepository.savePhoneForCurrentPersona(value)
     }
 
-    override fun refreshPersonaData() {
+    override suspend fun refreshPersonaData() {
         personaRepository.refreshPersona()
+    }
+
+    override suspend fun ensurePersonaDataLoaded() {
+        personaRepository.ensurePersonaDataLoaded()
     }
 }

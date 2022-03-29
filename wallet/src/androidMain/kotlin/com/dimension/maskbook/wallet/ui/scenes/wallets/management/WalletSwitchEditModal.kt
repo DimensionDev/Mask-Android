@@ -45,7 +45,7 @@ import com.dimension.maskbook.wallet.export.model.WalletData
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun WalletSwitchEditModal(
-    walletData: WalletData,
+    walletData: WalletData?,
     onRename: () -> Unit,
     onDelete: () -> Unit,
     onDisconnect: () -> Unit,
@@ -59,11 +59,11 @@ fun WalletSwitchEditModal(
                     Text(text = stringResource(R.string.scene_wallet_edit_item_rename))
                 },
                 trailing = {
-                    Text(text = walletData.name)
+                    Text(text = walletData?.name.orEmpty())
                 }
             )
             Spacer(modifier = Modifier.height(16.dp))
-            if (walletData.fromWalletConnect) {
+            if (walletData != null && walletData.fromWalletConnect) {
                 WalletSwitchItem(
                     onClick = onDisconnect,
                     icon = R.drawable.ic_disconnect,

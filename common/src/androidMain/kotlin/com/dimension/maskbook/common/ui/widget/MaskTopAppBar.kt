@@ -95,7 +95,7 @@ fun MaskTopAppBar(
                     Row(
                         Modifier
                             .height(40.dp)
-                            .padding(end = 22.dp),
+                            .padding(end = HorizontalScenePadding),
                         horizontalArrangement = Arrangement.End,
                         verticalAlignment = Alignment.CenterVertically,
                         content = actions
@@ -113,7 +113,7 @@ fun MaskTopAppBar(
             }
             if (subTitle != null) {
                 Spacer(modifier = Modifier.height(12.dp))
-                Row(Modifier.padding(horizontal = 23.dp)) {
+                Row(Modifier.padding(horizontal = HorizontalScenePadding)) {
                     ProvideTextStyle(MaterialTheme.typography.subtitle1) {
                         subTitle()
                     }
@@ -175,7 +175,7 @@ fun MaskSingleLineTopAppBar(
                     Row(
                         Modifier
                             .height(40.dp)
-                            .padding(end = 22.dp),
+                            .padding(end = HorizontalScenePadding),
                         horizontalArrangement = Arrangement.End,
                         verticalAlignment = Alignment.CenterVertically,
                         content = actions
@@ -197,8 +197,8 @@ fun MaskSingleLineTopAppBar(
     }
 }
 
-private val AppBarHeight = 44.dp
+val AppBarHeight = 44.dp
 private val TitleInsetWithoutIcon = Modifier.width(24.dp)
 private val TitleIconModifier = Modifier
     .height(36.dp)
-    .padding(start = 22.dp)
+    .padding(start = HorizontalScenePadding)

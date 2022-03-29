@@ -220,7 +220,7 @@ private fun RouteDefinition.funSpec(
                         if (it.type.isString) {
                             "${it.name}=\${${encodeNullable(it.name)}}"
                         } else {
-                            "${it.name}=\${${it.name}}"
+                            "${it.name}=\${if (${it.name} == null) \"\" else ${it.name}}"
                         }
                     }
                 )

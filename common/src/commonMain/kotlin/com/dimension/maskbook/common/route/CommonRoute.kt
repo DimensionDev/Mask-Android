@@ -22,10 +22,13 @@ package com.dimension.maskbook.common.route
 
 import com.dimension.maskbook.common.routeProcessor.annotations.Route
 
+@Suppress("CONST_VAL_WITHOUT_INITIALIZER")
 @Route
 expect object CommonRoute {
     object Main {
-        val Home: String
+        object Home {
+            operator fun invoke(initialRoute: String): String
+        }
         object Tabs {
             val Persona: String
             val Wallet: String

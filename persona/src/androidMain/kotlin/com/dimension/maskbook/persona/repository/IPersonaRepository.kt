@@ -20,12 +20,11 @@
  */
 package com.dimension.maskbook.persona.repository
 
-import androidx.lifecycle.LiveData
+import com.dimension.maskbook.persona.export.model.ConnectAccountData
 import com.dimension.maskbook.persona.export.model.PersonaData
 import com.dimension.maskbook.persona.export.model.PlatformType
 import com.dimension.maskbook.persona.export.model.SocialData
 import com.dimension.maskbook.persona.export.model.SocialProfile
-import com.dimension.maskbook.persona.model.RedirectTarget
 import kotlinx.coroutines.flow.Flow
 
 interface IPersonaRepository {
@@ -33,10 +32,10 @@ interface IPersonaRepository {
     val facebook: Flow<List<SocialData>>
     val persona: Flow<List<PersonaData>>
     val currentPersona: Flow<PersonaData?>
-    val redirect: LiveData<RedirectTarget?>
     fun beginConnectingProcess(
         personaId: String,
         platformType: PlatformType,
+        onDone: (ConnectAccountData) -> Unit,
     )
 
     fun finishConnectingProcess(
@@ -53,12 +52,14 @@ interface IPersonaRepository {
     fun connectFacebook(personaId: String, userName: String)
     fun disconnectTwitter(personaId: String, socialId: String)
     fun disconnectFacebook(personaId: String, socialId: String)
-    fun createPersonaFromMnemonic(value: List<String>, name: String)
+    suspend fun createPersonaFromMnemonic(value: List<String>, name: String)
     fun createPersonaFromPrivateKey(value: String)
     fun updateCurrentPersona(value: String)
     suspend fun backupPrivateKey(id: String): String
     fun init()
     fun saveEmailForCurrentPersona(value: String)
     fun savePhoneForCurrentPersona(value: String)
-    fun refreshPersona()
+    suspend fun refreshPersona()
+    suspend fun ensurePersonaDataLoaded()
+    fun setPlatform(platformType: PlatformType)
 }

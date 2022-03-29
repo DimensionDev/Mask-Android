@@ -31,13 +31,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -45,7 +45,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.route.Deeplinks
+import com.dimension.maskbook.common.route.navigationComposeAnimComposable
+import com.dimension.maskbook.common.route.navigationComposeAnimComposablePackage
+import com.dimension.maskbook.common.routeProcessor.annotations.Back
+import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
 import com.dimension.maskbook.common.ui.widget.MaskCard
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskScene
@@ -53,18 +58,26 @@ import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.common.ui.widget.button.MaskBackButton
 import com.dimension.maskbook.persona.R
-import com.dimension.maskbook.persona.export.model.PersonaData
+import com.dimension.maskbook.persona.repository.IPersonaRepository
 import com.dimension.maskbook.persona.route.PersonaRoute
+import com.dimension.maskbook.setting.export.SettingServices
+import org.koin.androidx.compose.get
 
-@OptIn(ExperimentalMaterialApi::class)
+@NavGraphDestination(
+    route = PersonaRoute.PersonaMenu,
+    packageName = navigationComposeAnimComposablePackage,
+    functionName = navigationComposeAnimComposable,
+)
 @Composable
 fun PersonaMenuScene(
-    personaData: PersonaData,
-    backupPassword: String,
-    paymentPassword: String,
     navController: NavController,
-    onBack: () -> Unit,
+    @Back onBack: () -> Unit,
 ) {
+    val currentPersona by get<IPersonaRepository>().currentPersona.observeAsState(initial = null)
+
+    val repository = get<SettingServices>()
+    val backupPassword by repository.backupPassword.observeAsState(initial = "")
+    val paymentPassword by repository.paymentPassword.observeAsState(initial = "")
     MaskScene {
         MaskScaffold(
             topBar = {
@@ -73,7 +86,7 @@ fun PersonaMenuScene(
                         MaskBackButton(onBack = onBack)
                     },
                     title = {
-                        Text(text = personaData.name)
+                        Text(text = currentPersona?.name ?: "")
                     }
                 )
             }
@@ -111,7 +124,9 @@ fun PersonaMenuScene(
                         modifier = Modifier.fillMaxWidth(),
                         elevation = 0.dp,
                         onClick = {
-                            navController.navigate(PersonaRoute.RenamePersona(personaData.id))
+                            currentPersona?.let {
+                                navController.navigate(PersonaRoute.RenamePersona(it.id))
+                            }
                         }
                     ) {
                         Row(

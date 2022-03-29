@@ -25,10 +25,10 @@ import androidx.navigation.NavGraphBuilder
 import org.koin.core.module.Module
 
 interface ModuleSetup {
-    fun NavGraphBuilder.route(navController: NavController, onBack: () -> Unit)
+    fun NavGraphBuilder.route(navController: NavController)
     fun dependencyInject(): Module
     fun onExtensionReady() {}
 }
 
-fun ModuleSetup.route(builder: NavGraphBuilder, navController: NavController, onBack: () -> Unit) =
-    builder.route(navController, onBack)
+fun ModuleSetup.route(builder: NavGraphBuilder, navController: NavController) =
+    builder.route(navController)

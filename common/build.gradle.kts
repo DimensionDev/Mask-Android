@@ -13,6 +13,7 @@ kotlin {
             dependencies {
                 implementation(projects.common.routeProcessor.annotations)
                 kspAndroid(projects.common.routeProcessor)
+                api(projects.common.bigDecimal)
             }
         }
         val commonTest by getting {
@@ -26,6 +27,7 @@ kotlin {
                 api(projects.labs.export)
                 api(projects.persona.export)
                 api(projects.setting.export)
+                api(projects.extension.export)
                 api(projects.localization)
 
                 // Compose
@@ -42,11 +44,12 @@ kotlin {
                 api("io.insert-koin:koin-androidx-compose:${Versions.koin}")
 
                 // Lifecycle
-                api("androidx.lifecycle:lifecycle-viewmodel-compose:${Versions.lifecycle}")
+                api("androidx.lifecycle:lifecycle-runtime-ktx:${Versions.lifecycle}")
+                api("androidx.lifecycle:lifecycle-livedata-ktx:${Versions.lifecycle}")
                 api("androidx.lifecycle:lifecycle-viewmodel-ktx:${Versions.lifecycle}")
                 api("androidx.lifecycle:lifecycle-viewmodel-savedstate:${Versions.lifecycle}")
+                api("androidx.lifecycle:lifecycle-viewmodel-compose:${Versions.lifecycle}")
                 api("androidx.lifecycle:lifecycle-common-java8:${Versions.lifecycle}")
-                api("androidx.lifecycle:lifecycle-runtime-ktx:${Versions.lifecycle}")
 
                 // Coil
                 api("io.coil-kt:coil-compose:${Versions.coil}")
@@ -65,13 +68,20 @@ kotlin {
                 api("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.Kotlin.coroutines}")
                 api("org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.Kotlin.coroutines}")
 
+                // Androidx
+                api("androidx.core:core-ktx:${Versions.Androidx.core}")
+                api("androidx.appcompat:appcompat:${Versions.Androidx.appcompat}")
+                api("androidx.activity:activity-ktx:${Versions.Androidx.activity}")
+                api("androidx.fragment:fragment-ktx:${Versions.Androidx.fragment}")
                 api("androidx.datastore:datastore-preferences:${Versions.datastore}")
+                api("androidx.navigation:navigation-ui-ktx:${Versions.navigation}")
+                api("androidx.navigation:navigation-compose:${Versions.navigation}")
+                implementation("androidx.biometric:biometric-ktx:${Versions.Androidx.biometric}")
 
-                api("org.web3j:core:${Versions.web3j}")
-
+                // serialization
                 api("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.Kotlin.serialization}")
 
-                implementation("androidx.biometric:biometric-ktx:${Versions.Androidx.biometric}")
+                api("org.web3j:core:${Versions.web3j}")
 
                 api("joda-time:joda-time:${Versions.jodaTime}")
             }

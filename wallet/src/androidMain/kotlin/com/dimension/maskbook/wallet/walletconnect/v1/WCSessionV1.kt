@@ -131,6 +131,7 @@ class WCSessionV1(
                 Session.MethodCall.SessionRequest(requestId, clientData),
                 topic = config.handshakeTopic,
                 callback = { resp ->
+                    @Suppress("UNCHECKED_CAST")
                     (resp.result as? Map<String, *>)?.correctExtractSessionParams()?.let { params ->
                         peerId = params.peerData?.id
                         peerMeta = params.peerData?.meta

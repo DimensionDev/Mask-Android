@@ -25,6 +25,7 @@ import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.dimension.maskbook.wallet.export.model.ChainType
+import com.dimension.maskbook.wallet.export.model.CollectibleContractSchema
 
 @Entity(
     indices = [Index(value = ["walletId", "tokenId", "id"], unique = true)],
@@ -42,16 +43,17 @@ data class DbCollectible(
     @Embedded(prefix = "creator_")
     val creator: DbCollectibleCreator,
     @Embedded(prefix = "collection_")
-    val collection: DbCollectibleCollection,
+    val collection: DbCollection,
     @Embedded(prefix = "contract_")
     val contract: DbCollectibleContract,
     @Embedded(prefix = "url_")
     val url: DbCollectibleUrl,
 )
 
-data class DbCollectibleCollection(
+data class DbCollection(
     val imageURL: String? = null,
     val name: String? = null,
+    val slug: String,
 )
 
 data class DbCollectibleCreator(
@@ -75,4 +77,5 @@ data class DbCollectibleContract(
     val imageUrl: String,
     val name: String,
     val symbol: String,
+    val schema: CollectibleContractSchema,
 )

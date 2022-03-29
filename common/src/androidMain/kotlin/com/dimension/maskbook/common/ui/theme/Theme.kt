@@ -29,6 +29,7 @@ import androidx.compose.material.Typography
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
@@ -54,8 +55,12 @@ fun MaskTheme(
         colors = provideColor(isDarkTheme),
         shapes = provideShapes(),
         typography = provideTypography(isDarkTheme),
-        content = content,
-    )
+    ) {
+        CompositionLocalProvider(
+            LocalMoreColors provides provideMoreColors(isDarkTheme),
+            content = content,
+        )
+    }
 }
 
 @Composable

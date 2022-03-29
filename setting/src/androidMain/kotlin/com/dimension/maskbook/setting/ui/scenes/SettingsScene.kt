@@ -52,9 +52,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.route.Deeplinks
-import com.dimension.maskbook.common.ui.LocalRootNavController
 import com.dimension.maskbook.common.ui.widget.IosSwitch
 import com.dimension.maskbook.common.ui.widget.MaskCard
 import com.dimension.maskbook.common.ui.widget.MaskListItem
@@ -76,6 +76,7 @@ import org.koin.androidx.compose.getViewModel
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun SettingsScene(
+    navController: NavController,
     onBack: () -> Unit,
 ) {
     val repository = get<ISettingsRepository>()
@@ -113,37 +114,47 @@ fun SettingsScene(
             )
             SettingsCard {
                 SettingsItem(
-                    targetRoute = SettingRoute.LanguageSettings,
                     title = stringResource(R.string.scene_setting_general_language),
                     icon = R.drawable.ic_settings_language,
                     trailingText = languageMap[language],
+                    onClick = {
+                        navController.navigate(SettingRoute.LanguageSettings)
+                    }
                 )
                 SettingsDivider()
                 SettingsItem(
-                    targetRoute = SettingRoute.AppearanceSettings,
                     title = stringResource(R.string.scene_setting_general_appearance),
                     icon = R.drawable.ic_settings_appearance,
                     trailingText = appearanceMap[appearance]?.let { it1 -> stringResource(it1) },
+                    onClick = {
+                        navController.navigate(SettingRoute.AppearanceSettings)
+                    }
                 )
                 SettingsDivider()
                 SettingsItem(
-                    targetRoute = SettingRoute.DataSourceSettings,
                     title = stringResource(R.string.scene_setting_general_data_source),
                     icon = R.drawable.ic_settings_datasource,
                     trailingText = dataProviderMap[dataProvider],
+                    onClick = {
+                        navController.navigate(SettingRoute.DataSourceSettings)
+                    }
                 )
                 SettingsDivider()
                 if (paymentPassword.isEmpty()) {
                     SettingsItem(
-                        targetRoute = SettingRoute.PaymentPasswordSettings,
                         title = stringResource(R.string.scene_setting_general_setup_payment_password),
                         icon = R.drawable.ic_settings_change_payment_password,
+                        onClick = {
+                            navController.navigate(SettingRoute.PaymentPasswordSettings)
+                        }
                     )
                 } else {
                     SettingsItem(
-                        targetRoute = SettingRoute.PaymentPasswordSettings,
                         title = stringResource(R.string.scene_setting_general_change_payment_password),
                         icon = R.drawable.ic_settings_change_payment_password,
+                        onClick = {
+                            navController.navigate(SettingRoute.PaymentPasswordSettings)
+                        }
                     )
                 }
                 if (biometricEnableViewModel.isSupported(context)) {
@@ -161,7 +172,7 @@ fun SettingsScene(
                                 )
                             })
                         },
-                        onClicked = {
+                        onClick = {
                             enableBiometric(
                                 !biometricEnabled,
                                 context,
@@ -177,67 +188,93 @@ fun SettingsScene(
                 title = stringResource(R.string.scene_setting_backup_recovery_title)
             )
             SettingsCard {
-                val rootNavController = LocalRootNavController.current
                 SettingsItem(
                     title = stringResource(R.string.scene_setting_backup_recovery_restore_data),
                     icon = R.drawable.ic_settings_restore_data,
-                    onClicked = {
-                        rootNavController.navigate(Uri.parse(Deeplinks.Wallet.Recovery))
+                    onClick = {
+                        navController.navigate(Uri.parse(Deeplinks.Wallet.Recovery))
                     }
                 )
                 SettingsDivider()
                 SettingsItem(
                     title = stringResource(R.string.scene_setting_backup_recovery_back_up_data),
                     icon = R.drawable.ic_settings_backup_data,
-                    targetRoute = if (backupPassword.isEmpty() || paymentPassword.isEmpty()) SettingRoute.SetupPasswordDialog else SettingRoute.BackupData.BackupSelection
+                    onClick = {
+                        val route = if (backupPassword.isEmpty() || paymentPassword.isEmpty()) {
+                            SettingRoute.SetupPasswordDialog
+                        } else {
+                            SettingRoute.BackupData.BackupSelection
+                        }
+                        navController.navigate(route)
+                    }
                 )
                 SettingsDivider()
                 if (backupPassword.isEmpty()) {
                     SettingsItem(
                         title = stringResource(R.string.scene_setting_backup_recovery_back_up_password),
                         icon = R.drawable.ic_settings_backup_password,
-                        targetRoute = SettingRoute.ChangeBackUpPassword,
-                        secondaryText = stringResource(R.string.scene_setting_backup_recovery_back_up_password_empty)
+                        secondaryText = stringResource(R.string.scene_setting_backup_recovery_back_up_password_empty),
+                        onClick = {
+                            navController.navigate(SettingRoute.ChangeBackUpPassword)
+                        }
                     )
                 } else {
                     SettingsItem(
                         title = stringResource(R.string.scene_setting_backup_recovery_change_backup_password),
                         icon = R.drawable.ic_settings_backup_password,
-                        targetRoute = SettingRoute.ChangeBackUpPassword,
+                        onClick = {
+                            navController.navigate(SettingRoute.ChangeBackUpPassword)
+                        }
                     )
                 }
                 SettingsDivider()
                 val email = persona?.email
-                if (email == null) {
+                if (email.isNullOrEmpty()) {
                     SettingsItem(
                         title = stringResource(R.string.scene_backup_backup_verify_field_email),
                         icon = R.drawable.ic_settings_email,
                         secondaryText = stringResource(R.string.scene_setting_profile_email_empty),
-                        targetRoute = SettingRoute.Settings_ChangeEmail.Settings_ChangeEmail_Setup
+                        onClick = {
+                            navController.navigate(
+                                SettingRoute.Settings_ChangeEmail.Settings_ChangeEmail_Setup
+                            )
+                        }
                     )
                 } else {
                     SettingsItem(
                         title = stringResource(R.string.scene_backup_backup_verify_field_email),
                         icon = R.drawable.ic_settings_email,
                         secondaryText = email,
-                        targetRoute = SettingRoute.Settings_ChangeEmail.Settings_ChangeEmail_Change_Code(email)
+                        onClick = {
+                            navController.navigate(
+                                SettingRoute.Settings_ChangeEmail.Settings_ChangeEmail_Change_Code(email)
+                            )
+                        }
                     )
                 }
                 SettingsDivider()
                 val phone = persona?.phone
-                if (phone == null) {
+                if (phone.isNullOrEmpty()) {
                     SettingsItem(
                         title = stringResource(R.string.scene_setting_profile_phone_number),
                         icon = R.drawable.ic_settings_phone_number,
                         secondaryText = stringResource(R.string.scene_setting_profile_phone_number_empty),
-                        targetRoute = SettingRoute.Settings_ChangePhone.Settings_ChangePhone_Setup,
+                        onClick = {
+                            navController.navigate(
+                                SettingRoute.Settings_ChangePhone.Settings_ChangePhone_Setup
+                            )
+                        }
                     )
                 } else {
                     SettingsItem(
                         title = stringResource(R.string.scene_setting_profile_phone_number),
                         icon = R.drawable.ic_settings_phone_number,
                         secondaryText = phone,
-                        targetRoute = SettingRoute.Settings_ChangePhone.Settings_ChangePhone_Change_Code(phone)
+                        onClick = {
+                            navController.navigate(
+                                SettingRoute.Settings_ChangePhone.Settings_ChangePhone_Change_Code(phone)
+                            )
+                        }
                     )
                 }
             }
@@ -265,21 +302,15 @@ private fun enableBiometric(
 
 @Composable
 fun SettingsItem(
-    targetRoute: String? = null,
     title: String,
     @DrawableRes icon: Int,
+    onClick: () -> Unit,
     secondaryText: String? = null,
     trailing: @Composable (() -> Unit)? = null,
     trailingText: String? = null,
-    onClicked: (() -> Unit)? = null,
 ) {
-    val rootNavController = LocalRootNavController.current
     MaskButton(
-        onClick = {
-            if (targetRoute != null) {
-                rootNavController.navigate(targetRoute)
-            } else onClicked?.invoke()
-        }
+        onClick = onClick,
     ) {
         MaskListItem(
             text = {

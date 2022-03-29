@@ -47,7 +47,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
+import com.dimension.maskbook.common.ext.humanizeDollar
+import com.dimension.maskbook.common.ext.humanizeToken
 import com.dimension.maskbook.common.model.DateType
+import com.dimension.maskbook.common.ui.widget.HorizontalScenePadding
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskScene
 import com.dimension.maskbook.common.ui.widget.MaskTopAppBar
@@ -56,8 +59,6 @@ import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.export.model.TokenData
 import com.dimension.maskbook.wallet.export.model.WalletTokenData
-import com.dimension.maskbook.wallet.ext.humanizeDollar
-import com.dimension.maskbook.wallet.ext.humanizeToken
 import com.dimension.maskbook.wallet.repository.TransactionData
 import com.dimension.maskbook.wallet.ui.widget.TransactionHistoryList
 
@@ -65,8 +66,8 @@ import com.dimension.maskbook.wallet.ui.widget.TransactionHistoryList
 @Composable
 fun TokenDetailScene(
     onBack: () -> Unit,
-    tokenData: TokenData,
-    walletTokenData: WalletTokenData,
+    tokenData: TokenData?,
+    walletTokenData: WalletTokenData?,
     transactions: Map<DateType, List<TransactionData>>,
     onSpeedUp: (TransactionData) -> Unit,
     onCancel: (TransactionData) -> Unit,
@@ -88,41 +89,43 @@ fun TokenDetailScene(
             Column(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Surface(
-                    contentColor = contentColorFor(backgroundColor = Color(0XFF212E59)),
-                    color = Color(0XFF212E59),
-                    shape = MaterialTheme.shapes.medium,
-                    modifier = Modifier.padding(horizontal = 23.dp)
-                ) {
-                    Row(
-                        modifier = Modifier.padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically,
+                if (walletTokenData != null && tokenData != null) {
+                    Surface(
+                        contentColor = contentColorFor(backgroundColor = Color(0XFF212E59)),
+                        color = Color(0XFF212E59),
+                        shape = MaterialTheme.shapes.medium,
+                        modifier = Modifier.padding(horizontal = HorizontalScenePadding)
                     ) {
-                        if (tokenData.logoURI != null) {
-                            Image(
-                                painter = rememberImagePainter(data = tokenData.logoURI),
-                                contentDescription = null,
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = tokenData.name,
-                            style = MaterialTheme.typography.subtitle2,
-                            modifier = Modifier.weight(1f),
-                            color = Color.White,
-                        )
-                        Column(
-                            horizontalAlignment = Alignment.End,
+                        Row(
+                            modifier = Modifier.padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically,
                         ) {
+                            if (tokenData.logoURI != null) {
+                                Image(
+                                    painter = rememberImagePainter(data = tokenData.logoURI),
+                                    contentDescription = null,
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                text = "${walletTokenData.count.humanizeToken()} ${tokenData.symbol}",
+                                text = tokenData.name,
+                                style = MaterialTheme.typography.subtitle2,
+                                modifier = Modifier.weight(1f),
                                 color = Color.White,
                             )
-                            Text(
-                                text = (walletTokenData.count * tokenData.price).humanizeDollar(),
-                                style = MaterialTheme.typography.h6,
-                                color = Color.White,
-                            )
+                            Column(
+                                horizontalAlignment = Alignment.End,
+                            ) {
+                                Text(
+                                    text = "${walletTokenData.count.humanizeToken()} ${tokenData.symbol}",
+                                    color = Color.White,
+                                )
+                                Text(
+                                    text = (walletTokenData.count * tokenData.price).humanizeDollar(),
+                                    style = MaterialTheme.typography.h6,
+                                    color = Color.White,
+                                )
+                            }
                         }
                     }
                 }
@@ -138,7 +141,7 @@ fun TokenDetailScene(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 23.dp),
+                            .padding(horizontal = HorizontalScenePadding),
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         PrimaryButton(

@@ -32,13 +32,10 @@ import kotlinx.coroutines.launch
 import java.util.UUID
 
 class CreateWalletRecoveryKeyViewModel(
+    wallet: String,
     private val repository: IWalletRepository
 ) : BaseMnemonicPhraseViewModel() {
-    private val _wallet = MutableStateFlow("")
-
-    fun setWallet(wallet: String) {
-        _wallet.value = wallet
-    }
+    private val _wallet = MutableStateFlow(wallet)
 
     @OptIn(ExperimentalStdlibApi::class)
     override fun generateWords(): List<String> {

@@ -24,6 +24,7 @@ data class SocialData(
     val id: String,
     val name: String,
     val avatar: String,
-    val personaId: String? = null,
     val network: Network,
+    val personaId: String? = null,
+    val linkedPersona: Boolean = false,
 )

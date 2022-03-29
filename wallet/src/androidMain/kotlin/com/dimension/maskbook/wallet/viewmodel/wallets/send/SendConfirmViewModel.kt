@@ -24,39 +24,72 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.common.ext.asStateIn
-import com.dimension.maskbook.wallet.export.model.TokenData
-import com.dimension.maskbook.wallet.repository.ISendHistoryRepository
+import com.dimension.maskbook.common.ext.onFinished
+import com.dimension.maskbook.wallet.export.model.TradableData
+import com.dimension.maskbook.wallet.export.model.WalletCollectibleData
+import com.dimension.maskbook.wallet.export.model.WalletTokenData
 import com.dimension.maskbook.wallet.repository.IWalletRepository
+import com.dimension.maskbook.wallet.usecase.GetAddressUseCase
+import com.dimension.maskbook.wallet.usecase.SendTokenUseCase
+import com.dimension.maskbook.wallet.usecase.SendWalletCollectibleUseCase
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.launch
 
 class SendConfirmViewModel(
     private val toAddress: String,
-    private val sendHistoryRepository: ISendHistoryRepository,
     private val walletRepository: IWalletRepository,
+    private val getAddress: GetAddressUseCase,
+    private val sendToken: SendTokenUseCase,
+    private val sendWalletCollectible: SendWalletCollectibleUseCase,
 ) : ViewModel() {
+    private val _loadingState = MutableStateFlow(false)
+    val loadingState = _loadingState.asStateIn(viewModelScope)
 
     fun send(
-        tokenData: TokenData,
+        tradableData: TradableData,
         amount: BigDecimal,
         gasLimit: Double,
         maxFee: Double,
-        maxPriorityFee: Double
+        maxPriorityFee: Double,
+        onDone: () -> Unit,
+        onFailed: () -> Unit
     ) {
-        walletRepository.sendTokenWithCurrentWallet(
-            amount = amount,
-            address = toAddress,
-            tokenData = tokenData,
-            gasLimit = gasLimit,
-            maxFee = maxFee,
-            maxPriorityFee = maxPriorityFee,
-        )
+        _loadingState.value = true
+        viewModelScope.launch {
+            when (tradableData) {
+                is WalletTokenData -> sendToken(
+                    amount = amount,
+                    address = toAddress,
+                    tokenData = tradableData.tokenData,
+                    gasLimit = gasLimit,
+                    maxFee = maxFee,
+                    maxPriorityFee = maxPriorityFee,
+                )
+                is WalletCollectibleData -> sendWalletCollectible(
+                    address = toAddress,
+                    collectible = tradableData,
+                    gasLimit = gasLimit,
+                    maxFee = maxFee,
+                    maxPriorityFee = maxPriorityFee,
+                )
+            }.onSuccess {
+                onDone.invoke()
+            }.onFailure {
+                onFailed.invoke()
+            }.onFinished {
+                _loadingState.value = false
+            }
+        }
+    }
+
+    fun cancel() {
+        _loadingState.value = false
     }
 
     val addressData by lazy {
-        sendHistoryRepository.getByAddress(toAddress)
+        getAddress(toAddress)
             .asStateIn(viewModelScope, null)
-            .mapNotNull { it }
     }
 
     val deepLink = walletRepository.currentWallet.map {

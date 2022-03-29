@@ -22,8 +22,14 @@ package com.dimension.maskbook.common.ext
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.lifecycle.ViewModel
+import androidx.navigation.NavController
+import org.koin.androidx.viewmodel.ViewModelOwner
+import org.koin.androidx.viewmodel.scope.getViewModel
 import org.koin.core.annotation.KoinInternalApi
 import org.koin.core.context.GlobalContext
+import org.koin.core.parameter.ParametersDefinition
+import org.koin.core.qualifier.Qualifier
 import org.koin.core.scope.Scope
 
 @OptIn(KoinInternalApi::class)
@@ -32,4 +38,19 @@ inline fun <reified T> getAll(
     scope: Scope = GlobalContext.get().scopeRegistry.rootScope,
 ): Set<T> = remember {
     scope.getAll<T>(T::class).toHashSet()
+}
+
+@OptIn(KoinInternalApi::class)
+@Composable
+inline fun <reified T : ViewModel> NavController.getNestedNavigationViewModel(
+    route: String,
+    qualifier: Qualifier? = null,
+    scope: Scope = GlobalContext.get().scopeRegistry.rootScope,
+    noinline parameters: ParametersDefinition? = null,
+): T {
+    return remember(route, qualifier, parameters) {
+        val backStackEntry = getBackStackEntry(route)
+        val owner = ViewModelOwner.from(backStackEntry, backStackEntry)
+        scope.getViewModel(qualifier, { owner }, parameters)
+    }
 }

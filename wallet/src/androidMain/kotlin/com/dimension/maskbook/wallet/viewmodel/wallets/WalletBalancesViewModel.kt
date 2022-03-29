@@ -22,40 +22,72 @@ package com.dimension.maskbook.wallet.viewmodel.wallets
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.common.ext.asStateIn
+import com.dimension.maskbook.common.ext.humanizeDollar
+import com.dimension.maskbook.common.ext.onFinished
 import com.dimension.maskbook.wallet.export.model.ChainType
+import com.dimension.maskbook.wallet.export.model.TokenData
 import com.dimension.maskbook.wallet.export.model.WalletData
+import com.dimension.maskbook.wallet.export.model.WalletTokenData
 import com.dimension.maskbook.wallet.repository.ICollectibleRepository
 import com.dimension.maskbook.wallet.repository.IWalletRepository
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.BalancesSceneType
+import com.dimension.maskbook.wallet.usecase.RefreshWalletUseCase
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.launch
 
 class WalletBalancesViewModel(
     private val repository: IWalletRepository,
     private val collectibleRepository: ICollectibleRepository,
+    private val refreshWalletUseCase: RefreshWalletUseCase,
 ) : ViewModel() {
+
+    init {
+        viewModelScope.launch {
+            repository.currentChain
+                .distinctUntilChanged()
+                .collect { chain ->
+                    chain?.let {
+                        _displayChainType.value = it.chainType
+                    }
+                }
+        }
+    }
+
     val wallets by lazy {
         repository.wallets.asStateIn(viewModelScope, emptyList())
     }
     val currentWallet by lazy {
         repository.currentWallet.asStateIn(viewModelScope, null)
     }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
     val collectible by lazy {
-        currentWallet.mapNotNull { it }.flatMapLatest { collectibleRepository.getCollectiblesByWallet(it) }
+        currentWallet.mapNotNull { it }
+            .flatMapLatest { collectibleRepository.getCollectibleCollectionsByWallet(it) }
     }
     val dWebData by lazy {
-        repository.dWebData.asStateIn(viewModelScope, null).mapNotNull { it }
+        repository.dWebData.asStateIn(viewModelScope, null)
     }
+
     private val _sceneType = MutableStateFlow(BalancesSceneType.Token)
     val sceneType = _sceneType.asStateIn(viewModelScope, BalancesSceneType.Token)
+
     fun setSceneType(value: BalancesSceneType) {
         _sceneType.value = value
     }
+
     fun setCurrentWallet(walletData: WalletData) {
         repository.setCurrentWallet(walletData = walletData)
     }
@@ -67,17 +99,61 @@ class WalletBalancesViewModel(
         _displayChainType.value = displayChainType
     }
 
-    val showTokens by lazy {
-        combine(_displayChainType, currentWallet) { chainType, wallet ->
-            when {
-                wallet == null -> emptyList()
-                chainType == null -> wallet.tokens
-                else -> wallet.tokens.filter {
-                    it.tokenData.chainType === chainType
-                }
-            }.sortedByDescending {
-                it.tokenData.price * it.count
+    private val _refreshingWallet = MutableStateFlow(false)
+    val refreshingWallet = _refreshingWallet.asStateIn(viewModelScope)
+    fun refreshWallet() {
+        _refreshingWallet.value = true
+        viewModelScope.launch {
+            refreshWalletUseCase().onFinished { _refreshingWallet.value = false }
+        }
+    }
+
+    private val chainTokenData = _displayChainType.map {
+        if (it != null) repository.getChainTokenData(it) else null
+    }
+
+    private val _showTokens = combine(chainTokenData, currentWallet) { chainTokenData, wallet ->
+        val list = when {
+            wallet == null -> emptyList()
+            chainTokenData == null -> wallet.tokens
+            else -> wallet.tokens.filter {
+                it.tokenData.chainType === chainTokenData.chainType
             }
-        }.flowOn(Dispatchers.IO).asStateIn(viewModelScope, emptyList())
+        }.sortedByDescending {
+            it.tokenData.price * it.count
+        }
+
+        list.filterNot { it.isExpandable(chainTokenData?.nativeToken) } to
+            list.filter { it.isExpandable(chainTokenData?.nativeToken) }
+    }.flowOn(Dispatchers.IO).shareIn(
+        viewModelScope,
+        SharingStarted.Lazily
+    )
+
+    val showTokens by lazy {
+        _showTokens.map { it.first }.asStateIn(viewModelScope, emptyList())
+    }
+
+    val showTokensLess by lazy {
+        _showTokens.map { it.second }.asStateIn(viewModelScope, emptyList())
+    }
+
+    val showTokensLessAmount by lazy {
+        showTokensLess.map { list ->
+            list.sumOf { it.tokenData.price * it.count }.humanizeDollar()
+        }.asStateIn(viewModelScope, "")
+    }
+
+    companion object {
+
+        private fun WalletTokenData.isExpandable(mainTokenData: TokenData?): Boolean {
+            return (mainTokenData == null || tokenData.address != mainTokenData.address) && isLess()
+        }
+
+        private fun WalletTokenData.isLess(): Boolean {
+            return tokenData.price * count < lessTokenDataPrice
+        }
+
+        private val lessTokenDataPrice = BigDecimal(10)
     }
 }

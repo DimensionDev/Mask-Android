@@ -305,7 +305,11 @@
                 "back_up_data": "Back Up Data",
                 "back_up_password": "Backup Password",
                 "back_up_password_empty": "Please set up backup password",
-                "change_backup_password": "Change Backup Password"
+                "change_backup_password": "Change Backup Password",
+                "persona_already_exits":{
+                    "title": "The persona already existed.",
+                    "desc": "The persona that corresponds with the %s already existed."
+                }
             },
             "profile": {
                 "title": "Profile",
@@ -503,6 +507,9 @@
         },
         "persona_contacts": {
             "empty_contacts_tips": "You don’t have encrypted friends. \nInvite friends to download Mask Network.",
+            "empty_search_tips": "No contact found. This account is not\ncaptured on Timeline.",
+            "message_tips": "Contacts are accounts that are captured in real-time on timeline when you browse Twitter or Facebook.",
+            "search_account": "Search account name/ID",
             "delete": "Confirm to delete ",
             "contact": "Contact"
         },
@@ -514,6 +521,10 @@
             "connect_to": "Connect To %s",
             "disconnect": "Disconnect",
             "accounts": "Accounts"
+        },
+        "persona_empty": {
+            "connect_social": "Connect Social accounts",
+            "message_tips": "Select the social account to connect your persona. Enjoy a web 3.0 social expereince."
         },
         "wallet_balance": {
             "btn_swap": "Swap",
@@ -640,7 +651,10 @@
         },
         "social": {
             "login_in_to_continue": "Log in to continue",
-            "login_in_notify": "Please log in to Twitter first and we will guide you through the next steps to connect to Mask Network.",
+            "login_in_notify": {
+                "twitter": "Log in to Twitter to connect.",
+                "facebook": "Log in to Facebook to connect."
+            },
             "i_understand": "I understand",
             "title": "Home",
             "connect_button_title": "Connect",
@@ -749,6 +763,10 @@
             "switch_wallet": "Switch wallets"
         },
         "backup": {
+            "remote_backup_no_backup": {
+                "title": "No cloud backup found",
+                "message": "No cloud backup is found with this Email or phone number."
+            },
             "remote_backup_actions_view": {
                 "tips": "There is already a cloud backup, you can either first merge this cloud backup to your local data before you back up, or back up directly."
             },
@@ -774,6 +792,10 @@
         },
         "scan_qr_code": {
             "title": "Scan QR Code"
+        },
+        "plugin_settings": {
+            "title": "Plugin Settings",
+            "message_tips": "If you turn off a plugin, the plugin function can no longer be rendered on timeline when browsing social media."
         }
     },
     "chain": {

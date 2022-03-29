@@ -52,6 +52,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.route.Deeplinks
+import com.dimension.maskbook.common.route.navigationComposeAnimComposable
+import com.dimension.maskbook.common.route.navigationComposeAnimComposablePackage
 import com.dimension.maskbook.common.route.navigationComposeBottomSheet
 import com.dimension.maskbook.common.route.navigationComposeBottomSheetPackage
 import com.dimension.maskbook.common.route.navigationComposeDialog
@@ -72,7 +74,6 @@ import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.setting.repository.ISettingsRepository
 import com.dimension.maskbook.setting.ui.scenes.PhoneCodeInputModal
 import com.dimension.maskbook.setting.ui.scenes.backup.BackupCloudScene
-import com.dimension.maskbook.setting.ui.scenes.backup.BackupLocalHost
 import com.dimension.maskbook.setting.ui.scenes.backup.BackupPasswordInputModal
 import com.dimension.maskbook.setting.ui.scenes.backup.BackupSelectionModal
 import com.dimension.maskbook.setting.viewmodel.BackupCloudExecuteViewModel
@@ -156,6 +157,8 @@ fun BackupDataCloudFailed(
 
 @NavGraphDestination(
     route = SettingRoute.BackupData.BackupData_BackupCloud.path,
+    packageName = navigationComposeAnimComposablePackage,
+    functionName = navigationComposeAnimComposable,
 )
 @Composable
 fun BackupDataBackupCould(
@@ -182,6 +185,8 @@ fun BackupDataBackupCould(
 
 @NavGraphDestination(
     route = SettingRoute.BackupData.BackupData_BackupCloud_Execute.path,
+    packageName = navigationComposeAnimComposablePackage,
+    functionName = navigationComposeAnimComposable,
 )
 @Composable
 fun BackupDataBackupCouldExecute(
@@ -391,7 +396,7 @@ fun BackupDataBackupMergeConfirm(
             PrimaryButton(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {
-                    viewModel.confirm(type, downloadUrl.orEmpty())
+                    viewModel.confirm(downloadUrl.orEmpty())
                 },
                 enabled = passwordValid && !loading
             ) {
@@ -467,9 +472,12 @@ fun BackupDataBackupMerge(
                 Text(text = stringResource(R.string.common_controls_merge_and_back_up))
             }
             Spacer(modifier = Modifier.height(16.dp))
-            PrimaryButton(onClick = {
-                navController.navigate(SettingRoute.BackupData.BackupData_BackupCloud(type, value, code))
-            }) {
+            PrimaryButton(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = {
+                    navController.navigate(SettingRoute.BackupData.BackupData_BackupCloud(type, value, code))
+                }
+            ) {
                 Text(text = stringResource(R.string.common_controls_back_up))
             }
         }
@@ -522,25 +530,29 @@ fun BackupSelectionEmail(
             scope.launch {
                 viewModel.verifyCodeNow(code, email, skipValidate = true)
                     .onSuccess { target ->
-                        navController.navigate(
-                            SettingRoute.BackupData.BackupData_BackupMerge(
+                        target.download_url?.let {
+                            navController.navigate(
+                                SettingRoute.BackupData.BackupData_BackupMerge(
+                                    "email",
+                                    email,
+                                    code,
+                                    download_url = target.download_url,
+                                    size = target.size,
+                                    uploaded_at = target.uploaded_at,
+                                    abstract = target.abstract
+                                ),
+                            )
+                        } ?: navController.navigate(
+                            SettingRoute.BackupData.BackupData_BackupCloud(
                                 "email",
                                 email,
                                 code,
-                                download_url = target.download_url,
-                                size = target.size,
-                                uploaded_at = target.uploaded_at,
-                                abstract = target.abstract,
                             ),
                         )
                     }
                     .onFailure {
                         navController.navigate(
-                            SettingRoute.BackupData.BackupData_BackupCloud(
-                                "email",
-                                email,
-                                code
-                            )
+                            SettingRoute.BackupData.BackupData_Cloud_Failed
                         )
                     }
             }
@@ -594,7 +606,6 @@ fun BackupSelectionPhone(
     val loading by viewModel.loading.observeAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.startCountDown()
         viewModel.sendCodeNow(phone)
     }
 
@@ -615,25 +626,29 @@ fun BackupSelectionPhone(
             scope.launch {
                 viewModel.verifyCodeNow(code = code, phone = phone, skipValidate = true)
                     .onSuccess { target ->
-                        navController.navigate(
-                            SettingRoute.BackupData.BackupData_BackupMerge(
+                        target.download_url?.let {
+                            navController.navigate(
+                                SettingRoute.BackupData.BackupData_BackupMerge(
+                                    "phone",
+                                    phone,
+                                    code,
+                                    download_url = target.download_url,
+                                    size = target.size,
+                                    uploaded_at = target.uploaded_at,
+                                    abstract = target.abstract
+                                ),
+                            )
+                        } ?: navController.navigate(
+                            SettingRoute.BackupData.BackupData_BackupCloud(
                                 "phone",
                                 phone,
                                 code,
-                                download_url = target.download_url,
-                                size = target.size,
-                                uploaded_at = target.uploaded_at,
-                                abstract = target.abstract
                             ),
                         )
                     }
                     .onFailure {
                         navController.navigate(
-                            SettingRoute.BackupData.BackupData_BackupCloud(
-                                "phone",
-                                phone,
-                                code
-                            )
+                            SettingRoute.BackupData.BackupData_Cloud_Failed
                         )
                     }
             }
@@ -680,7 +695,7 @@ fun BackupSelection(
     val persona by repository.currentPersona.observeAsState(initial = null)
     BackupSelectionModal(
         onLocal = {
-            navController.navigate(SettingRoute.BackupData.BackupLocalHost)
+            navController.navigate(SettingRoute.BackupData.BackupLocal.Backup)
         },
         onRemote = {
             val email = persona?.email
@@ -714,7 +729,7 @@ fun BackupDataPassword(
             password = it
         },
         onNext = {
-            navController.navigate(SettingRoute.BackupData.BackupLocalHost) {
+            navController.navigate(SettingRoute.BackupData.BackupLocal.Backup) {
                 popUpTo(SettingRoute.BackupData.Password) {
                     inclusive = true
                 }
@@ -725,37 +740,7 @@ fun BackupDataPassword(
 }
 
 @NavGraphDestination(
-    route = SettingRoute.BackupData.BackupLocalHost,
-    packageName = navigationComposeBottomSheetPackage,
-    functionName = navigationComposeBottomSheet,
-)
-@Composable
-fun BackupDataBackupLocalHost(
-    navController: NavController,
-) {
-    BackupLocalHost(
-        onBack = {
-            navController.popBackStack()
-        },
-        onFailure = {
-            navController.navigate(SettingRoute.BackupData.BackupLocalFailure) {
-                popUpTo(SettingRoute.BackupData.BackupLocalHost) {
-                    inclusive = true
-                }
-            }
-        },
-        onSuccess = {
-            navController.navigate(SettingRoute.BackupData.BackupLocalSuccess) {
-                popUpTo(SettingRoute.BackupData.BackupLocalHost) {
-                    inclusive = true
-                }
-            }
-        }
-    )
-}
-
-@NavGraphDestination(
-    route = SettingRoute.BackupData.BackupLocalFailure,
+    route = SettingRoute.BackupData.BackupLocal.Failed,
     packageName = navigationComposeDialogPackage,
     functionName = navigationComposeDialog,
 )
@@ -776,7 +761,7 @@ fun BackupDataBackupLocalFailure(
 }
 
 @NavGraphDestination(
-    route = SettingRoute.BackupData.BackupLocalSuccess,
+    route = SettingRoute.BackupData.BackupLocal.Success,
     packageName = navigationComposeDialogPackage,
     functionName = navigationComposeDialog,
 )

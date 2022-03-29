@@ -275,9 +275,11 @@ fun SettingsChangeEmailSetup(
         emailValid = emailValid,
         onConfirm = {
             scope.launch {
-                viewModel.sendCodeNow(email).onSuccess {
-                    navController.navigate(SettingRoute.Settings_ChangeEmail.Settings_ChangeEmail_Setup_Code(email))
-                }
+                navController.navigate(
+                    SettingRoute.Settings_ChangeEmail.Settings_ChangeEmail_Setup_Code(
+                        email
+                    )
+                )
             }
         },
         buttonEnabled = loading,
@@ -389,10 +391,6 @@ fun SettingsChangeEmailChangeCode(
     val canSend by viewModel.canSend.observeAsState()
     val countDown by viewModel.countdown.observeAsState()
 
-    LaunchedEffect(Unit) {
-        viewModel.sendCodeNow(email)
-    }
-
     EmailCodeInputModal(
         email = email,
         buttonEnabled = loading,
@@ -439,13 +437,11 @@ fun SettingsChangeEmailChangeNew(
         emailValid = emailValid,
         onConfirm = {
             scope.launch {
-                viewModel.sendCodeNow(email).onSuccess {
-                    navController.navigate(
-                        SettingRoute.Settings_ChangeEmail.Settings_ChangeEmail_Change_New_Code(
-                            email
-                        )
+                navController.navigate(
+                    SettingRoute.Settings_ChangeEmail.Settings_ChangeEmail_Change_New_Code(
+                        email
                     )
-                }
+                )
             }
         },
         buttonEnabled = loading,
@@ -547,7 +543,6 @@ fun SettingsChangeEmailChangeSuccess(
 fun SettingsChangePhoneSetup(
     navController: NavController,
 ) {
-    val scope = rememberCoroutineScope()
 
     val viewModel = getViewModel<PhoneSetupViewModel>()
     val regionCode by viewModel.regionCode.observeAsState()
@@ -561,18 +556,11 @@ fun SettingsChangePhoneSetup(
         onPhoneChange = { viewModel.setValue(it) },
         phoneValid = valid,
         onConfirm = {
-            scope.launch {
-                val code = regionCode + phone
-                viewModel.sendCodeNow(code).onSuccess {
-                    navController.navigate(
-                        SettingRoute.Settings_ChangePhone.Settings_ChangePhone_Setup_Code(code)
-                    ) {
-                        popUpTo(CommonRoute.Main.Home) {
-                            inclusive = false
-                        }
-                    }
-                }
-            }
+            navController.navigate(
+                SettingRoute.Settings_ChangePhone.Settings_ChangePhone_Setup_Code(
+                    regionCode + phone
+                )
+            )
         },
         buttonEnabled = loading,
         title = stringResource(R.string.scene_setting_bind_phone_number_title),
@@ -679,10 +667,6 @@ fun SettingsChangePhoneChangeCode(
     val countDown by viewModel.countdown.observeAsState()
     val loading by viewModel.loading.observeAsState()
 
-    LaunchedEffect(Unit) {
-        viewModel.sendCodeNow(phone)
-    }
-
     PhoneCodeInputModal(
         phone = phone,
         code = code,
@@ -733,13 +717,11 @@ fun SettingsChangePhoneChangeNew(
         onConfirm = {
             scope.launch {
                 val code = regionCode + phone
-                viewModel.sendCodeNow(code).onSuccess {
-                    navController.navigate(
-                        SettingRoute.Settings_ChangePhone.Settings_ChangePhone_Change_New_Code(code)
-                    ) {
-                        popUpTo(CommonRoute.Main.Home) {
-                            inclusive = false
-                        }
+                navController.navigate(
+                    SettingRoute.Settings_ChangePhone.Settings_ChangePhone_Change_New_Code(code)
+                ) {
+                    popUpTo(CommonRoute.Main.Home.path) {
+                        inclusive = false
                     }
                 }
             }

@@ -21,7 +21,6 @@
 package com.dimension.maskbook.wallet.ui.scenes.wallets.create.import
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -45,7 +44,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.dimension.maskbook.common.ext.observeAsState
+import com.dimension.maskbook.common.route.navigationComposeAnimComposable
+import com.dimension.maskbook.common.route.navigationComposeAnimComposablePackage
+import com.dimension.maskbook.common.routeProcessor.annotations.Back
+import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
+import com.dimension.maskbook.common.routeProcessor.annotations.Path
 import com.dimension.maskbook.common.ui.widget.MaskInputField
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskScene
@@ -55,17 +60,22 @@ import com.dimension.maskbook.common.ui.widget.button.MaskBackButton
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.repository.WalletCreateOrImportResult
+import com.dimension.maskbook.wallet.route.WalletRoute
 import com.dimension.maskbook.wallet.ui.scenes.wallets.common.Dialog
 import com.dimension.maskbook.wallet.viewmodel.wallets.import.ImportWalletMnemonicViewModel
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 
-@OptIn(ExperimentalAnimationApi::class)
+@NavGraphDestination(
+    route = WalletRoute.ImportWallet.Mnemonic.path,
+    packageName = navigationComposeAnimComposablePackage,
+    functionName = navigationComposeAnimComposable,
+)
 @Composable
 fun ImportWalletMnemonicScene(
-    onBack: () -> Unit,
-    wallet: String,
-    onDone: (code: String) -> Unit
+    navController: NavController,
+    @Back onBack: () -> Unit,
+    @Path("wallet") walletAddress: String,
 ) {
     MaskScene {
         MaskScaffold(
@@ -82,7 +92,7 @@ fun ImportWalletMnemonicScene(
         ) {
             Box {
                 val viewModel = getViewModel<ImportWalletMnemonicViewModel> {
-                    parametersOf(wallet)
+                    parametersOf(walletAddress)
                 }
                 val words by viewModel.words.observeAsState(initial = "")
                 val canConfirm by viewModel.canConfirm.observeAsState(initial = false)
@@ -116,7 +126,12 @@ fun ImportWalletMnemonicScene(
                         onClick = {
                             viewModel.confirm {
                                 if (it.type == WalletCreateOrImportResult.Type.SUCCESS) {
-                                    onDone.invoke(words)
+                                    navController.navigate(
+                                        WalletRoute.ImportWallet.DerivationPath(
+                                            walletAddress,
+                                            words,
+                                        )
+                                    )
                                 } else {
                                     result = it
                                     showDialog = true

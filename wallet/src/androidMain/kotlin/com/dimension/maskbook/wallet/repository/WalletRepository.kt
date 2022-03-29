@@ -33,9 +33,9 @@ import androidx.paging.PagingState
 import androidx.room.withTransaction
 import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.common.okhttp.okHttpClient
-import com.dimension.maskbook.common.repository.JSMethod
 import com.dimension.maskbook.debankapi.model.ChainID
 import com.dimension.maskbook.debankapi.model.Token
+import com.dimension.maskbook.wallet.data.JSMethod
 import com.dimension.maskbook.wallet.db.AppDatabase
 import com.dimension.maskbook.wallet.db.model.CoinPlatformType
 import com.dimension.maskbook.wallet.db.model.DbChainData
@@ -46,12 +46,14 @@ import com.dimension.maskbook.wallet.db.model.DbWalletBalance
 import com.dimension.maskbook.wallet.db.model.DbWalletToken
 import com.dimension.maskbook.wallet.db.model.WalletSource
 import com.dimension.maskbook.wallet.export.model.ChainType
+import com.dimension.maskbook.wallet.export.model.CollectibleContractSchema
 import com.dimension.maskbook.wallet.export.model.DbWalletBalanceType
 import com.dimension.maskbook.wallet.export.model.TokenData
+import com.dimension.maskbook.wallet.export.model.WalletCollectibleData
 import com.dimension.maskbook.wallet.export.model.WalletData
 import com.dimension.maskbook.wallet.ext.ether
 import com.dimension.maskbook.wallet.ext.gwei
-import com.dimension.maskbook.wallet.paging.mediator.CollectibleMediator
+import com.dimension.maskbook.wallet.paging.mediator.CollectibleCollectionMediator
 import com.dimension.maskbook.wallet.services.WalletServices
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager
 import com.dimension.maskwalletcore.WalletKey
@@ -60,14 +62,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.web3j.abi.FunctionEncoder
 import org.web3j.abi.datatypes.Address
+import org.web3j.abi.datatypes.DynamicBytes
 import org.web3j.abi.datatypes.Function
 import org.web3j.abi.datatypes.generated.Uint256
 import org.web3j.crypto.Credentials
@@ -75,6 +79,7 @@ import org.web3j.ens.EnsResolver
 import org.web3j.protocol.Web3j
 import org.web3j.protocol.http.HttpService
 import org.web3j.tx.RawTransactionManager
+import java.math.BigInteger
 import java.util.UUID
 import kotlin.math.pow
 import kotlin.time.Duration.Companion.seconds
@@ -96,11 +101,12 @@ private fun Token.toDbToken(chainId: ChainID?) = DbToken(
     price = BigDecimal(price ?: 0.0)
 )
 
-class WalletRepository(
+internal class WalletRepository(
     private val dataStore: DataStore<Preferences>,
     private val database: AppDatabase,
     private val services: WalletServices,
-    private val walletConnectManager: WalletConnectClientManager
+    private val walletConnectManager: WalletConnectClientManager,
+    private val jsMethod: JSMethod,
 ) : IWalletRepository {
     private val tokenScope = CoroutineScope(Dispatchers.IO)
     private val scope = CoroutineScope(Dispatchers.IO)
@@ -111,9 +117,7 @@ class WalletRepository(
             refreshChainData()
             while (true) {
                 delay(12.seconds)
-                refreshCurrentWalletToken()
-                refreshCurrentWalletCollectibles()
-                refreshNativeTokens()
+                refreshWallet()
             }
         }
     }
@@ -144,7 +148,7 @@ class WalletRepository(
                 it[ChainTypeKey] = networkType.name
             }
             if (notifyJS) {
-                JSMethod.Wallet.updateEthereumChainId(networkType.chainId)
+                jsMethod.updateEthereumChainId(networkType.chainId)
             }
         }
     }
@@ -156,12 +160,12 @@ class WalletRepository(
     private suspend fun refreshCurrentWalletCollectibles() {
         val currentWallet = currentWallet.firstOrNull() ?: return
         try {
-            CollectibleMediator(
+            CollectibleCollectionMediator(
                 walletId = currentWallet.id,
                 database = database,
                 openSeaServices = services.openSeaServices,
                 walletAddress = currentWallet.address,
-            ).load(LoadType.REFRESH, PagingState(emptyList(), null, PagingConfig(pageSize = 10), 0))
+            ).load(LoadType.REFRESH, PagingState(emptyList(), null, PagingConfig(pageSize = 20), 0))
         } catch (e: Throwable) {
             e.printStackTrace()
         }
@@ -299,29 +303,36 @@ class WalletRepository(
     override val currentWallet: Flow<WalletData?>
         get() = dataStore.data.map {
             it[CurrentWalletKey]
-        }.mapNotNull { it }.flatMapLatest {
-            database.walletDao().getByIdFlow(it)
+        }.flatMapLatest {
+            flow {
+                if (it == null) {
+                    emit(null)
+                } else {
+                    emitAll(database.walletDao().getByIdFlow(it))
+                }
+            }
         }.map {
             it?.let { it1 -> WalletData.fromDb(it1) }
         }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override val currentChain: Flow<ChainData?>
-        get() = dWebData.flatMapLatest {
-            database.chainDao().getByIdFlow(it.chainType.chainId)
-        }.map {
-            it?.let {
-                ChainData(
-                    chainId = it.chain.chainId,
-                    name = it.chain.name,
-                    fullName = it.chain.fullName,
-                    nativeTokenID = it.chain.nativeTokenID,
-                    logoURL = it.chain.logoURL,
-                    nativeToken = it.token?.let { token -> TokenData.fromDb(token) },
-                    chainType = ChainType.valueOf(it.chain.name)
-                )
-            }
+        get() = dWebData.map {
+            getChainTokenData(it.chainType)
         }
+
+    override suspend fun getChainTokenData(chainType: ChainType): ChainData? {
+        return database.chainDao().getById(chainType.chainId)?.let {
+            ChainData(
+                chainId = it.chain.chainId,
+                name = it.chain.name,
+                fullName = it.chain.fullName,
+                nativeTokenID = it.chain.nativeTokenID,
+                logoURL = it.chain.logoURL,
+                nativeToken = it.token?.let { token -> TokenData.fromDb(token) },
+                chainType = ChainType.valueOf(it.chain.name)
+            )
+        }
+    }
 
     override fun setCurrentWallet(walletData: WalletData?) {
         if (walletData?.id != null) {
@@ -342,7 +353,7 @@ class WalletRepository(
             dataStore.edit {
                 it[CurrentWalletKey] = dbWallet?.id.orEmpty()
             }
-            JSMethod.Wallet.updateEthereumAccount(dbWallet?.address.orEmpty())
+            jsMethod.updateEthereumAccount(dbWallet?.address.orEmpty())
         }
     }
 
@@ -609,7 +620,7 @@ class WalletRepository(
         onDone: (String?) -> Unit,
         onError: (Throwable) -> Unit,
     ) {
-        sendTokenWithCurrentWalletAndChainType(
+        transactionWithCurrentWalletAndChainType(
             amount = amount,
             address = address,
             chainType = tokenData.chainType,
@@ -622,7 +633,63 @@ class WalletRepository(
         )
     }
 
-    override fun sendTokenWithCurrentWalletAndChainType(
+    /**
+     * currently support ERC721 and ERC1155, ERC1155 can transfer multiple token in one transaction
+     * ERC721:safeTransferFrom(address _from, address _to, uint256 _tokenId, bytes data)
+     * ERC1155:safeTransferFrom(address _from, address _to, uint256 _id, uint256 _value, bytes data)
+     * _value: transfer amount, normally one
+     * data: additional data, normally empty
+     */
+    override fun sendCollectibleWithCurrentWallet(
+        address: String,
+        collectible: WalletCollectibleData,
+        gasLimit: Double,
+        maxFee: Double,
+        maxPriorityFee: Double,
+        onDone: (String?) -> Unit,
+        onError: (Throwable) -> Unit
+    ) {
+        scope.launch {
+            currentWallet.firstOrNull()?.let { wallet ->
+                val data = when (collectible.contract.schema) {
+                    CollectibleContractSchema.ERC721 -> listOf(
+                        Address(wallet.address), // from
+                        Address(address), // to
+                        Uint256(collectible.tokenId.toBigInteger()),
+                        DynamicBytes(byteArrayOf())
+                    )
+                    CollectibleContractSchema.ERC1155 -> listOf(
+                        Address(wallet.address), // from
+                        Address(address), // to
+                        Uint256(collectible.tokenId.toBigInteger()),
+                        Uint256(BigInteger.valueOf(1)),
+                        DynamicBytes(byteArrayOf())
+                    )
+                }.let {
+                    Function(
+                        "safeTransferFrom",
+                        it,
+                        listOf()
+                    )
+                }.let {
+                    FunctionEncoder.encode(it)
+                }
+                transactionWithCurrentWalletAndChainType(
+                    amount = BigDecimal.ZERO,
+                    address = collectible.contract.address,
+                    chainType = collectible.chainType,
+                    gasLimit = gasLimit,
+                    maxFee = maxFee,
+                    maxPriorityFee = maxPriorityFee,
+                    data = data,
+                    onDone = onDone,
+                    onError = onError
+                )
+            }
+        }
+    }
+
+    override fun transactionWithCurrentWalletAndChainType(
         amount: BigDecimal,
         address: String,
         chainType: ChainType,
@@ -783,6 +850,30 @@ class WalletRepository(
             EnsResolver(web3).resolve(name).apply {
                 web3.shutdown()
             }
+        }
+    }
+
+    override suspend fun getChainData(chainType: ChainType): Flow<ChainData?> {
+        return database.chainDao().getByIdFlow(chainType.chainId).map { dbData ->
+            dbData?.let {
+                ChainData(
+                    chainId = it.chain.chainId,
+                    name = it.chain.name,
+                    fullName = it.chain.fullName,
+                    nativeTokenID = it.chain.nativeTokenID,
+                    logoURL = it.chain.logoURL,
+                    nativeToken = it.token?.let { token -> TokenData.fromDb(token) },
+                    chainType = ChainType.valueOf(it.chain.name)
+                )
+            }
+        }
+    }
+
+    override suspend fun refreshWallet() {
+        withContext(tokenScope.coroutineContext) {
+            refreshCurrentWalletToken()
+            refreshCurrentWalletCollectibles()
+            refreshNativeTokens()
         }
     }
 }
