@@ -91,7 +91,7 @@ fun SetupPasswordDialog(
         },
         icon = {
             Image(
-                painter = painterResource(id = R.drawable.ic_property_1_note),
+                painter = painterResource(id = R.drawable.ic_note),
                 contentDescription = null
             )
         }
@@ -185,7 +185,7 @@ fun PaymentPasswordSettingsSuccess(
         },
         icon = {
             Image(
-                painterResource(id = R.drawable.ic_property_1_snccess),
+                painterResource(id = R.drawable.ic_success),
                 contentDescription = null
             )
         },
@@ -239,7 +239,7 @@ fun ChangeBackUpPasswordSuccess(
         },
         icon = {
             Image(
-                painterResource(id = R.drawable.ic_property_1_snccess),
+                painterResource(id = R.drawable.ic_success),
                 contentDescription = null
             )
         },
@@ -354,7 +354,7 @@ fun SettingsChangeEmailSetupSuccess(
         },
         icon = {
             Image(
-                painter = painterResource(id = R.drawable.ic_property_1_snccess),
+                painter = painterResource(id = R.drawable.ic_success),
                 contentDescription = null
             )
         },
@@ -516,7 +516,7 @@ fun SettingsChangeEmailChangeSuccess(
         },
         icon = {
             Image(
-                painter = painterResource(id = R.drawable.ic_property_1_snccess),
+                painter = painterResource(id = R.drawable.ic_success),
                 contentDescription = null
             )
         },
@@ -632,7 +632,7 @@ fun SettingsChangePhoneSetupSuccess(
         title = { Text(text = stringResource(R.string.scene_setting_bind_remote_info_setup_phone_number_title)) },
         icon = {
             Image(
-                painter = painterResource(id = R.drawable.ic_property_1_snccess),
+                painter = painterResource(id = R.drawable.ic_success),
                 contentDescription = null
             )
         },
@@ -798,7 +798,7 @@ fun SettingsChangePhoneChangeSuccess(
         },
         icon = {
             Image(
-                painter = painterResource(id = R.drawable.ic_property_1_snccess),
+                painter = painterResource(id = R.drawable.ic_success),
                 contentDescription = null
             )
         },

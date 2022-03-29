@@ -48,7 +48,7 @@ import com.dimension.maskbook.wallet.R
 fun RegisterScene(
     onCreateIdentity: () -> Unit,
     onRecoveryAndSignIn: () -> Unit,
-    // onSynchronization: () -> Unit,
+    onSynchronization: () -> Unit,
 ) {
     MaskScene {
         MaskScaffold {
@@ -93,14 +93,14 @@ fun RegisterScene(
                 ) {
                     Text(text = stringResource(R.string.scene_identity_empty_recovery_sign_in))
                 }
-//                Spacer(modifier = Modifier.height(16.dp))
-//                SecondaryButton(
-//                    modifier = Modifier
-//                        .fillMaxWidth(),
-//                    onClick = { onSynchronization.invoke() },
-//                ) {
-//                    Text(text = stringResource(R.string.scene_identity_empty_synchronization))
-//                }
+                Spacer(modifier = Modifier.height(16.dp))
+                SecondaryButton(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    onClick = { onSynchronization.invoke() },
+                ) {
+                    Text(text = stringResource(R.string.scene_identity_empty_synchronization))
+                }
             }
         }
     }

@@ -81,7 +81,7 @@ fun RegisterRecoveryRemoteBackupRecoveryRemoteBackupRecoveryNoBackup(
         },
         icon = {
             Image(
-                painter = painterResource(id = com.dimension.maskbook.localization.R.drawable.ic_property_1_failed),
+                painter = painterResource(id = com.dimension.maskbook.localization.R.drawable.ic_failed),
                 contentDescription = null
             )
         },

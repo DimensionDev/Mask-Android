@@ -44,7 +44,7 @@ class PersonaServicesImpl(
         personaRepository.createPersonaFromMnemonic(value, name)
     }
 
-    override fun createPersonaFromPrivateKey(value: String) {
+    override suspend fun createPersonaFromPrivateKey(value: String) {
         personaRepository.createPersonaFromPrivateKey(value)
     }
 

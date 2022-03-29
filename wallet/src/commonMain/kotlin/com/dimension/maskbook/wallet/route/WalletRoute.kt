@@ -161,6 +161,8 @@ expect object WalletRoute {
     object Register {
         const val Init: String
 
+        const val Synchronization: String
+
         object CreateIdentity {
             const val Route: String
             object Backup {
@@ -217,6 +219,7 @@ expect object WalletRoute {
             }
             const val PrivateKey: String
             const val Complected: String
+            const val Failed: String
             object AlreadyExists {
                 operator fun invoke(restoreFrom: String): String
             }

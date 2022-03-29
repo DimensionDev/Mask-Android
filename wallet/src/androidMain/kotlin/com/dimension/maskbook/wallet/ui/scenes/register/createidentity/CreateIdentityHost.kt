@@ -144,7 +144,7 @@ fun ConfirmRoute(
         },
         icon = {
             Image(
-                painterResource(id = R.drawable.ic_property_1_snccess),
+                painterResource(id = R.drawable.ic_success),
                 contentDescription = null
             )
         },

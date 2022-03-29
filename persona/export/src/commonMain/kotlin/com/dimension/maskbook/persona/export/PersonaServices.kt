@@ -28,7 +28,7 @@ interface PersonaServices {
     suspend fun hasPersona(): Boolean
     fun updateCurrentPersona(value: String)
     suspend fun createPersonaFromMnemonic(value: List<String>, name: String)
-    fun createPersonaFromPrivateKey(value: String)
+    suspend fun createPersonaFromPrivateKey(value: String)
     fun connectProfile(personaId: String, profileId: String)
     fun saveEmailForCurrentPersona(value: String)
     fun savePhoneForCurrentPersona(value: String)

@@ -397,7 +397,7 @@ private fun EmptyTokenWarning(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
-            painter = painterResource(id = R.drawable.ic_property_1_note),
+            painter = painterResource(id = R.drawable.ic_note),
             contentDescription = null,
             modifier = Modifier.size(24.dp)
         )

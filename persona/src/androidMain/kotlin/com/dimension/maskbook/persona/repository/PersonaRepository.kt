@@ -191,7 +191,8 @@ internal class PersonaRepository(
         }
     }
 
-    override fun createPersonaFromPrivateKey(value: String) {
+    override suspend fun createPersonaFromPrivateKey(value: String) {
+        jsMethod.restoreFromPrivateKey(privateKey = value, nickname = "persona1")
     }
 
     override suspend fun backupPrivateKey(id: String): String {

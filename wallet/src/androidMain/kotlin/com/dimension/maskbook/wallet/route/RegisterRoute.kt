@@ -23,8 +23,13 @@ package com.dimension.maskbook.wallet.route
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import androidx.navigation.navOptions
@@ -40,6 +45,8 @@ import com.dimension.maskbook.common.route.navigationComposeDialogPackage
 import com.dimension.maskbook.common.routeProcessor.annotations.Back
 import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
 import com.dimension.maskbook.common.routeProcessor.annotations.Path
+import com.dimension.maskbook.common.ui.widget.MaskDialog
+import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ui.scenes.register.CreatePersonaModal
 import com.dimension.maskbook.wallet.ui.scenes.register.CreatePersonaScene
@@ -47,8 +54,8 @@ import com.dimension.maskbook.wallet.ui.scenes.register.RegisterScene
 import com.dimension.maskbook.wallet.ui.scenes.register.recovery.IdentityScene
 import com.dimension.maskbook.wallet.ui.scenes.register.recovery.PersonaAlreadyExitsDialog
 import com.dimension.maskbook.wallet.ui.scenes.register.recovery.PrivateKeyScene
-import com.dimension.maskbook.wallet.ui.scenes.register.recovery.RecoveryComplectedScene
 import com.dimension.maskbook.wallet.ui.scenes.register.recovery.RecoveryHomeScene
+import com.dimension.maskbook.wallet.ui.scenes.wallets.common.ScanQrcodeScene
 import com.dimension.maskbook.wallet.viewmodel.recovery.IdentityViewModel
 import com.dimension.maskbook.wallet.viewmodel.recovery.PrivateKeyViewModel
 import org.koin.androidx.compose.getViewModel
@@ -70,8 +77,28 @@ fun RegisterInit(
         onRecoveryAndSignIn = {
             navController.navigate(WalletRoute.Register.Recovery.Home)
         },
-        // onSynchronization = {
-        // },
+        onSynchronization = {
+            navController.navigate(WalletRoute.Register.Synchronization)
+        },
+    )
+}
+@NavGraphDestination(
+    route = WalletRoute.Register.Synchronization,
+    packageName = navigationComposeAnimComposablePackage,
+    functionName = navigationComposeAnimComposable,
+)
+@Composable
+fun SynchronizationPersona(
+    navController: NavController,
+    @Back onBack: () -> Unit,
+) {
+    // TODO Mimao  wrap
+    ScanQrcodeScene(
+        onBack = onBack,
+        onResult = {
+            // TODO Mimao failed
+            // TODO Mimao Success
+        }
     )
 }
 
@@ -213,33 +240,6 @@ fun RegisterRecoveryIdentity(
 }
 
 @NavGraphDestination(
-    route = WalletRoute.Register.Recovery.AlreadyExists.path,
-    packageName = navigationComposeDialogPackage,
-    functionName = navigationComposeDialog,
-)
-@Composable
-fun RegisterRecoveryAlreadyExists(
-    navController: NavController,
-    @Back onBack: () -> Unit,
-    @Path("restoreFrom") restoreFrom: String,
-) {
-    PersonaAlreadyExitsDialog(
-        onBack = onBack,
-        onConfirm = {
-            navController.navigate(
-                Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona)),
-                navOptions {
-                    popUpTo(WalletRoute.Register.Init) {
-                        inclusive = true
-                    }
-                }
-            )
-        },
-        restoreFrom = restoreFrom
-    )
-}
-
-@NavGraphDestination(
     route = WalletRoute.Register.Recovery.PrivateKey,
     packageName = navigationComposeAnimComposablePackage,
     functionName = navigationComposeAnimComposable,
@@ -271,16 +271,17 @@ fun RegisterRecoveryPrivateKey(
 }
 
 @NavGraphDestination(
-    route = WalletRoute.Register.Recovery.Complected,
-    packageName = navigationComposeAnimComposablePackage,
-    functionName = navigationComposeAnimComposable,
+    route = WalletRoute.Register.Recovery.AlreadyExists.path,
+    packageName = navigationComposeDialogPackage,
+    functionName = navigationComposeDialog,
 )
 @Composable
-fun RegisterRecoveryComplected(
+fun RegisterRecoveryAlreadyExists(
     navController: NavController,
     @Back onBack: () -> Unit,
+    @Path("restoreFrom") restoreFrom: String,
 ) {
-    RecoveryComplectedScene(
+    PersonaAlreadyExitsDialog(
         onBack = onBack,
         onConfirm = {
             navController.navigate(
@@ -292,5 +293,69 @@ fun RegisterRecoveryComplected(
                 }
             )
         },
+        restoreFrom = restoreFrom
+    )
+}
+
+@NavGraphDestination(
+    route = WalletRoute.Register.Recovery.Complected,
+    packageName = navigationComposeAnimComposablePackage,
+    functionName = navigationComposeAnimComposable,
+)
+@Composable
+fun RegisterRecoveryComplected(
+    navController: NavController,
+    @Back onBack: () -> Unit,
+) {
+    MaskDialog(
+        onDismissRequest = onBack,
+        title = {
+            Text(stringResource(R.string.scene_Identity_restore_signin_success_title))
+        },
+        icon = {
+            Image(painter = painterResource(R.drawable.ic_success), contentDescription = "")
+        },
+        buttons = {
+            PrimaryButton(onClick = {
+                navController.navigate(
+                    Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona)),
+                    navOptions {
+                        popUpTo(WalletRoute.Register.Init) {
+                            inclusive = true
+                        }
+                    }
+                )
+            }, modifier = Modifier.fillMaxWidth()) {
+                Text(stringResource(R.string.common_controls_done))
+            }
+        }
+    )
+}
+
+@NavGraphDestination(
+    route = WalletRoute.Register.Recovery.Failed,
+    packageName = navigationComposeAnimComposablePackage,
+    functionName = navigationComposeAnimComposable,
+)
+@Composable
+fun RegisterRecoveryFailed(
+    navController: NavController,
+    @Back onBack: () -> Unit,
+) {
+    MaskDialog(
+        onDismissRequest = onBack,
+        title = {
+            Text(stringResource(R.string.scene_restore_titles_restore_failed))
+        },
+        icon = {
+            Image(painter = painterResource(R.drawable.ic_failed), contentDescription = "")
+        },
+        buttons = {
+            PrimaryButton(onClick = {
+                navController.popBackStack()
+            }, modifier = Modifier.fillMaxWidth()) {
+                Text(stringResource(R.string.common_controls_ok))
+            }
+        }
     )
 }

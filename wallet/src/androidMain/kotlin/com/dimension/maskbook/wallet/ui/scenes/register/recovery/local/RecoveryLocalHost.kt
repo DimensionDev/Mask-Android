@@ -47,7 +47,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.plusAssign
 import com.dimension.maskbook.common.ext.getNestedNavigationViewModel
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.route.navigationComposeAnimComposable
@@ -109,7 +108,7 @@ fun ImportFailedDialog(
         },
         icon = {
             Image(
-                painterResource(id = R.drawable.ic_property_1_failed),
+                painterResource(id = R.drawable.ic_failed),
                 contentDescription = null
             )
         }
@@ -130,7 +129,7 @@ fun ImportNotificationDialog(
         onDismissRequest = { },
         icon = {
             Image(
-                painterResource(id = R.drawable.ic_property_1_note),
+                painterResource(id = R.drawable.ic_note),
                 contentDescription = null
             )
         },

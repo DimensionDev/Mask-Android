@@ -229,7 +229,7 @@ fun WalletConnectUnsupportedNetwork(
     MaskDialog(
         onDismissRequest = onBack,
         icon = {
-            Image(painterResource(R.drawable.ic_property_1_failed), contentDescription = null)
+            Image(painterResource(R.drawable.ic_failed), contentDescription = null)
         },
         title = {
             Text(stringResource(R.string.scene_wallet_connect_network_not_support, network))
