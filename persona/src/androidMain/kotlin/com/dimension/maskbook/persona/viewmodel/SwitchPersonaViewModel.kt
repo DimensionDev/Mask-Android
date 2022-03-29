@@ -24,7 +24,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.persona.export.model.PersonaData
-import com.dimension.maskbook.persona.repository.DbPersonaDataSource
+import com.dimension.maskbook.persona.datasource.DbPersonaDataSource
 import com.dimension.maskbook.persona.repository.IPersonaRepository
 
 class SwitchPersonaViewModel(
