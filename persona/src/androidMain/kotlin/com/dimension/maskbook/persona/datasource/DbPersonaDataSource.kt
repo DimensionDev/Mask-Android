@@ -20,22 +20,25 @@
  */
 package com.dimension.maskbook.persona.datasource
 
+import androidx.room.withTransaction
 import com.dimension.maskbook.persona.db.PersonaDatabase
 import com.dimension.maskbook.persona.db.model.DbPersonaRecord
 import com.dimension.maskbook.persona.export.model.PersonaData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-class DbPersonaDataSource(database: PersonaDatabase) {
+class DbPersonaDataSource(private val database: PersonaDatabase) {
 
     private val personaDao = database.personaDao()
     private val linkedProfileDao = database.linkedProfileDao()
     private val relationDao = database.relationDao()
 
     suspend fun deletePersona(personaIdentifier: String) {
-        personaDao.delete(personaIdentifier)
-        linkedProfileDao.deleteWithPersona(personaIdentifier)
-        relationDao.deleteWithPersona(personaIdentifier)
+        database.withTransaction {
+            personaDao.delete(personaIdentifier)
+            linkedProfileDao.deleteWithPersona(personaIdentifier)
+            relationDao.deleteWithPersona(personaIdentifier)
+        }
     }
 
     suspend fun getPersona(personaIdentifier: String): PersonaData? {

@@ -20,6 +20,7 @@
  */
 package com.dimension.maskbook.persona.datasource
 
+import androidx.room.withTransaction
 import com.dimension.maskbook.persona.db.PersonaDatabase
 import com.dimension.maskbook.persona.db.migrator.mapper.toDbPersonaRecord
 import com.dimension.maskbook.persona.db.migrator.mapper.toIndexedDBPersona
@@ -34,7 +35,7 @@ import com.dimension.maskbook.persona.model.options.QueryPersonaOptions
 import com.dimension.maskbook.persona.model.options.QueryPersonasOptions
 import com.dimension.maskbook.persona.model.options.UpdatePersonaOptions
 
-class JsPersonaDataSource(database: PersonaDatabase) {
+class JsPersonaDataSource(private val database: PersonaDatabase) {
 
     private val personaDao = database.personaDao()
     private val linkedProfileDao = database.linkedProfileDao()
@@ -121,8 +122,10 @@ class JsPersonaDataSource(database: PersonaDatabase) {
     }
 
     suspend fun deletePersona(options: DeletePersonaOptions) {
-        personaDao.delete(options.personaIdentifier)
-        linkedProfileDao.deleteWithPersona(options.personaIdentifier)
-        relationDao.deleteWithPersona(options.personaIdentifier)
+        database.withTransaction {
+            personaDao.delete(options.personaIdentifier)
+            linkedProfileDao.deleteWithPersona(options.personaIdentifier)
+            relationDao.deleteWithPersona(options.personaIdentifier)
+        }
     }
 }
