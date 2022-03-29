@@ -18,21 +18,21 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.persona.repository
+package com.dimension.maskbook.persona.viewmodel.avatar
 
-import androidx.datastore.preferences.core.Preferences
-import kotlinx.coroutines.flow.Flow
+import android.net.Uri
+import androidx.lifecycle.ViewModel
+import com.dimension.maskbook.persona.repository.IPersonaRepository
+import kotlinx.coroutines.flow.map
 
-interface IPreferenceRepository {
-    val data: Flow<Preferences>
-    val currentPersonaIdentifier: Flow<String>
-    fun setCurrentPersonaIdentifier(identifier: String)
-    val shouldShowContactsTipDialog: Flow<Boolean>
-    fun setShowContactsTipDialog(bool: Boolean)
+class SetAvatarViewModel(
+    private val repository: IPersonaRepository,
+) : ViewModel() {
+    val currentAvatar by lazy {
+        repository.currentPersona.map { it?.avatar }
+    }
 
-    val isMigratorIndexedDb: Flow<Boolean>
-    fun setIsMigratorIndexedDb(bool: Boolean)
-
-    val lastDetectProfileIdentifier: Flow<String>
-    fun setLastDetectProfileIdentifier(identifier: String)
+    fun setAvatar(avatar: Uri) {
+        repository.setAvatarForCurrentPersona(avatar)
+    }
 }

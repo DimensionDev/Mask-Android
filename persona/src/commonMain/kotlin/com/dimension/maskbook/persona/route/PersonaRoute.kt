@@ -28,6 +28,8 @@ expect object PersonaRoute {
     const val Logout: String
     const val PersonaMenu: String
     const val SwitchPersona: String
+    const val SetAvatar: String
+    const val PersonaAvatarModal: String
     object RenamePersona {
         operator fun invoke(personaId: String): String
     }

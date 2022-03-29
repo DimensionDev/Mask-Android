@@ -39,6 +39,7 @@ import com.dimension.maskbook.common.ui.widget.button.MaskButton
 fun MaskSearchInput(
     value: String,
     onValueChanged: (String) -> Unit,
+    modifier: Modifier = Modifier,
     onSearch: () -> Unit = {},
     shape: Shape = MaterialTheme.shapes.small,
     placeholder: @Composable (() -> Unit)? = null,
@@ -58,7 +59,7 @@ fun MaskSearchInput(
         MaskInputField(
             value = value,
             onValueChange = onValueChanged,
-            modifier = Modifier.weight(1f),
+            modifier = modifier.weight(1f),
             colors = TextFieldDefaults.textFieldColors(
                 backgroundColor = Color.Transparent,
                 focusedIndicatorColor = Color.Transparent,

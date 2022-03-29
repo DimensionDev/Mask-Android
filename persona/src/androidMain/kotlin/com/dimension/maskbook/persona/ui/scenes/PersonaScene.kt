@@ -22,27 +22,21 @@ package com.dimension.maskbook.persona.ui.scenes
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.res.stringResource
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
 import com.dimension.maskbook.common.ui.widget.button.MaskIconCardButton
-import com.dimension.maskbook.common.ui.widget.button.clickable
+import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.export.model.Network
 import com.dimension.maskbook.persona.export.model.PersonaData
 import com.dimension.maskbook.persona.export.model.SocialData
@@ -59,10 +53,13 @@ fun PersonaScene(
     onAddSocialClick: (PersonaData, Network?) -> Unit,
     onRemoveSocialClick: (PersonaData, SocialData) -> Unit,
     onSocialItemClick: (PersonaData, SocialData) -> Unit,
+    onAddPersonaAvatar: () -> Unit,
+    onPersonaAvatarClick: () -> Unit,
 ) {
     val viewModel: PersonaViewModel = getViewModel()
     val currentPersona by viewModel.currentPersona.collectAsState()
     val socialList by viewModel.socialList.collectAsState()
+    val personaList by viewModel.personaList.collectAsState()
 
     val persona = currentPersona
     if (persona == null) {
@@ -73,35 +70,19 @@ fun PersonaScene(
         return
     }
 
-    val list = socialList
     MaskScaffold(
         topBar = {
             MaskSingleLineTopAppBar(
                 actions = {
-                    if (!socialList.isNullOrEmpty()) {
-                        MaskIconCardButton(onClick = onBack) {
-                            Icon(
-                                imageVector = Icons.Filled.Close,
-                                contentDescription = null,
-                            )
-                        }
+                    MaskIconCardButton(onClick = onBack) {
+                        Icon(
+                            imageVector = Icons.Filled.Close,
+                            contentDescription = null,
+                        )
                     }
                 },
                 title = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.clickable(
-                            onClick = onPersonaNameClick,
-                        ),
-                    ) {
-                        Text(text = persona.name)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Icon(
-                            Icons.Default.ChevronLeft,
-                            contentDescription = null,
-                            modifier = Modifier.rotate(-90f)
-                        )
-                    }
+                    Text(text = stringResource(R.string.scene_persona_welcome_persona))
                 }
             )
         }
@@ -111,21 +92,32 @@ fun PersonaScene(
                 .padding(innerPadding)
                 .fillMaxSize(),
         ) {
-            if (list != null) {
-                PersonaInfoScene(
-                    socialList = list,
-                    onAddSocialClick = { network ->
-                        onAddSocialClick(persona, network)
-                    },
-                    onSocialItemClick = { data, isEditing ->
-                        if (isEditing) {
-                            onRemoveSocialClick(persona, data)
-                        } else {
-                            onSocialItemClick(persona, data)
-                        }
-                    },
-                )
-            }
+            PersonaInfoScene(
+                socialList = socialList ?: emptyList(),
+                currentPersona = currentPersona,
+                personaList = personaList ?: emptyList(),
+                onAddSocialClick = { network ->
+                    onAddSocialClick(persona, network)
+                },
+                onSocialItemClick = { data, isEditing ->
+                    if (isEditing) {
+                        onRemoveSocialClick(persona, data)
+                    } else {
+                        onSocialItemClick(persona, data)
+                    }
+                },
+                onPersonaNameClick = onPersonaNameClick,
+                onCurrentPersonaChanged = {
+                    viewModel.setCurrentPersona(it)
+                },
+                onAvatarClick = {
+                    if (currentPersona?.avatar.isNullOrEmpty()) {
+                        onAddPersonaAvatar()
+                    } else {
+                        onPersonaAvatarClick()
+                    }
+                }
+            )
         }
     }
 }

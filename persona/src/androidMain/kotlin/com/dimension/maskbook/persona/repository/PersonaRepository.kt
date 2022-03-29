@@ -20,6 +20,7 @@
  */
 package com.dimension.maskbook.persona.repository
 
+import android.net.Uri
 import com.dimension.maskbook.common.ext.toSite
 import com.dimension.maskbook.extension.export.ExtensionServices
 import com.dimension.maskbook.persona.data.JSMethod
@@ -66,6 +67,9 @@ internal class PersonaRepository(
         get() = preferenceRepository.currentPersonaIdentifier.flatMapLatest {
             personaDataSource.getPersonaFlow(it)
         }
+
+    override val personaList: Flow<List<PersonaData>>
+        get() = personaDataSource.getPersonaListFlow()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override val socials: Flow<List<SocialData>>
@@ -203,5 +207,13 @@ internal class PersonaRepository(
 
     override fun setPlatform(platformType: PlatformType) {
         extensionServices.setSite(platformType.toSite())
+    }
+
+    override fun setAvatarForCurrentPersona(avatar: Uri?) {
+        scope.launch {
+            currentPersona.firstOrNull()?.let { personaData ->
+                personaDataSource.updateAvatar(personaData.identifier, avatar?.toString())
+            }
+        }
     }
 }

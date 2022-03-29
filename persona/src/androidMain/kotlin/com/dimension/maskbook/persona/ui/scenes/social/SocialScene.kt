@@ -25,15 +25,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Icon
 import androidx.compose.material.LocalContentAlpha
@@ -45,95 +43,76 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Remove
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import com.dimension.maskbook.common.ui.widget.NameImage
-import com.dimension.maskbook.common.ui.widget.SinglelineText
 import com.dimension.maskbook.common.ui.widget.button.MaskGridButton
 import com.dimension.maskbook.common.ui.widget.itemsGridIndexed
+import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.export.model.Network
 import com.dimension.maskbook.persona.export.model.SocialData
 import com.dimension.maskbook.persona.model.icon
 
-private val addIcon = SocialData(
-    id = "",
-    name = "",
-    avatar = "",
-    personaId = null,
-    network = Network.Twitter,
-)
-
-@Composable
-fun SocialScene(
-    socialList: List<SocialData>,
+fun LazyListScope.SocialScene(
+    isEditing: Boolean,
+    setIsEditing: (Boolean) -> Unit,
+    socialList: List<SocialData?>,
     onAddSocialClick: () -> Unit,
     onItemClick: (SocialData, isEditing: Boolean) -> Unit,
 ) {
-    var isEditing by rememberSaveable { mutableStateOf(false) }
-    val finalSocialList = remember(socialList) {
-        listOf(addIcon) + socialList
-    }
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(horizontal = 22.5f.dp, vertical = 25.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
-        item {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
+    item {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = stringResource(R.string.scene_persona_social_accounts),
+                style = MaterialTheme.typography.h5,
+            )
+            TextButton(
+                onClick = {
+                    setIsEditing(!isEditing)
+                }
             ) {
                 Text(
-                    text = "Accounts",
-                    style = MaterialTheme.typography.h5,
+                    text = if (isEditing) {
+                        SocialScreenDefaults.done
+                    } else {
+                        SocialScreenDefaults.edit
+                    },
+                    color = MaterialTheme.colors.primary,
                 )
-                TextButton(
-                    onClick = {
-                        isEditing = !isEditing
-                    }
-                ) {
-                    Text(
-                        text = if (isEditing) {
-                            SocialScreenDefaults.done
-                        } else {
-                            SocialScreenDefaults.edit
-                        },
-                        color = MaterialTheme.colors.primary,
-                    )
-                }
             }
         }
-        itemsGridIndexed(
-            data = finalSocialList,
-            rowSize = 3
-        ) { _, item ->
-            if (item === addIcon) {
-                AddIcon(
-                    enabled = !isEditing,
-                    onClick = onAddSocialClick
-                )
-            } else {
-                SocialItem(
-                    item = item,
-                    onItemClick = {
-                        onItemClick(item, isEditing)
-                    },
-                    isEditing = isEditing,
-                )
-            }
+    }
+    itemsGridIndexed(
+        data = socialList,
+        rowSize = 3,
+        padding = 20.dp,
+    ) { _, item ->
+        if (item == null) {
+            AddIcon(
+                enabled = !isEditing,
+                onClick = onAddSocialClick
+            )
+        } else {
+            SocialItem(
+                item = item,
+                onItemClick = {
+                    onItemClick(item, isEditing)
+                },
+                isEditing = isEditing,
+            )
         }
     }
 }
@@ -211,10 +190,12 @@ private fun SocialItem(
             }
         },
         text = {
-            SinglelineText(
+            Text(
                 text = item.name,
                 style = MaterialTheme.typography.subtitle2,
                 color = LocalContentColor.current.copy(LocalContentAlpha.current),
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 1,
             )
         }
     )

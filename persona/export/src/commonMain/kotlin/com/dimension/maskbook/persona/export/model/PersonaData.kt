@@ -25,4 +25,5 @@ data class PersonaData(
     val name: String,
     val email: String,
     val phone: String,
+    val avatar: String?,
 )
