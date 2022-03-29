@@ -30,6 +30,7 @@ import com.dimension.maskbook.common.route.DeeplinkNavigateArgs
 import com.dimension.maskbook.common.route.Navigator
 import com.dimension.maskbook.common.route.RouteNavigateArgs
 import com.dimension.maskbook.common.ui.widget.RouteHost
+import com.dimension.maskbook.entry.BuildConfig
 import com.dimension.maskbook.entry.EntrySetup
 import com.dimension.maskbook.entry.repository.EntryRepository
 import com.dimension.maskbook.entry.route.EntryRoute
@@ -81,6 +82,9 @@ fun Router(
         PersonaSetup.route(this, navController = navController)
         SettingSetup.route(this, navController = navController)
         ExtensionSetup.route(this, navController = navController)
+    }
+    if (BuildConfig.DEBUG) {
+        ComposeDebugTool(navController)
     }
 }
 

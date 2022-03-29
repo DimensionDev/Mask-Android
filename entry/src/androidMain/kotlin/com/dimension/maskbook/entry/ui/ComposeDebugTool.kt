@@ -18,7 +18,7 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.util
+package com.dimension.maskbook.entry.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
