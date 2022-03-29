@@ -100,6 +100,7 @@ class RecoveryLocalViewModel(
                     return@launch
                 }
                 _meta.value = backupServices.provideBackupMetaFromJson(json)
+                _loadState.value = LoadState.Success
             } catch (e: Throwable) {
                 e.printStackTrace()
                 _passwordError.value = true

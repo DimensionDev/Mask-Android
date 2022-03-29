@@ -136,12 +136,6 @@ object PersonaSetup : ModuleSetup {
 
         viewModel { SetAvatarViewModel(get()) }
 
-        viewModel { (data: ConnectAccountData) ->
-            com.dimension.maskbook.persona.viewmodel.social.UserNameModalViewModel(
-                get(),
-                data
-            )
-        }
         viewModel { (socialProfile: SocialProfile) -> UserNameModalViewModel(get(), socialProfile) }
     }
 

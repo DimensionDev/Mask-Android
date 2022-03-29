@@ -69,7 +69,7 @@ internal class PersonaRepository(
         }
 
     override val personaList: Flow<List<PersonaData>>
-        get() = personaRepository.getPersonaListFlow()
+        get() = personaDataSource.getPersonaListFlow()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override val socials: Flow<List<SocialData>>
@@ -212,7 +212,7 @@ internal class PersonaRepository(
     override fun setAvatarForCurrentPersona(avatar: Uri?) {
         scope.launch {
             currentPersona.firstOrNull()?.let { personaData ->
-                personaRepository.updateAvatar(personaData.identifier, avatar?.toString())
+                personaDataSource.updateAvatar(personaData.identifier, avatar?.toString())
             }
         }
     }
