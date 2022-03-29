@@ -56,12 +56,8 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -84,7 +80,7 @@ import org.koin.androidx.compose.get
 
 private data class IntroData(
     @DrawableRes val img: Int,
-    val desc: AnnotatedString,
+    val desc: String,
 )
 
 @NavGraphDestination(
@@ -102,53 +98,19 @@ fun IntroScene(
         listOf(
             IntroData(
                 img = R.drawable.ic_intro_01,
-                desc = buildAnnotatedString {
-                    append("Your ")
-                    withStyle(SpanStyle(fontWeight = FontWeight.W800)) {
-                        append("Portal")
-                    }
-                    append(" to the ")
-                    withStyle(SpanStyle(fontWeight = FontWeight.W800)) {
-                        append("New, \nOpen Internet")
-                    }
-                }
+                desc = "Your Portal to the New,\nOpen Internet"
             ),
             IntroData(
                 img = R.drawable.ic_intro_02,
-                desc = buildAnnotatedString {
-                    append("Send ")
-                    withStyle(SpanStyle(fontWeight = FontWeight.W800)) {
-                        append("encrypted")
-                    }
-                    append(" messages \non social media with ")
-                    withStyle(SpanStyle(fontWeight = FontWeight.W800)) {
-                        append("persona")
-                    }
-                }
+                desc = "Send Encrypted Messages \non Social Networks with Persona"
             ),
             IntroData(
                 img = R.drawable.ic_intro_03,
-                desc = buildAnnotatedString {
-                    withStyle(SpanStyle(fontWeight = FontWeight.W800)) {
-                        append("Multi-Chain wallet,")
-                    }
-                    append(" \ncompatible with ")
-                    withStyle(SpanStyle(fontWeight = FontWeight.W800)) {
-                        append("WalletConnect")
-                    }
-                }
+                desc = "Multi-Chain Wallet, \nCompatible with WalletConnect"
             ),
             IntroData(
                 img = R.drawable.ic_intro_04,
-                desc = buildAnnotatedString {
-                    withStyle(SpanStyle(fontWeight = FontWeight.W800)) {
-                        append("Back up in time,")
-                    }
-                    append("\nwith cloud / local ")
-                    withStyle(SpanStyle(fontWeight = FontWeight.W800)) {
-                        append("backup")
-                    }
-                }
+                desc = "Back up in Time,\nwith Cloud / Local Backup"
             ),
         )
     }
@@ -169,42 +131,20 @@ fun IntroScene(
             count = introList.size,
         ) { page ->
             Box {
+                val isEnd = page == introList.size - 1
                 IntroPage(
                     item = introList[page],
-                )
-                if (page == introList.size - 1) {
-                    Button(
-                        onClick = {
-                            repository.setShouldShowEntry(false)
-                            navController.navigate(WalletRoute.Register.Init) {
-                                popUpTo(EntryRoute.Intro) {
-                                    inclusive = true
-                                }
+                    isEnd = isEnd,
+                    onStartClick = {
+                        repository.setShouldShowEntry(false)
+                        navController.navigate(WalletRoute.Register.Init) {
+                            popUpTo(EntryRoute.Intro) {
+                                inclusive = true
                             }
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Color.White,
-                            contentColor = Color(0xFF1C68F3),
-                        ),
-                        contentPadding = PaddingValues(
-                            horizontal = 29.dp,
-                            vertical = 16.dp
-                        ),
-                        elevation = null,
-                        shape = RoundedCornerShape(8.dp),
-                        modifier = Modifier
-                            .align(Alignment.BottomCenter)
-                            .padding(bottom = 147.dp)
-                            .navigationBarsPadding(),
-                    ) {
-                        Text(
-                            text = "Let’s start",
-                            fontWeight = FontWeight.W600,
-                            fontSize = 18.sp,
-                            lineHeight = 21.6.sp,
-                        )
+                        }
                     }
-                } else {
+                )
+                if (!isEnd) {
                     TextButton(
                         onClick = {
                             repository.setShouldShowEntry(false)
@@ -214,9 +154,6 @@ fun IntroScene(
                                 }
                             }
                         },
-                        colors = ButtonDefaults.textButtonColors(
-                            contentColor = Color(0xFFD7E6FF),
-                        ),
                         modifier = Modifier
                             .align(Alignment.TopEnd)
                             .padding(end = 22.5.dp, top = 10.dp)
@@ -227,6 +164,7 @@ fun IntroScene(
                             fontWeight = FontWeight.W700,
                             fontSize = 16.sp,
                             lineHeight = 24.sp,
+                            color = Color(0xFFD7E6FF),
                         )
                     }
                 }
@@ -250,6 +188,8 @@ fun IntroScene(
 @Composable
 private fun IntroPage(
     item: IntroData,
+    isEnd: Boolean,
+    onStartClick: () -> Unit,
 ) {
     Box(
         modifier = Modifier
@@ -257,32 +197,69 @@ private fun IntroPage(
             .fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        Image(
-            painter = painterResource(R.drawable.ic_intro_grid),
-            contentDescription = null,
-            contentScale = ContentScale.FillWidth,
-            modifier = Modifier.fillMaxWidth(),
-        )
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(horizontal = 36.5.dp),
         ) {
-            Image(
-                painter = painterResource(item.img),
-                contentDescription = null,
-                contentScale = ContentScale.FillWidth,
-                modifier = Modifier.fillMaxWidth(),
-            )
+            IntroImage(item.img)
             Spacer(Modifier.height(80.dp))
             Text(
                 text = item.desc,
                 textAlign = TextAlign.Center,
                 color = Color.White,
-                fontWeight = FontWeight.W400,
+                fontWeight = FontWeight(860),
                 fontSize = 18.sp,
                 lineHeight = 27.sp,
             )
+            Spacer(Modifier.height(24.dp))
+            if (isEnd) {
+                Button(
+                    onClick = onStartClick,
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = Color.White,
+                    ),
+                    contentPadding = PaddingValues(
+                        horizontal = 29.dp,
+                    ),
+                    elevation = null,
+                    shape = RoundedCornerShape(8.dp),
+                    modifier = Modifier
+                        .navigationBarsPadding()
+                        .height(54.dp),
+                ) {
+                    Text(
+                        text = "Let’s start",
+                        fontWeight = FontWeight.W600,
+                        fontSize = 18.sp,
+                        lineHeight = 21.6.sp,
+                        color = Color(0xFF1C68F3),
+                    )
+                }
+            } else {
+                Spacer(Modifier.height(54.dp))
+            }
         }
+    }
+}
+
+@Composable
+private fun IntroImage(@DrawableRes imageId: Int) {
+    Box {
+        Image(
+            painter = painterResource(R.drawable.ic_intro_grid),
+            contentDescription = null,
+            contentScale = ContentScale.FillWidth,
+            modifier = Modifier
+                .matchParentSize()
+                .padding(top = 80.dp),
+        )
+        Image(
+            painter = painterResource(imageId),
+            contentDescription = null,
+            contentScale = ContentScale.FillWidth,
+            modifier = Modifier
+                .padding(horizontal = 36.5.dp)
+                .fillMaxWidth(),
+        )
     }
 }
 
