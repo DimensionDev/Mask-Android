@@ -94,9 +94,8 @@ private fun buildWhereSql(
         if (!profileIdentifier.isNullOrEmpty()) {
             args.add(profileIdentifier)
             "identifier in " +
-                "(SELECT personaIdentifier FROM DbLinkedProfileRecord WHERE " +
-                "profileIdentifier = :profileIdentifier " +
-                "LIMIT 1) "
+                "(SELECT personaIdentifier FROM ViewLinkedProfileWithKey WHERE " +
+                "profileIdentifier=:profileIdentifier ORDER BY privateKeyRaw)"
         } else null,
         if (!identifiers.isNullOrEmpty()) {
             "identifier in (${identifiers.joinToString(",") { "'$it'" }})"
@@ -109,8 +108,8 @@ private fun buildWhereSql(
             "hasLogout = :hasLogout"
         } else null,
         if (!nameContains.isNullOrEmpty()) {
-            args.add(nameContains)
-            "nickname LIKE '%:nameContains%'"
+            args.add("%$nameContains%")
+            "nickname LIKE :nameContains"
         } else null,
         if (initialized != null) {
             args.add(initialized)

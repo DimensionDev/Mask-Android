@@ -20,7 +20,13 @@
  */
 package com.dimension.maskbook.persona.mock.model
 
+import com.dimension.maskbook.persona.db.model.DbLinkedProfileRecord
 import com.dimension.maskbook.persona.db.model.DbPersonaRecord
+import com.dimension.maskbook.persona.db.model.DbProfileRecord
+import com.dimension.maskbook.persona.db.model.DbRelationRecord
+import com.dimension.maskbook.persona.db.model.ViewLinkedProfileWithKey
+import com.dimension.maskbook.persona.export.model.LinkedProfileDetailsState
+import com.dimension.maskbook.persona.export.model.Network
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -29,7 +35,7 @@ import org.jetbrains.annotations.TestOnly
 @TestOnly
 fun mockDbPersonaRecord(
     identifier: String,
-    nickname: String,
+    nickname: String? = null,
     mnemonic: String = "this is words",
     hasLogout: Boolean = false,
     privateKey: JsonObject? = JsonObject(
@@ -73,6 +79,64 @@ fun mockDbPersonaRecord(
             "k" to JsonPrimitive("123"),
         )
     ),
-    createAt = 1646386534519,
-    updateAt = 1646386534519,
+    createdAt = 1646386534519,
+    updatedAt = 1646386534519,
+)
+
+@TestOnly
+fun mockDbProfileRecord(
+    identifier: String,
+    nickname: String? = null,
+    network: Network? = null,
+    avatar: String? = null,
+) = DbProfileRecord(
+    identifier = identifier,
+    nickname = nickname,
+    network = network,
+    avatar = avatar,
+    createdAt = 1646386534519,
+    updatedAt = 1646386534519,
+)
+
+@TestOnly
+fun mockDbRelationRecord(
+    personaIdentifier: String,
+    profileIdentifier: String,
+    favor: Boolean = false,
+) = DbRelationRecord(
+    personaIdentifier = personaIdentifier,
+    profileIdentifier = profileIdentifier,
+    favor = favor,
+    createdAt = 1646386534519,
+    updatedAt = 1646386534519,
+)
+
+@TestOnly
+fun mockDbLinkedProfileRecord(
+    personaIdentifier: String,
+    profileIdentifier: String,
+    state: LinkedProfileDetailsState = LinkedProfileDetailsState.Confirmed,
+) = DbLinkedProfileRecord(
+    personaIdentifier = personaIdentifier,
+    profileIdentifier = profileIdentifier,
+    state = state,
+    createdAt = 1646386534519,
+    updatedAt = 1646386534519,
+)
+
+@TestOnly
+fun mockViewLinkedProfileWithKey(
+    personaIdentifier: String,
+    profileIdentifier: String,
+    state: LinkedProfileDetailsState = LinkedProfileDetailsState.Confirmed,
+    publicKey: JsonObject? = null,
+    privateKey: JsonObject? = null,
+    localKey: JsonObject? = null,
+) = ViewLinkedProfileWithKey(
+    personaIdentifier = personaIdentifier,
+    profileIdentifier = profileIdentifier,
+    state = state,
+    publicKey = publicKey,
+    privateKey = privateKey,
+    localKey = localKey,
 )

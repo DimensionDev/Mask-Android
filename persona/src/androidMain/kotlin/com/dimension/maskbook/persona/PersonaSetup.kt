@@ -29,22 +29,22 @@ import com.dimension.maskbook.common.ModuleSetup
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.persona.data.JSMethod
 import com.dimension.maskbook.persona.data.JSMethodV2
+import com.dimension.maskbook.persona.datasource.DbPersonaDataSource
+import com.dimension.maskbook.persona.datasource.DbProfileDataSource
+import com.dimension.maskbook.persona.datasource.DbRelationDataSource
+import com.dimension.maskbook.persona.datasource.JsPersonaDataSource
+import com.dimension.maskbook.persona.datasource.JsPostDataSource
+import com.dimension.maskbook.persona.datasource.JsProfileDataSource
+import com.dimension.maskbook.persona.datasource.JsRelationDataSource
 import com.dimension.maskbook.persona.db.EncryptJsonObjectConverter
 import com.dimension.maskbook.persona.db.EncryptStringConverter
 import com.dimension.maskbook.persona.db.PersonaDatabase
 import com.dimension.maskbook.persona.export.PersonaServices
-import com.dimension.maskbook.persona.export.model.ConnectAccountData
-import com.dimension.maskbook.persona.repository.DbPersonaRepository
-import com.dimension.maskbook.persona.repository.DbProfileRepository
-import com.dimension.maskbook.persona.repository.DbRelationRepository
+import com.dimension.maskbook.persona.model.SocialProfile
 import com.dimension.maskbook.persona.repository.IContactsRepository
 import com.dimension.maskbook.persona.repository.IPersonaRepository
 import com.dimension.maskbook.persona.repository.IPreferenceRepository
 import com.dimension.maskbook.persona.repository.ISocialsRepository
-import com.dimension.maskbook.persona.repository.JsPersonaRepository
-import com.dimension.maskbook.persona.repository.JsPostRepository
-import com.dimension.maskbook.persona.repository.JsProfileRepository
-import com.dimension.maskbook.persona.repository.JsRelationRepository
 import com.dimension.maskbook.persona.repository.PersonaRepository
 import com.dimension.maskbook.persona.repository.PreferenceRepository
 import com.dimension.maskbook.persona.repository.personaDataStore
@@ -59,6 +59,7 @@ import com.dimension.maskbook.persona.viewmodel.avatar.SetAvatarViewModel
 import com.dimension.maskbook.persona.viewmodel.contacts.ContactsViewModel
 import com.dimension.maskbook.persona.viewmodel.post.PostViewModel
 import com.dimension.maskbook.persona.viewmodel.social.DisconnectSocialViewModel
+import com.dimension.maskbook.persona.viewmodel.social.UserNameModalViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asExecutor
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -113,13 +114,13 @@ object PersonaSetup : ModuleSetup {
             )
         }
 
-        single { JsPersonaRepository(get()) }
-        single { JsProfileRepository(get()) }
-        single { JsRelationRepository(get()) }
-        single { JsPostRepository(get()) }
-        single { DbPersonaRepository(get()) }
-        single { DbProfileRepository(get()) }
-        single { DbRelationRepository(get()) }
+        single { JsPersonaDataSource(get()) }
+        single { JsProfileDataSource(get(), get()) }
+        single { JsRelationDataSource(get()) }
+        single { JsPostDataSource(get()) }
+        single { DbPersonaDataSource(get()) }
+        single { DbProfileDataSource(get()) }
+        single { DbRelationDataSource(get()) }
 
         single<PersonaServices> { PersonaServicesImpl(get()) }
         single { PersonasTabScreen() } bind TabScreen::class
@@ -141,6 +142,7 @@ object PersonaSetup : ModuleSetup {
                 data
             )
         }
+        viewModel { (socialProfile: SocialProfile) -> UserNameModalViewModel(get(), socialProfile) }
     }
 
     override fun onExtensionReady() {

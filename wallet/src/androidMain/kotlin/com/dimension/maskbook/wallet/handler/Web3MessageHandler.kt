@@ -177,7 +177,7 @@ internal class Web3MessageHandler(
     }
 }
 
-private inline fun <reified T : Any> Web3SendResponse.Companion.success(request: Web3Request, result: T?): Map<String, Any> {
+private inline fun <reified T : Any> Web3SendResponse.Companion.success(request: Web3Request, result: T?): Map<String, Any?> {
     requireNotNull(request.payload)
     return success(
         messageId = request.id,
@@ -187,7 +187,7 @@ private inline fun <reified T : Any> Web3SendResponse.Companion.success(request:
     )
 }
 
-private fun Web3SendResponse.Companion.error(request: Web3Request, error: String): Map<String, Any> {
+private fun Web3SendResponse.Companion.error(request: Web3Request, error: String): Map<String, Any?> {
     requireNotNull(request.payload)
     return error(
         messageId = request.id,

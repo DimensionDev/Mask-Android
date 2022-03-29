@@ -80,6 +80,7 @@ import androidx.navigation.navOptions
 import coil.compose.rememberImagePainter
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.ui.notification.StringResNotificationEvent.Companion.show
+import com.dimension.maskbook.common.ui.widget.HorizontalScenePadding
 import com.dimension.maskbook.common.ui.widget.LocalInAppNotification
 import com.dimension.maskbook.common.ui.widget.MaskDialog
 import com.dimension.maskbook.common.ui.widget.MaskModal
@@ -465,7 +466,7 @@ fun WalletConnectManually(
                 .height(338.dp)
                 .background(MaterialTheme.colors.surface, shape = MaterialTheme.shapes.medium),
             state = rememberLazyListState(),
-            contentPadding = PaddingValues(vertical = 20.dp, horizontal = 25.dp)
+            contentPadding = PaddingValues(vertical = 20.dp, horizontal = HorizontalScenePadding)
         ) {
             if (loading) {
                 item {

@@ -49,7 +49,6 @@ class BackupMergeConfirmViewModel(
     fun confirm(downloadUrl: String) = viewModelScope.launch {
         _loading.value = true
         try {
-            // TODO: decrypt .bin backup
             val content = backupRepository.downloadFile(downloadUrl).readText()
             settingsRepository.restoreBackupFromJson(content)
             onDone.invoke()

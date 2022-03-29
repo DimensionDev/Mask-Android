@@ -37,7 +37,7 @@ fun connectSocial(
         personaId = personaId,
         platformType = platform,
     ) {
-        controller.navigate(PersonaRoute.ConnectAccount(it.personaId, it.profile.toString()))
+        controller.navigate(PersonaRoute.ConnectAccount(it.personaId, it.profile.id, it.profile.avatar))
     }
     controller.navigateToExtension(platform.toSite().name)
 }

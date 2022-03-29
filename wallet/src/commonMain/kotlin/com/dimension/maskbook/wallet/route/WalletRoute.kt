@@ -199,14 +199,14 @@ expect object WalletRoute {
             object LocalBackup {
                 const val Route: String
                 object Loading {
-                    operator fun invoke(uri: String): String
+                    operator fun invoke(uri: String, account: String?): String
                 }
                 object Password {
-                    operator fun invoke(uri: String): String
+                    operator fun invoke(uri: String, account: String?): String
                 }
                 const val Failed: String
                 object Success {
-                    operator fun invoke(uri: String): String
+                    operator fun invoke(uri: String, account: String?): String
                 }
                 const val Notification: String
             }

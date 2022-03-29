@@ -22,10 +22,10 @@ package com.dimension.maskbook.persona.db.sql
 
 import com.dimension.maskbook.persona.model.options.PageOptions
 
-private const val dbName = "DbRelationRecord"
+private const val dbName = "ViewRelationDetail"
 
 fun buildQueryRelationsSql(
-    personaIdentifier: String,
+    personaIdentifier: String? = null,
     network: String? = null,
     nameContains: String? = null,
     favor: Boolean? = null,

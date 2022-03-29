@@ -30,6 +30,12 @@ data class CreateRelationOptions(
 )
 
 @Serializable
+data class QueryRelationOptions(
+    val personaIdentifier: String,
+    val profileIdentifier: String,
+)
+
+@Serializable
 data class QueryRelationsOptions(
     val personaIdentifier: String,
     val network: String? = null,

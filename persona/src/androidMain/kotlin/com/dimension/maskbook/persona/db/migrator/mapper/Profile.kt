@@ -20,8 +20,10 @@
  */
 package com.dimension.maskbook.persona.db.migrator.mapper
 
+import com.dimension.maskbook.persona.db.model.DbLinkedProfileRecord
 import com.dimension.maskbook.persona.db.model.DbProfileRecord
 import com.dimension.maskbook.persona.db.model.ProfileWithLinkedProfile
+import com.dimension.maskbook.persona.export.model.LinkedProfileDetailsState
 import com.dimension.maskbook.persona.export.model.Network
 import com.dimension.maskbook.persona.model.indexed.IndexedDBProfile
 
@@ -35,13 +37,25 @@ fun IndexedDBProfile.toDbProfileRecord(): DbProfileRecord {
     )
 }
 
+fun IndexedDBProfile.toDbLinkedProfileRecord(): DbLinkedProfileRecord? {
+    if (linkedPersona.isNullOrEmpty()) return null
+    return DbLinkedProfileRecord(
+        personaIdentifier = linkedPersona,
+        profileIdentifier = identifier,
+        state = LinkedProfileDetailsState.Confirmed,
+    )
+}
+
 fun ProfileWithLinkedProfile.toIndexedDBProfile(): IndexedDBProfile {
+    val link = links.asSequence()
+        .sortedBy { it.localKey == null }
+        .firstOrNull { it.state.isLinked() }
     return IndexedDBProfile(
-        identifier = identifier,
-        nickname = nickname,
-        linkedPersona = personaIdentifier,
-        localKey = localKey,
-        updatedAt = updatedAt,
-        createdAt = createdAt,
+        identifier = profile.identifier,
+        nickname = profile.nickname,
+        linkedPersona = link?.personaIdentifier,
+        localKey = link?.localKey,
+        updatedAt = profile.updatedAt,
+        createdAt = profile.createdAt,
     )
 }

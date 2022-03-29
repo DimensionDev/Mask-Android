@@ -93,7 +93,8 @@ fun WalletCollectibleData.Companion.fromDb(data: DbCollectible) = with(data) {
             address = contract.address,
             imageUrl = contract.imageUrl,
             name = contract.name,
-            symbol = contract.symbol
+            symbol = contract.symbol,
+            schema = contract.schema,
         ),
         collection = WalletCollectibleCollectionData.fromDb(this)
     )
@@ -347,4 +348,5 @@ interface IWalletRepository {
     fun validateKeystore(keyStore: String): Boolean
     suspend fun getEnsAddress(chainType: ChainType, name: String): String
     suspend fun getChainData(chainType: ChainType): Flow<ChainData?>
+    suspend fun refreshWallet()
 }

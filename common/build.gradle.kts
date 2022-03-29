@@ -13,6 +13,7 @@ kotlin {
             dependencies {
                 implementation(projects.common.routeProcessor.annotations)
                 kspAndroid(projects.common.routeProcessor)
+                api(projects.common.bigDecimal)
             }
         }
         val commonTest by getting {

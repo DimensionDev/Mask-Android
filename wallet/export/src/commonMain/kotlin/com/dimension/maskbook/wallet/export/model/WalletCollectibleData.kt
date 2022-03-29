@@ -53,5 +53,6 @@ data class WalletCollectibleContract(
     val address: String,
     val imageUrl: String,
     val name: String,
-    val symbol: String
+    val symbol: String,
+    val schema: CollectibleContractSchema
 )

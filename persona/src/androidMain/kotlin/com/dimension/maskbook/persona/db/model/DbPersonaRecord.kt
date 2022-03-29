@@ -46,8 +46,8 @@ data class DbPersonaRecord(
     @ColumnInfo(name = "localKeyRaw", typeAffinity = ColumnInfo.BLOB)
     var localKey: JsonObject? = null,
     var nickname: String? = null,
-    var createAt: Long = 0,
-    var updateAt: Long = 0,
+    var createdAt: Long = 0,
+    var updatedAt: Long = 0,
     var hasLogout: Boolean? = null,
     var initialized: Boolean? = null,
     var avatar: String? = null,

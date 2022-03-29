@@ -23,14 +23,14 @@ package com.dimension.maskbook.persona.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
-import com.dimension.maskbook.persona.repository.DbPersonaRepository
+import com.dimension.maskbook.persona.datasource.DbPersonaDataSource
 import com.dimension.maskbook.persona.repository.IPersonaRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 class RenamePersonaViewModel(
-    private val repository: IPersonaRepository,
-    private val personaRepository: DbPersonaRepository,
+    private val personaRepository: IPersonaRepository,
+    private val personaDataSource: DbPersonaDataSource,
     private val personaId: String,
 ) : ViewModel() {
 
@@ -39,7 +39,7 @@ class RenamePersonaViewModel(
 
     init {
         viewModelScope.launch {
-            _name.value = personaRepository.getPersona(personaId)?.name.orEmpty()
+            _name.value = personaDataSource.getPersona(personaId)?.name.orEmpty()
         }
     }
 
@@ -48,6 +48,6 @@ class RenamePersonaViewModel(
     }
 
     fun confirm() {
-        repository.updatePersona(personaId, _name.value)
+        personaRepository.updatePersona(personaId, _name.value)
     }
 }

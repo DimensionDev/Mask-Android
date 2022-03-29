@@ -25,9 +25,10 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.RawQuery
+import androidx.room.Transaction
 import androidx.sqlite.db.SupportSQLiteQuery
 import com.dimension.maskbook.persona.db.model.DbRelationRecord
-import com.dimension.maskbook.persona.db.model.RelationWithProfile
+import com.dimension.maskbook.persona.db.model.RelationWithLinkedProfile
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -42,14 +43,18 @@ interface RelationDao {
     @RawQuery
     suspend fun findListRaw(query: SupportSQLiteQuery): List<DbRelationRecord>
 
-    @Query("SELECT * FROM DbRelationRecord WHERE personaIdentifier=:personaIdentifier AND profileIdentifier=:profileIdentifier LIMIT 1")
+    @Query("SELECT * FROM DbRelationRecord WHERE personaIdentifier=:personaIdentifier AND profileIdentifier=:profileIdentifier")
     suspend fun find(
         personaIdentifier: String,
         profileIdentifier: String,
-    ): DbRelationRecord?
+    ): List<DbRelationRecord>
 
-    @Query("SELECT * FROM RelationWithProfile WHERE personaIdentifier=:personaIdentifier")
-    fun getListFlow(personaIdentifier: String): Flow<List<RelationWithProfile>>
+    @Query("SELECT * FROM DbRelationRecord WHERE personaIdentifier=:personaIdentifier")
+    suspend fun findList(personaIdentifier: String): List<DbRelationRecord>
+
+    @Transaction
+    @Query("SELECT * FROM ViewRelationDetail WHERE personaIdentifier=:personaIdentifier")
+    fun getListFlow(personaIdentifier: String): Flow<List<RelationWithLinkedProfile>>
 
     @Query("UPDATE DbRelationRecord SET favor=:favor WHERE personaIdentifier=:personaIdentifier AND profileIdentifier=:profileIdentifier")
     suspend fun updateFavor(

@@ -65,7 +65,7 @@ import kotlinx.serialization.encodeToString
         DbWCWallet::class,
         DbChainData::class,
     ],
-    version = 9,
+    version = 10,
 )
 @TypeConverters(BigDecimalTypeConverter::class, StringListConverter::class)
 abstract class AppDatabase : RoomDatabase() {

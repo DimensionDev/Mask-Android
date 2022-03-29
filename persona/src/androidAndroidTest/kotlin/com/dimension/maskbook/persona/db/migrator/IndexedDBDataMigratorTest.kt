@@ -138,8 +138,8 @@ class IndexedDBDataMigratorTest : PersonaDatabaseTest() {
         assertNotNull(linkedProfile)
 
         val relationDao = db.relationDao()
-        val relation = relationDao.find("ec_key:aaa/bbb", "person:twitter.com/CCC")
-        assertNotNull(relation)
-        assertTrue(relation.favor)
+        val relations = relationDao.find("ec_key:aaa/bbb", "person:twitter.com/CCC")
+        assertEquals(1, relations.size)
+        assertTrue(relations[0].favor)
     }
 }

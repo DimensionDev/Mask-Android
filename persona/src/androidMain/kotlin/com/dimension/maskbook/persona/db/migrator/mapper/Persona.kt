@@ -37,8 +37,8 @@ fun IndexedDBPersona.toDbPersonaRecord(): DbPersonaRecord {
         nickname = nickname,
         hasLogout = hasLogout,
         initialized = !uninitialized,
-        updateAt = updatedAt,
-        createAt = createdAt,
+        updatedAt = updatedAt,
+        createdAt = createdAt,
         email = "",
         phone = "",
     )
@@ -70,9 +70,9 @@ fun PersonaWithLinkedProfile.toIndexedDBPersona(): IndexedDBPersona {
         nickname = persona.nickname,
         hasLogout = persona.hasLogout ?: false,
         uninitialized = persona.initialized?.not() ?: false,
-        updatedAt = persona.updateAt,
-        createdAt = persona.createAt,
-        linkedProfiles = linkedProfiles.associate {
+        updatedAt = persona.updatedAt,
+        createdAt = persona.createdAt,
+        linkedProfiles = links.associate {
             it.profileIdentifier to IndexedDBPersona.LinkedProfileDetails(it.state)
         },
     )

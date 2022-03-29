@@ -21,9 +21,20 @@
 package com.dimension.maskbook.persona.db.model
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
-@Entity
+@Entity(
+    indices = [
+        Index(
+            value = [
+                "personaIdentifier",
+                "profileIdentifier",
+            ],
+            unique = true
+        )
+    ],
+)
 data class DbRelationRecord(
     @PrimaryKey(autoGenerate = true) val _id: Long = 0,
     val personaIdentifier: String = "",

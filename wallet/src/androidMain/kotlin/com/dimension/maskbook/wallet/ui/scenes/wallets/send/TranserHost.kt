@@ -34,6 +34,8 @@ import androidx.navigation.NavController
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.common.ext.getNestedNavigationViewModel
+import com.dimension.maskbook.common.ext.humanizeDollar
+import com.dimension.maskbook.common.ext.humanizeToken
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.route.navigationComposeAnimComposable
 import com.dimension.maskbook.common.route.navigationComposeAnimComposablePackage
@@ -48,8 +50,6 @@ import com.dimension.maskbook.common.ui.widget.LocalInAppNotification
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.export.model.WalletCollectibleData
 import com.dimension.maskbook.wallet.export.model.WalletTokenData
-import com.dimension.maskbook.wallet.ext.humanizeDollar
-import com.dimension.maskbook.wallet.ext.humanizeToken
 import com.dimension.maskbook.wallet.repository.UnlockType
 import com.dimension.maskbook.wallet.route.WalletRoute
 import com.dimension.maskbook.wallet.ui.scenes.wallets.common.ScanQrcodeScene
@@ -182,6 +182,7 @@ fun SendRoute(
 
     val arrives by gasFeeViewModel.arrives.observeAsState(initial = "")
     val gasUsdTotal by gasFeeViewModel.gasUsdTotal.observeAsState(initial = BigDecimal.ZERO)
+    val gasTotal by gasFeeViewModel.gasTotal.observeAsState(initial = BigDecimal.ZERO)
 
     val selectTradable by transferDetailViewModel.selectedTradable.collectAsState(null)
 
@@ -196,6 +197,7 @@ fun SendRoute(
     val canConfirm by transferDetailViewModel.canConfirm.observeAsState()
     val balance by transferDetailViewModel.balance.observeAsState()
     val maxAmount by transferDetailViewModel.maxAmount.observeAsState()
+    transferDetailViewModel.setGasTotal(gasTotal = gasTotal)
 
     TransferDetailScene(
         onBack = onBack,

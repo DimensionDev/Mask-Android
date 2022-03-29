@@ -29,19 +29,20 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.FragmentActivity
-import coil.ImageLoader
 import coil.compose.LocalImageLoader
-import coil.decode.SvgDecoder
 import com.dimension.maskbook.common.gecko.PromptFeatureDelegate
 import com.dimension.maskbook.common.gecko.WebContentController
+import com.dimension.maskbook.common.manager.ImageLoaderManager
 import com.dimension.maskbook.common.ui.widget.LocalWindowInsetsController
 import com.dimension.maskbook.entry.ui.App
 import com.google.accompanist.insets.ProvideWindowInsets
 import org.koin.android.ext.android.get
+import org.koin.android.ext.android.inject
 
 class ComposeActivity : FragmentActivity() {
 
     private lateinit var promptFeature: PromptFeatureDelegate
+    private val imageLoaderManager: ImageLoaderManager by inject()
 
     private val windowInsetsControllerCompat by lazy {
         WindowInsetsControllerCompat(window, window.decorView)
@@ -55,9 +56,7 @@ class ComposeActivity : FragmentActivity() {
         promptFeature = get<WebContentController>().createPromptFeature(this)
         setContent {
             CompositionLocalProvider(
-                LocalImageLoader provides ImageLoader.Builder(this).componentRegistry {
-                    add(SvgDecoder(this@ComposeActivity))
-                }.build(),
+                LocalImageLoader provides imageLoaderManager.imageLoader,
                 LocalWindowInsetsController provides windowInsetsControllerCompat,
             ) {
                 ProvideWindowInsets(
