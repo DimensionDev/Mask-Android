@@ -32,11 +32,11 @@ import com.dimension.maskbook.common.ext.applyTextStyle
 import com.dimension.maskbook.common.ui.widget.MaskListItem
 
 @Composable
-fun MaskListButton(
+fun MaskListItemButton(
     onClick: () -> Unit,
     @DrawableRes icon: Int,
-    text: @Composable (() -> Unit),
     trailing: @Composable (() -> Unit)? = null,
+    text: @Composable (() -> Unit),
 ) {
     MaskButton(onClick = onClick) {
         MaskListItem(

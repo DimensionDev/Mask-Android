@@ -32,7 +32,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.common.ui.widget.MaskModal
 import com.dimension.maskbook.common.ui.widget.MiddleEllipsisText
-import com.dimension.maskbook.common.ui.widget.button.MaskListButton
+import com.dimension.maskbook.common.ui.widget.button.MaskListItemButton
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.export.model.WalletData
 
@@ -57,7 +57,7 @@ fun WalletManagementModal(
         Column(
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            MaskListButton(
+            MaskListItemButton(
                 onClick = onRename,
                 icon = R.drawable.ic_rename_wallet,
                 text = {
@@ -68,43 +68,39 @@ fun WalletManagementModal(
                 }
             )
             if (walletData != null && !walletData.fromWalletConnect) {
-                MaskListButton(
+                MaskListItemButton(
                     onClick = onBackup,
                     icon = R.drawable.ic_back_up,
-                    text = {
-                        Text(text = stringResource(R.string.scene_personas_action_backup))
-                    },
-                )
+                ) {
+                    Text(text = stringResource(R.string.scene_personas_action_backup))
+                }
             }
-            MaskListButton(
+            MaskListItemButton(
                 onClick = onTransactionHistory,
                 icon = R.drawable.ic_transaction_history,
-                text = {
-                    Text(text = stringResource(R.string.scene_wallet_detail_wallet_items_history))
-                },
-            )
+            ) {
+                Text(text = stringResource(R.string.scene_wallet_detail_wallet_items_history))
+            }
             if (walletData != null && walletData.fromWalletConnect) {
-                MaskListButton(
+                MaskListItemButton(
                     onClick = onDisconnect,
                     icon = R.drawable.ic_disconnect,
-                    text = {
-                        Text(
-                            text = stringResource(R.string.scene_wallet_connect_disconnect),
-                            color = Color.Red,
-                        )
-                    },
-                )
+                ) {
+                    Text(
+                        text = stringResource(R.string.scene_wallet_connect_disconnect),
+                        color = Color.Red,
+                    )
+                }
             } else {
-                MaskListButton(
+                MaskListItemButton(
                     onClick = onDelete,
                     icon = R.drawable.ic_delete_wallet,
-                    text = {
-                        Text(
-                            text = stringResource(R.string.scene_wallet_edit_item_delete),
-                            color = Color.Red,
-                        )
-                    },
-                )
+                ) {
+                    Text(
+                        text = stringResource(R.string.scene_wallet_edit_item_delete),
+                        color = Color.Red,
+                    )
+                }
             }
         }
     }

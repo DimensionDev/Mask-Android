@@ -39,6 +39,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import com.dimension.maskbook.common.route.navigationComposeAnimComposable
@@ -51,6 +52,7 @@ import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.common.ui.widget.button.MaskBackButton
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
+import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.route.PersonaRoute
 import com.dimension.maskbook.persona.utils.ImagePicker
 import com.dimension.maskbook.persona.viewmodel.avatar.SetAvatarViewModel
@@ -77,7 +79,7 @@ fun SetAvatarScene(
                         MaskBackButton(onBack = onBack)
                     },
                     title = {
-                        Text(text = "Set Persona Avatar")
+                        Text(text = stringResource(R.string.scene_persona_avatar_set_persona_avatar))
                     }
                 )
             }
@@ -127,7 +129,7 @@ fun SetAvatarScene(
                         launcher.launch(intent)
                     },
                     content = {
-                        Text(text = "Select from photos")
+                        Text(text = stringResource(R.string.scene_persona_avatar_select_from_photos))
                     }
                 )
                 PrimaryButton(
@@ -142,7 +144,7 @@ fun SetAvatarScene(
                         launcher.launch(intent)
                     },
                     content = {
-                        Text(text = "Take a photo")
+                        Text(text = stringResource(R.string.scene_persona_avatar_take_a_photo))
                     }
                 )
             }

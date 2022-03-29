@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.dimension.maskbook.common.route.navigationComposeBottomSheet
@@ -32,7 +33,7 @@ import com.dimension.maskbook.common.route.navigationComposeBottomSheetPackage
 import com.dimension.maskbook.common.routeProcessor.annotations.Back
 import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
 import com.dimension.maskbook.common.ui.widget.MaskModal
-import com.dimension.maskbook.common.ui.widget.button.MaskListButton
+import com.dimension.maskbook.common.ui.widget.button.MaskListItemButton
 import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.repository.IPersonaRepository
 import com.dimension.maskbook.persona.route.PersonaRoute
@@ -53,22 +54,22 @@ fun PersonaAvatarModal(
         Column(
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            MaskListButton(
+            MaskListItemButton(
                 onClick = {
                     navController.navigate(PersonaRoute.SetAvatar)
                 },
                 text = {
-                    Text(text = "Set Persona Avatar")
+                    Text(text = stringResource(R.string.scene_persona_avatar_set_persona_avatar))
                 },
                 icon = R.drawable.image
             )
-            MaskListButton(
+            MaskListItemButton(
                 onClick = {
                     repository.setAvatarForCurrentPersona(null)
                     onBack.invoke()
                 },
                 text = {
-                    Text(text = "Remove Persona Avatar", color = Color.Red)
+                    Text(text = stringResource(R.string.scene_persona_avatar_remove_persona_avatar), color = Color.Red)
                 },
                 icon = R.drawable.ic_delete_wallet,
             )
