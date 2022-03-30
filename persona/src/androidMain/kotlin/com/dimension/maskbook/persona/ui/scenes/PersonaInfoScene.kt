@@ -41,7 +41,6 @@ import androidx.compose.material.TabRowDefaults
 import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -57,6 +56,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
@@ -321,8 +321,8 @@ private fun PersonaHeader(
                 },
                 icon = {
                     if (item == null || item.avatar.isNullOrEmpty()) {
-                        Icon(
-                            Icons.Default.AccountCircle,
+                        Image(
+                            painterResource(R.drawable.ic_persona_default_avatar),
                             contentDescription = null,
                             modifier = Modifier
                                 .size(56.dp)

@@ -85,7 +85,7 @@ fun SwitchPersonaModal(
                         },
                         content = {
                             Image(
-                                painter = painterResource(R.drawable.ic_default_persona_avatar),
+                                painter = painterResource(R.drawable.ic_persona_default_avatar),
                                 contentDescription = null,
                                 modifier = Modifier.size(32.dp),
                             )

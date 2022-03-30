@@ -39,6 +39,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
@@ -107,7 +108,7 @@ fun SetAvatarScene(
                     )
                 } else {
                     Image(
-                        Icons.Default.AccountCircle,
+                        painterResource(R.drawable.ic_persona_default_avatar),
                         contentDescription = null,
                         modifier = Modifier
                             .aspectRatio(1f)
