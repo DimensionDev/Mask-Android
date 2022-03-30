@@ -18,8 +18,9 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.persona.repository
+package com.dimension.maskbook.persona.datasource
 
+import androidx.room.withTransaction
 import com.dimension.maskbook.common.manager.ImageLoaderManager
 import com.dimension.maskbook.persona.db.PersonaDatabase
 import com.dimension.maskbook.persona.db.migrator.mapper.toDbLinkedProfileRecord
@@ -42,7 +43,7 @@ import com.dimension.maskbook.persona.model.options.StoreAvatarOptions
 import com.dimension.maskbook.persona.model.options.UpdateProfileOptions
 
 class JsProfileDataSource(
-    database: PersonaDatabase,
+    private val database: PersonaDatabase,
     private val imageLoaderManager: ImageLoaderManager,
 ) {
 
@@ -101,9 +102,11 @@ class JsProfileDataSource(
     }
 
     suspend fun deleteProfile(options: DeleteProfileOptions) {
-        profileDao.delete(options.profileIdentifier)
-        linkedProfileDao.deleteWithProfile(options.profileIdentifier)
-        relationDao.deleteWithProfile(options.profileIdentifier)
+        database.withTransaction {
+            profileDao.delete(options.profileIdentifier)
+            linkedProfileDao.deleteWithProfile(options.profileIdentifier)
+            relationDao.deleteWithProfile(options.profileIdentifier)
+        }
     }
 
     suspend fun attachProfile(options: AttachProfileOptions) {

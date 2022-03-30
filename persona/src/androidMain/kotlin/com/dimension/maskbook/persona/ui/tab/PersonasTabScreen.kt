@@ -93,7 +93,13 @@ class PersonasTabScreen : TabScreen {
                         }
                     )
                 }
-            }
+            },
+            onAddPersonaAvatar = {
+                navController.navigate(PersonaRoute.SetAvatar)
+            },
+            onPersonaAvatarClick = {
+                navController.navigate(PersonaRoute.PersonaAvatarModal)
+            },
         )
     }
 }

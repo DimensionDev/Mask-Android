@@ -27,6 +27,10 @@ import com.dimension.maskbook.common.ext.normalized
 import com.dimension.maskbook.extension.export.ExtensionServices
 import com.dimension.maskbook.extension.export.model.ExtensionMessage
 import com.dimension.maskbook.extension.export.model.buildExtensionResponse
+import com.dimension.maskbook.persona.datasource.JsPersonaDataSource
+import com.dimension.maskbook.persona.datasource.JsPostDataSource
+import com.dimension.maskbook.persona.datasource.JsProfileDataSource
+import com.dimension.maskbook.persona.datasource.JsRelationDataSource
 import com.dimension.maskbook.persona.db.PersonaDatabase
 import com.dimension.maskbook.persona.db.migrator.IndexedDBDataMigrator
 import com.dimension.maskbook.persona.model.indexed.IndexedDBAllRecord
@@ -57,10 +61,6 @@ import com.dimension.maskbook.persona.model.options.UpdateProfileOptions
 import com.dimension.maskbook.persona.model.options.UpdateRelationOptions
 import com.dimension.maskbook.persona.repository.IPersonaRepository
 import com.dimension.maskbook.persona.repository.IPreferenceRepository
-import com.dimension.maskbook.persona.repository.JsPersonaDataSource
-import com.dimension.maskbook.persona.repository.JsPostDataSource
-import com.dimension.maskbook.persona.repository.JsProfileDataSource
-import com.dimension.maskbook.persona.repository.JsRelationDataSource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn

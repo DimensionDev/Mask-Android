@@ -58,6 +58,7 @@ import com.dimension.maskbook.common.route.navigationComposeDialogPackage
 import com.dimension.maskbook.common.routeProcessor.annotations.Back
 import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
 import com.dimension.maskbook.common.routeProcessor.annotations.Path
+import com.dimension.maskbook.common.routeProcessor.annotations.Query
 import com.dimension.maskbook.common.ui.widget.BackMetaDisplay
 import com.dimension.maskbook.common.ui.widget.MaskDialog
 import com.dimension.maskbook.common.ui.widget.MaskModal
@@ -173,6 +174,7 @@ fun ImportNotificationDialog(
 @Composable
 fun ImportPasswordModal(
     @Path("uri") uri: String,
+    @Query("account") account: String?,
     navController: NavController,
 ) {
     DisposableEffect(Unit) {
@@ -185,7 +187,7 @@ fun ImportPasswordModal(
     }
     val viewModel: RecoveryLocalViewModel = navController
         .getNestedNavigationViewModel(PersonaRoute.Register.Recovery.LocalBackup.Route) {
-            parametersOf(uri)
+            parametersOf(uri, account)
         }
     val password by viewModel.password.observeAsState(initial = "")
     val error by viewModel.passwordError.observeAsState(initial = false)
@@ -228,11 +230,12 @@ fun ImportPasswordModal(
 fun ImportSuccessScene(
     @Back onBack: () -> Unit,
     @Path("uri") uri: String,
+    @Query("account") account: String?,
     navController: NavController,
 ) {
     val viewModel: RecoveryLocalViewModel = navController
         .getNestedNavigationViewModel(PersonaRoute.Register.Recovery.LocalBackup.Route) {
-            parametersOf(uri)
+            parametersOf(uri, account)
         }
     val meta by viewModel.meta.observeAsState(initial = null)
     MaskScene {
@@ -284,11 +287,12 @@ fun ImportSuccessScene(
 fun ImportingScene(
     @Back onBack: () -> Unit,
     @Path("uri") uri: String,
+    @Query("account") account: String?,
     navController: NavController,
 ) {
     val viewModel: RecoveryLocalViewModel = navController
         .getNestedNavigationViewModel(PersonaRoute.Register.Recovery.LocalBackup.Route) {
-            parametersOf(uri)
+            parametersOf(uri, account)
         }
     val state by viewModel.loadState.collectAsState()
     LaunchedEffect(Unit) {
@@ -303,7 +307,8 @@ fun ImportingScene(
                     }
                     RecoveryLocalViewModel.LoadState.Success -> navController.navigate(
                         PersonaRoute.Register.Recovery.LocalBackup.Success(
-                            uri
+                            uri,
+                            account
                         )
                     ) {
                         popUpTo(PersonaRoute.Register.Recovery.LocalBackup.Loading.path) {
@@ -313,7 +318,8 @@ fun ImportingScene(
                     RecoveryLocalViewModel.LoadState.RequirePassword -> {
                         navController.navigate(
                             PersonaRoute.Register.Recovery.LocalBackup.Password(
-                                uri
+                                uri,
+                                account
                             )
                         )
                     }

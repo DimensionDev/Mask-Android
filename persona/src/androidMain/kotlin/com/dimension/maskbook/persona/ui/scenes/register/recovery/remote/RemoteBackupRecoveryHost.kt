@@ -111,7 +111,7 @@ fun RegisterRecoveryRemoteBackupRecoveryRemoteBackupRecoveryEmailCode(
                 PersonaRoute.Register.Recovery.RemoteBackupRecovery.RemoteBackupRecovery_NoBackup
             )
             RemoteBackupRecoveryViewModelBase.NavigateTarget.RestoreBackup -> navController.navigate(
-                PersonaRoute.Register.Recovery.LocalBackup.Loading(it.value)
+                PersonaRoute.Register.Recovery.LocalBackup.Loading(it.value, email)
             )
             else -> Unit
         }
@@ -225,7 +225,7 @@ fun RegisterRecoveryRemoteBackupRecoveryRemoteBackupRecoveryPhoneCode(
                 PersonaRoute.Register.Recovery.RemoteBackupRecovery.RemoteBackupRecovery_NoBackup
             )
             RemoteBackupRecoveryViewModelBase.NavigateTarget.RestoreBackup -> navController.navigate(
-                PersonaRoute.Register.Recovery.LocalBackup.Loading(it.value)
+                PersonaRoute.Register.Recovery.LocalBackup.Loading(it.value, phone)
             )
             else -> Unit
         }

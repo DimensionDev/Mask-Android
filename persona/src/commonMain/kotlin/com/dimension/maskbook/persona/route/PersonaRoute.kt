@@ -28,6 +28,8 @@ expect object PersonaRoute {
     const val Logout: String
     const val PersonaMenu: String
     const val SwitchPersona: String
+    const val SetAvatar: String
+    const val PersonaAvatarModal: String
     object RenamePersona {
         operator fun invoke(personaId: String): String
     }
@@ -95,14 +97,14 @@ expect object PersonaRoute {
             object LocalBackup {
                 const val Route: String
                 object Loading {
-                    operator fun invoke(uri: String): String
+                    operator fun invoke(uri: String, account: String?): String
                 }
                 object Password {
-                    operator fun invoke(uri: String): String
+                    operator fun invoke(uri: String, account: String?): String
                 }
                 const val Failed: String
                 object Success {
-                    operator fun invoke(uri: String): String
+                    operator fun invoke(uri: String, account: String?): String
                 }
                 const val Notification: String
             }
