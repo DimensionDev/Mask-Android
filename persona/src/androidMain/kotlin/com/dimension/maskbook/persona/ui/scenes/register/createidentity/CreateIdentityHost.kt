@@ -18,25 +18,20 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.ui.scenes.wallets.create.create
+package com.dimension.maskbook.persona.ui.scenes.register.createidentity
 
 import android.net.Uri
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
-import androidx.navigation.navOptions
 import com.dimension.maskbook.common.ext.getNestedNavigationViewModel
+import com.dimension.maskbook.common.ext.navigate
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
@@ -50,44 +45,45 @@ import com.dimension.maskbook.common.routeProcessor.annotations.Path
 import com.dimension.maskbook.common.ui.scene.VerifyMnemonicWordsScene
 import com.dimension.maskbook.common.ui.widget.MaskDialog
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
-import com.dimension.maskbook.wallet.R
-import com.dimension.maskbook.wallet.repository.WalletCreateOrImportResult
-import com.dimension.maskbook.wallet.route.WalletRoute
-import com.dimension.maskbook.wallet.ui.scenes.wallets.common.Dialog
-import com.dimension.maskbook.wallet.viewmodel.wallets.create.CreateWalletRecoveryKeyViewModel
+import com.dimension.maskbook.persona.R
+import com.dimension.maskbook.persona.route.PersonaRoute
+import com.dimension.maskbook.persona.viewmodel.register.CreateIdentityViewModel
 import org.koin.core.parameter.parametersOf
 
-private const val GeneratedRouteName = "createWalletRoute"
+private const val GeneratedRouteName = "createIdentityRoute"
 
 @NavGraphDestination(
-    route = WalletRoute.CreateWallet.Pharse.path,
+    route = PersonaRoute.Register.CreateIdentity.Backup.path,
     packageName = navigationComposeAnimComposablePackage,
     functionName = navigationComposeAnimComposable,
     generatedFunctionName = GeneratedRouteName
 )
 @Composable
-fun PharseRoute(
+fun BackupRoute(
     navController: NavController,
-    @Path("wallet") wallet: String,
-    @Back onBack: () -> Unit,
+    @Path("personaName") personaName: String,
+    @Path("isWelcome") isWelcome: Boolean,
+    @Back onBack: () -> Unit
 ) {
-    val viewModel: CreateWalletRecoveryKeyViewModel = navController
-        .getNestedNavigationViewModel(WalletRoute.CreateWallet.Route) {
-            parametersOf(wallet)
+    val viewModel: CreateIdentityViewModel = navController
+        .getNestedNavigationViewModel(PersonaRoute.Register.CreateIdentity.Route) {
+            parametersOf(personaName)
         }
-    val words by viewModel.words.observeAsState(initial = emptyList())
-    MnemonicPhraseScene(
+    val words by viewModel.words.observeAsState(emptyList())
+    BackupIdentityScene(
         words = words.map { it.word },
         onRefreshWords = {
             viewModel.refreshWords()
         },
-        onVerify = { navController.navigate(WalletRoute.CreateWallet.Verify(wallet)) },
+        onVerify = {
+            navController.navigate(PersonaRoute.Register.CreateIdentity.Verify(personaName, isWelcome))
+        },
         onBack = onBack,
     )
 }
 
 @NavGraphDestination(
-    route = WalletRoute.CreateWallet.Verify.path,
+    route = PersonaRoute.Register.CreateIdentity.Verify.path,
     packageName = navigationComposeAnimComposablePackage,
     functionName = navigationComposeAnimComposable,
     generatedFunctionName = GeneratedRouteName
@@ -95,60 +91,40 @@ fun PharseRoute(
 @Composable
 fun VerifyRoute(
     navController: NavController,
-    @Path("wallet") wallet: String,
-    @Back onBack: () -> Unit,
+    @Path("personaName") personaName: String,
+    @Path("isWelcome") isWelcome: Boolean,
+    @Back onBack: () -> Unit
 ) {
-    val viewModel: CreateWalletRecoveryKeyViewModel = navController
-        .getNestedNavigationViewModel(WalletRoute.CreateWallet.Route) {
-            parametersOf(wallet)
+    val viewModel: CreateIdentityViewModel = navController
+        .getNestedNavigationViewModel(PersonaRoute.Register.CreateIdentity.Route) {
+            parametersOf(personaName)
         }
-    val result by viewModel.result.observeAsState(initial = null)
     val correct by viewModel.correct.observeAsState(initial = false)
     val selectedWords by viewModel.selectedWords.observeAsState(initial = emptyList())
     val wordsInRandomOrder by viewModel.wordsInRandomOrder.observeAsState(initial = emptyList())
-    var showDialog by remember {
-        mutableStateOf(false)
-    }
-    LaunchedEffect(result) {
-        result?.let {
-            if (it.type == WalletCreateOrImportResult.Type.SUCCESS) {
-                navController.navigate(WalletRoute.CreateWallet.Confirm)
-            }
+    VerifyMnemonicWordsScene(
+        words = wordsInRandomOrder,
+        onBack = {
+            viewModel.clearWords()
+            onBack.invoke()
+        },
+        onClear = { viewModel.clearWords() },
+        onConfirm = {
+            navController.navigate(PersonaRoute.Register.CreateIdentity.Confirm(personaName, isWelcome))
+        },
+        onWordSelected = {
+            viewModel.selectWord(it)
+        },
+        selectedWords = selectedWords,
+        correct = correct,
+        onWordDeselected = {
+            viewModel.deselectWord(it)
         }
-    }
-
-    if (result?.type != WalletCreateOrImportResult.Type.SUCCESS && showDialog) {
-        result?.Dialog(onDismissRequest = { showDialog = false })
-    }
-
-    Box {
-        VerifyMnemonicWordsScene(
-            words = wordsInRandomOrder,
-            onBack = {
-                viewModel.clearWords()
-                onBack.invoke()
-            },
-            onClear = { viewModel.clearWords() },
-            onConfirm = {
-                viewModel.confirm()
-                showDialog = true
-            },
-            onWordSelected = {
-                viewModel.selectWord(it)
-            },
-            selectedWords = selectedWords,
-            correct = correct,
-            onWordDeselected = {
-                viewModel.deselectWord(it)
-            },
-            title = stringResource(R.string.scene_mnemonic_verify_title),
-            subTitle = stringResource(R.string.scene_identify_verify_description)
-        )
-    }
+    )
 }
 
 @NavGraphDestination(
-    route = WalletRoute.CreateWallet.Confirm,
+    route = PersonaRoute.Register.CreateIdentity.Confirm.path,
     packageName = navigationComposeDialogPackage,
     functionName = navigationComposeDialog,
     generatedFunctionName = GeneratedRouteName
@@ -156,23 +132,15 @@ fun VerifyRoute(
 @Composable
 fun ConfirmRoute(
     navController: NavController,
+    @Path("personaName") personaName: String,
+    @Path("isWelcome") isWelcome: Boolean,
 ) {
-    val onDone = remember {
-        {
-            navController.navigate(
-                Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Wallet)),
-                navOptions = navOptions {
-                    launchSingleTop = true
-                    popUpTo(CommonRoute.Main.Home.path) {
-                        inclusive = false
-                    }
-                }
-            )
+    val viewModel: CreateIdentityViewModel = navController
+        .getNestedNavigationViewModel(PersonaRoute.Register.CreateIdentity.Route) {
+            parametersOf(personaName)
         }
-    }
     MaskDialog(
         onDismissRequest = {
-            onDone.invoke()
         },
         icon = {
             Image(
@@ -181,16 +149,28 @@ fun ConfirmRoute(
             )
         },
         title = {
-            Text(text = stringResource(R.string.common_alert_wallet_create_success_title))
+            Text(text = stringResource(R.string.common_alert_identity_create_title))
         },
         text = {
-            Text(text = stringResource(R.string.common_alert_wallet_create_success_description))
+            Text(text = stringResource(R.string.common_alert_identity_create_description))
         },
         buttons = {
             PrimaryButton(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {
-                    onDone.invoke()
+                    viewModel.confirm()
+                    navController.navigate(Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona))) {
+                        launchSingleTop = true
+                        if (isWelcome) {
+                            popUpTo(PersonaRoute.Register.Init) {
+                                inclusive = true
+                            }
+                        } else {
+                            popUpTo(CommonRoute.Main.Home.path) {
+                                inclusive = false
+                            }
+                        }
+                    }
                 },
             ) {
                 Text(text = stringResource(R.string.common_controls_done))

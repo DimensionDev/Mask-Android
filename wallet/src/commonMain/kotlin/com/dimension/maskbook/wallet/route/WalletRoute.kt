@@ -29,9 +29,6 @@ expect object WalletRoute {
         operator fun invoke(data: String): String
     }
 
-    object BackUpPassword {
-        operator fun invoke(target: String): String
-    }
     object CollectibleDetail {
         operator fun invoke(id: String): String
     }
@@ -156,73 +153,5 @@ expect object WalletRoute {
 
     object UnlockWalletDialog {
         operator fun invoke(target: String): String
-    }
-
-    object Register {
-        const val Init: String
-
-        const val Synchronization: String
-
-        object CreateIdentity {
-            const val Route: String
-            object Backup {
-                operator fun invoke(personaName: String, isWelcome: Boolean): String
-            }
-            object Verify {
-                operator fun invoke(personaName: String, isWelcome: Boolean): String
-            }
-            object Confirm {
-                operator fun invoke(personaName: String, isWelcome: Boolean): String
-            }
-        }
-
-        const val WelcomeCreatePersona: String
-        const val CreatePersona: String
-
-        object Recovery {
-            const val Home: String
-
-            object RemoteBackupRecovery {
-                const val RemoteBackupRecovery_NoBackup: String
-
-                object RemoteBackupRecovery_Email_Code {
-                    operator fun invoke(email: String): String
-                }
-
-                const val RemoteBackupRecovery_Email: String
-
-                object RemoteBackupRecovery_Phone_Code {
-                    operator fun invoke(phone: String): String
-                }
-
-                const val RemoteBackupRecovery_Phone: String
-            }
-
-            object LocalBackup {
-                const val Route: String
-                object Loading {
-                    operator fun invoke(uri: String): String
-                }
-                object Password {
-                    operator fun invoke(uri: String): String
-                }
-                const val Failed: String
-                object Success {
-                    operator fun invoke(uri: String): String
-                }
-                const val Notification: String
-            }
-
-            const val IdentityPersona: String
-            object Identity {
-                operator fun invoke(name: String): String
-            }
-            const val PrivateKey: String
-            const val Complected: String
-            const val Failed: String
-            object AlreadyExists {
-                operator fun invoke(restoreFrom: String): String
-            }
-        }
     }
 }

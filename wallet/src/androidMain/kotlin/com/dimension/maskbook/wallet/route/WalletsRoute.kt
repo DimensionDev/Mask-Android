@@ -57,11 +57,11 @@ import com.dimension.maskbook.common.ui.widget.LocalInAppNotification
 import com.dimension.maskbook.common.ui.widget.MaskDialog
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.common.viewmodel.BiometricEnableViewModel
+import com.dimension.maskbook.common.viewmodel.BiometricViewModel
 import com.dimension.maskbook.setting.export.SettingServices
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.repository.IWalletRepository
-import com.dimension.maskbook.wallet.ui.scenes.persona.BackUpPasswordModal
 import com.dimension.maskbook.wallet.ui.scenes.wallets.UnlockWalletDialog
 import com.dimension.maskbook.wallet.ui.scenes.wallets.WalletQrcodeScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.collectible.CollectibleDetailScene
@@ -83,8 +83,6 @@ import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletSwitchSc
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletTransactionHistoryScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.token.TokenDetailScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.walletconnect.WalletConnectModal
-import com.dimension.maskbook.wallet.viewmodel.wallets.BackUpPasswordViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.BiometricViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.TokenDetailViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.UnlockWalletViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.WalletConnectManagementViewModel
@@ -826,39 +824,6 @@ fun UnlockWalletDialog(
                     }
                 )
             }
-        }
-    )
-}
-
-@NavGraphDestination(
-    route = WalletRoute.BackUpPassword.path,
-    deeplink = [
-        Deeplinks.Wallet.BackUpPassword.path,
-    ],
-    packageName = navigationComposeBottomSheetPackage,
-    functionName = navigationComposeBottomSheet,
-)
-@Composable
-fun BackUpPassword(
-    navController: NavController,
-    @Path("target") target: String,
-) {
-    val viewModel = getViewModel<BackUpPasswordViewModel>()
-    val password by viewModel.password.observeAsState(initial = "")
-    val passwordValid by viewModel.passwordValid.observeAsState(initial = false)
-    BackUpPasswordModal(
-        password = password,
-        onPasswordChanged = { viewModel.setPassword(it) },
-        passwordValid = passwordValid,
-        onConfirm = {
-            navController.navigate(
-                target,
-                navOptions {
-                    popUpTo(WalletRoute.BackUpPassword.path) {
-                        inclusive = true
-                    }
-                }
-            )
         }
     )
 }

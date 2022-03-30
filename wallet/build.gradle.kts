@@ -30,7 +30,6 @@ kotlin {
                 implementation("androidx.paging:paging-compose:${Versions.Androidx.pagingCompose}")
 
                 implementation("io.github.dimensiondev:maskwalletcore:${Versions.maskWalletCore}")
-                implementation("com.journeyapps:zxing-android-embedded:${Versions.zxing}")
                 implementation("com.github.WalletConnect:kotlin-walletconnect-lib:${Versions.walletConnectV1}")
                 implementation("com.squareup.moshi:moshi:${Versions.moshi}")
                 implementation("com.github.komputing.khex:extensions:${Versions.khexExtension}")

@@ -18,29 +18,37 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.viewmodel.wallets
+package com.dimension.maskbook.persona.viewmodel.recovery
 
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
-import com.dimension.maskbook.common.util.BiometricAuthenticator
-import com.dimension.maskbook.common.viewmodel.BiometricViewModel
-import com.dimension.maskbook.setting.export.SettingServices
+import com.dimension.maskbook.persona.export.PersonaServices
+import com.dimension.maskbook.wallet.export.WalletServices
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 
-class UnlockWalletViewModel(
-    settingsRepository: SettingServices,
-    biometricAuthenticator: BiometricAuthenticator
-) : BiometricViewModel(biometricAuthenticator, settingsRepository) {
-    private val _password = MutableStateFlow("")
-    val password = _password.asStateIn(viewModelScope, "")
-    fun setPassword(value: String) {
-        _password.value = value
+class PrivateKeyViewModel(
+    private val personaServices: PersonaServices,
+    private val walletServices: WalletServices,
+) : ViewModel() {
+
+    private val _privateKey = MutableStateFlow("")
+    val privateKey = _privateKey.asStateIn(viewModelScope)
+
+    val canConfirm = _privateKey.map {
+        walletServices.validatePrivateKey(it.trim())
+    }.asStateIn(viewModelScope, false)
+
+    fun setPrivateKey(text: String) {
+        _privateKey.value = text
     }
 
-    val passwordValid by lazy {
-        combine(settingsRepository.paymentPassword, _password) { current, input ->
-            current == input
+    fun onConfirm() {
+        // TODO Mimao UseCase
+        viewModelScope.launch {
+            personaServices.createPersonaFromPrivateKey(_privateKey.value.trim())
         }
     }
 }

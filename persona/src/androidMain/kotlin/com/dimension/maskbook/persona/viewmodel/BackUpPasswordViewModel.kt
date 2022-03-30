@@ -18,7 +18,7 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.viewmodel.wallets
+package com.dimension.maskbook.persona.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
@@ -28,7 +28,7 @@ import com.dimension.maskbook.setting.export.SettingServices
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 
-class UnlockWalletViewModel(
+class BackUpPasswordViewModel(
     settingsRepository: SettingServices,
     biometricAuthenticator: BiometricAuthenticator
 ) : BiometricViewModel(biometricAuthenticator, settingsRepository) {
@@ -39,7 +39,7 @@ class UnlockWalletViewModel(
     }
 
     val passwordValid by lazy {
-        combine(settingsRepository.paymentPassword, _password) { current, input ->
+        combine(settingsRepository.backupPassword, _password) { current, input ->
             current == input
         }
     }

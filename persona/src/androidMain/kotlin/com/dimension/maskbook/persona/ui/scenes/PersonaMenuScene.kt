@@ -150,7 +150,7 @@ fun PersonaMenuScene(
                             if (backupPassword.isEmpty()) {
                                 navController.navigate(Uri.parse(Deeplinks.Setting.SetupPasswordDialog))
                             } else {
-                                navController.navigate(Uri.parse(Deeplinks.Wallet.BackUpPassword(PersonaRoute.ExportPrivateKey)))
+                                navController.navigate(Uri.parse(Deeplinks.Persona.BackUpPassword(PersonaRoute.ExportPrivateKey)))
                             }
                         }
                     ) {

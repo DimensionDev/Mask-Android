@@ -39,9 +39,9 @@ import com.dimension.maskbook.extension.route.ExtensionRoute
 import com.dimension.maskbook.labs.LabsSetup
 import com.dimension.maskbook.persona.PersonaSetup
 import com.dimension.maskbook.persona.export.PersonaServices
+import com.dimension.maskbook.persona.route.PersonaRoute
 import com.dimension.maskbook.setting.SettingSetup
 import com.dimension.maskbook.wallet.WalletSetup
-import com.dimension.maskbook.wallet.route.WalletRoute
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import kotlinx.coroutines.flow.firstOrNull
@@ -97,6 +97,6 @@ private suspend fun getInitialRoute(): String {
     return if (hasPersona) {
         ExtensionRoute.WebContent(null)
     } else {
-        WalletRoute.Register.Init
+        PersonaRoute.Register.Init
     }
 }

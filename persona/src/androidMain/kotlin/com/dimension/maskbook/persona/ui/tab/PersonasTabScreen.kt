@@ -49,10 +49,10 @@ class PersonasTabScreen : TabScreen {
         PersonaScene(
             onBack = onBack,
             onPersonaCreateClick = {
-                navController.navigate(Uri.parse(Deeplinks.Wallet.Register.WelcomeCreatePersona))
+                navController.navigate(Uri.parse(Deeplinks.Persona.Register.WelcomeCreatePersona))
             },
             onPersonaRecoveryClick = {
-                navController.navigate(Uri.parse(Deeplinks.Wallet.Recovery))
+                navController.navigate(Uri.parse(Deeplinks.Persona.Recovery))
             },
             onPersonaNameClick = {
                 navController.navigate(PersonaRoute.PersonaMenu)
