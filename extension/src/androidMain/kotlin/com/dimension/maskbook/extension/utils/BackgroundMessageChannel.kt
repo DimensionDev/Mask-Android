@@ -35,8 +35,8 @@ import org.json.JSONObject
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
-internal class MessageChannel(
-    private val controller: WebContentController,
+internal abstract class MessageChannel(
+    private val flow: Flow<JSONObject>,
     private val scope: CoroutineScope,
 ) {
     private val queue = ConcurrentHashMap<String, Channel<String?>>()
@@ -44,14 +44,15 @@ internal class MessageChannel(
     private val _extensionMessage = MutableSharedFlow<ExtensionMessage>(extraBufferCapacity = 50)
     val extensionMessage: Flow<ExtensionMessage> = _extensionMessage.asSharedFlow()
 
+    protected abstract fun sendMessage(message: JSONObject)
+
     fun startMessageCollect() {
-        controller.message
-            .onEach { onMessage(it) }
+        flow.onEach { onMessage(it) }
             .launchIn(scope)
     }
 
     fun sendResponseMessage(map: Map<String, Any?>) {
-        controller.sendMessage(JSONObject(map))
+        sendMessage(JSONObject(map))
     }
 
     suspend fun executeMessage(
@@ -71,14 +72,14 @@ internal class MessageChannel(
 
         // some method will not return, don't receive
         if (!isWait) {
-            controller.sendMessage(message)
+            sendMessage(message)
             return null
         }
 
         val channel = Channel<String?>()
         try {
             queue[id] = channel
-            controller.sendMessage(message)
+            sendMessage(message)
             return channel.receive()
         } finally {
             channel.close()
@@ -124,5 +125,17 @@ internal class MessageChannel(
                 )
             }
         }
+    }
+}
+
+internal class BackgroundMessageChannel(
+    private val controller: WebContentController,
+    scope: CoroutineScope,
+) : MessageChannel(
+    flow = controller.backgroundMessage,
+    scope = scope,
+) {
+    override fun sendMessage(message: JSONObject) {
+        controller.sendBackgroundMessage(message)
     }
 }

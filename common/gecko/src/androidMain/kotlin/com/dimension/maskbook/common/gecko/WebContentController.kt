@@ -28,6 +28,7 @@ import androidx.fragment.app.FragmentActivity
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import mozilla.components.browser.engine.gecko.GeckoEngine
 import mozilla.components.browser.state.action.BrowserAction
@@ -50,17 +51,48 @@ import java.io.Closeable
 private const val BackgroundPortName = "browser"
 private const val TAG = "WebContentController"
 
+private class MessageHolder : MessageHandler {
+    private val _message = MutableSharedFlow<JSONObject>(extraBufferCapacity = Int.MAX_VALUE)
+    val message = _message.asSharedFlow()
+    private val _port = MutableStateFlow<Port?>(null)
+    val connected = _port.map { it != null }
+    override fun onPortConnected(port: Port) {
+        _port.tryEmit(port)
+    }
+
+    override fun onPortDisconnected(port: Port) {
+        _port.tryEmit(null)
+    }
+
+    override fun onPortMessage(message: Any, port: Port) {
+        when (message) {
+            is JSONObject -> message
+            is String -> JSONObject(message)
+            else -> null
+        }?.let {
+            _message.tryEmit(it)
+        }
+    }
+
+    fun sendMessage(message: JSONObject) {
+        _port.value?.postMessage(JSONObject(mapOf("result" to message.toString())))
+    }
+}
+
 class WebContentController(
-    fragmentActivity: Context,
+    context: Context,
     var onNavigate: (String) -> Boolean = { true },
 ) : Closeable {
     private lateinit var _observer: Store.Subscription<BrowserState, BrowserAction>
-    private val _isExtensionConnected = MutableStateFlow(false)
-    val isExtensionConnected = _isExtensionConnected.asSharedFlow()
+    private val backgroundMessageHolder = MessageHolder()
+    val backgroundMessage = backgroundMessageHolder.message.map {
+        Log.i(TAG, "onBackgroundMessage: $it")
+        it
+    }
+    val isExtensionConnected = backgroundMessageHolder.connected
     private val _browserState = MutableStateFlow<BrowserState?>(null)
-    private var _port: Port? = null
     private val runtime by lazy {
-        GeckoRuntime.create(fragmentActivity)
+        GeckoRuntime.create(context)
     }
     private val interceptor by lazy {
         object : RequestInterceptor {
@@ -90,7 +122,7 @@ class WebContentController(
     }
     internal val engine by lazy {
         GeckoEngine(
-            fragmentActivity,
+            context,
             runtime = runtime,
             defaultSettings = DefaultSettings(
                 remoteDebuggingEnabled = BuildConfig.DEBUG,
@@ -116,31 +148,6 @@ class WebContentController(
         SessionUseCases(store)
     }
 
-    private val _message = MutableSharedFlow<JSONObject>(extraBufferCapacity = 50)
-    val message = _message.asSharedFlow()
-
-    private val messageHandler = object : MessageHandler {
-        override fun onPortConnected(port: Port) {
-            _port = port
-            _isExtensionConnected.value = true
-        }
-
-        override fun onPortDisconnected(port: Port) {
-            _port = null
-            _isExtensionConnected.value = false
-        }
-
-        override fun onPortMessage(message: Any, port: Port) {
-            when (message) {
-                is JSONObject -> message
-                is String -> JSONObject(message)
-                else -> null
-            }?.let {
-                Log.i(TAG, "onPortMessage: $it")
-                _message.tryEmit(it)
-            }
-        }
-    }
     fun installExtensions(
         id: String,
         url: String,
@@ -149,7 +156,7 @@ class WebContentController(
             id,
             url,
             onSuccess = {
-                it.registerBackgroundMessageHandler(BackgroundPortName, messageHandler)
+                it.registerBackgroundMessageHandler(BackgroundPortName, backgroundMessageHolder)
             }
         )
     }
@@ -186,8 +193,8 @@ class WebContentController(
         runtime.shutdown()
     }
 
-    fun sendMessage(message: JSONObject) {
-        Log.i(TAG, "sendMessage: $message")
-        _port?.postMessage(JSONObject(mapOf("result" to message.toString())))
+    fun sendBackgroundMessage(message: JSONObject) {
+        Log.i(TAG, "sendBackgroundMessage: $message")
+        backgroundMessageHolder.sendMessage(message)
     }
 }

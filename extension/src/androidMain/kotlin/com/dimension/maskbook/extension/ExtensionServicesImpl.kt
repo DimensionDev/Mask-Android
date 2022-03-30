@@ -24,14 +24,14 @@ import com.dimension.maskbook.extension.export.ExtensionServices
 import com.dimension.maskbook.extension.export.model.ExtensionMessage
 import com.dimension.maskbook.extension.export.model.Site
 import com.dimension.maskbook.extension.repository.ExtensionRepository
-import com.dimension.maskbook.extension.utils.MessageChannel
+import com.dimension.maskbook.extension.utils.BackgroundMessageChannel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapNotNull
 
 internal class ExtensionServicesImpl(
     private val repository: ExtensionRepository,
-    private val messageChannel: MessageChannel,
+    private val backgroundMessageChannel: BackgroundMessageChannel,
 ) : ExtensionServices {
     override val site: Flow<Site>
         get() = repository.currentSite
@@ -48,14 +48,14 @@ internal class ExtensionServicesImpl(
     }
 
     override suspend fun runJSMethod(method: String, isWait: Boolean, vararg args: Pair<String, Any>): String? {
-        return messageChannel.executeMessage(method, isWait, args.toMap())
+        return backgroundMessageChannel.executeMessage(method, isWait, args.toMap())
     }
 
     override fun subscribeJSEvent(vararg method: String): Flow<ExtensionMessage> {
-        return messageChannel.subscribeMessage(*method).mapNotNull { it }
+        return backgroundMessageChannel.subscribeMessage(*method).mapNotNull { it }
     }
 
     override fun sendJSEventResponse(map: Map<String, Any?>) {
-        messageChannel.sendResponseMessage(map)
+        backgroundMessageChannel.sendResponseMessage(map)
     }
 }
