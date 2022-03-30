@@ -46,10 +46,10 @@ import com.dimension.maskbook.common.route.navigationComposeDialogPackage
 import com.dimension.maskbook.common.routeProcessor.annotations.Back
 import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
 import com.dimension.maskbook.common.routeProcessor.annotations.Path
-import com.dimension.maskbook.common.ui.barcode.ScanQrcodeScene
 import com.dimension.maskbook.common.ui.widget.MaskDialog
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.persona.R
+import com.dimension.maskbook.persona.export.error.PersonaAlreadyExitsError
 import com.dimension.maskbook.persona.ui.scenes.register.CreatePersonaModal
 import com.dimension.maskbook.persona.ui.scenes.register.CreatePersonaScene
 import com.dimension.maskbook.persona.ui.scenes.register.RegisterScene
@@ -59,7 +59,6 @@ import com.dimension.maskbook.persona.ui.scenes.register.recovery.PrivateKeyScen
 import com.dimension.maskbook.persona.ui.scenes.register.recovery.RecoveryHomeScene
 import com.dimension.maskbook.persona.viewmodel.recovery.IdentityViewModel
 import com.dimension.maskbook.persona.viewmodel.recovery.PrivateKeyViewModel
-import com.dimension.maskbook.persona.viewmodel.recovery.SynchronizationViewModel
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
@@ -81,113 +80,8 @@ fun RegisterInit(
             navController.navigate(PersonaRoute.Register.Recovery.Home)
         },
         onSynchronization = {
-            navController.navigate(PersonaRoute.Register.Synchronization.Scan)
+            navController.navigate(PersonaRoute.Synchronization.Scan)
         },
-    )
-}
-
-@NavGraphDestination(
-    route = PersonaRoute.Register.Synchronization.Scan,
-    packageName = navigationComposeAnimComposablePackage,
-    functionName = navigationComposeAnimComposable,
-)
-@Composable
-fun SynchronizationPersona(
-    navController: NavController,
-    @Back onBack: () -> Unit,
-) {
-    val viewModel = getViewModel<SynchronizationViewModel>()
-    val scope = rememberCoroutineScope()
-    ScanQrcodeScene(
-        onBack = onBack,
-        onResult = {
-            scope.launch {
-                viewModel.confirm(it)
-                    .onSuccess {
-                        navController.navigate(
-                            PersonaRoute.Register.Synchronization.Success,
-                            navOptions {
-                                popUpTo(PersonaRoute.Register.Synchronization.Scan) {
-                                    inclusive = true
-                                }
-                            }
-                        )
-                    }
-                    .onFailure {
-                        navController.navigate(
-                            PersonaRoute.Register.Synchronization.Failed,
-                            navOptions {
-                                popUpTo(PersonaRoute.Register.Synchronization.Scan) {
-                                    inclusive = true
-                                }
-                            }
-                        )
-                    }
-            }
-        }
-    )
-}
-
-@NavGraphDestination(
-    route = PersonaRoute.Register.Synchronization.Success,
-    packageName = navigationComposeAnimComposablePackage,
-    functionName = navigationComposeAnimComposable,
-)
-@Composable
-fun SynchronizationSuccess(
-    navController: NavController,
-    @Back onBack: () -> Unit,
-) {
-    MaskDialog(
-        onDismissRequest = onBack,
-        title = {
-            Text("Synchronization Success")
-        },
-        icon = {
-            Image(painter = painterResource(R.drawable.ic_success), contentDescription = "")
-        },
-        buttons = {
-            PrimaryButton(onClick = {
-                navController.navigate(
-                    Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona)),
-                    navOptions {
-                        popUpTo(PersonaRoute.Register.Init) {
-                            inclusive = true
-                        }
-                    }
-                )
-            }, modifier = Modifier.fillMaxWidth()) {
-                Text(stringResource(R.string.common_controls_done))
-            }
-        }
-    )
-}
-
-@NavGraphDestination(
-    route = PersonaRoute.Register.Synchronization.Failed,
-    packageName = navigationComposeAnimComposablePackage,
-    functionName = navigationComposeAnimComposable,
-)
-@Composable
-fun SynchronizationFailed(
-    navController: NavController,
-    @Back onBack: () -> Unit,
-) {
-    MaskDialog(
-        onDismissRequest = onBack,
-        title = {
-            Text("Synchronization Failed")
-        },
-        icon = {
-            Image(painter = painterResource(R.drawable.ic_failed), contentDescription = "")
-        },
-        buttons = {
-            PrimaryButton(onClick = {
-                navController.popBackStack()
-            }, modifier = Modifier.fillMaxWidth()) {
-                Text(stringResource(R.string.common_controls_ok))
-            }
-        }
     )
 }
 
@@ -351,6 +245,8 @@ fun RegisterRecoveryPrivateKey(
     val viewModel: PrivateKeyViewModel = getViewModel()
     val privateKey by viewModel.privateKey.observeAsState()
     val canConfirm by viewModel.canConfirm.observeAsState()
+    val scope = rememberCoroutineScope()
+    val from = stringResource(R.string.scene_identity_privatekey_import_title)
     PrivateKeyScene(
         privateKey = privateKey,
         onPrivateKeyChanged = {
@@ -358,11 +254,29 @@ fun RegisterRecoveryPrivateKey(
         },
         canConfirm = canConfirm,
         onConfirm = {
-            viewModel.onConfirm()
-            navController.navigate(PersonaRoute.Register.Recovery.Complected) {
-                popUpTo(PersonaRoute.Register.Init) {
-                    inclusive = true
-                }
+            scope.launch {
+                viewModel.confirm()
+                    .onSuccess {
+                        navController.navigate(PersonaRoute.Register.Recovery.Complected) {
+                            popUpTo(PersonaRoute.Register.Init) {
+                                inclusive = true
+                            }
+                        }
+                    }.onFailure {
+                        if (it is PersonaAlreadyExitsError) {
+                            navController.navigate(PersonaRoute.Register.Recovery.AlreadyExists(from)) {
+                                popUpTo(PersonaRoute.Register.Init) {
+                                    inclusive = true
+                                }
+                            }
+                        } else {
+                            navController.navigate(PersonaRoute.Register.Recovery.Failed) {
+                                popUpTo(PersonaRoute.Register.Init) {
+                                    inclusive = true
+                                }
+                            }
+                        }
+                    }
             }
         },
         onBack = onBack,

@@ -66,7 +66,6 @@ import com.dimension.maskbook.persona.viewmodel.post.PostViewModel
 import com.dimension.maskbook.persona.viewmodel.recovery.IdentityViewModel
 import com.dimension.maskbook.persona.viewmodel.recovery.PrivateKeyViewModel
 import com.dimension.maskbook.persona.viewmodel.recovery.RecoveryLocalViewModel
-import com.dimension.maskbook.persona.viewmodel.recovery.SynchronizationViewModel
 import com.dimension.maskbook.persona.viewmodel.register.CreateIdentityViewModel
 import com.dimension.maskbook.persona.viewmodel.register.EmailRemoteBackupRecoveryViewModel
 import com.dimension.maskbook.persona.viewmodel.register.PhoneRemoteBackupRecoveryViewModel
@@ -189,7 +188,6 @@ object PersonaSetup : ModuleSetup {
         viewModel { (name: String) -> IdentityViewModel(get(), get(), name) }
         viewModel { PrivateKeyViewModel(get(), get()) }
         viewModel { (personaName: String) -> CreateIdentityViewModel(personaName, get(), get()) }
-        viewModel { SynchronizationViewModel(get()) }
     }
 
     override fun onExtensionReady() {

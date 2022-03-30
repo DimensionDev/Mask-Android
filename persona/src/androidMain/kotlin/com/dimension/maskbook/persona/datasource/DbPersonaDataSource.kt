@@ -20,9 +20,12 @@
  */
 package com.dimension.maskbook.persona.datasource
 
+import android.util.Log
 import androidx.room.withTransaction
 import com.dimension.maskbook.persona.db.PersonaDatabase
 import com.dimension.maskbook.persona.db.model.DbPersonaRecord
+import com.dimension.maskbook.persona.db.model.PersonaPrivateKey
+import com.dimension.maskbook.persona.db.model.PersonaPrivateKey.Companion.encode
 import com.dimension.maskbook.persona.export.model.PersonaData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -85,6 +88,15 @@ class DbPersonaDataSource(private val database: PersonaDatabase) {
 
     suspend fun containsMnemonic(mnemonic: String): Boolean {
         return personaDao.findList().any { it.mnemonic == mnemonic }
+    }
+
+    suspend fun containsPrivateKey(privateKey: String): Boolean {
+        return personaDao.findList().any {
+            Log.d("Mimao", "privateKey:${it.privateKeyData}")
+            Log.d("Mimao", "privateKey encode:${it.privateKeyData?.encode()}")
+            Log.d("Mimao", "decode privateKey:${PersonaPrivateKey.decode(privateKey)}")
+            PersonaPrivateKey.decode(privateKey) == it.privateKeyData
+        }
     }
 
     suspend fun isEmpty(): Boolean {

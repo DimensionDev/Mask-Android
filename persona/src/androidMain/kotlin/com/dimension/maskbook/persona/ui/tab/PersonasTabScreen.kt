@@ -100,6 +100,9 @@ class PersonasTabScreen : TabScreen {
             onPersonaAvatarClick = {
                 navController.navigate(PersonaRoute.PersonaAvatarModal)
             },
+            onSynchronize = {
+                navController.navigate(PersonaRoute.Synchronization.Scan)
+            }
         )
     }
 }

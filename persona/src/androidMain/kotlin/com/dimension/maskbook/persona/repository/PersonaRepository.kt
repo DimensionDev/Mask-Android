@@ -198,9 +198,10 @@ internal class PersonaRepository(
         }
     }
 
-    override suspend fun createPersonaFromPrivateKey(value: String) {
+    override suspend fun createPersonaFromPrivateKey(value: String, name: String) {
         withContext(scope.coroutineContext) {
-            jsMethod.restoreFromPrivateKey(privateKey = value, nickname = "persona1")
+            if (personaDataSource.containsPrivateKey(value)) throw PersonaAlreadyExitsError()
+            jsMethod.restoreFromPrivateKey(privateKey = value, nickname = name)
         }
     }
 

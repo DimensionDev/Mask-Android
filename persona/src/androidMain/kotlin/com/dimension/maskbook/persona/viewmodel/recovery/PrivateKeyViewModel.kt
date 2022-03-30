@@ -27,7 +27,6 @@ import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.wallet.export.WalletServices
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 
 class PrivateKeyViewModel(
     private val personaServices: PersonaServices,
@@ -45,10 +44,9 @@ class PrivateKeyViewModel(
         _privateKey.value = text
     }
 
-    fun onConfirm() {
-        // TODO Mimao UseCase
-        viewModelScope.launch {
-            personaServices.createPersonaFromPrivateKey(_privateKey.value.trim())
+    suspend fun confirm(nickname: String = "persona1"): Result<Unit> {
+        return runCatching {
+            personaServices.createPersonaFromPrivateKey(_privateKey.value.trim(), name = nickname)
         }
     }
 }

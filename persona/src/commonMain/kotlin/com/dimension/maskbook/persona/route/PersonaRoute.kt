@@ -54,14 +54,23 @@ expect object PersonaRoute {
         operator fun invoke(target: String): String
     }
 
+    object Synchronization {
+        const val Scan: String
+        const val Success: String
+        const val Failed: String
+        object Persona {
+            const val AlreadyExists: String
+            object PrivateKey {
+                operator fun invoke(privateKey: String, nickname: String?): String
+            }
+            object Identity {
+                operator fun invoke(identity: String, nickname: String?): String
+            }
+        }
+    }
+
     object Register {
         const val Init: String
-
-        object Synchronization {
-            const val Scan: String
-            const val Success: String
-            const val Failed: String
-        }
 
         object CreateIdentity {
             const val Route: String

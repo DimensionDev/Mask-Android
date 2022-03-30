@@ -18,18 +18,26 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.persona.export
+package com.dimension.maskbook.common.ui.scene
 
-import com.dimension.maskbook.persona.export.model.PersonaData
-import kotlinx.coroutines.flow.Flow
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import com.dimension.maskbook.common.ui.widget.MaskScaffold
+import com.dimension.maskbook.common.ui.widget.MaskScene
 
-interface PersonaServices {
-    val currentPersona: Flow<PersonaData?>
-    suspend fun hasPersona(): Boolean
-    fun updateCurrentPersona(value: String)
-    suspend fun createPersonaFromMnemonic(value: List<String>, name: String)
-    suspend fun createPersonaFromPrivateKey(value: String, name: String)
-    fun connectProfile(personaId: String, profileId: String)
-    fun saveEmailForCurrentPersona(value: String)
-    fun savePhoneForCurrentPersona(value: String)
+@Composable
+fun LoadingScene() {
+    MaskScene {
+        MaskScaffold {
+            Box(Modifier.fillMaxSize()) {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+        }
+    }
 }

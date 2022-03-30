@@ -18,24 +18,30 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.persona.viewmodel.recovery
+package com.dimension.maskbook.common.route
 
-import androidx.lifecycle.ViewModel
-import com.dimension.maskbook.persona.export.PersonaServices
+import com.dimension.maskbook.common.routeProcessor.annotations.Route
 
-class SynchronizationViewModel(
-    private val personaServices: PersonaServices,
-) : ViewModel() {
-    private val prefix = "mask://persona/privatekey/"
-    suspend fun confirm(
-        syncLink: String,
-    ): Result<Unit> {
-        return if (syncLink.startsWith(prefix)) {
-            runCatching {
-                personaServices.createPersonaFromPrivateKey(syncLink.removePrefix(prefix))
-            }
-        } else {
-            Result.failure(Error("Invalid synchronization link"))
-        }
+@Suppress("CONST_VAL_WITHOUT_INITIALIZER")
+@Route(
+    schema = "mask",
+)
+expect object Persona {
+    object PrivateKey {
+        operator fun invoke(privateKey: String, nickname: String?): String
+    }
+
+    object Identity {
+        operator fun invoke(identity: String, nickname: String?): String
+    }
+}
+
+@Suppress("CONST_VAL_WITHOUT_INITIALIZER")
+@Route(
+    schema = "mask",
+)
+expect object Wallet {
+    object PrivateKey {
+        operator fun invoke(privateKey: String, walletname: String?): String
     }
 }

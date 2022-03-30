@@ -42,7 +42,7 @@ interface IPersonaRepository {
     fun connectProfile(personaId: String, profileId: String)
     fun disconnectProfile(personaId: String, profileId: String)
     suspend fun createPersonaFromMnemonic(value: List<String>, name: String)
-    suspend fun createPersonaFromPrivateKey(value: String)
+    suspend fun createPersonaFromPrivateKey(value: String, name: String)
     suspend fun backupPrivateKey(id: String): String
     fun init()
     fun saveEmailForCurrentPersona(value: String)
