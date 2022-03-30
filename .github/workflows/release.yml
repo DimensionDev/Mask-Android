@@ -40,7 +40,7 @@ jobs:
       - name: Fetch maskbook
         run: ./.github/fetch_maskbook.sh
       - name: disable deamon
-        run: mkdir -p ~/.gradle && echo "org.gradle.daemon=false" >> ~/.gradle/gradle.properties`
+        run: mkdir -p ~/.gradle && echo "org.gradle.daemon=false" >> ~/.gradle/gradle.properties
 
       - name: Build with Gradle
         run: ./gradlew assemble --stacktrace
