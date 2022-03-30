@@ -21,12 +21,12 @@
 package com.dimension.maskbook.persona.ui.scenes
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
@@ -36,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.dimension.maskbook.common.ui.widget.HorizontalScenePadding
 import com.dimension.maskbook.common.ui.widget.button.MaskGridButton
 import com.dimension.maskbook.common.ui.widget.itemsGridIndexed
 import com.dimension.maskbook.persona.R
@@ -67,39 +68,41 @@ private val showList = listOf(
     )
 )
 
-fun LazyListScope.EmptySocialScene(
+@Composable
+fun EmptySocialScene(
     onItemClick: (Network) -> Unit
 ) {
-    item {
-        Text(
-            modifier = Modifier.padding(horizontal = 20.dp),
-            text = stringResource(R.string.scene_persona_empty_connect_social),
-            style = MaterialTheme.typography.h5,
-        )
-    }
-    item {
-        Spacer(Modifier.height(PersonaEmptySceneDefaults.itemPadding))
-    }
-    item {
-        Text(
-            modifier = Modifier.padding(horizontal = 20.dp),
-            text = stringResource(R.string.scene_persona_empty_message_tips),
-            style = MaterialTheme.typography.caption,
-        )
-    }
-    item {
-        Spacer(Modifier.height(PersonaEmptySceneDefaults.itemPadding))
-    }
-    itemsGridIndexed(
-        data = showList,
-        spacing = PersonaEmptySceneDefaults.itemPadding,
-        rowSize = 3,
-        padding = 20.dp,
-    ) { _, item ->
-        ConnectItem(
-            item = item,
-            onItemClick = { onItemClick(item.network) }
-        )
+    LazyColumn(
+        contentPadding = PaddingValues(horizontal = HorizontalScenePadding),
+    ) {
+        item {
+            Text(
+                text = stringResource(R.string.scene_persona_empty_connect_social),
+                style = MaterialTheme.typography.h2,
+            )
+        }
+        item {
+            Spacer(Modifier.height(PersonaEmptySceneDefaults.itemPadding))
+        }
+        item {
+            Text(
+                text = stringResource(R.string.scene_persona_empty_message_tips),
+                style = MaterialTheme.typography.subtitle2,
+            )
+        }
+        item {
+            Spacer(Modifier.height(PersonaEmptySceneDefaults.itemPadding))
+        }
+        itemsGridIndexed(
+            data = showList,
+            spacing = PersonaEmptySceneDefaults.itemPadding,
+            rowSize = 3,
+        ) { _, item ->
+            ConnectItem(
+                item = item,
+                onItemClick = { onItemClick(item.network) }
+            )
+        }
     }
 }
 

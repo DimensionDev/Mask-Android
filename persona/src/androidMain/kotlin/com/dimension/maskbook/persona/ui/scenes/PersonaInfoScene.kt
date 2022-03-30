@@ -21,20 +21,18 @@
 package com.dimension.maskbook.persona.ui.scenes
 
 import android.content.Intent
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Tab
@@ -42,7 +40,6 @@ import androidx.compose.material.TabRow
 import androidx.compose.material.TabRowDefaults
 import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material.Text
-import androidx.compose.material.contentColorFor
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.MoreHoriz
@@ -59,13 +56,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import androidx.compose.ui.zIndex
 import coil.compose.rememberImagePainter
+import com.dimension.maskbook.common.ui.widget.HorizontalScenePadding
+import com.dimension.maskbook.common.ui.widget.MaskAnimatedVisibility
 import com.dimension.maskbook.common.ui.widget.MaskCard
 import com.dimension.maskbook.common.ui.widget.MaskListItem
 import com.dimension.maskbook.common.ui.widget.TipMessageDialog
@@ -105,7 +103,6 @@ private val items = listOf(
     PersonaInfoData.Contacts,
 )
 
-@OptIn(ExperimentalPagerApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun PersonaInfoScene(
     socialList: List<SocialData>,
@@ -150,70 +147,66 @@ fun PersonaInfoScene(
             )
         }
 
-        LazyColumn {
-            if (!searchOnly) {
-                item {
-                    PersonaHeader(
-                        currentPersona,
-                        personaList,
-                        onCurrentPersonaChanged,
-                        onPersonaNameClick,
-                        onAvatarClick,
-                    )
-                }
+        Column(Modifier.fillMaxSize()) {
+            MaskAnimatedVisibility(!searchOnly) {
+                PersonaHeader(
+                    currentPersona,
+                    personaList,
+                    onCurrentPersonaChanged,
+                    onPersonaNameClick,
+                    onAvatarClick,
+                )
             }
+
             if (socialList.isEmpty()) {
                 EmptySocialScene(
                     onItemClick = { onAddSocialClick(it) }
                 )
             } else {
-                if (!searchOnly) {
-                    stickyHeader {
-                        TabRow(
-                            modifier = Modifier
-                                .padding(horizontal = 20.dp)
-                                .clip(RoundedCornerShape(8.dp)),
-                            selectedTabIndex = items.indexOf(selectedScene),
-                            backgroundColor = MaterialTheme.colors.onBackground.copy(alpha = 0.04f),
-                            divider = {
-                                TabRowDefaults.Divider(thickness = 0.dp)
-                            },
-                            indicator = { tabPositions ->
-                                Box(
-                                    Modifier
-                                        .tabIndicatorOffset(tabPositions[items.indexOf(selectedScene)])
+                MaskAnimatedVisibility(!searchOnly) {
+                    TabRow(
+                        modifier = Modifier
+                            .padding(horizontal = HorizontalScenePadding)
+                            .clip(RoundedCornerShape(8.dp)),
+                        selectedTabIndex = items.indexOf(selectedScene),
+                        backgroundColor = MaterialTheme.colors.background,
+                        divider = {
+                            TabRowDefaults.Divider(thickness = 0.dp, color = Color.Transparent)
+                        },
+                        indicator = { tabPositions ->
+                            Box(
+                                Modifier
+                                    .tabIndicatorOffset(tabPositions[items.indexOf(selectedScene)])
+                                    .fillMaxSize()
+                                    .padding(4.dp)
+                                    .zIndex(-1f),
+                            ) {
+                                Spacer(
+                                    modifier = Modifier
                                         .fillMaxSize()
-                                        .padding(4.dp)
-                                        .zIndex(-1f),
-                                ) {
-                                    Spacer(
-                                        modifier = Modifier
-                                            .fillMaxSize()
-                                            .background(
-                                                color = MaterialTheme.colors.surface,
-                                                shape = RoundedCornerShape(8.dp)
-                                            )
-                                    )
-                                }
-                            },
-                            tabs = {
-                                items.forEach { data ->
-                                    Tab(
-                                        selected = data == selectedScene,
-                                        text = { Text(data.title) },
-                                        onClick = {
-                                            selectedScene = data
-                                        },
-                                        selectedContentColor = MaterialTheme.colors.primary,
-                                        unselectedContentColor = MaterialTheme.colors.onBackground.copy(
-                                            alpha = ContentAlpha.medium
-                                        ),
-                                    )
-                                }
+                                        .background(
+                                            color = MaterialTheme.colors.surface,
+                                            shape = RoundedCornerShape(8.dp)
+                                        )
+                                )
                             }
-                        )
-                    }
+                        },
+                        tabs = {
+                            items.forEach { data ->
+                                Tab(
+                                    selected = data == selectedScene,
+                                    text = { Text(data.title) },
+                                    onClick = {
+                                        selectedScene = data
+                                    },
+                                    selectedContentColor = Color.Transparent,
+                                    unselectedContentColor = Color.Transparent,
+                                )
+                            }
+                        }
+                    )
                 }
+
                 when (selectedScene) {
                     PersonaInfoData.Social -> {
                         SocialScene(
@@ -230,13 +223,12 @@ fun PersonaInfoScene(
                             input = searchInput,
                             onSearchInputChanged = { viewModel.onInputChanged(it) },
                             onInvite = { onInvite() },
+                            searchOnly = searchOnly,
                             onSearchFocusChanged = { searchOnly = it }
                         )
                     }
                     PersonaInfoData.Post -> {
-                        item {
-                            PostScene()
-                        }
+                        PostScene()
                     }
                 }
             }
@@ -290,49 +282,28 @@ private fun PersonaHeader(
         }
     }
 
-    val selectBackgroundColor = MaterialTheme.colors.primary
-    val unSelectBackgroundColor = MaterialTheme.colors.primary
-    val selectContentColor = contentColorFor(selectBackgroundColor)
-    val unSelectContentColor = contentColorFor(unSelectBackgroundColor)
-
     HorizontalPager(
         state = pagerState,
         count = personaList.size,
-        contentPadding = PaddingValues(20.dp),
+        contentPadding = PaddingValues(35.dp),
     ) { page ->
-        var backgroundColor by remember { mutableStateOf(selectBackgroundColor) }
-        var contentColor by remember { mutableStateOf(selectContentColor) }
         MaskCard(
             modifier = Modifier
                 .graphicsLayer {
                     val pageOffset = calculateCurrentOffsetForPage(page).absoluteValue
                     lerp(
-                        start = 0.9f,
+                        start = 0.85f,
                         stop = 1f,
                         fraction = 1f - pageOffset.coerceIn(0f, 1f)
                     ).also { scale ->
                         scaleX = scale
                         scaleY = scale
                     }
-                    lerp(
-                        start = unSelectBackgroundColor,
-                        stop = selectBackgroundColor,
-                        fraction = 1f - pageOffset.coerceIn(0f, 1f)
-                    ).also { color ->
-                        backgroundColor = color
-                    }
-                    lerp(
-                        start = unSelectContentColor,
-                        stop = selectContentColor,
-                        fraction = 1f - pageOffset.coerceIn(0f, 1f)
-                    ).also { color ->
-                        contentColor = color
-                    }
                 }
                 .fillMaxWidth(),
-            backgroundColor = backgroundColor,
+            backgroundColor = MaterialTheme.colors.primary,
             elevation = 0.dp,
-            contentColor = contentColor,
+            contentColor = Color.White,
         ) {
             val item = personaList.getOrNull(page)
             MaskListItem(
@@ -345,7 +316,7 @@ private fun PersonaHeader(
                         text = item?.identifier ?: "",
                         style = MaterialTheme.typography.body2,
                         maxLines = 2,
-                        color = contentColor,
+                        color = Color.White,
                     )
                 },
                 icon = {
