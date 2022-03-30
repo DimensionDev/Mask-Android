@@ -31,6 +31,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import androidx.navigation.navOptions
+import com.dimension.maskbook.common.ext.decodeBase64
 import com.dimension.maskbook.common.ext.ifNullOrEmpty
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
@@ -50,9 +51,11 @@ import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.export.error.PersonaAlreadyExitsError
 import com.dimension.maskbook.persona.ui.scenes.register.recovery.PersonaAlreadyExitsDialog
+import com.dimension.maskbook.persona.viewmodel.recovery.IdentityViewModel
 import com.dimension.maskbook.persona.viewmodel.recovery.PrivateKeyViewModel
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
+import org.koin.core.parameter.parametersOf
 
 @NavGraphDestination(
     route = PersonaRoute.Synchronization.Scan,
@@ -197,6 +200,30 @@ fun SynchronizationPersonaPrivateKey(
         launch {
             viewModel.setPrivateKey(key)
             navController.handleResult(viewModel.confirm(nickname = nickname.ifNullOrEmpty { "persona1" }), PersonaRoute.Synchronization.Persona.PrivateKey.path)
+        }
+    }
+}
+
+@NavGraphDestination(
+    route = PersonaRoute.Synchronization.Persona.Identity.path,
+    packageName = navigationComposeAnimComposablePackage,
+    functionName = navigationComposeAnimComposable,
+    deeplink = [Persona.Identity.path]
+)
+@Composable
+fun SynchronizationIdentityPrivateKey(
+    navController: NavController,
+    @Path("identity") identity: String,
+    @Query("nickname") nickname: String?,
+) {
+    val viewModel = getViewModel<IdentityViewModel> {
+        parametersOf(nickname.ifNullOrEmpty { "persona1" })
+    }
+    LoadingScene()
+    LaunchedEffect(Unit) {
+        launch {
+            viewModel.setIdentity(identity.decodeBase64())
+            navController.handleResult(viewModel.confirm(), PersonaRoute.Synchronization.Persona.PrivateKey.path)
         }
     }
 }

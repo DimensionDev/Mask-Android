@@ -25,11 +25,9 @@ import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.Validator
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.persona.export.PersonaServices
-import com.dimension.maskbook.persona.export.error.PersonaAlreadyExitsError
 import com.dimension.maskbook.wallet.export.WalletServices
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 
 class IdentityViewModel(
     private val personaServices: PersonaServices,
@@ -48,18 +46,9 @@ class IdentityViewModel(
         _identity.value = text
     }
 
-    fun onConfirm(
-        onSuccess: () -> Unit,
-        onAlreadyExists: () -> Unit,
-    ) {
-        viewModelScope.launch {
-            runCatching {
-                personaServices.createPersonaFromMnemonic(_identity.value.trim().split(" "), name)
-            }.onSuccess {
-                onSuccess.invoke()
-            }.onFailure {
-                if (it is PersonaAlreadyExitsError) onAlreadyExists.invoke()
-            }
+    suspend fun confirm(): Result<Unit> {
+        return runCatching {
+            personaServices.createPersonaFromMnemonic(_identity.value.trim().split(" "), name)
         }
     }
 }

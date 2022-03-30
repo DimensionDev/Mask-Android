@@ -208,6 +208,7 @@ fun RegisterRecoveryIdentity(
     val identity by viewModel.identity.observeAsState()
     val canConfirm by viewModel.canConfirm.observeAsState()
     val from = stringResource(R.string.scene_identity_mnemonic_import_title)
+    val scope = rememberCoroutineScope()
     IdentityScene(
         identity = identity,
         onIdentityChanged = {
@@ -215,18 +216,30 @@ fun RegisterRecoveryIdentity(
         },
         canConfirm = canConfirm,
         onConfirm = {
-            viewModel.onConfirm(
-                onSuccess = {
-                    navController.navigate(PersonaRoute.Register.Recovery.Complected) {
-                        popUpTo(PersonaRoute.Register.Init) {
-                            inclusive = true
+            scope.launch {
+                viewModel.confirm()
+                    .onSuccess {
+                        navController.navigate(PersonaRoute.Register.Recovery.Complected) {
+                            popUpTo(PersonaRoute.Register.Init) {
+                                inclusive = true
+                            }
+                        }
+                    }.onFailure {
+                        if (it is PersonaAlreadyExitsError) {
+                            navController.navigate(PersonaRoute.Register.Recovery.AlreadyExists(from)) {
+                                popUpTo(PersonaRoute.Register.Init) {
+                                    inclusive = true
+                                }
+                            }
+                        } else {
+                            navController.navigate(PersonaRoute.Register.Recovery.Failed) {
+                                popUpTo(PersonaRoute.Register.Init) {
+                                    inclusive = true
+                                }
+                            }
                         }
                     }
-                },
-                onAlreadyExists = {
-                    navController.navigate(PersonaRoute.Register.Recovery.AlreadyExists(from))
-                }
-            )
+            }
         },
         onBack = onBack,
     )
