@@ -169,7 +169,7 @@ fun PersonaInfoScene(
                             .padding(horizontal = HorizontalScenePadding)
                             .clip(RoundedCornerShape(8.dp)),
                         selectedTabIndex = items.indexOf(selectedScene),
-                        backgroundColor = MaterialTheme.colors.background,
+                        backgroundColor = MaterialTheme.colors.onBackground.copy(alpha = 0.04f),
                         divider = {
                             TabRowDefaults.Divider(thickness = 0.dp, color = Color.Transparent)
                         },
