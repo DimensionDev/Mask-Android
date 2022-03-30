@@ -116,7 +116,8 @@ fun SynchronizationSuccess(
                 navController.navigate(
                     Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona)),
                     navOptions {
-                        popUpTo(PersonaRoute.Register.Init) {
+                        launchSingleTop = true
+                        popUpTo(PersonaRoute.Synchronization.Success) {
                             inclusive = true
                         }
                     }
@@ -172,7 +173,8 @@ fun SynchronizationPersonaAlreadyExists(
             navController.navigate(
                 Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona)),
                 navOptions {
-                    popUpTo(PersonaRoute.Register.Init) {
+                    launchSingleTop = true
+                    popUpTo(PersonaRoute.Synchronization.Persona.AlreadyExists) {
                         inclusive = true
                     }
                 }

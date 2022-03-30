@@ -70,6 +70,7 @@ fun PersonaScene(
         EmptyPersonaScene(
             onPersonaCreateClick = onPersonaCreateClick,
             onPersonaRecoveryClick = onPersonaRecoveryClick,
+            onPersonaSynchronizationClick = onSynchronize,
         )
         return
     }
