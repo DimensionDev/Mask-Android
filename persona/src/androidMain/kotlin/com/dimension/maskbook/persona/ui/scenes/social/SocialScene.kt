@@ -137,14 +137,11 @@ private fun AddIcon(
                 height = SocialScreenDefaults.itemHeight,
             ),
         icon = {
-            Icon(
-                imageVector = Icons.Rounded.Add,
+            Image(
+                painter = painterResource(if (enabled) R.drawable.ic_add_social else R.drawable.ic_add_social_closed),
                 contentDescription = null,
                 modifier = Modifier
-                    .size(SocialScreenDefaults.itemIconSize)
-                    .shadow(if (enabled) 6.dp else 0.dp, shape = CircleShape, clip = false)
-                    .background(MaterialTheme.colors.surface, shape = CircleShape)
-                    .padding(10.dp),
+                    .size(SocialScreenDefaults.itemIconSize),
             )
         },
         text = {
