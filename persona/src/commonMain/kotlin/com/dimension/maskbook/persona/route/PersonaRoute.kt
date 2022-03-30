@@ -57,7 +57,11 @@ expect object PersonaRoute {
     object Register {
         const val Init: String
 
-        const val Synchronization: String
+        object Synchronization {
+            const val Scan: String
+            const val Success: String
+            const val Failed: String
+        }
 
         object CreateIdentity {
             const val Route: String

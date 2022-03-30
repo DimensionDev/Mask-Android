@@ -22,11 +22,9 @@ package com.dimension.maskbook.persona.viewmodel.recovery
 
 import androidx.lifecycle.ViewModel
 import com.dimension.maskbook.persona.export.PersonaServices
-import com.dimension.maskbook.wallet.export.WalletServices
 
 class SynchronizationViewModel(
     private val personaServices: PersonaServices,
-    private val walletServices: WalletServices,
 ) : ViewModel() {
     private val prefix = "mask://persona/privatekey/"
     suspend fun confirm(

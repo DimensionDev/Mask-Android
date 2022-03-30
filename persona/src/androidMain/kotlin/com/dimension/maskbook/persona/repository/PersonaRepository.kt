@@ -199,7 +199,9 @@ internal class PersonaRepository(
     }
 
     override suspend fun createPersonaFromPrivateKey(value: String) {
-        jsMethod.restoreFromPrivateKey(privateKey = value, nickname = "persona1")
+        withContext(scope.coroutineContext) {
+            jsMethod.restoreFromPrivateKey(privateKey = value, nickname = "persona1")
+        }
     }
 
     override suspend fun backupPrivateKey(id: String): String {

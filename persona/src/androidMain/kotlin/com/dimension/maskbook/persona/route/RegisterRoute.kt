@@ -28,6 +28,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -58,6 +59,8 @@ import com.dimension.maskbook.persona.ui.scenes.register.recovery.PrivateKeyScen
 import com.dimension.maskbook.persona.ui.scenes.register.recovery.RecoveryHomeScene
 import com.dimension.maskbook.persona.viewmodel.recovery.IdentityViewModel
 import com.dimension.maskbook.persona.viewmodel.recovery.PrivateKeyViewModel
+import com.dimension.maskbook.persona.viewmodel.recovery.SynchronizationViewModel
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -78,26 +81,112 @@ fun RegisterInit(
             navController.navigate(PersonaRoute.Register.Recovery.Home)
         },
         onSynchronization = {
-            navController.navigate(PersonaRoute.Register.Synchronization)
+            navController.navigate(PersonaRoute.Register.Synchronization.Scan)
         },
     )
 }
+
 @NavGraphDestination(
-    route = PersonaRoute.Register.Synchronization,
+    route = PersonaRoute.Register.Synchronization.Scan,
     packageName = navigationComposeAnimComposablePackage,
     functionName = navigationComposeAnimComposable,
 )
 @Composable
 fun SynchronizationPersona(
-    // navController: NavController,
+    navController: NavController,
     @Back onBack: () -> Unit,
 ) {
-    // TODO Mimao  wrap
+    val viewModel = getViewModel<SynchronizationViewModel>()
+    val scope = rememberCoroutineScope()
     ScanQrcodeScene(
         onBack = onBack,
         onResult = {
-            // TODO Mimao failed
-            // TODO Mimao Success
+            scope.launch {
+                viewModel.confirm(it)
+                    .onSuccess {
+                        navController.navigate(
+                            PersonaRoute.Register.Synchronization.Success,
+                            navOptions {
+                                popUpTo(PersonaRoute.Register.Synchronization.Scan) {
+                                    inclusive = true
+                                }
+                            }
+                        )
+                    }
+                    .onFailure {
+                        navController.navigate(
+                            PersonaRoute.Register.Synchronization.Failed,
+                            navOptions {
+                                popUpTo(PersonaRoute.Register.Synchronization.Scan) {
+                                    inclusive = true
+                                }
+                            }
+                        )
+                    }
+            }
+        }
+    )
+}
+
+@NavGraphDestination(
+    route = PersonaRoute.Register.Synchronization.Success,
+    packageName = navigationComposeAnimComposablePackage,
+    functionName = navigationComposeAnimComposable,
+)
+@Composable
+fun SynchronizationSuccess(
+    navController: NavController,
+    @Back onBack: () -> Unit,
+) {
+    MaskDialog(
+        onDismissRequest = onBack,
+        title = {
+            Text("Synchronization Success")
+        },
+        icon = {
+            Image(painter = painterResource(R.drawable.ic_success), contentDescription = "")
+        },
+        buttons = {
+            PrimaryButton(onClick = {
+                navController.navigate(
+                    Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona)),
+                    navOptions {
+                        popUpTo(PersonaRoute.Register.Init) {
+                            inclusive = true
+                        }
+                    }
+                )
+            }, modifier = Modifier.fillMaxWidth()) {
+                Text(stringResource(R.string.common_controls_done))
+            }
+        }
+    )
+}
+
+@NavGraphDestination(
+    route = PersonaRoute.Register.Synchronization.Failed,
+    packageName = navigationComposeAnimComposablePackage,
+    functionName = navigationComposeAnimComposable,
+)
+@Composable
+fun SynchronizationFailed(
+    navController: NavController,
+    @Back onBack: () -> Unit,
+) {
+    MaskDialog(
+        onDismissRequest = onBack,
+        title = {
+            Text("Synchronization Failed")
+        },
+        icon = {
+            Image(painter = painterResource(R.drawable.ic_failed), contentDescription = "")
+        },
+        buttons = {
+            PrimaryButton(onClick = {
+                navController.popBackStack()
+            }, modifier = Modifier.fillMaxWidth()) {
+                Text(stringResource(R.string.common_controls_ok))
+            }
         }
     )
 }
@@ -118,7 +207,12 @@ fun WelcomeCreatePersona(
     CreatePersonaScene(
         onBack = onBack,
         onDone = { name ->
-            navController.navigate(PersonaRoute.Register.CreateIdentity.Backup(name, isWelcome = true))
+            navController.navigate(
+                PersonaRoute.Register.CreateIdentity.Backup(
+                    name,
+                    isWelcome = true
+                )
+            )
         }
     )
 }
@@ -137,7 +231,12 @@ fun CreatePersona(
 ) {
     CreatePersonaModal(
         onDone = { name ->
-            navController.navigate(PersonaRoute.Register.CreateIdentity.Backup(name, isWelcome = false))
+            navController.navigate(
+                PersonaRoute.Register.CreateIdentity.Backup(
+                    name,
+                    isWelcome = false
+                )
+            )
         }
     )
 }
