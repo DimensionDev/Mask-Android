@@ -60,7 +60,7 @@ interface PersonaDao {
     @Query("SELECT * FROM DbPersonaRecord WHERE identifier=:identifier LIMIT 1")
     fun getFlow(identifier: String): Flow<DbPersonaRecord?>
 
-    @Query("SELECT * FROM DbPersonaRecord")
+    @Query("SELECT * FROM DbPersonaRecord WHERE privateKeyRaw IS NOT NULL")
     fun getListFlow(): Flow<List<DbPersonaRecord>>
 
     @Query("UPDATE DbPersonaRecord SET nickname=:nickname WHERE identifier=:identifier")

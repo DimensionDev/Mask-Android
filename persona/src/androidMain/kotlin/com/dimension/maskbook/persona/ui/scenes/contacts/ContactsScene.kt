@@ -20,8 +20,9 @@
  */
 package com.dimension.maskbook.persona.ui.scenes.contacts
 
-import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,23 +31,28 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
+import com.dimension.maskbook.common.ui.widget.HorizontalScenePadding
+import com.dimension.maskbook.common.ui.widget.MaskAnimatedVisibility
 import com.dimension.maskbook.common.ui.widget.MaskListItem
 import com.dimension.maskbook.common.ui.widget.MaskSearchInput
 import com.dimension.maskbook.common.ui.widget.NameImage
@@ -57,48 +63,74 @@ import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.model.ContactData
 import com.dimension.maskbook.persona.model.icon
 
-@OptIn(ExperimentalAnimationApi::class)
-fun LazyListScope.ContactsScene(
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun ContactsScene(
     items: List<ContactData>,
     input: String,
     onSearchInputChanged: (String) -> Unit,
+    searchOnly: Boolean,
     onSearchFocusChanged: (Boolean) -> Unit,
     onInvite: (ContactData?) -> Unit,
 ) {
     if (input.isEmpty() && items.isEmpty()) {
-        item {
-            ContactsEmptyScene(
-                icon = {
-                    Image(
-                        painterResource(id = R.drawable.ic_group_129),
-                        contentDescription = null,
-                    )
-                },
-                text = {
-                    Text(text = stringResource(R.string.scene_persona_contacts_empty_contacts_tips))
-                },
-                trailing = {
-                    PrimaryButton(onClick = { onInvite(null) }) {
-                        Text(text = stringResource(R.string.common_controls_invite))
+        ContactsEmptyScene(
+            icon = {
+                Image(
+                    painterResource(id = R.drawable.ic_group_129),
+                    contentDescription = null,
+                )
+            },
+            text = {
+                Text(text = stringResource(R.string.scene_persona_contacts_empty_contacts_tips))
+            },
+            trailing = {
+                PrimaryButton(onClick = { onInvite(null) }) {
+                    Text(text = stringResource(R.string.common_controls_invite))
+                }
+            }
+        )
+        return
+    }
+
+    LazyColumn(
+        contentPadding = PaddingValues(
+            start = HorizontalScenePadding,
+            end = HorizontalScenePadding,
+            bottom = HorizontalScenePadding,
+        ),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
+        stickyHeader {
+            Row(
+                modifier = Modifier
+                    .background(MaterialTheme.colors.background)
+                    .padding(top = HorizontalScenePadding),
+            ) {
+                MaskSearchInput(
+                    modifier = Modifier.weight(1f),
+                    inputModifier = Modifier
+                        .onFocusChanged {
+                            onSearchFocusChanged.invoke(it.isFocused)
+                        },
+                    value = input,
+                    onValueChanged = { onSearchInputChanged(it) },
+                    placeholder = {
+                        Text(text = stringResource(R.string.scene_persona_contacts_search_account))
+                    }
+                )
+
+                val focusManager = LocalFocusManager.current
+                MaskAnimatedVisibility(searchOnly) {
+                    TextButton(
+                        onClick = {
+                            focusManager.clearFocus()
+                        },
+                    ) {
+                        Text(stringResource(R.string.action_cancel))
                     }
                 }
-            )
-        }
-    } else {
-        item {
-            MaskSearchInput(
-                modifier = Modifier.onFocusChanged {
-                    onSearchFocusChanged.invoke(it.isFocused)
-                },
-                value = input,
-                onValueChanged = { onSearchInputChanged(it) },
-                placeholder = {
-                    Text(text = stringResource(R.string.scene_persona_contacts_search_account))
-                }
-            )
-        }
-        item {
-            Spacer(modifier = Modifier.height(20.dp))
+            }
         }
         if (items.isEmpty()) {
             item {
@@ -145,74 +177,69 @@ fun LazyListScope.ContactsScene(
     items: List<ContactData>,
     onItemClick: (ContactData) -> Unit,
 ) {
-    itemsIndexed(items) { index, item ->
-        Column {
-            MaskButton(onClick = {}) {
-                MaskListItem(
-                    icon = {
-                        Box(contentAlignment = Alignment.BottomEnd) {
-                            if (item.avatar.isEmpty()) {
-                                NameImage(
-                                    name = item.name,
-                                    modifier = Modifier.size(38.dp),
-                                )
-                            } else {
-                                Image(
-                                    painter = rememberImagePainter(item.avatar),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(38.dp).clip(shape = CircleShape),
-                                )
-                            }
+    items(items) { item ->
+        MaskButton(onClick = {}) {
+            MaskListItem(
+                icon = {
+                    Box(contentAlignment = Alignment.BottomEnd) {
+                        if (item.avatar.isEmpty()) {
+                            NameImage(
+                                name = item.name,
+                                modifier = Modifier.size(38.dp),
+                            )
+                        } else {
                             Image(
-                                painter = painterResource(item.network.icon),
+                                painter = rememberImagePainter(item.avatar),
                                 contentDescription = null,
-                                modifier = Modifier
-                                    .size(16.dp)
-                                    .border(1.dp, MaterialTheme.colors.background, shape = CircleShape)
-                                    .clip(shape = CircleShape),
+                                modifier = Modifier.size(38.dp).clip(shape = CircleShape),
                             )
                         }
-                    },
-                    text = {
-                        Row {
-                            SinglelineText(
-                                text = item.name,
-                                modifier = Modifier.weight(1f, fill = false),
+                        Image(
+                            painter = painterResource(item.network.icon),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(16.dp)
+                                .border(1.dp, MaterialTheme.colors.background, shape = CircleShape)
+                                .clip(shape = CircleShape),
+                        )
+                    }
+                },
+                text = {
+                    Row {
+                        SinglelineText(
+                            text = item.name,
+                            modifier = Modifier.weight(1f, fill = false),
+                        )
+                        Spacer(Modifier.width(4.dp))
+                        if (item.linkedPersona) {
+                            Image(
+                                painter = painterResource(R.drawable.mask),
+                                contentDescription = null,
+                                modifier = Modifier.size(20.dp),
                             )
-                            Spacer(Modifier.width(4.dp))
-                            if (item.linkedPersona) {
-                                Image(
-                                    painter = painterResource(R.drawable.mask),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(20.dp),
-                                )
-                            }
-                        }
-                    },
-                    secondaryText = {
-                        Text(text = '@' + item.id.substringAfter('/'))
-                    },
-                    trailing = {
-                        if (!item.linkedPersona) {
-                            PrimaryButton(
-                                onClick = { onItemClick(item) },
-                                contentPadding = PaddingValues(
-                                    horizontal = 16.dp,
-                                    vertical = 5.5.dp
-                                ),
-                            ) {
-                                Text(
-                                    text = stringResource(R.string.common_controls_invite),
-                                    style = MaterialTheme.typography.caption,
-                                )
-                            }
                         }
                     }
-                )
-            }
-            if (index != items.lastIndex) {
-                Spacer(modifier = Modifier.height(16.dp))
-            }
+                },
+                secondaryText = {
+                    Text(text = '@' + item.id.substringAfter('/'))
+                },
+                trailing = {
+                    if (!item.linkedPersona) {
+                        PrimaryButton(
+                            onClick = { onItemClick(item) },
+                            contentPadding = PaddingValues(
+                                horizontal = 16.dp,
+                                vertical = 5.5.dp
+                            ),
+                        ) {
+                            Text(
+                                text = stringResource(R.string.common_controls_invite),
+                                style = MaterialTheme.typography.caption,
+                            )
+                        }
+                    }
+                }
+            )
         }
     }
 }

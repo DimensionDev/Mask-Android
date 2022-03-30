@@ -25,28 +25,26 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Remove
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -54,6 +52,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
+import com.dimension.maskbook.common.ui.widget.HorizontalScenePadding
 import com.dimension.maskbook.common.ui.widget.NameImage
 import com.dimension.maskbook.common.ui.widget.button.MaskGridButton
 import com.dimension.maskbook.common.ui.widget.itemsGridIndexed
@@ -62,57 +61,64 @@ import com.dimension.maskbook.persona.export.model.Network
 import com.dimension.maskbook.persona.export.model.SocialData
 import com.dimension.maskbook.persona.model.icon
 
-fun LazyListScope.SocialScene(
+@Composable
+fun SocialScene(
     isEditing: Boolean,
     setIsEditing: (Boolean) -> Unit,
     socialList: List<SocialData?>,
     onAddSocialClick: () -> Unit,
     onItemClick: (SocialData, isEditing: Boolean) -> Unit,
 ) {
-    item {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                text = stringResource(R.string.scene_persona_social_accounts),
-                style = MaterialTheme.typography.h5,
-            )
-            TextButton(
-                onClick = {
-                    setIsEditing(!isEditing)
-                }
+    LazyColumn(
+        contentPadding = PaddingValues(horizontal = HorizontalScenePadding),
+    ) {
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = if (isEditing) {
-                        SocialScreenDefaults.done
-                    } else {
-                        SocialScreenDefaults.edit
-                    },
-                    color = MaterialTheme.colors.primary,
+                    text = stringResource(R.string.scene_persona_social_accounts),
+                    style = MaterialTheme.typography.h5,
                 )
+                IconButton(
+                    onClick = {
+                        setIsEditing(!isEditing)
+                    }
+                ) {
+                    Image(
+                        painter = painterResource(
+                            if (isEditing) {
+                                R.drawable.ic_edit_social_finish
+                            } else {
+                                R.drawable.ic_edit_social
+                            }
+                        ),
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp),
+                    )
+                }
             }
         }
-    }
-    itemsGridIndexed(
-        data = socialList,
-        rowSize = 3,
-        padding = 20.dp,
-    ) { _, item ->
-        if (item == null) {
-            AddIcon(
-                enabled = !isEditing,
-                onClick = onAddSocialClick
-            )
-        } else {
-            SocialItem(
-                item = item,
-                onItemClick = {
-                    onItemClick(item, isEditing)
-                },
-                isEditing = isEditing,
-            )
+        itemsGridIndexed(
+            data = socialList,
+            rowSize = 3,
+        ) { _, item ->
+            if (item == null) {
+                AddIcon(
+                    enabled = !isEditing,
+                    onClick = onAddSocialClick
+                )
+            } else {
+                SocialItem(
+                    item = item,
+                    onItemClick = {
+                        onItemClick(item, isEditing)
+                    },
+                    isEditing = isEditing,
+                )
+            }
         }
     }
 }
@@ -131,14 +137,11 @@ private fun AddIcon(
                 height = SocialScreenDefaults.itemHeight,
             ),
         icon = {
-            Icon(
-                imageVector = Icons.Rounded.Add,
+            Image(
+                painter = painterResource(if (enabled) R.drawable.ic_add_social else R.drawable.ic_add_social_closed),
                 contentDescription = null,
                 modifier = Modifier
-                    .size(SocialScreenDefaults.itemIconSize)
-                    .shadow(if (enabled) 6.dp else 0.dp, shape = CircleShape, clip = false)
-                    .background(MaterialTheme.colors.surface, shape = CircleShape)
-                    .padding(10.dp),
+                    .size(SocialScreenDefaults.itemIconSize),
             )
         },
         text = {
