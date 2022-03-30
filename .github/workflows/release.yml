@@ -39,9 +39,11 @@ jobs:
           node-version: '16'
       - name: Fetch maskbook
         run: ./.github/fetch_maskbook.sh
+      - name: disable deamon
+        run: mkdir -p ~/.gradle && echo "org.gradle.daemon=false" >> ~/.gradle/gradle.properties`
 
       - name: Build with Gradle
-        run: ./gradlew assemble --no-daemon --stacktrace
+        run: ./gradlew assemble --stacktrace
 
       - name: Archive android artifacts
         uses: actions/upload-artifact@v2
