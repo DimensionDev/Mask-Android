@@ -48,6 +48,7 @@ interface ISettingsRepository {
         noWallets: Boolean = false,
         noPersonas: Boolean = false,
         noProfiles: Boolean = false,
+        noRelations: Boolean = false,
         hasPrivateKeyOnly: Boolean = false,
     ): String
     fun setShouldShowLegalScene(value: Boolean)

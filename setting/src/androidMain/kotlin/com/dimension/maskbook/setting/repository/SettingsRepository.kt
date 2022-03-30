@@ -20,11 +20,15 @@
  */
 package com.dimension.maskbook.setting.repository
 
+import com.dimension.maskbook.common.ext.decodeJson
+import com.dimension.maskbook.common.ext.encodeJson
+import com.dimension.maskbook.labs.export.model.AppKey
 import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.setting.data.JSDataSource
 import com.dimension.maskbook.setting.data.JSMethod
 import com.dimension.maskbook.setting.data.SettingDataSource
 import com.dimension.maskbook.setting.export.model.Appearance
+import com.dimension.maskbook.setting.export.model.BackupJSONFile
 import com.dimension.maskbook.setting.export.model.BackupMeta
 import com.dimension.maskbook.setting.export.model.DataProvider
 import com.dimension.maskbook.setting.export.model.Language
@@ -82,39 +86,35 @@ internal class SettingsRepository(
         settingDataSource.setShouldShowLegalScene(value)
     }
 
-    override suspend fun provideBackupMeta(): BackupMeta? {
-        return jsMethod.createBackupJson().let { json ->
-            jsMethod.getBackupPreviewInfo(json)?.let {
-                BackupMeta(
-                    personas = it.personas,
-                    associatedAccount = it.accounts,
-                    encryptedPost = it.posts,
-                    contacts = it.contacts,
-                    file = it.files,
-                    wallet = it.wallets,
-                    json = json,
-                    account = "",
-                )
-            }
+    override suspend fun provideBackupMeta(): BackupMeta {
+        return createBackupJson(
+            noPosts = false,
+            noWallets = false,
+            noPersonas = false,
+            noProfiles = false,
+            hasPrivateKeyOnly = false,
+        ).let {
+            provideBackupMetaFromJson(it)
         }
     }
 
-    override suspend fun provideBackupMetaFromJson(value: String): BackupMeta? {
-        return jsMethod.getBackupPreviewInfo(value)?.let {
+    override suspend fun provideBackupMetaFromJson(value: String): BackupMeta {
+        return value.decodeJson<BackupJSONFile>().let { json ->
             BackupMeta(
-                personas = it.personas,
-                associatedAccount = it.accounts,
-                encryptedPost = it.posts,
-                contacts = it.contacts,
-                file = it.files,
-                wallet = it.wallets,
+                personas = json.personas.size,
+                associatedAccount = json.personas.sumOf { it.linkedProfiles.size },
+                encryptedPost = json.posts.size,
+                contacts = json.profiles.size,
+                file = json.plugin?.count { it.key == AppKey.FileService.id } ?: 0,
+                wallet = json.wallets.size,
                 json = value,
-                account = "",
+                account = ""
             )
         }
     }
 
     override suspend fun restoreBackupFromJson(value: String) {
+        val file = value.decodeJson<BackupJSONFile>()
         jsMethod.restoreBackup(value)
         jsDataSource.initData()
         // personaServices.refreshPersonaData()
@@ -125,11 +125,63 @@ internal class SettingsRepository(
         noWallets: Boolean,
         noPersonas: Boolean,
         noProfiles: Boolean,
+        noRelations: Boolean,
         hasPrivateKeyOnly: Boolean
     ): String {
-        return jsMethod.createBackupJson(
-            noPosts, noWallets, noPersonas, noProfiles, hasPrivateKeyOnly
-        )
+        val personas = if (noPersonas) {
+            emptyList()
+        } else {
+            backupPersona(hasPrivateKeyOnly)
+        }
+        val profile = if (noProfiles) {
+            emptyList()
+        } else {
+            backProfiles()
+        }
+        val wallets = if (noWallets) {
+            emptyList()
+        } else {
+            backupWallets()
+        }
+        val posts = if (noPosts) {
+            emptyList()
+        } else {
+            backupPosts()
+        }
+        val relations = if (noRelations) {
+            emptyList()
+        } else {
+            backupRelations()
+        }
+        return BackupJSONFile(
+            personas = personas,
+            wallets = wallets,
+            posts = posts,
+            profiles = profile,
+            meta = BackupJSONFile.Meta.Default,
+            grantedHostPermissions = emptyList(),
+            relations = relations,
+        ).encodeJson()
+    }
+
+    private fun backupRelations(): List<BackupJSONFile.Relation> {
+        TODO("Not yet implemented")
+    }
+
+    private fun backupPosts(): List<BackupJSONFile.Post> {
+        TODO("Not yet implemented")
+    }
+
+    private fun backupWallets(): List<BackupJSONFile.Wallet> {
+        TODO("Not yet implemented")
+    }
+
+    private fun backProfiles(): List<BackupJSONFile.Profile> {
+        TODO("Not yet implemented")
+    }
+
+    private fun backupPersona(hasPrivateKeyOnly: Boolean): List<BackupJSONFile.Persona> {
+        TODO("Not yet implemented")
     }
 
     override fun saveEmailForCurrentPersona(value: String) {
