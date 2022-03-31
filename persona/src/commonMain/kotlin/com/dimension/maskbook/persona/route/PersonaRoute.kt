@@ -34,6 +34,7 @@ expect object PersonaRoute {
         operator fun invoke(personaId: String): String
     }
     const val ExportPrivateKey: String
+    const val DownloadQrCode: String
     object SelectPlatform {
         operator fun invoke(personaId: String): String
     }

@@ -27,8 +27,10 @@ import com.dimension.maskbook.persona.db.model.DbPersonaRecord
 import com.dimension.maskbook.persona.db.model.PersonaPrivateKey
 import com.dimension.maskbook.persona.db.model.PersonaPrivateKey.Companion.encode
 import com.dimension.maskbook.persona.export.model.PersonaData
+import com.dimension.maskbook.persona.export.model.PersonaQrCode
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import org.koin.core.definition.indexKey
 
 class DbPersonaDataSource(private val database: PersonaDatabase) {
 
@@ -109,6 +111,16 @@ class DbPersonaDataSource(private val database: PersonaDatabase) {
 
     suspend fun updateAvatar(identifier: String, avatar: String?) {
         personaDao.updateAvatar(identifier, avatar)
+    }
+
+    suspend fun getPersonaQrCode(identifier: String) = database.personaDao().find(identifier)?.let {
+        PersonaQrCode(
+            nickName = it.nickname.orEmpty(),
+            identifier = it.identifier,
+            privateKeyBase64 = it.privateKeyData?.encode() ?: return null,
+            identityWords = it.mnemonic.orEmpty(),
+            avatar = it.avatar
+        )
     }
 }
 

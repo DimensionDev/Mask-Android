@@ -171,6 +171,31 @@ fun PersonaMenuScene(
                         modifier = Modifier.fillMaxWidth(),
                         elevation = 0.dp,
                         onClick = {
+                            // first check if it has backup password
+                            if (backupPassword.isEmpty()) {
+                                navController.navigate(Uri.parse(Deeplinks.Setting.SetupPasswordDialog))
+                            } else {
+                                navController.navigate(Uri.parse(Deeplinks.Persona.BackUpPassword(PersonaRoute.DownloadQrCode)))
+                            }
+                        }
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Image(
+                                painterResource(id = R.drawable.ic_download),
+                                contentDescription = null
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(text = "Download Persona QR Code")
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                    MaskCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        elevation = 0.dp,
+                        onClick = {
                             navController.navigate(
                                 Uri.parse(if (backupPassword.isEmpty() || paymentPassword.isEmpty()) Deeplinks.Setting.SetupPasswordDialog else Deeplinks.Setting.BackupData.BackupSelection)
                             )

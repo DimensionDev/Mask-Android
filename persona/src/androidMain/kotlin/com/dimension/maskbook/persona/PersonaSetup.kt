@@ -55,6 +55,7 @@ import com.dimension.maskbook.persona.ui.scenes.register.createidentity.createId
 import com.dimension.maskbook.persona.ui.scenes.register.recovery.local.recoveryLocalRoute
 import com.dimension.maskbook.persona.ui.tab.PersonasTabScreen
 import com.dimension.maskbook.persona.viewmodel.BackUpPasswordViewModel
+import com.dimension.maskbook.persona.viewmodel.DownloadQrCodeViewModel
 import com.dimension.maskbook.persona.viewmodel.ExportPrivateKeyViewModel
 import com.dimension.maskbook.persona.viewmodel.PersonaMenuViewModel
 import com.dimension.maskbook.persona.viewmodel.PersonaViewModel
@@ -188,6 +189,7 @@ object PersonaSetup : ModuleSetup {
         viewModel { (name: String) -> IdentityViewModel(get(), get(), name) }
         viewModel { PrivateKeyViewModel(get(), get()) }
         viewModel { (personaName: String) -> CreateIdentityViewModel(personaName, get(), get()) }
+        viewModel { DownloadQrCodeViewModel(get(), get()) }
     }
 
     override fun onExtensionReady() {
