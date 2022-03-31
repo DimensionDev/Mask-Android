@@ -25,11 +25,20 @@ import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import androidx.fragment.app.FragmentActivity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import mozilla.components.browser.engine.gecko.GeckoEngine
 import mozilla.components.browser.state.action.BrowserAction
 import mozilla.components.browser.state.engine.EngineMiddleware
@@ -48,7 +57,7 @@ import org.json.JSONObject
 import org.mozilla.geckoview.GeckoRuntime
 import java.io.Closeable
 
-private const val BackgroundPortName = "browser"
+private const val PortName = "browser"
 private const val TAG = "WebContentController"
 
 private class MessageHolder : MessageHandler {
@@ -81,16 +90,25 @@ private class MessageHolder : MessageHandler {
 
 class WebContentController(
     context: Context,
+    private val scope: CoroutineScope,
     var onNavigate: (String) -> Boolean = { true },
 ) : Closeable {
+    private val _browserState = MutableStateFlow<BrowserState?>(null)
     private lateinit var _observer: Store.Subscription<BrowserState, BrowserAction>
-    private val backgroundMessageHolder = MessageHolder()
-    val backgroundMessage = backgroundMessageHolder.message.map {
+    private val _activeTabId = _browserState.mapNotNull { it?.selectedTab?.id }
+    private val _contentMessageHolders = MutableStateFlow(mapOf<String, MessageHolder>())
+    private val _backgroundMessageHolder = MessageHolder()
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val contentMessage: Flow<JSONObject> =
+        combine(_contentMessageHolders, _activeTabId) { holders, activeTabId ->
+            holders[activeTabId]?.message
+        }.mapNotNull { it }.flatMapLatest { it }
+    val backgroundMessage = _backgroundMessageHolder.message.map {
         Log.i(TAG, "onBackgroundMessage: $it")
         it
     }
-    val isExtensionConnected = backgroundMessageHolder.connected
-    private val _browserState = MutableStateFlow<BrowserState?>(null)
+    val isExtensionConnected = _backgroundMessageHolder.connected
     private val runtime by lazy {
         GeckoRuntime.create(context)
     }
@@ -155,8 +173,28 @@ class WebContentController(
         engine.installWebExtension(
             id,
             url,
-            onSuccess = {
-                it.registerBackgroundMessageHandler(BackgroundPortName, backgroundMessageHolder)
+            onSuccess = { extension ->
+                extension.registerBackgroundMessageHandler(PortName, _backgroundMessageHolder)
+                _browserState.mapNotNull { it?.tabs }.onEach { list ->
+                    list.forEach { tab ->
+                        tab.engineState.engineSession?.let { session ->
+                            if (!extension.hasContentMessageHandler(session, PortName)) {
+                                val holder = MessageHolder()
+                                _contentMessageHolders.value += tab.id to holder
+                                extension.registerContentMessageHandler(
+                                    session,
+                                    PortName,
+                                    holder,
+                                )
+                            }
+                        }
+                    }
+                }.launchIn(scope)
+                _browserState.mapNotNull { it?.closedTabs }.onEach { list ->
+                    list.forEach { tab ->
+                        _contentMessageHolders.value -= tab.id
+                    }
+                }.launchIn(scope)
             }
         )
     }
@@ -193,8 +231,19 @@ class WebContentController(
         runtime.shutdown()
     }
 
+    fun sendContentMessage(message: JSONObject) {
+        Log.i(TAG, "sendContentMessage: $message")
+        scope.launch {
+            _contentMessageHolders.firstOrNull()?.let { holders ->
+                _activeTabId.firstOrNull()?.let { tabId ->
+                    holders[tabId]?.sendMessage(message)
+                }
+            }
+        }
+    }
+
     fun sendBackgroundMessage(message: JSONObject) {
         Log.i(TAG, "sendBackgroundMessage: $message")
-        backgroundMessageHolder.sendMessage(message)
+        _backgroundMessageHolder.sendMessage(message)
     }
 }

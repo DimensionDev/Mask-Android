@@ -92,7 +92,7 @@ class JSMethodV2(
             }
         }
 
-        services.subscribeJSEvent(*methods)
+        services.subscribeBackgroundJSEvent(*methods)
             .onEach {
                 subscribeWithPersona(it) ||
                     subscribeWithProfile(it) ||

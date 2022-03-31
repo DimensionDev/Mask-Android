@@ -24,7 +24,7 @@ import com.dimension.maskbook.extension.export.ExtensionServices
 
 suspend inline fun <reified T : Any> ExtensionServices.execute(method: String, vararg args: Pair<String, Any>): T? {
     val isWait = T::class != Unit::class
-    val result = runJSMethod(method, isWait, *args) ?: return null
+    val result = runBackgroundJSMethod(method, isWait, *args) ?: return null
     return when (T::class) {
         Short::class -> result.toShortOrNull() as T?
         Int::class -> result.toIntOrNull() as T?

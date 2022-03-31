@@ -139,3 +139,15 @@ internal class BackgroundMessageChannel(
         controller.sendBackgroundMessage(message)
     }
 }
+
+internal class ContentMessageChannel(
+    private val controller: WebContentController,
+    scope: CoroutineScope,
+) : MessageChannel(
+    flow = controller.contentMessage,
+    scope = scope,
+) {
+    override fun sendMessage(message: JSONObject) {
+        controller.sendContentMessage(message)
+    }
+}

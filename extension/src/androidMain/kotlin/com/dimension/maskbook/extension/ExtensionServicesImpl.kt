@@ -25,6 +25,7 @@ import com.dimension.maskbook.extension.export.model.ExtensionMessage
 import com.dimension.maskbook.extension.export.model.Site
 import com.dimension.maskbook.extension.repository.ExtensionRepository
 import com.dimension.maskbook.extension.utils.BackgroundMessageChannel
+import com.dimension.maskbook.extension.utils.ContentMessageChannel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.mapNotNull
@@ -32,6 +33,7 @@ import kotlinx.coroutines.flow.mapNotNull
 internal class ExtensionServicesImpl(
     private val repository: ExtensionRepository,
     private val backgroundMessageChannel: BackgroundMessageChannel,
+    private val contentMessageChannel: ContentMessageChannel,
 ) : ExtensionServices {
     override val site: Flow<Site>
         get() = repository.currentSite
@@ -47,15 +49,31 @@ internal class ExtensionServicesImpl(
         isExtensionActive.first { it }
     }
 
-    override suspend fun runJSMethod(method: String, isWait: Boolean, vararg args: Pair<String, Any>): String? {
+    override suspend fun runBackgroundJSMethod(method: String, isWait: Boolean, vararg args: Pair<String, Any>): String? {
         return backgroundMessageChannel.executeMessage(method, isWait, args.toMap())
     }
 
-    override fun subscribeJSEvent(vararg method: String): Flow<ExtensionMessage> {
+    override fun subscribeBackgroundJSEvent(vararg method: String): Flow<ExtensionMessage> {
         return backgroundMessageChannel.subscribeMessage(*method).mapNotNull { it }
     }
 
-    override fun sendJSEventResponse(map: Map<String, Any?>) {
+    override fun sendBackgroundJSEventResponse(map: Map<String, Any?>) {
         backgroundMessageChannel.sendResponseMessage(map)
+    }
+
+    override suspend fun runCurrentContentJSMethod(
+        method: String,
+        isWait: Boolean,
+        vararg args: Pair<String, Any>
+    ): String? {
+        return contentMessageChannel.executeMessage(method, isWait, args.toMap())
+    }
+
+    override fun sendCurrentContentJSEventResponse(map: Map<String, Any?>) {
+        contentMessageChannel.sendResponseMessage(map)
+    }
+
+    override fun subscribeCurrentContentJSEvent(vararg method: String): Flow<ExtensionMessage> {
+        return contentMessageChannel.subscribeMessage(*method).mapNotNull { it }
     }
 }
