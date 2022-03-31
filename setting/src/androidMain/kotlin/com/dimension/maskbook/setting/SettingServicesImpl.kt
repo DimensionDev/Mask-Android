@@ -23,6 +23,7 @@ package com.dimension.maskbook.setting
 import com.dimension.maskbook.setting.export.BackupServices
 import com.dimension.maskbook.setting.export.SettingServices
 import com.dimension.maskbook.setting.export.model.Appearance
+import com.dimension.maskbook.setting.export.model.BackupFileMeta
 import com.dimension.maskbook.setting.export.model.BackupMeta
 import com.dimension.maskbook.setting.export.model.BackupMetaFile
 import com.dimension.maskbook.setting.repository.BackupRepository
@@ -68,12 +69,12 @@ class SettingServicesImpl(
         settingsRepository.restoreBackup(value)
     }
 
-    override suspend fun downloadBackupWithPhone(phone: String, code: String): String {
-        return backupRepository.downloadBackupWithPhone(phone, code).toString()
+    override suspend fun downloadBackupWithPhone(phone: String, code: String): BackupFileMeta {
+        return backupRepository.downloadBackupWithPhone(phone, code)
     }
 
-    override suspend fun downloadBackupWithEmail(email: String, code: String): String {
-        return backupRepository.downloadBackupWithEmail(email, code).toString()
+    override suspend fun downloadBackupWithEmail(email: String, code: String): BackupFileMeta {
+        return backupRepository.downloadBackupWithEmail(email, code)
     }
 
     override suspend fun validatePhoneCode(phone: String, code: String) {

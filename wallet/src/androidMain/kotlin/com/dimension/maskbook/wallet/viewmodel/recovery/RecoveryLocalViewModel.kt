@@ -24,11 +24,15 @@ import android.content.ContentResolver
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dimension.maskbook.common.ext.Validator
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.setting.export.BackupServices
+import com.dimension.maskbook.setting.export.SettingServices
 import com.dimension.maskbook.setting.export.model.BackupMeta
 import com.dimension.maskbook.setting.export.model.BackupMetaFile
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class RecoveryLocalViewModel(
@@ -36,6 +40,7 @@ class RecoveryLocalViewModel(
     private val uri: String,
     private val account: String,
     private val contentResolver: ContentResolver,
+    private val settingServices: SettingServices,
 ) : ViewModel() {
     enum class LoadState {
         Loading,
@@ -52,7 +57,12 @@ class RecoveryLocalViewModel(
     val password = _password.asStateIn(viewModelScope, "")
     private val _passwordError = MutableStateFlow(false)
     val passwordError = _passwordError.asStateIn(viewModelScope, false)
-    private var file: BackupMetaFile? = null
+    private val _file = MutableStateFlow<BackupMetaFile?>(null)
+    val file = _file.asStateIn(viewModelScope, null)
+    val passwordValid = password.map { Validator.isValidPasswordFormat(it) }
+    val paymentPassword by lazy {
+        settingServices.paymentPassword
+    }
 
     init {
         loading()
@@ -75,7 +85,7 @@ class RecoveryLocalViewModel(
                 _loadState.value = LoadState.Failed
                 return@launch
             }
-            file = data
+            _file.value = data
             _meta.value = backupServices.provideBackupMeta(data)
             _loadState.value = LoadState.Success
         } catch (e: Throwable) {
@@ -87,7 +97,7 @@ class RecoveryLocalViewModel(
 
     fun restore() = viewModelScope.launch {
         try {
-            file?.let { backupServices.restoreBackup(it) }
+            file.firstOrNull()?.let { backupServices.restoreBackup(it) }
         } catch (e: Throwable) {
         }
     }

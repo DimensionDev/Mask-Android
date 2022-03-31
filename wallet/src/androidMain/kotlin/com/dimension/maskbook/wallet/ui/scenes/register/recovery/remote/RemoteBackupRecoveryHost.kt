@@ -107,13 +107,21 @@ fun RegisterRecoveryRemoteBackupRecoveryRemoteBackupRecoveryEmailCode(
 ) {
     val requestNavigate: (RemoteBackupRecoveryViewModelBase.NavigateArgs) -> Unit = {
         when (it.target) {
-            RemoteBackupRecoveryViewModelBase.NavigateTarget.NoBackup -> navController.navigate(
-                WalletRoute.Register.Recovery.RemoteBackupRecovery.RemoteBackupRecovery_NoBackup
-            )
-            RemoteBackupRecoveryViewModelBase.NavigateTarget.RestoreBackup -> navController.navigate(
-                WalletRoute.Register.Recovery.LocalBackup.Loading(it.value, email)
-            )
-            else -> Unit
+            RemoteBackupRecoveryViewModelBase.NavigateTarget.NoBackup -> {
+                navController.navigate(
+                    WalletRoute.Register.Recovery.RemoteBackupRecovery.RemoteBackupRecovery_NoBackup
+                )
+            }
+            RemoteBackupRecoveryViewModelBase.NavigateTarget.RestoreBackup -> {
+                if (it is RemoteBackupRecoveryViewModelBase.BackupFileMetaNavigateArgs) {
+                    navController.navigate(
+                        WalletRoute.Register.Recovery.LocalBackup.Loading(it.backupFileMeta.url, it.backupFileMeta.uploaded_at, it.backupFileMeta.abstract, email)
+                    )
+                }
+            }
+            else -> {
+                Unit
+            }
         }
     }
     val viewModel = getViewModel<EmailRemoteBackupRecoveryViewModel> {
@@ -153,7 +161,9 @@ fun RegisterRecoveryRemoteBackupRecoveryRemoteBackupRecoveryEmail(
     navController: NavController,
 ) {
     val requestNavigate: (RemoteBackupRecoveryViewModelBase.NavigateArgs) -> Unit = {
-        navController.navigate(WalletRoute.Register.Recovery.RemoteBackupRecovery.RemoteBackupRecovery_Email_Code(it.value))
+        if (it is RemoteBackupRecoveryViewModelBase.StringNavigateArgs) {
+            navController.navigate(WalletRoute.Register.Recovery.RemoteBackupRecovery.RemoteBackupRecovery_Email_Code(it.value))
+        }
     }
     val viewModel = getViewModel<EmailRemoteBackupRecoveryViewModel> {
         parametersOf(requestNavigate)
@@ -221,13 +231,21 @@ fun RegisterRecoveryRemoteBackupRecoveryRemoteBackupRecoveryPhoneCode(
 ) {
     val requestNavigate: (RemoteBackupRecoveryViewModelBase.NavigateArgs) -> Unit = {
         when (it.target) {
-            RemoteBackupRecoveryViewModelBase.NavigateTarget.NoBackup -> navController.navigate(
-                WalletRoute.Register.Recovery.RemoteBackupRecovery.RemoteBackupRecovery_NoBackup
-            )
-            RemoteBackupRecoveryViewModelBase.NavigateTarget.RestoreBackup -> navController.navigate(
-                WalletRoute.Register.Recovery.LocalBackup.Loading(it.value, phone)
-            )
-            else -> Unit
+            RemoteBackupRecoveryViewModelBase.NavigateTarget.NoBackup -> {
+                navController.navigate(
+                    WalletRoute.Register.Recovery.RemoteBackupRecovery.RemoteBackupRecovery_NoBackup
+                )
+            }
+            RemoteBackupRecoveryViewModelBase.NavigateTarget.RestoreBackup -> {
+                if (it is RemoteBackupRecoveryViewModelBase.BackupFileMetaNavigateArgs) {
+                    navController.navigate(
+                        WalletRoute.Register.Recovery.LocalBackup.Loading(it.backupFileMeta.url, it.backupFileMeta.uploaded_at, it.backupFileMeta.abstract, phone)
+                    )
+                }
+            }
+            else -> {
+                Unit
+            }
         }
     }
     val viewModel = getViewModel<PhoneRemoteBackupRecoveryViewModel> {
@@ -310,7 +328,9 @@ fun RegisterRecoveryRemoteBackupRecoveryRemoteBackupRecoveryPhone(
     navController: NavController,
 ) {
     val requestNavigate: (RemoteBackupRecoveryViewModelBase.NavigateArgs) -> Unit = {
-        navController.navigate(WalletRoute.Register.Recovery.RemoteBackupRecovery.RemoteBackupRecovery_Phone_Code(it.value))
+        if (it is RemoteBackupRecoveryViewModelBase.StringNavigateArgs) {
+            navController.navigate(WalletRoute.Register.Recovery.RemoteBackupRecovery.RemoteBackupRecovery_Phone_Code(it.value))
+        }
     }
     val viewModel = getViewModel<PhoneRemoteBackupRecoveryViewModel> {
         parametersOf(requestNavigate)

@@ -108,7 +108,7 @@ internal class SettingsRepository(
         )
     }
 
-    override fun restoreBackup(value: BackupMetaFile) {
+    override suspend fun restoreBackup(value: BackupMetaFile) {
         TODO("Not yet implemented")
     }
 
@@ -161,7 +161,7 @@ internal class SettingsRepository(
     }
 
     private fun backupPosts(): List<BackupMetaFile.Post> {
-        TODO("Not yet implemented")
+        return emptyList()
     }
 
     private fun backupWallets(): List<BackupMetaFile.Wallet> {

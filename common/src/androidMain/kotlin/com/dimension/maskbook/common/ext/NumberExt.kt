@@ -21,6 +21,8 @@
 package com.dimension.maskbook.common.ext
 
 import com.dimension.maskbook.common.bigDecimal.BigDecimal
+import kotlin.math.log10
+import kotlin.math.pow
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.ExperimentalTime
 
@@ -88,3 +90,15 @@ fun String.trimTrailingZero(): String {
 
 @OptIn(ExperimentalTime::class)
 fun Number.humanizeMinutes(): String = toDouble().minutes.toString()
+
+fun Long.humanizeTimestamp(): String {
+    val date = java.util.Date(this)
+    val sdf = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault())
+    return sdf.format(date)
+}
+
+fun Long.humanizeFileSize(): String {
+    val units = arrayOf("B", "KB", "MB", "GB", "TB")
+    val digitGroups = (log10(toDouble()) / log10(1024.0)).toInt()
+    return "${toDouble() / 1024.0.pow(digitGroups)} ${units[digitGroups]}"
+}

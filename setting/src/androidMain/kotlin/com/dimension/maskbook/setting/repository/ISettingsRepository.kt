@@ -43,7 +43,7 @@ interface ISettingsRepository {
     fun setBackupPassword(value: String)
     suspend fun generateBackupMeta(): BackupMeta
     fun provideBackupMeta(file: BackupMetaFile): BackupMeta
-    fun restoreBackup(value: BackupMetaFile)
+    suspend fun restoreBackup(value: BackupMetaFile)
     suspend fun createBackup(
         noPosts: Boolean = false,
         noWallets: Boolean = false,
