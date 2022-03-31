@@ -23,11 +23,13 @@ package com.dimension.maskbook.setting.viewmodel
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dimension.maskbook.common.LocalBackupAccount
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.setting.repository.BackupRepository
 import com.dimension.maskbook.setting.repository.ISettingsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 
@@ -73,8 +75,12 @@ class BackupLocalViewModel(
     fun save(it: Uri, withWallet: Boolean) = viewModelScope.launch {
         _state.value = State.Loading
         try {
-            val json = repository.createBackupJson(noWallets = !withWallet)
-            backupRepository.saveLocality(it, json)
+            val password = repository.backupPassword.firstOrNull() ?: run {
+                _state.value = State.Failed
+                return@launch
+            }
+            val json = repository.createBackup(noWallets = !withWallet)
+            backupRepository.saveLocality(it, json, password = password, account = LocalBackupAccount)
             _state.value = State.Success
         } catch (e: Throwable) {
             _state.value = State.Failed
@@ -82,6 +88,6 @@ class BackupLocalViewModel(
     }
 
     val meta = flow {
-        emit(repository.provideBackupMeta())
+        emit(repository.generateBackupMeta())
     }.asStateIn(viewModelScope, null)
 }

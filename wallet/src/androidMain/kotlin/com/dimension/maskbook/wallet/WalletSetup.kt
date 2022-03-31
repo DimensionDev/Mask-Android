@@ -25,6 +25,7 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.room.Room
+import com.dimension.maskbook.common.LocalBackupAccount
 import com.dimension.maskbook.common.ModuleSetup
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.wallet.data.JSMethod
@@ -310,9 +311,8 @@ private fun Module.provideViewModel() {
         RecoveryLocalViewModel(
             get(),
             uri,
-            account,
+            account ?: LocalBackupAccount,
             get<Context>().contentResolver,
-            get()
         )
     }
     viewModel { (name: String) -> IdentityViewModel(get(), get(), name) }

@@ -32,7 +32,7 @@ import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.JsonElement
 
 @Serializable
-data class BackupJSONFile(
+data class BackupMetaFile(
     val wallets: List<Wallet>,
     @SerialName("_meta_")
     val meta: Meta,

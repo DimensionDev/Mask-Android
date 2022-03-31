@@ -22,12 +22,13 @@ package com.dimension.maskbook.setting.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dimension.maskbook.common.ext.Validator
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.setting.repository.BackupRepository
 import com.dimension.maskbook.setting.repository.ISettingsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import java.io.File
 
 class BackupMergeConfirmViewModel(
     private val backupRepository: BackupRepository,
@@ -38,21 +39,28 @@ class BackupMergeConfirmViewModel(
     val loading = _loading.asStateIn(viewModelScope, false)
     private val _backupPassword = MutableStateFlow("")
     val backupPassword = _backupPassword.asStateIn(viewModelScope, "")
-    val passwordValid = combine(_backupPassword, settingsRepository.backupPassword) { input, actual ->
-        input == actual
-    }
+    private val _passwordValid = MutableStateFlow(true)
+    val passwordValid = _passwordValid.asStateIn(viewModelScope, true)
+    private var file: File? = null
 
     fun setBackupPassword(value: String) {
         _backupPassword.value = value
+        _passwordValid.value = Validator.isValidPasswordFormat(value)
     }
 
-    fun confirm(downloadUrl: String) = viewModelScope.launch {
+    fun confirm(downloadUrl: String, account: String) = viewModelScope.launch {
         _loading.value = true
         try {
-            val content = backupRepository.downloadFile(downloadUrl).readText()
-            settingsRepository.restoreBackupFromJson(content)
+            val content = file ?: run {
+                val result = backupRepository.downloadFile(downloadUrl)
+                file = result
+                result
+            }
+            val backup = backupRepository.decryptBackup(backupPassword.value, account, content.readBytes())
+            settingsRepository.restoreBackup(backup)
             onDone.invoke()
         } catch (e: Throwable) {
+            _passwordValid.value = false
         }
         _loading.value = false
     }

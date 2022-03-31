@@ -21,3 +21,5 @@
 package com.dimension.maskbook.common
 
 const val IoScopeName = "IoScope"
+
+const val LocalBackupAccount = ""

@@ -39,7 +39,8 @@ class BackupCloudExecuteViewModel(
         account: String,
     ): Boolean {
         try {
-            val json = settingsRepository.createBackupJson(noWallets = !withWallet)
+            val json = settingsRepository.createBackup(noWallets = !withWallet)
+            val password = settingsRepository.backupPassword.firstOrNull() ?: return false
             val abs = personaServices.currentPersona.firstOrNull()?.name ?: return false
             backupRepository.uploadBackup(
                 code = code,
@@ -50,7 +51,8 @@ class BackupCloudExecuteViewModel(
                     "email" -> AccountType.email
                     "phone" -> AccountType.phone
                     else -> return false
-                }
+                },
+                password = password,
             )
             return true
         } catch (e: Throwable) {

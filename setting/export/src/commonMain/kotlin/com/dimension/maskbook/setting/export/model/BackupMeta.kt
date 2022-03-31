@@ -28,5 +28,4 @@ data class BackupMeta(
     val contacts: Int,
     val file: Int,
     val wallet: Int,
-    val json: String,
 )

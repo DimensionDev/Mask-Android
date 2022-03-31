@@ -20,16 +20,14 @@
  */
 package com.dimension.maskbook.setting.repository
 
-import com.dimension.maskbook.common.ext.decodeJson
-import com.dimension.maskbook.common.ext.encodeJson
 import com.dimension.maskbook.labs.export.model.AppKey
 import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.setting.data.JSDataSource
 import com.dimension.maskbook.setting.data.JSMethod
 import com.dimension.maskbook.setting.data.SettingDataSource
 import com.dimension.maskbook.setting.export.model.Appearance
-import com.dimension.maskbook.setting.export.model.BackupJSONFile
 import com.dimension.maskbook.setting.export.model.BackupMeta
+import com.dimension.maskbook.setting.export.model.BackupMetaFile
 import com.dimension.maskbook.setting.export.model.DataProvider
 import com.dimension.maskbook.setting.export.model.Language
 import kotlinx.coroutines.CoroutineScope
@@ -86,48 +84,42 @@ internal class SettingsRepository(
         settingDataSource.setShouldShowLegalScene(value)
     }
 
-    override suspend fun provideBackupMeta(): BackupMeta {
-        return createBackupJson(
+    override suspend fun generateBackupMeta(): BackupMeta {
+        return createBackup(
             noPosts = false,
             noWallets = false,
             noPersonas = false,
             noProfiles = false,
             hasPrivateKeyOnly = false,
         ).let {
-            provideBackupMetaFromJson(it)
+            provideBackupMeta(it)
         }
     }
 
-    override suspend fun provideBackupMetaFromJson(value: String): BackupMeta {
-        return value.decodeJson<BackupJSONFile>().let { json ->
-            BackupMeta(
-                personas = json.personas.size,
-                associatedAccount = json.personas.sumOf { it.linkedProfiles.size },
-                encryptedPost = json.posts.size,
-                contacts = json.profiles.size,
-                file = json.plugin?.count { it.key == AppKey.FileService.id } ?: 0,
-                wallet = json.wallets.size,
-                json = value,
-                account = ""
-            )
-        }
+    override fun provideBackupMeta(file: BackupMetaFile): BackupMeta {
+        return BackupMeta(
+            personas = file.personas.size,
+            associatedAccount = file.personas.sumOf { it.linkedProfiles.size },
+            encryptedPost = file.posts.size,
+            contacts = file.profiles.size,
+            file = file.plugin?.count { it.key == AppKey.FileService.id } ?: 0,
+            wallet = file.wallets.size,
+            account = ""
+        )
     }
 
-    override suspend fun restoreBackupFromJson(value: String) {
-        val file = value.decodeJson<BackupJSONFile>()
-        jsMethod.restoreBackup(value)
-        jsDataSource.initData()
-        // personaServices.refreshPersonaData()
+    override fun restoreBackup(value: BackupMetaFile) {
+        TODO("Not yet implemented")
     }
 
-    override suspend fun createBackupJson(
+    override suspend fun createBackup(
         noPosts: Boolean,
         noWallets: Boolean,
         noPersonas: Boolean,
         noProfiles: Boolean,
         noRelations: Boolean,
         hasPrivateKeyOnly: Boolean
-    ): String {
+    ): BackupMetaFile {
         val personas = if (noPersonas) {
             emptyList()
         } else {
@@ -153,34 +145,34 @@ internal class SettingsRepository(
         } else {
             backupRelations()
         }
-        return BackupJSONFile(
+        return BackupMetaFile(
             personas = personas,
             wallets = wallets,
             posts = posts,
             profiles = profile,
-            meta = BackupJSONFile.Meta.Default,
+            meta = BackupMetaFile.Meta.Default,
             grantedHostPermissions = emptyList(),
             relations = relations,
-        ).encodeJson()
+        )
     }
 
-    private fun backupRelations(): List<BackupJSONFile.Relation> {
+    private fun backupRelations(): List<BackupMetaFile.Relation> {
         TODO("Not yet implemented")
     }
 
-    private fun backupPosts(): List<BackupJSONFile.Post> {
+    private fun backupPosts(): List<BackupMetaFile.Post> {
         TODO("Not yet implemented")
     }
 
-    private fun backupWallets(): List<BackupJSONFile.Wallet> {
+    private fun backupWallets(): List<BackupMetaFile.Wallet> {
         TODO("Not yet implemented")
     }
 
-    private fun backProfiles(): List<BackupJSONFile.Profile> {
+    private fun backProfiles(): List<BackupMetaFile.Profile> {
         TODO("Not yet implemented")
     }
 
-    private fun backupPersona(hasPrivateKeyOnly: Boolean): List<BackupJSONFile.Persona> {
+    private fun backupPersona(hasPrivateKeyOnly: Boolean): List<BackupMetaFile.Persona> {
         TODO("Not yet implemented")
     }
 

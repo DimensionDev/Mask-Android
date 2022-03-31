@@ -25,21 +25,17 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
-import com.dimension.maskbook.common.ext.encodeJson
-import com.dimension.maskbook.common.ext.toJsonObject
 import com.dimension.maskbook.setting.export.BackupServices
-import com.dimension.maskbook.setting.export.SettingServices
 import com.dimension.maskbook.setting.export.model.BackupMeta
+import com.dimension.maskbook.setting.export.model.BackupMetaFile
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 class RecoveryLocalViewModel(
     private val backupServices: BackupServices,
     private val uri: String,
-    private val account: String?,
+    private val account: String,
     private val contentResolver: ContentResolver,
-    private val settingServices: SettingServices,
 ) : ViewModel() {
     enum class LoadState {
         Loading,
@@ -56,7 +52,7 @@ class RecoveryLocalViewModel(
     val password = _password.asStateIn(viewModelScope, "")
     private val _passwordError = MutableStateFlow(false)
     val passwordError = _passwordError.asStateIn(viewModelScope, false)
-    private var json = ""
+    private var file: BackupMetaFile? = null
 
     init {
         loading()
@@ -67,60 +63,32 @@ class RecoveryLocalViewModel(
     }
 
     private fun loading() = viewModelScope.launch {
-        if (account != null) {
-            _loadState.value = LoadState.RequirePassword
-        } else {
-            try {
-                contentResolver.openInputStream(Uri.parse(uri))?.use {
-                    json = it.bufferedReader().use { it.readText() }
-                    _meta.value = backupServices.provideBackupMetaFromJson(json)
-                    if (settingServices.backupPassword.firstOrNull().isNullOrEmpty()) {
-                        _loadState.value = LoadState.Success
-                    } else {
-                        _loadState.value = LoadState.RequirePassword
-                    }
-                } ?: run {
-                    _loadState.value = LoadState.Failed
-                }
-            } catch (e: Throwable) {
-                e.printStackTrace()
-                _loadState.value = LoadState.Failed
-            }
-        }
+        _loadState.value = LoadState.RequirePassword
     }
 
     fun confirmPassword() = viewModelScope.launch {
         _loadState.value = LoadState.Loading
-        if (account != null) {
-            try {
-                json = contentResolver.openInputStream(Uri.parse(uri))?.use {
-                    backupServices.decryptBackup(_password.value, account, it.readBytes()).toJsonObject().encodeJson()
-                } ?: run {
-                    _loadState.value = LoadState.Failed
-                    return@launch
-                }
-                _meta.value = backupServices.provideBackupMetaFromJson(json)
-                _loadState.value = LoadState.Success
-            } catch (e: Throwable) {
-                e.printStackTrace()
-                _passwordError.value = true
-                _loadState.value = LoadState.RequirePassword
+        try {
+            val data = contentResolver.openInputStream(Uri.parse(uri))?.use {
+                backupServices.decryptBackup(_password.value, account, it.readBytes())
+            } ?: run {
+                _loadState.value = LoadState.Failed
+                return@launch
             }
-        } else {
-            if (settingServices.backupPassword.firstOrNull() == password.value) {
-                _loadState.value = LoadState.Success
-            } else {
-                _passwordError.value = true
-            }
+            file = data
+            _meta.value = backupServices.provideBackupMeta(data)
+            _loadState.value = LoadState.Success
+        } catch (e: Throwable) {
+            e.printStackTrace()
+            _passwordError.value = true
+            _loadState.value = LoadState.RequirePassword
         }
     }
 
     fun restore() = viewModelScope.launch {
-        if (json.isNotEmpty()) {
-            try {
-                backupServices.restoreBackupFromJson(json)
-            } catch (e: Throwable) {
-            }
+        try {
+            file?.let { backupServices.restoreBackup(it) }
+        } catch (e: Throwable) {
         }
     }
 }
