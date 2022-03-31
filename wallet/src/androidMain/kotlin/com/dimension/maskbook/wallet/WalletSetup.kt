@@ -313,6 +313,7 @@ private fun Module.provideViewModel() {
             uri,
             account ?: LocalBackupAccount,
             get<Context>().contentResolver,
+            get(),
         )
     }
     viewModel { (name: String) -> IdentityViewModel(get(), get(), name) }

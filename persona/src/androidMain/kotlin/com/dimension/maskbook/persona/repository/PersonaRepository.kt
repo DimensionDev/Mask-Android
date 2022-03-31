@@ -29,6 +29,7 @@ import com.dimension.maskbook.persona.datasource.DbProfileDataSource
 import com.dimension.maskbook.persona.datasource.DbRelationDataSource
 import com.dimension.maskbook.persona.export.error.PersonaAlreadyExitsError
 import com.dimension.maskbook.persona.export.model.ConnectAccountData
+import com.dimension.maskbook.persona.export.model.IndexedDBPersona
 import com.dimension.maskbook.persona.export.model.PersonaData
 import com.dimension.maskbook.persona.export.model.PlatformType
 import com.dimension.maskbook.persona.export.model.SocialData
@@ -215,5 +216,19 @@ internal class PersonaRepository(
                 personaDataSource.updateAvatar(personaData.identifier, avatar?.toString())
             }
         }
+    }
+
+    override suspend fun createPersonaBackup(hasPrivateKeyOnly: Boolean): List<IndexedDBPersona> {
+        return personaDataSource.getIndexDbPersonaRecord().filter {
+            if (hasPrivateKeyOnly) {
+                it.privateKey != null
+            } else {
+                true
+            }
+        }
+    }
+
+    override suspend fun restorePersonaBackup(list: List<IndexedDBPersona>) {
+        personaDataSource.addAll(list)
     }
 }

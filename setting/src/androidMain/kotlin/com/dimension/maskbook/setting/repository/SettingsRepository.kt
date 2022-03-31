@@ -30,6 +30,8 @@ import com.dimension.maskbook.setting.export.model.BackupMeta
 import com.dimension.maskbook.setting.export.model.BackupMetaFile
 import com.dimension.maskbook.setting.export.model.DataProvider
 import com.dimension.maskbook.setting.export.model.Language
+import com.dimension.maskbook.setting.model.mapping.toBackupPersona
+import com.dimension.maskbook.setting.model.mapping.toIndexedDBPersona
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -109,7 +111,8 @@ internal class SettingsRepository(
     }
 
     override suspend fun restoreBackup(value: BackupMetaFile) {
-        TODO("Not yet implemented")
+        val persona = value.personas.map { it.toIndexedDBPersona() }
+        personaServices.restorePersonaBackup(persona)
     }
 
     override suspend fun createBackup(
@@ -156,24 +159,26 @@ internal class SettingsRepository(
         )
     }
 
-    private fun backupRelations(): List<BackupMetaFile.Relation> {
+    private suspend fun backupRelations(): List<BackupMetaFile.Relation> {
         TODO("Not yet implemented")
     }
 
-    private fun backupPosts(): List<BackupMetaFile.Post> {
+    private suspend fun backupPosts(): List<BackupMetaFile.Post> {
         return emptyList()
     }
 
-    private fun backupWallets(): List<BackupMetaFile.Wallet> {
+    private suspend fun backupWallets(): List<BackupMetaFile.Wallet> {
         TODO("Not yet implemented")
     }
 
-    private fun backProfiles(): List<BackupMetaFile.Profile> {
+    private suspend fun backProfiles(): List<BackupMetaFile.Profile> {
         TODO("Not yet implemented")
     }
 
-    private fun backupPersona(hasPrivateKeyOnly: Boolean): List<BackupMetaFile.Persona> {
-        TODO("Not yet implemented")
+    private suspend fun backupPersona(hasPrivateKeyOnly: Boolean): List<BackupMetaFile.Persona> {
+        return personaServices.createPersonaBackup(hasPrivateKeyOnly).map {
+            it.toBackupPersona()
+        }
     }
 
     override fun saveEmailForCurrentPersona(value: String) {

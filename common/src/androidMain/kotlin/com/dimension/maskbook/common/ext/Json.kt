@@ -28,7 +28,9 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.double
+import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.long
@@ -41,12 +43,14 @@ val JSON by lazy {
     }
 }
 
-inline fun <reified T> T.encodeJson(): String =
-    JSON.encodeToString(this)
+inline fun <reified T> T.encodeJson(): String = JSON.encodeToString(this)
 
-inline fun <reified T> String.decodeJson(): T {
-    return JSON.decodeFromString(this)
-}
+inline fun <reified T, reified R : JsonElement> T.encodeJsonElement(): R =
+    JSON.encodeToJsonElement(this) as R
+
+inline fun <reified T> String.decodeJson(): T = JSON.decodeFromString(this)
+
+inline fun <reified T> JsonElement.decodeJson(): T = JSON.decodeFromJsonElement(this)
 
 private val LONG_REGEX = Regex("""^-?\d+$""")
 private val DOUBLE_REGEX = Regex("""^-?\d+\.\d+(?:E-?\d+)?$""")

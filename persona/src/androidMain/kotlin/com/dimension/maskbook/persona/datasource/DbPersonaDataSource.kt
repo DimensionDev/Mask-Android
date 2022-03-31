@@ -22,7 +22,11 @@ package com.dimension.maskbook.persona.datasource
 
 import androidx.room.withTransaction
 import com.dimension.maskbook.persona.db.PersonaDatabase
+import com.dimension.maskbook.persona.db.migrator.mapper.toDbPersonaRecord
+import com.dimension.maskbook.persona.db.migrator.mapper.toIndexedDBPersona
+import com.dimension.maskbook.persona.db.migrator.mapper.toLinkedProfiles
 import com.dimension.maskbook.persona.db.model.DbPersonaRecord
+import com.dimension.maskbook.persona.export.model.IndexedDBPersona
 import com.dimension.maskbook.persona.export.model.PersonaData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -97,6 +101,17 @@ class DbPersonaDataSource(private val database: PersonaDatabase) {
 
     suspend fun updateAvatar(identifier: String, avatar: String?) {
         personaDao.updateAvatar(identifier, avatar)
+    }
+
+    suspend fun getIndexDbPersonaRecord(): List<IndexedDBPersona> {
+        return personaDao.getListWithProfile().map {
+            it.toIndexedDBPersona()
+        }
+    }
+
+    suspend fun addAll(list: List<IndexedDBPersona>) {
+        personaDao.insertAll(list.map { it.toDbPersonaRecord() })
+        linkedProfileDao.insert(list.flatMap { it.toLinkedProfiles() })
     }
 }
 

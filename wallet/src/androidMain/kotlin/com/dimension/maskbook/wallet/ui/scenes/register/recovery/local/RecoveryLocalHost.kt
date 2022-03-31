@@ -84,7 +84,6 @@ import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.password.SetUpPayme
 import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.password.VerifyPaymentPasswordModal
 import com.dimension.maskbook.wallet.viewmodel.recovery.RecoveryLocalViewModel
 import kotlinx.coroutines.flow.distinctUntilChanged
-import org.koin.androidx.compose.get
 import org.koin.core.parameter.parametersOf
 import java.io.File
 
@@ -230,12 +229,14 @@ fun ImportPasswordScene(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
+                        val file = remember(uri) { File(uri) }
+                        val fileName = remember(file) { file.name }
                         Column {
-                            Text(abstract ?: uri, style = MaterialTheme.typography.button)
+                            Text(abstract ?: fileName, style = MaterialTheme.typography.button)
                             Text(uploadedAt?.humanizeTimestamp() ?: "")
                         }
-                        val size = remember(uri) {
-                            File(uri).length().humanizeTimestamp()
+                        val size = remember(file) {
+                            file.length().humanizeTimestamp()
                         }
                         Text(
                             text = size,
@@ -344,7 +345,6 @@ fun ImportWalletCreatePasswordModal(
 )
 @Composable
 fun ImportWalletScene(
-    @Back onBack: () -> Unit,
     @Path("uri") uri: String,
     @Query("account") account: String?,
     navController: NavController,

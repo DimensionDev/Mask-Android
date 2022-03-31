@@ -121,7 +121,7 @@ data class BackupMetaFile(
     data class Persona(
         val updatedAt: Long,
         val createdAt: Long,
-        val publicKey: JsonWebKey,
+        val publicKey: JsonWebKey? = null,
         val identifier: String,
         val linkedProfiles: List<List<LinkedProfileElement>>,
         val nickname: String? = null,

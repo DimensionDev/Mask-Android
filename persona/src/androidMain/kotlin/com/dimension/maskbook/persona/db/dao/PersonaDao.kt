@@ -37,6 +37,9 @@ interface PersonaDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(persona: DbPersonaRecord)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(items: List<DbPersonaRecord>)
+
     @Query("DELETE FROM DbPersonaRecord WHERE identifier=:identifier")
     suspend fun delete(identifier: String)
 
@@ -56,6 +59,10 @@ interface PersonaDao {
     @Transaction
     @RawQuery
     suspend fun findListRaw(query: SupportSQLiteQuery): List<PersonaWithLinkedProfile>
+
+    @Transaction
+    @Query("SELECT * FROM DbPersonaRecord")
+    suspend fun getListWithProfile(): List<PersonaWithLinkedProfile>
 
     @Query("SELECT * FROM DbPersonaRecord WHERE identifier=:identifier LIMIT 1")
     fun getFlow(identifier: String): Flow<DbPersonaRecord?>

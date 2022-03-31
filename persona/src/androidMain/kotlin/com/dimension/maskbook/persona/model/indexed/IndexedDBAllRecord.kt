@@ -20,6 +20,7 @@
  */
 package com.dimension.maskbook.persona.model.indexed
 
+import com.dimension.maskbook.persona.export.model.IndexedDBPersona
 import kotlinx.serialization.Serializable
 
 @Serializable

@@ -20,6 +20,7 @@
  */
 package com.dimension.maskbook.persona.export
 
+import com.dimension.maskbook.persona.export.model.IndexedDBPersona
 import com.dimension.maskbook.persona.export.model.PersonaData
 import kotlinx.coroutines.flow.Flow
 
@@ -32,4 +33,6 @@ interface PersonaServices {
     fun connectProfile(personaId: String, profileId: String)
     fun saveEmailForCurrentPersona(value: String)
     fun savePhoneForCurrentPersona(value: String)
+    suspend fun createPersonaBackup(hasPrivateKeyOnly: Boolean): List<IndexedDBPersona>
+    suspend fun restorePersonaBackup(persona: List<IndexedDBPersona>)
 }

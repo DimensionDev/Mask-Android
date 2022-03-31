@@ -133,7 +133,7 @@ fun RegisterRecoveryHome(
         onResult = {
             if (it != null) {
                 navController.navigate(
-                    WalletRoute.Register.Recovery.LocalBackup.Loading(it.toString(), null)
+                    WalletRoute.Register.Recovery.LocalBackup.Loading(it.toString(), null, null, null)
                 )
             }
         },

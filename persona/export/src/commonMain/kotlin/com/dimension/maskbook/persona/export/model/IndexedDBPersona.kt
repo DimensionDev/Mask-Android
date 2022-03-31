@@ -18,9 +18,8 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.persona.model.indexed
+package com.dimension.maskbook.persona.export.model
 
-import com.dimension.maskbook.persona.export.model.LinkedProfileDetailsState
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonObject
 
