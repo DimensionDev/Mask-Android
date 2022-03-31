@@ -24,7 +24,6 @@ import androidx.annotation.DrawableRes
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -72,12 +71,14 @@ import androidx.paging.compose.items
 import coil.compose.rememberImagePainter
 import com.dimension.maskbook.common.ext.humanizeDollar
 import com.dimension.maskbook.common.ext.humanizeToken
+import com.dimension.maskbook.common.ext.onDrawableRes
 import com.dimension.maskbook.common.ui.theme.MaskTheme
 import com.dimension.maskbook.common.ui.theme.moreColor
 import com.dimension.maskbook.common.ui.widget.MaskListItem
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
+import com.dimension.maskbook.common.ui.widget.WalletTokenImage
 import com.dimension.maskbook.common.ui.widget.button.MaskButton
 import com.dimension.maskbook.common.ui.widget.button.MaskIconCardButton
 import com.dimension.maskbook.wallet.R
@@ -405,23 +406,14 @@ private fun TokenDataItem(item: WalletTokenData, onItemClick: () -> Unit) {
                 }
             },
             icon = {
-                Box {
-                    Image(
-                        painter = rememberImagePainter(data = tokenData.logoURI) {
-                            placeholder(R.drawable.mask)
-                            error(R.drawable.mask)
-                            fallback(R.drawable.mask)
-                        },
-                        contentDescription = null,
-                        modifier = Modifier.size(38.dp)
-                    )
-                    Image(
-                        painter = rememberImagePainter(data = tokenData.chainType.onDrawableRes),
-                        contentDescription = null,
-                        modifier = Modifier.size(16.dp).align(Alignment.BottomEnd)
-                            .border(1.dp, MaterialTheme.colors.background, shape = CircleShape)
-                    )
-                }
+                WalletTokenImage(
+                    painter = rememberImagePainter(data = tokenData.logoURI) {
+                        placeholder(R.drawable.mask)
+                        error(R.drawable.mask)
+                        fallback(R.drawable.mask)
+                    },
+                    chainPainter = rememberImagePainter(data = tokenData.chainType.onDrawableRes),
+                )
             }
         )
     }
