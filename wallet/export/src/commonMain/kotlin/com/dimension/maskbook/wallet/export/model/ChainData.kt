@@ -18,16 +18,14 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.export
+package com.dimension.maskbook.wallet.export.model
 
-import com.dimension.maskbook.wallet.export.model.ChainData
-import com.dimension.maskbook.wallet.export.model.WalletData
-import kotlinx.coroutines.flow.Flow
-
-interface WalletServices {
-    val currentWallet: Flow<WalletData?>
-    val currentChain: Flow<ChainData?>
-    fun generateNewMnemonic(): List<String>
-    fun validateMnemonic(mnemonic: String): Boolean
-    fun validatePrivateKey(privateKey: String): Boolean
-}
+data class ChainData(
+    val chainId: Long,
+    val name: String,
+    val fullName: String,
+    val nativeTokenID: String,
+    val logoURL: String,
+    val nativeToken: TokenData?,
+    val chainType: ChainType
+)

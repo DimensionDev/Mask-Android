@@ -57,6 +57,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.dimension.maskbook.common.ext.offDrawableRes
+import com.dimension.maskbook.common.ext.onDrawableRes
+import com.dimension.maskbook.common.ext.primaryColor
 import com.dimension.maskbook.common.ui.widget.CircleCheckbox
 import com.dimension.maskbook.common.ui.widget.HorizontalScenePadding
 import com.dimension.maskbook.common.ui.widget.MaskListItem
@@ -71,36 +74,6 @@ import com.dimension.maskbook.common.ui.widget.button.MaskTextButton
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.export.model.WalletData
-
-val ChainType.onDrawableRes: Int
-    get() = when (this) {
-        ChainType.eth -> R.drawable.ethereum_o1_2
-        ChainType.bsc -> R.drawable.binance_2
-        ChainType.polygon -> R.drawable.polygon_2
-        ChainType.arbitrum -> R.drawable.logos_and_symbols
-        ChainType.xdai -> R.drawable.ic_xdai_on
-        else -> -1
-    }
-
-val ChainType.offDrawableRes: Int
-    get() = when (this) {
-        ChainType.eth -> R.drawable.ethereum_o1_1
-        ChainType.bsc -> R.drawable.binance_1
-        ChainType.polygon -> R.drawable.polygon1
-        ChainType.arbitrum -> R.drawable.logos_and_symbols_1
-        ChainType.xdai -> R.drawable.ic_xdai_off
-        else -> -1
-    }
-
-val ChainType.primaryColor: Color
-    get() = when (this) {
-        ChainType.eth -> Color(0xFF627EEA)
-        ChainType.bsc -> Color(0xFFF3BA2F)
-        ChainType.polygon -> Color(0xFF8247E5)
-        ChainType.arbitrum -> Color(0xFF28A0F0)
-        ChainType.xdai -> Color(0xFF48A9A6)
-        else -> Color.Transparent
-    }
 
 val supportedChainType = buildList {
     add(ChainType.eth)

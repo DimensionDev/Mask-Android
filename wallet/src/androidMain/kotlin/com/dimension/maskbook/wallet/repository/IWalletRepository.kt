@@ -30,6 +30,7 @@ import com.dimension.maskbook.wallet.db.model.DbCollectible
 import com.dimension.maskbook.wallet.db.model.DbWalletTokenTokenWithWallet
 import com.dimension.maskbook.wallet.db.model.DbWalletTokenWithToken
 import com.dimension.maskbook.wallet.db.model.WalletSource
+import com.dimension.maskbook.wallet.export.model.ChainData
 import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.export.model.TokenData
 import com.dimension.maskbook.wallet.export.model.WalletCollectibleCollectionData
@@ -216,16 +217,6 @@ data class SendTokenConfirmData(
     val messageId: ExtensionId,
     val payloadId: ExtensionId,
     val jsonrpc: String,
-)
-
-data class ChainData(
-    val chainId: Long,
-    val name: String,
-    val fullName: String,
-    val nativeTokenID: String,
-    val logoURL: String,
-    val nativeToken: TokenData?,
-    val chainType: ChainType
 )
 
 @Serializable

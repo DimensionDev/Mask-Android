@@ -51,13 +51,13 @@ import androidx.compose.ui.unit.dp
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
 import coil.compose.rememberImagePainter
+import com.dimension.maskbook.common.ext.onDrawableRes
 import com.dimension.maskbook.common.ui.widget.MaskListItem
 import com.dimension.maskbook.common.ui.widget.button.MaskButton
 import com.dimension.maskbook.common.ui.widget.button.clickable
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.export.model.WalletCollectibleCollectionData
 import com.dimension.maskbook.wallet.export.model.WalletCollectibleData
-import com.dimension.maskbook.wallet.ui.scenes.wallets.management.onDrawableRes
 import com.dimension.maskbook.wallet.viewmodel.wallets.collectible.CollectiblesViewModel
 import org.koin.androidx.compose.getViewModel
 
