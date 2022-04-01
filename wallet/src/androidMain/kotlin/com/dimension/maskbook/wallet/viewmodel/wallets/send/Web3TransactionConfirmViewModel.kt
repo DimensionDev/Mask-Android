@@ -84,7 +84,7 @@ class Web3TransactionConfirmViewModel(
                     maxPriorityFee = maxPriorityFee,
                     data = data.data.data ?: "",
                 ).onSuccess {
-                    extensionServices.sendJSEventResponse(
+                    extensionServices.sendBackgroundJSEventResponse(
                         Web3SendResponse.success(
                             data.messageId,
                             data.jsonrpc,
@@ -94,7 +94,7 @@ class Web3TransactionConfirmViewModel(
                     )
                     onResult.invoke(true)
                 }.onFailure {
-                    extensionServices.sendJSEventResponse(
+                    extensionServices.sendBackgroundJSEventResponse(
                         Web3SendResponse.error(
                             data.messageId,
                             data.jsonrpc,
@@ -140,7 +140,7 @@ class Web3TransactionConfirmViewModel(
     }
 
     fun cancel() {
-        extensionServices.sendJSEventResponse(
+        extensionServices.sendBackgroundJSEventResponse(
             Web3SendResponse.error(
                 data.messageId,
                 data.jsonrpc,
