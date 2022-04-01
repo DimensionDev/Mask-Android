@@ -18,7 +18,7 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.labs.model
+package com.dimension.maskbook.labs.model.options
 
 import com.dimension.maskbook.common.ext.decodeJson
 import kotlin.test.Test

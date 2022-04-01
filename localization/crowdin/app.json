@@ -802,6 +802,27 @@
         "plugin_settings": {
             "title": "Plugin Settings",
             "message_tips": "If you turn off a plugin, the plugin function can no longer be rendered on timeline when browsing social media."
+        },
+        "open_red_package": {
+            "title": "Lucky Drop",
+            "wallet": "Wallet",
+            "claim": "Claim",
+            "claiming": "Claiming",
+            "switch_network": "Switch Network",
+            "confirm_risk_warning": "Confirm Risk Warning",
+            "wrong_network": "Wrong Network",
+            "total": "Total",
+            "ends": "Ends %s",
+            "from": "From: @%s",
+            "shares": "Shares",
+            "on_going": "Ongoing",
+            "expired": "Expired",
+            "claimed": "Claimed",
+            "refunded":"Refunded",
+            "refund":"Refund",
+            "empty": "Empty",
+            "share_message_official": "Hi friends, I just claimed a lucky drop sent by %s on %s network. Follow %s (mask.io) to claim the lucky drops.\n#mask_io #LuckyDrop\n%s",
+            "share_message_unsupport_platform": "Hi friends, I just claimed a lucky drop sent by @%s on %s network. \n%s"
         }
     },
     "chain": {

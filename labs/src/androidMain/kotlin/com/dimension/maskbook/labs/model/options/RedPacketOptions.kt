@@ -18,7 +18,7 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.labs.model
+package com.dimension.maskbook.labs.model.options
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -55,7 +55,7 @@ data class RedPacketOptions(
         @SerialName("contract_version")
         val contractVersion: Int,
         val network: String,
-        val token: ERC20Token? = null,
+        val token: ERC20Token = ERC20Token(),
         val tokenAddress: String? = null,
         val tokenType: Int? = null,
         val claimers: List<Claimer>,
@@ -77,13 +77,13 @@ data class RedPacketOptions(
 
         @Serializable
         data class ERC20Token(
-            val symbol: String,
-            val address: String,
-            val decimals: Int,
-            val logoURI: String,
-            val type: Int,
-            val chainId: Int,
-            val name: String,
+            val symbol: String = "",
+            val address: String = "",
+            val decimals: Int = 0,
+            val logoURI: String = "",
+            val type: Int = 0,
+            val chainId: Long = 0,
+            val name: String = "",
         )
     }
 
