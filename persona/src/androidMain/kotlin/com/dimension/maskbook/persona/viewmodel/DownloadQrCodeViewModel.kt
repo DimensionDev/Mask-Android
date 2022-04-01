@@ -24,11 +24,14 @@ import android.content.Context
 import android.graphics.pdf.PdfDocument
 import android.graphics.pdf.PdfDocument.PageInfo
 import android.net.Uri
+import android.util.Base64
 import android.view.View
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
+import com.dimension.maskbook.common.ext.encodeBase64
 import com.dimension.maskbook.persona.datasource.DbPersonaDataSource
+import com.dimension.maskbook.persona.export.model.PersonaQrCode
 import com.dimension.maskbook.persona.repository.IPersonaRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -73,5 +76,17 @@ class DownloadQrCodeViewModel(
                 pdfDocument.close()
             } ?: throw Error("PersonaQrCode info is null")
         }
+    }
+
+    fun generateQrCodeStr(qrCode: PersonaQrCode): String {
+        var str = if (qrCode.identityWords.isNotEmpty()) {
+            "mask://persona/identity/${qrCode.identityWords.encodeBase64(Base64.NO_WRAP)}"
+        } else {
+            "mask://persona/privatekey/${qrCode.privateKeyBase64}"
+        }
+        if (qrCode.nickName.isNotEmpty()) {
+            str += "?nickname=${qrCode.nickName}"
+        }
+        return str
     }
 }

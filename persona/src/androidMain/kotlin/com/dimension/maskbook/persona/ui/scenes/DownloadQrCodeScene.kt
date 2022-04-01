@@ -41,6 +41,7 @@ import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -98,7 +99,7 @@ fun DownloadQrCodeScene(
             )
             setContent {
                 personaQrCode?.let {
-                    QrCodePdfPreview(it)
+                    QrCodePdfPreview(it, viewModel.generateQrCodeStr(it))
                 }
             }
         }
@@ -131,19 +132,21 @@ fun DownloadQrCodeScene(
         },
     )
 
+    LaunchedEffect(personaQrCode) {
+        personaQrCode?.let {
+            if (!filePickerLaunched) {
+                viewModel.pickFile()
+                filePickerLauncher.launch("mask-persona-${it.nickName}.pdf")
+            }
+        }
+    }
+
     Box {
         // won't display only for pdf generate
-        personaQrCode?.let { info ->
+        personaQrCode?.let {
             AndroidView(
                 factory = {
-                    pdfView.apply {
-                        post {
-                            if (!filePickerLaunched) {
-                                viewModel.pickFile()
-                                filePickerLauncher.launch("mask-persona-${info.nickName}.pdf")
-                            }
-                        }
-                    }
+                    pdfView
                 }
             )
         }
@@ -152,7 +155,7 @@ fun DownloadQrCodeScene(
 }
 
 @Composable
-private fun QrCodePdfPreview(info: PersonaQrCode) {
+private fun QrCodePdfPreview(info: PersonaQrCode, qrStr: String) {
     Column(
         modifier = Modifier
             .background(color = Color.White)
@@ -181,11 +184,8 @@ private fun QrCodePdfPreview(info: PersonaQrCode) {
         Image(
             painter = rememberImagePainter(
                 data = rememberBarcodeBitmap(
-                    "mask://persona/privatekey/${info.privateKeyBase64}${
-                    info.nickName.takeIf { it.isNotEmpty() }?.let {
-                        "?nickname=$it"
-                    } ?: ""
-                    }",
+                    // currently ios can't handle ?nickname=xxx
+                    qrStr,
                     600,
                     600
                 )
@@ -200,7 +200,11 @@ private fun QrCodePdfPreview(info: PersonaQrCode) {
         info.identityWords.takeIf { it.isNotEmpty() }?.let {
             Divider(modifier = Modifier.fillMaxWidth(), color = Color.Gray)
             Spacer(Modifier.height(20.dp))
-            Text(stringResource(R.string.scene_persona_download_qr_code_identity_code), style = MaterialTheme.typography.h6, color = Color.Black)
+            Text(
+                stringResource(R.string.scene_persona_download_qr_code_identity_code),
+                style = MaterialTheme.typography.h6,
+                color = Color.Black
+            )
             Spacer(Modifier.height(10.dp))
             it.split(" ").withIndex()
                 .groupBy { it.index / 3 }
