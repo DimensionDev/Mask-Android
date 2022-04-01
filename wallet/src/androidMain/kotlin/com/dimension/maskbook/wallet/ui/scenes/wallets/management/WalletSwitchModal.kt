@@ -28,6 +28,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -101,6 +102,7 @@ fun WalletSwitchSceneModal(
         contentPadding = PaddingValues(0.dp)
     ) {
         MaskScaffold(
+            modifier = Modifier.fillMaxHeight(0.8f),
             topBar = {
                 Column {
                     MaskSingleLineTopAppBar(
@@ -241,7 +243,7 @@ private fun SupportChainTypeList(
 ) {
     LazyRow(
         contentPadding = PaddingValues(horizontal = HorizontalScenePadding),
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(supportedChainType) { item ->
             val isSelected = selectedChainType === item
@@ -341,6 +343,6 @@ private fun WalletSwitchBottomBar(
                 }
             )
         }
-        Spacer(Modifier.height(35.dp))
+        Spacer(Modifier.height(15.dp))
     }
 }
