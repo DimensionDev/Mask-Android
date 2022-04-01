@@ -20,7 +20,6 @@
  */
 package com.dimension.maskbook.persona.ui.scenes
 
-import android.util.Log
 import android.view.ViewGroup
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -54,6 +53,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
@@ -63,8 +63,10 @@ import com.dimension.maskbook.common.route.navigationComposeAnimComposable
 import com.dimension.maskbook.common.route.navigationComposeAnimComposablePackage
 import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
 import com.dimension.maskbook.common.ui.barcode.rememberBarcodeBitmap
+import com.dimension.maskbook.common.ui.widget.MaskDialog
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskScene
+import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.common.ui.widget.button.SecondaryButton
 import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.export.model.PersonaQrCode
@@ -102,15 +104,15 @@ fun DownloadQrCodeScene(
         contract = ActivityResultContracts.CreateDocument(),
         onResult = {
             if (it != null) {
-                Log.d("Mimao", "view size:${pdfView.width} * ${pdfView.height}")
-                Log.d("Mimao", "view measured size:${pdfView.measuredWidth} * ${pdfView.measuredHeight}")
-                viewModel.save(
-                    uri = it,
-                    context = context,
-                    pdfContent = pdfView,
-                    height = pdfView.height,
-                    width = pdfView.width
-                )
+                pdfView.post {
+                    viewModel.save(
+                        uri = it,
+                        context = context,
+                        pdfContent = pdfView,
+                        height = pdfView.height,
+                        width = pdfView.width
+                    )
+                }
             } else {
                 navController.popBackStack()
             }
@@ -134,8 +136,17 @@ fun DownloadQrCodeScene(
                         }
                     )
                 }
-                if (state == DownloadQrCodeViewModel.DownloadState.Pending) {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                when (state) {
+                    DownloadQrCodeViewModel.DownloadState.Idle -> {}
+                    DownloadQrCodeViewModel.DownloadState.Pending -> {
+                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                    }
+                    DownloadQrCodeViewModel.DownloadState.Success -> {
+                        DownloadSuccess(navController)
+                    }
+                    DownloadQrCodeViewModel.DownloadState.Failed -> {
+                        DownloadFailed(navController)
+                    }
                 }
             }
         }
@@ -218,4 +229,36 @@ private fun QrCodePdfPreview(info: PersonaQrCode) {
             style = MaterialTheme.typography.caption, color = MaterialTheme.colors.primary
         )
     }
+}
+
+@Composable
+private fun DownloadSuccess(navController: NavController) {
+    MaskDialog(
+        onDismissRequest = { navController.popBackStack() },
+        title = { Text("Download Success") },
+        icon = { Image(painterResource(R.drawable.ic_success), contentDescription = null) },
+        buttons = {
+            PrimaryButton(onClick = {
+                navController.popBackStack()
+            }) {
+                Text(stringResource(R.string.common_controls_done))
+            }
+        }
+    )
+}
+
+@Composable
+private fun DownloadFailed(navController: NavController) {
+    MaskDialog(
+        onDismissRequest = { navController.popBackStack() },
+        title = { Text("Download Failed") },
+        icon = { Image(painterResource(R.drawable.ic_failed), contentDescription = null) },
+        buttons = {
+            PrimaryButton(onClick = {
+                navController.popBackStack()
+            }) {
+                Text(stringResource(R.string.common_controls_ok))
+            }
+        }
+    )
 }
