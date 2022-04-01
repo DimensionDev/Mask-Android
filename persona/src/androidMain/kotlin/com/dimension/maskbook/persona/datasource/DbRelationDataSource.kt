@@ -21,7 +21,10 @@
 package com.dimension.maskbook.persona.datasource
 
 import com.dimension.maskbook.persona.db.PersonaDatabase
+import com.dimension.maskbook.persona.db.migrator.mapper.toDbRelationRecord
+import com.dimension.maskbook.persona.db.migrator.mapper.toIndexedDBRelation
 import com.dimension.maskbook.persona.db.model.RelationWithLinkedProfile
+import com.dimension.maskbook.persona.export.model.IndexedDBRelation
 import com.dimension.maskbook.persona.export.model.Network
 import com.dimension.maskbook.persona.model.ContactData
 import kotlinx.coroutines.flow.Flow
@@ -39,6 +42,20 @@ class DbRelationDataSource(database: PersonaDatabase) {
                 profile.toContactData()
             }
         }
+    }
+
+    suspend fun getAll(): List<IndexedDBRelation> {
+        return relationDao.getAll().map {
+            it.toIndexedDBRelation()
+        }
+    }
+
+    suspend fun addAll(relation: List<IndexedDBRelation>) {
+        relationDao.insert(
+            relation.map {
+                it.toDbRelationRecord()
+            }
+        )
     }
 }
 

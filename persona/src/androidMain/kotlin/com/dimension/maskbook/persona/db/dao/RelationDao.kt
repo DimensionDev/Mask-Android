@@ -56,6 +56,10 @@ interface RelationDao {
     @Query("SELECT * FROM ViewRelationDetail WHERE personaIdentifier=:personaIdentifier")
     fun getListFlow(personaIdentifier: String): Flow<List<RelationWithLinkedProfile>>
 
+    @Transaction
+    @Query("SELECT * FROM DbRelationRecord")
+    suspend fun getAll(): List<DbRelationRecord>
+
     @Query("UPDATE DbRelationRecord SET favor=:favor WHERE personaIdentifier=:personaIdentifier AND profileIdentifier=:profileIdentifier")
     suspend fun updateFavor(
         personaIdentifier: String,

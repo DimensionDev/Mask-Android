@@ -29,9 +29,9 @@ import com.dimension.maskbook.persona.db.migrator.mapper.toIndexedDBProfile
 import com.dimension.maskbook.persona.db.model.DbLinkedProfileRecord
 import com.dimension.maskbook.persona.db.sql.buildQueryProfileSql
 import com.dimension.maskbook.persona.db.sql.buildQueryProfilesSql
+import com.dimension.maskbook.persona.export.model.IndexedDBProfile
 import com.dimension.maskbook.persona.export.model.LinkedProfileDetailsState
 import com.dimension.maskbook.persona.export.model.Network
-import com.dimension.maskbook.persona.model.indexed.IndexedDBProfile
 import com.dimension.maskbook.persona.model.options.AttachProfileOptions
 import com.dimension.maskbook.persona.model.options.CreateProfileOptions
 import com.dimension.maskbook.persona.model.options.DeleteProfileOptions

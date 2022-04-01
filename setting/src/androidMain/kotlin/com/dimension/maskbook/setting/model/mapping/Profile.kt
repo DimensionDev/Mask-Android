@@ -23,8 +23,41 @@ package com.dimension.maskbook.setting.model.mapping
 import com.dimension.maskbook.common.ext.decodeJson
 import com.dimension.maskbook.common.ext.encodeJsonElement
 import com.dimension.maskbook.persona.export.model.IndexedDBPersona
+import com.dimension.maskbook.persona.export.model.IndexedDBProfile
+import com.dimension.maskbook.persona.export.model.IndexedDBRelation
 import com.dimension.maskbook.persona.export.model.LinkedProfileDetailsState
 import com.dimension.maskbook.setting.export.model.BackupMetaFile
+
+fun IndexedDBRelation.toBackupRelation() = BackupMetaFile.Relation(
+    favor = BackupMetaFile.Relation.RelationFavor.values().firstOrNull { it.value == favor }
+        ?: BackupMetaFile.Relation.RelationFavor.UNCOLLECTED,
+    persona = personaIdentifier,
+    profile = profileIdentifier,
+)
+
+fun BackupMetaFile.Relation.toIndexedDBRelation() = IndexedDBRelation(
+    favor = favor.value,
+    personaIdentifier = persona,
+    profileIdentifier = profile
+)
+
+fun IndexedDBProfile.toBackupProfile() = BackupMetaFile.Profile(
+    identifier = identifier,
+    updatedAt = updatedAt,
+    createdAt = createdAt,
+    nickname = nickname,
+    linkedPersona = linkedPersona,
+    localKey = localKey?.decodeJson(),
+)
+
+fun BackupMetaFile.Profile.toIndexedDBProfile() = IndexedDBProfile(
+    identifier = identifier,
+    updatedAt = updatedAt,
+    createdAt = createdAt,
+    nickname = nickname,
+    linkedPersona = linkedPersona,
+    localKey = localKey?.encodeJsonElement(),
+)
 
 fun IndexedDBPersona.toBackupPersona() = BackupMetaFile.Persona(
     updatedAt = updatedAt,

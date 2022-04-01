@@ -18,17 +18,17 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.persona.model.indexed
+package com.dimension.maskbook.persona.export.model
 
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonObject
 
 @Serializable
-data class IndexedDBRelation(
-    @SerialName("linked")
-    val personaIdentifier: String,
-    @SerialName("profile")
-    val profileIdentifier: String,
-    val favor: Int,
-    val network: String? = null,
+data class IndexedDBProfile(
+    val identifier: String,
+    val nickname: String? = null,
+    val linkedPersona: String? = null,
+    val localKey: JsonObject? = null,
+    val updatedAt: Long = 0,
+    val createdAt: Long = 0,
 )

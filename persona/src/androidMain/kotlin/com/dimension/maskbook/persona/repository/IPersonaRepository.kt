@@ -23,6 +23,8 @@ package com.dimension.maskbook.persona.repository
 import android.net.Uri
 import com.dimension.maskbook.persona.export.model.ConnectAccountData
 import com.dimension.maskbook.persona.export.model.IndexedDBPersona
+import com.dimension.maskbook.persona.export.model.IndexedDBProfile
+import com.dimension.maskbook.persona.export.model.IndexedDBRelation
 import com.dimension.maskbook.persona.export.model.PersonaData
 import com.dimension.maskbook.persona.export.model.PlatformType
 import kotlinx.coroutines.flow.Flow
@@ -52,4 +54,8 @@ interface IPersonaRepository {
     fun setAvatarForCurrentPersona(avatar: Uri?)
     suspend fun createPersonaBackup(hasPrivateKeyOnly: Boolean): List<IndexedDBPersona>
     suspend fun restorePersonaBackup(list: List<IndexedDBPersona>)
+    suspend fun createProfileBackup(): List<IndexedDBProfile>
+    suspend fun restoreProfileBackup(profile: List<IndexedDBProfile>)
+    suspend fun createRelationsBackup(): List<IndexedDBRelation>
+    suspend fun restoreRelationBackup(relation: List<IndexedDBRelation>)
 }

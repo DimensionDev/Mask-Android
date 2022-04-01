@@ -30,6 +30,8 @@ import com.dimension.maskbook.persona.datasource.DbRelationDataSource
 import com.dimension.maskbook.persona.export.error.PersonaAlreadyExitsError
 import com.dimension.maskbook.persona.export.model.ConnectAccountData
 import com.dimension.maskbook.persona.export.model.IndexedDBPersona
+import com.dimension.maskbook.persona.export.model.IndexedDBProfile
+import com.dimension.maskbook.persona.export.model.IndexedDBRelation
 import com.dimension.maskbook.persona.export.model.PersonaData
 import com.dimension.maskbook.persona.export.model.PlatformType
 import com.dimension.maskbook.persona.export.model.SocialData
@@ -230,5 +232,21 @@ internal class PersonaRepository(
 
     override suspend fun restorePersonaBackup(list: List<IndexedDBPersona>) {
         personaDataSource.addAll(list)
+    }
+
+    override suspend fun createProfileBackup(): List<IndexedDBProfile> {
+        return profileDataSource.getProfileList()
+    }
+
+    override suspend fun restoreProfileBackup(profile: List<IndexedDBProfile>) {
+        profileDataSource.addAll(profile)
+    }
+
+    override suspend fun createRelationsBackup(): List<IndexedDBRelation> {
+        return relationDataSource.getAll()
+    }
+
+    override suspend fun restoreRelationBackup(relation: List<IndexedDBRelation>) {
+        relationDataSource.addAll(relation)
     }
 }

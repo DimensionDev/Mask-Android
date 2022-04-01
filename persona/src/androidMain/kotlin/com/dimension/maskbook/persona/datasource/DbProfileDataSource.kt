@@ -21,12 +21,13 @@
 package com.dimension.maskbook.persona.datasource
 
 import com.dimension.maskbook.persona.db.PersonaDatabase
+import com.dimension.maskbook.persona.db.migrator.mapper.toDbProfileRecord
 import com.dimension.maskbook.persona.db.migrator.mapper.toIndexedDBProfile
 import com.dimension.maskbook.persona.db.model.DbProfileRecord
 import com.dimension.maskbook.persona.db.model.ProfileWithLinkedProfile
+import com.dimension.maskbook.persona.export.model.IndexedDBProfile
 import com.dimension.maskbook.persona.export.model.Network
 import com.dimension.maskbook.persona.export.model.SocialData
-import com.dimension.maskbook.persona.model.indexed.IndexedDBProfile
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -48,6 +49,10 @@ class DbProfileDataSource(database: PersonaDatabase) {
 
     suspend fun getProfileList(): List<IndexedDBProfile> {
         return profileDao.getList().map { it.toIndexedDBProfile() }
+    }
+
+    suspend fun addAll(profile: List<IndexedDBProfile>) {
+        profileDao.insert(profile.map { it.toDbProfileRecord() })
     }
 }
 

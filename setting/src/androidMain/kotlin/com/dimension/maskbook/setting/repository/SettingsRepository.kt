@@ -23,7 +23,6 @@ package com.dimension.maskbook.setting.repository
 import com.dimension.maskbook.labs.export.model.AppKey
 import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.setting.data.JSDataSource
-import com.dimension.maskbook.setting.data.JSMethod
 import com.dimension.maskbook.setting.data.SettingDataSource
 import com.dimension.maskbook.setting.export.model.Appearance
 import com.dimension.maskbook.setting.export.model.BackupMeta
@@ -31,7 +30,12 @@ import com.dimension.maskbook.setting.export.model.BackupMetaFile
 import com.dimension.maskbook.setting.export.model.DataProvider
 import com.dimension.maskbook.setting.export.model.Language
 import com.dimension.maskbook.setting.model.mapping.toBackupPersona
+import com.dimension.maskbook.setting.model.mapping.toBackupProfile
+import com.dimension.maskbook.setting.model.mapping.toBackupRelation
 import com.dimension.maskbook.setting.model.mapping.toIndexedDBPersona
+import com.dimension.maskbook.setting.model.mapping.toIndexedDBProfile
+import com.dimension.maskbook.setting.model.mapping.toIndexedDBRelation
+import com.dimension.maskbook.wallet.export.WalletServices
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -40,7 +44,7 @@ internal class SettingsRepository(
     private val personaServices: PersonaServices,
     private val settingDataSource: SettingDataSource,
     private val jsDataSource: JSDataSource,
-    private val jsMethod: JSMethod,
+    private val walletServices: WalletServices,
 ) : ISettingsRepository {
     private val scope = CoroutineScope(Dispatchers.IO)
     override val biometricEnabled: Flow<Boolean>
@@ -113,6 +117,10 @@ internal class SettingsRepository(
     override suspend fun restoreBackup(value: BackupMetaFile) {
         val persona = value.personas.map { it.toIndexedDBPersona() }
         personaServices.restorePersonaBackup(persona)
+        val profile = value.profiles.map { it.toIndexedDBProfile() }
+        personaServices.restoreProfileBackup(profile)
+        val relation = value.relations.map { it.toIndexedDBRelation() }
+        personaServices.restoreRelationBackup(relation)
     }
 
     override suspend fun createBackup(
@@ -160,7 +168,9 @@ internal class SettingsRepository(
     }
 
     private suspend fun backupRelations(): List<BackupMetaFile.Relation> {
-        TODO("Not yet implemented")
+        return personaServices.createRelationsBackup().map {
+            it.toBackupRelation()
+        }
     }
 
     private suspend fun backupPosts(): List<BackupMetaFile.Post> {
@@ -168,11 +178,13 @@ internal class SettingsRepository(
     }
 
     private suspend fun backupWallets(): List<BackupMetaFile.Wallet> {
-        TODO("Not yet implemented")
+        TODO("not implemented")
     }
 
     private suspend fun backProfiles(): List<BackupMetaFile.Profile> {
-        TODO("Not yet implemented")
+        return personaServices.createProfileBackup().map {
+            it.toBackupProfile()
+        }
     }
 
     private suspend fun backupPersona(hasPrivateKeyOnly: Boolean): List<BackupMetaFile.Persona> {
