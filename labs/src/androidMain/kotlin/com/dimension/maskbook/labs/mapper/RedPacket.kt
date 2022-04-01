@@ -24,6 +24,7 @@ import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.common.ext.humanizeToken
 import com.dimension.maskbook.common.ext.onDrawableRes
 import com.dimension.maskbook.labs.R
+import com.dimension.maskbook.labs.model.RedPacketState
 import com.dimension.maskbook.labs.model.options.RedPacketOptions
 import com.dimension.maskbook.labs.model.ui.UiLuckyDropData
 import com.dimension.maskbook.wallet.export.model.ChainData
@@ -35,13 +36,10 @@ import kotlin.math.pow
 
 private const val passwordInvalid = "PASSWORD INVALID"
 
-fun RedPacketOptions.toUiLuckyDropData(
+fun RedPacketOptions.toRedPacketState(
     currentWallet: WalletData,
     currentChain: ChainData,
-): UiLuckyDropData {
-    val amount = BigDecimal(payload.total).divide(BigDecimal(10.0.pow(payload.token.decimals)))
-    val endTime = DateTime(payload.creationTime + payload.duration)
-    val timeZone = TimeZone.getDefault().getDisplayName(false, TimeZone.SHORT)
+): RedPacketState {
 
     val isExpired = availability.expired
     val isEmpty = BigDecimal(availability.balance).compareTo(BigDecimal.ZERO) == 0
@@ -55,8 +53,30 @@ fun RedPacketOptions.toUiLuckyDropData(
 
     val canClaim = !isExpired && !isEmpty && !isClaimed && isPasswordValid && isOnSameChain
     val canRefund = isExpired && !isEmpty && isCreator && isOnSameChain
-    // val canSend = !isEmpty && !isExpired && !isRefunded && isCreator && isOnSameChain
+    val canSend = !isEmpty && !isExpired && !isRefunded && isCreator && isOnSameChain
 
+    return RedPacketState(
+        isExpired = isExpired,
+        isEmpty = isEmpty,
+        isClaimed = isClaimed,
+        isRefunded = isRefunded,
+        isCreator = isCreator,
+        isPasswordValid = isPasswordValid,
+        isOnSameChain = isOnSameChain,
+        canClaim = canClaim,
+        canRefund = canRefund,
+        canSend = canSend,
+    )
+}
+
+fun RedPacketOptions.toUiLuckyDropData(
+    currentWallet: WalletData,
+    currentChain: ChainData,
+): UiLuckyDropData {
+    val amount = BigDecimal(payload.total).divide(BigDecimal(10.0.pow(payload.token.decimals)))
+    val endTime = DateTime(payload.creationTime + payload.duration)
+    val timeZone = TimeZone.getDefault().getDisplayName(false, TimeZone.SHORT)
+    val state = toRedPacketState(currentWallet, currentChain)
     return UiLuckyDropData(
         wallet = UiLuckyDropData.Wallet(
             name = currentWallet.name,
@@ -77,19 +97,19 @@ fun RedPacketOptions.toUiLuckyDropData(
             amountString = amount.toString() + " " + payload.token.symbol,
             endTime = endTime.toString("yyyy/MM/dd hh a", Locale.US) + " " + timeZone,
             stateStringRes = when {
-                isClaimed -> R.string.scene_open_red_package_claimed
-                isRefunded -> R.string.scene_open_red_package_refunded
-                isExpired -> R.string.scene_open_red_package_expired
-                isEmpty -> R.string.scene_open_red_package_empty
+                state.isClaimed -> R.string.scene_open_red_package_claimed
+                state.isRefunded -> R.string.scene_open_red_package_refunded
+                state.isExpired -> R.string.scene_open_red_package_expired
+                state.isEmpty -> R.string.scene_open_red_package_empty
                 else -> R.string.scene_open_red_package_on_going
             },
         ),
-        buttonEnabled = canClaim || canRefund,
+        buttonEnabled = state.canClaim || state.canRefund,
         buttonStringRes = when {
-            canClaim -> R.string.scene_open_red_package_claim
-            canRefund -> R.string.scene_open_red_package_refund
-            isExpired -> R.string.scene_open_red_package_expired
-            !isOnSameChain -> R.string.scene_open_red_package_wrong_network
+            state.canClaim -> R.string.scene_open_red_package_claim
+            state.canRefund -> R.string.scene_open_red_package_refund
+            state.isExpired -> R.string.scene_open_red_package_expired
+            !state.isOnSameChain -> R.string.scene_open_red_package_wrong_network
             else -> 0
         }
     )

@@ -20,16 +20,22 @@
  */
 package com.dimension.maskbook.labs.data
 
+import com.dimension.maskbook.common.ext.decodeJson
 import com.dimension.maskbook.common.route.Navigator
 import com.dimension.maskbook.extension.export.ExtensionServices
+import com.dimension.maskbook.labs.mapper.toRedPacketState
+import com.dimension.maskbook.labs.model.options.RedPacketOptions
 import com.dimension.maskbook.labs.route.LabsRoute
+import com.dimension.maskbook.wallet.export.WalletServices
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 class RedPacketMethod(
     private val scope: CoroutineScope,
     private val services: ExtensionServices,
+    private val walletServices: WalletServices,
 ) {
 
     fun startSubscribe() {
@@ -37,8 +43,18 @@ class RedPacketMethod(
             .onEach { message ->
                 when (message.method) {
                     notifyRedPacket -> {
-                        // val params = message.params ?: return@onEach
-                        // Navigator.navigate(LabsRoute.RedPacket.LuckyDrop(params))
+                        val params = message.params ?: return@onEach
+                        val options = params.decodeJson<RedPacketOptions>()
+
+                        val currentWallet = walletServices.currentWallet.firstOrNull()
+                            ?: return@onEach
+                        val currentChain = walletServices.currentChain.firstOrNull()
+                            ?: return@onEach
+
+                        val data = options.toRedPacketState(currentWallet, currentChain)
+                        if (data.canClaim || data.canRefund) {
+                            Navigator.navigate(LabsRoute.RedPacket.LuckyDrop(params))
+                        }
                     }
                     claimOrRefundRedPacket -> {
                         val params = message.params ?: return@onEach
