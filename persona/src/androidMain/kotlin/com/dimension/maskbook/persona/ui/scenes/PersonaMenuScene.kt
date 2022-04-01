@@ -188,7 +188,7 @@ fun PersonaMenuScene(
                                 contentDescription = null
                             )
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text(text = "Download Persona QR Code")
+                            Text(text = stringResource(R.string.scene_persona_download_qr_code_title))
                         }
                     }
                     Spacer(modifier = Modifier.height(16.dp))

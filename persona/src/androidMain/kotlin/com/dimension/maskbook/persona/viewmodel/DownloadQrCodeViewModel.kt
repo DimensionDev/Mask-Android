@@ -28,26 +28,19 @@ import android.view.View
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
-import com.dimension.maskbook.persona.BuildConfig
 import com.dimension.maskbook.persona.datasource.DbPersonaDataSource
 import com.dimension.maskbook.persona.repository.IPersonaRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.mapNotNull
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class DownloadQrCodeViewModel(
     private val personaRepository: IPersonaRepository,
     private val dataSource: DbPersonaDataSource,
 ) : ViewModel() {
-    enum class DownloadState {
-        Idle,
-        Pending,
-        Success,
-        Failed
-    }
-    private val _state = MutableStateFlow(DownloadState.Idle)
-    val state = _state.asStateIn(viewModelScope)
+    private val _filePickerLaunched = MutableStateFlow(false)
+    val filePickerLaunched = _filePickerLaunched.asStateIn(viewModelScope)
 
     val personaQrCode = personaRepository.currentPersona.mapNotNull {
         it?.let { persona ->
@@ -56,32 +49,29 @@ class DownloadQrCodeViewModel(
     }.asStateIn(viewModelScope, null)
 
     fun pickFile() {
-        _state.value = DownloadState.Pending
+        _filePickerLaunched.value = true
     }
 
-    fun save(uri: Uri, context: Context, pdfContent: View, height: Int, width: Int) {
-        _state.value = DownloadState.Pending
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                personaQrCode.value?.let {
-                    // generate PDF
-                    val pdfDocument = PdfDocument()
-                    val myPageInfo = PageInfo.Builder(width, height, 1).create()
-                    val myPage = pdfDocument.startPage(myPageInfo)
-                    pdfContent.draw(myPage.canvas)
-                    pdfDocument.finishPage(myPage)
-                    context.contentResolver.openOutputStream(uri)?.use {
-                        pdfDocument.writeTo(it)
-                    }
-                    pdfDocument.close()
-                    _state.value = DownloadState.Success
-                } ?: kotlin.run {
-                    _state.value = DownloadState.Failed
+    suspend fun save(
+        uri: Uri,
+        context: Context,
+        pdfContent: View,
+        height: Int,
+        width: Int
+    ) = withContext(Dispatchers.IO) {
+        runCatching {
+            personaQrCode.value?.let {
+                // generate PDF
+                val pdfDocument = PdfDocument()
+                val myPageInfo = PageInfo.Builder(width, height, 1).create()
+                val myPage = pdfDocument.startPage(myPageInfo)
+                pdfContent.draw(myPage.canvas)
+                pdfDocument.finishPage(myPage)
+                context.contentResolver.openOutputStream(uri)?.use {
+                    pdfDocument.writeTo(it)
                 }
-            } catch (e: Throwable) {
-                if (BuildConfig.DEBUG) e.printStackTrace()
-                _state.value = DownloadState.Failed
-            }
+                pdfDocument.close()
+            } ?: throw Error("PersonaQrCode info is null")
         }
     }
 }

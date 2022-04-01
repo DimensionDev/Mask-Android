@@ -511,6 +511,13 @@
             "tips": "This export is only for exporting private key. We do not export any other data. If you need more data, please go to Settings: ",
             "backup_recovery":"Backup and Recovery"
         },
+        "persona_download_qr_code": {
+            "title": "Download Persona QR Code",
+            "identity_code": "Identity Code",
+            "tips": "The QR code encrypts the identity code or private key of your persona. It is recommended to print it. You can use Mask App to scan the QR code to login.",
+            "success": "Download success.",
+            "failed": "Download failed."
+        },
         "persona_contacts": {
             "empty_contacts_tips": "You don’t have encrypted friends. \nInvite friends to download Mask Network.",
             "empty_search_tips": "No contact found. This account is not\ncaptured on Timeline.",
@@ -595,6 +602,10 @@
             "create_an_identity": "Create an Identity",
             "recovery_sign_in": "Recovery & Sign In",
             "synchronization": "Synchronization"
+        },
+        "synchronization": {
+            "success": "Synchronization success",
+            "failed": "Synchronization failed"
         },
         "identity_create": {
             "title": "Verify identity code",

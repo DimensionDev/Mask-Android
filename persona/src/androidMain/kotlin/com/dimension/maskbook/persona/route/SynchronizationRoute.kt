@@ -106,7 +106,7 @@ fun SynchronizationSuccess(
     MaskDialog(
         onDismissRequest = onBack,
         title = {
-            Text("Synchronization Success")
+            Text(stringResource(R.string.scene_synchronization_success))
         },
         icon = {
             Image(painter = painterResource(R.drawable.ic_success), contentDescription = "")
@@ -142,7 +142,7 @@ fun SynchronizationFailed(
     MaskDialog(
         onDismissRequest = onBack,
         title = {
-            Text("Synchronization Failed")
+            Text(stringResource(R.string.scene_synchronization_failed))
         },
         icon = {
             Image(painter = painterResource(R.drawable.ic_failed), contentDescription = "")

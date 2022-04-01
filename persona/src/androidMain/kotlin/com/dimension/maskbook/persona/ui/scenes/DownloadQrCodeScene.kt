@@ -37,13 +37,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -59,19 +59,20 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.dimension.maskbook.common.ext.observeAsState
+import com.dimension.maskbook.common.ext.onFinished
 import com.dimension.maskbook.common.route.navigationComposeAnimComposable
 import com.dimension.maskbook.common.route.navigationComposeAnimComposablePackage
 import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
 import com.dimension.maskbook.common.ui.barcode.rememberBarcodeBitmap
-import com.dimension.maskbook.common.ui.widget.MaskDialog
-import com.dimension.maskbook.common.ui.widget.MaskScaffold
-import com.dimension.maskbook.common.ui.widget.MaskScene
-import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
+import com.dimension.maskbook.common.ui.notification.StringResNotificationEvent.Companion.show
+import com.dimension.maskbook.common.ui.scene.LoadingScene
+import com.dimension.maskbook.common.ui.widget.LocalInAppNotification
 import com.dimension.maskbook.common.ui.widget.button.SecondaryButton
 import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.export.model.PersonaQrCode
 import com.dimension.maskbook.persona.route.PersonaRoute
 import com.dimension.maskbook.persona.viewmodel.DownloadQrCodeViewModel
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 
 @NavGraphDestination(
@@ -85,8 +86,10 @@ fun DownloadQrCodeScene(
 ) {
     val viewModel = getViewModel<DownloadQrCodeViewModel>()
     val personaQrCode by viewModel.personaQrCode.observeAsState()
-    val state by viewModel.state.observeAsState()
+    val filePickerLaunched by viewModel.filePickerLaunched.observeAsState()
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    val inAppNotification = LocalInAppNotification.current
     val pdfView = remember(personaQrCode) {
         ComposeView(context).apply {
             layoutParams = ViewGroup.LayoutParams(
@@ -104,14 +107,23 @@ fun DownloadQrCodeScene(
         contract = ActivityResultContracts.CreateDocument(),
         onResult = {
             if (it != null) {
+                // ensure compose view render
                 pdfView.post {
-                    viewModel.save(
-                        uri = it,
-                        context = context,
-                        pdfContent = pdfView,
-                        height = pdfView.height,
-                        width = pdfView.width
-                    )
+                    scope.launch {
+                        viewModel.save(
+                            uri = it,
+                            context = context,
+                            pdfContent = pdfView,
+                            height = pdfView.height,
+                            width = pdfView.width
+                        ).onSuccess {
+                            inAppNotification.show(R.string.scene_persona_download_qr_code_success)
+                        }.onFailure {
+                            inAppNotification.show(R.string.scene_persona_download_qr_code_failed)
+                        }.onFinished {
+                            navController.popBackStack()
+                        }
+                    }
                 }
             } else {
                 navController.popBackStack()
@@ -119,37 +131,23 @@ fun DownloadQrCodeScene(
         },
     )
 
-    MaskScene {
-        MaskScaffold {
-            Box {
-                personaQrCode?.let { info ->
-                    AndroidView(
-                        factory = {
-                            pdfView.apply {
-                                post {
-                                    if (state == DownloadQrCodeViewModel.DownloadState.Idle) {
-                                        viewModel.pickFile()
-                                        filePickerLauncher.launch("mask-persona-${info.nickName}.pdf")
-                                    }
-                                }
+    Box {
+        // won't display only for pdf generate
+        personaQrCode?.let { info ->
+            AndroidView(
+                factory = {
+                    pdfView.apply {
+                        post {
+                            if (!filePickerLaunched) {
+                                viewModel.pickFile()
+                                filePickerLauncher.launch("mask-persona-${info.nickName}.pdf")
                             }
                         }
-                    )
-                }
-                when (state) {
-                    DownloadQrCodeViewModel.DownloadState.Idle -> {}
-                    DownloadQrCodeViewModel.DownloadState.Pending -> {
-                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-                    }
-                    DownloadQrCodeViewModel.DownloadState.Success -> {
-                        DownloadSuccess(navController)
-                    }
-                    DownloadQrCodeViewModel.DownloadState.Failed -> {
-                        DownloadFailed(navController)
                     }
                 }
-            }
+            )
         }
+        LoadingScene()
     }
 }
 
@@ -202,7 +200,7 @@ private fun QrCodePdfPreview(info: PersonaQrCode) {
         info.identityWords.takeIf { it.isNotEmpty() }?.let {
             Divider(modifier = Modifier.fillMaxWidth(), color = Color.Gray)
             Spacer(Modifier.height(20.dp))
-            Text("Identity Code", style = MaterialTheme.typography.h6, color = Color.Black)
+            Text(stringResource(R.string.scene_persona_download_qr_code_identity_code), style = MaterialTheme.typography.h6, color = Color.Black)
             Spacer(Modifier.height(10.dp))
             it.split(" ").withIndex()
                 .groupBy { it.index / 3 }
@@ -225,40 +223,8 @@ private fun QrCodePdfPreview(info: PersonaQrCode) {
                 }
         }
         Text(
-            "The QR code encrypts the identity code or private key of your persona. It's recommended to print it. You can use Mask App to scan the QR code to login.",
+            stringResource(R.string.scene_persona_download_qr_code_tips),
             style = MaterialTheme.typography.caption, color = MaterialTheme.colors.primary
         )
     }
-}
-
-@Composable
-private fun DownloadSuccess(navController: NavController) {
-    MaskDialog(
-        onDismissRequest = { navController.popBackStack() },
-        title = { Text("Download Success") },
-        icon = { Image(painterResource(R.drawable.ic_success), contentDescription = null) },
-        buttons = {
-            PrimaryButton(onClick = {
-                navController.popBackStack()
-            }) {
-                Text(stringResource(R.string.common_controls_done))
-            }
-        }
-    )
-}
-
-@Composable
-private fun DownloadFailed(navController: NavController) {
-    MaskDialog(
-        onDismissRequest = { navController.popBackStack() },
-        title = { Text("Download Failed") },
-        icon = { Image(painterResource(R.drawable.ic_failed), contentDescription = null) },
-        buttons = {
-            PrimaryButton(onClick = {
-                navController.popBackStack()
-            }) {
-                Text(stringResource(R.string.common_controls_ok))
-            }
-        }
-    )
 }
