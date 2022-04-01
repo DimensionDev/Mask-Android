@@ -20,16 +20,13 @@
  */
 package com.dimension.maskbook.wallet.handler
 
-import com.dimension.maskbook.common.ext.decodeJson
-import com.dimension.maskbook.common.ext.encodeBase64
 import com.dimension.maskbook.common.ext.encodeJson
 import com.dimension.maskbook.common.ext.normalized
 import com.dimension.maskbook.common.route.Navigator
 import com.dimension.maskbook.wallet.data.Web3Request
 import com.dimension.maskbook.wallet.db.model.CoinPlatformType
+import com.dimension.maskbook.wallet.model.SendTokenRequest
 import com.dimension.maskbook.wallet.repository.IWalletRepository
-import com.dimension.maskbook.wallet.repository.SendTokenConfirmData
-import com.dimension.maskbook.wallet.repository.SendTransactionData
 import com.dimension.maskbook.wallet.repository.httpService
 import com.dimension.maskbook.wallet.route.WalletRoute
 import com.fasterxml.jackson.core.type.TypeReference
@@ -85,13 +82,13 @@ internal class Web3MessageHandler(
                         )
                     }
                     "eth_sendTransaction" -> {
-                        val data = payload.params.firstOrNull()?.toString()
-                            ?.decodeJson<SendTransactionData>()?.let {
-                                SendTokenConfirmData(
-                                    it, request.id, request.payload.id, request.payload.jsonrpc
-                                )
-                            }?.encodeJson()?.encodeBase64() ?: return@launch
-                        Navigator.navigate(WalletRoute.SendTokenConfirm(data))
+                        val dataRaw = payload.params.firstOrNull()?.encodeJson() ?: return@launch
+                        val requestRaw = SendTokenRequest(
+                            messageId = request.id,
+                            payloadId = request.payload.id,
+                            jsonrpc = request.payload.jsonrpc,
+                        ).encodeJson()
+                        Navigator.navigate(WalletRoute.SendTokenConfirm(dataRaw, requestRaw))
                     }
                     "personal_sign" -> {
                         val message =

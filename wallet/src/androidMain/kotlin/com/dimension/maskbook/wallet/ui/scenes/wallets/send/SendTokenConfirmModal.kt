@@ -30,7 +30,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.dimension.maskbook.common.ext.decodeBase64
 import com.dimension.maskbook.common.ext.decodeJson
 import com.dimension.maskbook.common.ext.fromHexString
 import com.dimension.maskbook.common.ext.humanizeDollar
@@ -41,9 +40,11 @@ import com.dimension.maskbook.common.route.navigationComposeBottomSheetPackage
 import com.dimension.maskbook.common.routeProcessor.annotations.Back
 import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
 import com.dimension.maskbook.common.routeProcessor.annotations.Path
+import com.dimension.maskbook.common.routeProcessor.annotations.Query
+import com.dimension.maskbook.wallet.export.model.SendTransactionData
 import com.dimension.maskbook.wallet.export.model.WalletTokenData
+import com.dimension.maskbook.wallet.model.SendTokenRequest
 import com.dimension.maskbook.wallet.repository.GasPriceEditMode
-import com.dimension.maskbook.wallet.repository.SendTokenConfirmData
 import com.dimension.maskbook.wallet.route.WalletRoute
 import com.dimension.maskbook.wallet.ui.scenes.wallets.UnlockWalletDialog
 import com.dimension.maskbook.wallet.viewmodel.wallets.UnlockWalletViewModel
@@ -61,13 +62,16 @@ import java.math.BigDecimal
 )
 @Composable
 fun SendTokenConfirmModal(
-    @Path("data") dataBase64: String,
     @Back onBack: () -> Unit,
+    @Path("dataRaw") dataRaw: String,
+    @Query("requestRaw") requestRaw: String?,
 ) {
-    val data = remember(dataBase64) { dataBase64.decodeBase64().decodeJson<SendTokenConfirmData>() }
+    val data = remember(dataRaw) { dataRaw.decodeJson<SendTransactionData>() }
+    val request = remember(requestRaw) { requestRaw?.decodeJson<SendTokenRequest>() }
+
     val navController = rememberNavController()
     val viewModel = getViewModel<Web3TransactionConfirmViewModel> {
-        parametersOf(data)
+        parametersOf(data, request)
     }
     val token by viewModel.tokenData.observeAsState(null)
     val address by viewModel.addressData.observeAsState(null)
@@ -75,7 +79,7 @@ fun SendTokenConfirmModal(
     address?.let { addressData ->
         token?.let { tokenData ->
             val gasFeeViewModel = getViewModel<GasFeeViewModel> {
-                parametersOf(data.data.gas?.fromHexString()?.toDouble() ?: 21000.0)
+                parametersOf(data.gas?.fromHexString()?.toDouble() ?: 21000.0)
             }
             val gasLimit by gasFeeViewModel.gasLimit.observeAsState(initial = -1.0)
             val maxPriorityFee by gasFeeViewModel.maxPriorityFeePerGas.observeAsState(initial = -1.0)

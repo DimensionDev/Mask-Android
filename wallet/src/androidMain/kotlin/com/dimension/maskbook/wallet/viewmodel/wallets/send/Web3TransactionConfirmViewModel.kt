@@ -27,9 +27,10 @@ import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.common.ext.onFinished
 import com.dimension.maskbook.extension.export.ExtensionServices
 import com.dimension.maskbook.wallet.export.model.ChainType
+import com.dimension.maskbook.wallet.export.model.SendTransactionData
 import com.dimension.maskbook.wallet.ext.hexWei
 import com.dimension.maskbook.wallet.handler.Web3SendResponse
-import com.dimension.maskbook.wallet.repository.SendTokenConfirmData
+import com.dimension.maskbook.wallet.model.SendTokenRequest
 import com.dimension.maskbook.wallet.usecase.GetAddressUseCase
 import com.dimension.maskbook.wallet.usecase.GetWalletNativeTokenUseCase
 import com.dimension.maskbook.wallet.usecase.GetWalletTokenByAddressUseCase
@@ -44,7 +45,8 @@ import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 
 class Web3TransactionConfirmViewModel(
-    private val data: SendTokenConfirmData,
+    private val data: SendTransactionData,
+    private val request: SendTokenRequest?,
     private val setCurrentChain: SetCurrentChainUseCase,
     private val getWalletTokenByAddress: GetWalletTokenByAddressUseCase,
     private val getWalletNativeToken: GetWalletNativeTokenUseCase,
@@ -53,7 +55,7 @@ class Web3TransactionConfirmViewModel(
     private val extensionServices: ExtensionServices,
 ) : ViewModel() {
 
-    val chainType = data.data.chainId?.let { chainId ->
+    val chainType = data.chainId?.let { chainId ->
         ChainType.values().firstOrNull { it.chainId == chainId }
     } ?: ChainType.eth
 
@@ -73,7 +75,7 @@ class Web3TransactionConfirmViewModel(
         onResult: (success: Boolean) -> Unit
     ) {
         _loadingState.value = true
-        data.data.to?.let { address ->
+        data.to?.let { address ->
             viewModelScope.launch {
                 sendTransaction(
                     amount = amount.value,
@@ -82,26 +84,30 @@ class Web3TransactionConfirmViewModel(
                     gasLimit = gasLimit,
                     maxFee = maxFee,
                     maxPriorityFee = maxPriorityFee,
-                    data = data.data.data ?: "",
+                    data = data.data ?: "",
                 ).onSuccess {
-                    extensionServices.sendJSEventResponse(
-                        Web3SendResponse.success(
-                            data.messageId,
-                            data.jsonrpc,
-                            data.payloadId,
-                            it
+                    request?.let { request ->
+                        extensionServices.sendJSEventResponse(
+                            Web3SendResponse.success(
+                                request.messageId,
+                                request.jsonrpc,
+                                request.payloadId,
+                                it
+                            )
                         )
-                    )
+                    }
                     onResult.invoke(true)
                 }.onFailure {
-                    extensionServices.sendJSEventResponse(
-                        Web3SendResponse.error(
-                            data.messageId,
-                            data.jsonrpc,
-                            data.payloadId,
-                            it.cause?.message ?: "Failed to send transaction"
+                    request?.let { request ->
+                        extensionServices.sendJSEventResponse(
+                            Web3SendResponse.error(
+                                request.messageId,
+                                request.jsonrpc,
+                                request.payloadId,
+                                it.cause?.message ?: "Failed to send transaction"
+                            )
                         )
-                    )
+                    }
                     onResult.invoke(false)
                 }.onFinished {
                     _loadingState.value = false
@@ -112,7 +118,7 @@ class Web3TransactionConfirmViewModel(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val tokenData by lazy {
-        flow { emit(data.data.to) }
+        flow { emit(data.to) }
             .mapNotNull { it }
             .flatMapLatest {
                 combine(
@@ -126,12 +132,12 @@ class Web3TransactionConfirmViewModel(
             }.asStateIn(viewModelScope, null)
     }
 
-    val amount = MutableStateFlow(data.data.value?.hexWei?.ether ?: BigDecimal.ZERO)
+    val amount = MutableStateFlow(data.value?.hexWei?.ether ?: BigDecimal.ZERO)
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val addressData by lazy {
         flow {
-            emit(data.data.to)
+            emit(data.to)
         }.mapNotNull {
             it
         }.flatMapLatest {
@@ -140,13 +146,15 @@ class Web3TransactionConfirmViewModel(
     }
 
     fun cancel() {
-        extensionServices.sendJSEventResponse(
-            Web3SendResponse.error(
-                data.messageId,
-                data.jsonrpc,
-                data.payloadId,
-                "Transaction cancelled"
+        request?.let { request ->
+            extensionServices.sendJSEventResponse(
+                Web3SendResponse.error(
+                    request.messageId,
+                    request.jsonrpc,
+                    request.payloadId,
+                    "Transaction cancelled"
+                )
             )
-        )
+        }
     }
 }

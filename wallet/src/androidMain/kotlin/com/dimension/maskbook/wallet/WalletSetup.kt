@@ -32,7 +32,9 @@ import com.dimension.maskbook.wallet.db.AppDatabase
 import com.dimension.maskbook.wallet.db.RoomMigrations
 import com.dimension.maskbook.wallet.db.model.CoinPlatformType
 import com.dimension.maskbook.wallet.export.model.ChainType
+import com.dimension.maskbook.wallet.export.model.SendTransactionData
 import com.dimension.maskbook.wallet.handler.Web3MessageHandler
+import com.dimension.maskbook.wallet.model.SendTokenRequest
 import com.dimension.maskbook.wallet.repository.CollectibleRepository
 import com.dimension.maskbook.wallet.repository.ICollectibleRepository
 import com.dimension.maskbook.wallet.repository.ISendHistoryRepository
@@ -42,7 +44,6 @@ import com.dimension.maskbook.wallet.repository.IWalletConnectRepository
 import com.dimension.maskbook.wallet.repository.IWalletContactRepository
 import com.dimension.maskbook.wallet.repository.IWalletRepository
 import com.dimension.maskbook.wallet.repository.SendHistoryRepository
-import com.dimension.maskbook.wallet.repository.SendTokenConfirmData
 import com.dimension.maskbook.wallet.repository.TokenRepository
 import com.dimension.maskbook.wallet.repository.TransactionRepository
 import com.dimension.maskbook.wallet.repository.WalletConnectRepository
@@ -392,9 +393,10 @@ private fun Module.provideViewModel() {
     viewModel { BackUpPasswordViewModel(get(), get()) }
     viewModel { (id: String) -> CollectibleDetailViewModel(id, get(), get(), get()) }
     viewModel { CollectiblesViewModel(get(), get()) }
-    viewModel { (data: SendTokenConfirmData) ->
+    viewModel { (data: SendTransactionData, request: SendTokenRequest?) ->
         Web3TransactionConfirmViewModel(
             data,
+            request,
             get(),
             get(),
             get(),

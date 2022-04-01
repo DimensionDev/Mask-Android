@@ -24,7 +24,6 @@ import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.common.ext.ifNullOrEmpty
 import com.dimension.maskbook.common.okhttp.okHttpClient
 import com.dimension.maskbook.debankapi.model.ChainID
-import com.dimension.maskbook.extension.export.model.ExtensionId
 import com.dimension.maskbook.wallet.db.model.CoinPlatformType
 import com.dimension.maskbook.wallet.db.model.DbCollectible
 import com.dimension.maskbook.wallet.db.model.DbWalletTokenTokenWithWallet
@@ -39,7 +38,6 @@ import com.dimension.maskbook.wallet.export.model.WalletCollectibleData
 import com.dimension.maskbook.wallet.export.model.WalletData
 import com.dimension.maskbook.wallet.export.model.WalletTokenData
 import kotlinx.coroutines.flow.Flow
-import kotlinx.serialization.Serializable
 import org.web3j.protocol.http.HttpService
 
 data class WalletCreateOrImportResult(
@@ -209,43 +207,6 @@ val ChainID.chainType: ChainType
 data class DWebData(
     val coinPlatformType: CoinPlatformType,
     val chainType: ChainType,
-)
-
-@Serializable
-data class SendTokenConfirmData(
-    val data: SendTransactionData,
-    val messageId: ExtensionId,
-    val payloadId: ExtensionId,
-    val jsonrpc: String,
-)
-
-@Serializable
-data class SendTransactionData(
-    val from: String? = null,
-    val to: String? = null,
-    val value: String? = null,
-    val gas: String? = null,
-    val gasPrice: String? = null,
-    val data: String? = null,
-    val nonce: Long? = null,
-    val chainId: Long? = null,
-    val common: SendTransactionDataCommon? = null,
-    val chain: String? = null,
-    val hardfork: String? = null,
-)
-
-@Serializable
-data class SendTransactionDataCommon(
-    val customChain: CustomChainParams?,
-    val baseChain: String?,
-    val hardfork: String?,
-)
-
-@Serializable
-data class CustomChainParams(
-    val name: String?,
-    val networkId: Long?,
-    val chainId: Long?,
 )
 
 interface IWalletRepository {
