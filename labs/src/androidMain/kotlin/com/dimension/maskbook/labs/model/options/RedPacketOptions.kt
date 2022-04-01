@@ -53,14 +53,14 @@ data class RedPacketOptions(
         // Payload
         val sender: Sender,
         @SerialName("contract_version")
-        val contractVersion: Int,
+        val contractVersion: Int = 0,
         val network: String,
         val token: ERC20Token = ERC20Token(),
         val tokenAddress: String? = null,
         val tokenType: Int? = null,
-        val claimers: List<Claimer>,
+        val claimers: List<Claimer> = emptyList(),
         @SerialName("total_remaining")
-        val totalRemaining: String,
+        val totalRemaining: String = "",
     ) {
         @Serializable
         data class Sender(
