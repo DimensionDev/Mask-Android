@@ -20,6 +20,7 @@
  */
 package com.dimension.maskbook.labs.ui.scenes.redpacket
 
+import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -50,7 +51,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
+import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.route.navigationComposeBottomSheet
 import com.dimension.maskbook.common.route.navigationComposeBottomSheetPackage
 import com.dimension.maskbook.common.routeProcessor.annotations.Back
@@ -77,6 +80,7 @@ import org.koin.core.parameter.parametersOf
 )
 @Composable
 fun LuckDropModal(
+    navController: NavController,
     @Back onBack: () -> Unit,
     @Path("data") data: String,
 ) {
@@ -105,7 +109,9 @@ fun LuckDropModal(
             Spacer(Modifier.height(8.dp))
             WalletTokenCard(
                 wallet = stateData.wallet,
-                onClick = {}
+                onClick = {
+                    navController.navigate(Uri.parse(Deeplinks.Wallet.SwitchWallet))
+                }
             )
             Spacer(Modifier.height(24.dp))
             RedPacketButton(

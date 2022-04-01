@@ -296,6 +296,9 @@ fun WalletNetworkSwitchWarningDialog(
 
 @NavGraphDestination(
     route = WalletRoute.SwitchWallet,
+    deeplink = [
+        Deeplinks.Wallet.SwitchWallet,
+    ],
     packageName = navigationComposeBottomSheetPackage,
     functionName = navigationComposeBottomSheet,
 )
