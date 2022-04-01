@@ -50,18 +50,17 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import coil.compose.rememberImagePainter
 import com.dimension.maskbook.common.ui.widget.HorizontalScenePadding
 import com.dimension.maskbook.common.ui.widget.MaskAnimatedVisibility
 import com.dimension.maskbook.common.ui.widget.MaskListItem
 import com.dimension.maskbook.common.ui.widget.MaskSearchInput
-import com.dimension.maskbook.common.ui.widget.NameImage
 import com.dimension.maskbook.common.ui.widget.SinglelineText
 import com.dimension.maskbook.common.ui.widget.button.MaskButton
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.model.ContactData
 import com.dimension.maskbook.persona.model.icon
+import com.dimension.maskbook.persona.ui.AvatarImage
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -182,18 +181,12 @@ fun LazyListScope.ContactsScene(
             MaskListItem(
                 icon = {
                     Box(contentAlignment = Alignment.BottomEnd) {
-                        if (item.avatar.isEmpty()) {
-                            NameImage(
-                                name = item.name,
-                                modifier = Modifier.size(38.dp),
-                            )
-                        } else {
-                            Image(
-                                painter = rememberImagePainter(item.avatar),
-                                contentDescription = null,
-                                modifier = Modifier.size(38.dp).clip(shape = CircleShape),
-                            )
-                        }
+                        AvatarImage(
+                            modifier = Modifier.size(38.dp),
+                            avatar = item.avatar,
+                            name = item.name,
+                            network = item.network
+                        )
                         Image(
                             painter = painterResource(item.network.icon),
                             contentDescription = null,

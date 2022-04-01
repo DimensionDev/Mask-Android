@@ -51,15 +51,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil.compose.rememberImagePainter
 import com.dimension.maskbook.common.ui.widget.HorizontalScenePadding
-import com.dimension.maskbook.common.ui.widget.NameImage
 import com.dimension.maskbook.common.ui.widget.button.MaskGridButton
 import com.dimension.maskbook.common.ui.widget.itemsGridIndexed
 import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.export.model.Network
 import com.dimension.maskbook.persona.export.model.SocialData
 import com.dimension.maskbook.persona.model.icon
+import com.dimension.maskbook.persona.ui.AvatarImage
 
 @Composable
 fun SocialScene(
@@ -169,7 +168,12 @@ private fun SocialItem(
             ),
         icon = {
             Box {
-                AvatarImage(item.avatar, item.name)
+                AvatarImage(
+                    modifier = Modifier.size(SocialScreenDefaults.itemIconSize),
+                    avatar = item.avatar,
+                    name = item.name,
+                    network = item.network,
+                )
                 Image(
                     painter = painterResource(item.network.icon),
                     contentDescription = null,
@@ -202,26 +206,6 @@ private fun SocialItem(
             )
         }
     )
-}
-
-@Composable
-private fun AvatarImage(avatar: String, name: String) {
-    if (avatar.isNotEmpty()) {
-        Image(
-            painter = rememberImagePainter(avatar),
-            contentDescription = null,
-            modifier = Modifier
-                .size(SocialScreenDefaults.itemIconSize)
-                .clip(CircleShape),
-            alpha = LocalContentAlpha.current,
-        )
-    } else {
-        NameImage(
-            name = name,
-            style = MaterialTheme.typography.h4,
-            modifier = Modifier.size(SocialScreenDefaults.itemIconSize),
-        )
-    }
 }
 
 @Preview(showBackground = true)
