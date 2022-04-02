@@ -36,14 +36,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.common.ui.widget.MaskCard
-import com.dimension.maskbook.common.ui.widget.MaskDialog
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskScene
 import com.dimension.maskbook.common.ui.widget.MaskTopAppBar
@@ -64,30 +61,6 @@ fun BackupIdentityScene(
     onSkipOrNext: () -> Unit,
     onBack: () -> Unit,
 ) {
-    var showDialog by rememberSaveable {
-        mutableStateOf(true)
-    }
-    if (showDialog) {
-        MaskDialog(
-            onDismissRequest = {
-                showDialog = false
-            },
-            buttons = {
-                PrimaryButton(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = { showDialog = false },
-                ) {
-                    Text(text = stringResource(R.string.common_controls_ok))
-                }
-            },
-            title = {
-                Text(text = stringResource(R.string.common_alert_identity_phrase_title))
-            },
-            text = {
-                Text(text = stringResource(R.string.common_alert_identity_phrase_description))
-            }
-        )
-    }
     BackupContent(
         words = words,
         onRefreshWords = onRefreshWords,

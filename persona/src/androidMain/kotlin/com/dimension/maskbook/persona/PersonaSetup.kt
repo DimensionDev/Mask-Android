@@ -189,7 +189,14 @@ object PersonaSetup : ModuleSetup {
         viewModel { (name: String) -> IdentityViewModel(get(), get(), name) }
         viewModel { PrivateKeyViewModel(get(), get()) }
         viewModel { (personaName: String) -> CreateIdentityViewModel(personaName, get(), get()) }
-        viewModel { DownloadQrCodeViewModel(get(), get()) }
+        viewModel { (idType: DownloadQrCodeViewModel.IdType, idBase64: String) ->
+            DownloadQrCodeViewModel(
+                idType = idType,
+                idBase64 = idBase64,
+                get(),
+                get()
+            )
+        }
     }
 
     override fun onExtensionReady() {

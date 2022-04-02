@@ -28,6 +28,7 @@ import android.view.View
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
+import com.dimension.maskbook.common.ext.decodeBase64
 import com.dimension.maskbook.persona.datasource.DbPersonaDataSource
 import com.dimension.maskbook.persona.repository.IPersonaRepository
 import kotlinx.coroutines.Dispatchers
@@ -37,15 +38,26 @@ import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.withContext
 
 class DownloadQrCodeViewModel(
+    private val idType: IdType,
+    private val idBase64: String,
     private val personaRepository: IPersonaRepository,
     private val dataSource: DbPersonaDataSource,
 ) : ViewModel() {
+    enum class IdType {
+        ID,
+        Mnemonic
+    }
     private val _filePickerLaunched = MutableStateFlow(false)
     val filePickerLaunched = _filePickerLaunched.asStateIn(viewModelScope)
 
-    val personaQrCode = personaRepository.currentPersona.mapNotNull {
-        it?.let { persona ->
-            dataSource.getPersonaQrCode(persona.identifier)
+    val personaQrCode = personaRepository.personaList.mapNotNull {
+        it.mapNotNull {
+            dataSource.getPersonaQrCode(it.identifier)
+        }.firstOrNull {
+            when (idType) {
+                IdType.ID -> it.identifier == idBase64.decodeBase64()
+                IdType.Mnemonic -> it.identityWords == idBase64.decodeBase64()
+            }
         }
     }.asStateIn(viewModelScope, null)
 

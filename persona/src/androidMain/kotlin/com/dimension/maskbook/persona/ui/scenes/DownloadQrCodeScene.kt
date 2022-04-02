@@ -34,6 +34,7 @@ import com.dimension.maskbook.common.ext.onFinished
 import com.dimension.maskbook.common.route.navigationComposeAnimComposable
 import com.dimension.maskbook.common.route.navigationComposeAnimComposablePackage
 import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
+import com.dimension.maskbook.common.routeProcessor.annotations.Path
 import com.dimension.maskbook.common.ui.notification.StringResNotificationEvent.Companion.show
 import com.dimension.maskbook.common.ui.scene.LoadingScene
 import com.dimension.maskbook.common.ui.widget.LocalInAppNotification
@@ -43,17 +44,22 @@ import com.dimension.maskbook.persona.ui.common.PersonaQrCodePdfView
 import com.dimension.maskbook.persona.viewmodel.DownloadQrCodeViewModel
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
+import org.koin.core.parameter.parametersOf
 
 @NavGraphDestination(
-    route = PersonaRoute.DownloadQrCode,
+    route = PersonaRoute.DownloadQrCode.path,
     packageName = navigationComposeAnimComposablePackage,
     functionName = navigationComposeAnimComposable,
 )
 @Composable
 fun DownloadQrCodeScene(
-    navController: NavController
+    navController: NavController,
+    @Path("idType") idType: String,
+    @Path("idBase64") idBase64: String
 ) {
-    val viewModel = getViewModel<DownloadQrCodeViewModel>()
+    val viewModel = getViewModel<DownloadQrCodeViewModel> {
+        parametersOf(DownloadQrCodeViewModel.IdType.valueOf(idType), idBase64)
+    }
     val personaQrCode by viewModel.personaQrCode.observeAsState()
     val filePickerLaunched by viewModel.filePickerLaunched.observeAsState()
     val context = LocalContext.current

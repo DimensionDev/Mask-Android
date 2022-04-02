@@ -21,6 +21,7 @@
 package com.dimension.maskbook.persona.ui.scenes
 
 import android.net.Uri
+import android.util.Base64
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -46,6 +47,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.dimension.maskbook.common.ext.encodeBase64
 import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.route.navigationComposeAnimComposable
 import com.dimension.maskbook.common.route.navigationComposeAnimComposablePackage
@@ -59,6 +61,7 @@ import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.common.ui.widget.button.MaskBackButton
 import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.route.PersonaRoute
+import com.dimension.maskbook.persona.viewmodel.DownloadQrCodeViewModel
 import com.dimension.maskbook.persona.viewmodel.PersonaMenuViewModel
 import org.koin.androidx.compose.getViewModel
 
@@ -175,7 +178,18 @@ fun PersonaMenuScene(
                             if (backupPassword.isEmpty()) {
                                 navController.navigate(Uri.parse(Deeplinks.Setting.SetupPasswordDialog))
                             } else {
-                                navController.navigate(Uri.parse(Deeplinks.Persona.BackUpPassword(PersonaRoute.DownloadQrCode)))
+                                currentPersona?.let {
+                                    navController.navigate(
+                                        Uri.parse(
+                                            Deeplinks.Persona.BackUpPassword(
+                                                PersonaRoute.DownloadQrCode(
+                                                    idType = DownloadQrCodeViewModel.IdType.ID,
+                                                    idBase64 = it.identifier.encodeBase64(Base64.NO_WRAP)
+                                                )
+                                            )
+                                        )
+                                    )
+                                }
                             }
                         }
                     ) {

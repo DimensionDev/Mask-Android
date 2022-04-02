@@ -21,6 +21,7 @@
 package com.dimension.maskbook.persona.ui.scenes.register.createidentity
 
 import android.net.Uri
+import android.util.Base64
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Text
@@ -30,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
+import com.dimension.maskbook.common.ext.encodeBase64
 import com.dimension.maskbook.common.ext.getNestedNavigationViewModel
 import com.dimension.maskbook.common.ext.navigate
 import com.dimension.maskbook.common.ext.observeAsState
@@ -42,11 +44,11 @@ import com.dimension.maskbook.common.route.navigationComposeDialogPackage
 import com.dimension.maskbook.common.routeProcessor.annotations.Back
 import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
 import com.dimension.maskbook.common.routeProcessor.annotations.Path
-import com.dimension.maskbook.common.ui.scene.VerifyMnemonicWordsScene
 import com.dimension.maskbook.common.ui.widget.MaskDialog
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.route.PersonaRoute
+import com.dimension.maskbook.persona.viewmodel.DownloadQrCodeViewModel
 import com.dimension.maskbook.persona.viewmodel.register.CreateIdentityViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -78,7 +80,12 @@ fun BackupRoute(
         },
         onDownload = {
             viewModel.download()
-            navController.navigate(PersonaRoute.DownloadQrCode)
+            navController.navigate(
+                PersonaRoute.DownloadQrCode(
+                    idType = DownloadQrCodeViewModel.IdType.Mnemonic,
+                    idBase64 = words.joinToString(separator = " ") { it.word }.encodeBase64(Base64.NO_WRAP)
+                )
+            )
         },
         onBack = onBack,
         onSkipOrNext = {
@@ -86,47 +93,6 @@ fun BackupRoute(
             navController.navigate(PersonaRoute.Register.CreateIdentity.Confirm(personaName, isWelcome))
         },
         showNext = showNext,
-    )
-}
-
-@NavGraphDestination(
-    route = PersonaRoute.Register.CreateIdentity.Verify.path,
-    packageName = navigationComposeAnimComposablePackage,
-    functionName = navigationComposeAnimComposable,
-    generatedFunctionName = GeneratedRouteName
-)
-@Composable
-fun VerifyRoute(
-    navController: NavController,
-    @Path("personaName") personaName: String,
-    @Path("isWelcome") isWelcome: Boolean,
-    @Back onBack: () -> Unit
-) {
-    val viewModel: CreateIdentityViewModel = navController
-        .getNestedNavigationViewModel(PersonaRoute.Register.CreateIdentity.Route) {
-            parametersOf(personaName)
-        }
-    val correct by viewModel.correct.observeAsState(initial = false)
-    val selectedWords by viewModel.selectedWords.observeAsState(initial = emptyList())
-    val wordsInRandomOrder by viewModel.wordsInRandomOrder.observeAsState(initial = emptyList())
-    VerifyMnemonicWordsScene(
-        words = wordsInRandomOrder,
-        onBack = {
-            viewModel.clearWords()
-            onBack.invoke()
-        },
-        onClear = { viewModel.clearWords() },
-        onConfirm = {
-            navController.navigate(PersonaRoute.Register.CreateIdentity.Confirm(personaName, isWelcome))
-        },
-        onWordSelected = {
-            viewModel.selectWord(it)
-        },
-        selectedWords = selectedWords,
-        correct = correct,
-        onWordDeselected = {
-            viewModel.deselectWord(it)
-        }
     )
 }
 

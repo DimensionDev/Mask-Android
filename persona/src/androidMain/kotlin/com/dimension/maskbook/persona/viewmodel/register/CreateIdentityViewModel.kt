@@ -47,14 +47,11 @@ class CreateIdentityViewModel(
 
     override fun confirm() {
         viewModelScope.launch {
-            try {
+            runCatching {
                 personaRepository.createPersonaFromMnemonic(
                     _words.value.map { it.word },
                     personaName
                 )
-            } catch (e: Throwable) {
-                // ignore
-                _loading.value = false
             }
         }
     }
