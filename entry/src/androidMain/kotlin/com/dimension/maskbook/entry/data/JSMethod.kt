@@ -30,25 +30,25 @@ internal class JSMethod(
     private val extensionServices: ExtensionServices,
 ) {
     fun openCreateWalletView(): Flow<String> {
-        return extensionServices.subscribeJSEvent("misc_openCreateWalletView").map {
+        return extensionServices.subscribeBackgroundJSEvent("misc_openCreateWalletView").map {
             if (!it.params.isNullOrEmpty()) Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona) else ""
         }
     }
 
     fun openDashboardView(): Flow<String> {
-        return extensionServices.subscribeJSEvent("misc_openDashboardView").map {
+        return extensionServices.subscribeBackgroundJSEvent("misc_openDashboardView").map {
             if (!it.params.isNullOrEmpty()) Deeplinks.Main.Home(CommonRoute.Main.Tabs.Wallet) else ""
         }
     }
 
     fun openAppsView(): Flow<String> {
-        return extensionServices.subscribeJSEvent("misc_openAppsView").map {
+        return extensionServices.subscribeBackgroundJSEvent("misc_openAppsView").map {
             if (!it.params.isNullOrEmpty()) Deeplinks.Main.Home(CommonRoute.Main.Tabs.Labs) else ""
         }
     }
 
     fun openSettingsView(): Flow<String> {
-        return extensionServices.subscribeJSEvent("misc_openSettingsView").map {
+        return extensionServices.subscribeBackgroundJSEvent("misc_openSettingsView").map {
             if (!it.params.isNullOrEmpty()) Deeplinks.Main.Home(CommonRoute.Main.Tabs.Setting) else ""
         }
     }

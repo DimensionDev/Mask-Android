@@ -40,7 +40,8 @@ import com.dimension.maskbook.extension.export.model.Site
 import com.dimension.maskbook.extension.repository.ExtensionRepository
 import com.dimension.maskbook.extension.route.ExtensionRoute
 import com.dimension.maskbook.extension.ui.WebContentScene
-import com.dimension.maskbook.extension.utils.MessageChannel
+import com.dimension.maskbook.extension.utils.BackgroundMessageChannel
+import com.dimension.maskbook.extension.utils.ContentMessageChannel
 import com.google.accompanist.navigation.animation.composable
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -85,13 +86,14 @@ object ExtensionSetup : ModuleSetup {
     }
 
     override fun dependencyInject() = module {
-        single { WebContentController(get()) }
+        single { WebContentController(get(), get(named(IoScopeName))) }
         single { ExtensionRepository(get()) }
-        single<ExtensionServices> { ExtensionServicesImpl(get(), get()) }
-        single { MessageChannel(get(), get(named(IoScopeName))) }
+        single<ExtensionServices> { ExtensionServicesImpl(get(), get(), get()) }
+        single { BackgroundMessageChannel(get(), get(named(IoScopeName))) }
+        single { ContentMessageChannel(get(), get(named(IoScopeName))) }
     }
 
     override fun onExtensionReady() {
-        KoinPlatformTools.defaultContext().get().get<MessageChannel>().startMessageCollect()
+        KoinPlatformTools.defaultContext().get().get<BackgroundMessageChannel>().startMessageCollect()
     }
 }

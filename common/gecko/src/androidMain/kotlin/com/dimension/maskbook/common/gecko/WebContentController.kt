@@ -25,10 +25,20 @@ import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import androidx.fragment.app.FragmentActivity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import mozilla.components.browser.engine.gecko.GeckoEngine
 import mozilla.components.browser.state.action.BrowserAction
 import mozilla.components.browser.state.engine.EngineMiddleware
@@ -47,20 +57,60 @@ import org.json.JSONObject
 import org.mozilla.geckoview.GeckoRuntime
 import java.io.Closeable
 
-private const val BackgroundPortName = "browser"
+private const val PortName = "browser"
 private const val TAG = "WebContentController"
 
+private class MessageHolder : MessageHandler {
+    private val _message = MutableSharedFlow<JSONObject>(extraBufferCapacity = Int.MAX_VALUE)
+    val message = _message.asSharedFlow()
+    private val _port = MutableStateFlow<Port?>(null)
+    val connected = _port.map { it != null }
+    override fun onPortConnected(port: Port) {
+        _port.tryEmit(port)
+    }
+
+    override fun onPortDisconnected(port: Port) {
+        _port.tryEmit(null)
+    }
+
+    override fun onPortMessage(message: Any, port: Port) {
+        when (message) {
+            is JSONObject -> message
+            is String -> JSONObject(message)
+            else -> null
+        }?.let {
+            _message.tryEmit(it)
+        }
+    }
+
+    fun sendMessage(message: JSONObject) {
+        _port.value?.postMessage(JSONObject(mapOf("result" to message.toString())))
+    }
+}
+
 class WebContentController(
-    fragmentActivity: Context,
+    context: Context,
+    private val scope: CoroutineScope,
     var onNavigate: (String) -> Boolean = { true },
 ) : Closeable {
-    private lateinit var _observer: Store.Subscription<BrowserState, BrowserAction>
-    private val _isExtensionConnected = MutableStateFlow(false)
-    val isExtensionConnected = _isExtensionConnected.asSharedFlow()
     private val _browserState = MutableStateFlow<BrowserState?>(null)
-    private var _port: Port? = null
+    private lateinit var _observer: Store.Subscription<BrowserState, BrowserAction>
+    private val _activeTabId = _browserState.mapNotNull { it?.selectedTab?.id }
+    private val _contentMessageHolders = MutableStateFlow(mapOf<String, MessageHolder>())
+    private val _backgroundMessageHolder = MessageHolder()
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val contentMessage: Flow<JSONObject> =
+        combine(_contentMessageHolders, _activeTabId) { holders, activeTabId ->
+            holders[activeTabId]?.message
+        }.mapNotNull { it }.flatMapLatest { it }
+    val backgroundMessage = _backgroundMessageHolder.message.map {
+        Log.i(TAG, "onBackgroundMessage: $it")
+        it
+    }
+    val isExtensionConnected = _backgroundMessageHolder.connected
     private val runtime by lazy {
-        GeckoRuntime.create(fragmentActivity)
+        GeckoRuntime.create(context)
     }
     private val interceptor by lazy {
         object : RequestInterceptor {
@@ -90,7 +140,7 @@ class WebContentController(
     }
     internal val engine by lazy {
         GeckoEngine(
-            fragmentActivity,
+            context,
             runtime = runtime,
             defaultSettings = DefaultSettings(
                 remoteDebuggingEnabled = BuildConfig.DEBUG,
@@ -116,31 +166,6 @@ class WebContentController(
         SessionUseCases(store)
     }
 
-    private val _message = MutableSharedFlow<JSONObject>(extraBufferCapacity = 50)
-    val message = _message.asSharedFlow()
-
-    private val messageHandler = object : MessageHandler {
-        override fun onPortConnected(port: Port) {
-            _port = port
-            _isExtensionConnected.value = true
-        }
-
-        override fun onPortDisconnected(port: Port) {
-            _port = null
-            _isExtensionConnected.value = false
-        }
-
-        override fun onPortMessage(message: Any, port: Port) {
-            when (message) {
-                is JSONObject -> message
-                is String -> JSONObject(message)
-                else -> null
-            }?.let {
-                Log.i(TAG, "onPortMessage: $it")
-                _message.tryEmit(it)
-            }
-        }
-    }
     fun installExtensions(
         id: String,
         url: String,
@@ -148,8 +173,28 @@ class WebContentController(
         engine.installWebExtension(
             id,
             url,
-            onSuccess = {
-                it.registerBackgroundMessageHandler(BackgroundPortName, messageHandler)
+            onSuccess = { extension ->
+                extension.registerBackgroundMessageHandler(PortName, _backgroundMessageHolder)
+                _browserState.mapNotNull { it?.tabs }.onEach { list ->
+                    list.forEach { tab ->
+                        tab.engineState.engineSession?.let { session ->
+                            if (!extension.hasContentMessageHandler(session, PortName)) {
+                                val holder = MessageHolder()
+                                _contentMessageHolders.value += tab.id to holder
+                                extension.registerContentMessageHandler(
+                                    session,
+                                    PortName,
+                                    holder,
+                                )
+                            }
+                        }
+                    }
+                }.launchIn(scope)
+                _browserState.mapNotNull { it?.closedTabs }.onEach { list ->
+                    list.forEach { tab ->
+                        _contentMessageHolders.value -= tab.id
+                    }
+                }.launchIn(scope)
             }
         )
     }
@@ -186,8 +231,19 @@ class WebContentController(
         runtime.shutdown()
     }
 
-    fun sendMessage(message: JSONObject) {
-        Log.i(TAG, "sendMessage: $message")
-        _port?.postMessage(JSONObject(mapOf("result" to message.toString())))
+    fun sendContentMessage(message: JSONObject) {
+        Log.i(TAG, "sendContentMessage: $message")
+        scope.launch {
+            _contentMessageHolders.firstOrNull()?.let { holders ->
+                _activeTabId.firstOrNull()?.let { tabId ->
+                    holders[tabId]?.sendMessage(message)
+                }
+            }
+        }
+    }
+
+    fun sendBackgroundMessage(message: JSONObject) {
+        Log.i(TAG, "sendBackgroundMessage: $message")
+        _backgroundMessageHolder.sendMessage(message)
     }
 }

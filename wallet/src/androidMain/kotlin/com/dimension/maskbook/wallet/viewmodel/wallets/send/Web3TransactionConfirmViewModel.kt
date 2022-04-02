@@ -87,7 +87,7 @@ class Web3TransactionConfirmViewModel(
                     data = data.data ?: "",
                 ).onSuccess {
                     request?.let { request ->
-                        extensionServices.sendJSEventResponse(
+                        extensionServices.sendBackgroundJSEventResponse(
                             Web3SendResponse.success(
                                 request.messageId,
                                 request.jsonrpc,
@@ -99,7 +99,7 @@ class Web3TransactionConfirmViewModel(
                     onResult.invoke(true)
                 }.onFailure {
                     request?.let { request ->
-                        extensionServices.sendJSEventResponse(
+                        extensionServices.sendBackgroundJSEventResponse(
                             Web3SendResponse.error(
                                 request.messageId,
                                 request.jsonrpc,
@@ -147,7 +147,7 @@ class Web3TransactionConfirmViewModel(
 
     fun cancel() {
         request?.let { request ->
-            extensionServices.sendJSEventResponse(
+            extensionServices.sendBackgroundJSEventResponse(
                 Web3SendResponse.error(
                     request.messageId,
                     request.jsonrpc,
