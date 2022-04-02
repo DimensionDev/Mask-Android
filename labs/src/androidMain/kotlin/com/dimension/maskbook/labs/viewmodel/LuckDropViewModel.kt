@@ -24,26 +24,57 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.common.ext.decodeJson
+import com.dimension.maskbook.common.ext.encodeJson
 import com.dimension.maskbook.labs.mapper.toUiLuckyDropData
 import com.dimension.maskbook.labs.model.options.RedPacketOptions
 import com.dimension.maskbook.labs.model.ui.UiLuckyDropData
+import com.dimension.maskbook.labs.util.RedPacketFunctions
 import com.dimension.maskbook.wallet.export.WalletServices
+import com.dimension.maskbook.wallet.export.model.SendTransactionData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 
 class LuckDropViewModel(
     data: String,
-    walletServices: WalletServices,
+    private val walletServices: WalletServices,
 ) : ViewModel() {
 
-    val stateData = combine(
-        flow { emit(data.decodeJson<RedPacketOptions>()) },
-        walletServices.currentWallet.filterNotNull(),
-        walletServices.currentChain.filterNotNull(),
-    ) { redPacket, wallet, chain ->
+    private val redPacket = flow<RedPacketOptions> { emit(data.decodeJson()) }
+    private val currentWallet = walletServices.currentWallet.filterNotNull()
+    private val currentChain = walletServices.currentChain.filterNotNull()
+
+    val stateData = combine(redPacket, currentWallet, currentChain) { redPacket, wallet, chain ->
         redPacket.toUiLuckyDropData(wallet, chain)
     }.flowOn(Dispatchers.IO).asStateIn(viewModelScope, UiLuckyDropData())
+
+    suspend fun getSendTransactionData(): String? {
+        val stateData = stateData.firstOrNull() ?: return null
+        val wallet = stateData.wallet
+        val redPacket = stateData.redPacket
+
+        val data = when {
+            redPacket.canSend -> {
+                val signMessage = walletServices.signMessage(wallet.address, redPacket.password)
+                RedPacketFunctions.claim(redPacket.rpId, signMessage, wallet.address)
+            }
+            redPacket.canRefund -> {
+                RedPacketFunctions.refund(redPacket.rpId)
+            }
+            else -> return null
+        }
+
+        return SendTransactionData(
+            from = wallet.address,
+            to = redPacket.address,
+            data = data,
+            gas = null,
+            maxFee = null,
+            maxPriorityFee = null,
+            chainId = wallet.chainId,
+        ).encodeJson()
+    }
 }

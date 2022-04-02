@@ -35,6 +35,7 @@ import com.dimension.maskbook.common.ext.fromHexString
 import com.dimension.maskbook.common.ext.humanizeDollar
 import com.dimension.maskbook.common.ext.humanizeToken
 import com.dimension.maskbook.common.ext.observeAsState
+import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.route.navigationComposeBottomSheet
 import com.dimension.maskbook.common.route.navigationComposeBottomSheetPackage
 import com.dimension.maskbook.common.routeProcessor.annotations.Back
@@ -57,6 +58,9 @@ import java.math.BigDecimal
 
 @NavGraphDestination(
     route = WalletRoute.SendTokenConfirm.path,
+    deeplink = [
+        Deeplinks.Wallet.SendTokenConfirm.path,
+    ],
     packageName = navigationComposeBottomSheetPackage,
     functionName = navigationComposeBottomSheet,
 )

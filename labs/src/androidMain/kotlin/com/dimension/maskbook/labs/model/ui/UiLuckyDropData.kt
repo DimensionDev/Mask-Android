@@ -32,6 +32,7 @@ data class UiLuckyDropData(
     data class Wallet(
         val name: String = "",
         val address: String = "",
+        val chainId: Long = 0,
         val chainType: ChainType = ChainType.eth,
         val chainTypeIcon: Int = 0,
         val chainBalance: String = "",
@@ -46,5 +47,9 @@ data class UiLuckyDropData(
         val amountString: String = "",
         val endTime: String = "",
         val stateStringRes: Int = 0,
+        val rpId: String = "",
+        val password: String = "",
+        val canRefund: Boolean = false,
+        val canSend: Boolean = false,
     )
 }

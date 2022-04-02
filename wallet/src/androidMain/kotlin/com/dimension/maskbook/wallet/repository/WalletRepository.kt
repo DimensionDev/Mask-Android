@@ -32,7 +32,6 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingState
 import androidx.room.withTransaction
 import com.dimension.maskbook.common.bigDecimal.BigDecimal
-import com.dimension.maskbook.common.okhttp.okHttpClient
 import com.dimension.maskbook.debankapi.model.ChainID
 import com.dimension.maskbook.debankapi.model.Token
 import com.dimension.maskbook.wallet.data.JSMethod
@@ -79,7 +78,6 @@ import org.web3j.abi.datatypes.generated.Uint256
 import org.web3j.crypto.Credentials
 import org.web3j.ens.EnsResolver
 import org.web3j.protocol.Web3j
-import org.web3j.protocol.http.HttpService
 import org.web3j.tx.RawTransactionManager
 import java.math.BigInteger
 import java.util.UUID
@@ -771,7 +769,7 @@ internal class WalletRepository(
                     .firstOrNull()?.token?.address
             val realAddress = if (isNativeToken) {
                 if (EnsResolver.isValidEnsName(address)) {
-                    val web3 = Web3j.build(HttpService(tokenData.chainType.endpoint, okHttpClient))
+                    val web3 = Web3j.build(tokenData.chainType.httpService)
                     val ensResolver = EnsResolver(web3)
                     ensResolver.resolve(address).also {
                         web3.shutdown()
@@ -859,9 +857,5 @@ internal class WalletRepository(
         val wallet = findWalletByAddress(fromAddress) ?: return null
         val privateKey = getPrivateKey(wallet, CoinPlatformType.Ethereum)
         return SignUtils.signMessage(message, privateKey)
-    }
-
-    override suspend fun signRedPacket(message: String, password: String): String? {
-        return SignUtils.signMessage(message, password)
     }
 }

@@ -290,5 +290,4 @@ interface IWalletRepository {
     suspend fun getChainData(chainType: ChainType): Flow<ChainData?>
     suspend fun refreshWallet()
     suspend fun signMessage(message: String, fromAddress: String): String?
-    suspend fun signRedPacket(message: String, password: String): String?
 }

@@ -43,6 +43,7 @@ import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -70,6 +71,7 @@ import com.dimension.maskbook.labs.model.ui.UiLuckyDropData
 import com.dimension.maskbook.labs.route.LabsRoute
 import com.dimension.maskbook.labs.ui.widget.RedPacketButton
 import com.dimension.maskbook.labs.viewmodel.LuckDropViewModel
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -85,6 +87,8 @@ fun LuckDropModal(
     @Path("data") data: String,
 ) {
     BackHandler(onBack = onBack)
+
+    val scope = rememberCoroutineScope()
 
     val viewModel = getViewModel<LuckDropViewModel> {
         parametersOf(data)
@@ -116,7 +120,15 @@ fun LuckDropModal(
             Spacer(Modifier.height(24.dp))
             RedPacketButton(
                 enabled = stateData.buttonEnabled,
-                onClick = {},
+                onClick = {
+                    scope.launch {
+                        viewModel.getSendTransactionData()?.let { data ->
+                            navController.navigate(
+                                Uri.parse(Deeplinks.Wallet.SendTokenConfirm(data))
+                            )
+                        }
+                    }
+                },
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(

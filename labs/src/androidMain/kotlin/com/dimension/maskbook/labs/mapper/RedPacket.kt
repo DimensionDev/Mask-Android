@@ -81,6 +81,7 @@ fun RedPacketOptions.toUiLuckyDropData(
         wallet = UiLuckyDropData.Wallet(
             name = currentWallet.name,
             address = currentWallet.address,
+            chainId = currentChain.chainId,
             chainType = currentChain.chainType,
             chainTypeIcon = currentChain.chainType.onDrawableRes,
             chainBalance = currentWallet.tokens
@@ -103,6 +104,10 @@ fun RedPacketOptions.toUiLuckyDropData(
                 state.isEmpty -> R.string.scene_open_red_package_empty
                 else -> R.string.scene_open_red_package_on_going
             },
+            rpId = payload.rpId,
+            password = payload.password,
+            canSend = state.canSend,
+            canRefund = state.canRefund,
         ),
         buttonEnabled = state.canClaim || state.canRefund,
         buttonStringRes = when {

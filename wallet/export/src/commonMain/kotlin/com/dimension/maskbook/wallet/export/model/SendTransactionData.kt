@@ -20,6 +20,7 @@
  */
 package com.dimension.maskbook.wallet.export.model
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -29,6 +30,10 @@ data class SendTransactionData(
     val value: String? = null,
     val gas: String? = null,
     val gasPrice: String? = null,
+    @SerialName("maxFeePerGas")
+    val maxFee: String? = null,
+    @SerialName("maxPriorityFeePerGas")
+    val maxPriorityFee: String? = null,
     val data: String? = null,
     val nonce: Long? = null,
     val chainId: Long? = null,
