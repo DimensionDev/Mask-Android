@@ -56,6 +56,7 @@ import com.dimension.maskbook.wallet.ext.ether
 import com.dimension.maskbook.wallet.ext.gwei
 import com.dimension.maskbook.wallet.paging.mediator.CollectibleCollectionMediator
 import com.dimension.maskbook.wallet.services.WalletServices
+import com.dimension.maskbook.wallet.util.SignUtils
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager
 import com.dimension.maskwalletcore.WalletKey
 import kotlinx.coroutines.CoroutineScope
@@ -610,30 +611,6 @@ internal class WalletRepository(
         }
     }
 
-    override fun sendTokenWithCurrentWallet(
-        amount: BigDecimal,
-        address: String,
-        tokenData: TokenData,
-        gasLimit: Double,
-        maxFee: Double,
-        maxPriorityFee: Double,
-        data: String,
-        onDone: (String?) -> Unit,
-        onError: (Throwable) -> Unit,
-    ) {
-        transactionWithCurrentWalletAndChainType(
-            amount = amount,
-            address = address,
-            chainType = tokenData.chainType,
-            gasLimit = gasLimit,
-            maxFee = maxFee,
-            maxPriorityFee = maxPriorityFee,
-            onDone = onDone,
-            onError = onError,
-            data = data,
-        )
-    }
-
     /**
      * currently support ERC721 and ERC1155, ERC1155 can transfer multiple token in one transaction
      * ERC721:safeTransferFrom(address _from, address _to, uint256 _tokenId, bytes data)
@@ -675,7 +652,7 @@ internal class WalletRepository(
                 }.let {
                     FunctionEncoder.encode(it)
                 }
-                transactionWithCurrentWalletAndChainType(
+                sendTransactionWithCurrentWallet(
                     amount = BigDecimal.ZERO,
                     address = collectible.contract.address,
                     chainType = collectible.chainType,
@@ -690,7 +667,7 @@ internal class WalletRepository(
         }
     }
 
-    override fun transactionWithCurrentWalletAndChainType(
+    override fun sendTransactionWithCurrentWallet(
         amount: BigDecimal,
         address: String,
         chainType: ChainType,
@@ -821,10 +798,10 @@ internal class WalletRepository(
                     FunctionEncoder.encode(it)
                 }
             }
-            sendTokenWithCurrentWallet(
+            sendTransactionWithCurrentWallet(
                 amount = realAmount,
                 address = realAddress,
-                tokenData = tokenData,
+                chainType = tokenData.chainType,
                 gasLimit = gasLimit,
                 maxFee = maxFee,
                 maxPriorityFee = maxPriorityFee,
@@ -876,5 +853,15 @@ internal class WalletRepository(
             refreshCurrentWalletCollectibles()
             refreshNativeTokens()
         }
+    }
+
+    override suspend fun signMessage(message: String, fromAddress: String): String? {
+        val wallet = findWalletByAddress(fromAddress) ?: return null
+        val privateKey = getPrivateKey(wallet, CoinPlatformType.Ethereum)
+        return SignUtils.signMessage(message, privateKey)
+    }
+
+    override suspend fun signRedPacket(message: String, password: String): String? {
+        return SignUtils.signMessage(message, password)
     }
 }

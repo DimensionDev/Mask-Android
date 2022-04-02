@@ -15,6 +15,12 @@ kotlin {
                 kspAndroid(projects.common.routeProcessor)
             }
         }
+        val commonTest by getting {
+            dependencies {
+                implementation(kotlin("test"))
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:${Versions.Kotlin.coroutines}")
+            }
+        }
         val androidMain by getting {
             dependencies {
                 implementation(projects.debankapi)

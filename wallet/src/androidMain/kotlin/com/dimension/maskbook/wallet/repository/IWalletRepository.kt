@@ -261,18 +261,6 @@ interface IWalletRepository {
         onError: (Throwable) -> Unit = {},
     )
 
-    fun sendTokenWithCurrentWallet(
-        amount: BigDecimal,
-        address: String,
-        tokenData: TokenData,
-        gasLimit: Double,
-        maxFee: Double,
-        maxPriorityFee: Double,
-        data: String,
-        onDone: (String?) -> Unit = {},
-        onError: (Throwable) -> Unit = {},
-    )
-
     fun sendCollectibleWithCurrentWallet(
         address: String,
         collectible: WalletCollectibleData,
@@ -283,7 +271,7 @@ interface IWalletRepository {
         onError: (Throwable) -> Unit = {},
     )
 
-    fun transactionWithCurrentWalletAndChainType(
+    fun sendTransactionWithCurrentWallet(
         amount: BigDecimal,
         address: String,
         chainType: ChainType,
@@ -301,4 +289,6 @@ interface IWalletRepository {
     suspend fun getEnsAddress(chainType: ChainType, name: String): String
     suspend fun getChainData(chainType: ChainType): Flow<ChainData?>
     suspend fun refreshWallet()
+    suspend fun signMessage(message: String, fromAddress: String): String?
+    suspend fun signRedPacket(message: String, password: String): String?
 }

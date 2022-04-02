@@ -20,11 +20,12 @@
  */
 package com.dimension.maskbook.wallet.handler
 
+import com.dimension.maskbook.common.ext.decodeJson
 import com.dimension.maskbook.common.ext.encodeJson
 import com.dimension.maskbook.common.ext.normalized
 import com.dimension.maskbook.common.route.Navigator
 import com.dimension.maskbook.wallet.data.Web3Request
-import com.dimension.maskbook.wallet.db.model.CoinPlatformType
+import com.dimension.maskbook.wallet.export.model.SendTransactionData
 import com.dimension.maskbook.wallet.model.SendTokenRequest
 import com.dimension.maskbook.wallet.repository.IWalletRepository
 import com.dimension.maskbook.wallet.repository.httpService
@@ -39,13 +40,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
-import org.web3j.crypto.Credentials
-import org.web3j.crypto.Sign
-import org.web3j.crypto.Sign.SignatureData
 import org.web3j.protocol.core.Request
 import org.web3j.protocol.core.Response
-import org.web3j.utils.Numeric
-import java.nio.charset.Charset
 
 internal class Web3MessageHandler(
     private val walletRepository: IWalletRepository,
@@ -82,7 +78,9 @@ internal class Web3MessageHandler(
                         )
                     }
                     "eth_sendTransaction" -> {
-                        val dataRaw = payload.params.firstOrNull()?.encodeJson() ?: return@launch
+                        val dataRaw = payload.params.firstOrNull()
+                            ?.decodeJson<SendTransactionData>()
+                            ?.encodeJson() ?: return@launch
                         val requestRaw = SendTokenRequest(
                             messageId = request.id,
                             payloadId = request.payload.id,
@@ -91,24 +89,12 @@ internal class Web3MessageHandler(
                         Navigator.navigate(WalletRoute.SendTokenConfirm(dataRaw, requestRaw))
                     }
                     "personal_sign" -> {
-                        val message =
-                            payload.params.getOrNull(0)?.normalized as? String
-                                ?: return@launch
-                        val fromAddress =
-                            payload.params.getOrNull(1)?.normalized as? String
-                                ?: return@launch
-//                        val password = payload.params.getOrNull(2) ?: return@launch
-                        val wallet =
-                            walletRepository.findWalletByAddress(fromAddress) ?: return@launch
-                        val privateKey =
-                            walletRepository.getPrivateKey(wallet, CoinPlatformType.Ethereum)
-                        val credentials = Credentials.create(privateKey)
-                        val data = Sign.signPrefixedMessage(
-                            message.toByteArray(Charset.forName("UTF-8")),
-                            credentials.ecKeyPair,
-                        )
-                        val signature = getSignature(data)
-                        val hex = Numeric.toHexString(signature)
+                        val message = payload.params.getOrNull(0)?.normalized as? String
+                            ?: return@launch
+                        val fromAddress = payload.params.getOrNull(1)?.normalized as? String
+                            ?: return@launch
+                        val hex = walletRepository.signMessage(message, fromAddress)
+                            ?: return@launch
                         request.message.response(
                             Web3SendResponse.success(
                                 request,
@@ -192,23 +178,6 @@ private fun Web3SendResponse.Companion.error(request: Web3Request, error: String
         payloadId = request.payload.id,
         error = error
     )
-}
-
-private fun getSignature(sigData: SignatureData): ByteArray {
-    val magic1 = byteArrayOf(0, 27, 31, 35)
-    val magic2 = byteArrayOf(1, 28, 32, 36)
-    val v = sigData.v.firstOrNull() ?: throw Error("v is empty")
-    return sigData.r + sigData.s + when {
-        magic1.contains(v) -> {
-            0x1b
-        }
-        magic2.contains(v) -> {
-            0x1c
-        }
-        else -> {
-            throw Error("invalid v")
-        }
-    }
 }
 
 class JsonResponse : Response<JsonNode>()

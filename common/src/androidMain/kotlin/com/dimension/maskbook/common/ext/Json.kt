@@ -28,6 +28,7 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.double
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
@@ -46,6 +47,10 @@ inline fun <reified T> T.encodeJson(): String =
 
 inline fun <reified T> String.decodeJson(): T {
     return JSON.decodeFromString(this)
+}
+
+inline fun <reified T> JsonElement.decodeJson(): T {
+    return JSON.decodeFromJsonElement(this)
 }
 
 private val LONG_REGEX = Regex("""^-?\d+$""")
