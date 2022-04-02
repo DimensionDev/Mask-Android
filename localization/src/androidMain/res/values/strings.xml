@@ -370,7 +370,7 @@
     <string name="scene_persona_download_qr_code_success">Download success.</string>
     <string name="scene_persona_download_qr_code_failed">Download failed.</string>
     <string name="scene_persona_download_qr_code_title">Download Persona QR Code</string>
-    <string name="scene_persona_download_qr_code_tips">The QR code encrypts the identity code or private key of your persona. It is recommended to print it. You can use Mask App to scan the QR code to login.</string>
+    <string name="scene_persona_download_qr_code_tips">The QR code encrypts the identity code or private key of\nyour persona. It is recommended to print it. You can use\nMask App to scan the QR code to login.</string>
     <string name="scene_wallet_unlock_button">Unlock</string>
     <string name="scene_wallet_unlock_title">Unlock Wallet</string>
     <string name="scene_wallet_detail_wallet_title_change">Change</string>

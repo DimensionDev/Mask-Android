@@ -514,7 +514,7 @@
         "persona_download_qr_code": {
             "title": "Download Persona QR Code",
             "identity_code": "Identity Code",
-            "tips": "The QR code encrypts the identity code or private key of your persona. It is recommended to print it. You can use Mask App to scan the QR code to login.",
+            "tips": "The QR code encrypts the identity code or private key of\nyour persona. It is recommended to print it. You can use\nMask App to scan the QR code to login.",
             "success": "Download success.",
             "failed": "Download failed."
         },

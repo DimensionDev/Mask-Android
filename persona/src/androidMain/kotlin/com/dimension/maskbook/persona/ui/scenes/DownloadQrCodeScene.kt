@@ -40,7 +40,6 @@ import com.dimension.maskbook.common.ui.scene.LoadingScene
 import com.dimension.maskbook.common.ui.widget.LocalInAppNotification
 import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.route.PersonaRoute
-import com.dimension.maskbook.persona.ui.common.PersonaQrCodePdfView
 import com.dimension.maskbook.persona.viewmodel.DownloadQrCodeViewModel
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
@@ -65,12 +64,22 @@ fun DownloadQrCodeScene(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val inAppNotification = LocalInAppNotification.current
-    val renderPdf by viewModel.renderPdfView.observeAsState()
     val filePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.CreateDocument(),
         onResult = {
             if (it != null) {
-                viewModel.setUri(uri = it)
+                scope.launch {
+                    viewModel.save(
+                        context = context,
+                        uri = it,
+                    ).onSuccess {
+                        inAppNotification.show(R.string.scene_persona_download_qr_code_success)
+                    }.onFailure {
+                        inAppNotification.show(R.string.scene_persona_download_qr_code_failed)
+                    }.onFinished {
+                        navController.popBackStack()
+                    }
+                }
             } else {
                 navController.popBackStack()
             }
@@ -87,35 +96,6 @@ fun DownloadQrCodeScene(
     }
 
     Box {
-        // won't display only for pdf generate
-        if (renderPdf) {
-            personaQrCode?.let {
-                PersonaQrCodePdfView(
-                    personaQrCode = it,
-                    onUiReady = { pdfView ->
-                        // ensure pdfView render
-                        pdfView.post {
-                            scope.launch {
-                                viewModel.save(
-                                    context = context,
-                                    pdfContent = pdfView,
-                                ).onSuccess {
-                                    inAppNotification.show(R.string.scene_persona_download_qr_code_success)
-                                }.onFailure {
-                                    inAppNotification.show(R.string.scene_persona_download_qr_code_failed)
-                                }.onFinished {
-                                    navController.popBackStack()
-                                }
-                            }
-                        }
-                    },
-                    onUiError = {
-                        inAppNotification.show(R.string.scene_persona_download_qr_code_failed)
-                        navController.popBackStack()
-                    }
-                )
-            }
-        }
         LoadingScene()
     }
 }
