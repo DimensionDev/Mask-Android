@@ -23,8 +23,10 @@ package com.dimension.maskbook.persona.ui.scenes.register.createidentity
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Icon
@@ -33,7 +35,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -49,6 +50,7 @@ import com.dimension.maskbook.common.ui.widget.MaskTopAppBar
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.common.ui.widget.button.MaskBackButton
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
+import com.dimension.maskbook.common.ui.widget.button.SecondaryButton
 import com.dimension.maskbook.common.ui.widget.button.clickable
 import com.dimension.maskbook.common.ui.widget.itemsGridIndexed
 import com.dimension.maskbook.persona.R
@@ -56,8 +58,10 @@ import com.dimension.maskbook.persona.R
 @Composable
 fun BackupIdentityScene(
     words: List<String>,
+    showNext: Boolean = false,
     onRefreshWords: () -> Unit,
-    onVerify: () -> Unit,
+    onDownload: () -> Unit,
+    onSkipOrNext: () -> Unit,
     onBack: () -> Unit,
 ) {
     var showDialog by rememberSaveable {
@@ -85,24 +89,25 @@ fun BackupIdentityScene(
         )
     }
     BackupContent(
-        words,
-        onRefreshWords,
-        onBack,
-        onVerify,
+        words = words,
+        onRefreshWords = onRefreshWords,
+        onBack = onBack,
+        onDownload = onDownload,
+        onSkipOrNext = onSkipOrNext,
+        showNext = showNext
     )
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun BackupContent(
+    showNext: Boolean,
     words: List<String>,
     onRefreshWords: () -> Unit,
     onBack: () -> Unit,
-    onVerify: () -> Unit,
+    onDownload: () -> Unit,
+    onSkipOrNext: () -> Unit,
 ) {
-    LaunchedEffect(Unit) {
-        onRefreshWords.invoke()
-    }
     MaskScene {
         MaskScaffold(
             topBar = {
@@ -157,10 +162,18 @@ private fun BackupContent(
                 }
                 PrimaryButton(
                     modifier = Modifier.fillMaxWidth(),
-                    onClick = { onVerify.invoke() },
+                    onClick = { onDownload.invoke() },
                 ) {
-                    Text(text = stringResource(R.string.common_controls_verify))
+                    Text(text = "Download")
                 }
+                Spacer(modifier = Modifier.height(16.dp))
+                SecondaryButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = { onSkipOrNext.invoke() },
+                ) {
+                    Text(text = if (showNext) "I downloaded, next" else "Skip, download later")
+                }
+                Spacer(modifier = Modifier.height(54.dp))
             }
         }
     }

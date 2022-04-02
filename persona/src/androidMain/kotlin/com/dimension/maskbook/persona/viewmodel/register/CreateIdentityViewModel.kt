@@ -21,24 +21,50 @@
 package com.dimension.maskbook.persona.viewmodel.register
 
 import androidx.lifecycle.viewModelScope
+import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.common.viewmodel.BaseMnemonicPhraseViewModel
-import com.dimension.maskbook.persona.export.PersonaServices
+import com.dimension.maskbook.persona.repository.IPersonaRepository
 import com.dimension.maskbook.wallet.export.WalletServices
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 class CreateIdentityViewModel(
     private val personaName: String,
     private val walletServices: WalletServices,
-    private val personaServices: PersonaServices,
+    private val personaRepository: IPersonaRepository,
 ) : BaseMnemonicPhraseViewModel() {
+
+    init {
+        refreshWords()
+    }
 
     override fun generateWords(): List<String> {
         return walletServices.generateNewMnemonic()
     }
 
+    private val _showNext = MutableStateFlow(false)
+    val showNext = _showNext.asStateIn(viewModelScope)
+
     override fun confirm() {
         viewModelScope.launch {
-            personaServices.createPersonaFromMnemonic(_words.value.map { it.word }, personaName)
+            try {
+                personaRepository.createPersonaFromMnemonic(
+                    _words.value.map { it.word },
+                    personaName
+                )
+            } catch (e: Throwable) {
+                // ignore
+                _loading.value = false
+            }
         }
+    }
+
+    fun download() {
+        _showNext.value = true
+        confirm()
+    }
+
+    fun create() {
+        confirm()
     }
 }

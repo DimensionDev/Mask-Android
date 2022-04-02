@@ -70,15 +70,22 @@ fun BackupRoute(
             parametersOf(personaName)
         }
     val words by viewModel.words.observeAsState(emptyList())
+    val showNext by viewModel.showNext.observeAsState()
     BackupIdentityScene(
         words = words.map { it.word },
         onRefreshWords = {
             viewModel.refreshWords()
         },
-        onVerify = {
-            navController.navigate(PersonaRoute.Register.CreateIdentity.Verify(personaName, isWelcome))
+        onDownload = {
+            viewModel.download()
+            navController.navigate(PersonaRoute.DownloadQrCode)
         },
         onBack = onBack,
+        onSkipOrNext = {
+            viewModel.create()
+            navController.navigate(PersonaRoute.Register.CreateIdentity.Confirm(personaName, isWelcome))
+        },
+        showNext = showNext,
     )
 }
 
@@ -135,10 +142,6 @@ fun ConfirmRoute(
     @Path("personaName") personaName: String,
     @Path("isWelcome") isWelcome: Boolean,
 ) {
-    val viewModel: CreateIdentityViewModel = navController
-        .getNestedNavigationViewModel(PersonaRoute.Register.CreateIdentity.Route) {
-            parametersOf(personaName)
-        }
     MaskDialog(
         onDismissRequest = {
         },
@@ -152,13 +155,12 @@ fun ConfirmRoute(
             Text(text = stringResource(R.string.common_alert_identity_create_title))
         },
         text = {
-            Text(text = stringResource(R.string.common_alert_identity_create_description))
+            Text(text = "You have successfully created your persona $personaName")
         },
         buttons = {
             PrimaryButton(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {
-                    viewModel.confirm()
                     navController.navigate(Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona))) {
                         launchSingleTop = true
                         if (isWelcome) {
