@@ -21,6 +21,7 @@
 package com.dimension.maskbook.persona.ui.scenes.register.createidentity
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -28,6 +29,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -37,7 +39,10 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.common.ui.widget.MaskCard
@@ -71,7 +76,7 @@ fun BackupIdentityScene(
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, androidx.compose.material.ExperimentalMaterialApi::class)
 @Composable
 private fun BackupContent(
     showNext: Boolean,
@@ -129,6 +134,24 @@ private fun BackupContent(
                             Text(
                                 modifier = Modifier.padding(12.dp),
                                 text = "${index + 1} $it",
+                            )
+                        }
+                    }
+                    item {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Image(
+                                painter = painterResource(R.drawable.ic_warn_blue),
+                                contentDescription = null,
+                                modifier = Modifier.size(24.dp).padding(end = 10.dp),
+                                contentScale = ContentScale.FillBounds
+                            )
+                            Text(
+                                text = "Identity code is used to generate your persona.",
+                                color = MaterialTheme.colors.primary,
+                                style = MaterialTheme.typography.caption
                             )
                         }
                     }
