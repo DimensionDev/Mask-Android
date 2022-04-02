@@ -49,6 +49,6 @@ data class PersonaPrivateKey(
     companion object {
         fun PersonaPrivateKey.encode() = MsgPack.encodeToByteArray(this).encodeBase64String(flag = Base64.NO_WRAP)
 
-        fun decode(base64: String) = MsgPack.decodeFromByteArray<PersonaPrivateKey>(base64.decodeBase64Bytes(flag = Base64.NO_WRAP))
+        fun decode(base64: String) = MsgPack.decodeFromByteArray<PersonaPrivateKey>(base64.decodeBase64Bytes())
     }
 }

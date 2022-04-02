@@ -24,17 +24,15 @@ import android.content.Context
 import android.graphics.pdf.PdfDocument
 import android.graphics.pdf.PdfDocument.PageInfo
 import android.net.Uri
-import android.util.Base64
 import android.view.View
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
-import com.dimension.maskbook.common.ext.encodeBase64
 import com.dimension.maskbook.persona.datasource.DbPersonaDataSource
-import com.dimension.maskbook.persona.export.model.PersonaQrCode
 import com.dimension.maskbook.persona.repository.IPersonaRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.withContext
 
@@ -51,42 +49,38 @@ class DownloadQrCodeViewModel(
         }
     }.asStateIn(viewModelScope, null)
 
-    fun pickFile() {
+    fun launchFilePicker() {
+        _uri.value = null
         _filePickerLaunched.value = true
     }
 
+    private val _uri = MutableStateFlow<Uri?>(null)
+    val uri = _uri.asStateIn(viewModelScope)
+    val renderPdfView = combine(personaQrCode, uri) { code, uri ->
+        code != null && uri != null
+    }.asStateIn(viewModelScope, false)
+
+    fun setUri(uri: Uri) {
+        _uri.value = uri
+    }
+
     suspend fun save(
-        uri: Uri,
         context: Context,
         pdfContent: View,
-        height: Int,
-        width: Int
     ) = withContext(Dispatchers.IO) {
         runCatching {
             personaQrCode.value?.let {
                 // generate PDF
                 val pdfDocument = PdfDocument()
-                val myPageInfo = PageInfo.Builder(width, height, 1).create()
+                val myPageInfo = PageInfo.Builder(pdfContent.width, pdfContent.height, 1).create()
                 val myPage = pdfDocument.startPage(myPageInfo)
                 pdfContent.draw(myPage.canvas)
                 pdfDocument.finishPage(myPage)
-                context.contentResolver.openOutputStream(uri)?.use {
+                context.contentResolver.openOutputStream(uri.value ?: throw Error("uri is null"))?.use {
                     pdfDocument.writeTo(it)
                 }
                 pdfDocument.close()
             } ?: throw Error("PersonaQrCode info is null")
         }
-    }
-
-    fun generateQrCodeStr(qrCode: PersonaQrCode): String {
-        var str = if (qrCode.identityWords.isNotEmpty()) {
-            "mask://persona/identity/${qrCode.identityWords.encodeBase64(Base64.NO_WRAP)}"
-        } else {
-            "mask://persona/privatekey/${qrCode.privateKeyBase64}"
-        }
-        if (qrCode.nickName.isNotEmpty()) {
-            str += "?nickname=${qrCode.nickName}"
-        }
-        return str
     }
 }
