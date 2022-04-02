@@ -39,7 +39,7 @@ class RedPacketMethod(
 ) {
 
     fun startSubscribe() {
-        services.subscribeJSEvent(notifyRedPacket, claimOrRefundRedPacket)
+        services.subscribeCurrentContentJSEvent(notifyRedPacket, claimOrRefundRedPacket)
             .onEach { message ->
                 when (message.method) {
                     notifyRedPacket -> {
