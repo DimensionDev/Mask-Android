@@ -18,22 +18,11 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.labs.route
+package com.dimension.maskbook.common.model
 
-import com.dimension.maskbook.common.routeProcessor.annotations.Route
+sealed class ResultEvent {
 
-@Suppress("CONST_VAL_WITHOUT_INITIALIZER")
-@Route
-expect object LabsRoute {
-    const val PluginSettings: String
-    const val LabsTransak: String
-    const val MarketTrendSettings: String
-    object RedPacket {
-        object LuckyDrop {
-            operator fun invoke(data: String): String
-        }
-        object LuckyDropResult {
-            operator fun invoke(success: Boolean): String
-        }
-    }
+    internal object None : ResultEvent()
+
+    data class Confirm(val ok: Boolean) : ResultEvent()
 }

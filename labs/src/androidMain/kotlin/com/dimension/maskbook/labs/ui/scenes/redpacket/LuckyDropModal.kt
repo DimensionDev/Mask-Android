@@ -39,6 +39,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -51,7 +52,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
+import com.dimension.maskbook.common.ext.eventFlow
 import com.dimension.maskbook.common.ext.navigateUri
+import com.dimension.maskbook.common.ext.navigateWithPopSelf
+import com.dimension.maskbook.common.model.ResultEvent
 import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.route.navigationComposeBottomSheet
 import com.dimension.maskbook.common.route.navigationComposeBottomSheetPackage
@@ -81,6 +85,12 @@ fun LuckDropModal(
     navController: NavController,
     @Path("data") data: String,
 ) {
+    LaunchedEffect(Unit) {
+        navController.eventFlow<ResultEvent.Confirm>().collect {
+            navController.navigateWithPopSelf(LabsRoute.RedPacket.LuckyDropResult(it.ok))
+        }
+    }
+
     val viewModel = getViewModel<LuckDropViewModel> {
         parametersOf(data)
     }

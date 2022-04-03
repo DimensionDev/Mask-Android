@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -35,6 +36,8 @@ import com.dimension.maskbook.common.ext.fromHexString
 import com.dimension.maskbook.common.ext.humanizeDollar
 import com.dimension.maskbook.common.ext.humanizeToken
 import com.dimension.maskbook.common.ext.observeAsState
+import com.dimension.maskbook.common.ext.sendEvent
+import com.dimension.maskbook.common.model.ResultEvent
 import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.route.navigationComposeBottomSheet
 import com.dimension.maskbook.common.route.navigationComposeBottomSheetPackage
@@ -66,6 +69,7 @@ import java.math.BigDecimal
 )
 @Composable
 fun SendTokenConfirmModal(
+    rootNavController: NavController,
     @Back onBack: () -> Unit,
     @Path("dataRaw") dataRaw: String,
     @Query("requestRaw") requestRaw: String?,
@@ -198,8 +202,9 @@ fun SendTokenConfirmModal(
                             gasLimit = gasLimit,
                             maxFee = maxFee,
                             maxPriorityFee = maxPriorityFee,
-                            onResult = {
+                            onResult = { success ->
                                 onBack.invoke()
+                                rootNavController.sendEvent(ResultEvent.Confirm(success))
                             }
                         )
                     }
@@ -213,7 +218,9 @@ fun SendTokenConfirmModal(
                             if (biometricEnable) {
                                 unlockViewModel.authenticate(
                                     context = context,
-                                    onSuccess = { onSuccess.invoke() }
+                                    onSuccess = {
+                                        onSuccess.invoke()
+                                    }
                                 )
                             } else {
                                 if (passwordValid) {
