@@ -21,6 +21,7 @@
 package com.dimension.maskbook.labs.data
 
 import com.dimension.maskbook.common.ext.decodeJson
+import com.dimension.maskbook.common.ext.encodeJson
 import com.dimension.maskbook.common.route.Navigator
 import com.dimension.maskbook.extension.export.ExtensionServices
 import com.dimension.maskbook.labs.mapper.toRedPacketState
@@ -43,8 +44,7 @@ class RedPacketMethod(
             .onEach { message ->
                 when (message.method) {
                     notifyRedPacket -> {
-                        val params = message.params ?: return@onEach
-                        val options = params.decodeJson<RedPacketOptions>()
+                        val options = message.params?.decodeJson<RedPacketOptions>() ?: return@onEach
 
                         val currentWallet = walletServices.currentWallet.firstOrNull()
                             ?: return@onEach
@@ -53,12 +53,12 @@ class RedPacketMethod(
 
                         val data = options.toRedPacketState(currentWallet, currentChain)
                         if (data.canClaim || data.canRefund) {
-                            Navigator.navigate(LabsRoute.RedPacket.LuckyDrop(params))
+                            Navigator.navigate(LabsRoute.RedPacket.LuckyDrop(options.encodeJson()))
                         }
                     }
                     claimOrRefundRedPacket -> {
-                        val params = message.params ?: return@onEach
-                        Navigator.navigate(LabsRoute.RedPacket.LuckyDrop(params))
+                        val options = message.params?.decodeJson<RedPacketOptions>() ?: return@onEach
+                        Navigator.navigate(LabsRoute.RedPacket.LuckyDrop(options.encodeJson()))
                     }
                 }
             }
