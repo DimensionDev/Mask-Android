@@ -20,7 +20,6 @@
  */
 package com.dimension.maskbook.labs.ui.scenes.redpacket
 
-import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -42,7 +41,6 @@ import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -53,10 +51,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
+import com.dimension.maskbook.common.ext.navigateUri
 import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.route.navigationComposeBottomSheet
 import com.dimension.maskbook.common.route.navigationComposeBottomSheetPackage
-import com.dimension.maskbook.common.routeProcessor.annotations.Back
 import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
 import com.dimension.maskbook.common.routeProcessor.annotations.Path
 import com.dimension.maskbook.common.ui.theme.moreTypography
@@ -70,7 +68,6 @@ import com.dimension.maskbook.labs.model.ui.UiLuckyDropData
 import com.dimension.maskbook.labs.route.LabsRoute
 import com.dimension.maskbook.labs.ui.widget.RedPacketButton
 import com.dimension.maskbook.labs.viewmodel.LuckDropViewModel
-import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -84,8 +81,6 @@ fun LuckDropModal(
     navController: NavController,
     @Path("data") data: String,
 ) {
-    val scope = rememberCoroutineScope()
-
     val viewModel = getViewModel<LuckDropViewModel> {
         parametersOf(data)
     }
@@ -110,19 +105,15 @@ fun LuckDropModal(
             WalletTokenCard(
                 wallet = stateData.wallet,
                 onClick = {
-                    navController.navigate(Uri.parse(Deeplinks.Wallet.SwitchWallet))
+                    navController.navigateUri(Deeplinks.Wallet.SwitchWallet)
                 }
             )
             Spacer(Modifier.height(24.dp))
             RedPacketButton(
                 enabled = stateData.buttonEnabled,
                 onClick = {
-                    scope.launch {
-                        viewModel.getSendTransactionData()?.let { data ->
-                            navController.navigate(
-                                Uri.parse(Deeplinks.Wallet.SendTokenConfirm(data))
-                            )
-                        }
+                    viewModel.getSendTransactionData(stateData)?.let { data ->
+                        navController.navigateUri(Deeplinks.Wallet.SendTokenConfirm(data))
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),

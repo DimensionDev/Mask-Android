@@ -34,7 +34,6 @@ import com.dimension.maskbook.wallet.export.model.SendTransactionData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 
@@ -51,8 +50,7 @@ class LuckDropViewModel(
         redPacket.toUiLuckyDropData(wallet, chain)
     }.flowOn(Dispatchers.IO).asStateIn(viewModelScope, UiLuckyDropData())
 
-    suspend fun getSendTransactionData(): String? {
-        val stateData = stateData.firstOrNull() ?: return null
+    fun getSendTransactionData(stateData: UiLuckyDropData): String? {
         val wallet = stateData.wallet
         val redPacket = stateData.redPacket
 

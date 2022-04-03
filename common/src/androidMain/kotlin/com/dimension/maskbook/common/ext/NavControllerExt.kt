@@ -31,8 +31,28 @@ fun NavController.navigate(uri: Uri, builder: NavOptionsBuilder.() -> Unit) {
     navigate(uri, navOptions(builder))
 }
 
+fun NavController.navigateUri(uri: String, builder: NavOptionsBuilder.() -> Unit = {}) {
+    navigate(Uri.parse(uri), navOptions(builder))
+}
+
+fun NavController.navigateWithPopSelf(route: String) {
+    navigate(route) {
+        currentDestination?.route?.let { popRoute ->
+            popUpTo(popRoute) { inclusive = true }
+        }
+    }
+}
+
+fun NavController.navigateUriWithPopSelf(uri: String) {
+    navigate(Uri.parse(uri)) {
+        currentDestination?.route?.let { popRoute ->
+            popUpTo(popRoute) { inclusive = true }
+        }
+    }
+}
+
 fun NavController.navigateToExtension(site: String? = null) {
-    navigate(Uri.parse(Deeplinks.WebContent(site))) {
+    navigateUri(Deeplinks.WebContent(site)) {
         launchSingleTop = true
         popUpTo(CommonRoute.Main.Home.path) {
             inclusive = true
