@@ -54,7 +54,7 @@ internal class ExtensionServicesImpl(
     }
 
     override fun subscribeBackgroundJSEvent(vararg method: String): Flow<ExtensionMessage> {
-        return backgroundMessageChannel.subscribeMessage(*method).mapNotNull { it }
+        return backgroundMessageChannel.subscribeMessage(*method)
     }
 
     override fun sendBackgroundJSEventResponse(map: Map<String, Any?>) {
@@ -74,6 +74,6 @@ internal class ExtensionServicesImpl(
     }
 
     override fun subscribeCurrentContentJSEvent(vararg method: String): Flow<ExtensionMessage> {
-        return contentMessageChannel.subscribeMessage(*method).mapNotNull { it }
+        return contentMessageChannel.subscribeMessage(*method)
     }
 }

@@ -86,7 +86,7 @@ internal abstract class MessageChannel(
         }
     }
 
-    fun subscribeMessage(vararg method: String): Flow<ExtensionMessage?> {
+    fun subscribeMessage(vararg method: String): Flow<ExtensionMessage> {
         return _extensionMessage.filter { it.method in method }
     }
 

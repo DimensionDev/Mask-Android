@@ -95,5 +95,6 @@ object ExtensionSetup : ModuleSetup {
 
     override fun onExtensionReady() {
         KoinPlatformTools.defaultContext().get().get<BackgroundMessageChannel>().startMessageCollect()
+        KoinPlatformTools.defaultContext().get().get<ContentMessageChannel>().startMessageCollect()
     }
 }
