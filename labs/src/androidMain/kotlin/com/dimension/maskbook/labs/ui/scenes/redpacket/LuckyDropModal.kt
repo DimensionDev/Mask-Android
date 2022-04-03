@@ -21,7 +21,6 @@
 package com.dimension.maskbook.labs.ui.scenes.redpacket
 
 import android.net.Uri
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -83,11 +82,8 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun LuckDropModal(
     navController: NavController,
-    @Back onBack: () -> Unit,
     @Path("data") data: String,
 ) {
-    BackHandler(onBack = onBack)
-
     val scope = rememberCoroutineScope()
 
     val viewModel = getViewModel<LuckDropViewModel> {
