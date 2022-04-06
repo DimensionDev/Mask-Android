@@ -92,13 +92,17 @@ fun LuckDropModal(
 
     LaunchedEffect(Unit) {
         navController.eventFlow<ResultEvent.Confirm>().collect {
-            navController.navigateWithPopSelf(
-                LabsRoute.RedPacket.LuckyDropResult(
-                    success = it.ok,
-                    amount = stateData.redPacket.amountString,
-                    postLink = stateData.redPacket.postLink,
+            if (stateData.redPacket.canClaim) {
+                navController.navigateWithPopSelf(
+                    LabsRoute.RedPacket.LuckyDropResult(
+                        success = it.ok,
+                        amount = stateData.redPacket.amountString,
+                        postLink = stateData.redPacket.postLink,
+                    )
                 )
-            )
+            } else {
+                navController.popBackStack()
+            }
         }
     }
 

@@ -90,7 +90,7 @@ fun RedPacketOptions.toUiLuckyDropData(
                 ?: "",
         ),
         redPacket = UiLuckyDropData.RedPacket(
-            address = payload.sender.address,
+            contractAddress = payload.contractAddress,
             message = payload.sender.message,
             senderName = payload.sender.name,
             shares = payload.shares,
@@ -106,6 +106,7 @@ fun RedPacketOptions.toUiLuckyDropData(
             },
             rpId = payload.rpId,
             password = payload.password,
+            canClaim = state.canClaim,
             canSend = state.canSend,
             canRefund = state.canRefund,
             postLink = postLink,

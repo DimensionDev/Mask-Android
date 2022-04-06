@@ -67,7 +67,7 @@ class LuckDropViewModel(
 
         return SendTransactionData(
             from = wallet.address,
-            to = redPacket.address,
+            to = redPacket.contractAddress,
             data = data,
             gas = null,
             maxFee = null,

@@ -39,7 +39,7 @@ data class UiLuckyDropData(
     )
 
     data class RedPacket(
-        val address: String = "",
+        val contractAddress: String = "",
         val message: String = "",
         val senderName: String = "",
         val shares: Int = 0,
@@ -49,6 +49,7 @@ data class UiLuckyDropData(
         val stateStringRes: Int = 0,
         val rpId: String = "",
         val password: String = "",
+        val canClaim: Boolean = false,
         val canRefund: Boolean = false,
         val canSend: Boolean = false,
         val postLink: String = "",
