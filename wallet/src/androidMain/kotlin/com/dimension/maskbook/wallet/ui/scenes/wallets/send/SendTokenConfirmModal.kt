@@ -165,29 +165,6 @@ fun SendTokenConfirmModal(
                         }
                     )
                 }
-                composable(
-                    "AddContactSheet/{address}",
-                    arguments = listOf(
-                        navArgument("address") { type = NavType.StringType },
-                    ),
-                ) {
-                    it.arguments?.getString("address")?.let { address ->
-                        val addContactViewModel = getViewModel<AddContactViewModel>()
-                        val name by addContactViewModel.name.observeAsState(initial = "")
-                        AddContactSheet(
-                            avatarLabel = name,
-                            address = address,
-                            canConfirm = name.isNotEmpty(),
-                            nameInput = name,
-                            onNameChanged = { addContactViewModel.setName(it) },
-                            onAddContact = {
-                                addContactViewModel.confirm(name, address, onResult = {
-                                    navController.popBackStack()
-                                })
-                            }
-                        )
-                    }
-                }
                 dialog(
                     "UnlockWalletDialog",
                 ) {
