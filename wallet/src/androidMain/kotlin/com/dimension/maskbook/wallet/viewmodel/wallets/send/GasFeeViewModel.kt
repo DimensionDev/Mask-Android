@@ -66,7 +66,8 @@ class GasFeeViewModel(
     }
 
     private val _gasPriceEditMode = MutableStateFlow(GasPriceEditMode.MEDIUM)
-    val gasPriceEditMode = _gasPriceEditMode.asStateIn(viewModelScope, GasPriceEditMode.MEDIUM)
+    val gasPriceEditMode = _gasPriceEditMode.asStateIn(viewModelScope)
+
     fun setGasPriceEditMode(value: GasPriceEditMode) {
         _gasPriceEditMode.value = value
     }

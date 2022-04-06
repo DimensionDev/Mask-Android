@@ -28,7 +28,8 @@ data class SendTransactionData(
     val from: String? = null,
     val to: String? = null,
     val value: String? = null,
-    val gas: String? = null,
+    @SerialName("gas")
+    val gasLimit: String? = null,
     val gasPrice: String? = null,
     @SerialName("maxFeePerGas")
     val maxFee: String? = null,

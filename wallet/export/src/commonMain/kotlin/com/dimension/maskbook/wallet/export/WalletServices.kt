@@ -30,5 +30,4 @@ interface WalletServices {
     fun generateNewMnemonic(): List<String>
     fun validateMnemonic(mnemonic: String): Boolean
     fun validatePrivateKey(privateKey: String): Boolean
-    fun signMessage(message: String, password: String): String
 }

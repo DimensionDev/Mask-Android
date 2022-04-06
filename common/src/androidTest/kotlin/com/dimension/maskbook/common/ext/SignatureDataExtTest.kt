@@ -18,24 +18,24 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.ext
+package com.dimension.maskbook.common.ext
 
 import org.web3j.crypto.Sign
+import org.web3j.utils.Numeric
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
-val Sign.SignatureData.signature: ByteArray
-    get() {
-        val magic1 = byteArrayOf(0, 27, 31, 35)
-        val magic2 = byteArrayOf(1, 28, 32, 36)
-        val v = v.firstOrNull() ?: throw Error("v is empty")
-        return r + s + when {
-            magic1.contains(v) -> {
-                0x1b
-            }
-            magic2.contains(v) -> {
-                0x1c
-            }
-            else -> {
-                throw Error("invalid v")
-            }
-        }
+class SignatureDataExtTest {
+    @Test
+    fun test_signature() {
+        val sign = Sign.SignatureData(
+            Numeric.hexStringToByteArray("0x1c"),
+            Numeric.hexStringToByteArray("0xb91467e570a6466aa9e9876cbcd013baba02900b8979d43fe208a4a4f339f5fd"),
+            Numeric.hexStringToByteArray("0x6007e74cd82e037b800186422fc2da167c747ef045e5d18a5f5d4300f8e1a029"),
+        )
+        assertEquals(
+            Numeric.toHexString(sign.signature),
+            "0xb91467e570a6466aa9e9876cbcd013baba02900b8979d43fe208a4a4f339f5fd6007e74cd82e037b800186422fc2da167c747ef045e5d18a5f5d4300f8e1a0291c"
+        )
     }
+}

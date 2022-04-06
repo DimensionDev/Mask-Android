@@ -84,7 +84,7 @@ fun SendTokenConfirmModal(
     address?.let { addressData ->
         token?.let { tokenData ->
             val gasFeeViewModel = getViewModel<GasFeeViewModel> {
-                parametersOf(data.gas?.fromHexString()?.toDouble() ?: 21000.0)
+                parametersOf(data.gasLimit?.fromHexString()?.toDouble() ?: 21000.0)
             }
             val gasLimit by gasFeeViewModel.gasLimit.observeAsState()
             val maxPriorityFee by gasFeeViewModel.maxPriorityFeePerGas.observeAsState()

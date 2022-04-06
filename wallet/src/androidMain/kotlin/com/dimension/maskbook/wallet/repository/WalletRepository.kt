@@ -35,6 +35,7 @@ import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.common.ext.httpService
 import com.dimension.maskbook.common.ext.use
 import com.dimension.maskbook.common.util.EthUtils
+import com.dimension.maskbook.common.util.SignUtils
 import com.dimension.maskbook.debankapi.model.ChainID
 import com.dimension.maskbook.debankapi.model.Token
 import com.dimension.maskbook.wallet.data.JSMethod
@@ -60,7 +61,6 @@ import com.dimension.maskbook.wallet.ext.ether
 import com.dimension.maskbook.wallet.ext.gwei
 import com.dimension.maskbook.wallet.paging.mediator.CollectibleCollectionMediator
 import com.dimension.maskbook.wallet.services.WalletServices
-import com.dimension.maskbook.wallet.util.SignUtils
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager
 import com.dimension.maskwalletcore.WalletKey
 import kotlinx.coroutines.CoroutineScope

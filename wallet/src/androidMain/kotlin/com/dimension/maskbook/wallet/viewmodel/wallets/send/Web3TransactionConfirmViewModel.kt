@@ -104,7 +104,7 @@ class Web3TransactionConfirmViewModel(
                                 request.messageId,
                                 request.jsonrpc,
                                 request.payloadId,
-                                it.cause?.message ?: "Failed to send transaction"
+                                it.message ?: "Failed to send transaction"
                             )
                         )
                     }
@@ -152,7 +152,7 @@ class Web3TransactionConfirmViewModel(
                     request.messageId,
                     request.jsonrpc,
                     request.payloadId,
-                    "Transaction cancelled"
+                    "Cancel"
                 )
             )
         }

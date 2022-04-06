@@ -18,24 +18,32 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.ext
+package com.dimension.maskbook.common.util
 
-import org.web3j.crypto.Sign
-import org.web3j.utils.Numeric
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class SignatureDataExtTest {
+class SignUtilsTest {
+
     @Test
-    fun test_signature() {
-        val sign = Sign.SignatureData(
-            Numeric.hexStringToByteArray("0x1c"),
-            Numeric.hexStringToByteArray("0xb91467e570a6466aa9e9876cbcd013baba02900b8979d43fe208a4a4f339f5fd"),
-            Numeric.hexStringToByteArray("0x6007e74cd82e037b800186422fc2da167c747ef045e5d18a5f5d4300f8e1a029"),
-        )
+    fun sample_test() {
+        val message = "Some data"
+        val password = "0x4c0883a69102937d6231471b5dbb6204fe5129617082792ae468d01a3f362318"
+        val sign = SignUtils.signMessage(message, password)
         assertEquals(
-            Numeric.toHexString(sign.signature),
+            sign,
             "0xb91467e570a6466aa9e9876cbcd013baba02900b8979d43fe208a4a4f339f5fd6007e74cd82e037b800186422fc2da167c747ef045e5d18a5f5d4300f8e1a0291c"
+        )
+    }
+
+    @Test
+    fun password_test() {
+        val message = "0x790116d0685eB197B886DAcAD9C247f785987A4a"
+        val password = "0x2e0c577c80bd39cb10815c9fec98f70c081d75647c15118da9a93e3970d4860d"
+        val sign = SignUtils.signMessage(message, password)
+        assertEquals(
+            sign,
+            "0xbfd98d17fab451480902d52adcc0adbb80e4408bf26e4bfe10906ea1d84495e146670ff0ed90c4ab7c8093ca1238f6115795a7f5fad26f2ce441160ddd797a691b"
         )
     }
 }

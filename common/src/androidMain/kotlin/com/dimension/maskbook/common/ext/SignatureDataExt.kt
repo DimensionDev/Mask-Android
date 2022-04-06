@@ -18,21 +18,24 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.util
+package com.dimension.maskbook.common.ext
 
-import com.dimension.maskbook.wallet.ext.signature
-import org.web3j.crypto.Credentials
 import org.web3j.crypto.Sign
-import org.web3j.utils.Numeric
 
-object SignUtils {
-
-    fun signMessage(message: String, privateKey: String): String {
-        val credentials = Credentials.create(privateKey)
-        val data = Sign.signPrefixedMessage(
-            message.toByteArray(Charsets.UTF_8),
-            credentials.ecKeyPair,
-        )
-        return Numeric.toHexString(data.signature)
+val Sign.SignatureData.signature: ByteArray
+    get() {
+        val magic1 = byteArrayOf(0, 27, 31, 35)
+        val magic2 = byteArrayOf(1, 28, 32, 36)
+        val v = v.firstOrNull() ?: throw Error("v is empty")
+        return r + s + when {
+            magic1.contains(v) -> {
+                0x1b
+            }
+            magic2.contains(v) -> {
+                0x1c
+            }
+            else -> {
+                throw Error("invalid v")
+            }
+        }
     }
-}

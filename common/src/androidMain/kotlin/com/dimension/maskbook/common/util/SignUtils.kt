@@ -18,22 +18,21 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet
+package com.dimension.maskbook.common.util
 
-import com.dimension.maskbook.wallet.util.SignUtils
-import kotlin.test.Test
-import kotlin.test.assertEquals
+import com.dimension.maskbook.common.ext.signature
+import org.web3j.crypto.Credentials
+import org.web3j.crypto.Sign
+import org.web3j.utils.Numeric
 
-class RedPacketSignTest {
+object SignUtils {
 
-    @Test
-    fun test() {
-        val message = "0x790116d0685eB197B886DAcAD9C247f785987A4a"
-        val password = "0x2e0c577c80bd39cb10815c9fec98f70c081d75647c15118da9a93e3970d4860d"
-        val sign = SignUtils.signMessage(message, password)
-        assertEquals(
-            sign,
-            "0xbfd98d17fab451480902d52adcc0adbb80e4408bf26e4bfe10906ea1d84495e146670ff0ed90c4ab7c8093ca1238f6115795a7f5fad26f2ce441160ddd797a691b"
+    fun signMessage(message: String, privateKey: String): String {
+        val credentials = Credentials.create(privateKey)
+        val data = Sign.signPrefixedMessage(
+            message.toByteArray(Charsets.UTF_8),
+            credentials.ecKeyPair,
         )
+        return Numeric.toHexString(data.signature)
     }
 }

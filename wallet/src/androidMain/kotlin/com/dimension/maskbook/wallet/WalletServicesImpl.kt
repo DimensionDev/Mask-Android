@@ -24,7 +24,6 @@ import com.dimension.maskbook.wallet.export.WalletServices
 import com.dimension.maskbook.wallet.export.model.ChainData
 import com.dimension.maskbook.wallet.export.model.WalletData
 import com.dimension.maskbook.wallet.repository.IWalletRepository
-import com.dimension.maskbook.wallet.util.SignUtils
 import kotlinx.coroutines.flow.Flow
 
 class WalletServicesImpl(
@@ -46,9 +45,5 @@ class WalletServicesImpl(
 
     override fun validatePrivateKey(privateKey: String): Boolean {
         return walletRepository.validatePrivateKey(privateKey)
-    }
-
-    override fun signMessage(message: String, password: String): String {
-        return SignUtils.signMessage(message, password)
     }
 }

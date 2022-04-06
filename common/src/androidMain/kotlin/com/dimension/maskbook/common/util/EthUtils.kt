@@ -39,6 +39,21 @@ import java.math.BigInteger
 
 object EthUtils {
 
+    fun ethEstimateGas(
+        web3j: Web3j,
+        fromAddress: String,
+        contractAddress: String? = null,
+        data: String? = null,
+    ): Result<BigInteger> {
+        val transaction = Transaction.createEthCallTransaction(
+            fromAddress, contractAddress, data,
+        )
+        val response = web3j.ethEstimateGas(transaction).sendAsync().get()
+        return response.ifSuccess {
+            amountUsed
+        }
+    }
+
     fun ethCall(
         web3j: Web3j,
         fromAddress: String,

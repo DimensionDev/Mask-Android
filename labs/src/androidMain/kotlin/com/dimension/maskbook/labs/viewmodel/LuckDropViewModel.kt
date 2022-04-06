@@ -20,11 +20,16 @@
  */
 package com.dimension.maskbook.labs.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.common.ext.decodeJson
 import com.dimension.maskbook.common.ext.encodeJson
+import com.dimension.maskbook.common.ext.httpService
+import com.dimension.maskbook.common.ext.use
+import com.dimension.maskbook.common.util.EthUtils
+import com.dimension.maskbook.common.util.SignUtils
 import com.dimension.maskbook.labs.mapper.toUiLuckyDropData
 import com.dimension.maskbook.labs.model.options.RedPacketOptions
 import com.dimension.maskbook.labs.model.ui.UiLuckyDropData
@@ -36,6 +41,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import org.web3j.protocol.Web3j
+import org.web3j.utils.Numeric
 
 class LuckDropViewModel(
     data: String,
@@ -55,8 +62,8 @@ class LuckDropViewModel(
         val redPacket = stateData.redPacket
 
         val data = when {
-            redPacket.canSend -> {
-                val signMessage = walletServices.signMessage(wallet.address, redPacket.password)
+            redPacket.canClaim -> {
+                val signMessage = SignUtils.signMessage(wallet.address, redPacket.password)
                 RedPacketFunctions.claim(redPacket.rpId, signMessage, wallet.address)
             }
             redPacket.canRefund -> {
@@ -65,13 +72,20 @@ class LuckDropViewModel(
             else -> return null
         }
 
+        val gasLimit = Web3j.build(wallet.chainType.httpService).use { web3j ->
+            EthUtils.ethEstimateGas(
+                web3j = web3j,
+                fromAddress = wallet.address,
+            )
+        }.onFailure {
+            Log.w("LuckDropViewModel", it)
+        }.getOrNull() ?: return null
+
         return SendTransactionData(
             from = wallet.address,
             to = redPacket.contractAddress,
             data = data,
-            gas = null,
-            maxFee = null,
-            maxPriorityFee = null,
+            gasLimit = Numeric.toHexStringWithPrefix(gasLimit),
             chainId = wallet.chainId,
         ).encodeJson()
     }

@@ -169,15 +169,11 @@ fun SendRoute(
     val context = LocalContext.current
     val gasFeeViewModel = navController
         .getNestedNavigationViewModel<GasFeeViewModel>(WalletRoute.Transfer.Route) {
-            parametersOf(
-                21000.0
-            )
+            parametersOf(21000.0)
         }
     val transferDetailViewModel = navController
         .getNestedNavigationViewModel<TransferDetailViewModel>(WalletRoute.Transfer.Route) {
-            parametersOf(
-                tradableId
-            )
+            parametersOf(tradableId)
         }
 
     val arrives by gasFeeViewModel.arrives.observeAsState(initial = "")
@@ -270,9 +266,7 @@ fun SearchTokenRoute(
 ) {
     val transferDetailViewModel = navController
         .getNestedNavigationViewModel<TransferDetailViewModel>(WalletRoute.Transfer.Route) {
-            parametersOf(
-                tradableId
-            )
+            parametersOf(tradableId)
         }
 
     val viewModel = getViewModel<SearchTradableViewModel>()
@@ -309,9 +303,7 @@ fun SearchCollectiblesRoute(
 
     val transferDetailViewModel = navController
         .getNestedNavigationViewModel<TransferDetailViewModel>(WalletRoute.Transfer.Route) {
-            parametersOf(
-                tradableId
-            )
+            parametersOf(tradableId)
         }
     val viewModel = getViewModel<SearchTradableViewModel>()
     val walletCollectibleCollections =
@@ -345,9 +337,7 @@ fun EditGasFeeRoute(
 ) {
     val gasFeeViewModel = navController
         .getNestedNavigationViewModel<GasFeeViewModel>(WalletRoute.Transfer.Route) {
-            parametersOf(
-                21000.0
-            )
+            parametersOf(21000.0)
         }
 
     val gasLimit by gasFeeViewModel.gasLimit.observeAsState(initial = -1.0)
@@ -440,15 +430,11 @@ fun SendConfirmRoute(
     val context = LocalContext.current
     val gasFeeViewModel = navController
         .getNestedNavigationViewModel<GasFeeViewModel>(WalletRoute.Transfer.Route) {
-            parametersOf(
-                21000.0
-            )
+            parametersOf(21000.0)
         }
     val transferDetailViewModel = navController
         .getNestedNavigationViewModel<TransferDetailViewModel>(WalletRoute.Transfer.Route) {
-            parametersOf(
-                tradableId
-            )
+            parametersOf(tradableId)
         }
 
     val gasLimit by gasFeeViewModel.gasLimit.observeAsState(initial = -1.0)
