@@ -39,7 +39,6 @@ kotlin {
                 implementation("androidx.test:runner:1.4.0")
                 implementation("androidx.test.ext:junit-ktx:1.1.3")
                 implementation("androidx.test.espresso:espresso-core:3.4.0")
-                // implementation("androidx.room:room-testing:${Versions.Androidx.room}")
             }
         }
     }

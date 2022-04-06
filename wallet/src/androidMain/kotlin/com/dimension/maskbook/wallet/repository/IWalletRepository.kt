@@ -22,8 +22,6 @@ package com.dimension.maskbook.wallet.repository
 
 import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.common.ext.ifNullOrEmpty
-import com.dimension.maskbook.common.okhttp.okHttpClient
-import com.dimension.maskbook.debankapi.model.ChainID
 import com.dimension.maskbook.wallet.db.model.CoinPlatformType
 import com.dimension.maskbook.wallet.db.model.DbCollectible
 import com.dimension.maskbook.wallet.db.model.DbWalletTokenTokenWithWallet
@@ -38,7 +36,6 @@ import com.dimension.maskbook.wallet.export.model.WalletCollectibleData
 import com.dimension.maskbook.wallet.export.model.WalletData
 import com.dimension.maskbook.wallet.export.model.WalletTokenData
 import kotlinx.coroutines.flow.Flow
-import org.web3j.protocol.http.HttpService
 
 data class WalletCreateOrImportResult(
     val type: Type,
@@ -143,24 +140,6 @@ data class TransactionTokenData(
     val chainType: ChainType
 )
 
-data class SearchAddressResult(
-    val query: String, // bind  result to query
-    val success: Boolean,
-    val errorMsg: String? = null,
-    val data: ISearchAddressResultData? = null
-)
-
-interface ISearchAddressResultData
-
-data class MultipleAddressResultData(
-    val contacts: List<SearchAddressData>,
-    val suggestions: List<SearchAddressData>
-) : ISearchAddressResultData
-
-data class SingleAddressResultData(
-    val address: SearchAddressData
-) : ISearchAddressResultData
-
 enum class GasPriceEditMode {
     LOW,
     MEDIUM,
@@ -172,37 +151,6 @@ enum class UnlockType {
     PASSWORD,
     BIOMETRIC
 }
-
-fun String.toChainType(): ChainType {
-    return kotlin.runCatching { ChainType.valueOf(this) }.getOrNull() ?: ChainType.unknown
-}
-
-val ChainType.httpService: HttpService
-    get() = HttpService(endpoint, okHttpClient)
-
-val ChainType.dbank: ChainID
-    get() = when (this) {
-        ChainType.eth -> ChainID.eth
-        ChainType.rinkeby -> ChainID.eth
-        ChainType.bsc -> ChainID.bsc
-        ChainType.polygon -> ChainID.matic
-        ChainType.arbitrum -> ChainID.arb
-        ChainType.xdai -> ChainID.xdai
-        ChainType.optimism -> ChainID.op
-        ChainType.polka -> ChainID.eth
-        else -> throw NotImplementedError("ChainType $this not supported")
-    }
-
-val ChainID.chainType: ChainType
-    get() = when (this) {
-        ChainID.eth -> ChainType.eth
-        ChainID.bsc -> ChainType.bsc
-        ChainID.matic -> ChainType.polygon
-        ChainID.arb -> ChainType.arbitrum
-        ChainID.xdai -> ChainType.xdai
-        ChainID.op -> ChainType.optimism
-        else -> ChainType.unknown
-    }
 
 data class DWebData(
     val coinPlatformType: CoinPlatformType,

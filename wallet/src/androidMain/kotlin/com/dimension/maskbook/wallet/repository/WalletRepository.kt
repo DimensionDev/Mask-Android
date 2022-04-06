@@ -32,6 +32,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingState
 import androidx.room.withTransaction
 import com.dimension.maskbook.common.bigDecimal.BigDecimal
+import com.dimension.maskbook.common.ext.httpService
 import com.dimension.maskbook.common.ext.use
 import com.dimension.maskbook.common.util.EthUtils
 import com.dimension.maskbook.debankapi.model.ChainID
@@ -53,6 +54,8 @@ import com.dimension.maskbook.wallet.export.model.DbWalletBalanceType
 import com.dimension.maskbook.wallet.export.model.TokenData
 import com.dimension.maskbook.wallet.export.model.WalletCollectibleData
 import com.dimension.maskbook.wallet.export.model.WalletData
+import com.dimension.maskbook.wallet.ext.chainType
+import com.dimension.maskbook.wallet.ext.dbank
 import com.dimension.maskbook.wallet.ext.ether
 import com.dimension.maskbook.wallet.ext.gwei
 import com.dimension.maskbook.wallet.paging.mediator.CollectibleCollectionMediator

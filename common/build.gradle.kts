@@ -29,6 +29,9 @@ kotlin {
                 api(projects.setting.export)
                 api(projects.extension.export)
                 api(projects.localization)
+                api(projects.common.retrofit)
+                api(projects.common.okhttp)
+                api(projects.common.bigDecimal)
 
                 // Compose
                 api("org.jetbrains.compose.ui:ui:${Versions.compose_jb}")

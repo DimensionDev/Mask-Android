@@ -22,7 +22,12 @@ package com.dimension.maskbook.common.ext
 
 import androidx.compose.ui.graphics.Color
 import com.dimension.maskbook.common.R
+import com.dimension.maskbook.common.okhttp.okHttpClient
 import com.dimension.maskbook.wallet.export.model.ChainType
+import org.web3j.protocol.http.HttpService
+
+val ChainType.httpService: HttpService
+    get() = HttpService(endpoint, okHttpClient)
 
 val ChainType.onDrawableRes: Int
     get() = when (this) {

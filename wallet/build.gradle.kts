@@ -23,11 +23,8 @@ kotlin {
         }
         val androidMain by getting {
             dependencies {
-                implementation(projects.debankapi)
                 implementation(projects.common)
-                implementation(projects.common.retrofit)
-                implementation(projects.common.okhttp)
-                implementation(projects.common.bigDecimal)
+                implementation(projects.debankapi)
 
                 kspAndroid("androidx.room:room-compiler:${Versions.Androidx.room}")
 

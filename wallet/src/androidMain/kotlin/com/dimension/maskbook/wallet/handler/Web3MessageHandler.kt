@@ -22,13 +22,13 @@ package com.dimension.maskbook.wallet.handler
 
 import com.dimension.maskbook.common.ext.decodeJson
 import com.dimension.maskbook.common.ext.encodeJson
+import com.dimension.maskbook.common.ext.httpService
 import com.dimension.maskbook.common.ext.normalized
 import com.dimension.maskbook.common.route.Navigator
 import com.dimension.maskbook.wallet.data.Web3Request
 import com.dimension.maskbook.wallet.export.model.SendTransactionData
 import com.dimension.maskbook.wallet.model.SendTokenRequest
 import com.dimension.maskbook.wallet.repository.IWalletRepository
-import com.dimension.maskbook.wallet.repository.httpService
 import com.dimension.maskbook.wallet.route.WalletRoute
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.JsonNode
