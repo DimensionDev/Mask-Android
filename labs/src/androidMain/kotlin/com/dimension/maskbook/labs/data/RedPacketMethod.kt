@@ -52,7 +52,7 @@ class RedPacketMethod(
                             ?: return@onEach
 
                         val data = options.toRedPacketState(currentWallet, currentChain)
-                        if (data.canClaim || data.canRefund) {
+                        if (data.canClaim) {
                             Navigator.navigate(LabsRoute.RedPacket.LuckyDrop(options.encodeJson()))
                         }
                     }
