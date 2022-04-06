@@ -37,6 +37,7 @@ import com.dimension.maskbook.wallet.usecase.GetWalletNativeTokenUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
@@ -45,14 +46,14 @@ import java.math.BigDecimal
 
 class GasFeeViewModel(
     initialGasLimit: Double = 21000.0,
+    walletRepository: IWalletRepository,
     private val getSuggestGasFee: GetSuggestGasFeeUseCase,
     private val getArrivesWithGasFee: GetArrivesWithGasFeeUseCase,
     private val getWalletNativeToken: GetWalletNativeTokenUseCase,
-    private val walletRepository: IWalletRepository,
 ) : ViewModel() {
-    private val chainType = walletRepository.currentChain.mapNotNull {
-        it?.chainType
-    }.asStateIn(viewModelScope, ChainType.eth)
+    private val chainType = walletRepository.currentChain
+        .mapNotNull { it?.chainType }
+        .asStateIn(viewModelScope, ChainType.eth)
 
     // native token on current chain
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -138,13 +139,13 @@ class GasFeeViewModel(
     val gasTotal by lazy {
         combine(gasLimit, maxPriorityFeePerGas, maxFeePerGas) { limit, maxFee, maxPriorityFee ->
             ((maxFee.toBigDecimal() + maxPriorityFee.toBigDecimal()).gwei.ether) * limit.toBigDecimal()
-        }
+        }.asStateIn(viewModelScope, BigDecimal.ZERO)
     }
 
     val gasUsdTotal by lazy {
         combine(gasTotal, nativeToken) { total, token ->
             token?.let { total * it.price }
-        }.mapNotNull { it }.asStateIn(viewModelScope, BigDecimal.ZERO)
+        }.filterNotNull().asStateIn(viewModelScope, BigDecimal.ZERO)
     }
 
     val gasFeeUnit by lazy {

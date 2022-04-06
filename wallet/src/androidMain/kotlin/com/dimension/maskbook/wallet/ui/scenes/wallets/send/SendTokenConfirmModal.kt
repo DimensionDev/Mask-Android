@@ -25,12 +25,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import com.dimension.maskbook.common.ext.decodeJson
 import com.dimension.maskbook.common.ext.fromHexString
 import com.dimension.maskbook.common.ext.humanizeDollar
@@ -52,7 +50,6 @@ import com.dimension.maskbook.wallet.repository.GasPriceEditMode
 import com.dimension.maskbook.wallet.route.WalletRoute
 import com.dimension.maskbook.wallet.ui.scenes.wallets.UnlockWalletDialog
 import com.dimension.maskbook.wallet.viewmodel.wallets.UnlockWalletViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.send.AddContactViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.GasFeeViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.Web3TransactionConfirmViewModel
 import org.koin.androidx.compose.getViewModel
@@ -89,12 +86,15 @@ fun SendTokenConfirmModal(
             val gasFeeViewModel = getViewModel<GasFeeViewModel> {
                 parametersOf(data.gas?.fromHexString()?.toDouble() ?: 21000.0)
             }
-            val gasLimit by gasFeeViewModel.gasLimit.observeAsState(initial = -1.0)
-            val maxPriorityFee by gasFeeViewModel.maxPriorityFeePerGas.observeAsState(initial = -1.0)
-            val maxFee by gasFeeViewModel.maxFeePerGas.observeAsState(initial = -1.0)
-            val arrives by gasFeeViewModel.arrives.observeAsState(initial = "")
-            val gasUsdTotal by gasFeeViewModel.gasUsdTotal.observeAsState(initial = BigDecimal.ZERO)
-            val gasTotal by gasFeeViewModel.gasTotal.observeAsState(initial = BigDecimal.ZERO)
+            val gasLimit by gasFeeViewModel.gasLimit.observeAsState()
+            val maxPriorityFee by gasFeeViewModel.maxPriorityFeePerGas.observeAsState()
+            val maxFee by gasFeeViewModel.maxFeePerGas.observeAsState()
+            val arrives by gasFeeViewModel.arrives.observeAsState()
+            val gasUsdTotal by gasFeeViewModel.gasUsdTotal.observeAsState()
+            val gasTotal by gasFeeViewModel.gasTotal.observeAsState()
+            val loadingState by gasFeeViewModel.loadingState.observeAsState()
+            val gasFeeUnit by gasFeeViewModel.gasFeeUnit.observeAsState()
+
             NavHost(
                 navController,
                 startDestination = "SendConfirm"
@@ -109,9 +109,10 @@ fun SendTokenConfirmModal(
                             tokenData = tokenData
                         ),
                         sendPrice = amount.humanizeToken(),
-                        gasFee = gasUsdTotal.humanizeDollar(),
+                        gasFee = gasTotal.humanizeToken() + " " + gasFeeUnit,
                         total = (amount * tokenData.price + gasUsdTotal).humanizeDollar(),
                         sending = sending,
+                        confirmEnabled = !loadingState,
                         onConfirm = {
                             navController.navigate("UnlockWalletDialog")
                         },

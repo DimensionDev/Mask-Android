@@ -34,6 +34,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -70,6 +71,7 @@ fun ApproveConfirmSheet(
         gasFee = gasFee,
         total = total,
         sending = sending,
+        confirmEnabled = true,
         onConfirm = onConfirm,
         onCancel = onCancel,
         onEditGasFee = onEditGasFee
@@ -84,6 +86,7 @@ fun SendConfirmSheet(
     gasFee: String,
     total: String,
     sending: Boolean,
+    confirmEnabled: Boolean = true,
     onConfirm: () -> Unit,
     onCancel: () -> Unit,
     onEditGasFee: () -> Unit,
@@ -96,6 +99,7 @@ fun SendConfirmSheet(
         gasFee = gasFee,
         total = total,
         sending = sending,
+        confirmEnabled = confirmEnabled,
         onConfirm = onConfirm,
         onCancel = onCancel,
         onEditGasFee = onEditGasFee
@@ -148,6 +152,7 @@ private fun ConfirmSheet(
     gasFee: String,
     total: String,
     sending: Boolean,
+    confirmEnabled: Boolean,
     onConfirm: () -> Unit,
     onCancel: () -> Unit,
     onEditGasFee: () -> Unit,
@@ -175,7 +180,12 @@ private fun ConfirmSheet(
                 total = total
             )
             Spacer(modifier = Modifier.height(20.dp))
-            ButtonContent(onCancel = onCancel, onConfirm = onConfirm, sending = sending)
+            ButtonContent(
+                onCancel = onCancel,
+                onConfirm = onConfirm,
+                confirmEnabled = confirmEnabled,
+                sending = sending,
+            )
         }
     }
 }
@@ -276,6 +286,7 @@ private fun ColumnScope.ButtonContent(
     sending: Boolean,
     onCancel: () -> Unit,
     onConfirm: () -> Unit,
+    confirmEnabled: Boolean = true,
     confirmText: String = stringResource(R.string.common_controls_confirm)
 ) {
     Row(
@@ -292,7 +303,7 @@ private fun ColumnScope.ButtonContent(
         PrimaryButton(
             modifier = Modifier.weight(1f),
             onClick = onConfirm,
-            enabled = !sending
+            enabled = !sending && confirmEnabled,
         ) {
             Text(text = if (sending) stringResource(R.string.common_controls_sending) else confirmText)
         }
