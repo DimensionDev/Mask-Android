@@ -133,14 +133,14 @@ class DownloadQrCodeViewModel(
             false
         )
         canvas.drawBitmap(logoBitmap, 192f, 142f, bitmapPaint)
-        //draw Text
+        // draw Text
         val textPaint = Paint()
         textPaint.color = Color.BLACK
         textPaint.textSize = 20f
         textPaint.typeface = Typeface.DEFAULT_BOLD
-        //nick name y is text baseline position
+        // nick name y is text baseline position
         canvas.drawText(info.nickName, 264f, 142f + textPaint.textBaseLine(), textPaint)
-        //identity code
+        // identity code
         textPaint.textSize = 18f
         canvas.drawText(
             context.getString(R.string.scene_persona_download_qr_code_identity_code),
@@ -148,7 +148,7 @@ class DownloadQrCodeViewModel(
             651f + textPaint.textBaseLine(),
             textPaint
         )
-        //id
+        // id
         textPaint.reset()
         textPaint.color = Color.BLACK
         textPaint.textSize = 12f
