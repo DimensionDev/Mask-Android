@@ -40,6 +40,7 @@ fun MaskSearchInput(
     value: String,
     onValueChanged: (String) -> Unit,
     modifier: Modifier = Modifier,
+    inputModifier: Modifier = Modifier,
     onSearch: () -> Unit = {},
     shape: Shape = MaterialTheme.shapes.small,
     placeholder: @Composable (() -> Unit)? = null,
@@ -47,6 +48,7 @@ fun MaskSearchInput(
     readOnly: Boolean = false,
 ) {
     MaskButton(
+        modifier = modifier,
         onClick = {},
         shape = shape,
         contentPadding = PaddingValues(horizontal = 12.dp)
@@ -59,7 +61,7 @@ fun MaskSearchInput(
         MaskInputField(
             value = value,
             onValueChange = onValueChanged,
-            modifier = modifier.weight(1f),
+            modifier = inputModifier.weight(1f),
             colors = TextFieldDefaults.textFieldColors(
                 backgroundColor = Color.Transparent,
                 focusedIndicatorColor = Color.Transparent,

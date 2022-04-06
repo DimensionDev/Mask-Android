@@ -49,9 +49,6 @@ kotlin {
 android {
     setupLibrary()
 }
-dependencies {
-    implementation("androidx.test.ext:junit-ktx:1.1.3")
-}
 
 ksp {
     arg("room.schemaLocation", "$projectDir/schemas")

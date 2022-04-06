@@ -29,7 +29,10 @@ interface ExtensionServices {
     fun setSite(site: Site)
     val isExtensionActive: Flow<Boolean>
     suspend fun ensureExtensionActive()
-    suspend fun runJSMethod(method: String, isWait: Boolean, vararg args: Pair<String, Any>): String?
-    fun sendJSEventResponse(map: Map<String, Any?>)
-    fun subscribeJSEvent(vararg method: String): Flow<ExtensionMessage>
+    suspend fun runBackgroundJSMethod(method: String, isWait: Boolean, vararg args: Pair<String, Any>): String?
+    fun sendBackgroundJSEventResponse(map: Map<String, Any?>)
+    fun subscribeBackgroundJSEvent(vararg method: String): Flow<ExtensionMessage>
+    suspend fun runCurrentContentJSMethod(method: String, isWait: Boolean, vararg args: Pair<String, Any>): String?
+    fun sendCurrentContentJSEventResponse(map: Map<String, Any?>)
+    fun subscribeCurrentContentJSEvent(vararg method: String): Flow<ExtensionMessage>
 }

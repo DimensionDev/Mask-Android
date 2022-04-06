@@ -69,7 +69,7 @@ internal class JSMethod(
     }
 
     fun web3Event(): Flow<Web3Request> {
-        return extensionServices.subscribeJSEvent("send").map {
+        return extensionServices.subscribeBackgroundJSEvent("send").map {
             Web3Request(
                 it.id,
                 it.params?.decodeJson<JsonRpcPayload>(),
@@ -79,7 +79,7 @@ internal class JSMethod(
     }
 
     fun switchBlockChain(): Flow<SwitchBlockChainData> {
-        return extensionServices.subscribeJSEvent("wallet_switchBlockChain")
+        return extensionServices.subscribeBackgroundJSEvent("wallet_switchBlockChain")
             .mapNotNull { it.params?.decodeJson<SwitchBlockChainData>() }
     }
 }
