@@ -32,6 +32,8 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingState
 import androidx.room.withTransaction
 import com.dimension.maskbook.common.bigDecimal.BigDecimal
+import com.dimension.maskbook.common.ext.use
+import com.dimension.maskbook.common.util.EthUtils
 import com.dimension.maskbook.debankapi.model.ChainID
 import com.dimension.maskbook.debankapi.model.Token
 import com.dimension.maskbook.wallet.data.JSMethod
@@ -64,6 +66,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
@@ -75,10 +79,8 @@ import org.web3j.abi.datatypes.Address
 import org.web3j.abi.datatypes.DynamicBytes
 import org.web3j.abi.datatypes.Function
 import org.web3j.abi.datatypes.generated.Uint256
-import org.web3j.crypto.Credentials
 import org.web3j.ens.EnsResolver
 import org.web3j.protocol.Web3j
-import org.web3j.tx.RawTransactionManager
 import java.math.BigInteger
 import java.util.UUID
 import kotlin.math.pow
@@ -677,71 +679,41 @@ internal class WalletRepository(
         onError: (Throwable) -> Unit,
     ) {
         scope.launch {
-            try {
-                val hash = currentWallet.firstOrNull()?.let { wallet ->
-                    if (wallet.fromWalletConnect) {
-                        walletConnectManager.sendToken(
-                            amount = amount,
-                            fromAddress = wallet.address,
-                            toAddress = address,
-                            data = data,
-                            gasLimit = gasLimit,
-                            gasPrice = maxFee.toBigDecimal().gwei.ether + maxPriorityFee.toBigDecimal().gwei.ether,
-                            onResponse = { response, error ->
-                                error?.let { onError(it) } ?: onDone(response.toString())
-                            }
-                        )
-                        return@launch
+            val wallet = currentWallet.filterNotNull().first()
+            if (wallet.fromWalletConnect) {
+                walletConnectManager.sendToken(
+                    amount = amount,
+                    fromAddress = wallet.address,
+                    toAddress = address,
+                    data = data,
+                    gasLimit = gasLimit,
+                    gasPrice = maxFee.toBigDecimal().gwei.ether + maxPriorityFee.toBigDecimal().gwei.ether,
+                    onResponse = { response, error ->
+                        error?.let { onError(it) } ?: onDone(response.toString())
                     }
-                    val credentials = Credentials.create(
-                        getPrivateKey(
-                            wallet,
-                            CoinPlatformType.Ethereum
-                        )
-                    )
-                    val actualAmount = if (chainType == ChainType.eth) {
-                        amount.ether.wei.toBigInteger()
-                    } else {
+                )
+                return@launch
+            }
+
+            val privateKey = getPrivateKey(wallet, CoinPlatformType.Ethereum)
+            Web3j.build(chainType.httpService).use { web3j ->
+                EthUtils.ethSendRawTransaction(
+                    chainType = chainType,
+                    web3j = web3j,
+                    privateKey = privateKey,
+                    contractAddress = address,
+                    maxPriorityFeePerGas = maxPriorityFee.toBigDecimal().gwei.wei.toBigInteger(),
+                    maxFeePerGas = maxFee.toBigDecimal().gwei.wei.toBigInteger(),
+                    gasLimit = gasLimit.toBigDecimal().toBigInteger(),
+                    value = if (chainType.supportEip25519 && chainType != ChainType.eth) {
                         null
-                    }
-                    val web3 = Web3j.build(chainType.httpService)
-                    val manager = RawTransactionManager(web3, credentials, chainType.chainId)
-                    val result = if (chainType.supportEip25519) {
-                        manager.sendEIP1559Transaction(
-                            chainType.chainId,
-                            maxPriorityFee.gwei.wei.toBigInteger(),
-                            maxFee.gwei.wei.toBigInteger(),
-                            gasLimit.toBigDecimal().toBigInteger(),
-                            address,
-                            data,
-                            actualAmount,
-                        )
-                    } else {
-                        manager.sendTransaction(
-                            maxPriorityFee.gwei.wei.toBigInteger(),
-                            gasLimit.toBigDecimal().toBigInteger(),
-                            address,
-                            data,
-                            amount.ether.wei.toBigInteger()
-                        )
-                    }
-                    if (result.hasError()) {
-                        Log.e(
-                            "WalletRepository",
-                            "sendTokenWithCurrentWallet: ${result.error?.code}: ${result.error?.message}",
-                        )
-                        Log.e(
-                            "WalletRepository",
-                            "sendTokenWithCurrentWallet: ${result.error?.data}",
-                        )
-                        throw Exception(result.error?.message ?: "")
-                    }
-                    web3.shutdown()
-                    result.transactionHash
-                }
-                onDone.invoke(hash)
-            } catch (e: Throwable) {
-                onError(e)
+                    } else amount.ether.wei.toBigInteger(),
+                )
+            }.onSuccess {
+                onDone(it.transactionHash)
+            }.onFailure {
+                Log.w("WalletRepository", "sendTokenWithCurrentWallet: ${it.message}")
+                onError(it)
             }
         }
     }
