@@ -33,7 +33,7 @@ import com.dimension.maskbook.common.ui.theme.isDarkTheme
 import com.dimension.maskbook.common.ui.widget.button.MaskButton
 
 @Composable
-fun RedPacketButton(
+fun RedPacketClaimButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,

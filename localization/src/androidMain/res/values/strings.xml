@@ -419,6 +419,7 @@
     <string name="scene_open_red_package_from">From: @%s</string>
     <string name="scene_open_red_package_refunded">Refunded</string>
     <string name="scene_open_red_package_share_message_official">Hi friends, I just claimed a lucky drop sent by %s on %s network. Follow %s (mask.io) to claim the lucky drops.\n#mask_io #LuckyDrop\n%s</string>
+    <string name="scene_open_red_package_better_luck_next_time">Better luck\nnext time.</string>
     <string name="scene_open_red_package_refund">Refund</string>
     <string name="scene_restore_completion">Restore completed.</string>
     <string name="scene_restore_restored_post">Encrypted post</string>

@@ -70,7 +70,7 @@ import com.dimension.maskbook.common.ui.widget.button.MaskButton
 import com.dimension.maskbook.labs.R
 import com.dimension.maskbook.labs.model.ui.UiLuckyDropData
 import com.dimension.maskbook.labs.route.LabsRoute
-import com.dimension.maskbook.labs.ui.widget.RedPacketButton
+import com.dimension.maskbook.labs.ui.widget.RedPacketClaimButton
 import com.dimension.maskbook.labs.viewmodel.LuckDropViewModel
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
@@ -85,16 +85,22 @@ fun LuckDropModal(
     navController: NavController,
     @Path("data") data: String,
 ) {
-    LaunchedEffect(Unit) {
-        navController.eventFlow<ResultEvent.Confirm>().collect {
-            navController.navigateWithPopSelf(LabsRoute.RedPacket.LuckyDropResult(it.ok))
-        }
-    }
-
     val viewModel = getViewModel<LuckDropViewModel> {
         parametersOf(data)
     }
     val stateData by viewModel.stateData.collectAsState()
+
+    LaunchedEffect(Unit) {
+        navController.eventFlow<ResultEvent.Confirm>().collect {
+            navController.navigateWithPopSelf(
+                LabsRoute.RedPacket.LuckyDropResult(
+                    success = it.ok,
+                    amount = stateData.redPacket.amountString,
+                    postLink = stateData.redPacket.postLink,
+                )
+            )
+        }
+    }
 
     MaskModal(
         title = {
@@ -119,7 +125,7 @@ fun LuckDropModal(
                 }
             )
             Spacer(Modifier.height(24.dp))
-            RedPacketButton(
+            RedPacketClaimButton(
                 enabled = stateData.buttonEnabled,
                 onClick = {
                     viewModel.getSendTransactionData(stateData)?.let { data ->

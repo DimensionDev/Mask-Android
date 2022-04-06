@@ -51,5 +51,6 @@ data class UiLuckyDropData(
         val password: String = "",
         val canRefund: Boolean = false,
         val canSend: Boolean = false,
+        val postLink: String = "",
     )
 }

@@ -493,7 +493,7 @@
             "delete_tip": "If you haven’t backed up, please go to Settings - Backup and Recovery",
             "add_persona": "Add Persona",
             "user_id": "User ID",
-            "connect_social_tip": "To connect to Mask, Click here to enter twitter ID.",
+            "connect_social_tip": "To connect to Mask, Click here to enter twitter ID."
         },
         "persona_avatar": {
             "set_persona_avatar": "Set Persona Avatar",
@@ -822,7 +822,8 @@
             "refund":"Refund",
             "empty": "Empty",
             "share_message_official": "Hi friends, I just claimed a lucky drop sent by %s on %s network. Follow %s (mask.io) to claim the lucky drops.\n#mask_io #LuckyDrop\n%s",
-            "share_message_unsupport_platform": "Hi friends, I just claimed a lucky drop sent by @%s on %s network. \n%s"
+            "share_message_unsupport_platform": "Hi friends, I just claimed a lucky drop sent by @%s on %s network. \n%s",
+            "better_luck_next_time": "Better luck\nnext time."
         }
     },
     "chain": {

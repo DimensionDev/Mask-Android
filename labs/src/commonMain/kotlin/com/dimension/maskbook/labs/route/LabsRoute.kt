@@ -33,7 +33,7 @@ expect object LabsRoute {
             operator fun invoke(data: String): String
         }
         object LuckyDropResult {
-            operator fun invoke(success: Boolean): String
+            operator fun invoke(success: Boolean, amount: String?, postLink: String?): String
         }
     }
 }
