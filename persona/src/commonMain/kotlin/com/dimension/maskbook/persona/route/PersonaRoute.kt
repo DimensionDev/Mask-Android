@@ -21,7 +21,6 @@
 package com.dimension.maskbook.persona.route
 
 import com.dimension.maskbook.common.routeProcessor.annotations.Route
-import com.dimension.maskbook.persona.viewmodel.DownloadQrCodeViewModel
 
 @Suppress("CONST_VAL_WITHOUT_INITIALIZER")
 @Route
@@ -36,7 +35,7 @@ expect object PersonaRoute {
     }
     const val ExportPrivateKey: String
     object DownloadQrCode {
-        operator fun invoke(idType: DownloadQrCodeViewModel.IdType, idBase64: String): String
+        operator fun invoke(idType: String, idBase64: String): String
     }
     object SelectPlatform {
         operator fun invoke(personaId: String): String

@@ -183,7 +183,7 @@ fun PersonaMenuScene(
                                         Uri.parse(
                                             Deeplinks.Persona.BackUpPassword(
                                                 PersonaRoute.DownloadQrCode(
-                                                    idType = DownloadQrCodeViewModel.IdType.ID,
+                                                    idType = DownloadQrCodeViewModel.IdType.ID.name,
                                                     idBase64 = it.identifier.encodeBase64(Base64.NO_WRAP)
                                                 )
                                             )

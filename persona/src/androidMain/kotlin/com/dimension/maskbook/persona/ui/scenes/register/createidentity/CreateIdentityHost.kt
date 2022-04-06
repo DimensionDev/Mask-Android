@@ -82,7 +82,7 @@ fun BackupRoute(
             viewModel.download()
             navController.navigate(
                 PersonaRoute.DownloadQrCode(
-                    idType = DownloadQrCodeViewModel.IdType.Mnemonic,
+                    idType = DownloadQrCodeViewModel.IdType.Mnemonic.name,
                     idBase64 = words.joinToString(separator = " ") { it.word }.encodeBase64(Base64.NO_WRAP)
                 )
             )
