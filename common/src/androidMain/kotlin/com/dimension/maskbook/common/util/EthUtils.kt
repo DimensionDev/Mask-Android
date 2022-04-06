@@ -81,7 +81,34 @@ object EthUtils {
     ): Result<EthResponse> {
         val function = Function(functionName, inputParams, outputParams)
         val encodedFunction = FunctionEncoder.encode(function)
+        return ethSendRawTransaction(
+            web3j = web3j,
+            privateKey = privateKey,
+            chainType = chainType,
+            contractAddress = contractAddress,
+            maxPriorityFeePerGas = maxPriorityFeePerGas,
+            maxFeePerGas = maxFeePerGas,
+            gasLimit = gasLimit,
+            value = value,
+            data = encodedFunction,
+            constructor = constructor,
+            outputParams = function.outputParameters,
+        )
+    }
 
+    fun ethSendRawTransaction(
+        web3j: Web3j,
+        privateKey: String,
+        chainType: ChainType,
+        contractAddress: String,
+        maxPriorityFeePerGas: BigInteger,
+        maxFeePerGas: BigInteger,
+        gasLimit: BigInteger,
+        value: BigInteger?,
+        data: String,
+        constructor: Boolean = false,
+        outputParams: List<TypeReference<Type<*>>> = emptyList(),
+    ): Result<EthResponse> {
         val credentials = Credentials.create(privateKey)
         val transaction = RawTransactionManager(web3j, credentials, chainType.chainId)
         val response: EthSendTransaction = if (chainType.supportEip25519) {
@@ -91,7 +118,7 @@ object EthUtils {
                 maxFeePerGas,
                 gasLimit,
                 contractAddress,
-                encodedFunction,
+                data,
                 value,
                 constructor,
             )
@@ -100,7 +127,7 @@ object EthUtils {
                 maxPriorityFeePerGas + maxFeePerGas,
                 gasLimit,
                 contractAddress,
-                encodedFunction,
+                data,
                 value,
                 constructor
             )
@@ -109,7 +136,7 @@ object EthUtils {
         return response.ifSuccess {
             EthResponse(
                 transactionHash = transactionHash,
-                values = parseValues(function.outputParameters),
+                values = parseValues(outputParams),
             )
         }
     }

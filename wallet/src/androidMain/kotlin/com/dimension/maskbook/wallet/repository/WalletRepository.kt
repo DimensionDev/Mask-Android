@@ -711,6 +711,7 @@ internal class WalletRepository(
                     value = if (chainType.supportEip25519 && chainType != ChainType.eth) {
                         null
                     } else amount.ether.wei.toBigInteger(),
+                    data = data,
                 )
             }.onSuccess {
                 onDone(it.transactionHash)
