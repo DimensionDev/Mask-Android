@@ -26,7 +26,7 @@ import kotlin.test.assertEquals
 class SignUtilsTest {
 
     @Test
-    fun sample_test() {
+    fun test_sign_text() {
         val message = "Some data"
         val password = "0x4c0883a69102937d6231471b5dbb6204fe5129617082792ae468d01a3f362318"
         val sign = SignUtils.signMessage(message, password)
@@ -37,7 +37,7 @@ class SignUtilsTest {
     }
 
     @Test
-    fun password_test() {
+    fun test_sign_hex() {
         val message = "0x790116d0685eB197B886DAcAD9C247f785987A4a"
         val password = "0x2e0c577c80bd39cb10815c9fec98f70c081d75647c15118da9a93e3970d4860d"
         val sign = SignUtils.signMessage(message, password)

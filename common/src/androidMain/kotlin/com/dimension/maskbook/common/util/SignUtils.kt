@@ -20,19 +20,22 @@
  */
 package com.dimension.maskbook.common.util
 
+import com.dimension.maskbook.common.ext.isHexStrict
 import com.dimension.maskbook.common.ext.signature
 import org.web3j.crypto.Credentials
 import org.web3j.crypto.Sign
 import org.web3j.utils.Numeric
 
 object SignUtils {
-
     fun signMessage(message: String, privateKey: String): String {
+        val messageBytes = if (message.isHexStrict) {
+            Numeric.hexStringToByteArray(message)
+        } else {
+            message.toByteArray()
+        }
+
         val credentials = Credentials.create(privateKey)
-        val data = Sign.signPrefixedMessage(
-            message.toByteArray(Charsets.UTF_8),
-            credentials.ecKeyPair,
-        )
+        val data = Sign.signPrefixedMessage(messageBytes, credentials.ecKeyPair,)
         return Numeric.toHexString(data.signature)
     }
 }
