@@ -40,12 +40,10 @@ fun RedPacketOptions.toRedPacketState(
     currentWallet: WalletData,
     currentChain: ChainData,
 ): RedPacketState {
-
     val isExpired = availability.expired
-    val isEmpty = BigDecimal(availability.balance).compareTo(BigDecimal.ZERO) == 0
-    val isClaimed = availability.claimedAmount != null &&
-        BigDecimal(availability.claimedAmount) > BigDecimal.ZERO
-    val isRefunded = isEmpty && BigDecimal(availability.claimed) < BigDecimal(availability.total)
+    val isEmpty = availability.balance.compareTo(BigDecimal.ZERO) == 0
+    val isClaimed = availability.claimedAmount > BigDecimal.ZERO
+    val isRefunded = isEmpty && availability.claimed < availability.total
 
     val isCreator = payload.sender.address == currentWallet.address
     val isPasswordValid = payload.password.isNotEmpty() && payload.password != passwordInvalid

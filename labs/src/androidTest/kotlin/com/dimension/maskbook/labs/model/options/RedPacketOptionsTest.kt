@@ -20,6 +20,7 @@
  */
 package com.dimension.maskbook.labs.model.options
 
+import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.common.ext.decodeJson
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -79,5 +80,6 @@ class RedPacketOptionsTest {
     fun test_RedPacketOptions() {
         val options: RedPacketOptions = redPacketJson.decodeJson()
         assertEquals(options.postLink, "https://twitter.com/...")
+        assertEquals(options.availability.total, BigDecimal(5))
     }
 }

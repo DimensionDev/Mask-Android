@@ -20,6 +20,8 @@
  */
 package com.dimension.maskbook.labs.model.options
 
+import com.dimension.maskbook.common.bigDecimal.BigDecimal
+import com.dimension.maskbook.common.serializer.BigDecimalSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -91,12 +93,16 @@ data class RedPacketOptions(
     data class RedPacketAvailability(
         @SerialName("token_address")
         val tokenAddress: String,
-        val balance: String,
-        val total: String,
-        val claimed: String,
+        @Serializable(with = BigDecimalSerializer::class)
+        val balance: BigDecimal,
+        @Serializable(with = BigDecimalSerializer::class)
+        val total: BigDecimal,
+        @Serializable(with = BigDecimalSerializer::class)
+        val claimed: BigDecimal,
         val expired: Boolean,
+        @Serializable(with = BigDecimalSerializer::class)
         @SerialName("claimed_amount")
-        val claimedAmount: String? = null, // V2
+        val claimedAmount: BigDecimal = BigDecimal.ZERO, // V2
         @SerialName("ifclaimed")
         val ifClaimed: String? = null, // V1
     )
