@@ -20,11 +20,15 @@
  */
 package com.dimension.maskbook.labs.model
 
+import com.dimension.maskbook.common.bigDecimal.BigDecimal
+
 data class RedPacketAvailabilityState(
     val isExpired: Boolean,
     val isEmpty: Boolean,
     val isClaimed: Boolean,
     val isRefunded: Boolean,
+    val claimedAmount: BigDecimal,
+    val claimed: BigDecimal,
 )
 
 data class RedPacketState(

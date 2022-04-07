@@ -23,6 +23,7 @@ package com.dimension.maskbook.labs.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dimension.maskbook.common.exception.NullTransactionReceiptException
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.common.ext.decodeJson
 import com.dimension.maskbook.common.ext.encodeJson
@@ -34,6 +35,7 @@ import com.dimension.maskbook.common.util.EthUtils
 import com.dimension.maskbook.common.util.SignUtils
 import com.dimension.maskbook.labs.mapper.toRedPacketState
 import com.dimension.maskbook.labs.mapper.toUiLuckyDropData
+import com.dimension.maskbook.labs.model.RedPacketAvailabilityState
 import com.dimension.maskbook.labs.model.options.RedPacketOptions
 import com.dimension.maskbook.labs.model.ui.UiLuckyDropData
 import com.dimension.maskbook.labs.util.RedPacketUtils
@@ -70,7 +72,7 @@ class LuckDropViewModel(
         val wallet = stateData.wallet
         val redPacket = stateData.redPacket
 
-        val function = when {
+        val data = when {
             redPacket.canClaim -> {
                 val signMessage = SignUtils.signMessage(wallet.address, redPacket.password)
                 RedPacketUtils.Functions.claim(redPacket.rpId, signMessage, wallet.address)
@@ -79,12 +81,15 @@ class LuckDropViewModel(
                 RedPacketUtils.Functions.refund(redPacket.rpId)
             }
             else -> return null
-        }
+        }.let { FunctionEncoder.encode(it) }
 
         val gasLimit = wallet.chainType.web3j.use { web3j ->
             EthUtils.ethEstimateGas(
                 web3j = web3j,
                 fromAddress = wallet.address,
+                contractAddress = redPacket.contractAddress,
+                data = data,
+                value = redPacket.amount.toBigInteger(),
             )
         }.onFailure {
             Log.w("LuckDropViewModel", it)
@@ -93,18 +98,18 @@ class LuckDropViewModel(
         return SendTransactionData(
             from = wallet.address,
             to = redPacket.contractAddress,
-            data = FunctionEncoder.encode(function),
+            data = data,
             gasLimit = gasLimit.toHexString(),
             chainId = wallet.chainId,
         ).encodeJson()
     }
 
-    suspend fun getTransactionReceipt(
+    suspend fun getRedPacketAvailabilityState(
         stateData: UiLuckyDropData,
         transactionHash: String,
-    ): Boolean {
+    ): RedPacketAvailabilityState? {
         _loading.value = true
-        var success = false
+        var redPacketState: RedPacketAvailabilityState? = null
 
         val wallet = stateData.wallet
         val redPacket = stateData.redPacket
@@ -127,15 +132,16 @@ class LuckDropViewModel(
                     rpId = redPacket.rpId,
                 )
             } ?: return@useSuspend
-            Log.i("LuckDropViewModel", availability.toString())
             val state = availability.toRedPacketState()
-
-            success = (redPacket.canClaim && state.isClaimed) ||
+            if ((redPacket.canClaim && state.isClaimed) ||
                 (redPacket.canRefund && state.isRefunded)
+            ) {
+                redPacketState = state
+            }
         }
 
         _loading.value = false
-        return success
+        return redPacketState
     }
 
     private suspend fun <T> doWhileSuccess(count: Int = 10, block: () -> Result<T>): T? {
@@ -144,7 +150,9 @@ class LuckDropViewModel(
             block().onSuccess {
                 return it
             }.onFailure {
-                Log.w("LuckDropViewModel", it)
+                if (it !is NullTransactionReceiptException) {
+                    Log.w("LuckDropViewModel", it)
+                }
             }
             delay(1.5.seconds)
         }

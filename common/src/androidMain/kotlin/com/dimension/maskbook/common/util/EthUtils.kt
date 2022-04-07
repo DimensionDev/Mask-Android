@@ -20,6 +20,7 @@
  */
 package com.dimension.maskbook.common.util
 
+import com.dimension.maskbook.common.exception.NullTransactionReceiptException
 import com.dimension.maskbook.common.model.EthResponse
 import com.dimension.maskbook.common.model.EthTransactionReceiptResponse
 import com.dimension.maskbook.wallet.export.model.ChainType
@@ -44,10 +45,17 @@ object EthUtils {
         web3j: Web3j,
         fromAddress: String,
         contractAddress: String? = null,
+        value: BigInteger? = null,
         data: String? = null,
     ): Result<BigInteger> {
-        val transaction = Transaction.createEthCallTransaction(
-            fromAddress, contractAddress, data,
+        val transaction = Transaction.createFunctionCallTransaction(
+            fromAddress,
+            null,
+            null,
+            null,
+            contractAddress,
+            value,
+            data,
         )
         val response = kotlin.runCatching {
             web3j.ethEstimateGas(transaction).sendAsync().get()
@@ -193,7 +201,7 @@ object EthUtils {
 
         return response.ifSuccessResult {
             val transactionReceipt = response.result
-                ?: return@ifSuccessResult Result.failure(NullPointerException("transactionReceipt is null"))
+                ?: return@ifSuccessResult Result.failure(NullTransactionReceiptException())
 
             Result.success(
                 EthTransactionReceiptResponse(

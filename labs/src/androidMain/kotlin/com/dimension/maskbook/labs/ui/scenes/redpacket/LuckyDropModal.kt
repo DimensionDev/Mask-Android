@@ -53,6 +53,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
+import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.common.ext.eventFlow
 import com.dimension.maskbook.common.ext.navigateUri
 import com.dimension.maskbook.common.ext.navigateWithPopSelf
@@ -76,6 +77,7 @@ import com.dimension.maskbook.labs.ui.widget.RedPacketClaimButton
 import com.dimension.maskbook.labs.viewmodel.LuckDropViewModel
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
+import kotlin.math.pow
 
 @NavGraphDestination(
     route = LabsRoute.RedPacket.LuckyDrop.path,
@@ -94,18 +96,23 @@ fun LuckDropModal(
     val loading by viewModel.loading.collectAsState()
 
     LaunchedEffect(Unit) {
-        navController.eventFlow<ResultEvent.TokenConfirm>().collect {
-            val transactionHash = it.transactionHash
+        navController.eventFlow<ResultEvent.TokenConfirm>().collect { event ->
+            val transactionHash = event.transactionHash
             if (transactionHash == null) {
                 navController.popBackStack()
                 return@collect
             }
 
-            val success = viewModel.getTransactionReceipt(stateData, transactionHash)
+            val redPacketState = viewModel.getRedPacketAvailabilityState(stateData, transactionHash)
             navController.navigateWithPopSelf(
                 LabsRoute.RedPacket.LuckyDropResult(
-                    success = success,
-                    amount = stateData.redPacket.amountString,
+                    success = redPacketState != null,
+                    amount = redPacketState?.let {
+                        "%s %s".format(
+                            it.claimedAmount.divide(BigDecimal(10.0.pow(stateData.wallet.decimals))),
+                            stateData.wallet.symbol
+                        )
+                    },
                     postLink = stateData.redPacket.postLink,
                 )
             )

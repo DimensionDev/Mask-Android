@@ -47,6 +47,8 @@ fun RedPacketOptions.RedPacketAvailability.toRedPacketState(): RedPacketAvailabi
         isEmpty = isEmpty,
         isClaimed = isClaimed,
         isRefunded = isRefunded,
+        claimedAmount = claimedAmount,
+        claimed = claimed,
     )
 }
 
@@ -64,6 +66,7 @@ fun RedPacketOptions.toRedPacketState(
     val isPasswordValid = payload.password.isNotEmpty() && payload.password != passwordInvalid
     val isOnSameChain = payload.token.chainId == currentChain.chainId
 
+    // same as ios
     val canClaim = !isExpired && !isEmpty && !isClaimed && isPasswordValid && isOnSameChain
     val canRefund = isExpired && !isEmpty && isCreator && isOnSameChain
     val canSend = !isEmpty && !isExpired && !isRefunded && isCreator && isOnSameChain
@@ -86,7 +89,10 @@ fun RedPacketOptions.toUiLuckyDropData(
     currentWallet: WalletData,
     currentChain: ChainData,
 ): UiLuckyDropData {
-    val amount = BigDecimal(payload.total).divide(BigDecimal(10.0.pow(payload.token.decimals)))
+    val decimals = payload.token.decimals
+    val symbol = payload.token.symbol
+
+    val amount = payload.total.divide(BigDecimal(10.0.pow(decimals)))
     val endTime = DateTime(payload.creationTime + payload.duration)
     val timeZone = TimeZone.getDefault().getDisplayName(false, TimeZone.SHORT)
     val state = toRedPacketState(currentWallet, currentChain)
@@ -101,6 +107,8 @@ fun RedPacketOptions.toUiLuckyDropData(
                 .find { it.tokenAddress == currentChain.nativeTokenID }
                 ?.let { "${it.count.humanizeToken()} ${it.tokenData.symbol}" }
                 ?: "",
+            decimals = decimals,
+            symbol = symbol,
         ),
         redPacket = UiLuckyDropData.RedPacket(
             contractAddress = payload.contractAddress,
@@ -108,7 +116,7 @@ fun RedPacketOptions.toUiLuckyDropData(
             senderName = payload.sender.name,
             shares = payload.shares,
             amount = amount,
-            amountString = amount.toString() + " " + payload.token.symbol,
+            amountString = "$amount $symbol",
             endTime = endTime.toString("yyyy/MM/dd hh a", Locale.US) + " " + timeZone,
             stateStringRes = when {
                 state.isClaimed -> R.string.scene_open_red_package_claimed

@@ -45,7 +45,8 @@ data class RedPacketOptions(
         val shares: Int,
         @SerialName("is_random")
         val isRandom: Boolean,
-        val total: String,
+        @Serializable(with = BigDecimalSerializer::class)
+        val total: BigDecimal,
         @SerialName("creation_time")
         val creationTime: Long = 0,
         val duration: Int = 0,

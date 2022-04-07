@@ -36,6 +36,8 @@ data class UiLuckyDropData(
         val chainType: ChainType = ChainType.eth,
         val chainTypeIcon: Int = 0,
         val chainBalance: String = "",
+        val decimals: Int = 0,
+        val symbol: String = "",
     )
 
     data class RedPacket(
