@@ -59,7 +59,7 @@ fun LogoutDialog(
         onDismissRequest = { /*TODO*/ },
         icon = {
             Image(
-                painterResource(id = R.drawable.ic_property_1_note),
+                painterResource(id = R.drawable.ic_note),
                 contentDescription = null
             )
         },

@@ -91,6 +91,9 @@ kotlin {
                 api("org.web3j:core:${Versions.web3j}")
 
                 api("joda-time:joda-time:${Versions.jodaTime}")
+
+                // zxing
+                implementation("com.journeyapps:zxing-android-embedded:${Versions.zxing}")
             }
         }
         val androidAndroidTest by getting {

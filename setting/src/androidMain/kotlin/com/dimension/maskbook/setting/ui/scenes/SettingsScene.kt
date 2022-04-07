@@ -192,7 +192,7 @@ fun SettingsScene(
                     title = stringResource(R.string.scene_setting_backup_recovery_restore_data),
                     icon = R.drawable.ic_settings_restore_data,
                     onClick = {
-                        navController.navigate(Uri.parse(Deeplinks.Wallet.Recovery))
+                        navController.navigate(Uri.parse(Deeplinks.Persona.Recovery))
                     }
                 )
                 SettingsDivider()

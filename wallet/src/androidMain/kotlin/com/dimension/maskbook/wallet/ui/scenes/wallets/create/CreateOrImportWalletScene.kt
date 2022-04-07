@@ -160,7 +160,7 @@ private fun CreateSuccessDialog(onDismissRequest: () -> Unit) {
         title = { Text(text = "Wallet successfully created!") },
         icon = {
             Image(
-                painter = painterResource(id = R.drawable.ic_property_1_snccess),
+                painter = painterResource(id = R.drawable.ic_success),
                 contentDescription = null
             )
         },

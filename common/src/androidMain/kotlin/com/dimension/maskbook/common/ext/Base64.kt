@@ -22,34 +22,34 @@ package com.dimension.maskbook.common.ext
 
 import android.util.Base64
 
-fun ByteArray.encodeBase64(): ByteArray {
-    return Base64.encode(this, Base64.DEFAULT)
+fun ByteArray.encodeBase64(flag: Int = Base64.DEFAULT): ByteArray {
+    return Base64.encode(this, flag)
 }
 
-fun ByteArray.encodeBase64String(): String {
-    return String(encodeBase64())
+fun ByteArray.encodeBase64String(flag: Int = Base64.DEFAULT): String {
+    return String(encodeBase64(flag = flag))
 }
 
-fun ByteArray.decodeBase64(): ByteArray {
-    return Base64.decode(this, Base64.DEFAULT)
+fun ByteArray.decodeBase64(flag: Int = Base64.DEFAULT): ByteArray {
+    return Base64.decode(this, flag)
 }
 
-fun ByteArray.decodeBase64String(): String {
-    return String(decodeBase64())
+fun ByteArray.decodeBase64String(flag: Int = Base64.DEFAULT): String {
+    return String(decodeBase64(flag = flag))
 }
 
-fun String.encodeBase64Bytes(): ByteArray {
-    return toByteArray().encodeBase64()
+fun String.encodeBase64Bytes(flag: Int = Base64.DEFAULT): ByteArray {
+    return toByteArray().encodeBase64(flag = flag)
 }
 
-fun String.encodeBase64(): String {
-    return String(encodeBase64Bytes())
+fun String.encodeBase64(flag: Int = Base64.DEFAULT): String {
+    return String(encodeBase64Bytes(flag = flag))
 }
 
-fun String.decodeBase64Bytes(): ByteArray {
-    return toByteArray().decodeBase64()
+fun String.decodeBase64Bytes(flag: Int = Base64.DEFAULT): ByteArray {
+    return toByteArray().decodeBase64(flag = flag)
 }
 
-fun String.decodeBase64(): String {
-    return String(decodeBase64Bytes())
+fun String.decodeBase64(flag: Int = Base64.DEFAULT): String {
+    return String(decodeBase64Bytes(flag = flag))
 }

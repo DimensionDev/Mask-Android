@@ -37,7 +37,6 @@ import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -46,6 +45,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.dimension.maskbook.common.ui.barcode.rememberBarcodeBitmap
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskScene
 import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
@@ -54,8 +54,6 @@ import com.dimension.maskbook.common.ui.widget.button.MaskBackButton
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.common.ui.widget.button.clickable
 import com.dimension.maskbook.wallet.R
-import com.google.zxing.BarcodeFormat
-import com.journeyapps.barcodescanner.BarcodeEncoder
 
 @Composable
 fun WalletQrcodeScene(
@@ -96,18 +94,7 @@ fun WalletQrcodeScene(
                                 .padding(25.dp)
                                 .aspectRatio(1f)
                         ) {
-                            val bitmap = remember(address) {
-                                if (address.isNotEmpty()) {
-                                    BarcodeEncoder().encodeBitmap(
-                                        address,
-                                        BarcodeFormat.QR_CODE,
-                                        400,
-                                        400
-                                    )
-                                } else {
-                                    null
-                                }
-                            }
+                            val bitmap = rememberBarcodeBitmap(address)
                             if (bitmap != null) {
                                 Image(
                                     bitmap = bitmap.asImageBitmap(),
