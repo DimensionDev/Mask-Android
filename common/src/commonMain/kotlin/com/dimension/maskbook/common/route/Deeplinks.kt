@@ -47,6 +47,8 @@ expect object Deeplinks {
             const val WelcomeCreatePersona: String
             const val CreatePersona: String
         }
+    }
+    object Wallet {
         const val SwitchWallet: String
         object SendTokenConfirm {
             operator fun invoke(dataRaw: String): String
