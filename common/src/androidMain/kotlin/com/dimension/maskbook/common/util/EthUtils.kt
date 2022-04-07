@@ -21,6 +21,7 @@
 package com.dimension.maskbook.common.util
 
 import com.dimension.maskbook.common.model.EthResponse
+import com.dimension.maskbook.common.model.EthTransactionReceiptResponse
 import com.dimension.maskbook.wallet.export.model.ChainType
 import org.web3j.abi.FunctionEncoder
 import org.web3j.abi.FunctionReturnDecoder
@@ -169,7 +170,30 @@ object EthUtils {
         }
     }
 
-    private fun <T : Response<String>, R> T.ifSuccess(mapper: T.() -> R): Result<R> {
+    fun ethGetTransactionReceipt(
+        web3j: Web3j,
+        transactionHash: String,
+    ): Result<EthTransactionReceiptResponse> {
+        val response = web3j.ethGetTransactionReceipt(transactionHash).sendAsync().get()
+        return response.ifSuccess {
+            val transactionReceipt = result
+            EthTransactionReceiptResponse(
+                transactionHash = transactionReceipt.transactionHash,
+                blockHash = transactionReceipt.blockHash,
+                blockNumber = transactionReceipt.blockNumber,
+                transactionIndex = transactionReceipt.transactionIndex,
+                from = transactionReceipt.from,
+                to = transactionReceipt.to,
+                cumulativeGasUsed = transactionReceipt.cumulativeGasUsed,
+                gasUsed = transactionReceipt.gasUsed,
+                contractAddress = transactionReceipt.contractAddress,
+                status = transactionReceipt.status == "1",
+                root = transactionReceipt.root,
+            )
+        }
+    }
+
+    private fun <V, T : Response<V>, R> T.ifSuccess(mapper: T.() -> R): Result<R> {
         if (hasError()) {
             return Result.failure(Exception("${error.code}: ${error.message}"))
         }

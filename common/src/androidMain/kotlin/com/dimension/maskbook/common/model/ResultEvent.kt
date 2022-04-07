@@ -24,5 +24,5 @@ sealed class ResultEvent {
 
     internal object None : ResultEvent()
 
-    data class Confirm(val ok: Boolean) : ResultEvent()
+    data class TokenConfirm(val transactionHash: String?) : ResultEvent()
 }
