@@ -34,7 +34,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -72,6 +71,7 @@ import com.dimension.maskbook.common.ui.widget.button.MaskButton
 import com.dimension.maskbook.labs.R
 import com.dimension.maskbook.labs.model.ui.UiLuckyDropData
 import com.dimension.maskbook.labs.route.LabsRoute
+import com.dimension.maskbook.labs.ui.widget.ClaimLoadingIndicator
 import com.dimension.maskbook.labs.ui.widget.RedPacketClaimButton
 import com.dimension.maskbook.labs.viewmodel.LuckDropViewModel
 import org.koin.androidx.compose.getViewModel
@@ -142,15 +142,16 @@ fun LuckDropModal(
                 },
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                Text(
-                    text = if (stateData.buttonStringRes != 0) {
-                        stringResource(stateData.buttonStringRes)
-                    } else "",
-                )
                 if (loading) {
-                    Text("...")
+                    Text(stringResource(R.string.scene_open_red_package_claiming))
                     Spacer(Modifier.width(8.dp))
-                    CircularProgressIndicator()
+                    ClaimLoadingIndicator()
+                } else {
+                    Text(
+                        text = if (stateData.buttonStringRes != 0) {
+                            stringResource(stateData.buttonStringRes)
+                        } else "",
+                    )
                 }
             }
         }
