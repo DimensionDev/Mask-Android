@@ -29,3 +29,11 @@ fun <R> Web3j.use(block: (Web3j) -> R): R {
         shutdown()
     }
 }
+
+suspend fun <R> Web3j.useSuspend(block: suspend (Web3j) -> R): R {
+    try {
+        return block(this)
+    } finally {
+        shutdown()
+    }
+}

@@ -24,6 +24,7 @@ import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.common.ext.humanizeToken
 import com.dimension.maskbook.common.ext.onDrawableRes
 import com.dimension.maskbook.labs.R
+import com.dimension.maskbook.labs.model.RedPacketAvailabilityState
 import com.dimension.maskbook.labs.model.RedPacketState
 import com.dimension.maskbook.labs.model.options.RedPacketOptions
 import com.dimension.maskbook.labs.model.ui.UiLuckyDropData
@@ -36,14 +37,28 @@ import kotlin.math.pow
 
 private const val passwordInvalid = "PASSWORD INVALID"
 
+fun RedPacketOptions.RedPacketAvailability.toRedPacketState(): RedPacketAvailabilityState {
+    val isExpired = expired
+    val isEmpty = balance.compareTo(BigDecimal.ZERO) == 0
+    val isClaimed = claimedAmount > BigDecimal.ZERO
+    val isRefunded = isEmpty && claimed < total
+    return RedPacketAvailabilityState(
+        isExpired = isExpired,
+        isEmpty = isEmpty,
+        isClaimed = isClaimed,
+        isRefunded = isRefunded,
+    )
+}
+
 fun RedPacketOptions.toRedPacketState(
     currentWallet: WalletData,
     currentChain: ChainData,
 ): RedPacketState {
-    val isExpired = availability.expired
-    val isEmpty = availability.balance.compareTo(BigDecimal.ZERO) == 0
-    val isClaimed = availability.claimedAmount > BigDecimal.ZERO
-    val isRefunded = isEmpty && availability.claimed < availability.total
+    val availabilityState = availability.toRedPacketState()
+    val isExpired = availabilityState.isExpired
+    val isEmpty = availabilityState.isEmpty
+    val isClaimed = availabilityState.isClaimed
+    val isRefunded = availabilityState.isRefunded
 
     val isCreator = payload.sender.address == currentWallet.address
     val isPasswordValid = payload.password.isNotEmpty() && payload.password != passwordInvalid

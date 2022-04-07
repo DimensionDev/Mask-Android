@@ -27,26 +27,34 @@ import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.common.ext.decodeJson
 import com.dimension.maskbook.common.ext.encodeJson
 import com.dimension.maskbook.common.ext.httpService
+import com.dimension.maskbook.common.ext.toHexString
 import com.dimension.maskbook.common.ext.use
+import com.dimension.maskbook.common.ext.useSuspend
+import com.dimension.maskbook.common.ext.web3j
 import com.dimension.maskbook.common.util.EthUtils
 import com.dimension.maskbook.common.util.SignUtils
+import com.dimension.maskbook.labs.mapper.toRedPacketState
 import com.dimension.maskbook.labs.mapper.toUiLuckyDropData
 import com.dimension.maskbook.labs.model.options.RedPacketOptions
 import com.dimension.maskbook.labs.model.ui.UiLuckyDropData
-import com.dimension.maskbook.labs.util.RedPacketFunctions
+import com.dimension.maskbook.labs.util.RedPacketUtils
 import com.dimension.maskbook.wallet.export.WalletServices
 import com.dimension.maskbook.wallet.export.model.SendTransactionData
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import org.web3j.abi.FunctionEncoder
 import org.web3j.protocol.Web3j
-import org.web3j.utils.Numeric
+import kotlin.time.Duration.Companion.seconds
 
 class LuckDropViewModel(
     data: String,
-    private val walletServices: WalletServices,
+    walletServices: WalletServices,
 ) : ViewModel() {
 
     private val redPacket = flow<RedPacketOptions> { emit(data.decodeJson()) }
@@ -57,17 +65,20 @@ class LuckDropViewModel(
         redPacket.toUiLuckyDropData(wallet, chain)
     }.flowOn(Dispatchers.IO).asStateIn(viewModelScope, UiLuckyDropData())
 
+    private val _loading = MutableStateFlow(false)
+    val loading = _loading.asStateFlow()
+
     fun getSendTransactionData(stateData: UiLuckyDropData): String? {
         val wallet = stateData.wallet
         val redPacket = stateData.redPacket
 
-        val data = when {
+        val function = when {
             redPacket.canClaim -> {
                 val signMessage = SignUtils.signMessage(wallet.address, redPacket.password)
-                RedPacketFunctions.claim(redPacket.rpId, signMessage, wallet.address)
+                RedPacketUtils.Functions.claim(redPacket.rpId, signMessage, wallet.address)
             }
             redPacket.canRefund -> {
-                RedPacketFunctions.refund(redPacket.rpId)
+                RedPacketUtils.Functions.refund(redPacket.rpId)
             }
             else -> return null
         }
@@ -84,9 +95,43 @@ class LuckDropViewModel(
         return SendTransactionData(
             from = wallet.address,
             to = redPacket.contractAddress,
-            data = data,
-            gasLimit = Numeric.toHexStringWithPrefix(gasLimit),
+            data = FunctionEncoder.encode(function),
+            gasLimit = gasLimit.toHexString(),
             chainId = wallet.chainId,
         ).encodeJson()
+    }
+
+    suspend fun checkAvailability(stateData: UiLuckyDropData): Boolean {
+        _loading.value = true
+
+        val wallet = stateData.wallet
+        val redPacket = stateData.redPacket
+
+        var success = false
+        wallet.chainType.web3j.useSuspend { web3j ->
+            var start = 0
+            while (start++ < 10) {
+                RedPacketUtils.checkAvailability(
+                    web3j = web3j,
+                    fromAddress = wallet.address,
+                    contractAddress = redPacket.contractAddress,
+                    rpId = redPacket.rpId,
+                ).onSuccess {
+                    val state = it.toRedPacketState()
+                    when {
+                        (redPacket.canClaim && state.isClaimed) ||
+                            (redPacket.canRefund && state.isRefunded) -> {
+                            success = true
+                            return@useSuspend
+                        }
+                    }
+                }.onFailure {
+                    Log.w("LuckDropViewModel", it)
+                }
+                delay(2.seconds)
+            }
+        }
+        _loading.value = false
+        return success
     }
 }

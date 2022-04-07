@@ -18,24 +18,11 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.labs.model
+package com.dimension.maskbook.common.ext
 
-data class RedPacketAvailabilityState(
-    val isExpired: Boolean,
-    val isEmpty: Boolean,
-    val isClaimed: Boolean,
-    val isRefunded: Boolean,
-)
+import org.web3j.utils.Numeric
+import java.math.BigInteger
 
-data class RedPacketState(
-    val isExpired: Boolean,
-    val isEmpty: Boolean,
-    val isClaimed: Boolean,
-    val isRefunded: Boolean,
-    val isCreator: Boolean,
-    val isPasswordValid: Boolean,
-    val isOnSameChain: Boolean,
-    val canClaim: Boolean,
-    val canRefund: Boolean,
-    val canSend: Boolean,
-)
+fun BigInteger.toHexString(): String {
+    return Numeric.toHexStringWithPrefix(this)
+}

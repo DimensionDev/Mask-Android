@@ -31,8 +31,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -89,13 +91,15 @@ fun LuckDropModal(
         parametersOf(data)
     }
     val stateData by viewModel.stateData.collectAsState()
+    val loading by viewModel.loading.collectAsState()
 
     LaunchedEffect(Unit) {
         navController.eventFlow<ResultEvent.Confirm>().collect {
+            val success = viewModel.checkAvailability(stateData)
             if (stateData.redPacket.canClaim) {
                 navController.navigateWithPopSelf(
                     LabsRoute.RedPacket.LuckyDropResult(
-                        success = it.ok,
+                        success = it.ok && success,
                         amount = stateData.redPacket.amountString,
                         postLink = stateData.redPacket.postLink,
                     )
@@ -130,7 +134,7 @@ fun LuckDropModal(
             )
             Spacer(Modifier.height(24.dp))
             RedPacketClaimButton(
-                enabled = stateData.buttonEnabled,
+                enabled = stateData.buttonEnabled && !loading,
                 onClick = {
                     viewModel.getSendTransactionData(stateData)?.let { data ->
                         navController.navigateUri(Deeplinks.Wallet.SendTokenConfirm(data))
@@ -143,6 +147,11 @@ fun LuckDropModal(
                         stringResource(stateData.buttonStringRes)
                     } else "",
                 )
+                if (loading) {
+                    Text("...")
+                    Spacer(Modifier.width(8.dp))
+                    CircularProgressIndicator()
+                }
             }
         }
     }

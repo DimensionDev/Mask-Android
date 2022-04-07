@@ -62,7 +62,20 @@ object EthUtils {
         inputParams: List<Type<*>>,
         outputParams: List<TypeReference<*>>,
     ): Result<EthResponse> {
-        val function = Function(functionName, inputParams, outputParams)
+        return ethCall(
+            web3j = web3j,
+            fromAddress = fromAddress,
+            contractAddress = contractAddress,
+            function = Function(functionName, inputParams, outputParams),
+        )
+    }
+
+    fun ethCall(
+        web3j: Web3j,
+        fromAddress: String,
+        contractAddress: String,
+        function: Function,
+    ): Result<EthResponse> {
         val encodedFunction = FunctionEncoder.encode(function)
 
         val transaction = Transaction.createEthCallTransaction(
