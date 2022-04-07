@@ -70,15 +70,15 @@ private fun WalletCreateOrImportResult.Title() = when (type) {
 @Composable
 private fun WalletCreateOrImportResult.Icon() = when (type) {
     WalletCreateOrImportResult.Type.SUCCESS -> Image(
-        painter = painterResource(id = R.drawable.ic_property_1_snccess),
+        painter = painterResource(id = R.drawable.ic_success),
         contentDescription = null
     )
     WalletCreateOrImportResult.Type.ERROR -> Image(
-        painter = painterResource(id = R.drawable.ic_property_1_failed),
+        painter = painterResource(id = R.drawable.ic_failed),
         contentDescription = null
     )
     WalletCreateOrImportResult.Type.WARNING -> Image(
-        painter = painterResource(id = R.drawable.ic_property_1_note),
+        painter = painterResource(id = R.drawable.ic_note),
         contentDescription = null
     )
 }

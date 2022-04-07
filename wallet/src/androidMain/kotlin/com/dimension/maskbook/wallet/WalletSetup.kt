@@ -52,8 +52,6 @@ import com.dimension.maskbook.wallet.repository.walletDataStore
 import com.dimension.maskbook.wallet.route.WalletRoute
 import com.dimension.maskbook.wallet.route.generatedRoute
 import com.dimension.maskbook.wallet.services.WalletServices
-import com.dimension.maskbook.wallet.ui.scenes.register.createidentity.createIdentityRoute
-import com.dimension.maskbook.wallet.ui.scenes.register.recovery.local.recoveryLocalRoute
 import com.dimension.maskbook.wallet.ui.scenes.wallets.create.create.createWalletRoute
 import com.dimension.maskbook.wallet.ui.scenes.wallets.send.transferRoute
 import com.dimension.maskbook.wallet.ui.tab.WalletTabScreen
@@ -77,15 +75,6 @@ import com.dimension.maskbook.wallet.usecase.SendWalletCollectibleUseCase
 import com.dimension.maskbook.wallet.usecase.SetCurrentChainUseCase
 import com.dimension.maskbook.wallet.usecase.VerifyPaymentPasswordUseCase
 import com.dimension.maskbook.wallet.viewmodel.WelcomeViewModel
-import com.dimension.maskbook.wallet.viewmodel.recovery.IdentityViewModel
-import com.dimension.maskbook.wallet.viewmodel.recovery.PrivateKeyViewModel
-import com.dimension.maskbook.wallet.viewmodel.recovery.RecoveryLocalViewModel
-import com.dimension.maskbook.wallet.viewmodel.register.CreateIdentityViewModel
-import com.dimension.maskbook.wallet.viewmodel.register.EmailRemoteBackupRecoveryViewModel
-import com.dimension.maskbook.wallet.viewmodel.register.PhoneRemoteBackupRecoveryViewModel
-import com.dimension.maskbook.wallet.viewmodel.register.RemoteBackupRecoveryViewModelBase
-import com.dimension.maskbook.wallet.viewmodel.wallets.BackUpPasswordViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.BiometricViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.SetUpPaymentPasswordViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.TokenDetailViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.TouchIdEnableViewModel
@@ -143,22 +132,10 @@ object WalletSetup : ModuleSetup {
             transferRoute(navController)
         }
         navigation(
-            startDestination = WalletRoute.Register.CreateIdentity.Backup.path,
-            route = WalletRoute.Register.CreateIdentity.Route
-        ) {
-            createIdentityRoute(navController)
-        }
-        navigation(
             startDestination = WalletRoute.CreateWallet.Pharse.path,
             route = WalletRoute.CreateWallet.Route
         ) {
             createWalletRoute(navController)
-        }
-        navigation(
-            startDestination = WalletRoute.Register.Recovery.LocalBackup.Loading.path,
-            route = WalletRoute.Register.Recovery.LocalBackup.Route,
-        ) {
-            recoveryLocalRoute(navController)
         }
     }
 
@@ -306,31 +283,7 @@ private fun Module.provideUseCase() {
 }
 
 private fun Module.provideViewModel() {
-    viewModel { (uri: String, account: String?) ->
-        RecoveryLocalViewModel(
-            get(),
-            uri,
-            account,
-            get<Context>().contentResolver,
-            get()
-        )
-    }
-    viewModel { (name: String) -> IdentityViewModel(get(), get(), name) }
-    viewModel { PrivateKeyViewModel(get(), get()) }
-    viewModel { (personaName: String) -> CreateIdentityViewModel(personaName, get(), get()) }
     viewModel { WelcomeViewModel(get()) }
-    viewModel { (requestNavigate: (RemoteBackupRecoveryViewModelBase.NavigateArgs) -> Unit) ->
-        EmailRemoteBackupRecoveryViewModel(
-            requestNavigate,
-            get(),
-        )
-    }
-    viewModel { (requestNavigate: (RemoteBackupRecoveryViewModelBase.NavigateArgs) -> Unit) ->
-        PhoneRemoteBackupRecoveryViewModel(
-            requestNavigate,
-            get()
-        )
-    }
     viewModel { (wallet: String) -> CreateWalletRecoveryKeyViewModel(wallet, get()) }
     viewModel { SetUpPaymentPasswordViewModel(get()) }
     viewModel { TouchIdEnableViewModel() }
@@ -377,7 +330,7 @@ private fun Module.provideViewModel() {
     viewModel { (toAddress: String) ->
         SendConfirmViewModel(toAddress, get(), get(), get(), get())
     }
-    viewModel { BiometricViewModel(get(), get()) }
+
     viewModel { WalletConnectManagementViewModel(get(), get()) }
     viewModel { (onResult: (WalletConnectResult) -> Unit) ->
         WalletConnectViewModel(
@@ -389,7 +342,6 @@ private fun Module.provideViewModel() {
         )
     }
     viewModel { UnlockWalletViewModel(get(), get()) }
-    viewModel { BackUpPasswordViewModel(get(), get()) }
     viewModel { (id: String) -> CollectibleDetailViewModel(id, get(), get(), get()) }
     viewModel { CollectiblesViewModel(get(), get()) }
     viewModel { (data: SendTokenConfirmData) ->

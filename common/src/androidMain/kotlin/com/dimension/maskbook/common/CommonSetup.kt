@@ -27,6 +27,7 @@ import com.dimension.maskbook.common.manager.KeyStoreManager
 import com.dimension.maskbook.common.util.BiometricAuthenticator
 import com.dimension.maskbook.common.util.coroutineExceptionHandler
 import com.dimension.maskbook.common.viewmodel.BiometricEnableViewModel
+import com.dimension.maskbook.common.viewmodel.BiometricViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -47,5 +48,6 @@ object CommonSetup : ModuleSetup {
         single { ImageLoaderManager(get()) }
 
         viewModel { BiometricEnableViewModel(get(), get()) }
+        viewModel { BiometricViewModel(get(), get()) }
     }
 }

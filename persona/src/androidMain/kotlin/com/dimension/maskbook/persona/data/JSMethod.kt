@@ -71,6 +71,17 @@ internal class JSMethod(
         )
     }
 
+    suspend fun restoreFromPrivateKey(
+        nickname: String,
+        privateKey: String,
+    ) {
+        extensionServices.execute<Unit>(
+            "persona_restoreFromPrivateKey",
+            "nickname" to nickname,
+            "privateKey" to privateKey,
+        )
+    }
+
     suspend fun restoreFromBase64(
         backup: String
     ) {
