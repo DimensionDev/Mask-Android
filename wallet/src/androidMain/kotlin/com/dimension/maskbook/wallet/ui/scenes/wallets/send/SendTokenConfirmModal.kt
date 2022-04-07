@@ -180,9 +180,9 @@ fun SendTokenConfirmModal(
                             gasLimit = gasLimit,
                             maxFee = maxFee,
                             maxPriorityFee = maxPriorityFee,
-                            onResult = { success ->
+                            onResult = { transactionHash ->
                                 onBack.invoke()
-                                rootNavController.sendEvent(ResultEvent.Confirm(success))
+                                rootNavController.sendEvent(ResultEvent.TokenConfirm(transactionHash))
                             }
                         )
                     }

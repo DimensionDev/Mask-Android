@@ -72,7 +72,7 @@ class Web3TransactionConfirmViewModel(
         gasLimit: Double,
         maxFee: Double,
         maxPriorityFee: Double,
-        onResult: (success: Boolean) -> Unit
+        onResult: (transactionHash: String?) -> Unit
     ) {
         _loadingState.value = true
         data.to?.let { address ->
@@ -85,18 +85,18 @@ class Web3TransactionConfirmViewModel(
                     maxFee = maxFee,
                     maxPriorityFee = maxPriorityFee,
                     data = data.data ?: "",
-                ).onSuccess {
+                ).onSuccess { transactionHash ->
                     request?.let { request ->
                         extensionServices.sendBackgroundJSEventResponse(
                             Web3SendResponse.success(
                                 request.messageId,
                                 request.jsonrpc,
                                 request.payloadId,
-                                it
+                                transactionHash
                             )
                         )
                     }
-                    onResult.invoke(true)
+                    onResult.invoke(transactionHash)
                 }.onFailure {
                     request?.let { request ->
                         extensionServices.sendBackgroundJSEventResponse(
@@ -108,7 +108,7 @@ class Web3TransactionConfirmViewModel(
                             )
                         )
                     }
-                    onResult.invoke(false)
+                    onResult.invoke(null)
                 }.onFinished {
                     _loadingState.value = false
                 }

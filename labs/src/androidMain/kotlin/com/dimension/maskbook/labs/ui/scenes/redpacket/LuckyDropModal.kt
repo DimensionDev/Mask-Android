@@ -94,19 +94,21 @@ fun LuckDropModal(
     val loading by viewModel.loading.collectAsState()
 
     LaunchedEffect(Unit) {
-        navController.eventFlow<ResultEvent.Confirm>().collect {
-            val success = viewModel.checkAvailability(stateData)
-            if (stateData.redPacket.canClaim) {
-                navController.navigateWithPopSelf(
-                    LabsRoute.RedPacket.LuckyDropResult(
-                        success = it.ok && success,
-                        amount = stateData.redPacket.amountString,
-                        postLink = stateData.redPacket.postLink,
-                    )
-                )
-            } else {
+        navController.eventFlow<ResultEvent.TokenConfirm>().collect {
+            val transactionHash = it.transactionHash
+            if (transactionHash == null) {
                 navController.popBackStack()
+                return@collect
             }
+
+            val success = viewModel.getTransactionReceipt(stateData, transactionHash)
+            navController.navigateWithPopSelf(
+                LabsRoute.RedPacket.LuckyDropResult(
+                    success = success,
+                    amount = stateData.redPacket.amountString,
+                    postLink = stateData.redPacket.postLink,
+                )
+            )
         }
     }
 

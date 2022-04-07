@@ -26,7 +26,6 @@ import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.common.ext.decodeJson
 import com.dimension.maskbook.common.ext.encodeJson
-import com.dimension.maskbook.common.ext.httpService
 import com.dimension.maskbook.common.ext.toHexString
 import com.dimension.maskbook.common.ext.use
 import com.dimension.maskbook.common.ext.useSuspend
@@ -49,7 +48,6 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import org.web3j.abi.FunctionEncoder
-import org.web3j.protocol.Web3j
 import kotlin.time.Duration.Companion.seconds
 
 class LuckDropViewModel(
@@ -83,7 +81,7 @@ class LuckDropViewModel(
             else -> return null
         }
 
-        val gasLimit = Web3j.build(wallet.chainType.httpService).use { web3j ->
+        val gasLimit = wallet.chainType.web3j.use { web3j ->
             EthUtils.ethEstimateGas(
                 web3j = web3j,
                 fromAddress = wallet.address,
@@ -101,37 +99,55 @@ class LuckDropViewModel(
         ).encodeJson()
     }
 
-    suspend fun checkAvailability(stateData: UiLuckyDropData): Boolean {
+    suspend fun getTransactionReceipt(
+        stateData: UiLuckyDropData,
+        transactionHash: String,
+    ): Boolean {
         _loading.value = true
+        var success = false
 
         val wallet = stateData.wallet
         val redPacket = stateData.redPacket
 
-        var success = false
         wallet.chainType.web3j.useSuspend { web3j ->
-            var start = 0
-            while (start++ < 10) {
+            val transactionReceiptResponse = doWhileSuccess {
+                EthUtils.ethGetTransactionReceipt(web3j, transactionHash)
+            } ?: return@useSuspend
+
+            // contract failure
+            if (!transactionReceiptResponse.status) {
+                return@useSuspend
+            }
+
+            val availability = doWhileSuccess {
                 RedPacketUtils.checkAvailability(
                     web3j = web3j,
                     fromAddress = wallet.address,
                     contractAddress = redPacket.contractAddress,
                     rpId = redPacket.rpId,
-                ).onSuccess {
-                    val state = it.toRedPacketState()
-                    when {
-                        (redPacket.canClaim && state.isClaimed) ||
-                            (redPacket.canRefund && state.isRefunded) -> {
-                            success = true
-                            return@useSuspend
-                        }
-                    }
-                }.onFailure {
-                    Log.w("LuckDropViewModel", it)
-                }
-                delay(2.seconds)
-            }
+                )
+            } ?: return@useSuspend
+            Log.i("LuckDropViewModel", availability.toString())
+            val state = availability.toRedPacketState()
+
+            success = (redPacket.canClaim && state.isClaimed) ||
+                (redPacket.canRefund && state.isRefunded)
         }
+
         _loading.value = false
         return success
+    }
+
+    private suspend fun <T> doWhileSuccess(count: Int = 10, block: () -> Result<T>): T? {
+        var index = 0
+        while (index++ < count) {
+            block().onSuccess {
+                return it
+            }.onFailure {
+                Log.w("LuckDropViewModel", it)
+            }
+            delay(1.5.seconds)
+        }
+        return null
     }
 }

@@ -27,6 +27,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingConfig
 import androidx.paging.PagingState
@@ -162,6 +163,7 @@ internal class WalletRepository(
         return database.walletDao().getByAddress(address)?.let { WalletData.fromDb(it) }
     }
 
+    @OptIn(ExperimentalPagingApi::class)
     private suspend fun refreshCurrentWalletCollectibles() {
         val currentWallet = currentWallet.firstOrNull() ?: return
         try {
