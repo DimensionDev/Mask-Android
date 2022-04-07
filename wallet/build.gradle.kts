@@ -1,9 +1,9 @@
 plugins {
     kotlin("multiplatform")
     id("com.android.library")
+    id("org.jetbrains.compose").version(Versions.compose_jb)
     kotlin("plugin.serialization").version(Versions.Kotlin.lang)
     id("com.google.devtools.ksp").version(Versions.ksp)
-    id("org.jetbrains.compose").version(Versions.compose_jb)
 }
 
 kotlin {
@@ -17,8 +17,6 @@ kotlin {
         }
         val commonTest by getting {
             dependencies {
-                implementation(kotlin("test"))
-                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:${Versions.Kotlin.coroutines}")
             }
         }
         val androidMain by getting {
