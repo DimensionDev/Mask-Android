@@ -49,7 +49,12 @@ object EthUtils {
         val transaction = Transaction.createEthCallTransaction(
             fromAddress, contractAddress, data,
         )
-        val response = web3j.ethEstimateGas(transaction).sendAsync().get()
+        val response = kotlin.runCatching {
+            web3j.ethEstimateGas(transaction).sendAsync().get()
+        }.getOrElse {
+            return Result.failure(it)
+        }
+
         return response.ifSuccess {
             amountUsed
         }
@@ -82,9 +87,11 @@ object EthUtils {
         val transaction = Transaction.createEthCallTransaction(
             fromAddress, contractAddress, encodedFunction
         )
-        val response: EthCall = web3j.ethCall(
-            transaction, DefaultBlockParameterName.LATEST
-        ).sendAsync().get()
+        val response: EthCall = kotlin.runCatching {
+            web3j.ethCall(transaction, DefaultBlockParameterName.LATEST).sendAsync().get()
+        }.getOrElse {
+            return Result.failure(it)
+        }
 
         return response.ifSuccess {
             EthResponse(
@@ -140,26 +147,30 @@ object EthUtils {
     ): Result<EthResponse> {
         val credentials = Credentials.create(privateKey)
         val transaction = RawTransactionManager(web3j, credentials, chainType.chainId)
-        val response: EthSendTransaction = if (chainType.supportEip25519) {
-            transaction.sendEIP1559Transaction(
-                chainType.chainId,
-                maxPriorityFeePerGas,
-                maxFeePerGas,
-                gasLimit,
-                contractAddress,
-                data,
-                value,
-                constructor,
-            )
-        } else {
-            transaction.sendTransaction(
-                maxPriorityFeePerGas + maxFeePerGas,
-                gasLimit,
-                contractAddress,
-                data,
-                value,
-                constructor
-            )
+        val response: EthSendTransaction = kotlin.runCatching {
+            if (chainType.supportEip25519) {
+                transaction.sendEIP1559Transaction(
+                    chainType.chainId,
+                    maxPriorityFeePerGas,
+                    maxFeePerGas,
+                    gasLimit,
+                    contractAddress,
+                    data,
+                    value,
+                    constructor,
+                )
+            } else {
+                transaction.sendTransaction(
+                    maxPriorityFeePerGas + maxFeePerGas,
+                    gasLimit,
+                    contractAddress,
+                    data,
+                    value,
+                    constructor
+                )
+            }
+        }.getOrElse {
+            return Result.failure(it)
         }
 
         return response.ifSuccess {
@@ -174,30 +185,45 @@ object EthUtils {
         web3j: Web3j,
         transactionHash: String,
     ): Result<EthTransactionReceiptResponse> {
-        val response = web3j.ethGetTransactionReceipt(transactionHash).sendAsync().get()
-        return response.ifSuccess {
-            val transactionReceipt = result
-            EthTransactionReceiptResponse(
-                transactionHash = transactionReceipt.transactionHash,
-                blockHash = transactionReceipt.blockHash,
-                blockNumber = transactionReceipt.blockNumber,
-                transactionIndex = transactionReceipt.transactionIndex,
-                from = transactionReceipt.from,
-                to = transactionReceipt.to,
-                cumulativeGasUsed = transactionReceipt.cumulativeGasUsed,
-                gasUsed = transactionReceipt.gasUsed,
-                contractAddress = transactionReceipt.contractAddress,
-                status = transactionReceipt.status == "1",
-                root = transactionReceipt.root,
+        val response = kotlin.runCatching {
+            web3j.ethGetTransactionReceipt(transactionHash).sendAsync().get()
+        }.getOrElse {
+            return Result.failure(it)
+        }
+
+        return response.ifSuccessResult {
+            val transactionReceipt = response.result
+                ?: return@ifSuccessResult Result.failure(Exception("null transactionReceipt"))
+
+            Result.success(
+                EthTransactionReceiptResponse(
+                    transactionHash = transactionReceipt.transactionHash,
+                    blockHash = transactionReceipt.blockHash,
+                    blockNumber = transactionReceipt.blockNumber,
+                    transactionIndex = transactionReceipt.transactionIndex,
+                    from = transactionReceipt.from,
+                    to = transactionReceipt.to,
+                    cumulativeGasUsed = transactionReceipt.cumulativeGasUsed,
+                    gasUsed = transactionReceipt.gasUsed,
+                    contractAddress = transactionReceipt.contractAddress,
+                    status = transactionReceipt.status == "1",
+                    root = transactionReceipt.root,
+                )
             )
         }
     }
 
     private fun <V, T : Response<V>, R> T.ifSuccess(mapper: T.() -> R): Result<R> {
+        return ifSuccessResult {
+            Result.success(mapper())
+        }
+    }
+
+    private fun <V, T : Response<V>, R> T.ifSuccessResult(mapper: T.() -> Result<R>): Result<R> {
         if (hasError()) {
             return Result.failure(Exception("${error.code}: ${error.message}"))
         }
-        return Result.success(mapper())
+        return mapper()
     }
 
     private fun Response<String>.parseValues(outParams: List<TypeReference<Type<*>>>): List<Any> {
