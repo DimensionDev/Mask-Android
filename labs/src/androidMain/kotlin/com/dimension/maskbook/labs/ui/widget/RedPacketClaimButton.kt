@@ -43,31 +43,33 @@ fun RedPacketClaimButton(
     MaskButton(
         enabled = enabled,
         onClick = onClick,
-        colors = ButtonDefaults.buttonColors(
-            backgroundColor = if (isDarkTheme) {
-                Color(0xFFEFF3F4)
-            } else {
-                Color(0xFF111418)
-            },
-            disabledBackgroundColor = if (isDarkTheme) {
-                Color(0x80EFF3F4)
-            } else {
-                Color(0x80111418)
-            },
-            contentColor = if (isDarkTheme) {
-                Color(0xFF0F1419)
-            } else {
-                Color.White
-            },
-            disabledContentColor = if (isDarkTheme) {
-                Color(0x800F1419)
-            } else {
-                Color.White
-            },
-        ),
+        colors = if (isDarkTheme) {
+            RedPacketClaimButtonDefaults.darkButtonColors()
+        } else {
+            RedPacketClaimButtonDefaults.lightButtonColors()
+        },
         shape = CircleShape,
         contentPadding = PaddingValues(vertical = 12.dp),
         modifier = modifier,
         content = content
+    )
+}
+
+private object RedPacketClaimButtonDefaults {
+
+    @Composable
+    fun lightButtonColors() = ButtonDefaults.buttonColors(
+        backgroundColor = Color(0xFF111418),
+        disabledBackgroundColor = Color(0x80111418),
+        contentColor = Color.White,
+        disabledContentColor = Color.White,
+    )
+
+    @Composable
+    fun darkButtonColors() = ButtonDefaults.buttonColors(
+        backgroundColor = Color(0xFFEFF3F4),
+        disabledBackgroundColor = Color(0x80EFF3F4),
+        contentColor = Color(0xFF0F1419),
+        disabledContentColor = Color(0x800F1419),
     )
 }
