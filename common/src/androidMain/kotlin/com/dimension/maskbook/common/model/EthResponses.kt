@@ -36,7 +36,7 @@ data class EthTransactionReceiptResponse(
     val to: String,
     val cumulativeGasUsed: BigInteger,
     val gasUsed: BigInteger,
-    val contractAddress: String,
+    val contractAddress: String?,
     val status: Boolean,
     val root: String,
 )

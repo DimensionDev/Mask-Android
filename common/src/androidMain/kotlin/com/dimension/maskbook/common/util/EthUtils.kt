@@ -193,7 +193,7 @@ object EthUtils {
 
         return response.ifSuccessResult {
             val transactionReceipt = response.result
-                ?: return@ifSuccessResult Result.failure(Exception("null transactionReceipt"))
+                ?: return@ifSuccessResult Result.failure(NullPointerException("transactionReceipt is null"))
 
             Result.success(
                 EthTransactionReceiptResponse(
@@ -206,7 +206,7 @@ object EthUtils {
                     cumulativeGasUsed = transactionReceipt.cumulativeGasUsed,
                     gasUsed = transactionReceipt.gasUsed,
                     contractAddress = transactionReceipt.contractAddress,
-                    status = transactionReceipt.status == "1",
+                    status = transactionReceipt.status == "0x1",
                     root = transactionReceipt.root,
                 )
             )
