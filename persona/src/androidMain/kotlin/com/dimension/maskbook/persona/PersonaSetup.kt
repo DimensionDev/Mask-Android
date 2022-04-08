@@ -21,6 +21,7 @@
 package com.dimension.maskbook.persona
 
 import android.content.Context
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.room.Room
@@ -49,8 +50,13 @@ import com.dimension.maskbook.persona.repository.ISocialsRepository
 import com.dimension.maskbook.persona.repository.PersonaRepository
 import com.dimension.maskbook.persona.repository.PreferenceRepository
 import com.dimension.maskbook.persona.repository.personaDataStore
-import com.dimension.maskbook.persona.ui.scenes.generatedRoute
+import com.dimension.maskbook.persona.route.PersonaRoute
+import com.dimension.maskbook.persona.route.generatedRoute
+import com.dimension.maskbook.persona.ui.scenes.register.createidentity.createIdentityRoute
+import com.dimension.maskbook.persona.ui.scenes.register.recovery.local.recoveryLocalRoute
 import com.dimension.maskbook.persona.ui.tab.PersonasTabScreen
+import com.dimension.maskbook.persona.viewmodel.BackUpPasswordViewModel
+import com.dimension.maskbook.persona.viewmodel.DownloadQrCodeViewModel
 import com.dimension.maskbook.persona.viewmodel.ExportPrivateKeyViewModel
 import com.dimension.maskbook.persona.viewmodel.PersonaMenuViewModel
 import com.dimension.maskbook.persona.viewmodel.PersonaViewModel
@@ -59,8 +65,16 @@ import com.dimension.maskbook.persona.viewmodel.SwitchPersonaViewModel
 import com.dimension.maskbook.persona.viewmodel.avatar.SetAvatarViewModel
 import com.dimension.maskbook.persona.viewmodel.contacts.ContactsViewModel
 import com.dimension.maskbook.persona.viewmodel.post.PostViewModel
+import com.dimension.maskbook.persona.viewmodel.recovery.IdentityViewModel
+import com.dimension.maskbook.persona.viewmodel.recovery.PrivateKeyViewModel
+import com.dimension.maskbook.persona.viewmodel.recovery.RecoveryLocalViewModel
+import com.dimension.maskbook.persona.viewmodel.register.CreateIdentityViewModel
+import com.dimension.maskbook.persona.viewmodel.register.EmailRemoteBackupRecoveryViewModel
+import com.dimension.maskbook.persona.viewmodel.register.PhoneRemoteBackupRecoveryViewModel
+import com.dimension.maskbook.persona.viewmodel.register.RemoteBackupRecoveryViewModelBase
 import com.dimension.maskbook.persona.viewmodel.social.DisconnectSocialViewModel
 import com.dimension.maskbook.persona.viewmodel.social.UserNameModalViewModel
+import com.google.accompanist.navigation.animation.navigation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asExecutor
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -72,8 +86,21 @@ import org.koin.mp.KoinPlatformTools
 
 object PersonaSetup : ModuleSetup {
 
+    @OptIn(ExperimentalAnimationApi::class)
     override fun NavGraphBuilder.route(navController: NavController) {
         generatedRoute(navController)
+        navigation(
+            startDestination = PersonaRoute.Register.CreateIdentity.Backup.path,
+            route = PersonaRoute.Register.CreateIdentity.Route
+        ) {
+            createIdentityRoute(navController)
+        }
+        navigation(
+            startDestination = PersonaRoute.Register.Recovery.LocalBackup.Loading.path,
+            route = PersonaRoute.Register.Recovery.LocalBackup.Route,
+        ) {
+            recoveryLocalRoute(navController)
+        }
     }
 
     override fun dependencyInject() = module {
@@ -140,6 +167,39 @@ object PersonaSetup : ModuleSetup {
         viewModel { SetAvatarViewModel(get()) }
 
         viewModel { (socialProfile: SocialProfile) -> UserNameModalViewModel(get(), socialProfile) }
+        viewModel { BackUpPasswordViewModel(get(), get()) }
+        viewModel { (requestNavigate: (RemoteBackupRecoveryViewModelBase.NavigateArgs) -> Unit) ->
+            EmailRemoteBackupRecoveryViewModel(
+                requestNavigate,
+                get(),
+            )
+        }
+        viewModel { (requestNavigate: (RemoteBackupRecoveryViewModelBase.NavigateArgs) -> Unit) ->
+            PhoneRemoteBackupRecoveryViewModel(
+                requestNavigate,
+                get()
+            )
+        }
+        viewModel { (uri: String, account: String?) ->
+            RecoveryLocalViewModel(
+                get(),
+                uri,
+                account,
+                get<Context>().contentResolver,
+                get()
+            )
+        }
+        viewModel { (name: String) -> IdentityViewModel(get(), get(), name) }
+        viewModel { PrivateKeyViewModel(get(), get()) }
+        viewModel { (personaName: String) -> CreateIdentityViewModel(personaName, get(), get()) }
+        viewModel { (idType: DownloadQrCodeViewModel.IdType, idBase64: String) ->
+            DownloadQrCodeViewModel(
+                idType = idType,
+                idBase64 = idBase64,
+                get(),
+                get()
+            )
+        }
     }
 
     override fun onExtensionReady() {

@@ -113,7 +113,7 @@ fun BackupDataCloudSuccess(
         },
         icon = {
             Image(
-                painter = painterResource(id = R.drawable.ic_property_1_snccess),
+                painter = painterResource(id = R.drawable.ic_success),
                 contentDescription = null
             )
         }
@@ -148,7 +148,7 @@ fun BackupDataCloudFailed(
         },
         icon = {
             Image(
-                painter = painterResource(id = R.drawable.ic_property_1_failed),
+                painter = painterResource(id = R.drawable.ic_failed),
                 contentDescription = null
             )
         }
@@ -252,7 +252,7 @@ fun BackupSelectionNoEmailAndPhone(
         onDismissRequest = { navController.popBackStack() },
         icon = {
             Image(
-                painter = painterResource(id = R.drawable.ic_property_1_note),
+                painter = painterResource(id = R.drawable.ic_note),
                 contentDescription = null
             )
         },
@@ -288,7 +288,7 @@ fun BackupDataBackupMergeConfirmSuccess(
         },
         icon = {
             Image(
-                painter = painterResource(id = R.drawable.ic_property_1_snccess),
+                painter = painterResource(id = R.drawable.ic_success),
                 contentDescription = null
             )
         },
@@ -426,7 +426,7 @@ fun BackupDataBackupMerge(
         Column {
             Image(
                 modifier = Modifier.fillMaxWidth(),
-                painter = painterResource(id = R.drawable.ic_property_1_note),
+                painter = painterResource(id = R.drawable.ic_note),
                 contentDescription = null,
                 alignment = Alignment.Center,
             )
@@ -752,7 +752,7 @@ fun BackupDataBackupLocalFailure(
         onDismissRequest = { navController.popBackStack() },
         icon = {
             Image(
-                painter = painterResource(id = R.drawable.ic_property_1_failed),
+                painter = painterResource(id = R.drawable.ic_failed),
                 contentDescription = null
             )
         },
@@ -773,7 +773,7 @@ fun BackupDataBackupLocalSuccess(
         onDismissRequest = { navController.popBackStack() },
         icon = {
             Image(
-                painter = painterResource(id = R.drawable.ic_property_1_snccess),
+                painter = painterResource(id = R.drawable.ic_success),
                 contentDescription = null
             )
         },

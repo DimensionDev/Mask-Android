@@ -48,8 +48,8 @@ class PersonaServicesImpl(
         personaRepository.createPersonaFromMnemonic(value, name)
     }
 
-    override fun createPersonaFromPrivateKey(value: String) {
-        personaRepository.createPersonaFromPrivateKey(value)
+    override suspend fun createPersonaFromPrivateKey(value: String, name: String) {
+        personaRepository.createPersonaFromPrivateKey(value, name)
     }
 
     override fun connectProfile(personaId: String, profileId: String) {

@@ -38,7 +38,7 @@ expect object Deeplinks {
             const val BackupSelection: String
         }
     }
-    object Wallet {
+    object Persona {
         const val Recovery: String
         object BackUpPassword {
             operator fun invoke(target: String): String

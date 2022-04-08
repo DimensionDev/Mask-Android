@@ -22,10 +22,10 @@ package com.dimension.maskbook.wallet.viewmodel.wallets.create
 
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
+import com.dimension.maskbook.common.viewmodel.BaseMnemonicPhraseViewModel
 import com.dimension.maskbook.wallet.db.model.CoinPlatformType
 import com.dimension.maskbook.wallet.repository.IWalletRepository
 import com.dimension.maskbook.wallet.repository.WalletCreateOrImportResult
-import com.dimension.maskbook.wallet.viewmodel.base.BaseMnemonicPhraseViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch

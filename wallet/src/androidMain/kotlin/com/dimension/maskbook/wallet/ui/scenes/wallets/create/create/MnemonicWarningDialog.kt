@@ -43,7 +43,7 @@ fun MnemonicWarningDialog(onDismissRequest: () -> Unit) {
         },
         icon = {
             Image(
-                painter = painterResource(id = R.drawable.ic_property_1_note),
+                painter = painterResource(id = R.drawable.ic_note),
                 contentDescription = null
             )
         },

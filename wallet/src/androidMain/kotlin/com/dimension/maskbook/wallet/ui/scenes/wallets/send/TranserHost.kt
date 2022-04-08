@@ -45,15 +45,15 @@ import com.dimension.maskbook.common.routeProcessor.annotations.Back
 import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
 import com.dimension.maskbook.common.routeProcessor.annotations.Path
 import com.dimension.maskbook.common.routeProcessor.annotations.Query
+import com.dimension.maskbook.common.ui.barcode.ScanQrcodeScene
 import com.dimension.maskbook.common.ui.notification.StringResNotificationEvent.Companion.show
 import com.dimension.maskbook.common.ui.widget.LocalInAppNotification
+import com.dimension.maskbook.common.viewmodel.BiometricViewModel
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.export.model.WalletCollectibleData
 import com.dimension.maskbook.wallet.export.model.WalletTokenData
 import com.dimension.maskbook.wallet.repository.UnlockType
 import com.dimension.maskbook.wallet.route.WalletRoute
-import com.dimension.maskbook.wallet.ui.scenes.wallets.common.ScanQrcodeScene
-import com.dimension.maskbook.wallet.viewmodel.wallets.BiometricViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.AddContactViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.GasFeeViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.SearchAddressViewModel

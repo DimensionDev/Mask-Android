@@ -14,6 +14,7 @@ kotlin {
                 implementation(projects.common)
                 implementation(projects.common.routeProcessor.annotations)
                 kspAndroid(projects.common.routeProcessor)
+                implementation("com.ensarsarajcic.kotlinx:serialization-msgpack:${Versions.kotlinxSerializationMsgPackVersion}")
             }
         }
         val commonTest by getting {
@@ -47,9 +48,6 @@ kotlin {
 
 android {
     setupLibrary()
-}
-dependencies {
-    implementation("androidx.test.ext:junit-ktx:1.1.3")
 }
 
 ksp {

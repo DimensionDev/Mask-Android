@@ -21,6 +21,7 @@
 package com.dimension.maskbook.persona.ui.scenes
 
 import android.net.Uri
+import android.util.Base64
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -46,6 +47,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.dimension.maskbook.common.ext.encodeBase64
 import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.route.navigationComposeAnimComposable
 import com.dimension.maskbook.common.route.navigationComposeAnimComposablePackage
@@ -59,6 +61,7 @@ import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.common.ui.widget.button.MaskBackButton
 import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.route.PersonaRoute
+import com.dimension.maskbook.persona.viewmodel.DownloadQrCodeViewModel
 import com.dimension.maskbook.persona.viewmodel.PersonaMenuViewModel
 import org.koin.androidx.compose.getViewModel
 
@@ -150,7 +153,7 @@ fun PersonaMenuScene(
                             if (backupPassword.isEmpty()) {
                                 navController.navigate(Uri.parse(Deeplinks.Setting.SetupPasswordDialog))
                             } else {
-                                navController.navigate(Uri.parse(Deeplinks.Wallet.BackUpPassword(PersonaRoute.ExportPrivateKey)))
+                                navController.navigate(Uri.parse(Deeplinks.Persona.BackUpPassword(PersonaRoute.ExportPrivateKey)))
                             }
                         }
                     ) {
@@ -164,6 +167,42 @@ fun PersonaMenuScene(
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(text = stringResource(R.string.scene_persona_export_private_key_title))
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+                    MaskCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        elevation = 0.dp,
+                        onClick = {
+                            // first check if it has backup password
+                            if (backupPassword.isEmpty()) {
+                                navController.navigate(Uri.parse(Deeplinks.Setting.SetupPasswordDialog))
+                            } else {
+                                currentPersona?.let {
+                                    navController.navigate(
+                                        Uri.parse(
+                                            Deeplinks.Persona.BackUpPassword(
+                                                PersonaRoute.DownloadQrCode(
+                                                    idType = DownloadQrCodeViewModel.IdType.ID.name,
+                                                    idBase64 = it.identifier.encodeBase64(Base64.NO_WRAP)
+                                                )
+                                            )
+                                        )
+                                    )
+                                }
+                            }
+                        }
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Image(
+                                painterResource(id = R.drawable.ic_download),
+                                contentDescription = null
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(text = stringResource(R.string.scene_persona_download_qr_code_title))
                         }
                     }
                     Spacer(modifier = Modifier.height(16.dp))

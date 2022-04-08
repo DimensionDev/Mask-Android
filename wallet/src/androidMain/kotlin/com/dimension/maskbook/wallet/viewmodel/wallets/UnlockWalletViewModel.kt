@@ -23,6 +23,7 @@ package com.dimension.maskbook.wallet.viewmodel.wallets
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.common.util.BiometricAuthenticator
+import com.dimension.maskbook.common.viewmodel.BiometricViewModel
 import com.dimension.maskbook.setting.export.SettingServices
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine

@@ -46,6 +46,7 @@ import com.dimension.maskbook.persona.R
 fun EmptyPersonaScene(
     onPersonaCreateClick: () -> Unit,
     onPersonaRecoveryClick: () -> Unit,
+    onPersonaSynchronizationClick: () -> Unit,
 ) {
     MaskScaffold(
         topBar = {
@@ -84,6 +85,13 @@ fun EmptyPersonaScene(
                 onClick = onPersonaRecoveryClick,
             ) {
                 Text("Recover Persona")
+            }
+            Spacer(Modifier.height(20.dp))
+            PrimaryButton(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = onPersonaSynchronizationClick,
+            ) {
+                Text(stringResource(R.string.scene_identity_empty_synchronization))
             }
         }
     }

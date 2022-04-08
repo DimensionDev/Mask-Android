@@ -24,6 +24,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
+import com.dimension.maskbook.common.ext.decodeJson
 import com.dimension.maskbook.persona.db.EncryptJsonObjectConverter
 import com.dimension.maskbook.persona.db.EncryptStringConverter
 import kotlinx.serialization.json.JsonObject
@@ -68,4 +69,6 @@ data class DbPersonaRecord(
         if (record.avatar != null && record.avatar != avatar) avatar = record.avatar
         return this
     }
+
+    val privateKeyData get() = privateKey?.toString()?.decodeJson<PersonaPrivateKey>()
 }
