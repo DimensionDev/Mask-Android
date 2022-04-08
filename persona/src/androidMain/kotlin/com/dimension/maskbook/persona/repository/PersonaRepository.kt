@@ -235,6 +235,9 @@ internal class PersonaRepository(
 
     override suspend fun restorePersonaBackup(list: List<IndexedDBPersona>) {
         personaDataSource.addAll(list)
+        if (currentPersona.firstOrNull() == null) {
+            setCurrentPersona(list.firstOrNull()?.identifier.orEmpty())
+        }
     }
 
     override suspend fun createProfileBackup(): List<IndexedDBProfile> {

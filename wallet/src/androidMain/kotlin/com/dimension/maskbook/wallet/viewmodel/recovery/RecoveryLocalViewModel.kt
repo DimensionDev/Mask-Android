@@ -31,7 +31,6 @@ import com.dimension.maskbook.setting.export.SettingServices
 import com.dimension.maskbook.setting.export.model.BackupMeta
 import com.dimension.maskbook.setting.export.model.BackupMetaFile
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
@@ -98,7 +97,7 @@ class RecoveryLocalViewModel(
 
     fun restore() = viewModelScope.launch {
         try {
-            file.firstOrNull()?.let { backupServices.restoreBackup(it) }
+            _file.value?.let { backupServices.restoreBackup(it) }
         } catch (e: Throwable) {
         }
     }
