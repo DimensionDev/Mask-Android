@@ -25,6 +25,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import androidx.navigation.navOptions
@@ -133,7 +134,7 @@ fun RegisterRecoveryHome(
         onResult = {
             if (it != null) {
                 navController.navigate(
-                    WalletRoute.Register.Recovery.LocalBackup.Loading(it.toString(), null, null, null)
+                    WalletRoute.Register.Recovery.LocalBackup.Loading(it.toString(), System.currentTimeMillis(), null, null)
                 )
             }
         },

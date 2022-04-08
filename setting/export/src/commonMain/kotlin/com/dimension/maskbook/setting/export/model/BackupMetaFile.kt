@@ -57,8 +57,8 @@ data class BackupMetaFile(
     ) {
         @Serializable
         sealed class Recipients {
-            class StringValue(val value: String) : Recipients()
-            class UnionArrayValue(val value: List<RecipientElement>) : Recipients()
+            data class StringValue(val value: String) : Recipients()
+            data class UnionArrayValue(val value: List<RecipientElement>) : Recipients()
             @Serializable
             sealed class RecipientElement {
                 class RecipientClassValue(val value: RecipientClass) : RecipientElement() {
@@ -131,13 +131,15 @@ data class BackupMetaFile(
     ) {
         @Serializable
         sealed class LinkedProfileElement {
-            class LinkedProfileClassValue(val value: LinkedProfileClass) : LinkedProfileElement() {
+            @Serializable
+            data class LinkedProfileClassValue(val value: LinkedProfileClass) : LinkedProfileElement() {
                 @Serializable
                 data class LinkedProfileClass(
                     val connectionConfirmState: String
                 )
             }
-            class StringValue(val value: String) : LinkedProfileElement()
+            @Serializable
+            data class StringValue(val value: String) : LinkedProfileElement()
         }
     }
 

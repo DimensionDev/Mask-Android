@@ -148,7 +148,7 @@ class BackupRepository(
             cipher.doFinal(MsgPack.encodeToByteArray(BackupMetaFile.serializer(), content))
         RemoteBackupData(
             pbkdf2IV = iv,
-            paramIV = cipher.parameters.getParameterSpec(IvParameterSpec::class.java).iv,
+            paramIV = cipher.iv,
             encrypted = encrypted,
         ).toByteArray()
     }

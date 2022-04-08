@@ -40,7 +40,9 @@ import com.dimension.maskbook.setting.model.mapping.toIndexedDBProfile
 import com.dimension.maskbook.setting.model.mapping.toIndexedDBRelation
 import com.dimension.maskbook.setting.model.mapping.toWalletData
 import com.dimension.maskbook.wallet.export.WalletServices
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.withContext
 
 internal class SettingsRepository(
     private val personaServices: PersonaServices,
@@ -116,16 +118,18 @@ internal class SettingsRepository(
     }
 
     override suspend fun restoreBackup(value: BackupMetaFile) {
-        val persona = value.personas.map { it.toIndexedDBPersona() }
-        personaServices.restorePersonaBackup(persona)
-        val profile = value.profiles.map { it.toIndexedDBProfile() }
-        personaServices.restoreProfileBackup(profile)
-        val relation = value.relations.map { it.toIndexedDBRelation() }
-        personaServices.restoreRelationBackup(relation)
-        val post = value.posts.map { it.toIndexDbPost() }
-        personaServices.restorePostBackup(post)
-        val wallet = value.wallets.map { it.toWalletData() }
-        walletServices.restoreWalletBackup(wallet)
+        withContext(Dispatchers.IO) {
+            val persona = value.personas.map { it.toIndexedDBPersona() }
+            personaServices.restorePersonaBackup(persona)
+            val profile = value.profiles.map { it.toIndexedDBProfile() }
+            personaServices.restoreProfileBackup(profile)
+            val relation = value.relations.map { it.toIndexedDBRelation() }
+            personaServices.restoreRelationBackup(relation)
+            val post = value.posts.map { it.toIndexDbPost() }
+            personaServices.restorePostBackup(post)
+            val wallet = value.wallets.map { it.toWalletData() }
+            walletServices.restoreWalletBackup(wallet)
+        }
     }
 
     override suspend fun createBackup(
@@ -136,40 +140,42 @@ internal class SettingsRepository(
         noRelations: Boolean,
         hasPrivateKeyOnly: Boolean
     ): BackupMetaFile {
-        val personas = if (noPersonas) {
-            emptyList()
-        } else {
-            backupPersona(hasPrivateKeyOnly)
+        return withContext(Dispatchers.IO) {
+            val personas = if (noPersonas) {
+                emptyList()
+            } else {
+                backupPersona(hasPrivateKeyOnly)
+            }
+            val profile = if (noProfiles) {
+                emptyList()
+            } else {
+                backProfiles()
+            }
+            val wallets = if (noWallets) {
+                emptyList()
+            } else {
+                backupWallets()
+            }
+            val posts = if (noPosts) {
+                emptyList()
+            } else {
+                backupPosts()
+            }
+            val relations = if (noRelations) {
+                emptyList()
+            } else {
+                backupRelations()
+            }
+            BackupMetaFile(
+                personas = personas,
+                wallets = wallets,
+                posts = posts,
+                profiles = profile,
+                meta = BackupMetaFile.Meta.Default,
+                grantedHostPermissions = emptyList(),
+                relations = relations,
+            )
         }
-        val profile = if (noProfiles) {
-            emptyList()
-        } else {
-            backProfiles()
-        }
-        val wallets = if (noWallets) {
-            emptyList()
-        } else {
-            backupWallets()
-        }
-        val posts = if (noPosts) {
-            emptyList()
-        } else {
-            backupPosts()
-        }
-        val relations = if (noRelations) {
-            emptyList()
-        } else {
-            backupRelations()
-        }
-        return BackupMetaFile(
-            personas = personas,
-            wallets = wallets,
-            posts = posts,
-            profiles = profile,
-            meta = BackupMetaFile.Meta.Default,
-            grantedHostPermissions = emptyList(),
-            relations = relations,
-        )
     }
 
     private suspend fun backupRelations(): List<BackupMetaFile.Relation> {

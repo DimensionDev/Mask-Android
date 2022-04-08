@@ -83,6 +83,7 @@ class BackupLocalViewModel(
             backupRepository.saveLocality(it, json, password = password, account = LocalBackupAccount)
             _state.value = State.Success
         } catch (e: Throwable) {
+            e.printStackTrace()
             _state.value = State.Failed
         }
     }

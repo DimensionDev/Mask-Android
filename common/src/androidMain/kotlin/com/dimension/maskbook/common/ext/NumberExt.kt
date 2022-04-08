@@ -98,7 +98,9 @@ fun Long.humanizeTimestamp(): String {
 }
 
 fun Long.humanizeFileSize(): String {
-    val units = arrayOf("B", "KB", "MB", "GB", "TB")
-    val digitGroups = (log10(toDouble()) / log10(1024.0)).toInt()
-    return "${toDouble() / 1024.0.pow(digitGroups)} ${units[digitGroups]}"
+    val unit = 1000
+    if (this < unit) return "$this B"
+    val exp = (log10(toDouble()) / log10(unit.toDouble())).toInt()
+    val pre = "kMGTPE"[exp - 1]
+    return "%.1f %sB".format(this / unit.toDouble().pow(exp.toDouble()), pre)
 }

@@ -53,7 +53,7 @@ import com.dimension.maskbook.common.route.navigationComposeAnimComposable
 import com.dimension.maskbook.common.route.navigationComposeAnimComposablePackage
 import com.dimension.maskbook.common.routeProcessor.annotations.Back
 import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
-import com.dimension.maskbook.common.ui.widget.MaskCard
+import com.dimension.maskbook.common.ui.widget.BackMetaDisplay
 import com.dimension.maskbook.common.ui.widget.MaskPasswordInputField
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskScene
@@ -173,41 +173,7 @@ fun BackupLocalScene(
                     .padding(ScaffoldPadding),
             ) {
                 meta?.let { meta ->
-                    MaskCard(
-                        modifier = Modifier.fillMaxWidth(),
-                        elevation = 0.dp,
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(16.dp)
-                        ) {
-                            MetaItem(
-                                title = stringResource(R.string.scene_backup_restored_account),
-                                value = meta.account
-                            )
-                            Spacer(modifier = Modifier.height(16.dp))
-                            MetaItem(title = stringResource(R.string.tab_personas), value = meta.personas.toString())
-                            Spacer(modifier = Modifier.height(16.dp))
-                            MetaItem(
-                                title = stringResource(R.string.scene_backup_restored_account),
-                                value = meta.associatedAccount.toString()
-                            )
-                            Spacer(modifier = Modifier.height(16.dp))
-                            MetaItem(
-                                title = stringResource(R.string.scene_backup_restored_post),
-                                value = meta.encryptedPost.toString()
-                            )
-                            Spacer(modifier = Modifier.height(16.dp))
-                            MetaItem(
-                                title = stringResource(R.string.scene_backup_restored_contacts),
-                                value = meta.contacts.toString()
-                            )
-                            Spacer(modifier = Modifier.height(16.dp))
-                            MetaItem(
-                                title = stringResource(R.string.scene_backup_restored_files),
-                                value = meta.file.toString()
-                            )
-                        }
-                    }
+                    BackMetaDisplay(meta)
                     Spacer(modifier = Modifier.height(16.dp))
                     Row(
                         modifier = Modifier.clickable {

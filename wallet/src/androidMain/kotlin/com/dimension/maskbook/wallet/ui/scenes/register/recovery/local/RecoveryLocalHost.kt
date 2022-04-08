@@ -21,6 +21,7 @@
 package com.dimension.maskbook.wallet.ui.scenes.register.recovery.local
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,6 +36,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
@@ -48,12 +50,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.dimension.maskbook.common.ext.getNestedNavigationViewModel
+import com.dimension.maskbook.common.ext.humanizeFileSize
 import com.dimension.maskbook.common.ext.humanizeTimestamp
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.route.navigationComposeAnimComposable
@@ -194,6 +198,31 @@ fun ImportPasswordScene(
         .getNestedNavigationViewModel(WalletRoute.Register.Recovery.LocalBackup.Route) {
             parametersOf(uri, account)
         }
+    val state by viewModel.loadState.collectAsState()
+    LaunchedEffect(Unit) {
+        snapshotFlow { state }
+            .distinctUntilChanged()
+            .collect {
+                when (it) {
+                    RecoveryLocalViewModel.LoadState.Failed -> navController.navigate(WalletRoute.Register.Recovery.LocalBackup.Failed) {
+                        popUpTo(WalletRoute.Register.Recovery.LocalBackup.Loading.path) {
+                            inclusive = true
+                        }
+                    }
+                    RecoveryLocalViewModel.LoadState.Success -> navController.navigate(
+                        WalletRoute.Register.Recovery.LocalBackup.Success(
+                            uri,
+                            account
+                        )
+                    ) {
+                        popUpTo(WalletRoute.Register.Recovery.LocalBackup.Loading.path) {
+                            inclusive = true
+                        }
+                    }
+                    else -> Unit
+                }
+            }
+    }
     val passwordValid by viewModel.passwordValid.collectAsState(false)
     val password by viewModel.password.collectAsState()
     val error by viewModel.passwordError.collectAsState()
@@ -212,7 +241,7 @@ fun ImportPasswordScene(
                         )
                     },
                     title = {
-                        Text(text = "Restore Cloud backup")
+                        Text(text = "Restore backup")
                     }
                 )
             }
@@ -225,7 +254,9 @@ fun ImportPasswordScene(
             ) {
                 MaskCard {
                     Row(
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 16.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 12.dp, vertical = 16.dp),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
@@ -236,7 +267,7 @@ fun ImportPasswordScene(
                             Text(uploadedAt?.humanizeTimestamp() ?: "")
                         }
                         val size = remember(file) {
-                            file.length().humanizeTimestamp()
+                            file.length().humanizeFileSize()
                         }
                         Text(
                             text = size,
@@ -245,7 +276,7 @@ fun ImportPasswordScene(
                     }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
-                Text(text = "Cloud backup password")
+                Text(text = "Backup password")
                 MaskPasswordInputField(
                     modifier = Modifier.fillMaxWidth(),
                     value = password,
@@ -261,20 +292,20 @@ fun ImportPasswordScene(
                     )
                 }
                 Spacer(modifier = Modifier.height(24.dp))
-                MaskCard(
-                    backgroundColor = Color(0xAFC3E126)
+                Row(
+                    modifier = Modifier
+                        .background(Color(0xFFAFC3E1).copy(alpha = 0.15f))
+                        .clip(RoundedCornerShape(12.dp))
+                        .padding(horizontal = 10.dp, vertical = 16.dp),
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 16.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Icon(
-                            painterResource(R.drawable.ic_info_circle),
-                            contentDescription = null,
-                            modifier = Modifier.size(24.dp)
-                        )
-                        Text(text = "To decrypt the cloud backup, enter the backup password you used when you backed up to cloud.")
-                    }
+                    Icon(
+                        painterResource(R.drawable.ic_info_circle),
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(Modifier.width(12.dp))
+                    Text(text = "To decrypt the backup, enter the backup password you used when you back up.")
                 }
                 Spacer(modifier = Modifier.weight(1f))
                 PrimaryButton(
@@ -387,9 +418,19 @@ fun ImportWalletScene(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {
                     if (paymentPassword.isNullOrEmpty()) {
-                        navController.navigate(WalletRoute.Register.Recovery.LocalBackup.SetupPassword(uri, account))
+                        navController.navigate(
+                            WalletRoute.Register.Recovery.LocalBackup.SetupPassword(
+                                uri,
+                                account
+                            )
+                        )
                     } else {
-                        navController.navigate(WalletRoute.Register.Recovery.LocalBackup.ConfirmPassword(uri, account))
+                        navController.navigate(
+                            WalletRoute.Register.Recovery.LocalBackup.ConfirmPassword(
+                                uri,
+                                account
+                            )
+                        )
                     }
                 }
             ) {

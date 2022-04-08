@@ -78,6 +78,7 @@ class RecoveryLocalViewModel(
 
     fun confirmPassword() = viewModelScope.launch {
         _loadState.value = LoadState.Loading
+        _passwordError.value = false
         try {
             val data = contentResolver.openInputStream(Uri.parse(uri))?.use {
                 backupServices.decryptBackup(_password.value, account, it.readBytes())

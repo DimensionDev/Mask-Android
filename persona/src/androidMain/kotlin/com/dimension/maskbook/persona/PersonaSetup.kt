@@ -30,6 +30,7 @@ import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.persona.data.JSMethod
 import com.dimension.maskbook.persona.data.JSMethodV2
 import com.dimension.maskbook.persona.datasource.DbPersonaDataSource
+import com.dimension.maskbook.persona.datasource.DbPostDataSource
 import com.dimension.maskbook.persona.datasource.DbProfileDataSource
 import com.dimension.maskbook.persona.datasource.DbRelationDataSource
 import com.dimension.maskbook.persona.datasource.JsPersonaDataSource
@@ -97,7 +98,6 @@ object PersonaSetup : ModuleSetup {
             ISocialsRepository::class,
             IContactsRepository::class,
         )
-        single { DbPersonaDataSource(get()) }
         single<IPreferenceRepository> {
             PreferenceRepository(
                 get<Context>().personaDataStore,
@@ -123,6 +123,7 @@ object PersonaSetup : ModuleSetup {
         single { DbPersonaDataSource(get()) }
         single { DbProfileDataSource(get()) }
         single { DbRelationDataSource(get()) }
+        single { DbPostDataSource(get()) }
 
         single<PersonaServices> { PersonaServicesImpl(get()) }
         single { PersonasTabScreen() } bind TabScreen::class
