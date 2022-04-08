@@ -25,7 +25,6 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.room.Room
-import com.dimension.maskbook.common.LocalBackupAccount
 import com.dimension.maskbook.common.ModuleSetup
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.wallet.data.JSMethod
@@ -76,7 +75,6 @@ import com.dimension.maskbook.wallet.usecase.SendWalletCollectibleUseCase
 import com.dimension.maskbook.wallet.usecase.SetCurrentChainUseCase
 import com.dimension.maskbook.wallet.usecase.VerifyPaymentPasswordUseCase
 import com.dimension.maskbook.wallet.viewmodel.WelcomeViewModel
-import com.dimension.maskbook.wallet.viewmodel.wallets.SetUpPaymentPasswordViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.TokenDetailViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.TouchIdEnableViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.UnlockWalletViewModel
@@ -286,7 +284,6 @@ private fun Module.provideUseCase() {
 private fun Module.provideViewModel() {
     viewModel { WelcomeViewModel(get()) }
     viewModel { (wallet: String) -> CreateWalletRecoveryKeyViewModel(wallet, get()) }
-    viewModel { SetUpPaymentPasswordViewModel(get()) }
     viewModel { TouchIdEnableViewModel() }
     viewModel { (wallet: String) -> ImportWalletKeystoreViewModel(wallet, get()) }
     viewModel { (wallet: String) -> ImportWalletPrivateKeyViewModel(wallet, get()) }

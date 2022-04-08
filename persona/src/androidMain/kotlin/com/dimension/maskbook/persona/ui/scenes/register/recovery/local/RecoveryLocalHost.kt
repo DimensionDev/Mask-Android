@@ -70,6 +70,7 @@ import com.dimension.maskbook.common.routeProcessor.annotations.Back
 import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
 import com.dimension.maskbook.common.routeProcessor.annotations.Path
 import com.dimension.maskbook.common.routeProcessor.annotations.Query
+import com.dimension.maskbook.common.ui.scene.SetUpPaymentPassword
 import com.dimension.maskbook.common.ui.widget.BackMetaDisplay
 import com.dimension.maskbook.common.ui.widget.MaskCard
 import com.dimension.maskbook.common.ui.widget.MaskDialog
@@ -82,11 +83,7 @@ import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.common.ui.widget.button.MaskBackButton
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.common.ui.widget.button.SecondaryButton
-import com.dimension.maskbook.wallet.R
-import com.dimension.maskbook.wallet.route.WalletRoute
-import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.password.SetUpPaymentPassword
-import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.password.VerifyPaymentPasswordModal
-import com.dimension.maskbook.wallet.viewmodel.recovery.RecoveryLocalViewModel
+import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.route.PersonaRoute
 import com.dimension.maskbook.persona.viewmodel.recovery.RecoveryLocalViewModel
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -323,7 +320,7 @@ fun ImportPasswordScene(
 }
 
 @NavGraphDestination(
-    route = WalletRoute.Register.Recovery.LocalBackup.ConfirmPassword.path,
+    route = PersonaRoute.Register.Recovery.LocalBackup.ConfirmPassword.path,
     packageName = navigationComposeBottomSheetPackage,
     functionName = navigationComposeBottomSheet,
     generatedFunctionName = GeneratedRouteName
@@ -335,19 +332,19 @@ fun ImportWalletConfirmPasswordModal(
     @Query("account") account: String?,
 ) {
     val viewModel: RecoveryLocalViewModel = navController
-        .getNestedNavigationViewModel(WalletRoute.Register.Recovery.LocalBackup.Route) {
+        .getNestedNavigationViewModel(PersonaRoute.Register.Recovery.LocalBackup.Route) {
             parametersOf(uri, account)
         }
     VerifyPaymentPasswordModal(
         onNext = {
             viewModel.restore()
-            navController.navigate(WalletRoute.Register.Recovery.LocalBackup.Notification)
+            navController.navigate(PersonaRoute.Register.Recovery.LocalBackup.Notification)
         }
     )
 }
 
 @NavGraphDestination(
-    route = WalletRoute.Register.Recovery.LocalBackup.SetupPassword.path,
+    route = PersonaRoute.Register.Recovery.LocalBackup.SetupPassword.path,
     packageName = navigationComposeBottomSheetPackage,
     functionName = navigationComposeBottomSheet,
     generatedFunctionName = GeneratedRouteName
@@ -359,19 +356,19 @@ fun ImportWalletCreatePasswordModal(
     @Query("account") account: String?,
 ) {
     val viewModel: RecoveryLocalViewModel = navController
-        .getNestedNavigationViewModel(WalletRoute.Register.Recovery.LocalBackup.Route) {
+        .getNestedNavigationViewModel(PersonaRoute.Register.Recovery.LocalBackup.Route) {
             parametersOf(uri, account)
         }
     SetUpPaymentPassword(
         onNext = {
             viewModel.restore()
-            navController.navigate(WalletRoute.Register.Recovery.LocalBackup.Notification)
+            navController.navigate(PersonaRoute.Register.Recovery.LocalBackup.Notification)
         }
     )
 }
 
 @NavGraphDestination(
-    route = WalletRoute.Register.Recovery.LocalBackup.Wallet.path,
+    route = PersonaRoute.Register.Recovery.LocalBackup.Wallet.path,
     packageName = navigationComposeBottomSheetPackage,
     functionName = navigationComposeBottomSheet,
     generatedFunctionName = GeneratedRouteName
@@ -383,7 +380,7 @@ fun ImportWalletScene(
     navController: NavController,
 ) {
     val viewModel: RecoveryLocalViewModel = navController
-        .getNestedNavigationViewModel(WalletRoute.Register.Recovery.LocalBackup.Route) {
+        .getNestedNavigationViewModel(PersonaRoute.Register.Recovery.LocalBackup.Route) {
             parametersOf(uri, account)
         }
     val paymentPassword by viewModel.paymentPassword.collectAsState(initial = null)
@@ -421,14 +418,14 @@ fun ImportWalletScene(
                 onClick = {
                     if (paymentPassword.isNullOrEmpty()) {
                         navController.navigate(
-                            WalletRoute.Register.Recovery.LocalBackup.SetupPassword(
+                            PersonaRoute.Register.Recovery.LocalBackup.SetupPassword(
                                 uri,
                                 account
                             )
                         )
                     } else {
                         navController.navigate(
-                            WalletRoute.Register.Recovery.LocalBackup.ConfirmPassword(
+                            PersonaRoute.Register.Recovery.LocalBackup.ConfirmPassword(
                                 uri,
                                 account
                             )

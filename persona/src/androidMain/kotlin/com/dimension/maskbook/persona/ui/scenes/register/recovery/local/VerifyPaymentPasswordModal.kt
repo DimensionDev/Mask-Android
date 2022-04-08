@@ -18,7 +18,7 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.ui.scenes.wallets.intro.password
+package com.dimension.maskbook.persona.ui.scenes.register.recovery.local
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -35,15 +35,15 @@ import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.common.ui.widget.MaskModal
 import com.dimension.maskbook.common.ui.widget.MaskPasswordInputField
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
-import com.dimension.maskbook.wallet.R
-import com.dimension.maskbook.wallet.viewmodel.wallets.UnlockWalletViewModel
+import com.dimension.maskbook.persona.R
+import com.dimension.maskbook.persona.viewmodel.VerifyPaymentPasswordViewModel
 import org.koin.androidx.compose.getViewModel
 
 @Composable
 fun VerifyPaymentPasswordModal(
     onNext: () -> Unit,
 ) {
-    val viewModel = getViewModel<UnlockWalletViewModel>()
+    val viewModel = getViewModel<VerifyPaymentPasswordViewModel>()
     val password by viewModel.password.collectAsState()
     val canConfirm by viewModel.passwordValid.collectAsState(false)
     MaskModal(

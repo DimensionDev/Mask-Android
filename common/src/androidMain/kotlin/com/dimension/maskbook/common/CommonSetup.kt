@@ -28,6 +28,7 @@ import com.dimension.maskbook.common.util.BiometricAuthenticator
 import com.dimension.maskbook.common.util.coroutineExceptionHandler
 import com.dimension.maskbook.common.viewmodel.BiometricEnableViewModel
 import com.dimension.maskbook.common.viewmodel.BiometricViewModel
+import com.dimension.maskbook.common.viewmodel.SetUpPaymentPasswordViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -49,5 +50,6 @@ object CommonSetup : ModuleSetup {
 
         viewModel { BiometricEnableViewModel(get(), get()) }
         viewModel { BiometricViewModel(get(), get()) }
+        viewModel { SetUpPaymentPasswordViewModel(get()) }
     }
 }

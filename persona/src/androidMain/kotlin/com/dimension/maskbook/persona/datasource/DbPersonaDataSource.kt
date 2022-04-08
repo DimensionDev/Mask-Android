@@ -26,9 +26,9 @@ import com.dimension.maskbook.persona.db.migrator.mapper.toDbPersonaRecord
 import com.dimension.maskbook.persona.db.migrator.mapper.toIndexedDBPersona
 import com.dimension.maskbook.persona.db.migrator.mapper.toLinkedProfiles
 import com.dimension.maskbook.persona.db.model.DbPersonaRecord
-import com.dimension.maskbook.persona.export.model.IndexedDBPersona
 import com.dimension.maskbook.persona.db.model.PersonaPrivateKey
 import com.dimension.maskbook.persona.db.model.PersonaPrivateKey.Companion.encode
+import com.dimension.maskbook.persona.export.model.IndexedDBPersona
 import com.dimension.maskbook.persona.export.model.PersonaData
 import com.dimension.maskbook.persona.export.model.PersonaQrCode
 import kotlinx.coroutines.flow.Flow

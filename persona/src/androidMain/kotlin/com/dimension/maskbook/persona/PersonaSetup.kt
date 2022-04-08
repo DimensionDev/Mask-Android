@@ -26,6 +26,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.room.Room
 import com.dimension.maskbook.common.IoScopeName
+import com.dimension.maskbook.common.LocalBackupAccount
 import com.dimension.maskbook.common.ModuleSetup
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.persona.data.JSMethod
@@ -62,6 +63,7 @@ import com.dimension.maskbook.persona.viewmodel.PersonaMenuViewModel
 import com.dimension.maskbook.persona.viewmodel.PersonaViewModel
 import com.dimension.maskbook.persona.viewmodel.RenamePersonaViewModel
 import com.dimension.maskbook.persona.viewmodel.SwitchPersonaViewModel
+import com.dimension.maskbook.persona.viewmodel.VerifyPaymentPasswordViewModel
 import com.dimension.maskbook.persona.viewmodel.avatar.SetAvatarViewModel
 import com.dimension.maskbook.persona.viewmodel.contacts.ContactsViewModel
 import com.dimension.maskbook.persona.viewmodel.post.PostViewModel
@@ -155,6 +157,7 @@ object PersonaSetup : ModuleSetup {
         single<PersonaServices> { PersonaServicesImpl(get()) }
         single { PersonasTabScreen() } bind TabScreen::class
 
+        viewModel { VerifyPaymentPasswordViewModel(get()) }
         viewModel { PersonaViewModel(get(), get()) }
         viewModel { DisconnectSocialViewModel(get()) }
         viewModel { SwitchPersonaViewModel(get(), get()) }
@@ -184,7 +187,7 @@ object PersonaSetup : ModuleSetup {
             RecoveryLocalViewModel(
                 get(),
                 uri,
-                account,
+                account ?: LocalBackupAccount,
                 get<Context>().contentResolver,
                 get()
             )
