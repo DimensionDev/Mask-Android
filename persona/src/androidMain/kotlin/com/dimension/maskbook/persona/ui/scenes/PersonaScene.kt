@@ -61,7 +61,8 @@ fun PersonaScene(
     val socialList by viewModel.socialList.collectAsState()
     val personaList by viewModel.personaList.collectAsState()
 
-    val persona = currentPersona
+    if (currentPersona == null) return
+    val persona = currentPersona?.persona
     if (persona == null) {
         EmptyPersonaScene(
             onPersonaCreateClick = onPersonaCreateClick,
@@ -94,7 +95,7 @@ fun PersonaScene(
         ) {
             PersonaInfoScene(
                 socialList = socialList ?: emptyList(),
-                currentPersona = currentPersona,
+                currentPersona = persona,
                 personaList = personaList ?: emptyList(),
                 onAddSocialClick = { network ->
                     onAddSocialClick(persona, network)
@@ -111,7 +112,7 @@ fun PersonaScene(
                     viewModel.setCurrentPersona(it)
                 },
                 onAvatarClick = {
-                    if (currentPersona?.avatar.isNullOrEmpty()) {
+                    if (persona.avatar.isNullOrEmpty()) {
                         onAddPersonaAvatar()
                     } else {
                         onPersonaAvatarClick()
