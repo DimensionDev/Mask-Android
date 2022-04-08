@@ -37,16 +37,16 @@ fun NavController.navigateUri(uri: String, builder: NavOptionsBuilder.() -> Unit
 
 fun NavController.navigateWithPopSelf(route: String) {
     navigate(route) {
-        currentDestination?.route?.let { popRoute ->
-            popUpTo(popRoute) { inclusive = true }
+        currentDestination?.id?.let { popId ->
+            popUpTo(popId) { inclusive = true }
         }
     }
 }
 
 fun NavController.navigateUriWithPopSelf(uri: String) {
     navigate(Uri.parse(uri)) {
-        currentDestination?.route?.let { popRoute ->
-            popUpTo(popRoute) { inclusive = true }
+        currentDestination?.id?.let { popId ->
+            popUpTo(popId) { inclusive = true }
         }
     }
 }
