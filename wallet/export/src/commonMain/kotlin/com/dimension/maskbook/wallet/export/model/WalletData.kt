@@ -32,4 +32,6 @@ data class WalletData(
     val walletConnectDeepLink: String? = null,
     val tokens: List<WalletTokenData>,
     val balance: Map<DbWalletBalanceType, BigDecimal>,
-)
+) {
+    companion object
+}

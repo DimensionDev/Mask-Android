@@ -28,10 +28,10 @@ class IndexedDBPost(
     val postBy: String,
     val identifier: String,
     val postCryptoKey: JsonObject? = null,
-    val recipients: Map<String, JsonObject>? = null,
+    val recipients: MutableMap<String, JsonObject>? = null,
     val foundAt: Long,
     val encryptBy: String? = null,
     val url: String? = null,
     val summary: String? = null,
-    val interestedMeta: Map<String, JsonObject>? = null,
+    val interestedMeta: MutableMap<String, JsonObject>? = null,
 )

@@ -40,7 +40,7 @@ fun IndexedDBProfile.toDbProfileRecord(): DbProfileRecord {
 fun IndexedDBProfile.toDbLinkedProfileRecord(): DbLinkedProfileRecord? {
     if (linkedPersona.isNullOrEmpty()) return null
     return DbLinkedProfileRecord(
-        personaIdentifier = linkedPersona,
+        personaIdentifier = linkedPersona.orEmpty(),
         profileIdentifier = identifier,
         state = LinkedProfileDetailsState.Confirmed,
     )

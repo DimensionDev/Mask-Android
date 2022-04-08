@@ -32,6 +32,7 @@ import com.dimension.maskbook.setting.export.model.BackupMetaFile
 import com.dimension.maskbook.setting.ext.fromJWK
 import com.dimension.maskbook.setting.ext.toJWK
 import com.dimension.maskbook.wallet.export.model.BackupWalletData
+import kotlinx.serialization.json.JsonObject
 
 fun IndexedDBPost.toBackupPost() = BackupMetaFile.Post(
     postBy = postBy,
@@ -62,8 +63,8 @@ fun BackupMetaFile.Post.toIndexDbPost() = IndexedDBPost(
         when (it) {
             is BackupMetaFile.Post.Recipients.UnionArrayValue -> it.value.windowed(2).associate {
                 (it[0] as BackupMetaFile.Post.Recipients.RecipientElement.StringValue).value to
-                    (it[1] as BackupMetaFile.Post.Recipients.RecipientElement.RecipientClassValue).encodeJsonElement()
-            }
+                    (it[1] as BackupMetaFile.Post.Recipients.RecipientElement.RecipientClassValue).encodeJsonElement<BackupMetaFile.Post.Recipients.RecipientElement.RecipientClassValue, JsonObject>()
+            }.toMutableMap()
             is BackupMetaFile.Post.Recipients.StringValue -> null
         }
     },

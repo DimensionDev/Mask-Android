@@ -90,12 +90,14 @@ object PersonaSetup : ModuleSetup {
                 get(named(IoScopeName)),
                 get(), get(), get(),
                 get(), get(), get(),
+                get(),
             )
         } binds arrayOf(
             IPersonaRepository::class,
             ISocialsRepository::class,
             IContactsRepository::class,
         )
+        single { DbPersonaDataSource(get()) }
         single<IPreferenceRepository> {
             PreferenceRepository(
                 get<Context>().personaDataStore,
