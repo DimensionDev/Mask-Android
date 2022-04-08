@@ -22,6 +22,7 @@ package com.dimension.maskbook.persona
 
 import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.persona.export.model.IndexedDBPersona
+import com.dimension.maskbook.persona.export.model.IndexedDBPost
 import com.dimension.maskbook.persona.export.model.IndexedDBProfile
 import com.dimension.maskbook.persona.export.model.IndexedDBRelation
 import com.dimension.maskbook.persona.export.model.PersonaData
@@ -85,5 +86,13 @@ class PersonaServicesImpl(
 
     override suspend fun restoreRelationBackup(relation: List<IndexedDBRelation>) {
         personaRepository.restoreRelationBackup(relation)
+    }
+
+    override suspend fun createPostsBackup(): List<IndexedDBPost> {
+        return personaRepository.createPostsBackup()
+    }
+
+    override suspend fun restorePostBackup(post: List<IndexedDBPost>) {
+        personaRepository.restorePostBackup(post)
     }
 }

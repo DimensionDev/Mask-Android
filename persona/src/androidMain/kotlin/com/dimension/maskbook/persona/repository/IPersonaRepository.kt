@@ -23,6 +23,7 @@ package com.dimension.maskbook.persona.repository
 import android.net.Uri
 import com.dimension.maskbook.persona.export.model.ConnectAccountData
 import com.dimension.maskbook.persona.export.model.IndexedDBPersona
+import com.dimension.maskbook.persona.export.model.IndexedDBPost
 import com.dimension.maskbook.persona.export.model.IndexedDBProfile
 import com.dimension.maskbook.persona.export.model.IndexedDBRelation
 import com.dimension.maskbook.persona.export.model.PersonaData
@@ -58,4 +59,6 @@ interface IPersonaRepository {
     suspend fun restoreProfileBackup(profile: List<IndexedDBProfile>)
     suspend fun createRelationsBackup(): List<IndexedDBRelation>
     suspend fun restoreRelationBackup(relation: List<IndexedDBRelation>)
+    suspend fun createPostsBackup(): List<IndexedDBPost>
+    suspend fun restorePostBackup(post: List<IndexedDBPost>)
 }

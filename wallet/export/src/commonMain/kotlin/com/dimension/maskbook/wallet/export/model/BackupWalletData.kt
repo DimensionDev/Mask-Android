@@ -20,16 +20,14 @@
  */
 package com.dimension.maskbook.wallet.export.model
 
-import com.dimension.maskbook.common.bigDecimal.BigDecimal
-
-data class WalletData(
-    val id: String,
-    val name: String,
+data class BackupWalletData(
     val address: String,
-    val imported: Boolean,
-    val fromWalletConnect: Boolean,
-    val walletConnectChainType: ChainType? = ChainType.eth,
-    val walletConnectDeepLink: String? = null,
-    val tokens: List<WalletTokenData>,
-    val balance: Map<DbWalletBalanceType, BigDecimal>,
+    val name: String,
+    val passphrase: String? = null,
+    val publicKey: String? = null,
+    val privateKey: String? = null,
+    val mnemonic: String? = null,
+    val derivationPath: String? = null,
+    val updatedAt: Long,
+    val createdAt: Long,
 )

@@ -21,8 +21,8 @@
 package com.dimension.maskbook.persona.db.migrator.mapper
 
 import com.dimension.maskbook.persona.db.model.DbPostRecord
+import com.dimension.maskbook.persona.export.model.IndexedDBPost
 import com.dimension.maskbook.persona.export.model.Network
-import com.dimension.maskbook.persona.model.indexed.IndexedDBPost
 
 fun IndexedDBPost.toDbPostRecord(): DbPostRecord {
     return DbPostRecord(

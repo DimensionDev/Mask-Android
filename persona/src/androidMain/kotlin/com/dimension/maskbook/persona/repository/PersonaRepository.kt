@@ -25,11 +25,13 @@ import com.dimension.maskbook.common.ext.toSite
 import com.dimension.maskbook.extension.export.ExtensionServices
 import com.dimension.maskbook.persona.data.JSMethod
 import com.dimension.maskbook.persona.datasource.DbPersonaDataSource
+import com.dimension.maskbook.persona.datasource.DbPostDataSource
 import com.dimension.maskbook.persona.datasource.DbProfileDataSource
 import com.dimension.maskbook.persona.datasource.DbRelationDataSource
 import com.dimension.maskbook.persona.export.error.PersonaAlreadyExitsError
 import com.dimension.maskbook.persona.export.model.ConnectAccountData
 import com.dimension.maskbook.persona.export.model.IndexedDBPersona
+import com.dimension.maskbook.persona.export.model.IndexedDBPost
 import com.dimension.maskbook.persona.export.model.IndexedDBProfile
 import com.dimension.maskbook.persona.export.model.IndexedDBRelation
 import com.dimension.maskbook.persona.export.model.PersonaData
@@ -59,6 +61,7 @@ internal class PersonaRepository(
     private val personaDataSource: DbPersonaDataSource,
     private val profileDataSource: DbProfileDataSource,
     private val relationDataSource: DbRelationDataSource,
+    private val postDataSource: DbPostDataSource,
 ) : IPersonaRepository,
     ISocialsRepository,
     IContactsRepository {
@@ -248,5 +251,13 @@ internal class PersonaRepository(
 
     override suspend fun restoreRelationBackup(relation: List<IndexedDBRelation>) {
         relationDataSource.addAll(relation)
+    }
+
+    override suspend fun createPostsBackup(): List<IndexedDBPost> {
+        return postDataSource.getAll()
+    }
+
+    override suspend fun restorePostBackup(post: List<IndexedDBPost>) {
+        postDataSource.addAll(post)
     }
 }

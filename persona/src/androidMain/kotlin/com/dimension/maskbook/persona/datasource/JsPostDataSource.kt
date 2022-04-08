@@ -24,7 +24,7 @@ import com.dimension.maskbook.persona.db.PersonaDatabase
 import com.dimension.maskbook.persona.db.migrator.mapper.toDbPostRecord
 import com.dimension.maskbook.persona.db.migrator.mapper.toIndexedDBPost
 import com.dimension.maskbook.persona.db.sql.buildQueryPostSql
-import com.dimension.maskbook.persona.model.indexed.IndexedDBPost
+import com.dimension.maskbook.persona.export.model.IndexedDBPost
 import com.dimension.maskbook.persona.model.options.CreatePostOptions
 import com.dimension.maskbook.persona.model.options.QueryPostOptions
 import com.dimension.maskbook.persona.model.options.QueryPostsOptions

@@ -21,6 +21,7 @@
 package com.dimension.maskbook.persona.export
 
 import com.dimension.maskbook.persona.export.model.IndexedDBPersona
+import com.dimension.maskbook.persona.export.model.IndexedDBPost
 import com.dimension.maskbook.persona.export.model.IndexedDBProfile
 import com.dimension.maskbook.persona.export.model.IndexedDBRelation
 import com.dimension.maskbook.persona.export.model.PersonaData
@@ -41,4 +42,6 @@ interface PersonaServices {
     suspend fun restoreProfileBackup(profile: List<IndexedDBProfile>)
     suspend fun createRelationsBackup(): List<IndexedDBRelation>
     suspend fun restoreRelationBackup(relation: List<IndexedDBRelation>)
+    suspend fun createPostsBackup(): List<IndexedDBPost>
+    suspend fun restorePostBackup(post: List<IndexedDBPost>)
 }

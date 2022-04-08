@@ -18,7 +18,7 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.persona.model.indexed
+package com.dimension.maskbook.persona.export.model
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonObject
@@ -28,10 +28,10 @@ class IndexedDBPost(
     val postBy: String,
     val identifier: String,
     val postCryptoKey: JsonObject? = null,
-    val recipients: MutableMap<String, JsonObject>? = null,
+    val recipients: Map<String, JsonObject>? = null,
     val foundAt: Long,
     val encryptBy: String? = null,
     val url: String? = null,
     val summary: String? = null,
-    val interestedMeta: MutableMap<String, JsonObject>? = null,
+    val interestedMeta: Map<String, JsonObject>? = null,
 )

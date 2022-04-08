@@ -194,25 +194,25 @@ data class BackupMetaFile(
 
 @Serializable
 data class JsonWebKey(
-    var kty: String = "",
-    var kid: String? = null,
-    var use: String? = null,
-    var key_ops: List<String>? = null,
-    var alg: String? = null,
-    var ext: Boolean? = null,
-    var crv: String? = null,
-    var x: String? = null,
-    var y: String? = null,
-    var d: String? = null,
-    var n: String? = null,
-    var e: String? = null,
-    var p: String? = null,
-    var q: String? = null,
-    var dp: String? = null,
-    var dq: String? = null,
-    var qi: String? = null,
-    var oth: List<RsaOtherPrimesInfo>? = null,
-    var k: String? = null
+    val kty: String = "",
+    val kid: String? = null,
+    val use: String? = null,
+    val key_ops: List<String>? = null,
+    val alg: String? = null,
+    val ext: Boolean? = null,
+    val crv: String? = null,
+    val x: String? = null,
+    val y: String? = null,
+    val d: String? = null,
+    val n: String? = null,
+    val e: String? = null,
+    val p: String? = null,
+    val q: String? = null,
+    val dp: String? = null,
+    val dq: String? = null,
+    val qi: String? = null,
+    val oth: List<RsaOtherPrimesInfo>? = null,
+    val k: String? = null
 ) {
     @Serializable
     data class RsaOtherPrimesInfo(val r: String, val d: String, val t: String)

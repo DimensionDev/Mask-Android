@@ -18,18 +18,27 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.export.model
+package com.dimension.maskbook.persona.datasource
 
-import com.dimension.maskbook.common.bigDecimal.BigDecimal
+import com.dimension.maskbook.persona.db.PersonaDatabase
+import com.dimension.maskbook.persona.db.migrator.mapper.toDbPostRecord
+import com.dimension.maskbook.persona.db.migrator.mapper.toIndexedDBPost
+import com.dimension.maskbook.persona.export.model.IndexedDBPost
 
-data class WalletData(
-    val id: String,
-    val name: String,
-    val address: String,
-    val imported: Boolean,
-    val fromWalletConnect: Boolean,
-    val walletConnectChainType: ChainType? = ChainType.eth,
-    val walletConnectDeepLink: String? = null,
-    val tokens: List<WalletTokenData>,
-    val balance: Map<DbWalletBalanceType, BigDecimal>,
-)
+class DbPostDataSource(database: PersonaDatabase) {
+    private val postDao = database.postDao()
+
+    suspend fun getAll(): List<IndexedDBPost> {
+        return postDao.getAll().map {
+            it.toIndexedDBPost()
+        }
+    }
+
+    suspend fun addAll(post: List<IndexedDBPost>) {
+        postDao.insert(
+            post.map {
+                it.toDbPostRecord()
+            }
+        )
+    }
+}

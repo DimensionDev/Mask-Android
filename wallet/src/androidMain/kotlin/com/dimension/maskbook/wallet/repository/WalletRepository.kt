@@ -45,6 +45,7 @@ import com.dimension.maskbook.wallet.db.model.DbWallet
 import com.dimension.maskbook.wallet.db.model.DbWalletBalance
 import com.dimension.maskbook.wallet.db.model.DbWalletToken
 import com.dimension.maskbook.wallet.db.model.WalletSource
+import com.dimension.maskbook.wallet.export.model.BackupWalletData
 import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.export.model.CollectibleContractSchema
 import com.dimension.maskbook.wallet.export.model.DbWalletBalanceType
@@ -56,6 +57,7 @@ import com.dimension.maskbook.wallet.ext.gwei
 import com.dimension.maskbook.wallet.paging.mediator.CollectibleCollectionMediator
 import com.dimension.maskbook.wallet.services.WalletServices
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager
+import com.dimension.maskwalletcore.CoinType
 import com.dimension.maskwalletcore.WalletKey
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -874,6 +876,42 @@ internal class WalletRepository(
             refreshCurrentWalletToken()
             refreshCurrentWalletCollectibles()
             refreshNativeTokens()
+        }
+    }
+
+    override suspend fun createWalletBackup(): List<BackupWalletData> {
+        return database.walletDao().getAll().map {
+            val privateKey = WalletKey.load(it.storedKey.data).firstOrNull()
+            val mnemonic = privateKey?.exportMnemonic("")
+            // TODO: support other coin types
+            val privateKeyHex = privateKey?.exportPrivateKey(CoinType.Ethereum, "")
+            BackupWalletData(
+                address = it.wallet.address,
+                name = it.wallet.name,
+                passphrase = "",
+                publicKey = null,
+                privateKey = privateKeyHex,
+                mnemonic = mnemonic,
+                derivationPath = it.wallet.derivationPath,
+                updatedAt = it.wallet.updatedAt,
+                createdAt = it.wallet.createdAt,
+            )
+        }
+    }
+
+    override suspend fun restoreWalletBackup(wallet: List<BackupWalletData>) {
+        wallet.forEach {
+            val privateKey = it.privateKey
+            val mnemonic = it.mnemonic
+            val derivationPath = it.derivationPath
+            // TODO: support other coin types
+            if (!privateKey.isNullOrEmpty()) {
+                importWallet(it.name, privateKey, CoinPlatformType.Ethereum)
+            } else if (!mnemonic.isNullOrEmpty() && !derivationPath.isNullOrEmpty()) {
+                importWallet(it.name, mnemonic, derivationPath, CoinPlatformType.Ethereum)
+            } else {
+                // not a valid backup
+            }
         }
     }
 }

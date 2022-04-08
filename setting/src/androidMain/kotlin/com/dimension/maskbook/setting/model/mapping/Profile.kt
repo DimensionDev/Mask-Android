@@ -21,12 +21,91 @@
 package com.dimension.maskbook.setting.model.mapping
 
 import com.dimension.maskbook.common.ext.decodeJson
+import com.dimension.maskbook.common.ext.encodeJson
 import com.dimension.maskbook.common.ext.encodeJsonElement
 import com.dimension.maskbook.persona.export.model.IndexedDBPersona
+import com.dimension.maskbook.persona.export.model.IndexedDBPost
 import com.dimension.maskbook.persona.export.model.IndexedDBProfile
 import com.dimension.maskbook.persona.export.model.IndexedDBRelation
 import com.dimension.maskbook.persona.export.model.LinkedProfileDetailsState
 import com.dimension.maskbook.setting.export.model.BackupMetaFile
+import com.dimension.maskbook.setting.ext.fromJWK
+import com.dimension.maskbook.setting.ext.toJWK
+import com.dimension.maskbook.wallet.export.model.BackupWalletData
+
+fun IndexedDBPost.toBackupPost() = BackupMetaFile.Post(
+    postBy = postBy,
+    identifier = identifier,
+    postCryptoKey = postCryptoKey?.decodeJson(),
+    recipients = recipients?.let {
+        BackupMetaFile.Post.Recipients.UnionArrayValue(
+            value = it.flatMap {
+                listOf(
+                    BackupMetaFile.Post.Recipients.RecipientElement.StringValue(it.key),
+                    BackupMetaFile.Post.Recipients.RecipientElement.RecipientClassValue(it.value.decodeJson())
+                )
+            }
+        )
+    } ?: BackupMetaFile.Post.Recipients.StringValue("everyone"),
+    foundAt = foundAt,
+    encryptBy = encryptBy,
+    url = url,
+    summary = summary,
+    interestedMeta = interestedMeta.encodeJson(),
+)
+
+fun BackupMetaFile.Post.toIndexDbPost() = IndexedDBPost(
+    postBy = postBy,
+    identifier = identifier,
+    postCryptoKey = postCryptoKey?.encodeJsonElement(),
+    recipients = recipients.let {
+        when (it) {
+            is BackupMetaFile.Post.Recipients.UnionArrayValue -> it.value.windowed(2).associate {
+                (it[0] as BackupMetaFile.Post.Recipients.RecipientElement.StringValue).value to
+                    (it[1] as BackupMetaFile.Post.Recipients.RecipientElement.RecipientClassValue).encodeJsonElement()
+            }
+            is BackupMetaFile.Post.Recipients.StringValue -> null
+        }
+    },
+    foundAt = foundAt,
+    encryptBy = encryptBy,
+    url = url,
+    summary = summary,
+    interestedMeta = interestedMeta?.decodeJson(),
+)
+
+fun BackupWalletData.toBackupWallet() = BackupMetaFile.Wallet(
+    address = address,
+    name = name,
+    passphrase = passphrase,
+    createdAt = createdAt,
+    updatedAt = updatedAt,
+    publicKey = publicKey?.toJWK(),
+    privateKey = privateKey?.toJWK(),
+    mnemonic = mnemonic?.let { mnemonic ->
+        derivationPath?.let { derivationPath ->
+            BackupMetaFile.Mnemonic(
+                words = mnemonic,
+                parameter = BackupMetaFile.Mnemonic.Parameter(
+                    withPassword = false,
+                    path = derivationPath,
+                )
+            )
+        }
+    },
+)
+
+fun BackupMetaFile.Wallet.toWalletData() = BackupWalletData(
+    address = address,
+    name = name,
+    passphrase = passphrase,
+    createdAt = createdAt,
+    updatedAt = updatedAt,
+    publicKey = publicKey?.fromJWK(),
+    privateKey = privateKey?.fromJWK(),
+    mnemonic = mnemonic?.words,
+    derivationPath = mnemonic?.parameter?.path,
+)
 
 fun IndexedDBRelation.toBackupRelation() = BackupMetaFile.Relation(
     favor = BackupMetaFile.Relation.RelationFavor.values().firstOrNull { it.value == favor }
@@ -105,7 +184,7 @@ fun BackupMetaFile.Persona.toIndexedDBPersona() = IndexedDBPersona(
     },
     privateKey = privateKey?.encodeJsonElement(),
     localKey = localKey?.encodeJsonElement(),
-    linkedProfiles = linkedProfiles.filter { it.size == 2 }.associate {
+    linkedProfiles = linkedProfiles.filter { it.size % 2 == 0 }.associate {
         (it.first() as BackupMetaFile.Persona.LinkedProfileElement.StringValue).value to
             IndexedDBPersona.LinkedProfileDetails(
                 connectionConfirmState = LinkedProfileDetailsState.valueOf(

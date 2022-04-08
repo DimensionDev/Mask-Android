@@ -18,18 +18,22 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.export.model
+package com.dimension.maskbook.setting.ext
 
-import com.dimension.maskbook.common.bigDecimal.BigDecimal
+import com.dimension.maskbook.common.ext.decodeBase64
+import com.dimension.maskbook.common.ext.encodeBase64String
+import com.dimension.maskbook.setting.export.model.JsonWebKey
 
-data class WalletData(
-    val id: String,
-    val name: String,
-    val address: String,
-    val imported: Boolean,
-    val fromWalletConnect: Boolean,
-    val walletConnectChainType: ChainType? = ChainType.eth,
-    val walletConnectDeepLink: String? = null,
-    val tokens: List<WalletTokenData>,
-    val balance: Map<DbWalletBalanceType, BigDecimal>,
-)
+internal fun JsonWebKey.fromJWK() = d?.decodeBase64()
+
+internal fun String.toJWK(): JsonWebKey {
+    val privateKeyData = this.encodeToByteArray()
+    return JsonWebKey(
+        crv = "K-256",
+        kty = "EC",
+        key_ops = listOf("deriveKey", "deriveBits"),
+        d = privateKeyData.encodeBase64String(),
+        x = "",
+        y = "",
+    )
+}

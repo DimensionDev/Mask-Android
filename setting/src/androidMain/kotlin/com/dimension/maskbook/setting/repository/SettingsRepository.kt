@@ -30,14 +30,16 @@ import com.dimension.maskbook.setting.export.model.BackupMetaFile
 import com.dimension.maskbook.setting.export.model.DataProvider
 import com.dimension.maskbook.setting.export.model.Language
 import com.dimension.maskbook.setting.model.mapping.toBackupPersona
+import com.dimension.maskbook.setting.model.mapping.toBackupPost
 import com.dimension.maskbook.setting.model.mapping.toBackupProfile
 import com.dimension.maskbook.setting.model.mapping.toBackupRelation
+import com.dimension.maskbook.setting.model.mapping.toBackupWallet
+import com.dimension.maskbook.setting.model.mapping.toIndexDbPost
 import com.dimension.maskbook.setting.model.mapping.toIndexedDBPersona
 import com.dimension.maskbook.setting.model.mapping.toIndexedDBProfile
 import com.dimension.maskbook.setting.model.mapping.toIndexedDBRelation
+import com.dimension.maskbook.setting.model.mapping.toWalletData
 import com.dimension.maskbook.wallet.export.WalletServices
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 
 internal class SettingsRepository(
@@ -46,7 +48,6 @@ internal class SettingsRepository(
     private val jsDataSource: JSDataSource,
     private val walletServices: WalletServices,
 ) : ISettingsRepository {
-    private val scope = CoroutineScope(Dispatchers.IO)
     override val biometricEnabled: Flow<Boolean>
         get() = settingDataSource.biometricEnabled
     override val language: Flow<Language>
@@ -121,6 +122,10 @@ internal class SettingsRepository(
         personaServices.restoreProfileBackup(profile)
         val relation = value.relations.map { it.toIndexedDBRelation() }
         personaServices.restoreRelationBackup(relation)
+        val post = value.posts.map { it.toIndexDbPost() }
+        personaServices.restorePostBackup(post)
+        val wallet = value.wallets.map { it.toWalletData() }
+        walletServices.restoreWalletBackup(wallet)
     }
 
     override suspend fun createBackup(
@@ -174,11 +179,15 @@ internal class SettingsRepository(
     }
 
     private suspend fun backupPosts(): List<BackupMetaFile.Post> {
-        return emptyList()
+        return personaServices.createPostsBackup().map {
+            it.toBackupPost()
+        }
     }
 
     private suspend fun backupWallets(): List<BackupMetaFile.Wallet> {
-        TODO("not implemented")
+        return walletServices.createWalletBackup().map {
+            it.toBackupWallet()
+        }
     }
 
     private suspend fun backProfiles(): List<BackupMetaFile.Profile> {
