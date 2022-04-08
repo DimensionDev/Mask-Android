@@ -22,6 +22,7 @@ package com.dimension.maskbook.labs.data
 
 import com.dimension.maskbook.common.ext.decodeJson
 import com.dimension.maskbook.common.ext.encodeJson
+import com.dimension.maskbook.common.ext.responseSuccess
 import com.dimension.maskbook.common.route.Navigator
 import com.dimension.maskbook.extension.export.ExtensionServices
 import com.dimension.maskbook.labs.mapper.toRedPacketState
@@ -55,10 +56,14 @@ class RedPacketMethod(
                         if (data.canClaim) {
                             Navigator.navigate(LabsRoute.RedPacket.LuckyDrop(options.encodeJson()))
                         }
+
+                        message.responseSuccess(true)
                     }
                     claimOrRefundRedPacket -> {
                         val options = message.params?.decodeJson<RedPacketOptions>() ?: return@onEach
                         Navigator.navigate(LabsRoute.RedPacket.LuckyDrop(options.encodeJson()))
+
+                        message.responseSuccess(true)
                     }
                 }
             }
