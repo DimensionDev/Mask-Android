@@ -107,14 +107,7 @@ data class BackupMetaFile(
         val version: Long,
         val type: String
     ) {
-        companion object {
-            val Default: Meta get() = Meta(
-                maskbookVersion = "2.5.0",
-                createdAt = System.currentTimeMillis(),
-                version = 2,
-                type = "maskbook-backup"
-            )
-        }
+        companion object
     }
 
     @Serializable
