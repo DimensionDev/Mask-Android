@@ -31,6 +31,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.dimension.maskbook.common.ext.decodeBase64
 import com.dimension.maskbook.common.ext.ifNullOrEmpty
+import com.dimension.maskbook.common.ext.navOptions
+import com.dimension.maskbook.common.ext.navigateUri
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.route.Persona
@@ -70,7 +72,7 @@ fun SynchronizationScan(
         onBack = onBack,
         onResult = {
             try {
-                navController.navigate(
+                navController.navigateUri(
                     Uri.parse(it),
                     navOptions {
                         popUpTo(PersonaRoute.Synchronization.Scan) {
@@ -112,7 +114,7 @@ fun SynchronizationSuccess(
         },
         buttons = {
             PrimaryButton(onClick = {
-                navController.navigate(
+                navController.navigateUri(
                     Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona)),
                     navOptions {
                         launchSingleTop = true
@@ -169,7 +171,7 @@ fun SynchronizationPersonaAlreadyExists(
     PersonaAlreadyExitsDialog(
         onBack = onBack,
         onConfirm = {
-            navController.navigate(
+            navController.navigateUri(
                 Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona)),
                 navOptions {
                     launchSingleTop = true

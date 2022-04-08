@@ -36,6 +36,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
+import com.dimension.maskbook.common.ext.navOptions
+import com.dimension.maskbook.common.ext.navigate
 import com.dimension.maskbook.common.ext.navigateUri
 import com.dimension.maskbook.common.ext.shareText
 import com.dimension.maskbook.common.route.CommonRoute
@@ -571,7 +573,7 @@ fun WalletIntroHostLegal(
         navController.navigate(
             route,
             navOptions {
-                popUpTo(id = navBackStackEntry.destination.id) {
+                popUpTo(route = navBackStackEntry.route.route) {
                     inclusive = true
                 }
                 launchSingleTop = true

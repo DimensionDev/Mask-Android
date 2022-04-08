@@ -40,6 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.dimension.maskbook.common.ext.navigateUri
 import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.route.navigationComposeBottomSheet
 import com.dimension.maskbook.common.route.navigationComposeBottomSheetPackage
@@ -98,9 +99,7 @@ fun SwitchPersonaModal(
                     MaskSelection(
                         selected = false,
                         onClicked = {
-                            navController.navigate(
-                                Uri.parse(Deeplinks.Persona.Register.CreatePersona)
-                            )
+                            navController.navigateUri(Uri.parse(Deeplinks.Persona.Register.CreatePersona))
                         },
                         content = {
                             Text(

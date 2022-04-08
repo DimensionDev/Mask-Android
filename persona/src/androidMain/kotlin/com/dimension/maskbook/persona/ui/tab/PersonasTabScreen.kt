@@ -23,6 +23,7 @@ package com.dimension.maskbook.persona.ui.tab
 import android.net.Uri
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
+import com.dimension.maskbook.common.ext.navOptions
 import com.dimension.maskbook.common.ext.navigateUri
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks

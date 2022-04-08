@@ -312,7 +312,7 @@ fun RegisterRecoveryAlreadyExists(
     PersonaAlreadyExitsDialog(
         onBack = onBack,
         onConfirm = {
-            navController.navigate(
+            navController.navigateUri(
                 Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona)),
                 navOptions {
                     popUpTo(PersonaRoute.Register.Init) {

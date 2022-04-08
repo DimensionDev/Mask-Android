@@ -29,6 +29,8 @@ import com.dimension.maskbook.common.ext.decodeJson
 import com.dimension.maskbook.common.ext.fromHexString
 import com.dimension.maskbook.common.ext.humanizeDollar
 import com.dimension.maskbook.common.ext.humanizeToken
+import com.dimension.maskbook.common.ext.sendEvent
+import com.dimension.maskbook.common.model.ResultEvent
 import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.route.composable
 import com.dimension.maskbook.common.route.navigationComposeBottomSheet

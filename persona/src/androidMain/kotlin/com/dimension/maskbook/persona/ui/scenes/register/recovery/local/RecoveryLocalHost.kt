@@ -58,6 +58,7 @@ import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.common.ext.getNestedNavigationViewModel
 import com.dimension.maskbook.common.ext.humanizeFileSize
 import com.dimension.maskbook.common.ext.humanizeTimestamp
+import com.dimension.maskbook.common.ext.navigate
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.route.navigationComposeAnimComposable
 import com.dimension.maskbook.common.route.navigationComposeAnimComposablePackage

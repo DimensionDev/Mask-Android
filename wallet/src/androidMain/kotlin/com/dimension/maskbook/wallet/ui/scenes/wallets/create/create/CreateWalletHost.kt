@@ -25,16 +25,15 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavController
-import androidx.navigation.navOptions
 import com.dimension.maskbook.common.ext.getNestedNavigationViewModel
-import com.dimension.maskbook.common.ext.observeAsState
+import com.dimension.maskbook.common.ext.navOptions
+import com.dimension.maskbook.common.ext.navigateUri
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.route.navigationComposeAnimComposable
@@ -50,6 +49,7 @@ import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.route.WalletRoute
 import com.dimension.maskbook.wallet.viewmodel.wallets.create.CreateWalletRecoveryKeyViewModel
 import moe.tlaster.precompose.navigation.NavController
+import org.koin.core.parameter.parametersOf
 
 private const val GeneratedRouteName = "createWalletRoute"
 
@@ -69,7 +69,7 @@ fun PharseRoute(
         .getNestedNavigationViewModel(WalletRoute.CreateWallet.Route) {
             parametersOf(wallet)
         }
-    val words by viewModel.words.observeAsState(initial = emptyList())
+    val words by viewModel.words.collectAsState(initial = emptyList())
     MnemonicPhraseScene(
         words = words.map { it.word },
         onRefreshWords = {
@@ -92,7 +92,7 @@ fun ConfirmRoute(
 ) {
     val onDone = remember {
         {
-            navController.navigate(
+            navController.navigateUri(
                 Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Wallet)),
                 navOptions = navOptions {
                     launchSingleTop = true
