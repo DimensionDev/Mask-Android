@@ -20,10 +20,10 @@
  */
 package com.dimension.maskbook.wallet.viewmodel.wallets
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.wallet.repository.IWalletRepository
+import moe.tlaster.precompose.viewmodel.ViewModel
+import moe.tlaster.precompose.viewmodel.viewModelScope
 
 class WalletManagementModalViewModel(
     private val repository: IWalletRepository,

@@ -24,12 +24,12 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.staticCompositionLocalOf
-import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.setting.export.SettingServices
 import com.dimension.maskbook.setting.export.model.Appearance
-import org.koin.androidx.compose.get
+import moe.tlaster.koin.compose.get
 
 internal val LocalIsDarkTheme = staticCompositionLocalOf { false }
 
@@ -41,7 +41,7 @@ val MaterialTheme.isDarkTheme: Boolean
 @Composable
 internal fun isDarkTheme(): Boolean {
     val repo = get<SettingServices>()
-    val appearance by repo.appearance.observeAsState(initial = Appearance.default)
+    val appearance by repo.appearance.collectAsState(initial = Appearance.default)
     return when (appearance) {
         Appearance.default -> isSystemInDarkTheme()
         Appearance.light -> false

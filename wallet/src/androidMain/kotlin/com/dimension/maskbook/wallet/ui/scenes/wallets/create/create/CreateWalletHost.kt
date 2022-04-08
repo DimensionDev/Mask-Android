@@ -49,7 +49,7 @@ import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.route.WalletRoute
 import com.dimension.maskbook.wallet.viewmodel.wallets.create.CreateWalletRecoveryKeyViewModel
-import org.koin.core.parameter.parametersOf
+import moe.tlaster.precompose.navigation.NavController
 
 private const val GeneratedRouteName = "createWalletRoute"
 

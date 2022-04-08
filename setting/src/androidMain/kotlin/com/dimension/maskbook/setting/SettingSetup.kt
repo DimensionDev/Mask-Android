@@ -21,11 +21,9 @@
 package com.dimension.maskbook.setting
 
 import android.content.Context
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.navigation
 import com.dimension.maskbook.common.ModuleSetup
 import com.dimension.maskbook.common.retrofit.retrofit
+import com.dimension.maskbook.common.route.navigation
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.setting.SettingSetup.route
 import com.dimension.maskbook.setting.data.JSDataSource
@@ -54,13 +52,15 @@ import com.dimension.maskbook.setting.viewmodel.LanguageSettingsViewModel
 import com.dimension.maskbook.setting.viewmodel.PaymentPasswordSettingsViewModel
 import com.dimension.maskbook.setting.viewmodel.PhoneBackupViewModel
 import com.dimension.maskbook.setting.viewmodel.PhoneSetupViewModel
-import org.koin.androidx.viewmodel.dsl.viewModel
+import moe.tlaster.koin.viewModel
+import moe.tlaster.precompose.navigation.NavController
+import moe.tlaster.precompose.navigation.RouteBuilder
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.koin.mp.KoinPlatformTools
 
 object SettingSetup : ModuleSetup {
-    override fun NavGraphBuilder.route(navController: NavController) {
+    override fun RouteBuilder.route(navController: NavController) {
         generatedRoute(navController)
         navigation(
             startDestination = SettingRoute.BackupData.BackupLocal.Backup,

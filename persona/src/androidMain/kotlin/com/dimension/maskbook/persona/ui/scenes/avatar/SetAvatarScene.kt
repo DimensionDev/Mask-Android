@@ -56,7 +56,7 @@ import com.dimension.maskbook.persona.route.PersonaRoute
 import com.dimension.maskbook.persona.utils.ImagePicker
 import com.dimension.maskbook.persona.viewmodel.avatar.SetAvatarViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import org.koin.androidx.compose.getViewModel
+import moe.tlaster.koin.compose.getViewModel
 
 @OptIn(ExperimentalPermissionsApi::class)
 @NavGraphDestination(

@@ -41,8 +41,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
+import com.dimension.maskbook.common.ext.navigateUri
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.route.navigationComposeBottomSheet
@@ -56,7 +56,8 @@ import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.model.SocialProfile
 import com.dimension.maskbook.persona.route.PersonaRoute
 import com.dimension.maskbook.persona.viewmodel.social.UserNameModalViewModel
-import org.koin.androidx.compose.getViewModel
+import moe.tlaster.koin.compose.getViewModel
+import moe.tlaster.precompose.navigation.NavController
 import org.koin.core.parameter.parametersOf
 
 @NavGraphDestination(
@@ -113,7 +114,7 @@ fun ConnectAccountModal(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {
                     viewModel.done(personaId, name)
-                    navController.navigate(Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona)))
+                    navController.navigateUri(Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona)))
                 },
             ) {
                 Text(text = stringResource(R.string.scene_social_connect_button_title))

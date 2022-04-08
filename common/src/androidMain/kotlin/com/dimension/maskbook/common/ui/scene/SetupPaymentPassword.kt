@@ -29,6 +29,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -40,16 +41,16 @@ import com.dimension.maskbook.common.ui.widget.MaskModal
 import com.dimension.maskbook.common.ui.widget.MaskPasswordInputField
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.common.viewmodel.SetUpPaymentPasswordViewModel
-import org.koin.androidx.compose.getViewModel
+import moe.tlaster.koin.compose.getViewModel
 
 @Composable
 fun SetUpPaymentPassword(
     onNext: () -> Unit,
 ) {
     val viewModel: SetUpPaymentPasswordViewModel = getViewModel()
-    val newPassword by viewModel.newPassword.observeAsState(initial = "")
-    val newPasswordConfirm by viewModel.newPasswordConfirm.observeAsState(initial = "")
-    val canConfirm by viewModel.canConfirm.observeAsState(initial = false)
+    val newPassword by viewModel.newPassword.collectAsState(initial = "")
+    val newPasswordConfirm by viewModel.newPasswordConfirm.collectAsState(initial = "")
+    val canConfirm by viewModel.canConfirm.collectAsState(initial = false)
     MaskModal(
         title = {
             Text(

@@ -61,7 +61,6 @@ object Versions {
         const val paging = "3.1.0"
         const val pagingCompose = "1.0.0-alpha14"
         const val annotation = "1.3.0"
-        const val activityCompose = "1.4.0"
         const val biometric = "1.2.0-alpha04"
         const val activity = "1.4.0"
         const val fragment = "1.3.6"

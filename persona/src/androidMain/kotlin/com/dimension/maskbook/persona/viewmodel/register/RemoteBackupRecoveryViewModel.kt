@@ -21,14 +21,14 @@
 package com.dimension.maskbook.persona.viewmodel.register
 
 import android.os.CountDownTimer
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.Validator
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.setting.export.BackupServices
 import com.dimension.maskbook.setting.export.model.BackupFileMeta
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import moe.tlaster.precompose.viewmodel.ViewModel
+import moe.tlaster.precompose.viewmodel.viewModelScope
 
 class PhoneRemoteBackupRecoveryViewModel(
     requestNavigate: (NavigateArgs) -> Unit,

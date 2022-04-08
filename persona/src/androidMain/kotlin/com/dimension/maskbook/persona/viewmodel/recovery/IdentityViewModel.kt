@@ -20,14 +20,14 @@
  */
 package com.dimension.maskbook.persona.viewmodel.recovery
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.Validator
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.wallet.export.WalletServices
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
+import moe.tlaster.precompose.viewmodel.ViewModel
+import moe.tlaster.precompose.viewmodel.viewModelScope
 
 class IdentityViewModel(
     private val personaServices: PersonaServices,

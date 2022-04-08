@@ -33,14 +33,13 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.route.navigationComposeBottomSheet
 import com.dimension.maskbook.common.route.navigationComposeBottomSheetPackage
@@ -50,7 +49,8 @@ import com.dimension.maskbook.common.ui.widget.MaskSelection
 import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.route.PersonaRoute
 import com.dimension.maskbook.persona.viewmodel.SwitchPersonaViewModel
-import org.koin.androidx.compose.getViewModel
+import moe.tlaster.koin.compose.getViewModel
+import moe.tlaster.precompose.navigation.NavController
 
 @NavGraphDestination(
     route = PersonaRoute.SwitchPersona,
@@ -62,8 +62,8 @@ fun SwitchPersonaModal(
     navController: NavController,
 ) {
     val viewModel = getViewModel<SwitchPersonaViewModel>()
-    val currentPersonaData by viewModel.current.observeAsState(initial = null)
-    val items by viewModel.items.observeAsState(initial = emptyList())
+    val currentPersonaData by viewModel.current.collectAsState(initial = null)
+    val items by viewModel.items.collectAsState(initial = emptyList())
 
     MaskModal(
         title = {

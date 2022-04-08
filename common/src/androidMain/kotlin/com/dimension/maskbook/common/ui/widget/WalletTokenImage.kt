@@ -29,13 +29,13 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
-import coil.compose.ImagePainter
 
 @Composable
 fun WalletTokenImage(
-    painter: ImagePainter,
-    chainPainter: ImagePainter,
+    painter: Painter,
+    chainPainter: Painter,
 ) {
     Box {
         Image(

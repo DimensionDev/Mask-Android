@@ -44,7 +44,7 @@ import com.dimension.maskbook.persona.export.model.Network
 import com.dimension.maskbook.persona.export.model.PersonaData
 import com.dimension.maskbook.persona.export.model.SocialData
 import com.dimension.maskbook.persona.viewmodel.PersonaViewModel
-import org.koin.androidx.compose.getViewModel
+import moe.tlaster.koin.compose.getViewModel
 
 @ExperimentalAnimationApi
 @Composable

@@ -25,14 +25,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavController
-import com.dimension.maskbook.common.ext.observeAsState
-import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.route.navigationComposeBottomSheet
 import com.dimension.maskbook.common.route.navigationComposeBottomSheetPackage
@@ -55,7 +53,8 @@ import com.dimension.maskbook.setting.ui.scenes.PhoneInputModal
 import com.dimension.maskbook.setting.viewmodel.EmailSetupViewModel
 import com.dimension.maskbook.setting.viewmodel.PhoneSetupViewModel
 import kotlinx.coroutines.launch
-import org.koin.androidx.compose.getViewModel
+import moe.tlaster.koin.compose.getViewModel
+import moe.tlaster.precompose.navigation.NavController
 
 @NavGraphDestination(
     route = SettingRoute.SetupPasswordDialog,
@@ -266,9 +265,9 @@ fun SettingsChangeEmailSetup(
     val scope = rememberCoroutineScope()
 
     val viewModel = getViewModel<EmailSetupViewModel>()
-    val email by viewModel.value.observeAsState()
-    val emailValid by viewModel.valueValid.observeAsState()
-    val loading by viewModel.loading.observeAsState()
+    val email by viewModel.value.collectAsState()
+    val emailValid by viewModel.valueValid.collectAsState()
+    val loading by viewModel.loading.collectAsState()
     EmailInputModal(
         email = email,
         onEmailChange = { viewModel.setValue(it) },
@@ -300,11 +299,11 @@ fun SettingsChangeEmailSetupCode(
     val scope = rememberCoroutineScope()
 
     val viewModel = getViewModel<EmailSetupViewModel>()
-    val code by viewModel.code.observeAsState()
-    val valid by viewModel.codeValid.observeAsState()
-    val loading by viewModel.loading.observeAsState()
-    val canSend by viewModel.canSend.observeAsState()
-    val countDown by viewModel.countdown.observeAsState()
+    val code by viewModel.code.collectAsState()
+    val valid by viewModel.codeValid.collectAsState()
+    val loading by viewModel.loading.collectAsState()
+    val canSend by viewModel.canSend.collectAsState()
+    val countDown by viewModel.countdown.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.sendCodeNow(email)
@@ -385,11 +384,11 @@ fun SettingsChangeEmailChangeCode(
     val scope = rememberCoroutineScope()
 
     val viewModel = getViewModel<EmailSetupViewModel>()
-    val code by viewModel.code.observeAsState()
-    val valid by viewModel.codeValid.observeAsState()
-    val loading by viewModel.loading.observeAsState()
-    val canSend by viewModel.canSend.observeAsState()
-    val countDown by viewModel.countdown.observeAsState()
+    val code by viewModel.code.collectAsState()
+    val valid by viewModel.codeValid.collectAsState()
+    val loading by viewModel.loading.collectAsState()
+    val canSend by viewModel.canSend.collectAsState()
+    val countDown by viewModel.countdown.collectAsState()
 
     EmailCodeInputModal(
         email = email,
@@ -428,9 +427,9 @@ fun SettingsChangeEmailChangeNew(
     val scope = rememberCoroutineScope()
 
     val viewModel = getViewModel<EmailSetupViewModel>()
-    val email by viewModel.value.observeAsState()
-    val emailValid by viewModel.valueValid.observeAsState()
-    val loading by viewModel.loading.observeAsState()
+    val email by viewModel.value.collectAsState()
+    val emailValid by viewModel.valueValid.collectAsState()
+    val loading by viewModel.loading.collectAsState()
     EmailInputModal(
         email = email,
         onEmailChange = { viewModel.setValue(it) },
@@ -462,11 +461,11 @@ fun SettingsChangeEmailChangeNewCode(
     val scope = rememberCoroutineScope()
 
     val viewModel = getViewModel<EmailSetupViewModel>()
-    val code by viewModel.code.observeAsState()
-    val valid by viewModel.codeValid.observeAsState()
-    val loading by viewModel.loading.observeAsState()
-    val canSend by viewModel.canSend.observeAsState()
-    val countDown by viewModel.countdown.observeAsState()
+    val code by viewModel.code.collectAsState()
+    val valid by viewModel.codeValid.collectAsState()
+    val loading by viewModel.loading.collectAsState()
+    val canSend by viewModel.canSend.collectAsState()
+    val countDown by viewModel.countdown.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.sendCodeNow(email)
@@ -545,10 +544,10 @@ fun SettingsChangePhoneSetup(
 ) {
 
     val viewModel = getViewModel<PhoneSetupViewModel>()
-    val regionCode by viewModel.regionCode.observeAsState()
-    val phone by viewModel.value.observeAsState()
-    val valid by viewModel.valueValid.observeAsState()
-    val loading by viewModel.loading.observeAsState()
+    val regionCode by viewModel.regionCode.collectAsState()
+    val phone by viewModel.value.collectAsState()
+    val valid by viewModel.valueValid.collectAsState()
+    val loading by viewModel.loading.collectAsState()
     PhoneInputModal(
         regionCode = regionCode,
         onRegionCodeChange = { viewModel.setRegionCode(it) },
@@ -580,11 +579,11 @@ fun SettingsChangePhoneSetupCode(
     val scope = rememberCoroutineScope()
 
     val viewModel = getViewModel<PhoneSetupViewModel>()
-    val code by viewModel.code.observeAsState()
-    val canSend by viewModel.canSend.observeAsState()
-    val valid by viewModel.codeValid.observeAsState()
-    val countDown by viewModel.countdown.observeAsState()
-    val loading by viewModel.loading.observeAsState()
+    val code by viewModel.code.collectAsState()
+    val canSend by viewModel.canSend.collectAsState()
+    val valid by viewModel.codeValid.collectAsState()
+    val countDown by viewModel.countdown.collectAsState()
+    val loading by viewModel.loading.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.sendCodeNow(phone)
@@ -661,11 +660,11 @@ fun SettingsChangePhoneChangeCode(
     val scope = rememberCoroutineScope()
 
     val viewModel = getViewModel<PhoneSetupViewModel>()
-    val code by viewModel.code.observeAsState()
-    val canSend by viewModel.canSend.observeAsState()
-    val valid by viewModel.codeValid.observeAsState()
-    val countDown by viewModel.countdown.observeAsState()
-    val loading by viewModel.loading.observeAsState()
+    val code by viewModel.code.collectAsState()
+    val canSend by viewModel.canSend.collectAsState()
+    val valid by viewModel.codeValid.collectAsState()
+    val countDown by viewModel.countdown.collectAsState()
+    val loading by viewModel.loading.collectAsState()
 
     PhoneCodeInputModal(
         phone = phone,
@@ -704,10 +703,10 @@ fun SettingsChangePhoneChangeNew(
     val scope = rememberCoroutineScope()
 
     val viewModel = getViewModel<PhoneSetupViewModel>()
-    val regionCode by viewModel.regionCode.observeAsState()
-    val phone by viewModel.value.observeAsState()
-    val valid by viewModel.valueValid.observeAsState()
-    val loading by viewModel.loading.observeAsState()
+    val regionCode by viewModel.regionCode.collectAsState()
+    val phone by viewModel.value.collectAsState()
+    val valid by viewModel.valueValid.collectAsState()
+    val loading by viewModel.loading.collectAsState()
     PhoneInputModal(
         regionCode = regionCode,
         onRegionCodeChange = { viewModel.setRegionCode(it) },
@@ -744,11 +743,11 @@ fun SettingsChangePhoneChangeCodeNew(
     val scope = rememberCoroutineScope()
 
     val viewModel = getViewModel<PhoneSetupViewModel>()
-    val code by viewModel.code.observeAsState()
-    val canSend by viewModel.canSend.observeAsState()
-    val valid by viewModel.codeValid.observeAsState()
-    val countDown by viewModel.countdown.observeAsState()
-    val loading by viewModel.loading.observeAsState()
+    val code by viewModel.code.collectAsState()
+    val canSend by viewModel.canSend.collectAsState()
+    val valid by viewModel.codeValid.collectAsState()
+    val countDown by viewModel.countdown.collectAsState()
+    val loading by viewModel.loading.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.sendCodeNow(phone)

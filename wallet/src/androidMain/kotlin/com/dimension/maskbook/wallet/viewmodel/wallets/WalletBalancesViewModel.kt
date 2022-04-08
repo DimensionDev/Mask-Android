@@ -20,8 +20,6 @@
  */
 package com.dimension.maskbook.wallet.viewmodel.wallets
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.common.ext.humanizeDollar
@@ -46,6 +44,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
+import moe.tlaster.precompose.viewmodel.ViewModel
+import moe.tlaster.precompose.viewmodel.viewModelScope
 
 class WalletBalancesViewModel(
     private val repository: IWalletRepository,

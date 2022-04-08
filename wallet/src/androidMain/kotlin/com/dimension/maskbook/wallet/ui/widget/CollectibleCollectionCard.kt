@@ -59,7 +59,7 @@ import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.export.model.WalletCollectibleCollectionData
 import com.dimension.maskbook.wallet.export.model.WalletCollectibleData
 import com.dimension.maskbook.wallet.viewmodel.wallets.collectible.CollectiblesViewModel
-import org.koin.androidx.compose.getViewModel
+import moe.tlaster.koin.compose.getViewModel
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable

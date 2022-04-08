@@ -20,8 +20,6 @@
  */
 package com.dimension.maskbook.wallet.viewmodel.wallets.collectible
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.common.util.DateUtils
 import com.dimension.maskbook.wallet.repository.ICollectibleRepository
@@ -29,6 +27,8 @@ import com.dimension.maskbook.wallet.repository.ITransactionRepository
 import com.dimension.maskbook.wallet.repository.IWalletRepository
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
+import moe.tlaster.precompose.viewmodel.ViewModel
+import moe.tlaster.precompose.viewmodel.viewModelScope
 
 class CollectibleDetailViewModel(
     private val id: String,

@@ -20,10 +20,10 @@
  */
 package com.dimension.maskbook.wallet.viewmodel.wallets.management
 
-import androidx.lifecycle.ViewModel
 import com.dimension.maskbook.wallet.repository.IWalletRepository
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
+import moe.tlaster.precompose.viewmodel.ViewModel
 
 class WalletSwitchEditViewModel(
     private val id: String,

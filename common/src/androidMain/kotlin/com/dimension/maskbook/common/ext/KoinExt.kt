@@ -22,10 +22,9 @@ package com.dimension.maskbook.common.ext
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.lifecycle.ViewModel
-import androidx.navigation.NavController
-import org.koin.androidx.viewmodel.ViewModelOwner
-import org.koin.androidx.viewmodel.scope.getViewModel
+import moe.tlaster.koin.compose.getViewModel
+import moe.tlaster.precompose.navigation.NavController
+import moe.tlaster.precompose.viewmodel.ViewModel
 import org.koin.core.annotation.KoinInternalApi
 import org.koin.core.context.GlobalContext
 import org.koin.core.parameter.ParametersDefinition
@@ -48,9 +47,9 @@ inline fun <reified T : ViewModel> NavController.getNestedNavigationViewModel(
     scope: Scope = GlobalContext.get().scopeRegistry.rootScope,
     noinline parameters: ParametersDefinition? = null,
 ): T {
-    return remember(route, qualifier, parameters) {
+    return remember(route, qualifier, scope, parameters) {
         val backStackEntry = getBackStackEntry(route)
-        val owner = ViewModelOwner.from(backStackEntry, backStackEntry)
-        scope.getViewModel(qualifier, { owner }, parameters)
+            ?: throw RuntimeException("not find backStackEntry with route: $route")
+        backStackEntry.getViewModel(qualifier, scope, parameters)
     }
 }

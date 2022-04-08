@@ -26,15 +26,15 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavController
 import com.dimension.maskbook.common.ext.encodeBase64
 import com.dimension.maskbook.common.ext.getNestedNavigationViewModel
 import com.dimension.maskbook.common.ext.navigate
-import com.dimension.maskbook.common.ext.observeAsState
+import com.dimension.maskbook.common.ext.navigateUri
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.route.navigationComposeAnimComposable
@@ -50,6 +50,7 @@ import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.route.PersonaRoute
 import com.dimension.maskbook.persona.viewmodel.DownloadQrCodeViewModel
 import com.dimension.maskbook.persona.viewmodel.register.CreateIdentityViewModel
+import moe.tlaster.precompose.navigation.NavController
 import org.koin.core.parameter.parametersOf
 
 private const val GeneratedRouteName = "createIdentityRoute"
@@ -71,8 +72,8 @@ fun BackupRoute(
         .getNestedNavigationViewModel(PersonaRoute.Register.CreateIdentity.Route) {
             parametersOf(personaName)
         }
-    val words by viewModel.words.observeAsState(emptyList())
-    val showNext by viewModel.showNext.observeAsState()
+    val words by viewModel.words.collectAsState(emptyList())
+    val showNext by viewModel.showNext.collectAsState()
     BackupIdentityScene(
         words = words.map { it.word },
         onRefreshWords = {
@@ -127,7 +128,7 @@ fun ConfirmRoute(
             PrimaryButton(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {
-                    navController.navigate(Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona))) {
+                    navController.navigateUri(Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona))) {
                         launchSingleTop = true
                         if (isWelcome) {
                             popUpTo(PersonaRoute.Register.Init) {

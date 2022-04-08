@@ -21,34 +21,32 @@
 package com.dimension.maskbook.wallet.ui.scenes.wallets.intro
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.navigation.NavController
 import androidx.paging.compose.collectAsLazyPagingItems
-import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.wallet.route.WalletRoute
 import com.dimension.maskbook.wallet.ui.scenes.wallets.create.CreateType
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletBalancesScene
 import com.dimension.maskbook.wallet.viewmodel.wallets.WalletBalancesViewModel
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
-import org.koin.androidx.compose.getViewModel
+import moe.tlaster.koin.compose.getViewModel
+import moe.tlaster.precompose.navigation.NavController
 
-@ExperimentalMaterialNavigationApi
 @Composable
 fun WalletIntroHost(navController: NavController) {
     val clipboardManager = LocalClipboardManager.current
     val viewModel = getViewModel<WalletBalancesViewModel>()
     val collectible = viewModel.collectible.collectAsLazyPagingItems()
-    val dWebData by viewModel.dWebData.observeAsState()
-    val sceneType by viewModel.sceneType.observeAsState()
-    val wallet by viewModel.currentWallet.observeAsState()
-    val wallets by viewModel.wallets.observeAsState()
-    val displayChainType by viewModel.displayChainType.observeAsState()
-    val showTokens by viewModel.showTokens.observeAsState()
-    val showTokensLess by viewModel.showTokensLess.observeAsState()
-    val showTokensLessAmount by viewModel.showTokensLessAmount.observeAsState()
+    val dWebData by viewModel.dWebData.collectAsState()
+    val sceneType by viewModel.sceneType.collectAsState()
+    val wallet by viewModel.currentWallet.collectAsState()
+    val wallets by viewModel.wallets.collectAsState()
+    val displayChainType by viewModel.displayChainType.collectAsState()
+    val showTokens by viewModel.showTokens.collectAsState()
+    val showTokensLess by viewModel.showTokensLess.collectAsState()
+    val showTokensLessAmount by viewModel.showTokensLessAmount.collectAsState()
 
     val currentWallet = wallet
     val currentDWebData = dWebData
@@ -67,7 +65,7 @@ fun WalletIntroHost(navController: NavController) {
         )
     } else if (currentDWebData != null) {
         val swipeRefreshState = rememberSwipeRefreshState(false)
-        val refreshing by viewModel.refreshingWallet.observeAsState()
+        val refreshing by viewModel.refreshingWallet.collectAsState()
         swipeRefreshState.isRefreshing = refreshing
         WalletBalancesScene(
             wallets = wallets,

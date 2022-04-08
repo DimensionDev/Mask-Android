@@ -20,15 +20,15 @@
  */
 package com.dimension.maskbook.common
 
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
+import moe.tlaster.precompose.navigation.NavController
+import moe.tlaster.precompose.navigation.RouteBuilder
 import org.koin.core.module.Module
 
 interface ModuleSetup {
-    fun NavGraphBuilder.route(navController: NavController)
+    fun RouteBuilder.route(navController: NavController)
     fun dependencyInject(): Module
     fun onExtensionReady() {}
 }
 
-fun ModuleSetup.route(builder: NavGraphBuilder, navController: NavController) =
+fun ModuleSetup.route(builder: RouteBuilder, navController: NavController) =
     builder.route(navController)

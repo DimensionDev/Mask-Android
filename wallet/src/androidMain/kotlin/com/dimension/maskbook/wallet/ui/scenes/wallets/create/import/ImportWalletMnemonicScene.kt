@@ -37,6 +37,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,8 +45,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.route.navigationComposeAnimComposable
 import com.dimension.maskbook.common.route.navigationComposeAnimComposablePackage
 import com.dimension.maskbook.common.routeProcessor.annotations.Back
@@ -63,7 +62,8 @@ import com.dimension.maskbook.wallet.repository.WalletCreateOrImportResult
 import com.dimension.maskbook.wallet.route.WalletRoute
 import com.dimension.maskbook.wallet.ui.scenes.wallets.common.Dialog
 import com.dimension.maskbook.wallet.viewmodel.wallets.import.ImportWalletMnemonicViewModel
-import org.koin.androidx.compose.getViewModel
+import moe.tlaster.koin.compose.getViewModel
+import moe.tlaster.precompose.navigation.NavController
 import org.koin.core.parameter.parametersOf
 
 @NavGraphDestination(
@@ -94,9 +94,9 @@ fun ImportWalletMnemonicScene(
                 val viewModel = getViewModel<ImportWalletMnemonicViewModel> {
                     parametersOf(walletAddress)
                 }
-                val words by viewModel.words.observeAsState(initial = "")
-                val canConfirm by viewModel.canConfirm.observeAsState(initial = false)
-                val hintWords by viewModel.hintWords.observeAsState(initial = emptyList())
+                val words by viewModel.words.collectAsState(initial = "")
+                val canConfirm by viewModel.canConfirm.collectAsState(initial = false)
+                val hintWords by viewModel.hintWords.collectAsState(initial = emptyList())
                 var showDialog by remember {
                     mutableStateOf(false)
                 }

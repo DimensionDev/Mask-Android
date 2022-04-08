@@ -29,8 +29,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavController
-import androidx.navigation.navOptions
 import com.dimension.maskbook.common.ext.decodeBase64
 import com.dimension.maskbook.common.ext.ifNullOrEmpty
 import com.dimension.maskbook.common.route.CommonRoute
@@ -54,7 +52,8 @@ import com.dimension.maskbook.persona.ui.scenes.register.recovery.PersonaAlready
 import com.dimension.maskbook.persona.viewmodel.recovery.IdentityViewModel
 import com.dimension.maskbook.persona.viewmodel.recovery.PrivateKeyViewModel
 import kotlinx.coroutines.launch
-import org.koin.androidx.compose.getViewModel
+import moe.tlaster.koin.compose.getViewModel
+import moe.tlaster.precompose.navigation.NavController
 import org.koin.core.parameter.parametersOf
 
 @NavGraphDestination(

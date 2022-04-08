@@ -31,6 +31,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
@@ -40,7 +41,6 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.route.navigationComposeAnimComposable
 import com.dimension.maskbook.common.route.navigationComposeAnimComposablePackage
 import com.dimension.maskbook.common.routeProcessor.annotations.Back
@@ -56,7 +56,7 @@ import com.dimension.maskbook.common.ui.widget.button.SecondaryButton
 import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.route.PersonaRoute
 import com.dimension.maskbook.persona.viewmodel.ExportPrivateKeyViewModel
-import org.koin.androidx.compose.getViewModel
+import moe.tlaster.koin.compose.getViewModel
 
 @NavGraphDestination(
     route = PersonaRoute.ExportPrivateKey,
@@ -68,7 +68,7 @@ fun ExportPrivateKeyScene(
     @Back onBack: () -> Unit,
 ) {
     val viewModel = getViewModel<ExportPrivateKeyViewModel>()
-    val text by viewModel.privateKey.observeAsState(initial = "")
+    val text by viewModel.privateKey.collectAsState(initial = "")
 
     val annotatedText = buildAnnotatedString {
         append(stringResource(R.string.scene_persona_export_private_key_tips))

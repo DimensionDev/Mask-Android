@@ -32,6 +32,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -39,7 +40,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.ui.widget.MaskListItem
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
@@ -50,7 +50,7 @@ import com.dimension.maskbook.labs.R
 import com.dimension.maskbook.labs.export.model.AppKey
 import com.dimension.maskbook.labs.viewmodel.AppDisplayData
 import com.dimension.maskbook.labs.viewmodel.LabsViewModel
-import org.koin.androidx.compose.getViewModel
+import moe.tlaster.koin.compose.getViewModel
 
 @Composable
 fun LabsScene(
@@ -58,7 +58,7 @@ fun LabsScene(
     onItemClick: (AppKey) -> Unit,
 ) {
     val viewModel: LabsViewModel = getViewModel()
-    val apps by viewModel.apps.observeAsState(initial = emptyList())
+    val apps by viewModel.apps.collectAsState(initial = emptyList())
     MaskScaffold(
         topBar = {
             MaskSingleLineTopAppBar(

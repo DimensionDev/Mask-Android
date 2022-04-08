@@ -44,6 +44,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,8 +53,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import com.dimension.maskbook.common.ext.observeAsState
+import com.dimension.maskbook.common.ext.navigateUri
 import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.ui.widget.IosSwitch
 import com.dimension.maskbook.common.ui.widget.MaskCard
@@ -70,8 +70,9 @@ import com.dimension.maskbook.setting.export.model.DataProvider
 import com.dimension.maskbook.setting.export.model.Language
 import com.dimension.maskbook.setting.repository.ISettingsRepository
 import com.dimension.maskbook.setting.route.SettingRoute
-import org.koin.androidx.compose.get
-import org.koin.androidx.compose.getViewModel
+import moe.tlaster.koin.compose.get
+import moe.tlaster.koin.compose.getViewModel
+import moe.tlaster.precompose.navigation.NavController
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -80,14 +81,14 @@ fun SettingsScene(
     onBack: () -> Unit,
 ) {
     val repository = get<ISettingsRepository>()
-    val language by repository.language.observeAsState(initial = Language.auto)
-    val appearance by repository.appearance.observeAsState(initial = Appearance.default)
-    val dataProvider by repository.dataProvider.observeAsState(initial = DataProvider.UNISWAP_INFO)
-    val backupPassword by repository.backupPassword.observeAsState(initial = "")
-    val paymentPassword by repository.paymentPassword.observeAsState(initial = "")
-    val biometricEnabled by repository.biometricEnabled.observeAsState(initial = false)
+    val language by repository.language.collectAsState(initial = Language.auto)
+    val appearance by repository.appearance.collectAsState(initial = Appearance.default)
+    val dataProvider by repository.dataProvider.collectAsState(initial = DataProvider.UNISWAP_INFO)
+    val backupPassword by repository.backupPassword.collectAsState(initial = "")
+    val paymentPassword by repository.paymentPassword.collectAsState(initial = "")
+    val biometricEnabled by repository.biometricEnabled.collectAsState(initial = false)
     val personaRepository = get<PersonaServices>()
-    val persona by personaRepository.currentPersona.observeAsState(initial = null)
+    val persona by personaRepository.currentPersona.collectAsState(initial = null)
     val biometricEnableViewModel = getViewModel<BiometricEnableViewModel>()
     val context = LocalContext.current
     MaskScaffold(
@@ -192,7 +193,7 @@ fun SettingsScene(
                     title = stringResource(R.string.scene_setting_backup_recovery_restore_data),
                     icon = R.drawable.ic_settings_restore_data,
                     onClick = {
-                        navController.navigate(Uri.parse(Deeplinks.Persona.Recovery))
+                        navController.navigateUri(Uri.parse(Deeplinks.Persona.Recovery))
                     }
                 )
                 SettingsDivider()

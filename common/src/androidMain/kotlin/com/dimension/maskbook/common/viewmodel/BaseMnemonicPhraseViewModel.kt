@@ -20,14 +20,14 @@
  */
 package com.dimension.maskbook.common.viewmodel
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.BuildConfig
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.common.model.MnemonicWord
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
+import moe.tlaster.precompose.viewmodel.ViewModel
+import moe.tlaster.precompose.viewmodel.viewModelScope
 
 abstract class BaseMnemonicPhraseViewModel : ViewModel() {
     protected val _words = MutableStateFlow(emptyList<MnemonicWord>())

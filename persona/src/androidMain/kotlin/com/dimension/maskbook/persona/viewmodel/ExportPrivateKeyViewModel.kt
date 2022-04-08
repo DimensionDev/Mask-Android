@@ -20,12 +20,12 @@
  */
 package com.dimension.maskbook.persona.viewmodel
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.persona.repository.IPersonaRepository
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
+import moe.tlaster.precompose.viewmodel.ViewModel
+import moe.tlaster.precompose.viewmodel.viewModelScope
 
 class ExportPrivateKeyViewModel(
     private val repository: IPersonaRepository,

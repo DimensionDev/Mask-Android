@@ -36,10 +36,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavController
-import androidx.navigation.navOptions
-import com.dimension.maskbook.common.ext.observeAsState
+import com.dimension.maskbook.common.ext.navigateUri
 import com.dimension.maskbook.common.ext.shareText
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
@@ -94,8 +91,10 @@ import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletRenameVi
 import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletSwitchEditViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletSwitchViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletTransactionHistoryViewModel
-import org.koin.androidx.compose.get
-import org.koin.androidx.compose.getViewModel
+import moe.tlaster.koin.compose.get
+import moe.tlaster.koin.compose.getViewModel
+import moe.tlaster.precompose.navigation.BackStackEntry
+import moe.tlaster.precompose.navigation.NavController
 import org.koin.core.parameter.parametersOf
 
 @NavGraphDestination(
@@ -112,8 +111,8 @@ fun CollectibleDetail(
     val viewModel = getViewModel<CollectibleDetailViewModel> {
         parametersOf(id)
     }
-    val data by viewModel.data.observeAsState(initial = null)
-    val transactions by viewModel.transactions.observeAsState()
+    val data by viewModel.data.collectAsState(initial = null)
+    val transactions by viewModel.transactions.collectAsState()
     CollectibleDetailScene(
         data = data,
         onBack = onBack,
@@ -144,7 +143,7 @@ fun WalletQrcode(
     @Path("name") name: String,
 ) {
     val repository = get<IWalletRepository>()
-    val currentWallet by repository.currentWallet.observeAsState(initial = null)
+    val currentWallet by repository.currentWallet.collectAsState(initial = null)
     val context = LocalContext.current
     val clipboardManager = LocalClipboardManager.current
     val inAppNotification = LocalInAppNotification.current
@@ -174,10 +173,10 @@ fun TokenDetail(
     val viewModel = getViewModel<TokenDetailViewModel> {
         parametersOf(id)
     }
-    val token by viewModel.tokenData.observeAsState()
-    val transactions by viewModel.transactions.observeAsState()
-    val walletTokenData by viewModel.walletTokenData.observeAsState()
-    val dWebData by viewModel.dWebData.observeAsState()
+    val token by viewModel.tokenData.collectAsState()
+    val transactions by viewModel.transactions.collectAsState()
+    val walletTokenData by viewModel.walletTokenData.collectAsState()
+    val dWebData by viewModel.dWebData.collectAsState()
 
     TokenDetailScene(
         onBack = onBack,
@@ -248,7 +247,7 @@ fun WalletNetworkSwitch(
 ) {
     val target = remember(targetString) { ChainType.valueOf(targetString) }
     val viewModel = getViewModel<WalletSwitchViewModel>()
-    val currentNetwork by viewModel.network.observeAsState(initial = ChainType.eth)
+    val currentNetwork by viewModel.network.collectAsState(initial = ChainType.eth)
     WalletNetworkSwitchWarningDialog(
         currentNetwork = currentNetwork.name,
         connectingNetwork = target.name,
@@ -270,8 +269,8 @@ fun WalletNetworkSwitchWarningDialog(
     @Back onBack: () -> Unit,
 ) {
     val viewModel = getViewModel<WalletSwitchViewModel>()
-    val currentNetwork by viewModel.network.observeAsState(initial = ChainType.eth)
-    val wallet by viewModel.currentWallet.observeAsState(initial = null)
+    val currentNetwork by viewModel.network.collectAsState(initial = ChainType.eth)
+    val wallet by viewModel.currentWallet.collectAsState(initial = null)
     LaunchedEffect(wallet) {
         wallet?.let { wallet ->
             if (!wallet.fromWalletConnect || wallet.walletConnectChainType == currentNetwork || wallet.walletConnectChainType == null) {
@@ -305,9 +304,9 @@ fun SwitchWallet(
     navController: NavController,
 ) {
     val viewModel = getViewModel<WalletSwitchViewModel>()
-    val wallet by viewModel.currentWallet.observeAsState(initial = null)
-    val wallets by viewModel.wallets.observeAsState(initial = emptyList())
-    val chainType by viewModel.network.observeAsState(initial = ChainType.eth)
+    val wallet by viewModel.currentWallet.collectAsState(initial = null)
+    val wallets by viewModel.wallets.collectAsState(initial = emptyList())
+    val chainType by viewModel.network.collectAsState(initial = ChainType.eth)
     WalletSwitchSceneModal(
         selectedWallet = wallet,
         wallets = wallets,
@@ -394,7 +393,7 @@ fun WalletBalancesMenu(
     @Back onBack: () -> Unit,
 ) {
     val viewModel = getViewModel<WalletManagementModalViewModel>()
-    val currentWallet by viewModel.currentWallet.observeAsState(initial = null)
+    val currentWallet by viewModel.currentWallet.collectAsState(initial = null)
     val wcViewModel = getViewModel<WalletConnectManagementViewModel>()
     WalletManagementModal(
         walletData = currentWallet,
@@ -438,11 +437,11 @@ fun WalletManagementDeleteDialog(
         parametersOf(id)
     }
     val biometricViewModel = getViewModel<BiometricViewModel>()
-    val wallet by viewModel.wallet.observeAsState(initial = null)
-    val biometricEnabled by biometricViewModel.biometricEnabled.observeAsState(initial = false)
+    val wallet by viewModel.wallet.collectAsState(initial = null)
+    val biometricEnabled by biometricViewModel.biometricEnabled.collectAsState(initial = false)
     val context = LocalContext.current
-    val password by viewModel.password.observeAsState(initial = "")
-    val canConfirm by viewModel.canConfirm.observeAsState(initial = false)
+    val password by viewModel.password.collectAsState(initial = "")
+    val canConfirm by viewModel.canConfirm.collectAsState(initial = false)
     WalletDeleteDialog(
         walletData = wallet,
         password = password,
@@ -477,8 +476,8 @@ fun WalletManagementBackup(
     @Back onBack: () -> Unit,
 ) {
     val viewModel = getViewModel<WalletBackupViewModel>()
-    val keyStore by viewModel.keyStore.observeAsState(initial = "")
-    val privateKey by viewModel.privateKey.observeAsState(initial = "")
+    val keyStore by viewModel.keyStore.collectAsState(initial = "")
+    val privateKey by viewModel.privateKey.collectAsState(initial = "")
     BackupWalletScene(
         keyStore = keyStore,
         privateKey = privateKey,
@@ -496,7 +495,7 @@ fun WalletManagementTransactionHistory(
     @Back onBack: () -> Unit,
 ) {
     val viewModel = getViewModel<WalletTransactionHistoryViewModel>()
-    val transactions by viewModel.transactions.observeAsState()
+    val transactions by viewModel.transactions.collectAsState()
     WalletTransactionHistoryScene(
         onBack = onBack,
         transactions = transactions,
@@ -523,13 +522,13 @@ fun WalletManagementRename(
     val viewModel = getViewModel<WalletRenameViewModel> {
         parametersOf(walletId, walletName)
     }
-    val name by viewModel.name.observeAsState()
+    val name by viewModel.name.collectAsState()
     WalletRenameModal(
         name = name,
         onNameChanged = { viewModel.setName(it) },
         onDone = {
             viewModel.confirm()
-            navController.navigate(
+            navController.navigateUri(
                 Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Wallet)),
                 navOptions {
                     launchSingleTop = true
@@ -550,15 +549,15 @@ fun WalletManagementRename(
 @Composable
 fun WalletIntroHostLegal(
     navController: NavController,
-    navBackStackEntry: NavBackStackEntry,
+    navBackStackEntry: BackStackEntry,
     @Back onBack: () -> Unit,
     @Path("type") typeString: String,
 ) {
     val type = remember(typeString) { CreateType.valueOf(typeString) }
     val repo = get<SettingServices>()
-    val password by repo.paymentPassword.observeAsState(initial = null)
-    val enableBiometric by repo.biometricEnabled.observeAsState(initial = false)
-    val shouldShowLegalScene by repo.shouldShowLegalScene.observeAsState(initial = true)
+    val password by repo.paymentPassword.collectAsState(initial = null)
+    val enableBiometric by repo.biometricEnabled.collectAsState(initial = false)
+    val shouldShowLegalScene by repo.shouldShowLegalScene.collectAsState(initial = true)
     val biometricEnableViewModel: BiometricEnableViewModel = getViewModel()
     val context = LocalContext.current
     val next: () -> Unit = {
@@ -609,7 +608,7 @@ fun WalletIntroHostPassword(
     @Path("type") typeString: String,
 ) {
     val type = remember(typeString) { CreateType.valueOf(typeString) }
-    val enableBiometric by get<SettingServices>().biometricEnabled.observeAsState(initial = false)
+    val enableBiometric by get<SettingServices>().biometricEnabled.collectAsState(initial = false)
     val biometricEnableViewModel: BiometricEnableViewModel = getViewModel()
     val context = LocalContext.current
     SetUpPaymentPassword(
@@ -792,9 +791,9 @@ fun UnlockWalletDialog(
     @Path("target") target: String,
 ) {
     val viewModel = getViewModel<UnlockWalletViewModel>()
-    val biometricEnable by viewModel.biometricEnabled.observeAsState(initial = false)
-    val password by viewModel.password.observeAsState(initial = "")
-    val passwordValid by viewModel.passwordValid.observeAsState(initial = false)
+    val biometricEnable by viewModel.biometricEnabled.collectAsState(initial = false)
+    val password by viewModel.password.collectAsState(initial = "")
+    val passwordValid by viewModel.passwordValid.collectAsState(initial = false)
     val context = LocalContext.current
     UnlockWalletDialog(
         onBack = onBack,

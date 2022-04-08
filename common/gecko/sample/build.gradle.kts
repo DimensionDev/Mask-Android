@@ -32,7 +32,7 @@ android {
 }
 
 dependencies {
-    implementation("androidx.activity:activity-compose:${Versions.Androidx.activityCompose}")
+    implementation("androidx.activity:activity-compose:${Versions.Androidx.activity}")
     implementation("org.jetbrains.compose.ui:ui:${Versions.compose_jb}")
     implementation("org.jetbrains.compose.ui:ui-util:${Versions.compose_jb}")
     implementation("org.jetbrains.compose.foundation:foundation:${Versions.compose_jb}")

@@ -21,22 +21,16 @@
 package com.dimension.maskbook.wallet.ui.scenes.wallets.send
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
-import androidx.navigation.NavController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.dialog
-import androidx.navigation.compose.rememberNavController
 import com.dimension.maskbook.common.ext.decodeJson
 import com.dimension.maskbook.common.ext.fromHexString
 import com.dimension.maskbook.common.ext.humanizeDollar
 import com.dimension.maskbook.common.ext.humanizeToken
-import com.dimension.maskbook.common.ext.observeAsState
-import com.dimension.maskbook.common.ext.sendEvent
-import com.dimension.maskbook.common.model.ResultEvent
 import com.dimension.maskbook.common.route.Deeplinks
+import com.dimension.maskbook.common.route.composable
 import com.dimension.maskbook.common.route.navigationComposeBottomSheet
 import com.dimension.maskbook.common.route.navigationComposeBottomSheetPackage
 import com.dimension.maskbook.common.routeProcessor.annotations.Back
@@ -52,7 +46,10 @@ import com.dimension.maskbook.wallet.ui.scenes.wallets.UnlockWalletDialog
 import com.dimension.maskbook.wallet.viewmodel.wallets.UnlockWalletViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.GasFeeViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.Web3TransactionConfirmViewModel
-import org.koin.androidx.compose.getViewModel
+import moe.tlaster.koin.compose.getViewModel
+import moe.tlaster.precompose.navigation.NavController
+import moe.tlaster.precompose.navigation.NavHost
+import moe.tlaster.precompose.navigation.rememberNavController
 import org.koin.core.parameter.parametersOf
 import java.math.BigDecimal
 
@@ -78,29 +75,29 @@ fun SendTokenConfirmModal(
     val viewModel = getViewModel<Web3TransactionConfirmViewModel> {
         parametersOf(data, request)
     }
-    val token by viewModel.tokenData.observeAsState(null)
-    val address by viewModel.addressData.observeAsState(null)
-    val amount by viewModel.amount.observeAsState(BigDecimal.ZERO)
+    val token by viewModel.tokenData.collectAsState(null)
+    val address by viewModel.addressData.collectAsState(null)
+    val amount by viewModel.amount.collectAsState(BigDecimal.ZERO)
     address?.let { addressData ->
         token?.let { tokenData ->
             val gasFeeViewModel = getViewModel<GasFeeViewModel> {
                 parametersOf(data.gasLimit?.fromHexString()?.toDouble() ?: 21000.0)
             }
-            val gasLimit by gasFeeViewModel.gasLimit.observeAsState()
-            val maxPriorityFee by gasFeeViewModel.maxPriorityFeePerGas.observeAsState()
-            val maxFee by gasFeeViewModel.maxFeePerGas.observeAsState()
-            val arrives by gasFeeViewModel.arrives.observeAsState()
-            val gasUsdTotal by gasFeeViewModel.gasUsdTotal.observeAsState()
-            val gasTotal by gasFeeViewModel.gasTotal.observeAsState()
-            val loadingState by gasFeeViewModel.loadingState.observeAsState()
-            val gasFeeUnit by gasFeeViewModel.gasFeeUnit.observeAsState()
+            val gasLimit by gasFeeViewModel.gasLimit.collectAsState()
+            val maxPriorityFee by gasFeeViewModel.maxPriorityFeePerGas.collectAsState()
+            val maxFee by gasFeeViewModel.maxFeePerGas.collectAsState()
+            val arrives by gasFeeViewModel.arrives.collectAsState()
+            val gasUsdTotal by gasFeeViewModel.gasUsdTotal.collectAsState()
+            val gasTotal by gasFeeViewModel.gasTotal.collectAsState()
+            val loadingState by gasFeeViewModel.loadingState.collectAsState()
+            val gasFeeUnit by gasFeeViewModel.gasFeeUnit.collectAsState()
 
             NavHost(
                 navController,
-                startDestination = "SendConfirm"
+                initialRoute = "SendConfirm"
             ) {
                 composable("SendConfirm") {
-                    val sending by viewModel.loadingState.observeAsState()
+                    val sending by viewModel.loadingState.collectAsState()
                     SendConfirmSheet(
                         addressData = addressData,
                         tokenData = WalletTokenData(
@@ -127,8 +124,8 @@ fun SendTokenConfirmModal(
                     )
                 }
                 composable("EditGasFee") {
-                    val mode by gasFeeViewModel.gasPriceEditMode.observeAsState(initial = GasPriceEditMode.MEDIUM)
-                    val loading by gasFeeViewModel.loadingState.observeAsState()
+                    val mode by gasFeeViewModel.gasPriceEditMode.collectAsState(initial = GasPriceEditMode.MEDIUM)
+                    val loading by gasFeeViewModel.loadingState.collectAsState()
                     EditGasPriceSheet(
                         price = gasUsdTotal.humanizeDollar(),
                         costFee = gasTotal.humanizeToken(),
@@ -170,9 +167,9 @@ fun SendTokenConfirmModal(
                     "UnlockWalletDialog",
                 ) {
                     val unlockViewModel = getViewModel<UnlockWalletViewModel>()
-                    val biometricEnable by unlockViewModel.biometricEnabled.observeAsState(initial = false)
-                    val password by unlockViewModel.password.observeAsState(initial = "")
-                    val passwordValid by unlockViewModel.passwordValid.observeAsState(initial = false)
+                    val biometricEnable by unlockViewModel.biometricEnabled.collectAsState(initial = false)
+                    val password by unlockViewModel.password.collectAsState(initial = "")
+                    val passwordValid by unlockViewModel.passwordValid.collectAsState(initial = false)
                     val context = LocalContext.current
                     val onSuccess: () -> Unit = {
                         navController.popBackStack()

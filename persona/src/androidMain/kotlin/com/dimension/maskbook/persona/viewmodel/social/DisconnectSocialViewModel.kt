@@ -20,8 +20,8 @@
  */
 package com.dimension.maskbook.persona.viewmodel.social
 
-import androidx.lifecycle.ViewModel
 import com.dimension.maskbook.persona.repository.IPersonaRepository
+import moe.tlaster.precompose.viewmodel.ViewModel
 
 class DisconnectSocialViewModel(
     private val repository: IPersonaRepository,

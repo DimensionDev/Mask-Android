@@ -20,21 +20,11 @@
  */
 package com.dimension.maskbook.common.route
 
-import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.runtime.Composable
-import androidx.navigation.NamedNavArgument
-import androidx.navigation.NavBackStackEntry
-import androidx.navigation.NavDeepLink
-import androidx.navigation.NavGraphBuilder
-import com.google.accompanist.navigation.animation.composable
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
-import com.google.accompanist.navigation.material.bottomSheet
+import moe.tlaster.precompose.navigation.BackStackEntry
+import moe.tlaster.precompose.navigation.RouteBuilder
 
-const val navigationComposeDialogPackage = "androidx.navigation.compose"
+const val navigationComposeDialogPackage = "com.dimension.maskbook.common.route"
 const val navigationComposeDialog = "dialog"
 
 const val navigationComposeAnimComposablePackage = "com.dimension.maskbook.common.route"
@@ -46,55 +36,74 @@ const val navigationComposeModalComposable = "modalComposable"
 const val navigationComposeBottomSheetPackage = "com.dimension.maskbook.common.route"
 const val navigationComposeBottomSheet = "bottomSheet"
 
-@OptIn(ExperimentalAnimationApi::class)
-fun NavGraphBuilder.composable(
+fun RouteBuilder.composable(
     route: String,
-    arguments: List<NamedNavArgument> = emptyList(),
-    deepLinks: List<NavDeepLink> = emptyList(),
-    content: @Composable AnimatedVisibilityScope.(NavBackStackEntry) -> Unit
+    // arguments: List<NamedNavArgument> = emptyList(),
+    deepLinks: List<String> = emptyList(),
+    content: @Composable (BackStackEntry) -> Unit
 ) {
-    composable(
+    scene(
         route = route,
-        arguments = arguments,
+        // arguments = arguments,
         deepLinks = deepLinks,
         content = content,
     )
 }
 
-@OptIn(ExperimentalAnimationApi::class)
-fun NavGraphBuilder.modalComposable(
+fun RouteBuilder.modalComposable(
     route: String,
-    arguments: List<NamedNavArgument> = emptyList(),
-    deepLinks: List<NavDeepLink> = emptyList(),
-    content: @Composable AnimatedVisibilityScope.(NavBackStackEntry) -> Unit
+    // arguments: List<NamedNavArgument> = emptyList(),
+    deepLinks: List<String> = emptyList(),
+    content: @Composable (BackStackEntry) -> Unit
 ) {
-    composable(
+    scene(
         route = route,
-        arguments = arguments,
+        // arguments = arguments,
         deepLinks = deepLinks,
         content = content,
-        enterTransition = {
-            slideInVertically { it }
-        },
-        exitTransition = null,
-        popEnterTransition = null,
-        popExitTransition = {
-            slideOutVertically { it }
-        },
+        // enterTransition = {
+        //     slideInVertically { it }
+        // },
+        // exitTransition = null,
+        // popEnterTransition = null,
+        // popExitTransition = {
+        //     slideOutVertically { it }
+        // },
     )
 }
 
-@OptIn(ExperimentalMaterialNavigationApi::class)
-fun NavGraphBuilder.bottomSheet(
+fun RouteBuilder.bottomSheet(
     route: String,
-    arguments: List<NamedNavArgument> = emptyList(),
-    deepLinks: List<NavDeepLink> = emptyList(),
-    content: @Composable ColumnScope.(backstackEntry: NavBackStackEntry) -> Unit
+    // arguments: List<NamedNavArgument> = emptyList(),
+    deepLinks: List<String> = emptyList(),
+    content: @Composable (BackStackEntry) -> Unit
 ) {
-    bottomSheet(
+    scene(
         route = route,
-        arguments = arguments,
+        // arguments = arguments,
         deepLinks = deepLinks,
         content = content
     )
+}
+
+fun RouteBuilder.dialog(
+    route: String,
+    // arguments: List<NamedNavArgument> = emptyList(),
+    deepLinks: List<String> = emptyList(),
+    content: @Composable (BackStackEntry) -> Unit
+) {
+    dialog(
+        route = route,
+        // arguments = arguments,
+        // deepLinks = deepLinks,
+        content = content,
+    )
+}
+
+fun RouteBuilder.navigation(
+    route: String,
+    startDestination: String,
+    content: @Composable RouteBuilder.(BackStackEntry) -> Unit
+) {
+    // TODO
 }

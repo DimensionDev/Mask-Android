@@ -54,11 +54,13 @@ android {
 }
 
 dependencies {
-    implementation("androidx.core:core-splashscreen:1.0.0-beta01")
-    implementation("androidx.activity:activity-compose:${Versions.Androidx.activityCompose}")
+    implementation("androidx.core:core-splashscreen:1.0.0-beta02")
     implementation(projects.entry)
     implementation(projects.common)
     implementation(projects.common.gecko)
+
+    // Koin
+    implementation("io.insert-koin:koin-android:${Versions.koin}")
 
     if (enableFirebase) {
         implementation("com.google.firebase:firebase-analytics-ktx:${Versions.Firebase.analytics}")
