@@ -36,7 +36,7 @@ class ContactsViewModel(
     val input = _input.asStateFlow()
 
     val items = combine(repository.contacts, _input) { list, input ->
-        list.filter { it.name.contains(input, ignoreCase = true) }
+        list.filter { it.name.contains(input, ignoreCase = true) || it.id.contains(input, ignoreCase = true) }
     }.asStateIn(viewModelScope, emptyList())
 
     fun onInputChanged(value: String) {
