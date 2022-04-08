@@ -201,7 +201,7 @@ fun SynchronizationPersonaPrivateKey(
     LaunchedEffect(Unit) {
         launch {
             viewModel.setPrivateKey(key)
-            navController.handleResult(viewModel.confirm(nickname = nickname.ifNullOrEmpty { "persona1" }), PersonaRoute.Synchronization.Persona.PrivateKey.path)
+            navController.handleResult(viewModel.confirm(nickname = nickname.ifNullOrEmpty { "persona1" }))
         }
     }
 }
@@ -225,18 +225,20 @@ fun SynchronizationIdentityPrivateKey(
     LaunchedEffect(Unit) {
         launch {
             viewModel.setIdentity(identity.decodeBase64())
-            navController.handleResult(viewModel.confirm(), PersonaRoute.Synchronization.Persona.PrivateKey.path)
+            navController.handleResult(viewModel.confirm())
         }
     }
 }
 
-private fun NavController.handleResult(result: Result<Unit>, popUpRoute: String) {
+private fun NavController.handleResult(result: Result<Unit>) {
     result.onSuccess {
         navigate(
             PersonaRoute.Synchronization.Success,
             navOptions {
-                popUpTo(popUpRoute) {
-                    inclusive = true
+                currentBackStackEntry?.let { backStackEntry ->
+                    popUpTo(backStackEntry.destination.id) {
+                        inclusive = true
+                    }
                 }
             }
         )
@@ -247,8 +249,10 @@ private fun NavController.handleResult(result: Result<Unit>, popUpRoute: String)
             else
                 PersonaRoute.Synchronization.Failed,
             navOptions {
-                popUpTo(popUpRoute) {
-                    inclusive = true
+                currentBackStackEntry?.let { backStackEntry ->
+                    popUpTo(backStackEntry.destination.id) {
+                        inclusive = true
+                    }
                 }
             }
         )
