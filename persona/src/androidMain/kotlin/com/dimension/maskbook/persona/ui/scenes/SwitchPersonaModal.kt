@@ -99,7 +99,7 @@ fun SwitchPersonaModal(
                         selected = false,
                         onClicked = {
                             navController.navigate(
-                                Uri.parse(Deeplinks.Wallet.Register.CreatePersona)
+                                Uri.parse(Deeplinks.Persona.Register.CreatePersona)
                             )
                         },
                         content = {

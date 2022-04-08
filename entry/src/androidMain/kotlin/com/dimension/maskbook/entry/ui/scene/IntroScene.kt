@@ -69,7 +69,7 @@ import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestinat
 import com.dimension.maskbook.entry.R
 import com.dimension.maskbook.entry.repository.EntryRepository
 import com.dimension.maskbook.entry.route.EntryRoute
-import com.dimension.maskbook.wallet.route.WalletRoute
+import com.dimension.maskbook.persona.route.PersonaRoute
 import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -137,7 +137,7 @@ fun IntroScene(
                     isEnd = isEnd,
                     onStartClick = {
                         repository.setShouldShowEntry(false)
-                        navController.navigate(WalletRoute.Register.Init) {
+                        navController.navigate(PersonaRoute.Register.Init) {
                             popUpTo(EntryRoute.Intro) {
                                 inclusive = true
                             }
@@ -148,7 +148,7 @@ fun IntroScene(
                     TextButton(
                         onClick = {
                             repository.setShouldShowEntry(false)
-                            navController.navigate(WalletRoute.Register.Init) {
+                            navController.navigate(PersonaRoute.Register.Init) {
                                 popUpTo(EntryRoute.Intro) {
                                     inclusive = true
                                 }

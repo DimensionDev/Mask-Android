@@ -79,6 +79,7 @@ import androidx.navigation.navArgument
 import androidx.navigation.navOptions
 import coil.compose.rememberImagePainter
 import com.dimension.maskbook.common.ext.observeAsState
+import com.dimension.maskbook.common.ui.barcode.rememberBarcodeBitmap
 import com.dimension.maskbook.common.ui.notification.StringResNotificationEvent.Companion.show
 import com.dimension.maskbook.common.ui.widget.HorizontalScenePadding
 import com.dimension.maskbook.common.ui.widget.LocalInAppNotification
@@ -98,8 +99,6 @@ import com.dimension.maskbook.wallet.viewmodel.wallets.walletconnect.WalletConne
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
-import com.google.zxing.BarcodeFormat
-import com.journeyapps.barcodescanner.BarcodeEncoder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
@@ -229,7 +228,7 @@ fun WalletConnectUnsupportedNetwork(
     MaskDialog(
         onDismissRequest = onBack,
         icon = {
-            Image(painterResource(R.drawable.ic_property_1_failed), contentDescription = null)
+            Image(painterResource(R.drawable.ic_failed), contentDescription = null)
         },
         title = {
             Text(stringResource(R.string.scene_wallet_connect_network_not_support, network))
@@ -373,18 +372,7 @@ fun WalletConnectQRCode(
     onCopy: (String) -> Unit,
     loading: Boolean
 ) {
-    val qrCodeBitmap = remember(qrCode) {
-        try {
-            BarcodeEncoder().encodeBitmap(
-                qrCode,
-                BarcodeFormat.QR_CODE,
-                500,
-                500
-            )
-        } catch (e: Throwable) {
-            null
-        }
-    }
+    val qrCodeBitmap = rememberBarcodeBitmap(info = qrCode, width = 500, height = 500)
     Text(text = stringResource(R.string.scene_wallet_connect_qr_code_tips))
     Box(
         modifier = Modifier

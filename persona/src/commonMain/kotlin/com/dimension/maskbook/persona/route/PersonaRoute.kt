@@ -34,6 +34,9 @@ expect object PersonaRoute {
         operator fun invoke(personaId: String): String
     }
     const val ExportPrivateKey: String
+    object DownloadQrCode {
+        operator fun invoke(idType: String, idBase64: String): String
+    }
     object SelectPlatform {
         operator fun invoke(personaId: String): String
     }
@@ -48,5 +51,90 @@ expect object PersonaRoute {
             personaName: String?,
             socialName: String?
         ): String
+    }
+
+    object BackUpPassword {
+        operator fun invoke(target: String): String
+    }
+
+    object Synchronization {
+        const val Scan: String
+        const val Success: String
+        const val Failed: String
+        object Persona {
+            const val AlreadyExists: String
+            object PrivateKey {
+                operator fun invoke(privateKey: String, nickname: String?): String
+            }
+            object Identity {
+                operator fun invoke(identity: String, nickname: String?): String
+            }
+        }
+    }
+
+    object Register {
+        const val Init: String
+
+        object CreateIdentity {
+            const val Route: String
+            object Backup {
+                operator fun invoke(personaName: String, isWelcome: Boolean): String
+            }
+            object Verify {
+                operator fun invoke(personaName: String, isWelcome: Boolean): String
+            }
+            object Confirm {
+                operator fun invoke(personaName: String, isWelcome: Boolean): String
+            }
+        }
+
+        const val WelcomeCreatePersona: String
+        const val CreatePersona: String
+
+        object Recovery {
+            const val Home: String
+
+            object RemoteBackupRecovery {
+                const val RemoteBackupRecovery_NoBackup: String
+
+                object RemoteBackupRecovery_Email_Code {
+                    operator fun invoke(email: String): String
+                }
+
+                const val RemoteBackupRecovery_Email: String
+
+                object RemoteBackupRecovery_Phone_Code {
+                    operator fun invoke(phone: String): String
+                }
+
+                const val RemoteBackupRecovery_Phone: String
+            }
+
+            object LocalBackup {
+                const val Route: String
+                object Loading {
+                    operator fun invoke(uri: String, account: String?): String
+                }
+                object Password {
+                    operator fun invoke(uri: String, account: String?): String
+                }
+                const val Failed: String
+                object Success {
+                    operator fun invoke(uri: String, account: String?): String
+                }
+                const val Notification: String
+            }
+
+            const val IdentityPersona: String
+            object Identity {
+                operator fun invoke(name: String): String
+            }
+            const val PrivateKey: String
+            const val Complected: String
+            const val Failed: String
+            object AlreadyExists {
+                operator fun invoke(restoreFrom: String): String
+            }
+        }
     }
 }
