@@ -25,8 +25,6 @@ include(
     ":common",
     ":common:gecko",
     ":common:gecko:sample",
-    ":common:okhttp",
-    ":common:retrofit",
     ":common:routeProcessor",
     ":common:routeProcessor:annotations",
     ":common:bigDecimal",

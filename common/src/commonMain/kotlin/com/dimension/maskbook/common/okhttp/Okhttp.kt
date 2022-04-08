@@ -20,7 +20,7 @@
  */
 package com.dimension.maskbook.common.okhttp
 
-import android.util.Log
+import com.dimension.maskbook.common.isDebug
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.Call
 import okhttp3.Callback
@@ -31,10 +31,10 @@ import java.io.IOException
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
-val okHttpClient by lazy {
+val okHttpClient: OkHttpClient by lazy {
     OkHttpClient.Builder()
         .apply {
-            if (BuildConfig.DEBUG) {
+            if (isDebug) {
                 addInterceptor(
                     HttpLoggingInterceptor(HttpLogger()).apply {
                         setLevel(HttpLoggingInterceptor.Level.BODY)
@@ -47,7 +47,8 @@ val okHttpClient by lazy {
 
 class HttpLogger : HttpLoggingInterceptor.Logger {
     override fun log(message: String) {
-        Log.i("HttpLogger", message)
+        // TODO
+        // Log.i("HttpLogger", message)
     }
 }
 
