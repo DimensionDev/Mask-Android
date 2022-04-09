@@ -66,22 +66,27 @@ class BackStackEntry internal constructor(
         }
     }
 
-    inline fun <reified T> path(path: String, default: T? = null): T? {
-        val value = pathMap[path] ?: return default
+    inline fun <reified T> path(path: String): T {
+        val value = requireNotNull(pathMap[path])
         return convertValue(value)
     }
 
-    inline fun <reified T> query(name: String, default: T? = null): T? {
-        return queryString?.query(name, default)
+    inline fun <reified T> query(name: String): T? {
+        return query(name, null)
     }
 
-    inline fun <reified T> queryList(name: String): List<T?> {
+    inline fun <reified T> query(name: String, default: T): T {
+        val value = queryString?.map?.get(name)?.firstOrNull() ?: return default
+        return convertValue(value)
+    }
+
+    inline fun <reified T> queryList(name: String): List<T> {
         val value = queryString?.map?.get(name) ?: return emptyList()
         return value.map { convertValue(it) }
     }
 }
 
-inline fun <reified T> convertValue(value: String): T? {
+inline fun <reified T> convertValue(value: String): T {
     return when (T::class) {
         Int::class -> value.toIntOrNull()
         Long::class -> value.toLongOrNull()
