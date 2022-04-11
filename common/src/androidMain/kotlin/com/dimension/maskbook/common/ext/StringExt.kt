@@ -22,3 +22,6 @@ package com.dimension.maskbook.common.ext
 
 inline fun <C : R, R : CharSequence?> C?.ifNullOrEmpty(defaultValue: () -> R): R =
     if (isNullOrEmpty()) defaultValue() else this
+
+val String.isHexStrict: Boolean
+    get() = matches("^(0x)?([0-9a-fA-F]{2})+$".toRegex())

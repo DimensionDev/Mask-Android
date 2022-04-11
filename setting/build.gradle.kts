@@ -19,12 +19,10 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 implementation(projects.common)
-                implementation(projects.common.retrofit)
             }
         }
         val androidTest by getting {
             dependencies {
-                implementation("junit:junit:4.13.2")
             }
         }
     }

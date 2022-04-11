@@ -48,6 +48,40 @@ import com.dimension.maskbook.common.ui.theme.MaskTheme
 fun MaskDialog(
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
+    backgroundColor: Color = MaterialTheme.colors.background,
+    contentColor: Color = contentColorFor(MaterialTheme.colors.surface),
+    properties: DialogProperties = DialogProperties(
+        usePlatformDefaultWidth = false,
+    ),
+    content: @Composable () -> Unit
+) {
+    Dialog(
+        onDismissRequest = onDismissRequest,
+        properties = properties,
+    ) {
+        MaskTheme {
+            Box(
+                modifier = Modifier.padding(ModalPadding)
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center,
+            ) {
+                Surface(
+                    modifier = modifier,
+                    color = backgroundColor,
+                    contentColor = contentColor
+                ) {
+                    content()
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun MaskDialog(
+    onDismissRequest: () -> Unit,
+    modifier: Modifier = Modifier,
     buttons: @Composable () -> Unit = {},
     icon: (@Composable () -> Unit)? = null,
     title: (@Composable () -> Unit)? = null,

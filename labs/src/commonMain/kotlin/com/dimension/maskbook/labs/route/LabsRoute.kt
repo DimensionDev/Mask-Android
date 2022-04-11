@@ -28,4 +28,12 @@ expect object LabsRoute {
     const val PluginSettings: String
     const val LabsTransak: String
     const val MarketTrendSettings: String
+    object RedPacket {
+        object LuckyDrop {
+            operator fun invoke(data: String): String
+        }
+        object LuckyDropResult {
+            operator fun invoke(success: Boolean, amount: String?, postLink: String?): String
+        }
+    }
 }

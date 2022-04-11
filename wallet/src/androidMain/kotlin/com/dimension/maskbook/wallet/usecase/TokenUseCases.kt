@@ -79,7 +79,7 @@ class SendTransactionUseCase(
     ) = runCatching {
         val chain = chainType ?: repository.currentChain.first()?.chainType
         suspendCoroutine<String> { continuation ->
-            repository.transactionWithCurrentWalletAndChainType(
+            repository.sendTransactionWithCurrentWallet(
                 amount = amount,
                 address = address,
                 chainType = chain

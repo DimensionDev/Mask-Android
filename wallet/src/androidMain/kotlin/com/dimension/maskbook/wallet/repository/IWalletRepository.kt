@@ -22,15 +22,13 @@ package com.dimension.maskbook.wallet.repository
 
 import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.common.ext.ifNullOrEmpty
-import com.dimension.maskbook.common.okhttp.okHttpClient
-import com.dimension.maskbook.debankapi.model.ChainID
-import com.dimension.maskbook.extension.export.model.ExtensionId
 import com.dimension.maskbook.wallet.db.model.CoinPlatformType
 import com.dimension.maskbook.wallet.db.model.DbCollectible
 import com.dimension.maskbook.wallet.db.model.DbWalletTokenTokenWithWallet
 import com.dimension.maskbook.wallet.db.model.DbWalletTokenWithToken
 import com.dimension.maskbook.wallet.db.model.WalletSource
 import com.dimension.maskbook.wallet.export.model.BackupWalletData
+import com.dimension.maskbook.wallet.export.model.ChainData
 import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.export.model.TokenData
 import com.dimension.maskbook.wallet.export.model.WalletCollectibleCollectionData
@@ -39,8 +37,6 @@ import com.dimension.maskbook.wallet.export.model.WalletCollectibleData
 import com.dimension.maskbook.wallet.export.model.WalletData
 import com.dimension.maskbook.wallet.export.model.WalletTokenData
 import kotlinx.coroutines.flow.Flow
-import kotlinx.serialization.Serializable
-import org.web3j.protocol.http.HttpService
 
 data class WalletCreateOrImportResult(
     val type: Type,
@@ -145,24 +141,6 @@ data class TransactionTokenData(
     val chainType: ChainType
 )
 
-data class SearchAddressResult(
-    val query: String, // bind  result to query
-    val success: Boolean,
-    val errorMsg: String? = null,
-    val data: ISearchAddressResultData? = null
-)
-
-interface ISearchAddressResultData
-
-data class MultipleAddressResultData(
-    val contacts: List<SearchAddressData>,
-    val suggestions: List<SearchAddressData>
-) : ISearchAddressResultData
-
-data class SingleAddressResultData(
-    val address: SearchAddressData
-) : ISearchAddressResultData
-
 enum class GasPriceEditMode {
     LOW,
     MEDIUM,
@@ -175,87 +153,9 @@ enum class UnlockType {
     BIOMETRIC
 }
 
-fun String.toChainType(): ChainType {
-    return kotlin.runCatching { ChainType.valueOf(this) }.getOrNull() ?: ChainType.unknown
-}
-
-val ChainType.httpService: HttpService
-    get() = HttpService(endpoint, okHttpClient)
-
-val ChainType.dbank: ChainID
-    get() = when (this) {
-        ChainType.eth -> ChainID.eth
-        ChainType.rinkeby -> ChainID.eth
-        ChainType.bsc -> ChainID.bsc
-        ChainType.polygon -> ChainID.matic
-        ChainType.arbitrum -> ChainID.arb
-        ChainType.xdai -> ChainID.xdai
-        ChainType.optimism -> ChainID.op
-        ChainType.polka -> ChainID.eth
-        else -> throw NotImplementedError("ChainType $this not supported")
-    }
-
-val ChainID.chainType: ChainType
-    get() = when (this) {
-        ChainID.eth -> ChainType.eth
-        ChainID.bsc -> ChainType.bsc
-        ChainID.matic -> ChainType.polygon
-        ChainID.arb -> ChainType.arbitrum
-        ChainID.xdai -> ChainType.xdai
-        ChainID.op -> ChainType.optimism
-        else -> ChainType.unknown
-    }
-
 data class DWebData(
     val coinPlatformType: CoinPlatformType,
     val chainType: ChainType,
-)
-
-@Serializable
-data class SendTokenConfirmData(
-    val data: SendTransactionData,
-    val messageId: ExtensionId,
-    val payloadId: ExtensionId,
-    val jsonrpc: String,
-)
-
-data class ChainData(
-    val chainId: Long,
-    val name: String,
-    val fullName: String,
-    val nativeTokenID: String,
-    val logoURL: String,
-    val nativeToken: TokenData?,
-    val chainType: ChainType
-)
-
-@Serializable
-data class SendTransactionData(
-    val from: String? = null,
-    val to: String? = null,
-    val value: String? = null,
-    val gas: String? = null,
-    val gasPrice: String? = null,
-    val data: String? = null,
-    val nonce: Long? = null,
-    val chainId: Long? = null,
-    val common: SendTransactionDataCommon? = null,
-    val chain: String? = null,
-    val hardfork: String? = null,
-)
-
-@Serializable
-data class SendTransactionDataCommon(
-    val customChain: CustomChainParams?,
-    val baseChain: String?,
-    val hardfork: String?,
-)
-
-@Serializable
-data class CustomChainParams(
-    val name: String?,
-    val networkId: Long?,
-    val chainId: Long?,
 )
 
 interface IWalletRepository {
@@ -310,18 +210,6 @@ interface IWalletRepository {
         onError: (Throwable) -> Unit = {},
     )
 
-    fun sendTokenWithCurrentWallet(
-        amount: BigDecimal,
-        address: String,
-        tokenData: TokenData,
-        gasLimit: Double,
-        maxFee: Double,
-        maxPriorityFee: Double,
-        data: String,
-        onDone: (String?) -> Unit = {},
-        onError: (Throwable) -> Unit = {},
-    )
-
     fun sendCollectibleWithCurrentWallet(
         address: String,
         collectible: WalletCollectibleData,
@@ -332,7 +220,7 @@ interface IWalletRepository {
         onError: (Throwable) -> Unit = {},
     )
 
-    fun transactionWithCurrentWalletAndChainType(
+    fun sendTransactionWithCurrentWallet(
         amount: BigDecimal,
         address: String,
         chainType: ChainType,
@@ -350,6 +238,7 @@ interface IWalletRepository {
     suspend fun getEnsAddress(chainType: ChainType, name: String): String
     suspend fun getChainData(chainType: ChainType): Flow<ChainData?>
     suspend fun refreshWallet()
+    suspend fun signMessage(message: String, fromAddress: String): String?
     suspend fun createWalletBackup(): List<BackupWalletData>
     suspend fun restoreWalletBackup(wallet: List<BackupWalletData>)
 }

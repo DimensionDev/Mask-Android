@@ -69,6 +69,7 @@ import kotlin.math.roundToInt
 @Composable
 fun WebContentScene(
     onPersonaClicked: () -> Unit,
+    enabledBack: Boolean = true,
     site: Site?,
 ) {
     val controller = get<WebContentController>()
@@ -84,7 +85,7 @@ fun WebContentScene(
         viewController.setVerticalClipping(state.offset.roundToInt())
     }
     BackHandler(
-        enabled = canGoBack
+        enabled = enabledBack && canGoBack
     ) {
         controller.goBack()
     }

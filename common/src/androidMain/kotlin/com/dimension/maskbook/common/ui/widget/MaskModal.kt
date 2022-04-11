@@ -70,7 +70,7 @@ fun MaskModal(
                     modifier = Modifier
                         .size(40.dp, 4.dp)
                         .background(
-                            if (isDarkTheme()) {
+                            if (MaterialTheme.isDarkTheme) {
                                 MaskModalDefaults.lineDarkColor
                             } else {
                                 MaskModalDefaults.lineLightColor

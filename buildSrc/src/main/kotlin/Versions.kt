@@ -33,7 +33,7 @@ object Versions {
     const val retrofit = "2.9.0"
     const val retrofitSerialization = "0.8.0"
     const val okhttp = "4.9.2"
-    const val web3j = "4.8.8-android"
+    const val web3j = "4.9.1"
     const val kotlinpoet = "1.10.2"
     const val material = "1.5.0"
     const val khexExtension = "1.1.2"

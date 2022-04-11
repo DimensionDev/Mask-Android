@@ -1,9 +1,9 @@
 plugins {
     kotlin("multiplatform")
     id("com.android.library")
+    id("org.jetbrains.compose").version(Versions.compose_jb)
     kotlin("plugin.serialization").version(Versions.Kotlin.lang)
     id("com.google.devtools.ksp").version(Versions.ksp)
-    id("org.jetbrains.compose").version(Versions.compose_jb)
 }
 
 kotlin {
@@ -15,13 +15,14 @@ kotlin {
                 kspAndroid(projects.common.routeProcessor)
             }
         }
+        val commonTest by getting {
+            dependencies {
+            }
+        }
         val androidMain by getting {
             dependencies {
-                implementation(projects.debankapi)
                 implementation(projects.common)
-                implementation(projects.common.retrofit)
-                implementation(projects.common.okhttp)
-                implementation(projects.common.bigDecimal)
+                implementation(projects.debankapi)
 
                 kspAndroid("androidx.room:room-compiler:${Versions.Androidx.room}")
 

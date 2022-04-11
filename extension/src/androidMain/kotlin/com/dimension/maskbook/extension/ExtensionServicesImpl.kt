@@ -28,7 +28,6 @@ import com.dimension.maskbook.extension.utils.BackgroundMessageChannel
 import com.dimension.maskbook.extension.utils.ContentMessageChannel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.mapNotNull
 
 internal class ExtensionServicesImpl(
     private val repository: ExtensionRepository,
@@ -54,7 +53,7 @@ internal class ExtensionServicesImpl(
     }
 
     override fun subscribeBackgroundJSEvent(vararg method: String): Flow<ExtensionMessage> {
-        return backgroundMessageChannel.subscribeMessage(*method).mapNotNull { it }
+        return backgroundMessageChannel.subscribeMessage(*method)
     }
 
     override fun sendBackgroundJSEventResponse(map: Map<String, Any?>) {
@@ -74,6 +73,6 @@ internal class ExtensionServicesImpl(
     }
 
     override fun subscribeCurrentContentJSEvent(vararg method: String): Flow<ExtensionMessage> {
-        return contentMessageChannel.subscribeMessage(*method).mapNotNull { it }
+        return contentMessageChannel.subscribeMessage(*method)
     }
 }

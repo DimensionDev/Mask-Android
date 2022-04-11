@@ -26,7 +26,7 @@ import com.dimension.maskbook.common.routeProcessor.annotations.Route
 @Route
 expect object WalletRoute {
     object SendTokenConfirm {
-        operator fun invoke(data: String): String
+        operator fun invoke(dataRaw: String, requestRaw: String?): String
     }
 
     object CollectibleDetail {

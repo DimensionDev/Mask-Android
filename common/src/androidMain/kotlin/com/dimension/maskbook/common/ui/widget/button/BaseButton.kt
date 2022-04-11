@@ -34,8 +34,8 @@ import androidx.compose.material.ButtonElevation
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.LocalElevationOverlay
+import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.ProvideTextStyle
 import androidx.compose.material.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -78,22 +78,21 @@ fun BaseButton(
             interactionSource = interactionSource,
             indication = null,
         ) {
-            CompositionLocalProvider(LocalContentAlpha provides contentColor.alpha) {
-                ProvideTextStyle(
-                    value = MaterialTheme.typography.button
-                ) {
-                    Row(
-                        Modifier
-                            .defaultMinSize(
-                                minWidth = ButtonDefaults.MinWidth,
-                                minHeight = ButtonDefaults.MinHeight
-                            )
-                            .padding(contentPadding),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically,
-                        content = content
-                    )
-                }
+            CompositionLocalProvider(
+                LocalContentAlpha provides contentColor.alpha,
+                LocalTextStyle provides MaterialTheme.typography.button,
+            ) {
+                Row(
+                    Modifier
+                        .defaultMinSize(
+                            minWidth = ButtonDefaults.MinWidth,
+                            minHeight = ButtonDefaults.MinHeight
+                        )
+                        .padding(contentPadding),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                    content = content
+                )
             }
         }
     }

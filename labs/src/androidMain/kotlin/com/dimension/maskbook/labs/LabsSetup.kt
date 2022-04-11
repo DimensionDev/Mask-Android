@@ -27,6 +27,7 @@ import com.dimension.maskbook.common.IoScopeName
 import com.dimension.maskbook.common.ModuleSetup
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.labs.data.JSMethod
+import com.dimension.maskbook.labs.data.RedPacketMethod
 import com.dimension.maskbook.labs.repository.AppRepository
 import com.dimension.maskbook.labs.repository.IAppRepository
 import com.dimension.maskbook.labs.repository.IPreferenceRepository
@@ -35,6 +36,7 @@ import com.dimension.maskbook.labs.repository.labsDataStore
 import com.dimension.maskbook.labs.ui.scenes.generatedRoute
 import com.dimension.maskbook.labs.ui.tab.LabsTabScreen
 import com.dimension.maskbook.labs.viewmodel.LabsViewModel
+import com.dimension.maskbook.labs.viewmodel.LuckDropViewModel
 import com.dimension.maskbook.labs.viewmodel.PluginSettingsViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.qualifier.named
@@ -54,14 +56,17 @@ object LabsSetup : ModuleSetup {
             PreferenceRepository(get<Context>().labsDataStore, get(named(IoScopeName)))
         }
         single { JSMethod(get()) }
+        single { RedPacketMethod(get(named(IoScopeName)), get(), get()) }
 
         single { LabsTabScreen() } bind TabScreen::class
 
         viewModel { LabsViewModel(get(), get()) }
         viewModel { PluginSettingsViewModel(get(), get(), get()) }
+        viewModel { (data: String) -> LuckDropViewModel(data, get()) }
     }
 
     override fun onExtensionReady() {
         KoinPlatformTools.defaultContext().get().get<IAppRepository>().init()
+        KoinPlatformTools.defaultContext().get().get<RedPacketMethod>().startSubscribe()
     }
 }

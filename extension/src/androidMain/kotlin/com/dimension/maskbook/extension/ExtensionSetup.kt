@@ -24,9 +24,11 @@ import android.net.Uri
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.runtime.getValue
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import com.dimension.maskbook.common.IoScopeName
@@ -70,6 +72,8 @@ object ExtensionSetup : ModuleSetup {
                 )
             }
         ) {
+            val backStackEntry by navController.currentBackStackEntryAsState()
+
             val site = it.arguments?.getString("site")?.let { Site.valueOf(it) }
             WebContentScene(
                 onPersonaClicked = {
@@ -80,6 +84,7 @@ object ExtensionSetup : ModuleSetup {
                         }
                     }
                 },
+                enabledBack = backStackEntry == it,
                 site = site,
             )
         }
@@ -95,5 +100,6 @@ object ExtensionSetup : ModuleSetup {
 
     override fun onExtensionReady() {
         KoinPlatformTools.defaultContext().get().get<BackgroundMessageChannel>().startMessageCollect()
+        KoinPlatformTools.defaultContext().get().get<ContentMessageChannel>().startMessageCollect()
     }
 }
