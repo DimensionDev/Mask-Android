@@ -20,10 +20,6 @@
  */
 package com.dimension.maskbook.common.route
 
-import androidx.compose.runtime.Composable
-import moe.tlaster.precompose.navigation.BackStackEntry
-import moe.tlaster.precompose.navigation.RouteBuilder
-
 const val navigationComposeDialogPackage = "com.dimension.maskbook.common.route"
 const val navigationComposeDialog = "dialog"
 
@@ -35,75 +31,3 @@ const val navigationComposeModalComposable = "modalComposable"
 
 const val navigationComposeBottomSheetPackage = "com.dimension.maskbook.common.route"
 const val navigationComposeBottomSheet = "bottomSheet"
-
-fun RouteBuilder.composable(
-    route: String,
-    // arguments: List<NamedNavArgument> = emptyList(),
-    deepLinks: List<String> = emptyList(),
-    content: @Composable (BackStackEntry) -> Unit
-) {
-    scene(
-        route = route,
-        // arguments = arguments,
-        deepLinks = deepLinks,
-        content = content,
-    )
-}
-
-fun RouteBuilder.modalComposable(
-    route: String,
-    // arguments: List<NamedNavArgument> = emptyList(),
-    deepLinks: List<String> = emptyList(),
-    content: @Composable (BackStackEntry) -> Unit
-) {
-    scene(
-        route = route,
-        // arguments = arguments,
-        deepLinks = deepLinks,
-        content = content,
-        // enterTransition = {
-        //     slideInVertically { it }
-        // },
-        // exitTransition = null,
-        // popEnterTransition = null,
-        // popExitTransition = {
-        //     slideOutVertically { it }
-        // },
-    )
-}
-
-fun RouteBuilder.bottomSheet(
-    route: String,
-    // arguments: List<NamedNavArgument> = emptyList(),
-    deepLinks: List<String> = emptyList(),
-    content: @Composable (BackStackEntry) -> Unit
-) {
-    scene(
-        route = route,
-        // arguments = arguments,
-        deepLinks = deepLinks,
-        content = content
-    )
-}
-
-fun RouteBuilder.dialog(
-    route: String,
-    // arguments: List<NamedNavArgument> = emptyList(),
-    deepLinks: List<String> = emptyList(),
-    content: @Composable (BackStackEntry) -> Unit
-) {
-    dialog(
-        route = route,
-        // arguments = arguments,
-        // deepLinks = deepLinks,
-        content = content,
-    )
-}
-
-fun RouteBuilder.navigation(
-    route: String,
-    startDestination: String,
-    content: @Composable RouteBuilder.(BackStackEntry) -> Unit
-) {
-    // TODO
-}

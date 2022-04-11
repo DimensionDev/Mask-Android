@@ -29,6 +29,7 @@ import moe.tlaster.precompose.lifecycle.LifecycleOwner
 import moe.tlaster.precompose.navigation.route.ComposeRoute
 import moe.tlaster.precompose.navigation.route.DialogRoute
 import moe.tlaster.precompose.navigation.route.SceneRoute
+import moe.tlaster.precompose.navigation.transition.NavTransition
 import moe.tlaster.precompose.ui.BackDispatcher
 import moe.tlaster.precompose.ui.BackHandler
 import moe.tlaster.precompose.viewmodel.ViewModelStore
@@ -71,11 +72,11 @@ internal class RouteStackManager(
         get() = currentStack?.currentEntry
 
     val canGoBack: Boolean
-        get() = currentStack?.canGoBack != false || _backStacks.size > 1
+        get() = currentStack?.canGoBack == true || _backStacks.size > 1
 
     private val routeParser: RouteParser by lazy {
         RouteParser().apply {
-            routeGraph.routes
+            routeGraph.routes.asSequence()
                 .map { route ->
                     RouteParser.expandOptionalVariables(route.route).let {
                         if (route is SceneRoute) {
@@ -87,10 +88,14 @@ internal class RouteStackManager(
                         }
                     } to route
                 }
-                .flatMap { it.first.map { route -> route to it.second } }.forEach {
-                    insert(it.first, it.second)
-                }
+                .flatMap { it.first.map { route -> route to it.second } }
+                .forEach { insert(it.first, it.second) }
         }
+    }
+
+    private fun findRoute(route: String): RouteMatchResult? {
+        val routePath = route.substringBefore('?')
+        return routeParser.find(path = routePath)
     }
 
     internal fun getBackStackEntry(route: String): BackStackEntry? {
@@ -103,23 +108,19 @@ internal class RouteStackManager(
         }
     }
 
-    fun navigate(path: String, options: NavOptions? = null) {
+    fun navigate(route: String, options: NavOptions? = null) {
         val vm = viewModel ?: run {
-            pendingNavigation = path
+            pendingNavigation = route
             return
         }
-        val query = path.substringAfter('?', "")
-        val routePath = path.substringBefore('?')
-        val matchResult = routeParser.find(path = routePath)
-        checkNotNull(matchResult) { "RouteStackManager: navigate target $path not found" }
-        require(matchResult.route is ComposeRoute) { "RouteStackManager: navigate target $path is not ComposeRoute" }
-        if (options != null && matchResult.route is SceneRoute && options.launchSingleTop) {
-            _backStacks.firstOrNull { it.hasRoute(matchResult.route.route) }?.let {
-                _backStacks.remove(it)
-                _backStacks.add(it)
-            }
-        } else {
-            val entry = BackStackEntry(
+        val query = route.substringAfter('?', "")
+
+        val matchResult = findRoute(route)
+        checkNotNull(matchResult) { "RouteStackManager: navigate target $route not found" }
+        require(matchResult.route is ComposeRoute) { "RouteStackManager: navigate target $route is not ComposeRoute" }
+
+        fun newEntry(): BackStackEntry {
+            return BackStackEntry(
                 id = stackEntryId++,
                 route = matchResult.route,
                 pathMap = matchResult.pathMap,
@@ -128,14 +129,32 @@ internal class RouteStackManager(
                 },
                 viewModel = vm,
             )
+        }
+
+        fun newTask(entry: BackStackEntry, navTransition: NavTransition? = null): RouteStack {
+            return RouteStack(
+                id = routeStackId++,
+                stacks = mutableStateListOf(entry),
+                navTransition = navTransition,
+            )
+        }
+
+        var launchSingleTopSuccess = false
+        if (options?.launchSingleTop == true && matchResult.route is SceneRoute) {
+            _backStacks.firstOrNull { it.hasRoute(matchResult.route.route) }
+                ?.let {
+                    _backStacks.remove(it)
+                    _backStacks.add(it)
+                    launchSingleTopSuccess = true
+                }
+        }
+
+        if (!launchSingleTopSuccess) {
+            val entry = newEntry()
             when (matchResult.route) {
                 is SceneRoute -> {
                     _backStacks.add(
-                        RouteStack(
-                            id = routeStackId++,
-                            stacks = mutableStateListOf(entry),
-                            navTransition = matchResult.route.navTransition,
-                        )
+                        newTask(entry, matchResult.route.navTransition)
                     )
                 }
                 is DialogRoute -> {
@@ -149,7 +168,7 @@ internal class RouteStackManager(
             if (index != -1 && index != _backStacks.lastIndex) {
                 _backStacks.removeRange(
                     if (options.popUpTo.inclusive) index else index + 1,
-                    _backStacks.lastIndex
+                    _backStacks.lastIndex,
                 )
             } else if (options.popUpTo.route.isEmpty()) {
                 _backStacks.removeRange(0, _backStacks.lastIndex)
@@ -157,11 +176,29 @@ internal class RouteStackManager(
         }
     }
 
-    fun goBack(result: Any? = null) {
+    fun goBack(
+        route: String? = null,
+        inclusive: Boolean = false,
+        result: Any? = null,
+    ): Boolean {
         if (!canGoBack) {
-            backDispatcher?.onBackPress()
-            return
+            return false
         }
+
+        if (!route.isNullOrEmpty()) {
+            val matchResult = findRoute(route)
+            if (matchResult != null) {
+                val index = _backStacks.indexOfLast { it.hasRoute(matchResult.route.route) }
+                if (index != -1) {
+                    _backStacks.removeRange(
+                        if (inclusive) index else index + 1,
+                        _backStacks.lastIndex,
+                    )
+                    return true
+                }
+            }
+        }
+
         when {
             currentStack?.canGoBack == true -> {
                 currentStack?.goBack()
@@ -181,6 +218,7 @@ internal class RouteStackManager(
         }?.let {
             _suspendResult.remove(it)?.resume(result)
         }
+        return true
     }
 
     suspend fun waitingForResult(entry: BackStackEntry): Any? = suspendCoroutine {
@@ -206,12 +244,7 @@ internal class RouteStackManager(
     }
 
     override fun handleBackPress(): Boolean {
-        return if (canGoBack) {
-            goBack()
-            true
-        } else {
-            false
-        }
+        return goBack()
     }
 
     fun navigateInitial(initialRoute: String) {

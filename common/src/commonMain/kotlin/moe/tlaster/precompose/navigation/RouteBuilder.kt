@@ -57,10 +57,12 @@ class RouteBuilder(
      */
     fun dialog(
         route: String,
+        deepLinks: List<String> = emptyList(),
         content: @Composable (BackStackEntry) -> Unit,
     ) {
         this.route += DialogRoute(
             route = route,
+            deepLinks = deepLinks,
             content = content
         )
     }

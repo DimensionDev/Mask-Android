@@ -84,12 +84,15 @@ class NavController {
      * user presses the "Up" button marked with a left (or start)-facing arrow in the upper left
      * (or starting) corner of the app UI.
      */
-    fun goBack() {
-        stackManager?.goBack()
+    fun goBack(route: String? = null, inclusive: Boolean = false) {
+        stackManager?.goBack(
+            route = route,
+            inclusive = inclusive,
+        )
     }
 
     fun goBackWith(result: Any? = null) {
-        stackManager?.goBack(result)
+        stackManager?.goBack(result = result)
     }
 
     /**
@@ -97,6 +100,10 @@ class NavController {
      */
     fun popBackStack() {
         goBack()
+    }
+
+    fun popBackStack(route: String, inclusive: Boolean = false) {
+        goBack(route, inclusive)
     }
 
     /**

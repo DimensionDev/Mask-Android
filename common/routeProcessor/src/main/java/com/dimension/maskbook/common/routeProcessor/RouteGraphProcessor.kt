@@ -42,13 +42,12 @@ import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.buildCodeBlock
 import com.squareup.kotlinpoet.ksp.KotlinPoetKspPreview
-import com.squareup.kotlinpoet.ksp.toClassName
 import com.squareup.kotlinpoet.ksp.toTypeName
 import com.squareup.kotlinpoet.ksp.writeTo
 import com.squareup.kotlinpoet.withIndent
 
-private val navControllerType = ClassName("androidx.navigation", "NavController")
-private val navBackStackEntryType = ClassName("androidx.navigation", "NavBackStackEntry")
+private val navControllerType = ClassName("moe.tlaster.precompose.navigation", "NavController")
+private val navBackStackEntryType = ClassName("moe.tlaster.precompose.navigation", "BackStackEntry")
 private const val navControllerName = "controller"
 
 @OptIn(KotlinPoetKspPreview::class, KspExperimental::class)
@@ -93,14 +92,11 @@ internal class RouteGraphProcessor(
         )
         val packageName = data.first().packageName
         FileSpec.builder(packageName.asString(), "RouteGraph")
-            .addImport("androidx.navigation", "NavType")
-            .addImport("androidx.navigation", "navDeepLink")
-            .addImport("androidx.navigation", "navArgument")
             .also { fileBuilder ->
                 fileBuilder.addFunction(
                     FunSpec.builder(generatedFunctionName)
                         .addModifiers(KModifier.INTERNAL)
-                        .receiver(ClassName("androidx.navigation", "NavGraphBuilder"))
+                        .receiver(ClassName("moe.tlaster.precompose.navigation", "RouteBuilder"))
                         .addParameter(
                             navControllerName,
                             navControllerType,
@@ -133,42 +129,11 @@ internal class RouteGraphProcessor(
                                                 "route = %S,",
                                                 annotation.route,
                                             )
-                                            val parameters = ksFunctionDeclaration.parameters.filter {
-                                                it.isAnnotationPresent(
-                                                    Query::class
-                                                ) || it.isAnnotationPresent(Path::class)
-                                            }
-                                            if (parameters.isNotEmpty()) {
-                                                addStatement("arguments = listOf(")
-                                                withIndent {
-                                                    parameters.forEach {
-                                                        val type = it.type.resolve()
-                                                        val typeName = type.toClassName()
-
-                                                        val argumentName = when {
-                                                            it.isAnnotationPresent(Path::class) -> it.getAnnotationsByType(Path::class).first().name
-                                                            it.isAnnotationPresent(Query::class) -> it.getAnnotationsByType(Query::class).first().name
-                                                            else -> it.name?.asString().orEmpty()
-                                                        }
-
-                                                        addStatement(
-                                                            "navArgument(%S) { type = NavType.%NType; nullable = %L },",
-                                                            argumentName,
-                                                            if (typeName.isBoolean) "Bool" else type.declaration.simpleName.asString(),
-                                                            it.isAnnotationPresent(Query::class) && !typeName.isLong
-                                                        )
-                                                    }
-                                                }
-                                                addStatement("),")
-                                            }
                                             if (annotation.deeplink.isNotEmpty()) {
                                                 addStatement("deepLinks = listOf(")
                                                 withIndent {
                                                     annotation.deeplink.forEach {
-                                                        addStatement(
-                                                            "navDeepLink { uriPattern = %S }",
-                                                            it
-                                                        )
+                                                        add("%S", it)
                                                     }
                                                 }
                                                 addStatement("),")
@@ -187,17 +152,17 @@ internal class RouteGraphProcessor(
                                     if (it.isAnnotationPresent(Path::class)) {
                                         val path = it.getAnnotationsByType(Path::class).first()
                                         builder.addStatement(
-                                            "val ${it.name?.asString()} = it.arguments!!.get(%S) as %T",
+                                            "val ${it.name?.asString()}: %T = it.path(%S)!!",
+                                            it.type.toTypeName(),
                                             path.name,
-                                            it.type.toTypeName()
                                         )
                                     } else if (it.isAnnotationPresent(Query::class)) {
                                         val query =
                                             it.getAnnotationsByType(Query::class).first()
                                         builder.addStatement(
-                                            "val ${it.name?.asString()} = it.arguments?.get(%S) as? %T",
+                                            "val ${it.name?.asString()}: %T? = it.query(%S)",
+                                            it.type.toTypeName(),
                                             query.name,
-                                            it.type.toTypeName()
                                         )
                                     }
                                 }

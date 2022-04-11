@@ -74,7 +74,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
-import com.dimension.maskbook.common.route.AnimatedNavHost
+import com.dimension.maskbook.common.ext.navOptions
 import com.dimension.maskbook.common.route.composable
 import com.dimension.maskbook.common.ui.barcode.rememberBarcodeBitmap
 import com.dimension.maskbook.common.ui.notification.StringResNotificationEvent.Companion.show
@@ -97,6 +97,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import moe.tlaster.koin.compose.getViewModel
 import moe.tlaster.precompose.navigation.NavController
+import moe.tlaster.precompose.navigation.NavHost
 import moe.tlaster.precompose.navigation.rememberNavController
 import org.koin.core.parameter.parametersOf
 
@@ -147,7 +148,7 @@ fun WalletConnectModal(rootNavController: NavController) {
                 textAlign = TextAlign.Center,
             )
 
-            AnimatedNavHost(
+            NavHost(
                 navController = navController,
                 initialRoute = "WalletConnectTypeSelect"
             ) {
@@ -197,9 +198,8 @@ fun WalletConnectModal(rootNavController: NavController) {
 
                 dialog(
                     "WalletConnectUnsupportedNetwork/{network}",
-                    listOf(navArgument("network") { type = NavType.StringType })
                 ) {
-                    val network = it.arguments?.getString("network") ?: "unKnown"
+                    val network: String = it.path("network")
                     WalletConnectUnsupportedNetwork(
                         onBack = {
                             viewModel.retry()

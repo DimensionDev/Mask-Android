@@ -25,12 +25,13 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import com.dimension.maskbook.common.CommonSetup
+import com.dimension.maskbook.common.ext.navigate
+import com.dimension.maskbook.common.ext.navigateUri
 import com.dimension.maskbook.common.route
 import com.dimension.maskbook.common.route.DeeplinkNavigateArgs
 import com.dimension.maskbook.common.route.Navigator
 import com.dimension.maskbook.common.route.RouteNavigateArgs
 import com.dimension.maskbook.common.ui.widget.RouteHost
-import com.dimension.maskbook.common.ui.widget.rememberMaskBottomSheetNavigator
 import com.dimension.maskbook.entry.BuildConfig
 import com.dimension.maskbook.entry.EntrySetup
 import com.dimension.maskbook.entry.repository.EntryRepository
@@ -43,18 +44,18 @@ import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.persona.route.PersonaRoute
 import com.dimension.maskbook.setting.SettingSetup
 import com.dimension.maskbook.wallet.WalletSetup
-import com.google.accompanist.navigation.animation.rememberAnimatedNavController
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import kotlinx.coroutines.flow.firstOrNull
+import moe.tlaster.precompose.navigation.rememberNavController
 import org.koin.mp.KoinPlatformTools
 
-@OptIn(ExperimentalMaterialNavigationApi::class, ExperimentalAnimationApi::class)
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun Router(
     startDestination: String,
 ) {
-    val bottomSheetNavigator = rememberMaskBottomSheetNavigator()
-    val navController = rememberAnimatedNavController(bottomSheetNavigator)
+    // val bottomSheetNavigator = rememberMaskBottomSheetNavigator()
+    // val navController = rememberAnimatedNavController(bottomSheetNavigator)
+    val navController = rememberNavController()
     LaunchedEffect(Unit) {
         val initialRoute = getInitialRoute()
         navController.navigate(initialRoute) {
@@ -67,14 +68,14 @@ fun Router(
         Navigator.navigateEvent.collect {
             it.getContentIfNotHandled()?.let { it1 ->
                 when (it1) {
-                    is DeeplinkNavigateArgs -> navController.navigate(Uri.parse(it1.url))
+                    is DeeplinkNavigateArgs -> navController.navigateUri(Uri.parse(it1.url))
                     is RouteNavigateArgs -> navController.navigate(it1.route)
                 }
             }
         }
     }
     RouteHost(
-        bottomSheetNavigator = bottomSheetNavigator,
+        // bottomSheetNavigator = bottomSheetNavigator,
         navController = navController,
         startDestination = startDestination,
     ) {

@@ -24,75 +24,67 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.foundation.shape.CornerSize
-import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.unit.dp
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
-import com.dimension.maskbook.common.ui.theme.modalScrimColor
-import com.google.accompanist.navigation.animation.AnimatedNavHost
-import com.google.accompanist.navigation.animation.rememberAnimatedNavController
-import com.google.accompanist.navigation.material.BottomSheetNavigator
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
-import com.google.accompanist.navigation.material.ModalBottomSheetLayout
+import moe.tlaster.precompose.navigation.NavController
+import moe.tlaster.precompose.navigation.NavHost
+import moe.tlaster.precompose.navigation.RouteBuilder
+import moe.tlaster.precompose.navigation.rememberNavController
 
 private const val navHostAnimationDurationMillis = 320
 
 @ExperimentalAnimationApi
-@ExperimentalMaterialNavigationApi
 @Composable
 fun RouteHost(
-    bottomSheetNavigator: BottomSheetNavigator = rememberMaskBottomSheetNavigator(),
-    navController: NavHostController = rememberAnimatedNavController(bottomSheetNavigator),
+    // bottomSheetNavigator: BottomSheetNavigator = rememberMaskBottomSheetNavigator(),
+    navController: NavController = rememberNavController(),
     startDestination: String,
-    builder: NavGraphBuilder.() -> Unit
+    builder: RouteBuilder.() -> Unit
 ) {
-    ModalBottomSheetLayout(
-        bottomSheetNavigator,
-        sheetBackgroundColor = MaterialTheme.colors.background,
-        sheetShape = MaterialTheme.shapes.large.copy(
-            bottomStart = CornerSize(0.dp),
-            bottomEnd = CornerSize(0.dp),
-        ),
-        scrimColor = MaterialTheme.colors.modalScrimColor,
-    ) {
-        AnimatedNavHost(
-            navController = navController,
-            startDestination = startDestination,
-            enterTransition = {
-                slideInHorizontally(
-                    initialOffsetX = { it },
-                    animationSpec = tween(
-                        navHostAnimationDurationMillis
-                    )
-                )
-            },
-            exitTransition = {
-                slideOutHorizontally(
-                    targetOffsetX = { -it },
-                    animationSpec = tween(
-                        navHostAnimationDurationMillis
-                    )
-                )
-            },
-            popEnterTransition = {
-                slideInHorizontally(
-                    initialOffsetX = { -it },
-                    animationSpec = tween(
-                        navHostAnimationDurationMillis
-                    )
-                )
-            },
-            popExitTransition = {
-                slideOutHorizontally(
-                    targetOffsetX = { it },
-                    animationSpec = tween(
-                        navHostAnimationDurationMillis
-                    )
-                )
-            },
-            builder = builder,
-        )
-    }
+    // ModalBottomSheetLayout(
+    //     // bottomSheetNavigator,
+    //     sheetBackgroundColor = MaterialTheme.colors.background,
+    //     sheetShape = MaterialTheme.shapes.large.copy(
+    //         bottomStart = CornerSize(0.dp),
+    //         bottomEnd = CornerSize(0.dp),
+    //     ),
+    //     scrimColor = MaterialTheme.colors.modalScrimColor,
+    // ) {
+    NavHost(
+        navController = navController,
+        initialRoute = startDestination,
+        // enterTransition = {
+        //     slideInHorizontally(
+        //         initialOffsetX = { it },
+        //         animationSpec = tween(
+        //             navHostAnimationDurationMillis
+        //         )
+        //     )
+        // },
+        // exitTransition = {
+        //     slideOutHorizontally(
+        //         targetOffsetX = { -it },
+        //         animationSpec = tween(
+        //             navHostAnimationDurationMillis
+        //         )
+        //     )
+        // },
+        // popEnterTransition = {
+        //     slideInHorizontally(
+        //         initialOffsetX = { -it },
+        //         animationSpec = tween(
+        //             navHostAnimationDurationMillis
+        //         )
+        //     )
+        // },
+        // popExitTransition = {
+        //     slideOutHorizontally(
+        //         targetOffsetX = { it },
+        //         animationSpec = tween(
+        //             navHostAnimationDurationMillis
+        //         )
+        //     )
+        // },
+        builder = builder,
+    )
+    // }
 }

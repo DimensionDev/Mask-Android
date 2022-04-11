@@ -50,20 +50,20 @@ object ExtensionSetup : ModuleSetup {
             deepLinks = listOf(
                 Deeplinks.WebContent.path
             ),
-            arguments = listOf(
-                navArgument("site") { type = NavType.StringType; nullable = true }
-            ),
-            exitTransition = {
-                scaleOut(
-                    targetScale = 0.9f,
-                )
-            },
-            popExitTransition = null,
-            popEnterTransition = {
-                scaleIn(
-                    initialScale = 0.9f,
-                )
-            }
+            // arguments = listOf(
+            //     navArgument("site") { type = NavType.StringType; nullable = true }
+            // ),
+            // exitTransition = {
+            //     scaleOut(
+            //         targetScale = 0.9f,
+            //     )
+            // },
+            // popExitTransition = null,
+            // popEnterTransition = {
+            //     scaleIn(
+            //         initialScale = 0.9f,
+            //     )
+            // }
         ) {
             val backStackEntry by navController.currentBackStackEntryAsState()
 
