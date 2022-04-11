@@ -28,15 +28,17 @@ import com.dimension.maskbook.persona.repository.IPersonaRepository
 import com.dimension.maskbook.persona.repository.ISocialsRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class PersonaViewModel(
     private val personaRepository: IPersonaRepository,
     private val socialRepository: ISocialsRepository,
 ) : ViewModel() {
-
+    data class PersonaState(val persona: PersonaData?)
     val currentPersona by lazy {
         personaRepository.currentPersona
+            .map { PersonaState(it) }
             .asStateIn(viewModelScope, null)
     }
     val personaList by lazy {
