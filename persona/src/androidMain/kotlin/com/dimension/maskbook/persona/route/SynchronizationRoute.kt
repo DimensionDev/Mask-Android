@@ -237,7 +237,7 @@ private fun NavController.handleResult(result: Result<Unit>) {
             PersonaRoute.Synchronization.Success,
             navOptions {
                 currentBackStackEntry?.let { backStackEntry ->
-                    popUpTo(backStackEntry.destination.id) {
+                    popUpTo(backStackEntry.route.route) {
                         inclusive = true
                     }
                 }
@@ -251,7 +251,7 @@ private fun NavController.handleResult(result: Result<Unit>) {
                 PersonaRoute.Synchronization.Failed,
             navOptions {
                 currentBackStackEntry?.let { backStackEntry ->
-                    popUpTo(backStackEntry.destination.id) {
+                    popUpTo(backStackEntry.route.route) {
                         inclusive = true
                     }
                 }

@@ -37,7 +37,7 @@ import com.dimension.maskbook.common.ui.widget.MaskPasswordInputField
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.viewmodel.VerifyPaymentPasswordViewModel
-import org.koin.androidx.compose.getViewModel
+import moe.tlaster.koin.compose.getViewModel
 
 @Composable
 fun VerifyPaymentPasswordModal(
