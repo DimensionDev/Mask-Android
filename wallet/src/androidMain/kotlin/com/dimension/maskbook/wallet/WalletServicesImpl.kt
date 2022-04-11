@@ -21,6 +21,7 @@
 package com.dimension.maskbook.wallet
 
 import com.dimension.maskbook.wallet.export.WalletServices
+import com.dimension.maskbook.wallet.export.model.BackupWalletData
 import com.dimension.maskbook.wallet.export.model.ChainData
 import com.dimension.maskbook.wallet.export.model.WalletData
 import com.dimension.maskbook.wallet.repository.IWalletRepository
@@ -45,5 +46,13 @@ class WalletServicesImpl(
 
     override fun validatePrivateKey(privateKey: String): Boolean {
         return walletRepository.validatePrivateKey(privateKey)
+    }
+
+    override suspend fun createWalletBackup(): List<BackupWalletData> {
+        return walletRepository.createWalletBackup()
+    }
+
+    override suspend fun restoreWalletBackup(wallet: List<BackupWalletData>) {
+        walletRepository.restoreWalletBackup(wallet)
     }
 }

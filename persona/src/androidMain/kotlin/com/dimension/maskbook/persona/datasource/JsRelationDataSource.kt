@@ -24,7 +24,7 @@ import com.dimension.maskbook.persona.db.PersonaDatabase
 import com.dimension.maskbook.persona.db.migrator.mapper.toDbRelationRecord
 import com.dimension.maskbook.persona.db.migrator.mapper.toIndexedDBRelation
 import com.dimension.maskbook.persona.db.sql.buildQueryRelationsSql
-import com.dimension.maskbook.persona.model.indexed.IndexedDBRelation
+import com.dimension.maskbook.persona.export.model.IndexedDBRelation
 import com.dimension.maskbook.persona.model.options.CreateRelationOptions
 import com.dimension.maskbook.persona.model.options.DeleteRelationOptions
 import com.dimension.maskbook.persona.model.options.QueryRelationOptions

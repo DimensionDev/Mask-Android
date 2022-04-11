@@ -23,7 +23,7 @@ package com.dimension.maskbook.persona.db.migrator.mapper
 import com.dimension.maskbook.persona.db.model.DbLinkedProfileRecord
 import com.dimension.maskbook.persona.db.model.DbPersonaRecord
 import com.dimension.maskbook.persona.db.model.PersonaWithLinkedProfile
-import com.dimension.maskbook.persona.model.indexed.IndexedDBPersona
+import com.dimension.maskbook.persona.export.model.IndexedDBPersona
 
 fun IndexedDBPersona.toDbPersonaRecord(): DbPersonaRecord {
     return DbPersonaRecord(

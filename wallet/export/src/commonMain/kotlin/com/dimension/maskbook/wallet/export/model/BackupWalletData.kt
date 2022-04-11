@@ -18,20 +18,16 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.persona.model.indexed
+package com.dimension.maskbook.wallet.export.model
 
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonObject
-
-@Serializable
-class IndexedDBPost(
-    val postBy: String,
-    val identifier: String,
-    val postCryptoKey: JsonObject? = null,
-    val recipients: MutableMap<String, JsonObject>? = null,
-    val foundAt: Long,
-    val encryptBy: String? = null,
-    val url: String? = null,
-    val summary: String? = null,
-    val interestedMeta: MutableMap<String, JsonObject>? = null,
+data class BackupWalletData(
+    val address: String,
+    val name: String,
+    val passphrase: String? = null,
+    val publicKey: String? = null,
+    val privateKey: String? = null,
+    val mnemonic: String? = null,
+    val derivationPath: String? = null,
+    val updatedAt: Long,
+    val createdAt: Long,
 )

@@ -27,6 +27,7 @@ import com.dimension.maskbook.wallet.db.model.DbCollectible
 import com.dimension.maskbook.wallet.db.model.DbWalletTokenTokenWithWallet
 import com.dimension.maskbook.wallet.db.model.DbWalletTokenWithToken
 import com.dimension.maskbook.wallet.db.model.WalletSource
+import com.dimension.maskbook.wallet.export.model.BackupWalletData
 import com.dimension.maskbook.wallet.export.model.ChainData
 import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.export.model.TokenData
@@ -238,4 +239,6 @@ interface IWalletRepository {
     suspend fun getChainData(chainType: ChainType): Flow<ChainData?>
     suspend fun refreshWallet()
     suspend fun signMessage(message: String, fromAddress: String): String?
+    suspend fun createWalletBackup(): List<BackupWalletData>
+    suspend fun restoreWalletBackup(wallet: List<BackupWalletData>)
 }

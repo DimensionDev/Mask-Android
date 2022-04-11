@@ -396,7 +396,7 @@ fun BackupDataBackupMergeConfirm(
             PrimaryButton(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {
-                    viewModel.confirm(downloadUrl.orEmpty())
+                    viewModel.confirm(downloadUrl.orEmpty(), account = value)
                 },
                 enabled = passwordValid && !loading
             ) {
@@ -700,11 +700,11 @@ fun BackupSelection(
         onRemote = {
             val email = persona?.email
             val phone = persona?.phone
-            if (email == null && phone == null) {
+            if (email.isNullOrEmpty() && phone.isNullOrEmpty()) {
                 navController.navigate(SettingRoute.BackupData.BackupSelection_NoEmailAndPhone)
-            } else if (email != null) {
+            } else if (!email.isNullOrEmpty()) {
                 navController.navigate(SettingRoute.BackupData.BackupSelection_Email(email))
-            } else if (phone != null) {
+            } else if (!phone.isNullOrEmpty()) {
                 navController.navigate(SettingRoute.BackupData.BackupSelection_Phone(phone))
             }
         }

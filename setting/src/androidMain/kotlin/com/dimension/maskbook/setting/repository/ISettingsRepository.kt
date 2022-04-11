@@ -22,6 +22,7 @@ package com.dimension.maskbook.setting.repository
 
 import com.dimension.maskbook.setting.export.model.Appearance
 import com.dimension.maskbook.setting.export.model.BackupMeta
+import com.dimension.maskbook.setting.export.model.BackupMetaFile
 import com.dimension.maskbook.setting.export.model.DataProvider
 import com.dimension.maskbook.setting.export.model.Language
 import kotlinx.coroutines.flow.Flow
@@ -40,16 +41,18 @@ interface ISettingsRepository {
     fun setDataProvider(dataProvider: DataProvider)
     fun setPaymentPassword(value: String)
     fun setBackupPassword(value: String)
-    suspend fun provideBackupMeta(): BackupMeta?
-    suspend fun provideBackupMetaFromJson(value: String): BackupMeta?
-    suspend fun restoreBackupFromJson(value: String)
-    suspend fun createBackupJson(
+    suspend fun generateBackupMeta(): BackupMeta
+    fun provideBackupMeta(file: BackupMetaFile): BackupMeta
+    suspend fun restoreBackup(value: BackupMetaFile)
+    suspend fun createBackup(
         noPosts: Boolean = false,
         noWallets: Boolean = false,
         noPersonas: Boolean = false,
         noProfiles: Boolean = false,
+        noRelations: Boolean = false,
         hasPrivateKeyOnly: Boolean = false,
-    ): String
+    ): BackupMetaFile
+
     fun setShouldShowLegalScene(value: Boolean)
     fun saveEmailForCurrentPersona(value: String)
     fun savePhoneForCurrentPersona(value: String)

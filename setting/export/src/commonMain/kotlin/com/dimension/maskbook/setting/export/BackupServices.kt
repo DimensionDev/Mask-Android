@@ -20,17 +20,19 @@
  */
 package com.dimension.maskbook.setting.export
 
+import com.dimension.maskbook.setting.export.model.BackupFileMeta
 import com.dimension.maskbook.setting.export.model.BackupMeta
+import com.dimension.maskbook.setting.export.model.BackupMetaFile
 
 interface BackupServices {
-    suspend fun restoreBackupFromJson(value: String)
-    suspend fun provideBackupMetaFromJson(value: String): BackupMeta?
-    suspend fun downloadBackupWithPhone(phone: String, code: String): String
-    suspend fun downloadBackupWithEmail(email: String, code: String): String
+    suspend fun restoreBackup(value: BackupMetaFile)
+    suspend fun provideBackupMeta(file: BackupMetaFile): BackupMeta
+    suspend fun downloadBackupWithPhone(phone: String, code: String): BackupFileMeta
+    suspend fun downloadBackupWithEmail(email: String, code: String): BackupFileMeta
     suspend fun validatePhoneCode(phone: String, code: String)
     suspend fun validateEmailCode(email: String, code: String)
     suspend fun sendPhoneCode(phone: String)
     suspend fun sendEmailCode(email: String)
-    suspend fun decryptBackup(password: String, account: String, data: ByteArray): Map<String, Any>
-    suspend fun encryptBackup(password: String, account: String, content: Map<String, Any>): ByteArray
+    suspend fun decryptBackup(password: String, account: String, data: ByteArray): BackupMetaFile
+    suspend fun encryptBackup(password: String, account: String, content: BackupMetaFile): ByteArray
 }

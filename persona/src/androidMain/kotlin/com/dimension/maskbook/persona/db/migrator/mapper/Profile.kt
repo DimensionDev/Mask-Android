@@ -23,9 +23,9 @@ package com.dimension.maskbook.persona.db.migrator.mapper
 import com.dimension.maskbook.persona.db.model.DbLinkedProfileRecord
 import com.dimension.maskbook.persona.db.model.DbProfileRecord
 import com.dimension.maskbook.persona.db.model.ProfileWithLinkedProfile
+import com.dimension.maskbook.persona.export.model.IndexedDBProfile
 import com.dimension.maskbook.persona.export.model.LinkedProfileDetailsState
 import com.dimension.maskbook.persona.export.model.Network
-import com.dimension.maskbook.persona.model.indexed.IndexedDBProfile
 
 fun IndexedDBProfile.toDbProfileRecord(): DbProfileRecord {
     return DbProfileRecord(
@@ -40,7 +40,7 @@ fun IndexedDBProfile.toDbProfileRecord(): DbProfileRecord {
 fun IndexedDBProfile.toDbLinkedProfileRecord(): DbLinkedProfileRecord? {
     if (linkedPersona.isNullOrEmpty()) return null
     return DbLinkedProfileRecord(
-        personaIdentifier = linkedPersona,
+        personaIdentifier = linkedPersona.orEmpty(),
         profileIdentifier = identifier,
         state = LinkedProfileDetailsState.Confirmed,
     )

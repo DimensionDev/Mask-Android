@@ -53,6 +53,7 @@ import com.dimension.maskbook.common.routeProcessor.annotations.Back
 import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
 import com.dimension.maskbook.common.routeProcessor.annotations.Path
 import com.dimension.maskbook.common.ui.notification.StringResNotificationEvent.Companion.show
+import com.dimension.maskbook.common.ui.scene.SetUpPaymentPassword
 import com.dimension.maskbook.common.ui.widget.LocalInAppNotification
 import com.dimension.maskbook.common.ui.widget.MaskDialog
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
@@ -70,7 +71,6 @@ import com.dimension.maskbook.wallet.ui.scenes.wallets.create.CreateOrImportWall
 import com.dimension.maskbook.wallet.ui.scenes.wallets.create.CreateType
 import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.LegalScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.password.BiometricsEnableScene
-import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.password.SetUpPaymentPassword
 import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.password.TouchIdEnableScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.BackupWalletScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletDeleteDialog

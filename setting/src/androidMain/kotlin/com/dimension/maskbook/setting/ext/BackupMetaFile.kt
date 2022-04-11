@@ -18,17 +18,14 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.persona.model.indexed
+package com.dimension.maskbook.setting.ext
 
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonObject
+import com.dimension.maskbook.setting.export.model.BackupMetaFile
 
-@Serializable
-data class IndexedDBProfile(
-    val identifier: String,
-    val nickname: String? = null,
-    val linkedPersona: String? = null,
-    val localKey: JsonObject? = null,
-    val updatedAt: Long = 0,
-    val createdAt: Long = 0,
-)
+val BackupMetaFile.Meta.Companion.Default: BackupMetaFile.Meta
+    get() = BackupMetaFile.Meta(
+        maskbookVersion = "2.5.0",
+        createdAt = System.currentTimeMillis(),
+        version = 2,
+        type = "maskbook-backup"
+    )

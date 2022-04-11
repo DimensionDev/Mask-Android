@@ -25,10 +25,15 @@ import com.dimension.maskbook.common.ext.toSite
 import com.dimension.maskbook.extension.export.ExtensionServices
 import com.dimension.maskbook.persona.data.JSMethod
 import com.dimension.maskbook.persona.datasource.DbPersonaDataSource
+import com.dimension.maskbook.persona.datasource.DbPostDataSource
 import com.dimension.maskbook.persona.datasource.DbProfileDataSource
 import com.dimension.maskbook.persona.datasource.DbRelationDataSource
 import com.dimension.maskbook.persona.export.error.PersonaAlreadyExitsError
 import com.dimension.maskbook.persona.export.model.ConnectAccountData
+import com.dimension.maskbook.persona.export.model.IndexedDBPersona
+import com.dimension.maskbook.persona.export.model.IndexedDBPost
+import com.dimension.maskbook.persona.export.model.IndexedDBProfile
+import com.dimension.maskbook.persona.export.model.IndexedDBRelation
 import com.dimension.maskbook.persona.export.model.PersonaData
 import com.dimension.maskbook.persona.export.model.PlatformType
 import com.dimension.maskbook.persona.export.model.SocialData
@@ -56,6 +61,7 @@ internal class PersonaRepository(
     private val personaDataSource: DbPersonaDataSource,
     private val profileDataSource: DbProfileDataSource,
     private val relationDataSource: DbRelationDataSource,
+    private val postDataSource: DbPostDataSource,
 ) : IPersonaRepository,
     ISocialsRepository,
     IContactsRepository {
@@ -219,5 +225,46 @@ internal class PersonaRepository(
                 personaDataSource.updateAvatar(personaData.identifier, avatar?.toString())
             }
         }
+    }
+
+    override suspend fun createPersonaBackup(hasPrivateKeyOnly: Boolean): List<IndexedDBPersona> {
+        return personaDataSource.getIndexDbPersonaRecord().filter {
+            if (hasPrivateKeyOnly) {
+                it.privateKey != null
+            } else {
+                true
+            }
+        }
+    }
+
+    override suspend fun restorePersonaBackup(list: List<IndexedDBPersona>) {
+        personaDataSource.addAll(list)
+        if (currentPersona.firstOrNull() == null) {
+            setCurrentPersona(list.firstOrNull()?.identifier.orEmpty())
+        }
+    }
+
+    override suspend fun createProfileBackup(): List<IndexedDBProfile> {
+        return profileDataSource.getProfileList()
+    }
+
+    override suspend fun restoreProfileBackup(profile: List<IndexedDBProfile>) {
+        profileDataSource.addAll(profile)
+    }
+
+    override suspend fun createRelationsBackup(): List<IndexedDBRelation> {
+        return relationDataSource.getAll()
+    }
+
+    override suspend fun restoreRelationBackup(relation: List<IndexedDBRelation>) {
+        relationDataSource.addAll(relation)
+    }
+
+    override suspend fun createPostsBackup(): List<IndexedDBPost> {
+        return postDataSource.getAll()
+    }
+
+    override suspend fun restorePostBackup(post: List<IndexedDBPost>) {
+        postDataSource.addAll(post)
     }
 }
