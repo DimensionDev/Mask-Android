@@ -52,10 +52,6 @@ inline fun <reified T> String.decodeJson(): T = JSON.decodeFromString(this)
 
 inline fun <reified T> JsonElement.decodeJson(): T = JSON.decodeFromJsonElement(this)
 
-inline fun <reified T> JsonElement.decodeJson(): T {
-    return JSON.decodeFromJsonElement(this)
-}
-
 private val LONG_REGEX = Regex("""^-?\d+$""")
 private val DOUBLE_REGEX = Regex("""^-?\d+\.\d+(?:E-?\d+)?$""")
 
