@@ -313,7 +313,7 @@ private fun PersonaHeader(
                 },
                 secondaryText = {
                     Text(
-                        text = item?.identifier ?: "",
+                        text = item?.identifier?.substringAfter("/") ?: "",
                         style = MaterialTheme.typography.body2,
                         maxLines = 2,
                         color = Color.White,
