@@ -21,8 +21,8 @@
 package com.dimension.maskbook.persona.db.migrator.mapper
 
 import com.dimension.maskbook.persona.db.model.DbRelationRecord
+import com.dimension.maskbook.persona.export.model.IndexedDBRelation
 import com.dimension.maskbook.persona.export.model.Network
-import com.dimension.maskbook.persona.model.indexed.IndexedDBRelation
 
 fun IndexedDBRelation.toDbRelationRecord(): DbRelationRecord {
     return DbRelationRecord(

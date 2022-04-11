@@ -34,9 +34,15 @@ interface PostDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(post: DbPostRecord)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(post: List<DbPostRecord>)
+
     @Query("SELECT * FROM DbPostRecord WHERE identifier=:identifier LIMIT 1")
     suspend fun find(identifier: String): DbPostRecord?
 
     @RawQuery
     suspend fun findListRaw(query: SupportSQLiteQuery): List<DbPostRecord>
+
+    @Query("SELECT * FROM DbPostRecord")
+    suspend fun getAll(): List<DbPostRecord>
 }

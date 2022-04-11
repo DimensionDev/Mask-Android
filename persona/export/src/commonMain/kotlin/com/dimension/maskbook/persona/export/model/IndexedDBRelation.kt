@@ -18,40 +18,17 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.persona.model.options
+package com.dimension.maskbook.persona.export.model
 
-import com.dimension.maskbook.persona.export.model.IndexedDBRelation
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class CreateRelationOptions(
-    val relation: IndexedDBRelation,
-)
-
-@Serializable
-data class QueryRelationOptions(
+data class IndexedDBRelation(
+    @SerialName("linked")
     val personaIdentifier: String,
+    @SerialName("profile")
     val profileIdentifier: String,
-)
-
-@Serializable
-data class QueryRelationsOptions(
-    val personaIdentifier: String,
+    val favor: Int,
     val network: String? = null,
-    val nameContains: String? = null,
-    val favor: Boolean? = null,
-    @SerialName("pageOption")
-    val pageOptions: PageOptions? = null,
-)
-
-@Serializable
-data class UpdateRelationOptions(
-    val relation: IndexedDBRelation,
-)
-
-@Serializable
-data class DeleteRelationOptions(
-    val personaIdentifier: String,
-    val profileIdentifier: String,
 )

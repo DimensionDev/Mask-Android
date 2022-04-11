@@ -153,7 +153,7 @@ fun RegisterRecoveryHome(
         onResult = {
             if (it != null) {
                 navController.navigate(
-                    PersonaRoute.Register.Recovery.LocalBackup.Loading(it.toString(), null)
+                    PersonaRoute.Register.Recovery.LocalBackup.Loading(it.toString(), System.currentTimeMillis(), null, null)
                 )
             }
         },

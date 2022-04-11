@@ -27,7 +27,7 @@ import com.dimension.maskbook.persona.db.migrator.mapper.toIndexedDBPersona
 import com.dimension.maskbook.persona.db.sql.buildQueryPersonaByProfileSql
 import com.dimension.maskbook.persona.db.sql.buildQueryPersonaSql
 import com.dimension.maskbook.persona.db.sql.buildQueryPersonasSql
-import com.dimension.maskbook.persona.model.indexed.IndexedDBPersona
+import com.dimension.maskbook.persona.export.model.IndexedDBPersona
 import com.dimension.maskbook.persona.model.options.CreatePersonaOptions
 import com.dimension.maskbook.persona.model.options.DeletePersonaOptions
 import com.dimension.maskbook.persona.model.options.QueryPersonaByProfileOptions

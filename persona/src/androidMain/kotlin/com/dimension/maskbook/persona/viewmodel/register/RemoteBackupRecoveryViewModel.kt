@@ -26,6 +26,7 @@ import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.Validator
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.setting.export.BackupServices
+import com.dimension.maskbook.setting.export.model.BackupFileMeta
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
@@ -41,7 +42,7 @@ class PhoneRemoteBackupRecoveryViewModel(
         _regionCode.value = value
     }
 
-    override suspend fun downloadBackupInternal(code: String, value: String): String {
+    override suspend fun downloadBackupInternal(code: String, value: String): BackupFileMeta {
         return backupServices.downloadBackupWithPhone(value, code)
     }
 
@@ -64,8 +65,8 @@ class EmailRemoteBackupRecoveryViewModel(
 ) : RemoteBackupRecoveryViewModelBase(
     requestNavigate
 ) {
-    override suspend fun downloadBackupInternal(code: String, value: String): String {
-        return backupServices.downloadBackupWithEmail(value, code).toString()
+    override suspend fun downloadBackupInternal(code: String, value: String): BackupFileMeta {
+        return backupServices.downloadBackupWithEmail(value, code)
     }
 
     override suspend fun verifyCodeInternal(value: String, code: String) {
@@ -93,10 +94,24 @@ abstract class RemoteBackupRecoveryViewModelBase(
         Next,
     }
 
-    data class NavigateArgs(
+    sealed interface NavigateArgs {
+        val target: NavigateTarget
+    }
+
+    data class StringNavigateArgs(
         val value: String,
-        val target: NavigateTarget,
-    )
+        override val target: NavigateTarget,
+    ) : NavigateArgs
+
+    data class BackupFileMetaNavigateArgs(
+        val backupFileMeta: BackupFileMeta,
+        override val target: NavigateTarget,
+    ) : NavigateArgs
+
+    // data class NavigateArgs(
+    //     val value: String,
+    //     val target: NavigateTarget,
+    // )
 
     private val _value = MutableStateFlow("")
     val value = _value.asStateIn(viewModelScope, "")
@@ -144,15 +159,15 @@ abstract class RemoteBackupRecoveryViewModelBase(
             return@launch
         }
         try {
-            val uri = downloadBackupInternal(code, value)
-            requestNavigate.invoke(NavigateArgs(uri, NavigateTarget.RestoreBackup))
+            val meta = downloadBackupInternal(code, value)
+            requestNavigate.invoke(BackupFileMetaNavigateArgs(meta, NavigateTarget.RestoreBackup))
         } catch (e: Throwable) {
-            requestNavigate.invoke(NavigateArgs(value, NavigateTarget.NoBackup))
+            requestNavigate.invoke(StringNavigateArgs(value, NavigateTarget.NoBackup))
         }
         _loading.value = false
     }
 
-    abstract suspend fun downloadBackupInternal(code: String, value: String): String
+    abstract suspend fun downloadBackupInternal(code: String, value: String): BackupFileMeta
 
     abstract suspend fun verifyCodeInternal(value: String, code: String)
 
@@ -166,7 +181,7 @@ abstract class RemoteBackupRecoveryViewModelBase(
         _loading.value = true
         try {
             sendCodeInternal(value)
-            requestNavigate.invoke(NavigateArgs(value, NavigateTarget.Code))
+            requestNavigate.invoke(StringNavigateArgs(value, NavigateTarget.Code))
             startCountDown()
         } catch (e: Throwable) {
         }

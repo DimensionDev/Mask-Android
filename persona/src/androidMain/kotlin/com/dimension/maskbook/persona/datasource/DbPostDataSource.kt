@@ -18,38 +18,27 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.persona.model.options
+package com.dimension.maskbook.persona.datasource
 
+import com.dimension.maskbook.persona.db.PersonaDatabase
+import com.dimension.maskbook.persona.db.migrator.mapper.toDbPostRecord
+import com.dimension.maskbook.persona.db.migrator.mapper.toIndexedDBPost
 import com.dimension.maskbook.persona.export.model.IndexedDBPost
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
 
-@Serializable
-data class CreatePostOptions(
-    val post: IndexedDBPost,
-)
+class DbPostDataSource(database: PersonaDatabase) {
+    private val postDao = database.postDao()
 
-@Serializable
-data class QueryPostOptions(
-    val identifier: String,
-)
+    suspend fun getAll(): List<IndexedDBPost> {
+        return postDao.getAll().map {
+            it.toIndexedDBPost()
+        }
+    }
 
-@Serializable
-data class QueryPostsOptions(
-    val encryptBy: String?,
-    val userIds: List<String>,
-    val network: String? = null,
-    @SerialName("pageOption")
-    val pageOptions: PageOptions? = null,
-)
-
-@Serializable
-data class UpdatePostOptions(
-    val post: IndexedDBPost,
-    val options: Options,
-) {
-    @Serializable
-    data class Options(
-        val mode: Int = 0,
-    )
+    suspend fun addAll(post: List<IndexedDBPost>) {
+        postDao.insert(
+            post.map {
+                it.toDbPostRecord()
+            }
+        )
+    }
 }

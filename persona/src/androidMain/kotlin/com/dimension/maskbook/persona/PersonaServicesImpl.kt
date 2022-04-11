@@ -21,6 +21,10 @@
 package com.dimension.maskbook.persona
 
 import com.dimension.maskbook.persona.export.PersonaServices
+import com.dimension.maskbook.persona.export.model.IndexedDBPersona
+import com.dimension.maskbook.persona.export.model.IndexedDBPost
+import com.dimension.maskbook.persona.export.model.IndexedDBProfile
+import com.dimension.maskbook.persona.export.model.IndexedDBRelation
 import com.dimension.maskbook.persona.export.model.PersonaData
 import com.dimension.maskbook.persona.repository.IPersonaRepository
 import kotlinx.coroutines.flow.Flow
@@ -58,5 +62,37 @@ class PersonaServicesImpl(
 
     override fun savePhoneForCurrentPersona(value: String) {
         personaRepository.savePhoneForCurrentPersona(value)
+    }
+
+    override suspend fun createPersonaBackup(hasPrivateKeyOnly: Boolean): List<IndexedDBPersona> {
+        return personaRepository.createPersonaBackup(hasPrivateKeyOnly)
+    }
+
+    override suspend fun restorePersonaBackup(persona: List<IndexedDBPersona>) {
+        personaRepository.restorePersonaBackup(persona)
+    }
+
+    override suspend fun createProfileBackup(): List<IndexedDBProfile> {
+        return personaRepository.createProfileBackup()
+    }
+
+    override suspend fun restoreProfileBackup(profile: List<IndexedDBProfile>) {
+        personaRepository.restoreProfileBackup(profile)
+    }
+
+    override suspend fun createRelationsBackup(): List<IndexedDBRelation> {
+        return personaRepository.createRelationsBackup()
+    }
+
+    override suspend fun restoreRelationBackup(relation: List<IndexedDBRelation>) {
+        personaRepository.restoreRelationBackup(relation)
+    }
+
+    override suspend fun createPostsBackup(): List<IndexedDBPost> {
+        return personaRepository.createPostsBackup()
+    }
+
+    override suspend fun restorePostBackup(post: List<IndexedDBPost>) {
+        personaRepository.restorePostBackup(post)
     }
 }

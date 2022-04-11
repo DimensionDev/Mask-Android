@@ -18,17 +18,22 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.persona.model.indexed
+package com.dimension.maskbook.setting.ext
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import com.dimension.maskbook.common.ext.decodeBase64
+import com.dimension.maskbook.common.ext.encodeBase64String
+import com.dimension.maskbook.setting.export.model.JsonWebKey
 
-@Serializable
-data class IndexedDBRelation(
-    @SerialName("linked")
-    val personaIdentifier: String,
-    @SerialName("profile")
-    val profileIdentifier: String,
-    val favor: Int,
-    val network: String? = null,
-)
+internal fun JsonWebKey.fromJWK() = d?.decodeBase64()
+
+internal fun String.toJWK(): JsonWebKey {
+    val privateKeyData = this.encodeToByteArray()
+    return JsonWebKey(
+        crv = "K-256",
+        kty = "EC",
+        key_ops = listOf("deriveKey", "deriveBits"),
+        d = privateKeyData.encodeBase64String(),
+        x = "",
+        y = "",
+    )
+}
