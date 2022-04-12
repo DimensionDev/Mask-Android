@@ -29,6 +29,7 @@ import moe.tlaster.precompose.navigation.NavController
 import moe.tlaster.precompose.navigation.NavHost
 import moe.tlaster.precompose.navigation.RouteBuilder
 import moe.tlaster.precompose.navigation.rememberNavController
+import moe.tlaster.precompose.navigation.NavTransition
 
 private const val navHostAnimationDurationMillis = 320
 
@@ -52,38 +53,40 @@ fun RouteHost(
     NavHost(
         navController = navController,
         initialRoute = startDestination,
-        // enterTransition = {
-        //     slideInHorizontally(
-        //         initialOffsetX = { it },
-        //         animationSpec = tween(
-        //             navHostAnimationDurationMillis
-        //         )
-        //     )
-        // },
-        // exitTransition = {
-        //     slideOutHorizontally(
-        //         targetOffsetX = { -it },
-        //         animationSpec = tween(
-        //             navHostAnimationDurationMillis
-        //         )
-        //     )
-        // },
-        // popEnterTransition = {
-        //     slideInHorizontally(
-        //         initialOffsetX = { -it },
-        //         animationSpec = tween(
-        //             navHostAnimationDurationMillis
-        //         )
-        //     )
-        // },
-        // popExitTransition = {
-        //     slideOutHorizontally(
-        //         targetOffsetX = { it },
-        //         animationSpec = tween(
-        //             navHostAnimationDurationMillis
-        //         )
-        //     )
-        // },
+        navTransition = NavTransition(
+            enterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { it },
+                    animationSpec = tween(
+                        navHostAnimationDurationMillis
+                    )
+                )
+            },
+            exitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { -it },
+                    animationSpec = tween(
+                        navHostAnimationDurationMillis
+                    )
+                )
+            },
+            popEnterTransition = {
+                slideInHorizontally(
+                    initialOffsetX = { -it },
+                    animationSpec = tween(
+                        navHostAnimationDurationMillis
+                    )
+                )
+            },
+            popExitTransition = {
+                slideOutHorizontally(
+                    targetOffsetX = { it },
+                    animationSpec = tween(
+                        navHostAnimationDurationMillis
+                    )
+                )
+            },
+        ),
         builder = builder,
     )
     // }

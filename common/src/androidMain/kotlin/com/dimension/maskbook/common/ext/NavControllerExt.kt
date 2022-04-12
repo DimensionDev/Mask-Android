@@ -75,7 +75,7 @@ fun NavController.navigateUri(uri: Uri, navOptions: NavOptions) {
 
 fun NavController.navigateWithPopSelf(route: String) {
     navigate(route) {
-        currentDestination?.route?.let { popRoute ->
+        currentBackStackEntry?.route?.let { popRoute ->
             popUpTo(popRoute.route) { inclusive = true }
         }
     }
@@ -83,7 +83,7 @@ fun NavController.navigateWithPopSelf(route: String) {
 
 fun NavController.navigateUriWithPopSelf(uri: Uri) {
     navigateUri(uri) {
-        currentDestination?.route?.let { popRoute ->
+        currentBackStackEntry?.route?.let { popRoute ->
             popUpTo(popRoute.route) { inclusive = true }
         }
     }

@@ -51,7 +51,7 @@ class NavController {
     val backQueue: List<BackStackEntry>
         get() = stackManager?.backStacks?.mapNotNull { it.currentEntry } ?: emptyList()
 
-    val currentDestination: BackStackEntry?
+    val currentBackStackEntry: BackStackEntry?
         get() = stackManager?.currentEntry
 
     fun getBackStackEntry(route: String): BackStackEntry? {

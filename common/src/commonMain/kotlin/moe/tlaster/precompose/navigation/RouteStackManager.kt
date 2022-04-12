@@ -22,6 +22,7 @@ package moe.tlaster.precompose.navigation
 
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.SaveableStateHolder
 import moe.tlaster.precompose.lifecycle.Lifecycle
 import moe.tlaster.precompose.lifecycle.LifecycleObserver
@@ -29,7 +30,6 @@ import moe.tlaster.precompose.lifecycle.LifecycleOwner
 import moe.tlaster.precompose.navigation.route.ComposeRoute
 import moe.tlaster.precompose.navigation.route.DialogRoute
 import moe.tlaster.precompose.navigation.route.SceneRoute
-import moe.tlaster.precompose.navigation.transition.NavTransition
 import moe.tlaster.precompose.ui.BackDispatcher
 import moe.tlaster.precompose.ui.BackHandler
 import moe.tlaster.precompose.viewmodel.ViewModelStore
@@ -74,6 +74,8 @@ internal class RouteStackManager(
     val canGoBack: Boolean
         get() = currentStack?.canGoBack == true || _backStacks.size > 1
 
+    val isPop = mutableStateOf(false)
+
     private val routeParser: RouteParser by lazy {
         RouteParser().apply {
             routeGraph.routes.asSequence()
@@ -113,12 +115,13 @@ internal class RouteStackManager(
             pendingNavigation = route
             return
         }
-        val query = route.substringAfter('?', "")
+        isPop.value = false
 
         val matchResult = findRoute(route)
         checkNotNull(matchResult) { "RouteStackManager: navigate target $route not found" }
         require(matchResult.route is ComposeRoute) { "RouteStackManager: navigate target $route is not ComposeRoute" }
 
+        val query = route.substringAfter('?', "")
         fun newEntry(): BackStackEntry {
             return BackStackEntry(
                 id = stackEntryId++,
@@ -134,7 +137,7 @@ internal class RouteStackManager(
         fun newTask(entry: BackStackEntry, navTransition: NavTransition? = null): RouteStack {
             return RouteStack(
                 id = routeStackId++,
-                stacks = mutableStateListOf(entry),
+                topEntry = entry,
                 navTransition = navTransition,
             )
         }
@@ -158,7 +161,7 @@ internal class RouteStackManager(
                     )
                 }
                 is DialogRoute -> {
-                    currentStack?.stacks?.add(entry)
+                    currentStack?.entries?.add(entry)
                 }
             }
         }
@@ -184,6 +187,7 @@ internal class RouteStackManager(
         if (!canGoBack) {
             return false
         }
+        isPop.value = true
 
         if (!route.isNullOrEmpty()) {
             val matchResult = findRoute(route)

@@ -24,7 +24,6 @@ import androidx.compose.runtime.Composable
 import moe.tlaster.precompose.navigation.route.DialogRoute
 import moe.tlaster.precompose.navigation.route.Route
 import moe.tlaster.precompose.navigation.route.SceneRoute
-import moe.tlaster.precompose.navigation.transition.NavTransition
 
 class RouteBuilder(
     private val initialRoute: String,
@@ -45,11 +44,12 @@ class RouteBuilder(
     ) {
         this.route += SceneRoute(
             route = route,
-            navTransition = navTransition,
             deepLinks = deepLinks,
+            navTransition = navTransition,
             content = content,
         )
     }
+
     /**
      * Add the scene [Composable] to the [RouteBuilder], which will show over the scene
      * @param route route for the destination
@@ -58,11 +58,13 @@ class RouteBuilder(
     fun dialog(
         route: String,
         deepLinks: List<String> = emptyList(),
+        navTransition: NavTransition? = null,
         content: @Composable (BackStackEntry) -> Unit,
     ) {
         this.route += DialogRoute(
             route = route,
             deepLinks = deepLinks,
+            navTransition = navTransition,
             content = content
         )
     }

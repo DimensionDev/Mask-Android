@@ -22,11 +22,16 @@ package moe.tlaster.precompose.navigation.route
 
 import androidx.compose.runtime.Composable
 import moe.tlaster.precompose.navigation.BackStackEntry
-import moe.tlaster.precompose.navigation.transition.NavTransition
+import moe.tlaster.precompose.navigation.NavTransition
 
 internal class SceneRoute(
     route: String,
-    val navTransition: NavTransition?,
-    val deepLinks: List<String>,
+    deepLinks: List<String>,
+    navTransition: NavTransition?,
     content: @Composable (BackStackEntry) -> Unit,
-) : ComposeRoute(route, content)
+) : ComposeRoute(
+    route = route,
+    deepLinks = deepLinks,
+    navTransition = navTransition,
+    content = content
+)

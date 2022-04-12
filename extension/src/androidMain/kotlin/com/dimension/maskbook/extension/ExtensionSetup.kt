@@ -21,6 +21,9 @@
 package com.dimension.maskbook.extension
 
 import android.net.Uri
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.runtime.getValue
 import com.dimension.maskbook.common.IoScopeName
 import com.dimension.maskbook.common.ModuleSetup
@@ -38,32 +41,34 @@ import com.dimension.maskbook.extension.utils.ContentMessageChannel
 import moe.tlaster.precompose.navigation.NavController
 import moe.tlaster.precompose.navigation.RouteBuilder
 import moe.tlaster.precompose.navigation.currentBackStackEntryAsState
+import moe.tlaster.precompose.navigation.NavTransition
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import org.koin.mp.KoinPlatformTools
 
 object ExtensionSetup : ModuleSetup {
 
+    @OptIn(ExperimentalAnimationApi::class)
     override fun RouteBuilder.route(navController: NavController) {
         scene(
             route = ExtensionRoute.WebContent.path,
             deepLinks = listOf(
                 Deeplinks.WebContent.path
             ),
-            // arguments = listOf(
-            //     navArgument("site") { type = NavType.StringType; nullable = true }
-            // ),
-            // exitTransition = {
-            //     scaleOut(
-            //         targetScale = 0.9f,
-            //     )
-            // },
-            // popExitTransition = null,
-            // popEnterTransition = {
-            //     scaleIn(
-            //         initialScale = 0.9f,
-            //     )
-            // }
+            navTransition = NavTransition(
+                enterTransition = NavTransition.NoneEnter,
+                exitTransition = {
+                    scaleOut(
+                        targetScale = 0.9f,
+                    )
+                },
+                popExitTransition = NavTransition.NoneExit,
+                popEnterTransition = {
+                    scaleIn(
+                        initialScale = 0.9f,
+                    )
+                }
+            ),
         ) {
             val backStackEntry by navController.currentBackStackEntryAsState()
 

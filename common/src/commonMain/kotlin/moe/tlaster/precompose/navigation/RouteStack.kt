@@ -23,33 +23,34 @@ package moe.tlaster.precompose.navigation
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import moe.tlaster.precompose.navigation.transition.NavTransition
 
 @Stable
-internal class RouteStack(
+class RouteStack internal constructor(
     val id: Long,
-    val stacks: SnapshotStateList<BackStackEntry> = mutableStateListOf(),
+    val topEntry: BackStackEntry,
+    val entries: SnapshotStateList<BackStackEntry> = mutableStateListOf(),
     val navTransition: NavTransition? = null,
 ) {
     private var destroyAfterTransition = false
-    val currentEntry: BackStackEntry?
-        get() = stacks.lastOrNull()
+
+    val currentEntry: BackStackEntry
+        get() = entries.lastOrNull() ?: topEntry
 
     val canGoBack: Boolean
-        get() = stacks.size > 1
+        get() = entries.isNotEmpty()
 
     fun goBack(): BackStackEntry {
-        return stacks.removeLast().also {
+        return entries.removeLast().also {
             it.destroy()
         }
     }
 
     fun onActive() {
-        currentEntry?.active()
+        currentEntry.active()
     }
 
     fun onInActive() {
-        currentEntry?.inActive()
+        currentEntry.inActive()
         if (destroyAfterTransition) {
             onDestroyed()
         }
@@ -60,13 +61,12 @@ internal class RouteStack(
     }
 
     fun onDestroyed() {
-        stacks.forEach {
-            it.destroy()
-        }
-        stacks.clear()
+        topEntry.destroy()
+        entries.forEach { it.destroy() }
+        entries.clear()
     }
 
     fun hasRoute(route: String): Boolean {
-        return stacks.any { it.route.route == route }
+        return topEntry.route.route == route || entries.any { it.route.route == route }
     }
 }

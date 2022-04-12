@@ -20,16 +20,18 @@
  */
 package moe.tlaster.precompose.navigation
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.with
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveableStateHolder
-import moe.tlaster.precompose.navigation.transition.AnimatedDialogRoute
-import moe.tlaster.precompose.navigation.transition.AnimatedRoute
-import moe.tlaster.precompose.navigation.transition.DialogTransition
-import moe.tlaster.precompose.navigation.transition.NavTransition
 import moe.tlaster.precompose.ui.LocalBackDispatcherOwner
 import moe.tlaster.precompose.ui.LocalLifecycleOwner
 import moe.tlaster.precompose.ui.LocalViewModelStoreOwner
@@ -45,15 +47,14 @@ import moe.tlaster.precompose.ui.LocalViewModelStoreOwner
  *
  * @param navController the Navigator for this host
  * @param initialRoute the route for the start destination
- * @param navTransition navigation transition for the scenes in this [NavHost]
  * @param builder the builder used to construct the graph
  */
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun NavHost(
     navController: NavController,
     initialRoute: String,
     navTransition: NavTransition = remember { NavTransition() },
-    dialogTransition: DialogTransition = remember { DialogTransition() },
     builder: RouteBuilder.() -> Unit,
 ) {
     val stateHolder = rememberSaveableStateHolder()
@@ -83,43 +84,82 @@ fun NavHost(
     LaunchedEffect(manager, initialRoute) {
         manager.navigateInitial(initialRoute)
     }
+
     val currentStack = manager.currentStack
     if (currentStack != null) {
-        AnimatedRoute(
+
+        val finalStackEnter: AnimatedContentScope<RouteStack>.() -> EnterTransition = {
+            if (manager.isPop.value) {
+                (targetState.navTransition ?: navTransition).popEnterTransition.invoke(this)
+            } else {
+                (targetState.navTransition ?: navTransition).enterTransition.invoke(this)
+            }
+        }
+        val finalStackExit: AnimatedContentScope<RouteStack>.() -> ExitTransition = {
+            if (manager.isPop.value) {
+                (targetState.navTransition ?: navTransition).popExitTransition.invoke(this)
+            } else {
+                (targetState.navTransition ?: navTransition).exitTransition.invoke(this)
+            }
+        }
+
+        val finalEntryEnter: AnimatedContentScope<BackStackEntry>.() -> EnterTransition = {
+            if (manager.isPop.value) {
+                (targetState.route.navTransition ?: navTransition).popEnterTransition.invoke(this)
+            } else {
+                (targetState.route.navTransition ?: navTransition).enterTransition.invoke(this)
+            }
+        }
+        val finalEntryExit: AnimatedContentScope<BackStackEntry>.() -> ExitTransition = {
+            if (manager.isPop.value) {
+                (targetState.route.navTransition ?: navTransition).popExitTransition.invoke(this)
+            } else {
+                (targetState.route.navTransition ?: navTransition).exitTransition.invoke(this)
+            }
+        }
+
+        AnimatedContent(
             currentStack,
-            navTransition = navTransition,
-            manager = manager,
-        ) { routeStack ->
-            LaunchedEffect(routeStack) {
-                routeStack.onActive()
-            }
-            DisposableEffect(routeStack) {
+            transitionSpec = {
+                finalStackEnter(this) with finalStackExit(this)
+            },
+        ) { stack ->
+            DisposableEffect(stack) {
+                stack.onActive()
                 onDispose {
-                    routeStack.onInActive()
+                    stack.onInActive()
                 }
             }
-            val currentEntry = routeStack.currentEntry
-            if (currentEntry != null) {
-                LaunchedEffect(currentEntry) {
-                    currentEntry.active()
-                }
-                DisposableEffect(currentEntry) {
+
+            @Composable
+            fun initEntry(entry: BackStackEntry) {
+                DisposableEffect(entry) {
+                    entry.active()
                     onDispose {
-                        currentEntry.inActive()
+                        entry.inActive()
+                    }
+                }
+
+                stateHolder.SaveableStateProvider(entry.id) {
+                    CompositionLocalProvider(
+                        LocalViewModelStoreOwner provides entry,
+                        LocalLifecycleOwner provides entry,
+                    ) {
+                        entry.route.content(entry)
                     }
                 }
             }
-            AnimatedDialogRoute(
-                stack = routeStack,
-                dialogTransition = dialogTransition,
-            ) {
-                stateHolder.SaveableStateProvider(it.id) {
-                    CompositionLocalProvider(
-                        LocalViewModelStoreOwner provides it,
-                        LocalLifecycleOwner provides it,
-                    ) {
-                        it.route.content.invoke(it)
-                    }
+
+            initEntry(stack.topEntry)
+
+            if (stack.currentEntry != stack.topEntry) {
+                AnimatedContent(
+                    stack.currentEntry,
+                    transitionSpec = {
+                        finalEntryEnter(this) with finalEntryExit(this)
+                    },
+                ) { entry ->
+                    initEntry(entry)
                 }
             }
         }
