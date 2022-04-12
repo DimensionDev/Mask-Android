@@ -131,6 +131,10 @@ internal class RouteStackManager(
             "RouteStackManager: navigate target $route is not ComposeRoute"
         }
 
+        if (options?.popUpTo != null) {
+            popTo(options.popUpTo.route, options.popUpTo.inclusive)
+        }
+
         val query = route.substringAfter('?', "")
         fun newEntry(route: ComposeRoute): BackStackEntry {
             return BackStackEntry(
@@ -212,18 +216,6 @@ internal class RouteStackManager(
                 }
             }
         }
-
-        if (options?.popUpTo != null && matchResult.route is SceneRoute) {
-            val index = _backStacks.indexOfLast { it.hasRoute(options.popUpTo.route) }
-            if (index != -1 && index != _backStacks.lastIndex) {
-                _backStacks.removeRange(
-                    if (options.popUpTo.inclusive) index else index + 1,
-                    _backStacks.lastIndex,
-                )
-            } else if (options.popUpTo.route.isEmpty()) {
-                _backStacks.removeRange(0, _backStacks.lastIndex)
-            }
-        }
     }
 
     fun goBack(
@@ -236,21 +228,10 @@ internal class RouteStackManager(
         }
         isPop.value = true
 
-        if (!route.isNullOrEmpty()) {
-            val matchResult = routeGraph.findRoute(route)
-            if (matchResult != null) {
-                val index = _backStacks.indexOfLast { it.hasRoute(matchResult.route.route) }
-                if (index != -1) {
-                    _backStacks.removeRange(
-                        if (inclusive) index else index + 1,
-                        _backStacks.lastIndex,
-                    )
-                    return true
-                }
-            }
-        }
-
         when {
+            !route.isNullOrEmpty() -> {
+                popTo(route, inclusive)
+            }
             currentStack?.canGoBack == true -> {
                 currentStack?.goBack()
             }
@@ -270,6 +251,38 @@ internal class RouteStackManager(
             _suspendResult.remove(it)?.resume(result)
         }
         return true
+    }
+
+    private fun popTo(route: String, inclusive: Boolean = false): BackStackEntry? {
+        val matchResult = routeGraph.findRoute(route) ?: return null
+
+        val matchRoute = matchResult.route
+        val stackIndex = _backStacks.indexOfLast { it.hasRoute(matchRoute.route) }
+        if (stackIndex == -1) return null
+
+        val stack = _backStacks[stackIndex]
+        val entryIndex = stack.entries.indexOfLast { it.route.route == matchRoute.route }
+
+        return when (matchRoute) {
+            is SceneRoute, is NavigationRoute -> {
+                if (entryIndex == -1) {
+                    val fromIndex = if (inclusive) stackIndex else stackIndex + 1
+                    val toIndex =  _backStacks.lastIndex
+                    if (fromIndex <= toIndex) {
+                        _backStacks.removeRange(fromIndex, toIndex)
+                    }
+                    currentEntry
+                } else {
+                    val fromIndex = if (inclusive) entryIndex else entryIndex + 1
+                    val toIndex = stack.entries.lastIndex
+                    if (fromIndex <= toIndex) {
+                        stack.entries.removeRange(fromIndex, toIndex)
+                    }
+                    stack.currentEntry
+                }
+            }
+            else -> null
+        }
     }
 
     suspend fun waitingForResult(entry: BackStackEntry): Any? = suspendCoroutine {

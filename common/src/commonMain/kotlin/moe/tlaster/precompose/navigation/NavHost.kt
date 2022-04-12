@@ -55,7 +55,7 @@ import moe.tlaster.precompose.ui.LocalViewModelStoreOwner
  * @param builder the builder used to construct the graph
  */
 
-@OptIn(ExperimentalAnimationApi::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun NavHost(
     navController: NavController,
