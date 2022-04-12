@@ -193,6 +193,7 @@ fun SendRoute(
     val canConfirm by transferDetailViewModel.canConfirm.observeAsState()
     val balance by transferDetailViewModel.balance.observeAsState()
     val maxAmount by transferDetailViewModel.maxAmount.observeAsState()
+    val isEnoughForGas by transferDetailViewModel.isEnoughForGas.observeAsState()
     transferDetailViewModel.setGasTotal(gasTotal = gasTotal)
 
     TransferDetailScene(
@@ -216,6 +217,7 @@ fun SendRoute(
         onAmountChanged = { transferDetailViewModel.setAmount(it) },
         unlockType = if (biometricEnabled) UnlockType.BIOMETRIC else UnlockType.PASSWORD,
         gasFee = gasUsdTotal.humanizeDollar(),
+        isEnoughForGas = isEnoughForGas,
         arrivesIn = arrives,
         onEditGasFee = {
             navController.navigate(WalletRoute.Transfer.EditGasFee)
