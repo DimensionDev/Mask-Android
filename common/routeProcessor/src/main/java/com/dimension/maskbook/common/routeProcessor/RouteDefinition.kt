@@ -85,7 +85,6 @@ internal data class ParameterRouteDefinition(
                 childRoute.forEach {
                     if (it is FunctionRouteDefinition) {
                         val pathParams = it.parameters.filter { !it.parameter.type.resolve().isMarkedNullable }
-                        // val queryParams = it.parameters.filter { it.parameter.type.resolve().isMarkedNullable }
                         addProperty(
                             PropertySpec.builder("path", String::class)
                                 .addModifiers(KModifier.CONST)
@@ -96,8 +95,6 @@ internal data class ParameterRouteDefinition(
                                     name,
                                     if (pathParams.any()) RouteDivider else "",
                                     pathParams.joinToString(RouteDivider) { "{${it.name}}" },
-                                    // if (queryParams.any()) "?" else "",
-                                    // queryParams.joinToString("&") { "${it.name}={${it.name}}" }
                                 )
                                 .build()
                         )

@@ -160,7 +160,7 @@ internal class RouteGraphProcessor(
                                         val query =
                                             it.getAnnotationsByType(Query::class).first()
                                         builder.addStatement(
-                                            "val ${it.name?.asString()}: %T? = it.query(%S)",
+                                            "val ${it.name?.asString()}: %T = it.query(%S)",
                                             it.type.toTypeName(),
                                             query.name,
                                         )
