@@ -1,0 +1,859 @@
+{
+    "tab": {
+        "personas": "",
+        "wallet": "",
+        "labs": "",
+        "setting": ""
+    },
+    "common": {
+        "alert": {
+            "biometry_id_activate": {
+                "title": "",
+                "description": ""
+            },
+            "face_id_activate_fail": {
+                "title": "",
+                "description": ""
+            },
+            "keychain_auth_prompt": {
+                "title": ""
+            },
+            "recovery_key": {
+                "title": "",
+                "description": ""
+            },
+            "recovery_key_warning": {
+                "title": "",
+                "description": ""
+            },
+            "recovery_key_tips": {
+                "title": "",
+                "description": ""
+            },
+            "wallet_create_success": {
+                "title": "",
+                "description": ""
+            },
+            "wallet_derive_success": {
+                "title": "",
+                "description": ""
+            },
+            "wallet_import": {
+                "alert_title_success": "",
+                "alert_title_fail": ""
+            },
+            "signout": {
+                "title": "",
+                "description": ""
+            },
+            "set_password": {
+                "title": "",
+                "description": ""
+            },
+            "change_password": {
+                "title": "",
+                "description": ""
+            },
+            "change_password_failed": {
+                "title": ""
+            },
+            "setup_backup_password": {
+                "title": "",
+                "description": ""
+            },
+            "setup_backup_password_failed": {
+                "title": ""
+            },
+            "change_backup_password": {
+                "title": "",
+                "description": ""
+            },
+            "change_backup_password_failed": {
+                "title": ""
+            },
+            "wallet_backup": {
+                "title": ""
+            },
+            "identity_phrase": {
+                "title": "",
+                "description": ""
+            },
+            "identify_code_screenshot_warning": {
+                "title": "",
+                "description": ""
+            },
+            "identity_create": {
+                "title": "",
+                "description": ""
+            },
+            "persona_logout": {
+                "title": "",
+                "description": ""
+            },
+            "persona_name_duplicated": {
+                "title": ""
+            },
+            "local_backup": {
+                "backup_completed": "",
+                "backup_failed": ""
+            },
+            "setting": {
+                "warning_backup_data_titile": "",
+                "warning_backup_data_description": ""
+            },
+            "disconnect_profile": {
+                "title": ""
+            },
+            "bind_remote_info": {
+                "title": "",
+                "detail": ""
+            },
+            "export_private_key": {
+                "title": "",
+                "description": ""
+            },
+            "backup_tips_no_backup_password": {
+                "title": "",
+                "description": ""
+            },
+            "copied_to_clipboard": {
+                "title": ""
+            },
+            "permissions": {
+                "title": "",
+                "description": "",
+                "open_settings": "",
+                "btn": {
+                    "ok": "",
+                    "cancel": "",
+                    "settings": ""
+                }
+            }
+        },
+        "controls": {
+            "create_wallet": "",
+            "import_wallet": "",
+            "accept": "",
+            "enable": "",
+            "no_thanks": "",
+            "done": "",
+            "ok": "",
+            "i_understand": "",
+            "verify": "",
+            "confirm": "",
+            "sending": "",
+            "sent": "",
+            "clear": "",
+            "next": "",
+            "signout": "",
+            "cancel": "",
+            "change": "",
+            "invite": "",
+            "try_again": "",
+            "retry": "",
+            "webview_go_back": "",
+            "merge_and_back_up": "",
+            "merge_to_local_data": "",
+            "back_up_to_cloud": "",
+            "back_up_locally": "",
+            "back_up": "",
+            "resend": ""
+        },
+        "loading": ""
+    },
+    "scene": {
+        "terms_of_service": {
+            "title": "",
+            "description": "",
+            "service_agreement": ""
+        },
+        "create_wallet": {
+            "wallet_name": "",
+            "wallet_name_placeholder": "",
+            "enter_password": "",
+            "password_error": "",
+            "select_network": "",
+            "multichain_wallet_title": "",
+            "multichain_wallet_description": ""
+        },
+        "biometry_recognition": {
+            "face_id": {
+                "title": "",
+                "description": ""
+            },
+            "touch_id": {
+                "title": "",
+                "description": ""
+            }
+        },
+        "biometry_id": {
+            "face_id": "",
+            "touch_id": "",
+            "face_id_reason": "",
+            "touch_id_reason": "",
+            "passcode_notSet": "",
+            "biometry_not_enrolled": "",
+            "biometry_lockout": "",
+            "biometry_not_available": "",
+            "biometry_has_changed": ""
+        },
+        "wallet_detail": {
+            "wallet_items_rename": "",
+            "wallet_items_backup": "",
+            "wallet_items_delete": "",
+            "wallet_title_change": "",
+            "wallet_items_history": ""
+        },
+        "wallet_list": {
+            "title": "",
+            "wallets_items_create": "",
+            "wallets_items_import": "",
+            "wallets_items_add": "",
+            "wallets_list_import": ""
+        },
+        "mnemonic_word": {
+            "title": "",
+            "description": ""
+        },
+        "mnemonic_verify": {
+            "title": "",
+            "description": "",
+            "words_title": "",
+            "mnemonic_error": "",
+            "mnemonic_prompt": ""
+        },
+        "select_network": {},
+        "wallets_list_add": {
+            "wallets_items_add": "",
+            "wallets_list_import": ""
+        },
+        "wallet_rename": {
+            "name_title": "",
+            "placeholder": "",
+            "rename_button": ""
+        },
+        "wallet_delete": {
+            "title": "",
+            "content": "",
+            "password": "",
+            "placeholder": "",
+            "btn_cancel": "",
+            "btn_delete": ""
+        },
+        "wallet_backup": {
+            "title": "",
+            "tab_keystore": "",
+            "tab_private_key": "",
+            "keystore_tips": "",
+            "private_key_tips": "",
+            "btn_cancel": "",
+            "btn_copy": ""
+        },
+        "wallet_edit": {
+            "item_rename": "",
+            "item_delete": ""
+        },
+        "wallet_import": {
+            "title": "",
+            "item_mnemonic_words": "",
+            "item_mnemonic_words_desc": "",
+            "item_private_key": "",
+            "item_private_key_desc": "",
+            "item_keystore": "",
+            "item_keystore_desc": ""
+        },
+        "wallet_derivation_path": {
+            "title": "",
+            "header_address": "",
+            "header_balance": "",
+            "header_operation": "",
+            "operation_add": "",
+            "operation_added": ""
+        },
+        "wallet_mnemonic": {
+            "title": "",
+            "btn_confirm": "",
+            "placeholder": ""
+        },
+        "wallet_private_key": {
+            "title": "",
+            "btn_confirm": "",
+            "placeholder": ""
+        },
+        "wallet_keystore": {
+            "title": "",
+            "btn_confirm": "",
+            "password_placeholder": "",
+            "keystore_placeholder": ""
+        },
+        "setting": {
+            "general": {
+                "title": "",
+                "language": "",
+                "appearance": "",
+                "data_source": "",
+                "sync_with_plug": "",
+                "setup_payment_password": "",
+                "change_payment_password": "",
+                "unlock_wallet_with_face_id": "",
+                "unlock_wallet_with_touch_id": ""
+            },
+            "backup_recovery": {
+                "title": "",
+                "restore_data": "",
+                "back_up_data": "",
+                "back_up_password": "",
+                "back_up_password_empty": "",
+                "change_backup_password": "",
+                "persona_already_exits": {
+                    "title": "",
+                    "desc": ""
+                }
+            },
+            "profile": {
+                "title": "",
+                "email": "",
+                "email_empty": "",
+                "phone_number": "",
+                "phone_number_empty": "",
+                "log_out": ""
+            },
+            "detail": {
+                "automatic": "",
+                "light": "",
+                "dark": ""
+            },
+            "backup_data": {
+                "title": "",
+                "no_backup_title": "",
+                "subtitle": "",
+                "backup_icloud": "",
+                "backup_manually": ""
+            },
+            "recovery": {
+                "title": "",
+                "backup_icloud": "",
+                "backup_manually": ""
+            },
+            "local_backup": {
+                "title": "",
+                "local_wallet": "",
+                "loading_text": ""
+            },
+            "remote_backup": {
+                "title": ""
+            },
+            "bind_phone_number": {
+                "title": "",
+                "sub_title": ""
+            },
+            "change_phone_number": {
+                "title": "",
+                "sub_title": "",
+                "tips": ""
+            },
+            "bind_email": {
+                "title": "",
+                "sub_title": ""
+            },
+            "change_email": {
+                "title": "",
+                "sub_title": "",
+                "tips": ""
+            },
+            "bind_remote_info": {
+                "setup_email_title": "",
+                "change_email_title": "",
+                "setup_phone_number_title": "",
+                "change_phone_number_title": "",
+                "setup_email_detail": "",
+                "change_email_detail": "",
+                "setup_phone_number_detail": "",
+                "change_phone_number_detail": ""
+            },
+            "validation_code": "",
+            "validation_code_mismatch": "",
+            "validation_code_via_email": "",
+            "validation_code_via_mobile_phone": ""
+        },
+        "backup_password_verify": {
+            "title": ""
+        },
+        "set_backup_password": {
+            "title": "",
+            "backup_password": "",
+            "confirm_backup_password": "",
+            "tips": "",
+            "error_inconsistent_password": ""
+        },
+        "change_backup_password": {
+            "title": "",
+            "sub_title": "",
+            "backup_password": "",
+            "new_backup_password": "",
+            "confirm_backup_password": "",
+            "tips": "",
+            "error_incorrect_password": "",
+            "error_inconsistent_password": ""
+        },
+        "sendTransaction": {
+            "send": {
+                "placeholder_address": "",
+                "Label_To": "",
+                "label_Amount": "",
+                "btn_max": "",
+                "btn_send": "",
+                "btn_Next": "",
+                "Label_Password": "",
+                "btn_withoutPassword": "",
+                "amount_error": "",
+                "password_error": ""
+            },
+            "addContact": {
+                "btn_add": "",
+                "placeholder_name": ""
+            },
+            "tokenList": {
+                "title": "",
+                "placeholder": ""
+            },
+            "gasPrice": {
+                "title": "",
+                "standard": "",
+                "fast": "",
+                "custom": "",
+                "btn_confirm": "",
+                "fee": "",
+                "arrives": "",
+                "gasPrice": "",
+                "gasLimit": "",
+                "maxPriorityFee": "",
+                "maxFee": "",
+                "costFee": "",
+                "advancedBtn": "",
+                "gasLimit_error": "",
+                "maxPriorityFee_error_low": "",
+                "maxPriorityFee_error_high": "",
+                "maxFee_error_low": "",
+                "maxFee_error_high": ""
+            },
+            "sendConfirmPop": {
+                "gasFee": "",
+                "total": "",
+                "edit": "",
+                "gasFeeLow": "",
+                "gasFeeMedium": "",
+                "gasFeeHigh": ""
+            }
+        },
+        "set_password": {
+            "title": "",
+            "payment_password": "",
+            "repeat_payment_password": "",
+            "password_invalid": "",
+            "confirm_payment_password": "",
+            "input_payment_password": "",
+            "failed_updating_password": ""
+        },
+        "change_password": {
+            "title": "",
+            "sub_title": "",
+            "failed_loading_password": "",
+            "password": "",
+            "new_password": "",
+            "confirm_Password": "",
+            "incorrect_password": "",
+            "password_not_match": "",
+            "password_demand": ""
+        },
+        "personas": {
+            "personas": "",
+            "tabs": {
+                "social": "",
+                "post": "",
+                "contacts": "",
+                "group": ""
+            },
+            "action": {
+                "change_add_persona": "",
+                "rename": "",
+                "export_private_key": "",
+                "backup": "",
+                "recovery": "",
+                "log_out": "",
+                "delete": ""
+            },
+            "create": {
+                "persona": "",
+                "create_persona": "",
+                "input_persona_name": ""
+            },
+            "delete": "",
+            "delete_tip": "",
+            "add_persona": "",
+            "user_id": "",
+            "connect_social_tip": ""
+        },
+        "persona_avatar": {
+            "set_persona_avatar": "",
+            "remove_persona_avatar": "",
+            "select_from_photos": "",
+            "take_a_photo": ""
+        },
+        "persona_welcome": {
+            "title": "",
+            "description": "",
+            "persona": ""
+        },
+        "persona_export_private_key": {
+            "title": "",
+            "tips": "",
+            "backup_recovery": ""
+        },
+        "persona_download_qr_code": {
+            "title": "",
+            "identity_code": "",
+            "tips": "",
+            "success": "",
+            "failed": ""
+        },
+        "persona_contacts": {
+            "empty_contacts_tips": "",
+            "empty_search_tips": "",
+            "message_tips": "",
+            "search_account": "",
+            "delete": "",
+            "contact": ""
+        },
+        "persona_social": {
+            "twitter": "",
+            "facebook": "",
+            "instagram": "",
+            "minds": "",
+            "connect_to": "",
+            "disconnect": "",
+            "accounts": ""
+        },
+        "persona_empty": {
+            "connect_social": "",
+            "message_tips": ""
+        },
+        "wallet_balance": {
+            "btn_swap": "",
+            "btn_Send": "",
+            "btn_receive": "",
+            "header_title_collectibles": "",
+            "date_today": "",
+            "date_yestoday": "",
+            "date_thisMonth": "",
+            "date_lastMonth": "",
+            "transaction_received": "",
+            "transaction_approve": "",
+            "transaction_send": "",
+            "transaction_swap": "",
+            "transaction_deposit": "",
+            "transaction_cancel": "",
+            "transaction_action_title": "",
+            "transaction_action_view": "",
+            "balance_expand_all": "",
+            "balance_expand_less": "",
+            "header_title_tokens": "",
+            "empty_token": "",
+            "empty_collectibles": ""
+        },
+        "wallet_send_address": {
+            "recent": "",
+            "search_address": "",
+            "empty_token_warn": "",
+            "by_token": ""
+        },
+        "token_detail": {
+            "switch_network": "",
+            "walletconnect_switch_network_alert": ""
+        },
+        "transaction_history": {
+            "no_transaction": "",
+            "status": {
+                "pending": "",
+                "fail": ""
+            },
+            "speed_up": "",
+            "type": {
+                "send": "",
+                "receive": "",
+                "swap": "",
+                "cancel": "",
+                "approve": "",
+                "unknown": ""
+            }
+        },
+        "wallet_receive": {
+            "btn_share": "",
+            "your_address": ""
+        },
+        "wallet_unlock": {
+            "title": "",
+            "button": ""
+        },
+        "identity_empty": {
+            "title": "",
+            "description": "",
+            "create_an_identity": "",
+            "recovery_sign_in": "",
+            "synchronization": ""
+        },
+        "synchronization": {
+            "success": "",
+            "failed": ""
+        },
+        "identity_create": {
+            "title": "",
+            "description": ""
+        },
+        "identify_verify": {
+            "title": "",
+            "description": "",
+            "identity_error": ""
+        },
+        "identity_recovery": {
+            "title": "",
+            "identity_button": "",
+            "private_key_button": "",
+            "local_backup_recovery_button": "",
+            "cloud_backup_recovery_button_title": ""
+        },
+        "identity_mnemonic_import": {
+            "title": "",
+            "description": "",
+            "placeholder": ""
+        },
+        "identity_privatekey_import": {
+            "title": "",
+            "description": "",
+            "placeholder": ""
+        },
+        "Identity_restore_signin_success": {
+            "title": ""
+        },
+        "app": {
+            "market_trend_source": "",
+            "wallet_address": "",
+            "riskwarning": "",
+            "riskwarning_title": "",
+            "swap_option_source": "",
+            "swap_network_source": {
+                "eth": "",
+                "poly": "",
+                "bsc": ""
+            },
+            "plugins": {
+                "file_service": "",
+                "ito": "",
+                "lucy_drop": "",
+                "swap": "",
+                "transaction": "",
+                "market_trend": "",
+                "snapshot": "",
+                "collectibles": "",
+                "gitcoin": "",
+                "valuables": "",
+                "dhedge": "",
+                "file_service_desc": "",
+                "ito_desc": "",
+                "lucy_drop_desc": "",
+                "swap_desc": "",
+                "transaction_desc": ""
+            }
+        },
+        "social": {
+            "login_in_to_continue": "",
+            "login_in_notify": {
+                "twitter": "",
+                "facebook": ""
+            },
+            "i_understand": "",
+            "title": "",
+            "connect_button_title": "",
+            "profile_select_title": "",
+            "connected": "",
+            "connect_hint1": "",
+            "connect_hint2": "",
+            "connect_hint_logged_in": "",
+            "connect_to_mask_network": "",
+            "account_already_connected": "",
+            "connect_stop": "",
+            "error": {
+                "fail_to_connect": ""
+            }
+        },
+        "share": {
+            "shareLink": ""
+        },
+        "restore": {
+            "titles": {
+                "restore_buckup": "",
+                "restore_remote_backup": "",
+                "recovery_with_email": "",
+                "recovery_with_mobile": "",
+                "restore_succeed": "",
+                "restore_failed": "",
+                "native_wallets": "",
+                "unsupport_restore_data": "",
+                "loading_failed": "",
+                "verify_wallet_password": ""
+            },
+            "buttonTitles": {
+                "backup": "",
+                "restore": "",
+                "next": "",
+                "confirm": "",
+                "resend": "",
+                "email": "",
+                "mobile": ""
+            },
+            "succeed_detail": "",
+            "completion": "",
+            "failed_detail": "",
+            "input_placeholder": {
+                "email": ""
+            },
+            "check_unsupport_data": "",
+            "restore_created_date": "",
+            "restored_post": "",
+            "restored_account": "",
+            "restored_persona": "",
+            "restored_files": "",
+            "restored_contacts": "",
+            "restored_relations": "",
+            "wallet_existed": "",
+            "input_title": {
+                "remote_backup_password": "",
+                "email": "",
+                "validationcode": "",
+                "mobile": "",
+                "payment_password": ""
+            },
+            "tip": {
+                "data_failed_to_fetch": "",
+                "failed_to_download_file": "",
+                "incorrect_backup_password": "",
+                "invalid_email_address": "",
+                "invalid_mobile_number": "",
+                "email_validationcode": "",
+                "mobile_validationcode": "",
+                "incorrect_validationcode": "",
+                "invalid_validationcode": "",
+                "validationcode_five_minutes": "",
+                "validationcode_ten_minutes": "",
+                "validationcode_thirty_minutes": "",
+                "validationcode_one_hour": "",
+                "validationcode_twentyfour_hours": "",
+                "failed_loading_remotefile": "",
+                "remote_restore_succeed": "",
+                "remote_restore_syncing_password": ""
+            }
+        },
+        "wallet_connect": {
+            "wallet_connect": "",
+            "select_wallet": "",
+            "scan_q_r_code": "",
+            "qr_code_tips": "",
+            "tap_to_copy": "",
+            "connecting": "",
+            "connect_success": "",
+            "scan": "",
+            "disconnect": "",
+            "connection_fail": "",
+            "could_not_switch_blockchain_network_title": "",
+            "could_not_switch_blockchain_network_message": "",
+            "network_not_match": "",
+            "network_not_support": "",
+            "address_exist": "",
+            "replace_wallet_connect_wallet": ""
+        },
+        "wallet_connect_server": {
+            "want_to_connect": "",
+            "connected_apps": "",
+            "connect": "",
+            "wallet_connect_notification": "",
+            "switch_wallet": ""
+        },
+        "backup": {
+            "remote_backup_no_backup": {
+                "title": "",
+                "message": ""
+            },
+            "remote_backup_actions_view": {
+                "tips": ""
+            },
+            "merge_to_local": {
+                "title": ""
+            },
+            "validation_code": "",
+            "with_phone": "",
+            "with_email": "",
+            "tips_phone": "",
+            "tips_email": "",
+            "backup_verify_field_email": "",
+            "backup_verify_field_phone": "",
+            "backup_verify_title_email": "",
+            "backup_verify_title_phone": "",
+            "restore_created_date": "",
+            "restored_post": "",
+            "restored_account": "",
+            "restored_persona": "",
+            "restored_files": "",
+            "restored_contacts": "",
+            "restored_relations": ""
+        },
+        "scan_qr_code": {
+            "title": ""
+        },
+        "plugin_settings": {
+            "title": "",
+            "message_tips": ""
+        },
+        "open_red_package": {
+            "title": "",
+            "wallet": "",
+            "claim": "",
+            "claiming": "",
+            "switch_network": "",
+            "confirm_risk_warning": "",
+            "wrong_network": "",
+            "total": "",
+            "ends": "",
+            "from": "",
+            "shares": "",
+            "on_going": "",
+            "expired": "",
+            "claimed": "",
+            "refunded": "",
+            "refund": "",
+            "empty": "",
+            "share_message_official": "",
+            "share_message_unsupport_platform": "",
+            "better_luck_next_time": ""
+        }
+    },
+    "chain": {
+        "short_name": {
+            "eth": "",
+            "bsc": "",
+            "dot": "",
+            "polygon": "",
+            "arbitrum": "",
+            "xdai": "",
+            "optimism": ""
+        },
+        "name": {
+            "eth": "",
+            "bsc": "",
+            "dot": "",
+            "polygon": "",
+            "arbitrum": "",
+            "xdai": "",
+            "optimism": ""
+        }
+    }
+}
