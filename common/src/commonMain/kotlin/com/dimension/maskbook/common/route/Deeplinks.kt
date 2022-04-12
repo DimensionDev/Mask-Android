@@ -57,4 +57,7 @@ expect object Deeplinks {
     object WebContent {
         operator fun invoke(site: String?): String
     }
+    object Labs {
+        const val Transak: String
+    }
 }

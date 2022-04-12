@@ -81,6 +81,7 @@ import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletSwitchAd
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletSwitchEditModal
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletSwitchSceneModal
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletTransactionHistoryScene
+import com.dimension.maskbook.wallet.ui.scenes.wallets.send.EmptyTokenDialog
 import com.dimension.maskbook.wallet.ui.scenes.wallets.token.TokenDetailScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.walletconnect.WalletConnectModal
 import com.dimension.maskbook.wallet.viewmodel.wallets.TokenDetailViewModel
@@ -827,6 +828,37 @@ fun UnlockWalletDialog(
                     }
                 )
             }
+        }
+    )
+}
+
+// if (it.count <= BigDecimal.ZERO) {
+//     navController.navigate(
+//         WalletRoute.EmptyTokenDialog(it.tokenData.symbol),
+//         navOptions {
+//             popUpTo(WalletRoute.Transfer.Route){
+//                 inclusive = true
+//             }
+//         }
+//     )
+// }
+
+@NavGraphDestination(
+    route = WalletRoute.EmptyTokenDialog.path,
+    packageName = navigationComposeDialogPackage,
+    functionName = navigationComposeDialog,
+)
+@Composable
+fun EmptyTokenDialogRoute(
+    navController: NavController,
+    @Back onBack: () -> Unit,
+    @Path("tokenSymbol") tokenSymbol: String,
+) {
+    EmptyTokenDialog(
+        tokenSymbol = tokenSymbol,
+        onCancel = onBack,
+        onBuy = {
+            navController.navigate(deepLink = Uri.parse(Deeplinks.Labs.Transak))
         }
     )
 }
