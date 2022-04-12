@@ -147,7 +147,9 @@ class WalletBalancesViewModel(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val walletNativeToken = dWebData.flatMapLatest {
+    val walletNativeToken = currentWallet.flatMapLatest {
+        dWebData
+    }.flatMapLatest {
         getWalletNativeToken(it?.chainType)
     }.asStateIn(viewModelScope, null)
 
