@@ -156,9 +156,8 @@ fun TransferDetailScene(
                             onValueChanged = onAmountChanged,
                             onMax = { onAmountChanged.invoke(maxAmount) },
                             error = when {
-                                isEnoughForGas -> {
-                                    // TODO Mimao localize
-                                    "Insufficient gas balance"
+                                !isEnoughForGas -> {
+                                    stringResource(R.string.scene_sendTransaction_not_enough_gas)
                                 }
                                 amount.toBigDecimalOrNull() ?: BigDecimal.ZERO > maxAmount.toBigDecimalOrNull() ?: BigDecimal.ZERO -> {
                                     stringResource(R.string.scene_sendTransaction_send_amount_error)
