@@ -39,6 +39,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.navOptions
+import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.ext.shareText
 import com.dimension.maskbook.common.route.CommonRoute
@@ -62,6 +63,7 @@ import com.dimension.maskbook.common.viewmodel.BiometricViewModel
 import com.dimension.maskbook.setting.export.SettingServices
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.export.model.ChainType
+import com.dimension.maskbook.wallet.export.model.WalletTokenData
 import com.dimension.maskbook.wallet.repository.IWalletRepository
 import com.dimension.maskbook.wallet.ui.scenes.wallets.UnlockWalletDialog
 import com.dimension.maskbook.wallet.ui.scenes.wallets.WalletQrcodeScene
@@ -115,12 +117,15 @@ fun CollectibleDetail(
     }
     val data by viewModel.data.observeAsState(initial = null)
     val transactions by viewModel.transactions.observeAsState()
+    val nativeToken by viewModel.walletNativeToken.observeAsState()
     CollectibleDetailScene(
         data = data,
         onBack = onBack,
         onSend = {
-            data?.let {
-                navController.navigate(WalletRoute.Transfer.SearchAddress(it.tradableId()))
+            data?.let { collectible ->
+                nativeToken?.let {
+                    navController.transfer(walletNativeToken = it, tradableId = collectible.tradableId())
+                }
             }
         },
         onReceive = {
@@ -179,6 +184,7 @@ fun TokenDetail(
     val transactions by viewModel.transactions.observeAsState()
     val walletTokenData by viewModel.walletTokenData.observeAsState()
     val dWebData by viewModel.dWebData.observeAsState()
+    val nativeToken by viewModel.walletNativeToken.observeAsState()
 
     TokenDetailScene(
         onBack = onBack,
@@ -192,7 +198,9 @@ fun TokenDetail(
                 if (token.chainType != dWebData?.chainType) {
                     navController.navigate(WalletRoute.WalletNetworkSwitch(token.chainType.name))
                 } else {
-                    navController.navigate(WalletRoute.Transfer.SearchAddress(token.address))
+                    nativeToken?.let {
+                        navController.transfer(walletNativeToken = it, tradableId = token.address)
+                    }
                 }
             }
         },
@@ -832,17 +840,6 @@ fun UnlockWalletDialog(
     )
 }
 
-// if (it.count <= BigDecimal.ZERO) {
-//     navController.navigate(
-//         WalletRoute.EmptyTokenDialog(it.tokenData.symbol),
-//         navOptions {
-//             popUpTo(WalletRoute.Transfer.Route){
-//                 inclusive = true
-//             }
-//         }
-//     )
-// }
-
 @NavGraphDestination(
     route = WalletRoute.EmptyTokenDialog.path,
     packageName = navigationComposeDialogPackage,
@@ -861,4 +858,14 @@ fun EmptyTokenDialogRoute(
             navController.navigate(deepLink = Uri.parse(Deeplinks.Labs.Transak))
         }
     )
+}
+
+fun NavController.transfer(walletNativeToken: WalletTokenData, tradableId: String? = null) {
+    if (walletNativeToken.count <= BigDecimal.ZERO) {
+        navigate(
+            WalletRoute.EmptyTokenDialog(walletNativeToken.tokenData.symbol),
+        )
+    } else {
+        navigate(WalletRoute.Transfer.SearchAddress.invoke(tradableId = tradableId))
+    }
 }
