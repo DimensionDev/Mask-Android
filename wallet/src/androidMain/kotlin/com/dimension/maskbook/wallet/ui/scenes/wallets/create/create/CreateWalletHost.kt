@@ -31,6 +31,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -102,10 +103,10 @@ fun VerifyRoute(
         .getNestedNavigationViewModel(WalletRoute.CreateWallet.Route) {
             parametersOf(wallet)
         }
-    val result by viewModel.result.observeAsState(initial = null)
-    val correct by viewModel.correct.observeAsState(initial = false)
-    val selectedWords by viewModel.selectedWords.observeAsState(initial = emptyList())
-    val wordsInRandomOrder by viewModel.wordsInRandomOrder.observeAsState(initial = emptyList())
+    val result by viewModel.result.collectAsState(initial = null)
+    val correct by viewModel.correct.collectAsState(initial = false)
+    val selectedWords by viewModel.selectedWords.collectAsState(initial = emptyList())
+    val wordsInRandomOrder by viewModel.wordsInRandomOrder.collectAsState(initial = emptyList())
     var showDialog by remember {
         mutableStateOf(false)
     }
