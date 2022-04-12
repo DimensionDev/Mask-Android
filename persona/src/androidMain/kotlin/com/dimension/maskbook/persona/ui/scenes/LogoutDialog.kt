@@ -30,21 +30,36 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.dimension.maskbook.common.route.CommonRoute
+import com.dimension.maskbook.common.route.navigationComposeDialog
+import com.dimension.maskbook.common.route.navigationComposeDialogPackage
+import com.dimension.maskbook.common.routeProcessor.annotations.Back
+import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
 import com.dimension.maskbook.common.ui.widget.MaskDialog
-import com.dimension.maskbook.common.ui.widget.PrimaryButton
-import com.dimension.maskbook.common.ui.widget.SecondaryButton
+import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
+import com.dimension.maskbook.common.ui.widget.button.SecondaryButton
 import com.dimension.maskbook.persona.R
+import com.dimension.maskbook.persona.repository.IPersonaRepository
+import com.dimension.maskbook.persona.route.PersonaRoute
+import org.koin.androidx.compose.get
 
+@NavGraphDestination(
+    route = PersonaRoute.Logout,
+    packageName = navigationComposeDialogPackage,
+    functionName = navigationComposeDialog,
+)
 @Composable
 fun LogoutDialog(
-    onBack: () -> Unit,
-    onDone: () -> Unit,
+    navController: NavController,
+    @Back onBack: () -> Unit,
 ) {
+    val repository = get<IPersonaRepository>()
     MaskDialog(
         onDismissRequest = { /*TODO*/ },
         icon = {
             Image(
-                painterResource(id = R.drawable.ic_property_1_note),
+                painterResource(id = R.drawable.ic_note),
                 contentDescription = null
             )
         },
@@ -65,7 +80,10 @@ fun LogoutDialog(
                 Spacer(modifier = Modifier.width(20.dp))
                 PrimaryButton(
                     modifier = Modifier.weight(1f),
-                    onClick = onDone,
+                    onClick = {
+                        repository.logout()
+                        navController.popBackStack(CommonRoute.Main.Home.path, inclusive = false)
+                    },
                 ) {
                     Text(text = stringResource(R.string.common_controls_confirm))
                 }

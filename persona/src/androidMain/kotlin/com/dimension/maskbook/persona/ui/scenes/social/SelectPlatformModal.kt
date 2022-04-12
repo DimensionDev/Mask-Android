@@ -21,15 +21,10 @@
 package com.dimension.maskbook.persona.ui.scenes.social
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -37,43 +32,61 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.dimension.maskbook.common.ui.widget.MaskGridButton
+import androidx.navigation.NavController
+import com.dimension.maskbook.common.route.navigationComposeBottomSheet
+import com.dimension.maskbook.common.route.navigationComposeBottomSheetPackage
+import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
+import com.dimension.maskbook.common.routeProcessor.annotations.Path
 import com.dimension.maskbook.common.ui.widget.MaskModal
-import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
+import com.dimension.maskbook.common.ui.widget.button.MaskGridButton
 import com.dimension.maskbook.persona.export.model.Network
-import com.dimension.maskbook.persona.export.model.PlatformType
 import com.dimension.maskbook.persona.model.icon
 import com.dimension.maskbook.persona.model.platform
 import com.dimension.maskbook.persona.model.title
+import com.dimension.maskbook.persona.repository.IPersonaRepository
+import com.dimension.maskbook.persona.route.PersonaRoute
+import org.koin.androidx.compose.get
 
 private val items = listOf(
     Network.Twitter,
     Network.Facebook,
 )
 
+@NavGraphDestination(
+    route = PersonaRoute.SelectPlatform.path,
+    packageName = navigationComposeBottomSheetPackage,
+    functionName = navigationComposeBottomSheet,
+)
 @Composable
 fun SelectPlatformModal(
-    onDone: (PlatformType) -> Unit
+    navController: NavController,
+    @Path("personaId") personaId: String,
 ) {
-    MaskModal {
-        Column(
-            modifier = Modifier.padding(ScaffoldPadding),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
+    val repository = get<IPersonaRepository>()
+    MaskModal(
+        title = {
             Text(
                 text = "Connect Social accounts",
-                style = MaterialTheme.typography.h6
             )
-            Spacer(modifier = Modifier.height(21.dp))
+        }
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 items.forEach { item ->
                     MaskGridButton(
-                        modifier = Modifier.size(SelectPlatformModalDefaults.itemSize),
                         onClick = {
-                            item.platform?.let(onDone)
+                            item.platform?.let {
+                                connectSocial(
+                                    controller = navController,
+                                    personaId = personaId,
+                                    platform = it,
+                                    repository = repository
+                                )
+                            }
                         },
                         icon = {
                             Image(
@@ -90,13 +103,11 @@ fun SelectPlatformModal(
                         }
                     )
                 }
-                Spacer(Modifier.width(SelectPlatformModalDefaults.itemSize))
             }
         }
     }
 }
 
 private object SelectPlatformModalDefaults {
-    val itemSize = 100.dp
     val iconSize = 48.dp
 }

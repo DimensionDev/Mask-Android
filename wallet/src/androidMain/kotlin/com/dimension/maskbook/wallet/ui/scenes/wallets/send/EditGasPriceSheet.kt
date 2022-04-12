@@ -23,7 +23,6 @@ package com.dimension.maskbook.wallet.ui.scenes.wallets.send
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -34,6 +33,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -51,10 +51,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.dimension.maskbook.common.ui.widget.MaskInputField
+import com.dimension.maskbook.common.ui.widget.MaskDecimalInputField
 import com.dimension.maskbook.common.ui.widget.MaskModal
-import com.dimension.maskbook.common.ui.widget.PrimaryButton
-import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
+import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
+import com.dimension.maskbook.common.ui.widget.button.clickable
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.repository.GasPriceEditMode
 
@@ -77,66 +77,73 @@ fun EditGasPriceSheet(
     gasLimitError: String?,
     maxPriorityFeeError: String?,
     maxFeeError: String?,
+    loading: Boolean,
     canConfirm: Boolean,
     onConfirm: () -> Unit
 ) {
-    MaskModal {
+    MaskModal(
+        title = {
+            Text(
+                text = stringResource(R.string.scene_sendTransaction_gasPrice_title),
+            )
+        }
+    ) {
         Column(
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
-                .padding(ScaffoldPadding),
         ) {
             var showAdvanced by remember {
                 mutableStateOf(false)
             }
-
-            Spacer(modifier = Modifier.height(20.dp))
-            Text(
-                text = stringResource(R.string.scene_sendTransaction_gasPrice_title),
-                style = MaterialTheme.typography.h6,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-            Spacer(modifier = Modifier.height(20.dp))
-            Text(
-                text = "~$price",
-                style = MaterialTheme.typography.h4,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = "${stringResource(R.string.scene_sendTransaction_gasPrice_costFee)}$costFee $costFeeUnit",
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = arrivesIn, color = Color(0xFF60DFAB),
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-            Spacer(modifier = Modifier.height(20.dp))
-            Row(modifier = Modifier.fillMaxWidth()) {
-                SelectableButton(
-                    text = "Low",
-                    selected = mode == GasPriceEditMode.LOW,
-                    onSelect = { onSelectMode.invoke(GasPriceEditMode.LOW) },
-                    modifier = Modifier.weight(1f)
+            if (loading) {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(20.dp)
                 )
-                Spacer(modifier = Modifier.width(12.dp))
-                SelectableButton(
-                    text = "Medium",
-                    selected = mode == GasPriceEditMode.MEDIUM,
-                    onSelect = { onSelectMode.invoke(GasPriceEditMode.MEDIUM) },
-                    modifier = Modifier.weight(1f)
-                )
-                Spacer(modifier = Modifier.width(12.dp))
-                SelectableButton(
-                    text = "High",
-                    selected = mode == GasPriceEditMode.HIGH,
-                    onSelect = { onSelectMode.invoke(GasPriceEditMode.HIGH) },
-                    modifier = Modifier.weight(1f)
-                )
+            } else {
+                Column {
+                    Text(
+                        text = "~$price",
+                        style = MaterialTheme.typography.h4,
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "${stringResource(R.string.scene_sendTransaction_gasPrice_costFee)}$costFee $costFeeUnit",
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = arrivesIn, color = Color(0xFF60DFAB),
+                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                    )
+                    Spacer(modifier = Modifier.height(20.dp))
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        SelectableButton(
+                            text = "Low",
+                            selected = mode == GasPriceEditMode.LOW,
+                            onSelect = { onSelectMode.invoke(GasPriceEditMode.LOW) },
+                            modifier = Modifier.weight(1f)
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        SelectableButton(
+                            text = "Medium",
+                            selected = mode == GasPriceEditMode.MEDIUM,
+                            onSelect = { onSelectMode.invoke(GasPriceEditMode.MEDIUM) },
+                            modifier = Modifier.weight(1f)
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        SelectableButton(
+                            text = "High",
+                            selected = mode == GasPriceEditMode.HIGH,
+                            onSelect = { onSelectMode.invoke(GasPriceEditMode.HIGH) },
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(20.dp))
+                }
             }
-            Spacer(modifier = Modifier.height(20.dp))
-
             TextButton(onClick = { showAdvanced = !showAdvanced }) {
                 Text(text = stringResource(R.string.scene_sendTransaction_gasPrice_advancedBtn))
                 Spacer(modifier = Modifier.width(10.dp))
@@ -196,9 +203,11 @@ private fun CustomContent(
                 text = stringResource(R.string.scene_sendTransaction_gasPrice_gasLimit),
             )
             Spacer(modifier = Modifier.height(8.dp))
-            MaskInputField(
-                value = gasLimit,
-                onValueChange = onGasLimitChanged,
+            MaskDecimalInputField(
+                decimalValue = gasLimit.toBigDecimal(),
+                onValueChange = {
+                    onGasLimitChanged.invoke(it.toString())
+                },
                 modifier = Modifier.fillMaxWidth(),
             )
             if (!gasLimitError.isNullOrEmpty()) {
@@ -214,9 +223,9 @@ private fun CustomContent(
                 Text(text = "~$maxPriorityFeePrice")
             }
             Spacer(modifier = Modifier.height(8.dp))
-            MaskInputField(
-                value = maxPriorityFee,
-                onValueChange = onMaxPriorityFeeChanged,
+            MaskDecimalInputField(
+                decimalValue = maxPriorityFee.toBigDecimal(),
+                onValueChange = { onMaxPriorityFeeChanged.invoke(it.toString()) },
                 modifier = Modifier.fillMaxWidth(),
             )
             if (!maxPriorityFeeError.isNullOrEmpty()) {
@@ -232,9 +241,9 @@ private fun CustomContent(
                 Text(text = "~$maxFeePrice")
             }
             Spacer(modifier = Modifier.height(8.dp))
-            MaskInputField(
-                value = maxFee,
-                onValueChange = onMaxFeeChanged,
+            MaskDecimalInputField(
+                decimalValue = maxFee.toBigDecimal(),
+                onValueChange = { onMaxFeeChanged.invoke(it.toString()) },
                 modifier = Modifier.fillMaxWidth(),
             )
             if (!maxFeeError.isNullOrEmpty()) {

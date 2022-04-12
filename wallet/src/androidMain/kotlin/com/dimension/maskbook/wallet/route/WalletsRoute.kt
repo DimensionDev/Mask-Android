@@ -22,27 +22,43 @@ package com.dimension.maskbook.wallet.route
 
 import android.content.Intent
 import android.net.Uri
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavType
-import androidx.navigation.compose.dialog
-import androidx.navigation.navArgument
 import androidx.navigation.navOptions
-import com.dimension.maskbook.common.ext.copyText
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.ext.shareText
+import com.dimension.maskbook.common.route.CommonRoute
+import com.dimension.maskbook.common.route.Deeplinks
+import com.dimension.maskbook.common.route.navigationComposeAnimComposable
+import com.dimension.maskbook.common.route.navigationComposeAnimComposablePackage
+import com.dimension.maskbook.common.route.navigationComposeBottomSheet
+import com.dimension.maskbook.common.route.navigationComposeBottomSheetPackage
+import com.dimension.maskbook.common.route.navigationComposeDialog
+import com.dimension.maskbook.common.route.navigationComposeDialogPackage
+import com.dimension.maskbook.common.routeProcessor.annotations.Back
+import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
+import com.dimension.maskbook.common.routeProcessor.annotations.Path
+import com.dimension.maskbook.common.ui.notification.StringResNotificationEvent.Companion.show
+import com.dimension.maskbook.common.ui.scene.SetUpPaymentPassword
+import com.dimension.maskbook.common.ui.widget.LocalInAppNotification
 import com.dimension.maskbook.common.ui.widget.MaskDialog
-import com.dimension.maskbook.common.ui.widget.PrimaryButton
+import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.common.viewmodel.BiometricEnableViewModel
+import com.dimension.maskbook.common.viewmodel.BiometricViewModel
 import com.dimension.maskbook.setting.export.SettingServices
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.export.model.ChainType
@@ -53,14 +69,10 @@ import com.dimension.maskbook.wallet.ui.scenes.wallets.collectible.CollectibleDe
 import com.dimension.maskbook.wallet.ui.scenes.wallets.common.MultiChainWalletDialog
 import com.dimension.maskbook.wallet.ui.scenes.wallets.create.CreateOrImportWalletScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.create.CreateType
-import com.dimension.maskbook.wallet.ui.scenes.wallets.create.create.CreateWalletHost
-import com.dimension.maskbook.wallet.ui.scenes.wallets.create.import.ImportWalletHost
 import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.LegalScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.password.BiometricsEnableScene
-import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.password.SetUpPaymentPassword
 import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.password.TouchIdEnableScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.BackupWalletScene
-import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletConnectModal
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletDeleteDialog
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletManagementModal
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletNetworkSwitchWarningDialog
@@ -69,9 +81,8 @@ import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletSwitchAd
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletSwitchEditModal
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletSwitchSceneModal
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletTransactionHistoryScene
-import com.dimension.maskbook.wallet.ui.scenes.wallets.send.SendTokenHost
 import com.dimension.maskbook.wallet.ui.scenes.wallets.token.TokenDetailScene
-import com.dimension.maskbook.wallet.viewmodel.wallets.BiometricViewModel
+import com.dimension.maskbook.wallet.ui.scenes.wallets.walletconnect.WalletConnectModal
 import com.dimension.maskbook.wallet.viewmodel.wallets.TokenDetailViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.UnlockWalletViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.WalletConnectManagementViewModel
@@ -80,642 +91,742 @@ import com.dimension.maskbook.wallet.viewmodel.wallets.collectible.CollectibleDe
 import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletBackupViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletDeleteViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletRenameViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletSwitchEditViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletSwitchViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletTransactionHistoryViewModel
-import com.google.accompanist.navigation.animation.composable
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
-import com.google.accompanist.navigation.material.bottomSheet
 import org.koin.androidx.compose.get
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 
-@ExperimentalAnimationApi
-@ExperimentalMaterialNavigationApi
-fun NavGraphBuilder.walletsRoute(
-    navController: NavController
+@NavGraphDestination(
+    route = WalletRoute.CollectibleDetail.path,
+    packageName = navigationComposeAnimComposablePackage,
+    functionName = navigationComposeAnimComposable,
+)
+@Composable
+fun CollectibleDetail(
+    navController: NavController,
+    @Back onBack: () -> Unit,
+    @Path("id") id: String,
 ) {
-    composable(
-        "CollectibleDetail/{id}",
-        arguments = listOf(
-            navArgument("id") { type = NavType.StringType }
-        )
-    ) {
-        it.arguments?.getString("id")?.let { id ->
-            val viewModel = getViewModel<CollectibleDetailViewModel> {
-                parametersOf(id)
-            }
-            val data by viewModel.data.observeAsState(initial = null)
+    val viewModel = getViewModel<CollectibleDetailViewModel> {
+        parametersOf(id)
+    }
+    val data by viewModel.data.observeAsState(initial = null)
+    val transactions by viewModel.transactions.observeAsState()
+    CollectibleDetailScene(
+        data = data,
+        onBack = onBack,
+        onSend = {
             data?.let {
-                CollectibleDetailScene(
-                    data = it,
-                    onBack = {
-                        navController.popBackStack()
-                    },
-                    onSend = {
-                    },
-                    onReceive = {
-                        navController.navigate("WalletQrcode/${it.chainType.name}")
-                    }
-                )
+                navController.navigate(WalletRoute.Transfer.SearchAddress(it.tradableId()))
             }
-        }
-    }
+        },
+        onReceive = {
+            data?.let {
+                navController.navigate(WalletRoute.WalletQrcode(it.chainType.name))
+            }
+        },
+        transactions = transactions,
+        onSpeedUp = {},
+        onCancel = {}
+    )
+}
 
-    composable(
-        "WalletQrcode/{name}",
-        arguments = listOf(navArgument("name") { type = NavType.StringType })
-    ) {
-        val repository = get<IWalletRepository>()
-        val currentWallet by repository.currentWallet.observeAsState(initial = null)
-        val name = it.arguments?.getString("name") ?: ""
-        val context = LocalContext.current
-        currentWallet?.let {
-            WalletQrcodeScene(
-                address = it.address,
-                name = name,
-                onShare = { context.shareText(it.address) },
-                onBack = { navController.popBackStack() },
-                onCopy = { context.copyText(it.address) }
-            )
+@NavGraphDestination(
+    route = WalletRoute.WalletQrcode.path,
+    packageName = navigationComposeAnimComposablePackage,
+    functionName = navigationComposeAnimComposable,
+)
+@Composable
+fun WalletQrcode(
+    @Back onBack: () -> Unit,
+    @Path("name") name: String,
+) {
+    val repository = get<IWalletRepository>()
+    val currentWallet by repository.currentWallet.observeAsState(initial = null)
+    val context = LocalContext.current
+    val clipboardManager = LocalClipboardManager.current
+    val inAppNotification = LocalInAppNotification.current
+    WalletQrcodeScene(
+        address = currentWallet?.address.orEmpty(),
+        name = name,
+        onShare = { context.shareText(currentWallet?.address.orEmpty()) },
+        onBack = onBack,
+        onCopy = {
+            clipboardManager.setText(buildAnnotatedString { append(currentWallet?.address.orEmpty()) })
+            inAppNotification.show(R.string.common_alert_copied_to_clipboard_title)
+        }
+    )
+}
+
+@NavGraphDestination(
+    route = WalletRoute.TokenDetail.path,
+    packageName = navigationComposeAnimComposablePackage,
+    functionName = navigationComposeAnimComposable,
+)
+@Composable
+fun TokenDetail(
+    navController: NavController,
+    @Back onBack: () -> Unit,
+    @Path("id") id: String,
+) {
+    val viewModel = getViewModel<TokenDetailViewModel> {
+        parametersOf(id)
+    }
+    val token by viewModel.tokenData.observeAsState()
+    val transactions by viewModel.transactions.observeAsState()
+    val walletTokenData by viewModel.walletTokenData.observeAsState()
+    val dWebData by viewModel.dWebData.observeAsState()
+
+    TokenDetailScene(
+        onBack = onBack,
+        tokenData = token,
+        walletTokenData = walletTokenData,
+        transactions = transactions,
+        onSpeedUp = { },
+        onCancel = { },
+        onSend = {
+            token?.let { token ->
+                if (token.chainType != dWebData?.chainType) {
+                    navController.navigate(WalletRoute.WalletNetworkSwitch(token.chainType.name))
+                } else {
+                    navController.navigate(WalletRoute.Transfer.SearchAddress(token.address))
+                }
+            }
+        },
+        onReceive = {
+            token?.let { token ->
+                navController.navigate(WalletRoute.WalletQrcode(token.symbol))
+            }
+        },
+    )
+}
+
+@NavGraphDestination(
+    route = WalletRoute.SwitchWalletAdd,
+    packageName = navigationComposeBottomSheetPackage,
+    functionName = navigationComposeBottomSheet,
+)
+@Composable
+fun SwitchWalletAdd(
+    navController: NavController,
+) {
+    WalletSwitchAddModal(
+        onCreate = {
+            navController.navigate(WalletRoute.WalletIntroHostLegal(CreateType.CREATE.name))
+        },
+        onImport = {
+            navController.navigate(WalletRoute.WalletIntroHostLegal(CreateType.IMPORT.name))
+        },
+    )
+}
+
+@NavGraphDestination(
+    route = WalletRoute.SwitchWalletAddWalletConnect,
+    packageName = navigationComposeBottomSheetPackage,
+    functionName = navigationComposeBottomSheet,
+)
+@Composable
+fun SwitchWalletAddWalletConnect(
+    navController: NavController,
+) {
+    WalletConnectModal(
+        rootNavController = navController,
+    )
+}
+
+@NavGraphDestination(
+    route = WalletRoute.WalletNetworkSwitch.path,
+    packageName = navigationComposeDialogPackage,
+    functionName = navigationComposeDialog,
+)
+@Composable
+fun WalletNetworkSwitch(
+    @Back onBack: () -> Unit,
+    @Path("target") targetString: String,
+) {
+    val target = remember(targetString) { ChainType.valueOf(targetString) }
+    val viewModel = getViewModel<WalletSwitchViewModel>()
+    val currentNetwork by viewModel.network.observeAsState(initial = ChainType.eth)
+    WalletNetworkSwitchWarningDialog(
+        currentNetwork = currentNetwork.name,
+        connectingNetwork = target.name,
+        onCancel = onBack,
+        onSwitch = {
+            viewModel.setChainType(target)
+            onBack.invoke()
+        }
+    )
+}
+
+@NavGraphDestination(
+    route = WalletRoute.WalletNetworkSwitchWarningDialog,
+    packageName = navigationComposeDialogPackage,
+    functionName = navigationComposeDialog,
+)
+@Composable
+fun WalletNetworkSwitchWarningDialog(
+    @Back onBack: () -> Unit,
+) {
+    val viewModel = getViewModel<WalletSwitchViewModel>()
+    val currentNetwork by viewModel.network.observeAsState(initial = ChainType.eth)
+    val wallet by viewModel.currentWallet.observeAsState(initial = null)
+    LaunchedEffect(wallet) {
+        wallet?.let { wallet ->
+            if (!wallet.fromWalletConnect || wallet.walletConnectChainType == currentNetwork || wallet.walletConnectChainType == null) {
+                onBack.invoke()
+            }
         }
     }
-    composable(
-        "TokenDetail/{id}",
-        arguments = listOf(
-            navArgument("id") { type = NavType.StringType }
-        )
-    ) {
-        it.arguments?.getString("id")?.let { id ->
-            val viewModel = getViewModel<TokenDetailViewModel> {
-                parametersOf(id)
+    WalletNetworkSwitchWarningDialog(
+        currentNetwork = currentNetwork.name,
+        connectingNetwork = wallet?.walletConnectChainType?.name.orEmpty(),
+        onCancel = onBack,
+        onSwitch = {
+            wallet?.walletConnectChainType?.let { type ->
+                viewModel.setChainType(type)
             }
-            val token by viewModel.tokenData.observeAsState(initial = null)
-            val transaction by viewModel.transaction.observeAsState(initial = emptyList())
-            val walletTokenData by viewModel.walletTokenData.observeAsState(initial = null)
-            val dWebData by viewModel.dWebData.observeAsState(initial = null)
-            walletTokenData?.let { walletTokenData ->
-                token?.let { token ->
-                    TokenDetailScene(
-                        onBack = { navController.popBackStack() },
-                        tokenData = token,
-                        walletTokenData = walletTokenData,
-                        transactions = transaction,
-                        onSpeedUp = { },
-                        onCancel = { },
-                        onSend = {
-                            if (token.chainType != dWebData?.chainType) {
-                                navController.navigate("WalletNetworkSwitch/${token.chainType}")
-                            } else {
-                                navController.navigate("SendTokenScene/${token.address}")
-                            }
-                        },
-                        onReceive = {
-                            navController.navigate("WalletQrcode/${token.symbol}")
-                        },
+            onBack.invoke()
+        }
+    )
+}
+
+@NavGraphDestination(
+    route = WalletRoute.SwitchWallet,
+    deeplink = [
+        Deeplinks.Wallet.SwitchWallet,
+    ],
+    packageName = navigationComposeBottomSheetPackage,
+    functionName = navigationComposeBottomSheet,
+)
+@Composable
+fun SwitchWallet(
+    navController: NavController,
+) {
+    val viewModel = getViewModel<WalletSwitchViewModel>()
+    val wallet by viewModel.currentWallet.observeAsState(initial = null)
+    val wallets by viewModel.wallets.observeAsState(initial = emptyList())
+    val chainType by viewModel.network.observeAsState(initial = ChainType.eth)
+    WalletSwitchSceneModal(
+        selectedWallet = wallet,
+        wallets = wallets,
+        onWalletSelected = {
+            viewModel.setCurrentWallet(it)
+        },
+        selectedChainType = chainType,
+        onChainTypeSelected = {
+            viewModel.setChainType(it)
+        },
+        onAddWalletClicked = {
+            navController.navigate(WalletRoute.SwitchWalletAdd) {
+                popUpTo(WalletRoute.SwitchWallet) {
+                    inclusive = true
+                }
+            }
+        },
+        onWalletConnectClicked = {
+            navController.navigate(WalletRoute.SwitchWalletAddWalletConnect) {
+                popUpTo(WalletRoute.SwitchWallet) {
+                    inclusive = true
+                }
+            }
+        },
+        onEditMenuClicked = {
+            navController.navigate(WalletRoute.WalletSwitchEditModal(it.id)) {
+                popUpTo(WalletRoute.SwitchWallet) {
+                    inclusive = true
+                }
+            }
+        }
+    )
+}
+
+@NavGraphDestination(
+    route = WalletRoute.WalletSwitchEditModal.path,
+    packageName = navigationComposeBottomSheetPackage,
+    functionName = navigationComposeBottomSheet,
+)
+@Composable
+fun WalletSwitchEditModal(
+    navController: NavController,
+    @Back onBack: () -> Unit,
+    @Path("id") id: String,
+) {
+    val viewModel = getViewModel<WalletConnectManagementViewModel>()
+    val editViewModel = getViewModel<WalletSwitchEditViewModel> {
+        parametersOf(id)
+    }
+    val wallet by editViewModel.wallet.collectAsState(initial = null)
+    WalletSwitchEditModal(
+        walletData = wallet,
+        onRename = {
+            wallet?.let { wallet ->
+                navController.navigate(
+                    WalletRoute.WalletManagementRename(
+                        wallet.id,
+                        wallet.name
                     )
-                }
-            }
-        }
-    }
-    bottomSheet("SwitchWalletAdd") {
-        WalletSwitchAddModal(
-            onCreate = {
-                navController.navigate("WalletIntroHostLegal/${CreateType.CREATE}")
-            },
-            onImport = {
-                navController.navigate("WalletIntroHostLegal/${CreateType.IMPORT}")
-            },
-        )
-    }
-    bottomSheet("SwitchWalletAddWalletConnect") {
-        WalletConnectModal()
-    }
-
-    dialog(
-        "WalletNetworkSwitch/{target}",
-        arguments = listOf(navArgument("target") { type = NavType.StringType })
-    ) {
-        it.arguments?.getString("target")?.let {
-            ChainType.valueOf(it)
-        }?.let { target ->
-            val viewModel = getViewModel<WalletSwitchViewModel>()
-            val currentNetwork by viewModel.network.observeAsState(initial = ChainType.eth)
-            WalletNetworkSwitchWarningDialog(
-                currentNetwork = currentNetwork.name,
-                connectingNetwork = target.name,
-                onCancel = { navController.popBackStack() },
-                onSwitch = {
-                    viewModel.setChainType(target)
-                    navController.popBackStack()
-                }
-            )
-        }
-    }
-
-    dialog("WalletNetworkSwitchWarningDialog") {
-        val viewModel = getViewModel<WalletSwitchViewModel>()
-        val currentNetwork by viewModel.network.observeAsState(initial = ChainType.eth)
-        val wallet by viewModel.currentWallet.observeAsState(initial = null)
-        wallet?.let {
-            if (!it.fromWalletConnect || it.walletConnectChainType == currentNetwork || it.walletConnectChainType == null) navController.popBackStack()
-            WalletNetworkSwitchWarningDialog(
-                currentNetwork = currentNetwork.name,
-                connectingNetwork = it.walletConnectChainType?.name ?: "",
-                onCancel = { navController.popBackStack() },
-                onSwitch = {
-                    it.walletConnectChainType?.let { type ->
-                        viewModel.setChainType(type)
-                    }
-                    navController.popBackStack()
-                }
-            )
-        }
-    }
-
-    bottomSheet("SwitchWallet") {
-        val viewModel = getViewModel<WalletSwitchViewModel>()
-        val wallet by viewModel.currentWallet.observeAsState(initial = null)
-        val wallets by viewModel.wallets.observeAsState(initial = emptyList())
-        val chainType by viewModel.network.observeAsState(initial = ChainType.eth)
-        wallet?.let { it1 ->
-            WalletSwitchSceneModal(
-                selectedWallet = it1,
-                wallets = wallets,
-                onWalletSelected = {
-                    viewModel.setCurrentWallet(it)
-                },
-                selectedChainType = chainType,
-                onChainTypeSelected = {
-                    viewModel.setChainType(it)
-                },
-                onAddWalletClicked = {
-                    navController.navigate("SwitchWalletAdd")
-                },
-                onWalletConnectClicked = {
-                    navController.navigate("SwitchWalletAddWalletConnect")
-                },
-                onEditMenuClicked = {
-                    navController.navigate("WalletSwitchEditModal/${it.id}")
-                }
-            )
-        }
-    }
-    bottomSheet(
-        "WalletSwitchEditModal/{id}",
-        arguments = listOf(navArgument("id") { type = NavType.StringType })
-    ) {
-        it.arguments?.getString("id")?.let { id ->
-            val repository = get<IWalletRepository>()
-            val wallets by repository.wallets.observeAsState(initial = emptyList())
-            val viewModel = getViewModel<WalletConnectManagementViewModel>()
-            wallets.firstOrNull { it.id == id }?.let { wallet ->
-                WalletSwitchEditModal(
-                    walletData = wallet,
-                    onRename = { navController.navigate("WalletManagementRename/${wallet.id}") },
-                    onDelete = {
-                        navController.popBackStack()
-                        navController.navigate("WalletManagementDeleteDialog/${wallet.id}")
-                    },
-                    onDisconnect = {
-                        viewModel.disconnect(walletData = wallet)
-                        navController.popBackStack()
-                    }
                 )
             }
-        }
-    }
-    bottomSheet("WalletBalancesMenu") {
-        val viewModel = getViewModel<WalletManagementModalViewModel>()
-        val currentWallet by viewModel.currentWallet.observeAsState(initial = null)
-        val wcViewModel = getViewModel<WalletConnectManagementViewModel>()
-        currentWallet?.let { wallet ->
-            WalletManagementModal(
-                walletData = wallet,
-                onRename = { navController.navigate("WalletManagementRename/${wallet.id}") },
-                onBackup = { navController.navigate("UnlockWalletDialog/WalletManagementBackup") },
-                onTransactionHistory = { navController.navigate("WalletManagementTransactionHistory") },
-                onDelete = {
-                    navController.popBackStack()
-                    navController.navigate("WalletManagementDeleteDialog/${wallet.id}")
-                },
-                onDisconnect = {
-                    wcViewModel.disconnect(walletData = wallet)
-                    navController.popBackStack()
-                }
-            )
-        }
-    }
-    dialog(
-        "WalletManagementDeleteDialog/{id}",
-        arguments = listOf(
-            navArgument("id") { type = NavType.StringType }
-        )
-    ) {
-        it.arguments?.getString("id")?.let { id ->
-            val viewModel = getViewModel<WalletDeleteViewModel> {
-                parametersOf(id)
+        },
+        onDelete = {
+            onBack.invoke()
+            wallet?.let { wallet ->
+                navController.navigate(WalletRoute.WalletManagementDeleteDialog(wallet.id))
             }
-            val biometricViewModel = getViewModel<BiometricViewModel>()
-            val wallet by viewModel.wallet.observeAsState(initial = null)
-            val biometricEnabled by biometricViewModel.biometricEnabled.observeAsState(initial = false)
-            val context = LocalContext.current
-            wallet?.let { walletData ->
-                val password by viewModel.password.observeAsState(initial = "")
-                val canConfirm by viewModel.canConfirm.observeAsState(initial = false)
-                WalletDeleteDialog(
-                    walletData = walletData,
-                    password = password,
-                    onPasswordChanged = { viewModel.setPassword(it) },
-                    onBack = { navController.popBackStack() },
-                    onDelete = {
-                        if (biometricEnabled) {
-                            biometricViewModel.authenticate(
-                                context = context,
-                                onSuccess = {
-                                    viewModel.confirm()
-                                    navController.popBackStack()
-                                }
-                            )
-                        } else {
-                            viewModel.confirm()
-                            navController.popBackStack()
-                        }
-                    },
-                    passwordValid = canConfirm,
-                    biometricEnabled = biometricEnabled
+        },
+        onDisconnect = {
+            wallet?.let { viewModel.disconnect(walletData = it) }
+            onBack.invoke()
+        }
+    )
+}
+
+@NavGraphDestination(
+    route = WalletRoute.WalletBalancesMenu,
+    packageName = navigationComposeBottomSheetPackage,
+    functionName = navigationComposeBottomSheet,
+)
+@Composable
+fun WalletBalancesMenu(
+    navController: NavController,
+    @Back onBack: () -> Unit,
+) {
+    val viewModel = getViewModel<WalletManagementModalViewModel>()
+    val currentWallet by viewModel.currentWallet.observeAsState(initial = null)
+    val wcViewModel = getViewModel<WalletConnectManagementViewModel>()
+    WalletManagementModal(
+        walletData = currentWallet,
+        onRename = {
+            currentWallet?.let { wallet ->
+                navController.navigate(WalletRoute.WalletManagementRename(wallet.id, wallet.name))
+            }
+        },
+        onBackup = {
+            navController.navigate(WalletRoute.UnlockWalletDialog(WalletRoute.WalletManagementBackup))
+        },
+        onTransactionHistory = {
+            navController.navigate(WalletRoute.WalletManagementTransactionHistory)
+        },
+        onDelete = {
+            onBack.invoke()
+            currentWallet?.let { wallet ->
+                navController.navigate(WalletRoute.WalletManagementDeleteDialog(wallet.id))
+            }
+        },
+        onDisconnect = {
+            currentWallet?.let { wallet ->
+                wcViewModel.disconnect(walletData = wallet)
+            }
+            onBack.invoke()
+        }
+    )
+}
+
+@NavGraphDestination(
+    route = WalletRoute.WalletManagementDeleteDialog.path,
+    packageName = navigationComposeDialogPackage,
+    functionName = navigationComposeDialog,
+)
+@Composable
+fun WalletManagementDeleteDialog(
+    @Back onBack: () -> Unit,
+    @Path("id") id: String,
+) {
+    val viewModel = getViewModel<WalletDeleteViewModel> {
+        parametersOf(id)
+    }
+    val biometricViewModel = getViewModel<BiometricViewModel>()
+    val wallet by viewModel.wallet.observeAsState(initial = null)
+    val biometricEnabled by biometricViewModel.biometricEnabled.observeAsState(initial = false)
+    val context = LocalContext.current
+    val password by viewModel.password.observeAsState(initial = "")
+    val canConfirm by viewModel.canConfirm.observeAsState(initial = false)
+    WalletDeleteDialog(
+        walletData = wallet,
+        password = password,
+        onPasswordChanged = { viewModel.setPassword(it) },
+        onBack = onBack,
+        onDelete = {
+            if (biometricEnabled) {
+                biometricViewModel.authenticate(
+                    context = context,
+                    onSuccess = {
+                        viewModel.confirm()
+                        onBack.invoke()
+                    }
                 )
-            }
-        }
-    }
-    composable("WalletManagementBackup") {
-        val viewModel = getViewModel<WalletBackupViewModel>()
-        val keyStore by viewModel.keyStore.observeAsState(initial = "")
-        val privateKey by viewModel.privateKey.observeAsState(initial = "")
-        BackupWalletScene(
-            keyStore = keyStore,
-            privateKey = privateKey,
-            onBack = { navController.popBackStack() },
-        )
-    }
-    composable("WalletManagementTransactionHistory") {
-        val viewModel = getViewModel<WalletTransactionHistoryViewModel>()
-        val transaction by viewModel.transactions.observeAsState(initial = emptyList())
-        WalletTransactionHistoryScene(
-            onBack = { navController.popBackStack() },
-            transactions = transaction,
-            onSpeedUp = {
-                // TODO:
-            },
-            onCancel = {
-                // TODO:
-            }
-        )
-    }
-    bottomSheet(
-        "WalletManagementRename/{id}",
-        arguments = listOf(
-            navArgument("id") { type = NavType.StringType }
-        )
-    ) {
-        it.arguments?.getString("id")?.let { id ->
-            val viewModel = getViewModel<WalletRenameViewModel> {
-                parametersOf(id)
-            }
-            val name by viewModel.name.observeAsState(initial = "")
-            WalletRenameModal(
-                name = name,
-                onNameChanged = { viewModel.setName(it) },
-                onDone = {
-                    viewModel.confirm()
-                    navController.popBackStack()
-                },
-            )
-        }
-    }
-    composable(
-        "WalletIntroHostLegal/{type}",
-        arguments = listOf(
-            navArgument("type") { type = NavType.StringType },
-        )
-    ) {
-        val type = it.arguments?.getString("type")?.let { type ->
-            CreateType.valueOf(type)
-        } ?: CreateType.CREATE
-        val repo = get<SettingServices>()
-        val password by repo.paymentPassword.observeAsState(initial = null)
-        val enableBiometric by repo.biometricEnabled.observeAsState(initial = false)
-        val shouldShowLegalScene by repo.shouldShowLegalScene.observeAsState(initial = true)
-        val biometricEnableViewModel: BiometricEnableViewModel = getViewModel()
-        val context = LocalContext.current
-        val next: () -> Unit = {
-            val route = if (password.isNullOrEmpty()) {
-                "WalletIntroHostPassword/$type"
-            } else if (!enableBiometric && biometricEnableViewModel.isSupported(context)) {
-                "WalletIntroHostFaceId/$type"
             } else {
-                "CreateOrImportWallet/$type"
+                viewModel.confirm()
+                onBack.invoke()
             }
+        },
+        passwordValid = canConfirm,
+        biometricEnabled = biometricEnabled
+    )
+}
+
+@NavGraphDestination(
+    route = WalletRoute.WalletManagementBackup,
+    packageName = navigationComposeAnimComposablePackage,
+    functionName = navigationComposeAnimComposable,
+)
+@Composable
+fun WalletManagementBackup(
+    @Back onBack: () -> Unit,
+) {
+    val viewModel = getViewModel<WalletBackupViewModel>()
+    val keyStore by viewModel.keyStore.observeAsState(initial = "")
+    val privateKey by viewModel.privateKey.observeAsState(initial = "")
+    BackupWalletScene(
+        keyStore = keyStore,
+        privateKey = privateKey,
+        onBack = onBack,
+    )
+}
+
+@NavGraphDestination(
+    route = WalletRoute.WalletManagementTransactionHistory,
+    packageName = navigationComposeAnimComposablePackage,
+    functionName = navigationComposeAnimComposable,
+)
+@Composable
+fun WalletManagementTransactionHistory(
+    @Back onBack: () -> Unit,
+) {
+    val viewModel = getViewModel<WalletTransactionHistoryViewModel>()
+    val transactions by viewModel.transactions.observeAsState()
+    WalletTransactionHistoryScene(
+        onBack = onBack,
+        transactions = transactions,
+        onSpeedUp = {
+            // TODO:
+        },
+        onCancel = {
+            // TODO:
+        }
+    )
+}
+
+@NavGraphDestination(
+    route = WalletRoute.WalletManagementRename.path,
+    packageName = navigationComposeBottomSheetPackage,
+    functionName = navigationComposeBottomSheet,
+)
+@Composable
+fun WalletManagementRename(
+    navController: NavController,
+    @Path("id") walletId: String,
+    @Path("name") walletName: String,
+) {
+    val viewModel = getViewModel<WalletRenameViewModel> {
+        parametersOf(walletId, walletName)
+    }
+    val name by viewModel.name.observeAsState()
+    WalletRenameModal(
+        name = name,
+        onNameChanged = { viewModel.setName(it) },
+        onDone = {
+            viewModel.confirm()
             navController.navigate(
-                route,
+                Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Wallet)),
                 navOptions {
-                    popUpTo(id = it.destination.id) {
-                        inclusive = true
-                    }
                     launchSingleTop = true
+                    popUpTo(CommonRoute.Main.Home.path) {
+                        inclusive = false
+                    }
                 }
             )
+        },
+    )
+}
+
+@NavGraphDestination(
+    route = WalletRoute.WalletIntroHostLegal.path,
+    packageName = navigationComposeAnimComposablePackage,
+    functionName = navigationComposeAnimComposable,
+)
+@Composable
+fun WalletIntroHostLegal(
+    navController: NavController,
+    navBackStackEntry: NavBackStackEntry,
+    @Back onBack: () -> Unit,
+    @Path("type") typeString: String,
+) {
+    val type = remember(typeString) { CreateType.valueOf(typeString) }
+    val repo = get<SettingServices>()
+    val password by repo.paymentPassword.observeAsState(initial = null)
+    val enableBiometric by repo.biometricEnabled.observeAsState(initial = false)
+    val shouldShowLegalScene by repo.shouldShowLegalScene.observeAsState(initial = true)
+    val biometricEnableViewModel: BiometricEnableViewModel = getViewModel()
+    val context = LocalContext.current
+    val next: () -> Unit = {
+        val route = if (password.isNullOrEmpty()) {
+            WalletRoute.WalletIntroHostPassword(type.name)
+        } else if (!enableBiometric && biometricEnableViewModel.isSupported(context)) {
+            WalletRoute.WalletIntroHostFaceId(type.name)
+        } else {
+            WalletRoute.CreateOrImportWallet(type.name)
         }
-        if (!shouldShowLegalScene) {
-            next()
+        navController.navigate(
+            route,
+            navOptions {
+                popUpTo(id = navBackStackEntry.destination.id) {
+                    inclusive = true
+                }
+                launchSingleTop = true
+            }
+        )
+    }
+    if (!shouldShowLegalScene) {
+        next()
+    }
+    LegalScene(
+        onBack = onBack,
+        onAccept = {
+            repo.setShouldShowLegalScene(false)
+        },
+        onBrowseAgreement = {
+            context.startActivity(
+                Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse("https://legal.mask.io/maskbook/privacy-policy-ios.html")
+                )
+            )
         }
-        LegalScene(
-            onBack = { navController.popBackStack() },
-            onAccept = {
-                repo.setShouldShowLegalScene(false)
-            },
-            onBrowseAgreement = {
-                context.startActivity(
-                    Intent(
-                        Intent.ACTION_VIEW,
-                        Uri.parse("https://legal.mask.io/maskbook/privacy-policy-ios.html")
-                    )
-                )
+    )
+}
+
+@NavGraphDestination(
+    route = WalletRoute.WalletIntroHostPassword.path,
+    packageName = navigationComposeBottomSheetPackage,
+    functionName = navigationComposeBottomSheet,
+)
+@Composable
+fun WalletIntroHostPassword(
+    navController: NavController,
+    @Path("type") typeString: String,
+) {
+    val type = remember(typeString) { CreateType.valueOf(typeString) }
+    val enableBiometric by get<SettingServices>().biometricEnabled.observeAsState(initial = false)
+    val biometricEnableViewModel: BiometricEnableViewModel = getViewModel()
+    val context = LocalContext.current
+    SetUpPaymentPassword(
+        onNext = {
+            if (!enableBiometric && biometricEnableViewModel.isSupported(context)) {
+                navController.navigate(WalletRoute.WalletIntroHostFaceId(type.name))
+            } else {
+                navController.navigate(WalletRoute.CreateOrImportWallet(type.name))
             }
-        )
-    }
+        }
+    )
+}
 
-    bottomSheet(
-        "WalletIntroHostPassword/{type}",
-        arguments = listOf(
-            navArgument("type") { type = NavType.StringType },
-        )
-    ) {
-        val type = it.arguments?.getString("type")?.let { type ->
-            CreateType.valueOf(type)
-        } ?: CreateType.CREATE
-        val enableBiometric by get<SettingServices>().biometricEnabled.observeAsState(initial = false)
-        val biometricEnableViewModel: BiometricEnableViewModel = getViewModel()
-        val context = LocalContext.current
-        SetUpPaymentPassword(
-            onNext = {
-                if (!enableBiometric && biometricEnableViewModel.isSupported(context)) {
-                    navController.navigate("WalletIntroHostFaceId/$type")
-                } else {
-                    navController.navigate("CreateOrImportWallet/$type")
-                }
+@NavGraphDestination(
+    route = WalletRoute.WalletIntroHostFaceId.path,
+    packageName = navigationComposeAnimComposablePackage,
+    functionName = navigationComposeAnimComposable,
+)
+@Composable
+fun WalletIntroHostFaceId(
+    navController: NavController,
+    @Back onBack: () -> Unit,
+    @Path("type") typeString: String,
+) {
+    val type = remember(typeString) { CreateType.valueOf(typeString) }
+    BiometricsEnableScene(
+        onBack = onBack,
+        onEnable = { enabled ->
+            if (enabled) {
+                navController.navigate(WalletRoute.WalletIntroHostFaceIdEnableSuccess(type.name))
+            } else {
+                navController.navigate(WalletRoute.CreateOrImportWallet(type.name))
             }
-        )
-    }
+        }
+    )
+}
 
-    composable(
-        "WalletIntroHostFaceId/{type}",
-        arguments = listOf(
-            navArgument("type") { type = NavType.StringType },
-        )
-    ) {
-        val type = it.arguments?.getString("type")?.let { type ->
-            CreateType.valueOf(type)
-        } ?: CreateType.CREATE
-        BiometricsEnableScene(
-            onBack = { navController.popBackStack() },
-            onEnable = { enabled ->
-                if (enabled) {
-                    navController.navigate("WalletIntroHostFaceIdEnableSuccess/$type")
-                } else {
-                    navController.navigate("CreateOrImportWallet/$type")
-                }
-            }
-        )
-    }
-
-    dialog(
-        "WalletIntroHostFaceIdEnableSuccess/{type}",
-        arguments = listOf(
-            navArgument("type") { type = NavType.StringType },
-        )
-    ) {
-        val type = it.arguments?.getString("type")?.let { type ->
-            CreateType.valueOf(type)
-        } ?: CreateType.CREATE
-        MaskDialog(
-            onDismissRequest = {
-                navController.navigate("CreateOrImportWallet/$type")
-            },
-            title = {
-                Text(text = stringResource(R.string.common_alert_biometry_id_activate_title))
-            },
-            text = {
-                Text(text = stringResource(R.string.common_alert_biometry_id_activate_description))
-            },
-            icon = {
-                Image(
-                    painterResource(id = R.drawable.ic_property_1_snccess),
-                    contentDescription = null
-                )
-            },
-            buttons = {
-                PrimaryButton(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = {
-                        navController.navigate("CreateOrImportWallet/$type")
-                    },
-                ) {
-                    Text(text = stringResource(R.string.common_controls_done))
-                }
-            }
-        )
-    }
-
-    composable(
-        "WalletIntroHostTouchId/{type}",
-        arguments = listOf(
-            navArgument("type") { type = NavType.StringType },
-        )
-    ) {
-        val type = it.arguments?.getString("type")?.let { type ->
-            CreateType.valueOf(type)
-        } ?: CreateType.CREATE
-        TouchIdEnableScene(
-            onBack = { navController.popBackStack() },
-            onEnable = {
-                navController.navigate("WalletIntroHostTouchIdEnableSuccess/$type")
-            }
-        )
-    }
-
-    dialog(
-        "WalletIntroHostTouchIdEnableSuccess/{type}",
-        arguments = listOf(
-            navArgument("type") { type = NavType.StringType },
-        )
-    ) {
-        val type = it.arguments?.getString("type")?.let { type ->
-            CreateType.valueOf(type)
-        } ?: CreateType.CREATE
-        MaskDialog(
-            onDismissRequest = {
-                navController.navigate("CreateOrImportWallet/$type")
-            },
-            title = {
-                Text(text = stringResource(R.string.common_alert_biometry_id_activate_title))
-            },
-            text = {
-                Text(text = "Touch id has been enabled successfully.")
-            },
-            icon = {
-                Image(
-                    painterResource(id = R.drawable.ic_property_1_snccess),
-                    contentDescription = null
-                )
-            },
-            buttons = {
-                PrimaryButton(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = {
-                        navController.navigate("CreateOrImportWallet/$type")
-                    },
-                ) {
-                    Text(text = stringResource(R.string.common_controls_done))
-                }
-            }
-        )
-    }
-
-    composable(
-        "CreateOrImportWallet/{type}",
-        arguments = listOf(
-            navArgument("type") { type = NavType.StringType },
-        )
-    ) {
-        CreateOrImportWalletScene(
-            onBack = { navController.popBackStack() },
-            type = it.arguments?.getString("type")?.let { type ->
-                CreateType.valueOf(type)
-            } ?: CreateType.CREATE
-        )
-    }
-
-    dialog("MultiChainWalletDialog") {
-        MultiChainWalletDialog()
-    }
-
-    composable(
-        "CreateWallet/{wallet}",
-        arguments = listOf(
-            navArgument("wallet") { type = NavType.StringType },
-        )
-    ) {
-        it.arguments?.getString("wallet")?.let { wallet ->
-            CreateWalletHost(
-                wallet = wallet,
-                onDone = {
-                    navController.navigate(
-                        Uri.parse("maskwallet://Home/Wallets"),
-                        navOptions = navOptions {
-                            launchSingleTop = true
-                            popUpTo("Home") {
-                                inclusive = false
-                            }
-                        }
-                    )
+@NavGraphDestination(
+    route = WalletRoute.WalletIntroHostFaceIdEnableSuccess.path,
+    packageName = navigationComposeDialogPackage,
+    functionName = navigationComposeDialog,
+)
+@Composable
+fun WalletIntroHostFaceIdEnableSuccess(
+    navController: NavController,
+    @Path("type") typeString: String,
+) {
+    val type = remember(typeString) { CreateType.valueOf(typeString) }
+    MaskDialog(
+        onDismissRequest = {
+            navController.navigate(WalletRoute.CreateOrImportWallet(type.name))
+        },
+        title = {
+            Text(text = stringResource(R.string.common_alert_biometry_id_activate_title))
+        },
+        text = {
+            Text(text = stringResource(R.string.common_alert_biometry_id_activate_description))
+        },
+        icon = {
+            Image(
+                painterResource(id = R.drawable.ic_success),
+                contentDescription = null
+            )
+        },
+        buttons = {
+            PrimaryButton(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = {
+                    navController.navigate(WalletRoute.CreateOrImportWallet(type.name))
                 },
-                onBack = { navController.popBackStack() }
-            )
-        }
-    }
-
-    composable(
-        "ImportWallet/{wallet}",
-        arguments = listOf(
-            navArgument("wallet") { type = NavType.StringType },
-        )
-    ) {
-        it.arguments?.getString("wallet")?.let { wallet ->
-            ImportWalletHost(
-                wallet = wallet,
-                onDone = {
-                    navController.navigate(
-                        Uri.parse("maskwallet://Home/Wallets"),
-                        navOptions = navOptions {
-                            launchSingleTop = true
-                            popUpTo("Home") {
-                                inclusive = false
-                            }
-                        }
-                    )
-                },
-                onBack = { navController.popBackStack() }
-            )
-        }
-    }
-
-    composable(
-        "SendTokenScene/{tokenAddress}",
-        arguments = listOf(
-            navArgument("tokenAddress") { type = NavType.StringType }
-        )
-    ) {
-        SendTokenHost(
-            tokenAddress = it.arguments?.getString("tokenAddress").orEmpty(),
-            onBack = {
-                navController.popBackStack()
-            },
-            onDone = {
-                navController.popBackStack()
+            ) {
+                Text(text = stringResource(R.string.common_controls_done))
             }
-        )
-    }
+        }
+    )
+}
 
-    dialog(
-        "UnlockWalletDialog/{target}",
-        arguments = listOf(
-            navArgument("target") { type = NavType.StringType }
-        )
-    ) { backStackEntry ->
-        val viewModel = getViewModel<UnlockWalletViewModel>()
-        val biometricEnable by viewModel.biometricEnabled.observeAsState(initial = false)
-        val password by viewModel.password.observeAsState(initial = "")
-        val passwordValid by viewModel.passwordValid.observeAsState(initial = false)
-        val context = LocalContext.current
-        val target = backStackEntry.arguments?.getString("target")
-        UnlockWalletDialog(
-            onBack = { navController.popBackStack() },
-            biometricEnabled = biometricEnable,
-            password = password,
-            onPasswordChanged = { viewModel.setPassword(it) },
-            passwordValid = passwordValid,
-            onConfirm = {
-                if (biometricEnable) {
-                    viewModel.authenticate(
-                        context = context,
-                        onSuccess = {
-                            target?.let {
-                                navController.navigate(
-                                    it,
-                                    navOptions {
-                                        popUpTo("UnlockWalletDialog") {
-                                            inclusive = true
-                                        }
-                                    }
-                                )
-                            } ?: navController.popBackStack()
-                        }
-                    )
-                } else {
-                    target?.let {
-                        if (passwordValid) {
-                            navController.navigate(
-                                it,
-                                navOptions {
-                                    popUpTo("UnlockWalletDialog") {
-                                        inclusive = true
-                                    }
+@NavGraphDestination(
+    route = WalletRoute.WalletIntroHostTouchId.path,
+    packageName = navigationComposeAnimComposablePackage,
+    functionName = navigationComposeAnimComposable,
+)
+@Composable
+fun WalletIntroHostTouchId(
+    navController: NavController,
+    @Back onBack: () -> Unit,
+    @Path("type") typeString: String,
+) {
+    val type = remember(typeString) { CreateType.valueOf(typeString) }
+    TouchIdEnableScene(
+        onBack = onBack,
+        onEnable = {
+            navController.navigate(WalletRoute.WalletIntroHostTouchIdEnableSuccess(type.name))
+        }
+    )
+}
+
+@NavGraphDestination(
+    route = WalletRoute.WalletIntroHostTouchIdEnableSuccess.path,
+    packageName = navigationComposeDialogPackage,
+    functionName = navigationComposeDialog,
+)
+@Composable
+fun WalletIntroHostTouchIdEnableSuccess(
+    navController: NavController,
+    @Path("type") typeString: String,
+) {
+    val type = remember(typeString) { CreateType.valueOf(typeString) }
+    MaskDialog(
+        onDismissRequest = {
+            navController.navigate(WalletRoute.CreateOrImportWallet(type.name))
+        },
+        title = {
+            Text(text = stringResource(R.string.common_alert_biometry_id_activate_title))
+        },
+        text = {
+            Text(text = "Touch id has been enabled successfully.")
+        },
+        icon = {
+            Image(
+                painterResource(id = R.drawable.ic_success),
+                contentDescription = null
+            )
+        },
+        buttons = {
+            PrimaryButton(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = {
+                    navController.navigate(WalletRoute.CreateOrImportWallet(type.name))
+                },
+            ) {
+                Text(text = stringResource(R.string.common_controls_done))
+            }
+        }
+    )
+}
+
+@NavGraphDestination(
+    route = WalletRoute.CreateOrImportWallet.path,
+    packageName = navigationComposeAnimComposablePackage,
+    functionName = navigationComposeAnimComposable,
+)
+@Composable
+fun CreateOrImportWallet(
+    navController: NavController,
+    @Back onBack: () -> Unit,
+    @Path("type") typeString: String,
+) {
+    val type = remember(typeString) { CreateType.valueOf(typeString) }
+    CreateOrImportWalletScene(
+        navController = navController,
+        onBack = onBack,
+        type = type,
+    )
+}
+
+@NavGraphDestination(
+    route = WalletRoute.MultiChainWalletDialog,
+    packageName = navigationComposeDialogPackage,
+    functionName = navigationComposeDialog,
+)
+@Composable
+fun MultiChainWalletDialogRoute(
+    @Back onBack: () -> Unit,
+) {
+    MultiChainWalletDialog(
+        onBack = onBack,
+    )
+}
+
+@NavGraphDestination(
+    route = WalletRoute.UnlockWalletDialog.path,
+    packageName = navigationComposeDialogPackage,
+    functionName = navigationComposeDialog,
+)
+@Composable
+fun UnlockWalletDialog(
+    navController: NavController,
+    @Back onBack: () -> Unit,
+    @Path("target") target: String,
+) {
+    val viewModel = getViewModel<UnlockWalletViewModel>()
+    val biometricEnable by viewModel.biometricEnabled.observeAsState(initial = false)
+    val password by viewModel.password.observeAsState(initial = "")
+    val passwordValid by viewModel.passwordValid.observeAsState(initial = false)
+    val context = LocalContext.current
+    UnlockWalletDialog(
+        onBack = onBack,
+        biometricEnabled = biometricEnable,
+        password = password,
+        onPasswordChanged = { viewModel.setPassword(it) },
+        passwordValid = passwordValid,
+        onConfirm = {
+            if (biometricEnable) {
+                viewModel.authenticate(
+                    context = context,
+                    onSuccess = {
+                        navController.navigate(
+                            target,
+                            navOptions {
+                                popUpTo(WalletRoute.UnlockWalletDialog.path) {
+                                    inclusive = true
                                 }
-                            )
+                            }
+                        )
+                    }
+                )
+            } else if (passwordValid) {
+                navController.navigate(
+                    target,
+                    navOptions {
+                        popUpTo(WalletRoute.UnlockWalletDialog.path) {
+                            inclusive = true
                         }
-                    } ?: navController.popBackStack()
-                }
+                    }
+                )
             }
-        )
-    }
+        }
+    )
 }

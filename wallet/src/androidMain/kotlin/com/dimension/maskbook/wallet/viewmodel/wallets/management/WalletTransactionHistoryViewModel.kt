@@ -21,11 +21,15 @@
 package com.dimension.maskbook.wallet.viewmodel.wallets.management
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.dimension.maskbook.common.ext.asStateIn
+import com.dimension.maskbook.common.util.DateUtils
 import com.dimension.maskbook.wallet.repository.ITransactionRepository
 import com.dimension.maskbook.wallet.repository.IWalletRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.mapLatest
-import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 
 class WalletTransactionHistoryViewModel(
     private val repository: IWalletRepository,
@@ -33,8 +37,23 @@ class WalletTransactionHistoryViewModel(
 ) : ViewModel() {
     @OptIn(ExperimentalCoroutinesApi::class)
     val transactions by lazy {
-        repository.currentWallet.mapNotNull { it }.mapLatest {
-            transactionRepository.getTransactionByWallet(it)
-        }
+        repository.currentWallet
+            .map { currentWallet ->
+                if (currentWallet == null) emptyList()
+                else {
+                    transactionRepository.getTransactionByWallet(currentWallet)
+                }
+            }
+            .map { list ->
+                if (list.isEmpty()) emptyMap()
+                else {
+                    list.asSequence()
+                        .sortedByDescending { it.createdAt }
+                        .groupBy { DateUtils.getDateText(it.createdAt) }
+                        .toMap()
+                }
+            }
+            .flowOn(Dispatchers.IO)
+            .asStateIn(viewModelScope, emptyMap())
     }
 }

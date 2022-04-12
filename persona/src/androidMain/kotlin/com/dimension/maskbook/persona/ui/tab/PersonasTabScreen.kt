@@ -20,61 +20,95 @@
  */
 package com.dimension.maskbook.persona.ui.tab
 
+import android.net.Uri
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
-import com.dimension.maskbook.common.ext.encodeUrl
-import com.dimension.maskbook.common.ui.LocalRootNavController
+import androidx.navigation.NavController
+import androidx.navigation.navOptions
+import com.dimension.maskbook.common.route.CommonRoute
+import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.export.model.Network
 import com.dimension.maskbook.persona.export.model.PlatformType
+import com.dimension.maskbook.persona.repository.IPersonaRepository
+import com.dimension.maskbook.persona.route.PersonaRoute
 import com.dimension.maskbook.persona.ui.scenes.PersonaScene
+import com.dimension.maskbook.persona.ui.scenes.social.connectSocial
+import org.koin.androidx.compose.get
 
 class PersonasTabScreen : TabScreen {
-    override val route = "Personas"
+    override val route = CommonRoute.Main.Tabs.Persona
     override val title: Int = R.string.tab_personas
     override val icon: Int = R.drawable.ic_persona
 
     @OptIn(ExperimentalAnimationApi::class)
     @Composable
-    override fun Content(onBack: () -> Unit) {
-        val rootNavController = LocalRootNavController.current
+    override fun Content(navController: NavController, onBack: () -> Unit) {
+        val repository = get<IPersonaRepository>()
         PersonaScene(
             onBack = onBack,
             onPersonaCreateClick = {
-                rootNavController.navigate("WelcomeCreatePersona")
+                navController.navigate(Uri.parse(Deeplinks.Persona.Register.WelcomeCreatePersona))
             },
             onPersonaRecoveryClick = {
-                rootNavController.navigate("Recovery")
+                navController.navigate(Uri.parse(Deeplinks.Persona.Recovery))
             },
             onPersonaNameClick = {
-                rootNavController.navigate("PersonaMenu")
+                navController.navigate(PersonaRoute.PersonaMenu)
             },
             onAddSocialClick = { persona, network ->
-                val platform = when (network) {
-                    Network.Twitter -> PlatformType.Twitter
-                    Network.Facebook -> PlatformType.Facebook
-                    else -> null // TODO support other network
-                }
-                if (platform == null) {
-                    rootNavController.navigate("SelectPlatform/${persona.id.encodeUrl()}")
-                } else {
-                    rootNavController.navigate("ConnectSocial/${persona.id.encodeUrl()}/$platform")
-                }
+                network?.toPlatform()?.let {
+                    connectSocial(
+                        controller = navController,
+                        personaId = persona.identifier,
+                        platform = it,
+                        repository = repository
+                    )
+                } ?: navController.navigate(PersonaRoute.SelectPlatform(persona.identifier))
             },
             onRemoveSocialClick = { persona, social ->
-                val platform = when (social.network) {
-                    Network.Twitter -> PlatformType.Twitter
-                    Network.Facebook -> PlatformType.Facebook
-                    else -> null // TODO support other network
-                }
-                if (platform != null) {
-                    rootNavController.navigate(
-                        "DisconnectSocial/${persona.id.encodeUrl()}/$platform/${social.id.encodeUrl()}" +
-                            "?personaName=${persona.name.encodeUrl()}&socialName=${social.name.encodeUrl()}"
+                social.network.toPlatform()?.let {
+                    navController.navigate(
+                        PersonaRoute.DisconnectSocial(
+                            personaId = persona.identifier,
+                            platform = it.name,
+                            socialId = social.id,
+                            personaName = persona.name,
+                            socialName = social.name,
+                        )
                     )
                 }
             },
+            onSocialItemClick = { _, social ->
+                social.network.toPlatform()?.let {
+                    repository.setPlatform(it)
+                    navController.navigate(
+                        Uri.parse(Deeplinks.WebContent(null)),
+                        navOptions {
+                            launchSingleTop = true
+                            popUpTo(CommonRoute.Main.Home.path) {
+                                inclusive = true
+                            }
+                        }
+                    )
+                }
+            },
+            onAddPersonaAvatar = {
+                navController.navigate(PersonaRoute.SetAvatar)
+            },
+            onPersonaAvatarClick = {
+                navController.navigate(PersonaRoute.PersonaAvatarModal)
+            },
+            onSynchronize = {
+                navController.navigate(PersonaRoute.Synchronization.Scan)
+            }
         )
     }
+}
+
+private fun Network.toPlatform() = when (this) {
+    Network.Twitter -> PlatformType.Twitter
+    Network.Facebook -> PlatformType.Facebook
+    else -> null // TODO support other network
 }

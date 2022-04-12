@@ -20,7 +20,6 @@
  */
 package com.dimension.maskbook.common.ui.theme
 
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Colors
 import androidx.compose.material.MaterialTheme
@@ -29,7 +28,7 @@ import androidx.compose.material.Typography
 import androidx.compose.material.darkColors
 import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
@@ -37,10 +36,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.dimension.maskbook.common.ext.observeAsState
-import com.dimension.maskbook.setting.export.SettingServices
-import com.dimension.maskbook.setting.export.model.Appearance
-import org.koin.androidx.compose.get
+
+val Colors.modalScrimColor: Color
+    get() = Color(0x99000000)
 
 @Composable
 fun MaskTheme(
@@ -51,8 +49,14 @@ fun MaskTheme(
         colors = provideColor(isDarkTheme),
         shapes = provideShapes(),
         typography = provideTypography(isDarkTheme),
-        content = content,
-    )
+    ) {
+        CompositionLocalProvider(
+            LocalMoreColors provides provideMoreColors(isDarkTheme),
+            LocalMoreTypography provides provideMoreTypography(isDarkTheme),
+            LocalIsDarkTheme provides isDarkTheme,
+            content = content,
+        )
+    }
 }
 
 @Composable
@@ -61,6 +65,13 @@ fun provideTypography(isDarkTheme: Boolean): Typography {
         h1 = TextStyle(
             fontSize = 32.sp,
             lineHeight = 38.4.sp,
+            fontStyle = FontStyle.Normal,
+            fontWeight = FontWeight.W700,
+            color = if (isDarkTheme) Color.White.copy(0.8f) else Color(0xFF1D2238)
+        ),
+        h2 = TextStyle(
+            fontSize = 24.sp,
+            lineHeight = 36.sp,
             fontStyle = FontStyle.Normal,
             fontWeight = FontWeight.W700,
             color = if (isDarkTheme) Color.White.copy(0.8f) else Color(0xFF1D2238)
@@ -82,6 +93,13 @@ fun provideTypography(isDarkTheme: Boolean): Typography {
         h5 = TextStyle(
             fontSize = 16.sp,
             lineHeight = 24.sp,
+            fontStyle = FontStyle.Normal,
+            fontWeight = FontWeight.W700,
+            color = if (isDarkTheme) Color.White.copy(0.8f) else Color(0xFF1D2238),
+        ),
+        h6 = TextStyle(
+            fontSize = 14.sp,
+            lineHeight = 21.sp,
             fontStyle = FontStyle.Normal,
             fontWeight = FontWeight.W700,
             color = if (isDarkTheme) Color.White.copy(0.8f) else Color(0xFF1D2238),
@@ -142,20 +160,9 @@ fun provideShapes(): Shapes {
 }
 
 @Composable
-fun isDarkTheme(): Boolean {
-    val repo = get<SettingServices>()
-    val appearance by repo.appearance.observeAsState(initial = Appearance.default)
-    return when (appearance) {
-        Appearance.default -> isSystemInDarkTheme()
-        Appearance.light -> false
-        Appearance.dark -> true
-    }
-}
-
-@Composable
 fun provideColor(isDarkTheme: Boolean): Colors {
-    val primary = Color(0xFF1C68F3)
     return if (isDarkTheme) {
+        val primary = Color(0xFF4989FF)
         darkColors(
             primary = primary,
             onPrimary = Color.White.copy(0.8f),
@@ -168,6 +175,7 @@ fun provideColor(isDarkTheme: Boolean): Colors {
             onSurface = Color.White.copy(alpha = 0.4f),
         )
     } else {
+        val primary = Color(0xFF1C68F3)
         lightColors(
             primary = primary,
             onPrimary = Color.White,

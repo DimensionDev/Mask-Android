@@ -28,6 +28,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -35,18 +36,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import com.dimension.maskbook.common.ui.widget.HorizontalScenePadding
 import com.dimension.maskbook.common.ui.widget.MaskDialog
 import com.dimension.maskbook.common.ui.widget.MaskPasswordInputField
 import com.dimension.maskbook.common.ui.widget.NameImage
-import com.dimension.maskbook.common.ui.widget.PrimaryButton
-import com.dimension.maskbook.common.ui.widget.SecondaryButton
+import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
+import com.dimension.maskbook.common.ui.widget.button.SecondaryButton
+import com.dimension.maskbook.common.ui.widget.color
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.export.model.WalletData
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun WalletDeleteDialog(
-    walletData: WalletData,
+    walletData: WalletData?,
     biometricEnabled: Boolean,
     password: String,
     onPasswordChanged: (String) -> Unit,
@@ -57,12 +60,13 @@ fun WalletDeleteDialog(
     MaskDialog(
         // workaround for https://issuetracker.google.com/issues/194911971
         properties = DialogProperties(usePlatformDefaultWidth = false),
-        modifier = Modifier.padding(horizontal = 23.dp),
+        modifier = Modifier.padding(horizontal = HorizontalScenePadding),
         onDismissRequest = onBack,
         icon = {
             NameImage(
-                name = walletData.name,
+                name = walletData?.name.orEmpty(),
                 modifier = Modifier.size(36.dp),
+                color = walletData?.name?.color ?: MaterialTheme.colors.primary,
             )
         },
         title = {
@@ -70,7 +74,7 @@ fun WalletDeleteDialog(
         },
         text = {
             Column {
-                Text(text = walletData.address)
+                Text(text = walletData?.address.orEmpty())
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(text = stringResource(R.string.scene_wallet_delete_content))
             }

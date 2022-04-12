@@ -22,10 +22,9 @@ package com.dimension.maskbook.setting.repository
 
 import com.dimension.maskbook.setting.export.model.Appearance
 import com.dimension.maskbook.setting.export.model.BackupMeta
+import com.dimension.maskbook.setting.export.model.BackupMetaFile
 import com.dimension.maskbook.setting.export.model.DataProvider
 import com.dimension.maskbook.setting.export.model.Language
-import com.dimension.maskbook.setting.export.model.NetworkType
-import com.dimension.maskbook.setting.export.model.TradeProvider
 import kotlinx.coroutines.flow.Flow
 
 interface ISettingsRepository {
@@ -35,25 +34,25 @@ interface ISettingsRepository {
     val dataProvider: Flow<DataProvider>
     val paymentPassword: Flow<String>
     val backupPassword: Flow<String>
-    val tradeProvider: Flow<Map<NetworkType, TradeProvider>>
     val shouldShowLegalScene: Flow<Boolean>
     fun setBiometricEnabled(value: Boolean)
-    fun setTradeProvider(networkType: NetworkType, tradeProvider: TradeProvider)
     fun setLanguage(language: Language)
     fun setAppearance(appearance: Appearance)
     fun setDataProvider(dataProvider: DataProvider)
     fun setPaymentPassword(value: String)
     fun setBackupPassword(value: String)
-    suspend fun provideBackupMeta(): BackupMeta?
-    suspend fun provideBackupMetaFromJson(value: String): BackupMeta?
-    suspend fun restoreBackupFromJson(value: String)
-    suspend fun createBackupJson(
+    suspend fun generateBackupMeta(): BackupMeta
+    fun provideBackupMeta(file: BackupMetaFile): BackupMeta
+    suspend fun restoreBackup(value: BackupMetaFile)
+    suspend fun createBackup(
         noPosts: Boolean = false,
         noWallets: Boolean = false,
         noPersonas: Boolean = false,
         noProfiles: Boolean = false,
+        noRelations: Boolean = false,
         hasPrivateKeyOnly: Boolean = false,
-    ): String
+    ): BackupMetaFile
+
     fun setShouldShowLegalScene(value: Boolean)
     fun saveEmailForCurrentPersona(value: String)
     fun savePhoneForCurrentPersona(value: String)

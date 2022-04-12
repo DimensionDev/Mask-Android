@@ -22,6 +22,7 @@ package com.dimension.maskbook.common.retrofit
 
 import com.dimension.maskbook.common.okhttp.okHttpClient
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import retrofit2.Retrofit
@@ -35,6 +36,7 @@ val JSON by lazy {
     }
 }
 
+@OptIn(ExperimentalSerializationApi::class)
 inline fun <reified T> retrofit(
     baseUrl: String,
 ): T {

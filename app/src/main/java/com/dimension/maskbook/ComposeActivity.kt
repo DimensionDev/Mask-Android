@@ -20,130 +20,68 @@
  */
 package com.dimension.maskbook
 
+import android.content.Intent
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.activity.compose.setContent
-import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.material.MaterialTheme
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.navigation.plusAssign
-import coil.ImageLoader
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsControllerCompat
+import androidx.fragment.app.FragmentActivity
 import coil.compose.LocalImageLoader
-import coil.decode.SvgDecoder
-import com.dimension.maskbook.common.navHostAnimationDurationMillis
-import com.dimension.maskbook.common.route
-import com.dimension.maskbook.common.ui.LocalRootNavController
-import com.dimension.maskbook.common.ui.theme.MaskTheme
-import com.dimension.maskbook.labs.LabsSetup
-import com.dimension.maskbook.persona.PersonaSetup
-import com.dimension.maskbook.setting.SettingSetup
-import com.dimension.maskbook.wallet.WalletSetup
-import com.dimension.maskbook.wallet.route.mainRoute
-import com.dimension.maskbook.wallet.route.registerRoute
-import com.dimension.maskbook.wallet.route.walletsRoute
-import com.google.accompanist.navigation.animation.AnimatedNavHost
-import com.google.accompanist.navigation.animation.rememberAnimatedNavController
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
-import com.google.accompanist.navigation.material.ModalBottomSheetLayout
-import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
+import com.dimension.maskbook.common.gecko.PromptFeatureDelegate
+import com.dimension.maskbook.common.gecko.WebContentController
+import com.dimension.maskbook.common.manager.ImageLoaderManager
+import com.dimension.maskbook.common.ui.widget.LocalWindowInsetsController
+import com.dimension.maskbook.entry.ui.App
+import com.google.accompanist.insets.ProvideWindowInsets
+import org.koin.android.ext.android.get
+import org.koin.android.ext.android.inject
 
-class ComposeActivity : AppCompatActivity() {
-    companion object {
-        object Destination {
-            val register = "Register"
-            val main = "Main"
-        }
+class ComposeActivity : FragmentActivity() {
+
+    private lateinit var promptFeature: PromptFeatureDelegate
+    private val imageLoaderManager: ImageLoaderManager by inject()
+
+    private val windowInsetsControllerCompat by lazy {
+        WindowInsetsControllerCompat(window, window.decorView)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         super.onCreate(savedInstanceState)
-        val startDestination = intent.getStringExtra("startDestination") ?: Destination.register
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+        promptFeature = get<WebContentController>().createPromptFeature(this)
         setContent {
             CompositionLocalProvider(
-                LocalImageLoader provides ImageLoader.Builder(this).componentRegistry {
-                    add(SvgDecoder(this@ComposeActivity))
-                }.build()
+                LocalImageLoader provides imageLoaderManager.imageLoader,
+                LocalWindowInsetsController provides windowInsetsControllerCompat,
             ) {
-                MaskTheme {
+                ProvideWindowInsets(
+                    windowInsetsAnimationsEnabled = true
+                ) {
                     App(
-                        onBack = { finish() },
-                        startDestination = startDestination,
+                        onInitialized = {
+                            promptFeature.start()
+                        },
                     )
                 }
             }
         }
     }
-}
 
-@OptIn(ExperimentalMaterialNavigationApi::class, ExperimentalAnimationApi::class)
-@Composable
-fun App(
-    startDestination: String = "Register",
-    onBack: () -> Unit,
-) {
-    val navController = rememberAnimatedNavController()
-    val bottomSheetNavigator = rememberBottomSheetNavigator()
-    navController.navigatorProvider += bottomSheetNavigator
-    CompositionLocalProvider(LocalRootNavController provides navController) {
-        ModalBottomSheetLayout(
-            bottomSheetNavigator,
-            sheetBackgroundColor = MaterialTheme.colors.background,
-        ) {
-            AnimatedNavHost(
-                navController = navController,
-                startDestination = startDestination,
-                enterTransition = {
-                    slideInHorizontally(
-                        initialOffsetX = { it },
-                        animationSpec = tween(
-                            navHostAnimationDurationMillis
-                        )
-                    )
-                },
-                exitTransition = {
-                    slideOutHorizontally(
-                        targetOffsetX = { -it },
-                        animationSpec = tween(
-                            navHostAnimationDurationMillis
-                        )
-                    )
-                },
-                popEnterTransition = {
-                    slideInHorizontally(
-                        initialOffsetX = { -it },
-                        animationSpec = tween(
-                            navHostAnimationDurationMillis
-                        )
-                    )
-                },
-                popExitTransition = {
-                    slideOutHorizontally(
-                        targetOffsetX = { it },
-                        animationSpec = tween(
-                            navHostAnimationDurationMillis
-                        )
-                    )
-                },
-            ) {
-                registerRoute(
-                    navController = navController,
-                )
-                mainRoute(
-                    navController = navController,
-                    onBack = onBack,
-                ) {
-                    walletsRoute(navController = navController)
-
-                    SettingSetup.route(this, navController = navController, onBack = onBack)
-                    WalletSetup.route(this, navController = navController, onBack = onBack)
-                    LabsSetup.route(this, navController = navController, onBack = onBack)
-                    PersonaSetup.route(this, navController = navController, onBack = onBack)
-                }
-            }
+    override fun onBackPressed() {
+        if (!promptFeature.onBackPressed()) {
+            super.onBackPressed()
         }
+    }
+
+    @Deprecated("Deprecated in Java")
+    @Suppress("DEPRECATION")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        promptFeature.onActivityResult(requestCode, data, resultCode)
     }
 }

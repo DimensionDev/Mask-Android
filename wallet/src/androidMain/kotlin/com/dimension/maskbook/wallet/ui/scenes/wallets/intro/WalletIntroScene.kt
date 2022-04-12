@@ -37,8 +37,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
-import com.dimension.maskbook.common.ui.widget.PrimaryButton
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
+import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.wallet.R
 
 @Composable
@@ -72,26 +72,20 @@ fun WalletIntroScene(
             ) {
                 Text(text = stringResource(R.string.common_controls_create_wallet))
             }
-            ButtonSpacing()
+            Spacer(modifier = Modifier.height(16.dp))
             PrimaryButton(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = onImport,
             ) {
                 Text(text = stringResource(R.string.common_controls_import_wallet))
             }
-            ButtonSpacing()
+            Spacer(modifier = Modifier.height(16.dp))
             PrimaryButton(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = onConnect,
             ) {
                 Text(text = stringResource(R.string.scene_wallet_connect_wallet_connect))
             }
-            ButtonSpacing()
         }
     }
-}
-
-@Composable
-private fun ButtonSpacing() {
-    Spacer(modifier = Modifier.height(16.dp))
 }

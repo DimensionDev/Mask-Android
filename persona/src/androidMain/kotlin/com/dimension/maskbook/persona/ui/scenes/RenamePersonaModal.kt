@@ -24,40 +24,60 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.dimension.maskbook.common.route.navigationComposeBottomSheet
+import com.dimension.maskbook.common.route.navigationComposeBottomSheetPackage
+import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
+import com.dimension.maskbook.common.routeProcessor.annotations.Path
 import com.dimension.maskbook.common.ui.widget.MaskInputField
 import com.dimension.maskbook.common.ui.widget.MaskModal
-import com.dimension.maskbook.common.ui.widget.PrimaryButton
-import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
+import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.persona.R
+import com.dimension.maskbook.persona.route.PersonaRoute
+import com.dimension.maskbook.persona.viewmodel.RenamePersonaViewModel
+import org.koin.androidx.compose.getViewModel
+import org.koin.core.parameter.parametersOf
 
+@NavGraphDestination(
+    route = PersonaRoute.RenamePersona.path,
+    packageName = navigationComposeBottomSheetPackage,
+    functionName = navigationComposeBottomSheet,
+)
 @Composable
 fun RenamePersonaModal(
-    name: String,
-    onNameChanged: (String) -> Unit,
-    onDone: () -> Unit,
+    navController: NavController,
+    @Path("personaId") personaId: String,
 ) {
+    val viewModel = getViewModel<RenamePersonaViewModel> {
+        parametersOf(personaId)
+    }
+    val name by viewModel.name.collectAsState()
+
     MaskModal {
-        Column(
-            modifier = Modifier
-                .padding(ScaffoldPadding),
-        ) {
+        Column {
             Text(text = stringResource(R.string.scene_personas_action_rename))
             Spacer(modifier = Modifier.height(8.dp))
             MaskInputField(
                 value = name,
-                onValueChange = onNameChanged,
+                onValueChange = {
+                    viewModel.setName(it)
+                },
                 modifier = Modifier.fillMaxWidth(),
             )
             Spacer(modifier = Modifier.height(20.dp))
             PrimaryButton(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = onDone,
+                onClick = {
+                    viewModel.confirm()
+                    navController.popBackStack()
+                },
             ) {
                 Text(text = stringResource(R.string.common_controls_confirm))
             }

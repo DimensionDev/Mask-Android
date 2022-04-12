@@ -22,7 +22,6 @@ package com.dimension.maskbook.wallet.ui.scenes.wallets
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,7 +37,6 @@ import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -47,15 +45,15 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.dimension.maskbook.common.ui.theme.MaskTheme
-import com.dimension.maskbook.common.ui.widget.MaskBackButton
+import com.dimension.maskbook.common.ui.barcode.rememberBarcodeBitmap
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
+import com.dimension.maskbook.common.ui.widget.MaskScene
 import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
-import com.dimension.maskbook.common.ui.widget.PrimaryButton
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
+import com.dimension.maskbook.common.ui.widget.button.MaskBackButton
+import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
+import com.dimension.maskbook.common.ui.widget.button.clickable
 import com.dimension.maskbook.wallet.R
-import com.google.zxing.BarcodeFormat
-import com.journeyapps.barcodescanner.BarcodeEncoder
 
 @Composable
 fun WalletQrcodeScene(
@@ -65,7 +63,7 @@ fun WalletQrcodeScene(
     onBack: () -> Unit,
     onCopy: () -> Unit,
 ) {
-    MaskTheme {
+    MaskScene {
         MaskScaffold(
             topBar = {
                 MaskSingleLineTopAppBar(
@@ -96,21 +94,15 @@ fun WalletQrcodeScene(
                                 .padding(25.dp)
                                 .aspectRatio(1f)
                         ) {
-                            val bitmap = remember(address) {
-                                val barcodeEncoder = BarcodeEncoder()
-                                barcodeEncoder.encodeBitmap(
-                                    address,
-                                    BarcodeFormat.QR_CODE,
-                                    400,
-                                    400
+                            val bitmap = rememberBarcodeBitmap(address)
+                            if (bitmap != null) {
+                                Image(
+                                    bitmap = bitmap.asImageBitmap(),
+                                    contentDescription = null,
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentScale = ContentScale.FillWidth,
                                 )
                             }
-                            Image(
-                                bitmap = bitmap.asImageBitmap(),
-                                contentDescription = null,
-                                modifier = Modifier.fillMaxSize(),
-                                contentScale = ContentScale.FillWidth,
-                            )
                         }
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
@@ -122,7 +114,10 @@ fun WalletQrcodeScene(
                         Box(
                             modifier = Modifier
                                 .padding(horizontal = 16.dp, vertical = 24.dp)
-                                .background(MaterialTheme.colors.surface, shape = MaterialTheme.shapes.medium)
+                                .background(
+                                    MaterialTheme.colors.surface,
+                                    shape = MaterialTheme.shapes.medium
+                                )
                                 .clip(MaterialTheme.shapes.medium)
                                 .padding(horizontal = 16.dp, vertical = 10.dp)
                                 .clickable {

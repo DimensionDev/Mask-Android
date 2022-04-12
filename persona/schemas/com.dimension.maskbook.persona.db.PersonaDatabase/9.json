@@ -1,0 +1,373 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 9,
+    "identityHash": "01e16f242eafce0632c5bba4dd9ad92a",
+    "entities": [
+      {
+        "tableName": "DbPersonaRecord",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`identifier` TEXT NOT NULL, `mnemonicRaw` BLOB, `path` TEXT, `withPassword` INTEGER, `publicKeyRaw` BLOB, `privateKeyRaw` BLOB, `localKeyRaw` BLOB, `nickname` TEXT, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, `hasLogout` INTEGER, `initialized` INTEGER, `avatar` TEXT, `email` TEXT NOT NULL, `phone` TEXT NOT NULL, PRIMARY KEY(`identifier`))",
+        "fields": [
+          {
+            "fieldPath": "identifier",
+            "columnName": "identifier",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mnemonic",
+            "columnName": "mnemonicRaw",
+            "affinity": "BLOB",
+            "notNull": false
+          },
+          {
+            "fieldPath": "path",
+            "columnName": "path",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "withPassword",
+            "columnName": "withPassword",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "publicKey",
+            "columnName": "publicKeyRaw",
+            "affinity": "BLOB",
+            "notNull": false
+          },
+          {
+            "fieldPath": "privateKey",
+            "columnName": "privateKeyRaw",
+            "affinity": "BLOB",
+            "notNull": false
+          },
+          {
+            "fieldPath": "localKey",
+            "columnName": "localKeyRaw",
+            "affinity": "BLOB",
+            "notNull": false
+          },
+          {
+            "fieldPath": "nickname",
+            "columnName": "nickname",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hasLogout",
+            "columnName": "hasLogout",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "initialized",
+            "columnName": "initialized",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "avatar",
+            "columnName": "avatar",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "email",
+            "columnName": "email",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "phone",
+            "columnName": "phone",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "identifier"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "DbProfileRecord",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`identifier` TEXT NOT NULL, `nickname` TEXT, `network` TEXT, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, `avatar` TEXT, PRIMARY KEY(`identifier`))",
+        "fields": [
+          {
+            "fieldPath": "identifier",
+            "columnName": "identifier",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nickname",
+            "columnName": "nickname",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "network",
+            "columnName": "network",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "avatar",
+            "columnName": "avatar",
+            "affinity": "TEXT",
+            "notNull": false
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "identifier"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "DbRelationRecord",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `personaIdentifier` TEXT NOT NULL, `profileIdentifier` TEXT NOT NULL, `favor` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "_id",
+            "columnName": "_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "personaIdentifier",
+            "columnName": "personaIdentifier",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "profileIdentifier",
+            "columnName": "profileIdentifier",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "favor",
+            "columnName": "favor",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "_id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_DbRelationRecord_personaIdentifier_profileIdentifier",
+            "unique": true,
+            "columnNames": [
+              "personaIdentifier",
+              "profileIdentifier"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_DbRelationRecord_personaIdentifier_profileIdentifier` ON `${TABLE_NAME}` (`personaIdentifier`, `profileIdentifier`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "DbLinkedProfileRecord",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `personaIdentifier` TEXT NOT NULL, `profileIdentifier` TEXT NOT NULL, `state` TEXT NOT NULL, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "_id",
+            "columnName": "_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "personaIdentifier",
+            "columnName": "personaIdentifier",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "profileIdentifier",
+            "columnName": "profileIdentifier",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "state",
+            "columnName": "state",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAt",
+            "columnName": "createdAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAt",
+            "columnName": "updatedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "_id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_DbLinkedProfileRecord_personaIdentifier_profileIdentifier",
+            "unique": true,
+            "columnNames": [
+              "personaIdentifier",
+              "profileIdentifier"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_DbLinkedProfileRecord_personaIdentifier_profileIdentifier` ON `${TABLE_NAME}` (`personaIdentifier`, `profileIdentifier`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "DbPostRecord",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`identifier` TEXT NOT NULL, `encryptBy` TEXT, `postNetwork` TEXT NOT NULL, `postUserId` TEXT NOT NULL, `postCryptoKeyRaw` BLOB, `url` TEXT, `summary` TEXT, `recipientsRaw` TEXT, `interestedMetaRaw` TEXT, `foundAt` INTEGER NOT NULL, PRIMARY KEY(`identifier`))",
+        "fields": [
+          {
+            "fieldPath": "identifier",
+            "columnName": "identifier",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "encryptBy",
+            "columnName": "encryptBy",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "postNetwork",
+            "columnName": "postNetwork",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "postUserId",
+            "columnName": "postUserId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "postCryptoKey",
+            "columnName": "postCryptoKeyRaw",
+            "affinity": "BLOB",
+            "notNull": false
+          },
+          {
+            "fieldPath": "url",
+            "columnName": "url",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "summary",
+            "columnName": "summary",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "recipientsRaw",
+            "columnName": "recipientsRaw",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "interestedMetaRaw",
+            "columnName": "interestedMetaRaw",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "foundAt",
+            "columnName": "foundAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "identifier"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [
+      {
+        "viewName": "ViewRelationDetail",
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT relation.personaIdentifier, relation.profileIdentifier, relation.favor, profile.nickname, profile.avatar, profile.network FROM DbRelationRecord relation INNER JOIN DbProfileRecord profile ON profile.identifier=relation.profileIdentifier"
+      },
+      {
+        "viewName": "ViewLinkedProfileWithKey",
+        "createSql": "CREATE VIEW `${VIEW_NAME}` AS SELECT link.personaIdentifier, link.profileIdentifier, link.state, persona.publicKeyRaw, persona.privateKeyRaw, persona.localKeyRaw FROM DbLinkedProfileRecord link LEFT OUTER JOIN DbPersonaRecord persona on persona.identifier=link.personaIdentifier"
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '01e16f242eafce0632c5bba4dd9ad92a')"
+    ]
+  }
+}

@@ -23,18 +23,23 @@ package com.dimension.maskbook.setting
 import android.content.Context
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.navigation
 import com.dimension.maskbook.common.ModuleSetup
 import com.dimension.maskbook.common.retrofit.retrofit
 import com.dimension.maskbook.common.ui.tab.TabScreen
+import com.dimension.maskbook.setting.SettingSetup.route
 import com.dimension.maskbook.setting.data.JSDataSource
-import com.dimension.maskbook.setting.data.PreferenceDataSource
+import com.dimension.maskbook.setting.data.JSMethod
+import com.dimension.maskbook.setting.data.SettingDataSource
 import com.dimension.maskbook.setting.data.settingsDataStore
 import com.dimension.maskbook.setting.export.SettingServices
 import com.dimension.maskbook.setting.repository.BackupRepository
 import com.dimension.maskbook.setting.repository.ISettingsRepository
 import com.dimension.maskbook.setting.repository.SettingsRepository
+import com.dimension.maskbook.setting.route.SettingRoute
+import com.dimension.maskbook.setting.route.generatedRoute
 import com.dimension.maskbook.setting.services.BackupServices
-import com.dimension.maskbook.setting.services.model.DownloadResponse
+import com.dimension.maskbook.setting.ui.scenes.backup.backupLocalRoute
 import com.dimension.maskbook.setting.ui.tab.SettingsTabScreen
 import com.dimension.maskbook.setting.viewmodel.AppearanceSettingsViewModel
 import com.dimension.maskbook.setting.viewmodel.BackupCloudExecuteViewModel
@@ -49,14 +54,20 @@ import com.dimension.maskbook.setting.viewmodel.LanguageSettingsViewModel
 import com.dimension.maskbook.setting.viewmodel.PaymentPasswordSettingsViewModel
 import com.dimension.maskbook.setting.viewmodel.PhoneBackupViewModel
 import com.dimension.maskbook.setting.viewmodel.PhoneSetupViewModel
-import com.dimension.maskbook.setting.viewmodel.RemoteBackupRecoveryViewModelBase
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.koin.mp.KoinPlatformTools
 
 object SettingSetup : ModuleSetup {
-    override fun NavGraphBuilder.route(navController: NavController, onBack: () -> Unit) {
+    override fun NavGraphBuilder.route(navController: NavController) {
+        generatedRoute(navController)
+        navigation(
+            startDestination = SettingRoute.BackupData.BackupLocal.Backup,
+            route = SettingRoute.BackupData.BackupLocal.Route,
+        ) {
+            backupLocalRoute(navController)
+        }
     }
 
     override fun dependencyInject() = module {
@@ -64,13 +75,14 @@ object SettingSetup : ModuleSetup {
             retrofit("https://vaalh28dbi.execute-api.ap-east-1.amazonaws.com")
         }
         single<ISettingsRepository> {
-            SettingsRepository(get(), get(), get())
+            SettingsRepository(get(), get(), get(), get())
         }
         single { BackupRepository(get(), get<Context>().cacheDir, get<Context>().contentResolver) }
         single<SettingServices> { SettingServicesImpl(get(), get()) } bind com.dimension.maskbook.setting.export.BackupServices::class
         single { SettingsTabScreen() } bind TabScreen::class
-        single { JSDataSource() }
-        single { PreferenceDataSource(get<Context>().settingsDataStore) }
+        single { JSDataSource(get()) }
+        single { JSMethod(get()) }
+        single { SettingDataSource(get<Context>().settingsDataStore) }
 
         viewModel { LanguageSettingsViewModel(get()) }
         viewModel { AppearanceSettingsViewModel(get()) }
@@ -78,38 +90,15 @@ object SettingSetup : ModuleSetup {
         viewModel { PaymentPasswordSettingsViewModel(get()) }
         viewModel { BackupPasswordSettingsViewModel(get()) }
         viewModel { BackupLocalViewModel(get(), get()) }
-        viewModel { (requestNavigate: (RemoteBackupRecoveryViewModelBase.NavigateArgs) -> Unit) ->
-            EmailSetupViewModel(
-                requestNavigate = requestNavigate,
-                backupRepository = get(),
-                settingsRepository = get(),
-            )
-        }
-        viewModel { (requestNavigate: (RemoteBackupRecoveryViewModelBase.NavigateArgs) -> Unit) ->
-            PhoneSetupViewModel(
-                requestNavigate = requestNavigate,
-                backupRepository = get(),
-                settingsRepository = get()
-            )
-        }
-        viewModel { (
-            requestMerge: (target: DownloadResponse, email: String, code: String) -> Unit,
-            next: (email: String, code: String) -> Unit,
-        ) ->
-            EmailBackupViewModel(get(), requestMerge, next)
-        }
-        viewModel { (
-            requestMerge: (target: DownloadResponse, email: String, code: String) -> Unit,
-            next: (email: String, code: String) -> Unit,
-        ) ->
-            PhoneBackupViewModel(get(), requestMerge, next)
-        }
+        viewModel { EmailSetupViewModel(get(), get()) }
+        viewModel { PhoneSetupViewModel(get(), get()) }
+        viewModel { EmailBackupViewModel(get()) }
+        viewModel { PhoneBackupViewModel(get()) }
         viewModel { (onDone: () -> Unit) ->
             BackupMergeConfirmViewModel(get(), get(), onDone)
         }
         viewModel { BackupCloudViewModel(get()) }
         viewModel { BackupCloudExecuteViewModel(get(), get(), get()) }
-        // viewModel { BiometricEnableViewModel(get(), get()) }
     }
 
     override fun onExtensionReady() {

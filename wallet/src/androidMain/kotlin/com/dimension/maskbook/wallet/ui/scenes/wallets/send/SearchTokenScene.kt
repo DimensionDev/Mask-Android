@@ -21,7 +21,6 @@
 package com.dimension.maskbook.wallet.ui.scenes.wallets.send
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -39,20 +38,22 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
-import com.dimension.maskbook.common.ui.theme.MaskTheme
-import com.dimension.maskbook.common.ui.widget.MaskBackButton
-import com.dimension.maskbook.common.ui.widget.MaskButton
+import com.dimension.maskbook.common.bigDecimal.BigDecimal
+import com.dimension.maskbook.common.ext.humanizeDollar
+import com.dimension.maskbook.common.ext.humanizeToken
+import com.dimension.maskbook.common.ui.widget.HorizontalScenePadding
 import com.dimension.maskbook.common.ui.widget.MaskInputField
 import com.dimension.maskbook.common.ui.widget.MaskListItem
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
+import com.dimension.maskbook.common.ui.widget.MaskScene
 import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
+import com.dimension.maskbook.common.ui.widget.button.MaskBackButton
+import com.dimension.maskbook.common.ui.widget.button.MaskButton
+import com.dimension.maskbook.common.ui.widget.button.clickable
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.export.model.TokenData
 import com.dimension.maskbook.wallet.export.model.WalletTokenData
-import com.dimension.maskbook.wallet.ext.humanizeDollar
-import com.dimension.maskbook.wallet.ext.humanizeToken
-import java.math.BigDecimal
 
 @Composable
 fun SearchTokenScene(
@@ -62,7 +63,7 @@ fun SearchTokenScene(
     tokens: List<WalletTokenData>,
     onSelect: (WalletTokenData) -> Unit
 ) {
-    MaskTheme {
+    MaskScene {
         MaskScaffold(
             topBar = {
                 MaskSingleLineTopAppBar(
@@ -81,7 +82,7 @@ fun SearchTokenScene(
                     value = query,
                     onValueChange = onQueryChanged,
                     modifier = Modifier.fillMaxWidth()
-                        .padding(horizontal = 23.dp),
+                        .padding(horizontal = HorizontalScenePadding),
                     leadingIcon = {
                         Image(
                             painter = painterResource(id = R.drawable.ic_search),
@@ -99,7 +100,7 @@ fun SearchTokenScene(
                     contentPadding = ScaffoldPadding,
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
-                    items(tokens.filter { it.tokenData.name.contains(query, ignoreCase = true) }) {
+                    items(tokens) {
                         SearchResultItem(
                             modifier = Modifier.clickable {
                                 onSelect.invoke(it)

@@ -20,8 +20,10 @@
  */
 package com.dimension.maskbook.common.ui.widget
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -32,6 +34,7 @@ import androidx.compose.material.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
@@ -40,6 +43,41 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.dimension.maskbook.common.ui.theme.MaskTheme
 
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun MaskDialog(
+    onDismissRequest: () -> Unit,
+    modifier: Modifier = Modifier,
+    backgroundColor: Color = MaterialTheme.colors.background,
+    contentColor: Color = contentColorFor(MaterialTheme.colors.surface),
+    properties: DialogProperties = DialogProperties(
+        usePlatformDefaultWidth = false,
+    ),
+    content: @Composable () -> Unit
+) {
+    Dialog(
+        onDismissRequest = onDismissRequest,
+        properties = properties,
+    ) {
+        MaskTheme {
+            Box(
+                modifier = Modifier.padding(ModalPadding)
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center,
+            ) {
+                Surface(
+                    modifier = modifier,
+                    color = backgroundColor,
+                    contentColor = contentColor
+                ) {
+                    content()
+                }
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun MaskDialog(
     onDismissRequest: () -> Unit,
@@ -48,23 +86,31 @@ fun MaskDialog(
     icon: (@Composable () -> Unit)? = null,
     title: (@Composable () -> Unit)? = null,
     text: @Composable (() -> Unit)? = null,
-    properties: DialogProperties = DialogProperties()
+    properties: DialogProperties = DialogProperties(
+        usePlatformDefaultWidth = false,
+    )
 ) {
     Dialog(
         onDismissRequest = onDismissRequest,
         properties = properties,
     ) {
         MaskTheme {
-            MaskDialogContent(
-                modifier,
-                MaterialTheme.shapes.medium,
-                MaterialTheme.colors.background,
-                contentColorFor(MaterialTheme.colors.surface),
-                icon,
-                title,
-                text,
-                buttons
-            )
+            Box(
+                modifier = Modifier.padding(ModalPadding)
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center,
+            ) {
+                MaskDialogContent(
+                    modifier,
+                    MaterialTheme.shapes.medium,
+                    MaterialTheme.colors.background,
+                    contentColorFor(MaterialTheme.colors.surface),
+                    icon,
+                    title,
+                    text,
+                    buttons
+                )
+            }
         }
     }
 }

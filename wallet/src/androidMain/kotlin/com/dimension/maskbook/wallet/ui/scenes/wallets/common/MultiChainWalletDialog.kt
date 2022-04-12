@@ -39,16 +39,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.dimension.maskbook.common.ui.LocalRootNavController
 import com.dimension.maskbook.common.ui.widget.MaskDialog
-import com.dimension.maskbook.common.ui.widget.PrimaryButton
+import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.wallet.R
 
 @Composable
-fun MultiChainWalletDialog() {
-    val rootNavController = LocalRootNavController.current
+fun MultiChainWalletDialog(onBack: () -> Unit) {
     MaskDialog(
-        onDismissRequest = { rootNavController.popBackStack() },
+        onDismissRequest = { onBack.invoke() },
         title = {
             Text(text = stringResource(R.string.scene_create_wallet_multichain_wallet_title))
         },
@@ -86,7 +84,7 @@ fun MultiChainWalletDialog() {
         buttons = {
             PrimaryButton(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = { rootNavController.popBackStack() },
+                onClick = onBack,
             ) {
                 Text(text = stringResource(R.string.common_controls_ok))
             }

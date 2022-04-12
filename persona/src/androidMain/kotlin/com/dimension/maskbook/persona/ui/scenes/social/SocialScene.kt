@@ -28,66 +28,49 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Remove
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
-import com.dimension.maskbook.common.ui.widget.MaskGridButton
+import com.dimension.maskbook.common.ui.widget.HorizontalScenePadding
 import com.dimension.maskbook.common.ui.widget.NameImage
+import com.dimension.maskbook.common.ui.widget.button.MaskGridButton
 import com.dimension.maskbook.common.ui.widget.itemsGridIndexed
+import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.export.model.Network
 import com.dimension.maskbook.persona.export.model.SocialData
 import com.dimension.maskbook.persona.model.icon
 
-private val addIcon = SocialData(
-    id = "",
-    name = "",
-    avatar = "",
-    personaId = null,
-    network = Network.Twitter,
-)
-
 @Composable
 fun SocialScene(
-    socialList: List<SocialData>,
+    isEditing: Boolean,
+    setIsEditing: (Boolean) -> Unit,
+    socialList: List<SocialData?>,
     onAddSocialClick: () -> Unit,
     onItemClick: (SocialData, isEditing: Boolean) -> Unit,
 ) {
-    var isEditing by rememberSaveable { mutableStateOf(false) }
-    val finalSocialList = remember(socialList) {
-        listOf(addIcon) + socialList
-    }
     LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(horizontal = 22.5f.dp, vertical = 25.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        contentPadding = PaddingValues(horizontal = HorizontalScenePadding),
     ) {
         item {
             Row(
@@ -96,30 +79,33 @@ fun SocialScene(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = "Accounts",
+                    text = stringResource(R.string.scene_persona_social_accounts),
                     style = MaterialTheme.typography.h5,
                 )
-                TextButton(
+                IconButton(
                     onClick = {
-                        isEditing = !isEditing
+                        setIsEditing(!isEditing)
                     }
                 ) {
-                    Text(
-                        text = if (isEditing) {
-                            SocialScreenDefaults.done
-                        } else {
-                            SocialScreenDefaults.edit
-                        },
-                        color = MaterialTheme.colors.primary,
+                    Image(
+                        painter = painterResource(
+                            if (isEditing) {
+                                R.drawable.ic_edit_social_finish
+                            } else {
+                                R.drawable.ic_edit_social
+                            }
+                        ),
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp),
                     )
                 }
             }
         }
         itemsGridIndexed(
-            data = finalSocialList,
-            rowSize = 3
+            data = socialList,
+            rowSize = 3,
         ) { _, item ->
-            if (item === addIcon) {
+            if (item == null) {
                 AddIcon(
                     enabled = !isEditing,
                     onClick = onAddSocialClick
@@ -151,14 +137,11 @@ private fun AddIcon(
                 height = SocialScreenDefaults.itemHeight,
             ),
         icon = {
-            Icon(
-                imageVector = Icons.Rounded.Add,
+            Image(
+                painter = painterResource(if (enabled) R.drawable.ic_add_social else R.drawable.ic_add_social_closed),
                 contentDescription = null,
                 modifier = Modifier
-                    .size(SocialScreenDefaults.itemIconSize)
-                    .shadow(if (enabled) 6.dp else 0.dp, shape = CircleShape, clip = false)
-                    .background(MaterialTheme.colors.surface, shape = CircleShape)
-                    .padding(10.dp),
+                    .size(SocialScreenDefaults.itemIconSize),
             )
         },
         text = {
@@ -214,6 +197,8 @@ private fun SocialItem(
                 text = item.name,
                 style = MaterialTheme.typography.subtitle2,
                 color = LocalContentColor.current.copy(LocalContentAlpha.current),
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 1,
             )
         }
     )

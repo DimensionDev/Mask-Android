@@ -31,6 +31,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Switch
 import androidx.compose.material.SwitchColors
 import androidx.compose.material.SwitchDefaults
@@ -56,7 +57,7 @@ fun IosSwitch(
         checkedThumbColor = Color.White,
         checkedTrackColor = Color.Transparent,
         checkedTrackAlpha = 0f,
-        uncheckedThumbColor = if (isDarkTheme()) {
+        uncheckedThumbColor = if (MaterialTheme.isDarkTheme) {
             IosSwitchDefault.unCheckedThumbDarkColor
         } else {
             IosSwitchDefault.unCheckedThumbLightColor
@@ -68,7 +69,7 @@ fun IosSwitch(
     val background by animateColorAsState(
         when {
             checked -> IosSwitchDefault.checkedTrackLightColor
-            isDarkTheme() -> IosSwitchDefault.unCheckedTrackDarkColor
+            MaterialTheme.isDarkTheme -> IosSwitchDefault.unCheckedTrackDarkColor
             else -> IosSwitchDefault.unCheckedTrackLightColor
         }
     )

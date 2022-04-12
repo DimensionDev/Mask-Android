@@ -20,78 +20,53 @@
  */
 package com.dimension.maskbook.labs
 
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.runtime.getValue
+import android.content.Context
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import com.dimension.maskbook.common.IoScopeName
 import com.dimension.maskbook.common.ModuleSetup
-import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.ui.tab.TabScreen
-import com.dimension.maskbook.labs.export.model.TransakConfig
+import com.dimension.maskbook.labs.data.JSMethod
+import com.dimension.maskbook.labs.data.RedPacketMethod
 import com.dimension.maskbook.labs.repository.AppRepository
 import com.dimension.maskbook.labs.repository.IAppRepository
-import com.dimension.maskbook.labs.ui.scenes.LabsTransakScene
-import com.dimension.maskbook.labs.ui.scenes.MarketTrendSettingsModal
-import com.dimension.maskbook.labs.ui.scenes.PluginSettingsScene
+import com.dimension.maskbook.labs.repository.IPreferenceRepository
+import com.dimension.maskbook.labs.repository.PreferenceRepository
+import com.dimension.maskbook.labs.repository.labsDataStore
+import com.dimension.maskbook.labs.ui.scenes.generatedRoute
 import com.dimension.maskbook.labs.ui.tab.LabsTabScreen
 import com.dimension.maskbook.labs.viewmodel.LabsViewModel
-import com.dimension.maskbook.labs.viewmodel.MarketTrendSettingsViewModel
+import com.dimension.maskbook.labs.viewmodel.LuckDropViewModel
 import com.dimension.maskbook.labs.viewmodel.PluginSettingsViewModel
-import com.dimension.maskbook.wallet.export.WalletServices
-import com.google.accompanist.navigation.animation.composable
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
-import com.google.accompanist.navigation.material.bottomSheet
-import org.koin.androidx.compose.get
 import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.koin.mp.KoinPlatformTools
 
 object LabsSetup : ModuleSetup {
 
-    @OptIn(
-        ExperimentalAnimationApi::class,
-        ExperimentalMaterialNavigationApi::class
-    )
-    override fun NavGraphBuilder.route(navController: NavController, onBack: () -> Unit) {
-        composable("PluginSettings") {
-            PluginSettingsScene(
-                onBack = {
-                    navController.popBackStack()
-                }
-            )
-        }
-        composable(
-            route = "LabsTransak"
-        ) {
-            val repo = get<WalletServices>()
-            val currentWallet by repo.currentWallet.observeAsState(null)
-            LabsTransakScene(
-                onBack = { navController.popBackStack() },
-                transakConfig = TransakConfig(
-                    isStaging = BuildConfig.DEBUG,
-                    walletAddress = currentWallet?.address ?: "",
-                    defaultCryptoCurrency = currentWallet?.tokens?.firstOrNull()?.tokenData?.symbol
-                        ?: "ETH",
-                )
-            )
-        }
-        bottomSheet("MarketTrendSettings") {
-            MarketTrendSettingsModal()
-        }
+    override fun NavGraphBuilder.route(navController: NavController) {
+        generatedRoute(navController)
     }
 
     override fun dependencyInject() = module {
-        single<IAppRepository> { AppRepository() }
+        single<IAppRepository> { AppRepository(get()) }
+        single<IPreferenceRepository> {
+            PreferenceRepository(get<Context>().labsDataStore, get(named(IoScopeName)))
+        }
+        single { JSMethod(get()) }
+        single { RedPacketMethod(get(named(IoScopeName)), get(), get()) }
 
         single { LabsTabScreen() } bind TabScreen::class
 
         viewModel { LabsViewModel(get(), get()) }
-        viewModel { PluginSettingsViewModel(get(), get()) }
-        viewModel { MarketTrendSettingsViewModel(get()) }
+        viewModel { PluginSettingsViewModel(get(), get(), get()) }
+        viewModel { (data: String) -> LuckDropViewModel(data, get()) }
     }
 
     override fun onExtensionReady() {
         KoinPlatformTools.defaultContext().get().get<IAppRepository>().init()
+        KoinPlatformTools.defaultContext().get().get<RedPacketMethod>().startSubscribe()
     }
 }

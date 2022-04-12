@@ -40,12 +40,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
+import com.dimension.maskbook.common.ui.widget.HorizontalScenePadding
 import com.dimension.maskbook.common.ui.widget.MaskDialog
 import com.dimension.maskbook.common.ui.widget.MaskModal
 import com.dimension.maskbook.common.ui.widget.MaskPasswordInputField
-import com.dimension.maskbook.common.ui.widget.PrimaryButton
-import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
-import com.dimension.maskbook.common.ui.widget.SecondaryButton
+import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
+import com.dimension.maskbook.common.ui.widget.button.SecondaryButton
 import com.dimension.maskbook.wallet.R
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -61,7 +61,7 @@ fun UnlockWalletDialog(
     MaskDialog(
         // workaround for https://issuetracker.google.com/issues/194911971
         properties = DialogProperties(usePlatformDefaultWidth = false),
-        modifier = Modifier.padding(horizontal = 23.dp),
+        modifier = Modifier.padding(horizontal = HorizontalScenePadding),
         onDismissRequest = onBack,
         title = {
             Text(text = stringResource(R.string.scene_wallet_unlock_title))
@@ -91,6 +91,7 @@ fun UnlockWalletDialog(
                 Spacer(modifier = Modifier.width(8.dp))
                 PrimaryButton(
                     onClick = onConfirm,
+                    enabled = passwordValid || biometricEnabled,
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(text = stringResource(R.string.scene_wallet_unlock_button))
@@ -103,10 +104,7 @@ fun UnlockWalletDialog(
 @Composable
 fun UnlockWalletWithTouchModal() {
     MaskModal {
-        Column(
-            modifier = Modifier
-                .padding(ScaffoldPadding)
-        ) {
+        Column {
             Image(
                 painterResource(id = R.drawable.touch_id),
                 contentDescription = null,

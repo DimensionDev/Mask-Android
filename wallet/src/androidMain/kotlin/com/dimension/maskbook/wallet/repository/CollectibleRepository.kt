@@ -26,7 +26,10 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
 import com.dimension.maskbook.wallet.db.AppDatabase
+import com.dimension.maskbook.wallet.export.model.WalletCollectibleCollectionData
+import com.dimension.maskbook.wallet.export.model.WalletCollectibleData
 import com.dimension.maskbook.wallet.export.model.WalletData
+import com.dimension.maskbook.wallet.paging.mediator.CollectibleCollectionMediator
 import com.dimension.maskbook.wallet.paging.mediator.CollectibleMediator
 import com.dimension.maskbook.wallet.services.WalletServices
 import kotlinx.coroutines.flow.Flow
@@ -37,17 +40,20 @@ class CollectibleRepository(
     private val services: WalletServices,
 ) : ICollectibleRepository {
     @OptIn(ExperimentalPagingApi::class)
-    override fun getCollectiblesByWallet(walletData: WalletData): Flow<PagingData<WalletCollectibleData>> {
+    override fun getCollectiblesByWallet(walletData: WalletData, collectionSlug: String?): Flow<PagingData<WalletCollectibleData>> {
         return Pager(
             config = PagingConfig(pageSize = 20),
             remoteMediator = CollectibleMediator(
                 walletId = walletData.id,
                 database = database,
                 openSeaServices = services.openSeaServices,
-                walletAddress = walletData.address
+                walletAddress = walletData.address,
+                collectionSlug = collectionSlug
             ),
         ) {
-            database.collectibleDao().getByWallet(walletData.id)
+            collectionSlug?.let {
+                database.collectibleDao().getByWalletAndCollection(walletData.id, collectionSlug = it)
+            } ?: database.collectibleDao().getByWallet(walletData.id)
         }.flow.map {
             it.map {
                 WalletCollectibleData.fromDb(it)
@@ -59,5 +65,14 @@ class CollectibleRepository(
         return database.collectibleDao().getById(collectibleId).map {
             it?.let { it1 -> WalletCollectibleData.fromDb(it1) }
         }
+    }
+
+    override fun getCollectibleCollectionsByWallet(walletData: WalletData): Flow<PagingData<WalletCollectibleCollectionData>> {
+        return CollectibleCollectionMediator.pager(
+            walletAddress = walletData.address,
+            walletId = walletData.id,
+            services = services.openSeaServices,
+            database = database
+        )
     }
 }

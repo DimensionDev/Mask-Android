@@ -21,6 +21,8 @@
 package com.dimension.maskbook.wallet
 
 import com.dimension.maskbook.wallet.export.WalletServices
+import com.dimension.maskbook.wallet.export.model.BackupWalletData
+import com.dimension.maskbook.wallet.export.model.ChainData
 import com.dimension.maskbook.wallet.export.model.WalletData
 import com.dimension.maskbook.wallet.repository.IWalletRepository
 import kotlinx.coroutines.flow.Flow
@@ -31,7 +33,26 @@ class WalletServicesImpl(
     override val currentWallet: Flow<WalletData?>
         get() = walletRepository.currentWallet
 
+    override val currentChain: Flow<ChainData?>
+        get() = walletRepository.currentChain
+
     override fun generateNewMnemonic(): List<String> {
         return walletRepository.generateNewMnemonic()
+    }
+
+    override fun validateMnemonic(mnemonic: String): Boolean {
+        return walletRepository.validateMnemonic(mnemonic)
+    }
+
+    override fun validatePrivateKey(privateKey: String): Boolean {
+        return walletRepository.validatePrivateKey(privateKey)
+    }
+
+    override suspend fun createWalletBackup(): List<BackupWalletData> {
+        return walletRepository.createWalletBackup()
+    }
+
+    override suspend fun restoreWalletBackup(wallet: List<BackupWalletData>) {
+        walletRepository.restoreWalletBackup(wallet)
     }
 }

@@ -3,8 +3,14 @@ import java.util.Properties
 plugins {
     id("com.android.application")
     kotlin("android")
-    kotlin("plugin.serialization").version(Versions.Kotlin.lang)
     id("org.jetbrains.compose").version(Versions.compose_jb)
+    id("com.google.gms.google-services").version(Versions.Firebase.Plugin.google_services).apply(false)
+    id("com.google.firebase.crashlytics").version(Versions.Firebase.Plugin.crashlytics).apply(false)
+}
+
+if (enableFirebase) {
+    apply(plugin = "com.google.gms.google-services")
+    apply(plugin = "com.google.firebase.crashlytics")
 }
 
 android {
@@ -48,35 +54,18 @@ android {
 }
 
 dependencies {
-    implementation("androidx.activity:activity-compose:1.4.0")
-    implementation("androidx.annotation:annotation:1.3.0")
-    implementation("androidx.appcompat:appcompat:1.4.0")
-    implementation("androidx.core:core-ktx:1.7.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.1.2")
-    implementation("com.google.android.material:material:1.4.0")
-    implementation("com.github.romandanylyk:PageIndicatorView:v.1.0.3")
-    implementation("androidx.preference:preference-ktx:1.1.1")
-    implementation("com.google.code.gson:gson:2.8.6")
-    implementation(projects.wallet)
-    implementation(projects.persona)
-    implementation(projects.labs)
-    implementation(projects.setting)
-    implementation("io.github.dimensiondev:maskwalletcore:0.4.0")
-    implementation("androidx.biometric:biometric-ktx:1.2.0-alpha04")
-    implementation("org.web3j:core:4.8.8-android")
-    implementation("androidx.paging:paging-runtime-ktx:3.1.0")
-
-    implementation(projects.debankapi)
-
+    implementation("androidx.core:core-splashscreen:1.0.0-beta01")
+    implementation("androidx.activity:activity-compose:${Versions.Androidx.activityCompose}")
+    implementation(projects.entry)
     implementation(projects.common)
-    implementation(projects.common.okhttp)
+    implementation(projects.common.gecko)
 
-    implementation("org.mozilla.geckoview:geckoview:95.+")
+    if (enableFirebase) {
+        implementation("com.google.firebase:firebase-analytics-ktx:${Versions.Firebase.analytics}")
+        implementation(platform("com.google.firebase:firebase-bom:${Versions.Firebase.bom}"))
+        implementation("com.google.firebase:firebase-crashlytics-ktx:${Versions.Firebase.crashlytics}")
+    }
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test:runner:1.4.0")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
-
-    implementation("me.dm7.barcodescanner:zxing:1.9.8")
-    implementation("com.github.tbruyelle:rxpermissions:0.10.1")
-    implementation("com.jakewharton.rxbinding2:rxbinding:2.1.1")
 }

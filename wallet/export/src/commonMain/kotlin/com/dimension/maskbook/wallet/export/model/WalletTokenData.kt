@@ -20,12 +20,16 @@
  */
 package com.dimension.maskbook.wallet.export.model
 
-import java.math.BigDecimal
+import com.dimension.maskbook.common.bigDecimal.BigDecimal
 
 data class WalletTokenData(
     val count: BigDecimal,
     val tokenAddress: String,
     val tokenData: TokenData,
-) {
+) : TradableData {
+    override fun tradableId() = tokenAddress
+
+    override fun network() = tokenData.chainType
+
     companion object
 }

@@ -28,6 +28,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -53,53 +54,29 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.dimension.maskbook.common.ext.offDrawableRes
+import com.dimension.maskbook.common.ext.onDrawableRes
+import com.dimension.maskbook.common.ext.primaryColor
 import com.dimension.maskbook.common.ui.widget.CircleCheckbox
-import com.dimension.maskbook.common.ui.widget.MaskButton
-import com.dimension.maskbook.common.ui.widget.MaskIconButton
+import com.dimension.maskbook.common.ui.widget.HorizontalScenePadding
 import com.dimension.maskbook.common.ui.widget.MaskListItem
 import com.dimension.maskbook.common.ui.widget.MaskModal
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
-import com.dimension.maskbook.common.ui.widget.MaskTextButton
 import com.dimension.maskbook.common.ui.widget.MiddleEllipsisText
 import com.dimension.maskbook.common.ui.widget.NameImage
+import com.dimension.maskbook.common.ui.widget.button.MaskButton
+import com.dimension.maskbook.common.ui.widget.button.MaskIconButton
+import com.dimension.maskbook.common.ui.widget.button.MaskTextButton
+import com.dimension.maskbook.common.ui.widget.color
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.export.model.WalletData
-
-val ChainType.onDrawableRes: Int
-    get() = when (this) {
-        ChainType.eth -> R.drawable.ethereum_o1_2
-        ChainType.bsc -> R.drawable.binance_2
-        ChainType.polygon -> R.drawable.polygon_2
-        ChainType.arbitrum -> R.drawable.logos_and_symbols
-        ChainType.xdai -> R.drawable.ic_xdai_on
-        else -> -1
-    }
-
-val ChainType.offDrawableRes: Int
-    get() = when (this) {
-        ChainType.eth -> R.drawable.ethereum_o1_1
-        ChainType.bsc -> R.drawable.binance_1
-        ChainType.polygon -> R.drawable.polygon1
-        ChainType.arbitrum -> R.drawable.logos_and_symbols_1
-        ChainType.xdai -> R.drawable.ic_xdai_off
-        else -> -1
-    }
-
-val ChainType.primaryColor: Color
-    get() = when (this) {
-        ChainType.eth -> Color(0xFF627EEA)
-        ChainType.bsc -> Color(0xFFF3BA2F)
-        ChainType.polygon -> Color(0xFF8247E5)
-        ChainType.arbitrum -> Color(0xFF28A0F0)
-        ChainType.xdai -> Color(0xFF48A9A6)
-        else -> Color.Transparent
-    }
 
 val supportedChainType = buildList {
     add(ChainType.eth)
@@ -111,7 +88,7 @@ val supportedChainType = buildList {
 
 @Composable
 fun WalletSwitchSceneModal(
-    selectedWallet: WalletData,
+    selectedWallet: WalletData?,
     wallets: List<WalletData>,
     onWalletSelected: (WalletData) -> Unit,
     selectedChainType: ChainType,
@@ -123,10 +100,17 @@ fun WalletSwitchSceneModal(
     var editMode by rememberSaveable {
         mutableStateOf(false)
     }
-    MaskModal {
+    MaskModal(
+        contentPadding = PaddingValues(0.dp)
+    ) {
         MaskScaffold(
+            modifier = Modifier.fillMaxHeight(0.8f),
             topBar = {
-                Column {
+                Column(
+                    modifier = Modifier
+                        .shadow(4.dp)
+                        .background(color = MaterialTheme.colors.background),
+                ) {
                     MaskSingleLineTopAppBar(
                         title = {
                             Text(text = stringResource(R.string.scene_wallet_list_title))
@@ -157,19 +141,26 @@ fun WalletSwitchSceneModal(
             bottomBar = {
                 WalletSwitchBottomBar(
                     onClick = onAddWalletClicked,
+                    enabled = !editMode,
                 )
             }
         ) { innerPadding ->
             LazyColumn(
                 modifier = Modifier.padding(innerPadding),
-                contentPadding = PaddingValues(horizontal = 22.dp, vertical = 16.dp),
+                contentPadding = PaddingValues(
+                    horizontal = HorizontalScenePadding,
+                    vertical = 16.dp
+                ),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 items(wallets) { wallet ->
                     val isSelected = selectedWallet == wallet
                     WalletSwitchListItem(
-                        enabled = !isSelected,
-                        onClick = { onWalletSelected(wallet) },
+                        onClick = {
+                            if (!isSelected) {
+                                onWalletSelected(wallet)
+                            }
+                        },
                         text = {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
@@ -202,6 +193,7 @@ fun WalletSwitchSceneModal(
                                 name = wallet.name,
                                 modifier = Modifier.size(32.dp),
                                 alpha = 1f,
+                                color = wallet.name.color
                             )
                         },
                         trailing = {
@@ -264,8 +256,8 @@ private fun SupportChainTypeList(
     onChainTypeSelected: (ChainType) -> Unit
 ) {
     LazyRow(
-        contentPadding = PaddingValues(horizontal = 22.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
+        contentPadding = PaddingValues(horizontal = HorizontalScenePadding),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(supportedChainType) { item ->
             val isSelected = selectedChainType === item
@@ -299,7 +291,9 @@ private fun SupportChainTypeList(
                     }
                     if (isSelected) {
                         Spacer(Modifier.height(8.dp))
-                        Spacer(Modifier.size(6.dp).background(item.primaryColor, shape = CircleShape))
+                        Spacer(
+                            Modifier.size(6.dp).background(item.primaryColor, shape = CircleShape)
+                        )
                         Spacer(Modifier.height(12.dp))
                     } else {
                         Spacer(Modifier.height(26.dp))
@@ -312,9 +306,9 @@ private fun SupportChainTypeList(
 
 @Composable
 private fun WalletSwitchListItem(
-    enabled: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     icon: @Composable (() -> Unit)? = null,
     secondaryText: @Composable (() -> Unit)? = null,
     overlineText: @Composable (() -> Unit)? = null,
@@ -327,7 +321,8 @@ private fun WalletSwitchListItem(
         modifier = modifier,
         colors = ButtonDefaults.buttonColors(
             backgroundColor = MaterialTheme.colors.surface,
-            disabledBackgroundColor = MaterialTheme.colors.surface,
+            disabledBackgroundColor = MaterialTheme.colors.surface.copy(alpha = 0.5f),
+            disabledContentColor = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
         ),
     ) {
         MaskListItem(
@@ -342,11 +337,13 @@ private fun WalletSwitchListItem(
 
 @Composable
 private fun WalletSwitchBottomBar(
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    enabled: Boolean,
 ) {
-    Column(Modifier.padding(horizontal = 23.dp, vertical = 20.dp)) {
+    Column(Modifier.padding(horizontal = HorizontalScenePadding, vertical = 20.dp)) {
         MaskButton(
             onClick = onClick,
+            enabled = enabled,
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = Color.Transparent,
                 disabledBackgroundColor = Color.Transparent,
@@ -365,6 +362,6 @@ private fun WalletSwitchBottomBar(
                 }
             )
         }
-        Spacer(Modifier.height(35.dp))
+        Spacer(Modifier.height(15.dp))
     }
 }

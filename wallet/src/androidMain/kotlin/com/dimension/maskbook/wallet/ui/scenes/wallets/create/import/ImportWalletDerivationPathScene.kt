@@ -20,6 +20,7 @@
  */
 package com.dimension.maskbook.wallet.ui.scenes.wallets.create.import
 
+import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -55,20 +56,30 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.navOptions
 import com.dimension.maskbook.common.ext.observeAsState
-import com.dimension.maskbook.common.ui.theme.MaskTheme
-import com.dimension.maskbook.common.ui.widget.MaskBackButton
-import com.dimension.maskbook.common.ui.widget.MaskIconButton
+import com.dimension.maskbook.common.route.CommonRoute
+import com.dimension.maskbook.common.route.Deeplinks
+import com.dimension.maskbook.common.route.navigationComposeAnimComposable
+import com.dimension.maskbook.common.route.navigationComposeAnimComposablePackage
+import com.dimension.maskbook.common.routeProcessor.annotations.Back
+import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
+import com.dimension.maskbook.common.routeProcessor.annotations.Path
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
-import com.dimension.maskbook.common.ui.widget.MaskTextButton
+import com.dimension.maskbook.common.ui.widget.MaskScene
 import com.dimension.maskbook.common.ui.widget.MaskTopAppBar
 import com.dimension.maskbook.common.ui.widget.MiddleEllipsisText
-import com.dimension.maskbook.common.ui.widget.PrimaryButton
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
+import com.dimension.maskbook.common.ui.widget.SinglelineText
+import com.dimension.maskbook.common.ui.widget.button.MaskBackButton
+import com.dimension.maskbook.common.ui.widget.button.MaskIconButton
+import com.dimension.maskbook.common.ui.widget.button.MaskTextButton
+import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.repository.WalletCreateOrImportResult
+import com.dimension.maskbook.wallet.route.WalletRoute
 import com.dimension.maskbook.wallet.ui.scenes.wallets.common.Dialog
 import com.dimension.maskbook.wallet.viewmodel.wallets.import.ImportWalletDerivationPathViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -80,14 +91,21 @@ import org.koin.core.parameter.parametersOf
 
 typealias DerivationPathItem = ImportWalletDerivationPathViewModel.BalanceRow
 
+@NavGraphDestination(
+    route = WalletRoute.ImportWallet.DerivationPath.path,
+    packageName = navigationComposeAnimComposablePackage,
+    functionName = navigationComposeAnimComposable,
+)
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun ImportWalletDerivationPathScene(
-    onBack: () -> Unit,
-    onDone: (WalletCreateOrImportResult) -> Unit,
-    wallet: String,
-    code: List<String>,
+    navController: NavController,
+    @Back onBack: () -> Unit,
+    @Path("wallet") wallet: String,
+    @Path("mnemonicCode") codeString: String,
 ) {
+    // "word1+word2+word3+word5..."
+    val code = codeString.split("+")
     val viewModel = getViewModel<ImportWalletDerivationPathViewModel> {
         parametersOf(wallet, code)
     }
@@ -106,7 +124,7 @@ fun ImportWalletDerivationPathScene(
         }
     }
 
-    MaskTheme {
+    MaskScene {
         MaskScaffold(
             topBar = {
                 MaskTopAppBar(
@@ -198,9 +216,17 @@ fun ImportWalletDerivationPathScene(
                     result?.let {
                         it.Dialog(onDismissRequest = {
                             showDialog = false
-                            if (it.type == WalletCreateOrImportResult.Type.SUCCESS) onDone.invoke(
-                                it.copy()
-                            )
+                            if (it.type == WalletCreateOrImportResult.Type.SUCCESS) {
+                                navController.navigate(
+                                    Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Wallet)),
+                                    navOptions = navOptions {
+                                        launchSingleTop = true
+                                        popUpTo(CommonRoute.Main.Home.path) {
+                                            inclusive = false
+                                        }
+                                    }
+                                )
+                            }
                             result = null
                         })
                     }
@@ -242,12 +268,10 @@ private fun DerivationPathPager(
                     modifier = Modifier.weight(1f),
                     textAlign = TextAlign.Start,
                 )
-                Text(
+                SinglelineText(
                     text = balances[item.address] ?: "--",
                     modifier = Modifier.weight(1f),
                     textAlign = TextAlign.End,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
                 )
                 if (item.isAdded) {
                     Text(

@@ -305,7 +305,11 @@
                 "back_up_data": "Back Up Data",
                 "back_up_password": "Backup Password",
                 "back_up_password_empty": "Please set up backup password",
-                "change_backup_password": "Change Backup Password"
+                "change_backup_password": "Change Backup Password",
+                "persona_already_exits":{
+                    "title": "The persona already existed.",
+                    "desc": "The persona that corresponds with the %s already existed."
+                }
             },
             "profile": {
                 "title": "Profile",
@@ -487,7 +491,15 @@
             },
             "delete": "Confirm to delete persona\n",
             "delete_tip": "If you haven’t backed up, please go to Settings - Backup and Recovery",
-            "add_persona": "Add Persona"
+            "add_persona": "Add Persona",
+            "user_id": "User ID",
+            "connect_social_tip": "To connect to Mask, Click here to enter twitter ID."
+        },
+        "persona_avatar": {
+            "set_persona_avatar": "Set Persona Avatar",
+            "remove_persona_avatar": "Remove Persona Avatar",
+            "select_from_photos": "Select from photos",
+            "take_a_photo": "Take a photo"
         },
         "persona_welcome": {
             "title": "Welcome to Mask Network",
@@ -499,8 +511,18 @@
             "tips": "This export is only for exporting private key. We do not export any other data. If you need more data, please go to Settings: ",
             "backup_recovery":"Backup and Recovery"
         },
+        "persona_download_qr_code": {
+            "title": "Download Persona QR Code",
+            "identity_code": "Identity Code",
+            "tips": "The QR code encrypts the identity code or private key of\nyour persona. It is recommended to print it. You can use\nMask App to scan the QR code to login.",
+            "success": "Download success.",
+            "failed": "Download failed."
+        },
         "persona_contacts": {
             "empty_contacts_tips": "You don’t have encrypted friends. \nInvite friends to download Mask Network.",
+            "empty_search_tips": "No contact found. This account is not\ncaptured on Timeline.",
+            "message_tips": "Contacts are accounts that are captured in real-time on timeline when you browse Twitter or Facebook.",
+            "search_account": "Search account name/ID",
             "delete": "Confirm to delete ",
             "contact": "Contact"
         },
@@ -512,6 +534,10 @@
             "connect_to": "Connect To %s",
             "disconnect": "Disconnect",
             "accounts": "Accounts"
+        },
+        "persona_empty": {
+            "connect_social": "Connect Social accounts",
+            "message_tips": "Connect persona to social networks below"
         },
         "wallet_balance": {
             "btn_swap": "Swap",
@@ -558,7 +584,8 @@
                 "receive": "Received %s",
                 "swap": "WETH Deposit",
                 "cancel": "Cancel %s",
-                "approve": "Approve %s"
+                "approve": "Approve %s",
+                "unknown": "Unknown %s"
             }
         },
         "wallet_receive": {
@@ -575,6 +602,10 @@
             "create_an_identity": "Create an Identity",
             "recovery_sign_in": "Recovery & Sign In",
             "synchronization": "Synchronization"
+        },
+        "synchronization": {
+            "success": "Synchronization success",
+            "failed": "Synchronization failed"
         },
         "identity_create": {
             "title": "Verify identity code",
@@ -617,22 +648,30 @@
                 "bsc": "BSC Network"
             },
             "plugins": {
-               "file_service": "File Service",
-               "ito": "ITO",
-               "lucy_drop": "Lucky Drop",
-               "swap": "Swap",
-               "transaction": "Transak",
-               "market_trend": "Market Trend",
-               "snapshot": "Snapshot",
-               "collectibles": "Collectibles",
-               "gitcoin": "Gitcoin",
-               "valuables": "Valuables",
-               "dhedge": "DHEDGE"
+                "file_service": "File Service",
+                "ito": "ITO",
+                "lucy_drop": "Lucky Drop",
+                "swap": "Swap",
+                "transaction": "Transak",
+                "market_trend": "Market Trend",
+                "snapshot": "Snapshot",
+                "collectibles": "Collectibles",
+                "gitcoin": "Gitcoin",
+                "valuables": "Valuables",
+                "dhedge": "DHEDGE",
+                "file_service_desc": "Decentralized file storage for users.",
+                "ito_desc": "Enable users to buy tokens directly on Twitter.",
+                "lucy_drop_desc": "Surprise your encrypted friends with Token/NFT Lucky Drops.",
+                "swap_desc": "Pop-up trading widget that allows you to instantly view prices of the hottest Crypto/Stock and trade. Can also invest in the best performing managers.",
+                "transaction_desc": "Buy crypto with Transak, support 60+ currencies. "
             }
         },
         "social": {
             "login_in_to_continue": "Log in to continue",
-            "login_in_notify": "Please log in to Twitter first and we will guide you through the next steps to connect to Mask Network.",
+            "login_in_notify": {
+                "twitter": "Log in to Twitter to connect.",
+                "facebook": "Log in to Facebook to connect."
+            },
             "i_understand": "I understand",
             "title": "Home",
             "connect_button_title": "Connect",
@@ -741,6 +780,10 @@
             "switch_wallet": "Switch wallets"
         },
         "backup": {
+            "remote_backup_no_backup": {
+                "title": "No cloud backup found",
+                "message": "No cloud backup is found with this Email or phone number."
+            },
             "remote_backup_actions_view": {
                 "tips": "There is already a cloud backup, you can either first merge this cloud backup to your local data before you back up, or back up directly."
             },
@@ -766,6 +809,32 @@
         },
         "scan_qr_code": {
             "title": "Scan QR Code"
+        },
+        "plugin_settings": {
+            "title": "Plugin Settings",
+            "message_tips": "If you turn off a plugin, the plugin function can no longer be rendered on timeline when browsing social media."
+        },
+        "open_red_package": {
+            "title": "Lucky Drop",
+            "wallet": "Wallet",
+            "claim": "Claim",
+            "claiming": "Claiming",
+            "switch_network": "Switch Network",
+            "confirm_risk_warning": "Confirm Risk Warning",
+            "wrong_network": "Wrong Network",
+            "total": "Total",
+            "ends": "Ends %s",
+            "from": "From: @%s",
+            "shares": "Shares",
+            "on_going": "Ongoing",
+            "expired": "Expired",
+            "claimed": "Claimed",
+            "refunded":"Refunded",
+            "refund":"Refund",
+            "empty": "Empty",
+            "share_message_official": "Hi friends, I just claimed a lucky drop sent by %s on %s network. Follow %s (mask.io) to claim the lucky drops.\n#mask_io #LuckyDrop\n%s",
+            "share_message_unsupport_platform": "Hi friends, I just claimed a lucky drop sent by @%s on %s network. \n%s",
+            "better_luck_next_time": "Better luck\nnext time."
         }
     },
     "chain": {

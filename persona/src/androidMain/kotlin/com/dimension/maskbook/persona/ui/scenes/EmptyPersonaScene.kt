@@ -38,14 +38,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
-import com.dimension.maskbook.common.ui.widget.PrimaryButton
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
+import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.persona.R
 
 @Composable
 fun EmptyPersonaScene(
     onPersonaCreateClick: () -> Unit,
     onPersonaRecoveryClick: () -> Unit,
+    onPersonaSynchronizationClick: () -> Unit,
 ) {
     MaskScaffold(
         topBar = {
@@ -84,6 +85,13 @@ fun EmptyPersonaScene(
                 onClick = onPersonaRecoveryClick,
             ) {
                 Text("Recover Persona")
+            }
+            Spacer(Modifier.height(20.dp))
+            PrimaryButton(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = onPersonaSynchronizationClick,
+            ) {
+                Text(stringResource(R.string.scene_identity_empty_synchronization))
             }
         }
     }

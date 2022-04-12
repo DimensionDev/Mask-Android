@@ -32,7 +32,7 @@ class BackupCloudViewModel(
     private val settingsRepository: ISettingsRepository,
 ) : ViewModel() {
     val meta = flow {
-        emit(settingsRepository.provideBackupMeta())
+        emit(settingsRepository.generateBackupMeta())
     }.asStateIn(viewModelScope, null)
     private val _backupPassword = MutableStateFlow("")
     val backupPassword = _backupPassword.asStateIn(viewModelScope, "")

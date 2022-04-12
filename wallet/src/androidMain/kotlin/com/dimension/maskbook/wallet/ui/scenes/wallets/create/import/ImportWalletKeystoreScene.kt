@@ -20,6 +20,7 @@
  */
 package com.dimension.maskbook.wallet.ui.scenes.wallets.create.import
 
+import android.net.Uri
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -37,29 +38,44 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.navOptions
 import com.dimension.maskbook.common.ext.observeAsState
-import com.dimension.maskbook.common.ui.theme.MaskTheme
-import com.dimension.maskbook.common.ui.widget.MaskBackButton
+import com.dimension.maskbook.common.route.CommonRoute
+import com.dimension.maskbook.common.route.Deeplinks
+import com.dimension.maskbook.common.route.navigationComposeAnimComposable
+import com.dimension.maskbook.common.route.navigationComposeAnimComposablePackage
+import com.dimension.maskbook.common.routeProcessor.annotations.Back
+import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
+import com.dimension.maskbook.common.routeProcessor.annotations.Path
 import com.dimension.maskbook.common.ui.widget.MaskInputField
 import com.dimension.maskbook.common.ui.widget.MaskPasswordInputField
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
+import com.dimension.maskbook.common.ui.widget.MaskScene
 import com.dimension.maskbook.common.ui.widget.MaskTopAppBar
-import com.dimension.maskbook.common.ui.widget.PrimaryButton
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
+import com.dimension.maskbook.common.ui.widget.button.MaskBackButton
+import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.repository.WalletCreateOrImportResult
+import com.dimension.maskbook.wallet.route.WalletRoute
 import com.dimension.maskbook.wallet.ui.scenes.wallets.common.Dialog
 import com.dimension.maskbook.wallet.viewmodel.wallets.import.ImportWalletKeystoreViewModel
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 
+@NavGraphDestination(
+    route = WalletRoute.ImportWallet.Keystore.path,
+    packageName = navigationComposeAnimComposablePackage,
+    functionName = navigationComposeAnimComposable,
+)
 @Composable
 fun ImportWalletKeyStoreScene(
-    wallet: String,
-    onDone: (WalletCreateOrImportResult) -> Unit,
-    onBack: () -> Unit,
+    navController: NavController,
+    @Back onBack: () -> Unit,
+    @Path("wallet") wallet: String,
 ) {
-    MaskTheme {
+    MaskScene {
         MaskScaffold(
             topBar = {
                 MaskTopAppBar(
@@ -117,7 +133,15 @@ fun ImportWalletKeyStoreScene(
                         onClick = {
                             viewModel.confirm {
                                 if (it.type == WalletCreateOrImportResult.Type.SUCCESS) {
-                                    onDone.invoke(it)
+                                    navController.navigate(
+                                        Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Wallet)),
+                                        navOptions = navOptions {
+                                            launchSingleTop = true
+                                            popUpTo(CommonRoute.Main.Home.path) {
+                                                inclusive = false
+                                            }
+                                        }
+                                    )
                                 } else {
                                     result = it
                                     showDialog = true

@@ -43,25 +43,28 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.dimension.maskbook.common.ui.LocalRootNavController
-import com.dimension.maskbook.common.ui.theme.MaskTheme
-import com.dimension.maskbook.common.ui.widget.MaskBackButton
-import com.dimension.maskbook.common.ui.widget.MaskButton
+import androidx.navigation.NavController
+import com.dimension.maskbook.common.ui.widget.HorizontalScenePadding
 import com.dimension.maskbook.common.ui.widget.MaskDialog
-import com.dimension.maskbook.common.ui.widget.MaskIconButton
 import com.dimension.maskbook.common.ui.widget.MaskInputField
 import com.dimension.maskbook.common.ui.widget.MaskListItem
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
+import com.dimension.maskbook.common.ui.widget.MaskScene
 import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
-import com.dimension.maskbook.common.ui.widget.PrimaryButton
+import com.dimension.maskbook.common.ui.widget.button.MaskBackButton
+import com.dimension.maskbook.common.ui.widget.button.MaskButton
+import com.dimension.maskbook.common.ui.widget.button.MaskIconButton
+import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.wallet.R
+import com.dimension.maskbook.wallet.route.WalletRoute
 
 @Composable
 fun CreateOrImportWalletScene(
+    navController: NavController,
     onBack: () -> Unit,
     type: CreateType
 ) {
-    MaskTheme {
+    MaskScene {
         MaskScaffold(
             topBar = {
                 MaskSingleLineTopAppBar(
@@ -71,13 +74,12 @@ fun CreateOrImportWalletScene(
                 )
             }
         ) {
-            val rootNavController = LocalRootNavController.current
             var input by remember {
                 mutableStateOf("")
             }
             Column(
                 modifier = Modifier
-                    .padding(horizontal = 23.dp)
+                    .padding(horizontal = HorizontalScenePadding)
                     .verticalScroll(rememberScrollState())
                     .fillMaxSize(),
             ) {
@@ -106,7 +108,7 @@ fun CreateOrImportWalletScene(
                         trailing = {
                             MaskIconButton(
                                 onClick = {
-                                    rootNavController.navigate("MultiChainWalletDialog")
+                                    navController.navigate(WalletRoute.MultiChainWalletDialog)
                                 }
                             ) {
                                 Image(
@@ -137,8 +139,8 @@ fun CreateOrImportWalletScene(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
                         when (type) {
-                            CreateType.CREATE -> rootNavController.navigate("CreateWallet/$input")
-                            CreateType.IMPORT -> rootNavController.navigate("ImportWallet/$input")
+                            CreateType.CREATE -> navController.navigate(WalletRoute.CreateWallet.Pharse(input))
+                            CreateType.IMPORT -> navController.navigate(WalletRoute.ImportWallet.Import(input))
                         }
                     },
                     enabled = input.isNotEmpty()
@@ -158,7 +160,7 @@ private fun CreateSuccessDialog(onDismissRequest: () -> Unit) {
         title = { Text(text = "Wallet successfully created!") },
         icon = {
             Image(
-                painter = painterResource(id = R.drawable.ic_property_1_snccess),
+                painter = painterResource(id = R.drawable.ic_success),
                 contentDescription = null
             )
         },

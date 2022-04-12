@@ -21,7 +21,6 @@
 package com.dimension.maskbook.common.routeProcessor
 
 import com.google.devtools.ksp.symbol.KSValueParameter
-import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.ParameterSpec
@@ -29,6 +28,7 @@ import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.Taggable
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.asTypeName
 
 private const val RouteDivider = "/"
 
@@ -73,6 +73,48 @@ internal data class PrefixRouteDefinition(
     }
 }
 
+internal data class ParameterRouteDefinition(
+    override val name: String,
+    override val parent: RouteDefinition?,
+    val childRoute: ArrayList<RouteDefinition> = arrayListOf(),
+) : RouteDefinition {
+    override fun generateRoute(): Taggable {
+        return TypeSpec.objectBuilder(name)
+            .addModifiers(KModifier.ACTUAL)
+            .apply {
+                childRoute.forEach {
+                    if (it is FunctionRouteDefinition) {
+                        val pathParams = it.parameters.filter { !it.parameter.type.resolve().isMarkedNullable }
+                        val queryParams = it.parameters.filter { it.parameter.type.resolve().isMarkedNullable }
+                        addProperty(
+                            PropertySpec.builder("path", String::class)
+                                .addModifiers(KModifier.CONST)
+                                .initializer(
+                                    "%S + %S + %S + %S + %S + %S + %S",
+                                    parentPath,
+                                    RouteDivider,
+                                    name,
+                                    if (pathParams.any()) RouteDivider else "",
+                                    pathParams.joinToString(RouteDivider) { "{${it.name}}" },
+                                    if (queryParams.any()) "?" else "",
+                                    queryParams.joinToString("&") { "${it.name}={${it.name}}" }
+                                )
+                                .build()
+                        )
+                        addFunction(
+                            funSpec(
+                                name,
+                                it.parameters
+                            )
+                        )
+                    } else {
+                        it.generateRoute().addTo(this)
+                    }
+                }
+            }.build()
+    }
+}
+
 internal data class NestedRouteDefinition(
     override var name: String,
     override var parent: RouteDefinition? = null,
@@ -80,6 +122,7 @@ internal data class NestedRouteDefinition(
 ) : RouteDefinition {
     override fun generateRoute(): Taggable {
         return TypeSpec.objectBuilder(name)
+            .addModifiers(KModifier.ACTUAL)
             .apply {
                 childRoute.forEach {
                     it.generateRoute().addTo(this)
@@ -100,10 +143,16 @@ private fun Taggable.addTo(builder: TypeSpec.Builder) {
 internal data class ConstRouteDefinition(
     override val name: String,
     override val parent: RouteDefinition? = null,
+    private val isConst: Boolean
 ) : RouteDefinition {
     override fun generateRoute(): Taggable {
         return PropertySpec.builder(name, String::class)
-            .addModifiers(KModifier.CONST)
+            .addModifiers(KModifier.ACTUAL)
+            .apply {
+                if (isConst) {
+                    addModifiers(KModifier.CONST)
+                }
+            }
             .initializer("%S + %S + %S", parentPath, RouteDivider, name)
             .build()
     }
@@ -116,46 +165,10 @@ internal data class FunctionRouteDefinition(
 ) : RouteDefinition {
     override fun generateRoute(): Taggable {
         val p = parameters.filter { !it.parameter.type.resolve().isMarkedNullable }
-        val query = parameters.filter { it.parameter.type.resolve().isMarkedNullable }
         return TypeSpec.objectBuilder(name)
+            .addModifiers(KModifier.ACTUAL)
             .addFunction(
-                FunSpec.builder("invoke")
-                    .addModifiers(KModifier.OPERATOR)
-                    .returns(String::class)
-                    .addParameters(
-                        parameters.map {
-                            ParameterSpec.builder(it.name, it.type)
-                                .build()
-                        }
-                    )
-                    .addStatement("val path = %S + %S + %S", parentPath, RouteDivider, name)
-                    .also {
-                        if (p.any()) {
-                            it.addStatement(
-                                "val params = %S + %P",
-                                RouteDivider,
-                                p.joinToString(RouteDivider) { if (it.type == ClassName("kotlin", "String")) "\${${encode(it.name)}}" else "\${${it.name}}" },
-                            )
-                        } else {
-                            it.addStatement("val params = \"\"")
-                        }
-                        if (query.any()) {
-                            it.addStatement(
-                                "val query = \"?\" + %P",
-                                query.joinToString("&") {
-                                    if (it.type == ClassName("kotlin", "String")) {
-                                        "${it.name}=\${${encodeNullable(it.name)}}"
-                                    } else {
-                                        "${it.name}=\${${it.name}}"
-                                    }
-                                }
-                            )
-                        } else {
-                            it.addStatement("val query = \"\"")
-                        }
-                    }
-                    .addStatement("return path + params + query")
-                    .build()
+                funSpec(name = name, parameters = parameters)
             )
             .addProperty(
                 PropertySpec.builder("path", String::class)
@@ -172,14 +185,63 @@ internal data class FunctionRouteDefinition(
             )
             .build()
     }
-
-    private fun encode(value: String) = "java.net.URLEncoder.encode($value, \"UTF-8\")"
-    private fun encodeNullable(value: String) =
-        "java.net.URLEncoder.encode(if($value == null) \"\" else $value, \"UTF-8\")"
 }
+
+private fun RouteDefinition.funSpec(
+    name: String,
+    parameters: List<RouteParameter>,
+): FunSpec {
+    val parameter = parameters.filter { !it.parameter.type.resolve().isMarkedNullable }
+    val query = parameters.filter { it.parameter.type.resolve().isMarkedNullable }
+    return FunSpec.builder("invoke")
+        .addModifiers(KModifier.OPERATOR, KModifier.ACTUAL)
+        .returns(String::class)
+        .addParameters(
+            parameters.map {
+                ParameterSpec.builder(it.name, it.type)
+                    .build()
+            }
+        )
+        .addStatement("val path = %S + %S + %S", parentPath, RouteDivider, name)
+        .also {
+            if (parameter.any()) {
+                it.addStatement(
+                    "val params = %S + %P",
+                    RouteDivider,
+                    parameter.joinToString(RouteDivider) { if (it.type.isString) "\${${encode(it.name)}}" else "\${${it.name}}" },
+                )
+            } else {
+                it.addStatement("val params = \"\"")
+            }
+            if (query.any()) {
+                it.addStatement(
+                    "val query = \"?\" + %P",
+                    query.joinToString("&") {
+                        if (it.type.isString) {
+                            "${it.name}=\${${encodeNullable(it.name)}}"
+                        } else {
+                            "${it.name}=\${if (${it.name} == null) \"\" else ${it.name}}"
+                        }
+                    }
+                )
+            } else {
+                it.addStatement("val query = \"\"")
+            }
+        }
+        .addStatement("return path + params + query")
+        .build()
+}
+
+private fun encode(value: String) = "java.net.URLEncoder.encode($value, \"UTF-8\")"
+private fun encodeNullable(value: String) =
+    "java.net.URLEncoder.encode(if($value == null) \"\" else $value, \"UTF-8\")"
 
 internal data class RouteParameter(
     val name: String,
     val type: TypeName,
     val parameter: KSValueParameter,
 )
+
+internal val TypeName.isString get() = this == String::class.asTypeName()
+internal val TypeName.isBoolean get() = this == Boolean::class.asTypeName()
+internal val TypeName.isLong get() = this == Long::class.asTypeName()

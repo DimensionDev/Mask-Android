@@ -25,7 +25,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
@@ -37,25 +36,22 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.common.ext.applyTextStyle
-import com.dimension.maskbook.common.ui.widget.MaskButton
 import com.dimension.maskbook.common.ui.widget.MaskListItem
 import com.dimension.maskbook.common.ui.widget.MaskModal
-import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
+import com.dimension.maskbook.common.ui.widget.button.MaskButton
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.export.model.WalletData
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun WalletSwitchEditModal(
-    walletData: WalletData,
+    walletData: WalletData?,
     onRename: () -> Unit,
     onDelete: () -> Unit,
     onDisconnect: () -> Unit,
 ) {
     MaskModal {
-        Column(
-            modifier = Modifier.padding(ScaffoldPadding)
-        ) {
+        Column {
             WalletSwitchItem(
                 onClick = onRename,
                 icon = R.drawable.ic_rename_wallet,
@@ -63,11 +59,11 @@ fun WalletSwitchEditModal(
                     Text(text = stringResource(R.string.scene_wallet_edit_item_rename))
                 },
                 trailing = {
-                    Text(text = walletData.name)
+                    Text(text = walletData?.name.orEmpty())
                 }
             )
             Spacer(modifier = Modifier.height(16.dp))
-            if (walletData.fromWalletConnect) {
+            if (walletData != null && walletData.fromWalletConnect) {
                 WalletSwitchItem(
                     onClick = onDisconnect,
                     icon = R.drawable.ic_disconnect,

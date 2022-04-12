@@ -29,4 +29,16 @@ object RoomMigrations {
             database.execSQL("ALTER TABLE DbSendHistory ADD COLUMN `name` TEXT DEFAULT '' NOT NULL")
         }
     }
+
+    val MIGRATION_7_8 get() = object : Migration(7, 8) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            database.execSQL("CREATE TABLE IF NOT EXISTS `DbChainData` (`chainId` INTEGER NOT NULL, `name` TEXT NOT NULL,  `fullName` TEXT NOT NULL, `nativeTokenID` TEXT NOT NULL, `logoURL` TEXT NOT NULL, PRIMARY KEY(`chainId`))")
+        }
+    }
+
+    val MIGRATION_8_9 get() = object : Migration(8, 9) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            database.execSQL("ALTER TABLE DbCollectible ADD COLUMN `collection_slug` TEXT DEFAULT '' NOT NULL")
+        }
+    }
 }

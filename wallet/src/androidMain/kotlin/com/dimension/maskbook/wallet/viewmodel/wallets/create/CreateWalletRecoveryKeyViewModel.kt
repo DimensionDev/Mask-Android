@@ -22,23 +22,20 @@ package com.dimension.maskbook.wallet.viewmodel.wallets.create
 
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
+import com.dimension.maskbook.common.viewmodel.BaseMnemonicPhraseViewModel
 import com.dimension.maskbook.wallet.db.model.CoinPlatformType
 import com.dimension.maskbook.wallet.repository.IWalletRepository
 import com.dimension.maskbook.wallet.repository.WalletCreateOrImportResult
-import com.dimension.maskbook.wallet.viewmodel.base.BaseMnemonicPhraseViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import java.util.UUID
 
 class CreateWalletRecoveryKeyViewModel(
+    wallet: String,
     private val repository: IWalletRepository
 ) : BaseMnemonicPhraseViewModel() {
-    private val _wallet = MutableStateFlow("")
-
-    fun setWallet(wallet: String) {
-        _wallet.value = wallet
-    }
+    private val _wallet = MutableStateFlow(wallet)
 
     @OptIn(ExperimentalStdlibApi::class)
     override fun generateWords(): List<String> {
@@ -51,7 +48,7 @@ class CreateWalletRecoveryKeyViewModel(
         viewModelScope.launch {
             try {
                 val platform = repository.dWebData.firstOrNull()?.coinPlatformType ?: CoinPlatformType.Ethereum
-                repository.createWallet(_words.value, _wallet.value, platform)
+                repository.createWallet(_words.value.map { it.word }, _wallet.value, platform)
                 _result.value = WalletCreateOrImportResult(
                     type = WalletCreateOrImportResult.Type.SUCCESS,
                 )

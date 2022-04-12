@@ -21,34 +21,78 @@
 package com.dimension.maskbook.persona
 
 import com.dimension.maskbook.persona.export.PersonaServices
+import com.dimension.maskbook.persona.export.model.IndexedDBPersona
+import com.dimension.maskbook.persona.export.model.IndexedDBPost
+import com.dimension.maskbook.persona.export.model.IndexedDBProfile
+import com.dimension.maskbook.persona.export.model.IndexedDBRelation
 import com.dimension.maskbook.persona.export.model.PersonaData
-import com.dimension.maskbook.persona.export.model.PlatformType
 import com.dimension.maskbook.persona.repository.IPersonaRepository
 import kotlinx.coroutines.flow.Flow
 
 class PersonaServicesImpl(
-    private val personaRepository: IPersonaRepository
+    private val personaRepository: IPersonaRepository,
 ) : PersonaServices {
+
     override val currentPersona: Flow<PersonaData?>
         get() = personaRepository.currentPersona
+
+    override suspend fun hasPersona(): Boolean {
+        return personaRepository.hasPersona()
+    }
 
     override fun updateCurrentPersona(value: String) {
         personaRepository.updateCurrentPersona(value)
     }
 
-    override fun createPersonaFromMnemonic(value: List<String>, name: String) {
+    override suspend fun createPersonaFromMnemonic(value: List<String>, name: String) {
         personaRepository.createPersonaFromMnemonic(value, name)
     }
 
-    override fun createPersonaFromPrivateKey(value: String) {
-        personaRepository.createPersonaFromPrivateKey(value)
+    override suspend fun createPersonaFromPrivateKey(value: String, name: String) {
+        personaRepository.createPersonaFromPrivateKey(value, name)
     }
 
-    override fun finishConnectingProcess(userName: String, platformType: PlatformType) {
-        personaRepository.finishConnectingProcess(userName, platformType)
+    override fun connectProfile(personaId: String, profileId: String) {
+        personaRepository.connectProfile(personaId, profileId)
     }
 
-    override fun cancelConnectingProcess() {
-        personaRepository.cancelConnectingProcess()
+    override fun saveEmailForCurrentPersona(value: String) {
+        personaRepository.saveEmailForCurrentPersona(value)
+    }
+
+    override fun savePhoneForCurrentPersona(value: String) {
+        personaRepository.savePhoneForCurrentPersona(value)
+    }
+
+    override suspend fun createPersonaBackup(hasPrivateKeyOnly: Boolean): List<IndexedDBPersona> {
+        return personaRepository.createPersonaBackup(hasPrivateKeyOnly)
+    }
+
+    override suspend fun restorePersonaBackup(persona: List<IndexedDBPersona>) {
+        personaRepository.restorePersonaBackup(persona)
+    }
+
+    override suspend fun createProfileBackup(): List<IndexedDBProfile> {
+        return personaRepository.createProfileBackup()
+    }
+
+    override suspend fun restoreProfileBackup(profile: List<IndexedDBProfile>) {
+        personaRepository.restoreProfileBackup(profile)
+    }
+
+    override suspend fun createRelationsBackup(): List<IndexedDBRelation> {
+        return personaRepository.createRelationsBackup()
+    }
+
+    override suspend fun restoreRelationBackup(relation: List<IndexedDBRelation>) {
+        personaRepository.restoreRelationBackup(relation)
+    }
+
+    override suspend fun createPostsBackup(): List<IndexedDBPost> {
+        return personaRepository.createPostsBackup()
+    }
+
+    override suspend fun restorePostBackup(post: List<IndexedDBPost>) {
+        personaRepository.restorePostBackup(post)
     }
 }

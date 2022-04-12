@@ -28,6 +28,7 @@ jobs:
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
           KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
           SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+          GOOGLE_SERVICES: ${{ secrets.GOOGLE_SERVICES }}
         run: ./.github/apply_signing.sh
 
       - uses: pnpm/action-setup@v2
@@ -37,7 +38,7 @@ jobs:
         with:
           node-version: '16'
       - name: Fetch maskbook
-        run: ./.github/build_maskbook.sh
+        run: ./.github/fetch_maskbook.sh
 
       - name: Build with Gradle
         run: ./gradlew assemble --stacktrace

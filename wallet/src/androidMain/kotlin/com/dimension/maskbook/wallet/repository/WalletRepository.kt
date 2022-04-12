@@ -27,49 +27,69 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingConfig
 import androidx.paging.PagingState
 import androidx.room.withTransaction
-import com.dimension.maskbook.common.okhttp.okHttpClient
-import com.dimension.maskbook.common.repository.JSMethod
+import com.dimension.maskbook.common.bigDecimal.BigDecimal
+import com.dimension.maskbook.common.ext.httpService
+import com.dimension.maskbook.common.ext.use
+import com.dimension.maskbook.common.util.EthUtils
+import com.dimension.maskbook.common.util.SignUtils
 import com.dimension.maskbook.debankapi.model.ChainID
+import com.dimension.maskbook.debankapi.model.Token
+import com.dimension.maskbook.wallet.data.JSMethod
 import com.dimension.maskbook.wallet.db.AppDatabase
 import com.dimension.maskbook.wallet.db.model.CoinPlatformType
+import com.dimension.maskbook.wallet.db.model.DbChainData
 import com.dimension.maskbook.wallet.db.model.DbStoredKey
 import com.dimension.maskbook.wallet.db.model.DbToken
 import com.dimension.maskbook.wallet.db.model.DbWallet
 import com.dimension.maskbook.wallet.db.model.DbWalletBalance
 import com.dimension.maskbook.wallet.db.model.DbWalletToken
 import com.dimension.maskbook.wallet.db.model.WalletSource
+import com.dimension.maskbook.wallet.export.model.BackupWalletData
+import com.dimension.maskbook.wallet.export.model.ChainData
 import com.dimension.maskbook.wallet.export.model.ChainType
+import com.dimension.maskbook.wallet.export.model.CollectibleContractSchema
 import com.dimension.maskbook.wallet.export.model.DbWalletBalanceType
 import com.dimension.maskbook.wallet.export.model.TokenData
+import com.dimension.maskbook.wallet.export.model.WalletCollectibleData
 import com.dimension.maskbook.wallet.export.model.WalletData
+import com.dimension.maskbook.wallet.ext.chainType
+import com.dimension.maskbook.wallet.ext.dbank
 import com.dimension.maskbook.wallet.ext.ether
 import com.dimension.maskbook.wallet.ext.gwei
-import com.dimension.maskbook.wallet.paging.mediator.CollectibleMediator
+import com.dimension.maskbook.wallet.paging.mediator.CollectibleCollectionMediator
 import com.dimension.maskbook.wallet.services.WalletServices
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager
+import com.dimension.maskwalletcore.CoinType
 import com.dimension.maskwalletcore.WalletKey
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.web3j.crypto.Credentials
+import org.web3j.abi.FunctionEncoder
+import org.web3j.abi.datatypes.Address
+import org.web3j.abi.datatypes.DynamicBytes
+import org.web3j.abi.datatypes.Function
+import org.web3j.abi.datatypes.generated.Uint256
 import org.web3j.ens.EnsResolver
 import org.web3j.protocol.Web3j
-import org.web3j.protocol.http.HttpService
-import org.web3j.tx.RawTransactionManager
-import java.math.BigDecimal
+import java.math.BigInteger
 import java.util.UUID
+import kotlin.math.pow
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
 
@@ -78,11 +98,23 @@ private val CurrentWalletKey = stringPreferencesKey("current_wallet")
 private val ChainTypeKey = stringPreferencesKey("chain_type")
 val Context.walletDataStore: DataStore<Preferences> by preferencesDataStore(name = "wallet")
 
-class WalletRepository(
+private fun Token.toDbToken(chainId: ChainID?) = DbToken(
+    id = id ?: "",
+    address = id ?: "",
+    chainType = chainId?.chainType ?: ChainType.unknown,
+    name = name ?: "",
+    symbol = symbol ?: "",
+    decimals = decimals ?: 0L,
+    logoURI = logoURL,
+    price = BigDecimal(price ?: 0.0)
+)
+
+internal class WalletRepository(
     private val dataStore: DataStore<Preferences>,
     private val database: AppDatabase,
     private val services: WalletServices,
-    private val walletConnectManager: WalletConnectClientManager
+    private val walletConnectManager: WalletConnectClientManager,
+    private val jsMethod: JSMethod,
 ) : IWalletRepository {
     private val tokenScope = CoroutineScope(Dispatchers.IO)
     private val scope = CoroutineScope(Dispatchers.IO)
@@ -90,10 +122,10 @@ class WalletRepository(
     @OptIn(ExperimentalTime::class)
     override fun init() {
         tokenScope.launch {
+            refreshChainData()
             while (true) {
                 delay(12.seconds)
-                refreshCurrentWalletToken()
-                refreshCurrentWalletCollectibles()
+                refreshWallet()
             }
         }
     }
@@ -124,7 +156,7 @@ class WalletRepository(
                 it[ChainTypeKey] = networkType.name
             }
             if (notifyJS) {
-                JSMethod.Wallet.updateEthereumChainId(networkType.chainId)
+                jsMethod.updateEthereumChainId(networkType.chainId)
             }
         }
     }
@@ -133,15 +165,16 @@ class WalletRepository(
         return database.walletDao().getByAddress(address)?.let { WalletData.fromDb(it) }
     }
 
+    @OptIn(ExperimentalPagingApi::class)
     private suspend fun refreshCurrentWalletCollectibles() {
         val currentWallet = currentWallet.firstOrNull() ?: return
         try {
-            CollectibleMediator(
+            CollectibleCollectionMediator(
                 walletId = currentWallet.id,
                 database = database,
                 openSeaServices = services.openSeaServices,
                 walletAddress = currentWallet.address,
-            ).load(LoadType.REFRESH, PagingState(emptyList(), null, PagingConfig(pageSize = 10), 0))
+            ).load(LoadType.REFRESH, PagingState(emptyList(), null, PagingConfig(pageSize = 20), 0))
         } catch (e: Throwable) {
             e.printStackTrace()
         }
@@ -192,16 +225,7 @@ class WalletRepository(
             val tokens = token.map {
                 val chainId =
                     kotlin.runCatching { it.chain?.let { it1 -> ChainID.valueOf(it1) } }.getOrNull()
-                DbToken(
-                    id = it.id ?: "",
-                    address = it.id ?: "",
-                    chainType = chainId?.chainType ?: ChainType.unknown,
-                    name = it.name ?: "",
-                    symbol = it.symbol ?: "",
-                    decimals = it.decimals ?: 0L,
-                    logoURI = it.logoURL,
-                    price = BigDecimal(it.price ?: 0.0)
-                )
+                it.toDbToken(chainId)
             }
             val walletTokens = token.map {
                 DbWalletToken(
@@ -215,6 +239,59 @@ class WalletRepository(
                 database.walletBalanceDao().add(balance)
                 database.tokenDao().add(tokens)
                 database.walletTokenDao().add(walletTokens)
+            }
+        } catch (e: Throwable) {
+            e.printStackTrace()
+        }
+    }
+
+    private suspend fun refreshChainData() {
+        try {
+            val chains = services.debankServices.getChainList().mapNotNull {
+                it.id?.let { id ->
+                    try {
+                        val chainID = ChainID.valueOf(id)
+                        if (chainID.chainType != ChainType.unknown) {
+                            DbChainData(
+                                chainId = chainID.chainType.chainId,
+                                name = chainID.chainType.name,
+                                fullName = it.name ?: chainID.chainType.name,
+                                nativeTokenID = it.nativeTokenID ?: "",
+                                logoURL = it.logoURL ?: ""
+                            )
+                        } else null
+                    } catch (e: Throwable) {
+                        null
+                    }
+                }
+            }
+            database.chainDao().add(chains)
+        } catch (e: Throwable) {
+            e.printStackTrace()
+        }
+    }
+
+    private suspend fun refreshNativeTokens() {
+        try {
+            val chains = database.chainDao().getAll().map { it.chain }.ifEmpty {
+                // in case init refreshChainData failed
+                refreshChainData()
+                database.chainDao().getAll().map { it.chain }
+            }
+            val tokens = chains.mapNotNull {
+                try {
+                    val chainId = ChainType.valueOf(it.name).dbank
+                    services.debankServices.token(
+                        id = it.nativeTokenID,
+                        chainId = ChainType.valueOf(it.name).dbank
+                    ).toDbToken(chainId)
+                } catch (e: Throwable) {
+                    null
+                }
+            }
+
+            database.withTransaction {
+                database.tokenDao().add(tokens)
             }
         } catch (e: Throwable) {
             e.printStackTrace()
@@ -235,11 +312,36 @@ class WalletRepository(
     override val currentWallet: Flow<WalletData?>
         get() = dataStore.data.map {
             it[CurrentWalletKey]
-        }.mapNotNull { it }.flatMapLatest {
-            database.walletDao().getByIdFlow(it)
+        }.flatMapLatest {
+            flow {
+                if (it == null) {
+                    emit(null)
+                } else {
+                    emitAll(database.walletDao().getByIdFlow(it))
+                }
+            }
         }.map {
             it?.let { it1 -> WalletData.fromDb(it1) }
         }
+
+    override val currentChain: Flow<ChainData?>
+        get() = dWebData.map {
+            getChainTokenData(it.chainType)
+        }
+
+    override suspend fun getChainTokenData(chainType: ChainType): ChainData? {
+        return database.chainDao().getById(chainType.chainId)?.let {
+            ChainData(
+                chainId = it.chain.chainId,
+                name = it.chain.name,
+                fullName = it.chain.fullName,
+                nativeTokenID = it.chain.nativeTokenID,
+                logoURL = it.chain.logoURL,
+                nativeToken = it.token?.let { token -> TokenData.fromDb(token) },
+                chainType = ChainType.valueOf(it.chain.name)
+            )
+        }
+    }
 
     override fun setCurrentWallet(walletData: WalletData?) {
         if (walletData?.id != null) {
@@ -260,7 +362,7 @@ class WalletRepository(
             dataStore.edit {
                 it[CurrentWalletKey] = dbWallet?.id.orEmpty()
             }
-            JSMethod.Wallet.updateEthereumAccount(dbWallet?.address.orEmpty())
+            jsMethod.updateEthereumAccount(dbWallet?.address.orEmpty())
         }
     }
 
@@ -516,38 +618,67 @@ class WalletRepository(
         }
     }
 
-    override fun sendTokenWithCurrentWallet(
-        amount: BigDecimal,
+    /**
+     * currently support ERC721 and ERC1155, ERC1155 can transfer multiple token in one transaction
+     * ERC721:safeTransferFrom(address _from, address _to, uint256 _tokenId, bytes data)
+     * ERC1155:safeTransferFrom(address _from, address _to, uint256 _id, uint256 _value, bytes data)
+     * _value: transfer amount, normally one
+     * data: additional data, normally empty
+     */
+    override fun sendCollectibleWithCurrentWallet(
         address: String,
-        tokenData: TokenData,
+        collectible: WalletCollectibleData,
         gasLimit: Double,
-        gasFee: BigDecimal,
         maxFee: Double,
         maxPriorityFee: Double,
-        data: String,
         onDone: (String?) -> Unit,
-        onError: (Throwable) -> Unit,
+        onError: (Throwable) -> Unit
     ) {
-        sendTokenWithCurrentWalletAndChainType(
-            amount = amount,
-            address = address,
-            chainType = tokenData.chainType,
-            gasLimit = gasLimit,
-            gasFee = gasFee,
-            maxFee = maxFee,
-            maxPriorityFee = maxPriorityFee,
-            onDone = onDone,
-            onError = onError,
-            data = data,
-        )
+        scope.launch {
+            currentWallet.firstOrNull()?.let { wallet ->
+                val data = when (collectible.contract.schema) {
+                    CollectibleContractSchema.ERC721 -> listOf(
+                        Address(wallet.address), // from
+                        Address(address), // to
+                        Uint256(collectible.tokenId.toBigInteger()),
+                        DynamicBytes(byteArrayOf())
+                    )
+                    CollectibleContractSchema.ERC1155 -> listOf(
+                        Address(wallet.address), // from
+                        Address(address), // to
+                        Uint256(collectible.tokenId.toBigInteger()),
+                        Uint256(BigInteger.valueOf(1)),
+                        DynamicBytes(byteArrayOf())
+                    )
+                }.let {
+                    Function(
+                        "safeTransferFrom",
+                        it,
+                        listOf()
+                    )
+                }.let {
+                    FunctionEncoder.encode(it)
+                }
+                sendTransactionWithCurrentWallet(
+                    amount = BigDecimal.ZERO,
+                    address = collectible.contract.address,
+                    chainType = collectible.chainType,
+                    gasLimit = gasLimit,
+                    maxFee = maxFee,
+                    maxPriorityFee = maxPriorityFee,
+                    data = data,
+                    onDone = onDone,
+                    onError = onError
+                )
+            }
+        }
     }
 
-    override fun sendTokenWithCurrentWalletAndChainType(
+    override fun sendTransactionWithCurrentWallet(
         amount: BigDecimal,
         address: String,
         chainType: ChainType,
         gasLimit: Double,
-        gasFee: BigDecimal,
         maxFee: Double,
         maxPriorityFee: Double,
         data: String,
@@ -555,71 +686,42 @@ class WalletRepository(
         onError: (Throwable) -> Unit,
     ) {
         scope.launch {
-            try {
-                val hash = currentWallet.firstOrNull()?.let { wallet ->
-                    if (wallet.fromWalletConnect) {
-                        walletConnectManager.sendToken(
-                            amount = amount,
-                            fromAddress = wallet.address,
-                            toAddress = address,
-                            data = data,
-                            gasLimit = gasLimit,
-                            gasPrice = gasFee + maxPriorityFee.toBigDecimal().gwei.ether,
-                            onResponse = { response, error ->
-                                error?.let { onError(it) } ?: onDone(response.toString())
-                            }
-                        )
-                        return@launch
+            val wallet = currentWallet.filterNotNull().first()
+            if (wallet.fromWalletConnect) {
+                walletConnectManager.sendToken(
+                    amount = amount,
+                    fromAddress = wallet.address,
+                    toAddress = address,
+                    data = data,
+                    gasLimit = gasLimit,
+                    gasPrice = maxFee.toBigDecimal().gwei.ether + maxPriorityFee.toBigDecimal().gwei.ether,
+                    onResponse = { response, error ->
+                        error?.let { onError(it) } ?: onDone(response.toString())
                     }
-                    val credentials = Credentials.create(
-                        getPrivateKey(
-                            wallet,
-                            CoinPlatformType.Ethereum
-                        )
-                    )
-                    val actualAmount = if (chainType == ChainType.eth) {
-                        amount.ether.wei.toBigInteger()
-                    } else {
+                )
+                return@launch
+            }
+
+            val privateKey = getPrivateKey(wallet, CoinPlatformType.Ethereum)
+            Web3j.build(chainType.httpService).use { web3j ->
+                EthUtils.ethSendRawTransaction(
+                    chainType = chainType,
+                    web3j = web3j,
+                    privateKey = privateKey,
+                    contractAddress = address,
+                    maxPriorityFeePerGas = maxPriorityFee.toBigDecimal().gwei.wei.toBigInteger(),
+                    maxFeePerGas = maxFee.toBigDecimal().gwei.wei.toBigInteger(),
+                    gasLimit = gasLimit.toBigDecimal().toBigInteger(),
+                    value = if (chainType.supportEip25519 && chainType != ChainType.eth) {
                         null
-                    }
-                    val web3 = Web3j.build(chainType.httpService)
-                    val manager = RawTransactionManager(web3, credentials, chainType.chainId)
-                    val result = if (chainType.supportEip25519) {
-                        manager.sendEIP1559Transaction(
-                            chainType.chainId,
-                            maxPriorityFee.gwei.wei.toBigInteger(),
-                            maxFee.gwei.wei.toBigInteger(),
-                            gasLimit.toBigDecimal().toBigInteger(),
-                            address,
-                            data,
-                            actualAmount,
-                        )
-                    } else {
-                        manager.sendTransaction(
-                            maxPriorityFee.gwei.wei.toBigInteger(),
-                            gasLimit.toBigDecimal().toBigInteger(),
-                            address,
-                            data,
-                            amount.ether.wei.toBigInteger()
-                        )
-                    }
-                    if (result.hasError()) {
-                        Log.e(
-                            "WalletRepository",
-                            "sendTokenWithCurrentWallet: ${result.error?.code}: ${result.error?.message}",
-                        )
-                        Log.e(
-                            "WalletRepository",
-                            "sendTokenWithCurrentWallet: ${result.error?.data}",
-                        )
-                        throw Exception(result.error?.message ?: "")
-                    }
-                    web3.shutdown()
-                    result.transactionHash
-                }
-                onDone.invoke(hash)
-            } catch (e: Throwable) {
-                onError(e)
+                    } else amount.ether.wei.toBigInteger(),
+                    data = data,
+                )
+            }.onSuccess {
+                onDone(it.transactionHash)
+            }.onFailure {
+                Log.w("WalletRepository", "sendTokenWithCurrentWallet: ${it.message}")
+                onError(it)
             }
         }
     }
@@ -636,41 +738,52 @@ class WalletRepository(
         address: String,
         tokenData: TokenData,
         gasLimit: Double,
-        gasFee: BigDecimal,
         maxFee: Double,
         maxPriorityFee: Double,
         onDone: (String?) -> Unit,
         onError: (Throwable) -> Unit,
     ) {
         scope.launch {
-            val realAddress = if (EnsResolver.isValidEnsName(address)) {
-                val web3 = Web3j.build(HttpService(tokenData.chainType.endpoint, okHttpClient))
-                val ensResolver = EnsResolver(web3)
-                ensResolver.resolve(address).also {
-                    web3.shutdown()
+            val isNativeToken =
+                tokenData.address == database.chainDao().getByIdFlow(tokenData.chainType.chainId)
+                    .firstOrNull()?.token?.address
+            val realAddress = if (isNativeToken) {
+                if (EnsResolver.isValidEnsName(address)) {
+                    val web3 = Web3j.build(tokenData.chainType.httpService)
+                    val ensResolver = EnsResolver(web3)
+                    ensResolver.resolve(address).also {
+                        web3.shutdown()
+                    }
+                } else {
+                    address
                 }
             } else {
-                address
+                // use token's contract address
+                tokenData.address
             }
-//            val data = Function(
-//                "transfer",
-//                listOf(
-//                    Address(realAddress),
-//                    Uint256((amount * (10.0.pow(tokenData.decimals.toInt())).toBigDecimal()).toBigInteger())
-//                ),
-//                listOf(),
-//            ).let {
-//                FunctionEncoder.encode(it)
-//            }
-            sendTokenWithCurrentWallet(
-                amount = amount,
+            val realAmount = if (isNativeToken) amount else BigDecimal.ZERO
+            val data = if (isNativeToken) {
+                ""
+            } else {
+                Function(
+                    "transfer",
+                    listOf(
+                        Address(address),
+                        Uint256((amount * (10.0.pow(tokenData.decimals.toInt())).toBigDecimal()).toBigInteger())
+                    ),
+                    listOf(),
+                ).let {
+                    FunctionEncoder.encode(it)
+                }
+            }
+            sendTransactionWithCurrentWallet(
+                amount = realAmount,
                 address = realAddress,
-                tokenData = tokenData,
+                chainType = tokenData.chainType,
                 gasLimit = gasLimit,
-                gasFee = gasFee,
                 maxFee = maxFee,
                 maxPriorityFee = maxPriorityFee,
-                data = "",
+                data = data,
                 onDone = onDone,
                 onError = onError
             )
@@ -692,6 +805,72 @@ class WalletRepository(
             val web3 = Web3j.build(chainType.httpService)
             EnsResolver(web3).resolve(name).apply {
                 web3.shutdown()
+            }
+        }
+    }
+
+    override suspend fun getChainData(chainType: ChainType): Flow<ChainData?> {
+        return database.chainDao().getByIdFlow(chainType.chainId).map { dbData ->
+            dbData?.let {
+                ChainData(
+                    chainId = it.chain.chainId,
+                    name = it.chain.name,
+                    fullName = it.chain.fullName,
+                    nativeTokenID = it.chain.nativeTokenID,
+                    logoURL = it.chain.logoURL,
+                    nativeToken = it.token?.let { token -> TokenData.fromDb(token) },
+                    chainType = ChainType.valueOf(it.chain.name)
+                )
+            }
+        }
+    }
+
+    override suspend fun refreshWallet() {
+        withContext(tokenScope.coroutineContext) {
+            refreshCurrentWalletToken()
+            refreshCurrentWalletCollectibles()
+            refreshNativeTokens()
+        }
+    }
+
+    override suspend fun signMessage(message: String, fromAddress: String): String? {
+        val wallet = findWalletByAddress(fromAddress) ?: return null
+        val privateKey = getPrivateKey(wallet, CoinPlatformType.Ethereum)
+        return SignUtils.signMessage(message, privateKey)
+    }
+
+    override suspend fun createWalletBackup(): List<BackupWalletData> {
+        return database.walletDao().getAll().map {
+            val privateKey = WalletKey.load(it.storedKey.data).firstOrNull()
+            val mnemonic = privateKey?.exportMnemonic("")
+            // TODO: support other coin types
+            val privateKeyHex = privateKey?.exportPrivateKey(CoinType.Ethereum, "")
+            BackupWalletData(
+                address = it.wallet.address,
+                name = it.wallet.name,
+                passphrase = "",
+                publicKey = null,
+                privateKey = privateKeyHex,
+                mnemonic = mnemonic,
+                derivationPath = it.wallet.derivationPath,
+                updatedAt = it.wallet.updatedAt,
+                createdAt = it.wallet.createdAt,
+            )
+        }
+    }
+
+    override suspend fun restoreWalletBackup(wallet: List<BackupWalletData>) {
+        wallet.forEach {
+            val privateKey = it.privateKey
+            val mnemonic = it.mnemonic
+            val derivationPath = it.derivationPath
+            // TODO: support other coin types
+            if (!privateKey.isNullOrEmpty()) {
+                importWallet(it.name, privateKey, CoinPlatformType.Ethereum)
+            } else if (!mnemonic.isNullOrEmpty() && !derivationPath.isNullOrEmpty()) {
+                importWallet(it.name, mnemonic, derivationPath, CoinPlatformType.Ethereum)
+            } else {
+                // not a valid backup
             }
         }
     }

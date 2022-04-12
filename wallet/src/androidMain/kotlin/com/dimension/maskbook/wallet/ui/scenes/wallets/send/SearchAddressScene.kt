@@ -25,7 +25,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -39,14 +38,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
-import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Done
@@ -57,18 +53,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.dimension.maskbook.common.ui.theme.MaskTheme
-import com.dimension.maskbook.common.ui.widget.MaskBackButton
-import com.dimension.maskbook.common.ui.widget.MaskButton
-import com.dimension.maskbook.common.ui.widget.MaskIconButton
-import com.dimension.maskbook.common.ui.widget.MaskInputField
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
+import com.dimension.maskbook.common.ui.widget.MaskScene
+import com.dimension.maskbook.common.ui.widget.MaskSearchInput
 import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
-import com.dimension.maskbook.common.ui.widget.PrimaryButton
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
+import com.dimension.maskbook.common.ui.widget.button.MaskBackButton
+import com.dimension.maskbook.common.ui.widget.button.MaskButton
+import com.dimension.maskbook.common.ui.widget.button.MaskIconButton
+import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
+import com.dimension.maskbook.common.ui.widget.button.clickable
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.repository.SearchAddressData
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.EnsData
@@ -76,7 +71,6 @@ import com.dimension.maskbook.wallet.viewmodel.wallets.send.EnsData
 @Composable
 fun SearchAddressScene(
     onBack: () -> Unit,
-    tokenAddress: String,
     query: String,
     canConfirm: Boolean,
     ensData: EnsData?,
@@ -85,8 +79,6 @@ fun SearchAddressScene(
     onQueryChanged: (String) -> Unit,
     contacts: List<SearchAddressData>,
     recent: List<SearchAddressData>,
-    noTokenFound: Boolean,
-    onBuyToken: () -> Unit,
     onScanQrCode: () -> Unit,
     onSearch: () -> Unit,
     onCopy: (String) -> Unit,
@@ -94,7 +86,7 @@ fun SearchAddressScene(
     onItemSelect: (SearchAddressData) -> Unit,
     onNext: () -> Unit,
 ) {
-    MaskTheme {
+    MaskScene {
         MaskScaffold(
             topBar = {
                 MaskSingleLineTopAppBar(
@@ -105,13 +97,6 @@ fun SearchAddressScene(
                 )
             }
         ) {
-            if (noTokenFound) {
-                EmptyTokenWarning(
-                    tokenName = tokenAddress,
-                    onBuy = onBuyToken
-                )
-                return@MaskScaffold
-            }
 
             Column(
                 modifier = Modifier
@@ -178,70 +163,39 @@ private fun SearchInput(
     onClear: () -> Unit,
     onSearch: () -> Unit,
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(color = MaterialTheme.colors.surface, shape = MaterialTheme.shapes.small)
-            .padding(horizontal = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.ic_search),
-            contentDescription = null,
-            modifier = Modifier.size(24.dp)
-        )
-        MaskInputField(
-            value = value,
-            onValueChange = onValueChanged,
-            modifier = Modifier.weight(1f),
-            colors = TextFieldDefaults.textFieldColors(
-                backgroundColor = Color.Transparent,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                disabledIndicatorColor = Color.Transparent
-            ),
-            placeholder = {
-                Text(
-                    text = stringResource(R.string.scene_wallet_send_address_search_address),
-                    modifier = Modifier.fillMaxWidth(),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            },
-            readOnly = readOnly,
-            singleLine = true,
-            keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Search,
-            ),
-            keyboardActions = KeyboardActions(
-                onSearch = {
-                    onSearch()
-                }
-            ),
-        )
-        if (ensData != null) {
+    MaskSearchInput(
+        value = value,
+        onValueChanged = onValueChanged,
+        onSearch = onSearch,
+        readOnly = readOnly,
+        placeholder = {
+            Text(text = stringResource(R.string.scene_wallet_send_address_search_address))
+        },
+        trailing = {
+            if (ensData != null) {
+                Spacer(Modifier.width(8.dp))
+                ProgressButton(ensData)
+            }
             Spacer(Modifier.width(8.dp))
-            ProgressButton(ensData)
-        }
-        Spacer(Modifier.width(8.dp))
-        if (value.isEmpty()) {
-            MaskIconButton(onClick = onScanQrCode) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_scan),
-                    contentDescription = null,
-                    modifier = Modifier.size(24.dp)
-                )
-            }
-        } else {
-            MaskIconButton(onClick = onClear) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_clear),
-                    contentDescription = null,
-                    modifier = Modifier.size(24.dp)
-                )
+            if (value.isEmpty()) {
+                MaskIconButton(onClick = onScanQrCode) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_scan),
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp),
+                    )
+                }
+            } else {
+                MaskIconButton(onClick = onClear) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_clear),
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
             }
         }
-    }
+    )
 }
 
 @Composable
@@ -443,7 +397,7 @@ private fun EmptyTokenWarning(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
-            painter = painterResource(id = R.drawable.ic_property_1_note),
+            painter = painterResource(id = R.drawable.ic_note),
             contentDescription = null,
             modifier = Modifier.size(24.dp)
         )

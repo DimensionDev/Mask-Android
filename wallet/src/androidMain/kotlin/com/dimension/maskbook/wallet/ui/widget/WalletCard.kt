@@ -23,8 +23,6 @@ package com.dimension.maskbook.wallet.ui.widget
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,8 +34,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
@@ -57,20 +53,21 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
-import com.dimension.maskbook.common.ui.widget.MaskIconButton
-import com.dimension.maskbook.common.ui.widget.MaskTextButton
+import com.dimension.maskbook.common.bigDecimal.BigDecimal
+import com.dimension.maskbook.common.ext.humanizeDollar
+import com.dimension.maskbook.common.ext.onDrawableRes
 import com.dimension.maskbook.common.ui.widget.MiddleEllipsisText
+import com.dimension.maskbook.common.ui.widget.button.MaskIconButton
+import com.dimension.maskbook.common.ui.widget.button.MaskTextButton
+import com.dimension.maskbook.common.ui.widget.button.clickable
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.export.model.DbWalletBalanceType
 import com.dimension.maskbook.wallet.export.model.WalletData
-import com.dimension.maskbook.wallet.ext.humanizeDollar
-import com.dimension.maskbook.wallet.ui.scenes.wallets.management.onDrawableRes
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.calculateCurrentOffsetForPage
-import java.math.BigDecimal
 import kotlin.math.absoluteValue
 
 @ExperimentalPagerApi
@@ -117,6 +114,7 @@ fun WalletCard(
                     ChainType.bsc -> wallet.balance[DbWalletBalanceType.bsc]
                     ChainType.polygon -> wallet.balance[DbWalletBalanceType.polygon]
                     ChainType.arbitrum -> wallet.balance[DbWalletBalanceType.arbitrum]
+                    ChainType.xdai -> wallet.balance[DbWalletBalanceType.xdai]
                     else -> null
                 } ?: BigDecimal.ZERO
             }
@@ -238,16 +236,18 @@ private fun WalletDisplayAmount(
     chainType: ChainType?,
     onDisplayChainTypeClick: (ChainType?) -> Unit,
 ) {
-    LazyRow(
+    Row(
         modifier = Modifier
             .background(
                 brush = WalletCardDefaults.displayAmountTypeBackground,
             )
+            .padding(
+                horizontal = WalletCardDefaults.contentPadding,
+            )
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(WalletCardDefaults.contentPadding),
-        contentPadding = PaddingValues(horizontal = WalletCardDefaults.contentPadding),
     ) {
-        items(amountTypeList) { item ->
+        amountTypeList.forEach { item ->
             val isSelected = if (chainType == null) {
                 DisplayAmountType.All === item
             } else {
@@ -260,8 +260,6 @@ private fun WalletDisplayAmount(
                     .clickable(
                         enabled = !isSelected,
                         onClick = { onDisplayChainTypeClick(item.chainType) },
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() },
                     ),
             ) {
                 Spacer(Modifier.height(13.dp))
@@ -294,6 +292,7 @@ private enum class DisplayAmountType(
     Binance(R.drawable.wallet_2, ChainType.bsc),
     Matic(R.drawable.wallet_3, ChainType.polygon),
     Arbitrum(R.drawable.wallet_4, ChainType.arbitrum),
+    Xdai(R.drawable.wallet_5, ChainType.xdai),
 }
 
 private object WalletCardDefaults {

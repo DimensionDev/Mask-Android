@@ -41,20 +41,31 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.common.ext.observeAsState
-import com.dimension.maskbook.common.ui.widget.MaskBackButton
+import com.dimension.maskbook.common.route.navigationComposeAnimComposable
+import com.dimension.maskbook.common.route.navigationComposeAnimComposablePackage
+import com.dimension.maskbook.common.routeProcessor.annotations.Back
+import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
 import com.dimension.maskbook.common.ui.widget.MaskInputField
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
+import com.dimension.maskbook.common.ui.widget.MaskScene
 import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
-import com.dimension.maskbook.common.ui.widget.PrimaryButton
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
-import com.dimension.maskbook.common.ui.widget.SecondaryButton
+import com.dimension.maskbook.common.ui.widget.button.MaskBackButton
+import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
+import com.dimension.maskbook.common.ui.widget.button.SecondaryButton
 import com.dimension.maskbook.persona.R
+import com.dimension.maskbook.persona.route.PersonaRoute
 import com.dimension.maskbook.persona.viewmodel.ExportPrivateKeyViewModel
 import org.koin.androidx.compose.getViewModel
 
+@NavGraphDestination(
+    route = PersonaRoute.ExportPrivateKey,
+    packageName = navigationComposeAnimComposablePackage,
+    functionName = navigationComposeAnimComposable,
+)
 @Composable
 fun ExportPrivateKeyScene(
-    onBack: () -> Unit,
+    @Back onBack: () -> Unit,
 ) {
     val viewModel = getViewModel<ExportPrivateKeyViewModel>()
     val text by viewModel.privateKey.observeAsState(initial = "")
@@ -65,60 +76,61 @@ fun ExportPrivateKeyScene(
             append(stringResource(R.string.scene_persona_export_private_key_backup_recovery))
         }
     }
-
-    MaskScaffold(
-        topBar = {
-            MaskSingleLineTopAppBar(
-                navigationIcon = {
-                    MaskBackButton {
-                        onBack.invoke()
-                    }
-                },
-                title = {
-                    Text(text = stringResource(R.string.scene_persona_export_private_key_title))
-                }
-            )
-        }
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(ScaffoldPadding),
-        ) {
-            MaskInputField(
-                value = text,
-                onValueChange = {},
-                modifier = Modifier.fillMaxWidth(),
-                readOnly = true,
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(text = annotatedText)
-            Spacer(modifier = Modifier.weight(1f))
-            Row {
-                Row {
-                    SecondaryButton(
-                        modifier = Modifier.weight(1f),
-                        onClick = {
+    MaskScene {
+        MaskScaffold(
+            topBar = {
+                MaskSingleLineTopAppBar(
+                    navigationIcon = {
+                        MaskBackButton {
                             onBack.invoke()
                         }
-                    ) {
-                        Text(text = stringResource(R.string.common_controls_cancel))
+                    },
+                    title = {
+                        Text(text = stringResource(R.string.scene_persona_export_private_key_title))
                     }
-                    Spacer(modifier = Modifier.width(20.dp))
-                    val manager = LocalClipboardManager.current
-                    PrimaryButton(
-                        modifier = Modifier.weight(1f),
-                        onClick = {
-                            manager.setText(
-                                annotatedString = buildAnnotatedString {
-                                    this.append(
-                                        text
-                                    )
-                                }
-                            )
-                        },
-                    ) {
-                        Text(text = stringResource(R.string.scene_wallet_backup_btn_copy))
+                )
+            }
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(ScaffoldPadding),
+            ) {
+                MaskInputField(
+                    value = text,
+                    onValueChange = {},
+                    modifier = Modifier.fillMaxWidth(),
+                    readOnly = true,
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(text = annotatedText)
+                Spacer(modifier = Modifier.weight(1f))
+                Row {
+                    Row {
+                        SecondaryButton(
+                            modifier = Modifier.weight(1f),
+                            onClick = {
+                                onBack.invoke()
+                            }
+                        ) {
+                            Text(text = stringResource(R.string.common_controls_cancel))
+                        }
+                        Spacer(modifier = Modifier.width(20.dp))
+                        val manager = LocalClipboardManager.current
+                        PrimaryButton(
+                            modifier = Modifier.weight(1f),
+                            onClick = {
+                                manager.setText(
+                                    annotatedString = buildAnnotatedString {
+                                        this.append(
+                                            text
+                                        )
+                                    }
+                                )
+                            },
+                        ) {
+                            Text(text = stringResource(R.string.scene_wallet_backup_btn_copy))
+                        }
                     }
                 }
             }

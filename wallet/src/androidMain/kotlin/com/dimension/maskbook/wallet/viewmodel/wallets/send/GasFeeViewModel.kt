@@ -23,115 +23,71 @@ package com.dimension.maskbook.wallet.viewmodel.wallets.send
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
+import com.dimension.maskbook.common.ext.humanizeMinutes
+import com.dimension.maskbook.common.ext.onFinished
 import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.ext.gwei
-import com.dimension.maskbook.wallet.ext.humanizeMinutes
 import com.dimension.maskbook.wallet.repository.GasPriceEditMode
 import com.dimension.maskbook.wallet.repository.IWalletRepository
-import com.dimension.maskbook.wallet.services.WalletServices
-import com.dimension.maskbook.wallet.services.model.EthGasFee
-import com.dimension.maskbook.wallet.services.model.EthGasFeeResponse
-import com.dimension.maskbook.wallet.services.model.MaticGasFeeResponse
+import com.dimension.maskbook.wallet.usecase.GasFeeData
+import com.dimension.maskbook.wallet.usecase.GasFeeModel
+import com.dimension.maskbook.wallet.usecase.GetArrivesWithGasFeeUseCase
+import com.dimension.maskbook.wallet.usecase.GetSuggestGasFeeUseCase
+import com.dimension.maskbook.wallet.usecase.GetWalletNativeTokenUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.launch
 import java.math.BigDecimal
-import kotlin.time.ExperimentalTime
-
-data class GasFeeData(
-    val maxPriorityFeePerGas: Double,
-    val maxFeePerGas: Double,
-) {
-    companion object {
-        fun fromEthGasFee(data: EthGasFee?) = GasFeeData(
-            maxFeePerGas = data?.suggestedMaxFeePerGas?.toDoubleOrNull() ?: 0.0,
-            maxPriorityFeePerGas = data?.suggestedMaxPriorityFeePerGas?.toDoubleOrNull() ?: 0.0
-        )
-    }
-}
-
-class GasFeeModel {
-    val low: GasFeeData
-    val medium: GasFeeData
-    val high: GasFeeData
-    val baseFee: Double
-
-    constructor(response: EthGasFeeResponse) {
-        low = GasFeeData.fromEthGasFee(response.low)
-        medium = GasFeeData.fromEthGasFee(response.medium)
-        high = GasFeeData.fromEthGasFee(response.high)
-        baseFee = response.estimatedBaseFee?.toDoubleOrNull() ?: 0.0
-    }
-
-    constructor(response: MaticGasFeeResponse) {
-        low = GasFeeData(
-            maxPriorityFeePerGas = response.safeLow ?: 0.0,
-            maxFeePerGas = 0.0,
-        )
-        medium = GasFeeData(
-            maxPriorityFeePerGas = response.standard ?: 0.0,
-            maxFeePerGas = 0.0,
-        )
-        high = GasFeeData(
-            maxPriorityFeePerGas = response.fast ?: 0.0,
-            maxFeePerGas = 0.0,
-        )
-        baseFee = 0.0
-    }
-
-    constructor(baseGasFee: Double) {
-        low = GasFeeData(
-            maxPriorityFeePerGas = baseGasFee - 0.1,
-            maxFeePerGas = 0.0,
-        )
-        medium = GasFeeData(
-            maxPriorityFeePerGas = baseGasFee,
-            maxFeePerGas = 0.0,
-        )
-        high = GasFeeData(
-            maxPriorityFeePerGas = baseGasFee + 0.1,
-            maxFeePerGas = 0.0,
-        )
-        baseFee = 0.0
-    }
-}
 
 class GasFeeViewModel(
     initialGasLimit: Double = 21000.0,
-    private val services: WalletServices,
-    private val walletRepository: IWalletRepository,
+    walletRepository: IWalletRepository,
+    private val getSuggestGasFee: GetSuggestGasFeeUseCase,
+    private val getArrivesWithGasFee: GetArrivesWithGasFeeUseCase,
+    private val getWalletNativeToken: GetWalletNativeTokenUseCase,
 ) : ViewModel() {
+    private val chainType = walletRepository.currentChain
+        .mapNotNull { it?.chainType }
+        .asStateIn(viewModelScope, ChainType.eth)
+
+    // native token on current chain
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val nativeToken by lazy {
+        chainType.flatMapLatest {
+            getWalletNativeToken(it)
+        }.map {
+            it?.tokenData
+        }
+    }
+
     private val _gasPriceEditMode = MutableStateFlow(GasPriceEditMode.MEDIUM)
-    val gasPriceEditMode = _gasPriceEditMode.asStateIn(viewModelScope, GasPriceEditMode.MEDIUM)
+    val gasPriceEditMode = _gasPriceEditMode.asStateIn(viewModelScope)
+
     fun setGasPriceEditMode(value: GasPriceEditMode) {
         _gasPriceEditMode.value = value
     }
 
-    val defaultGasFee by lazy {
-        flow {
-            try {
-                emit(services.gasServices.ethGas())
-            } catch (e: Throwable) {
-                emit(null)
-            }
-        }.mapNotNull { it }
+    private val _loadingState = MutableStateFlow(false)
+    val loadingState = _loadingState.asStateIn(viewModelScope)
+
+    private val _suggestGasFee = MutableStateFlow(GasFeeModel())
+
+    init {
+        refreshSuggestGasFee()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val gasFeeModel by lazy {
-        walletRepository.dWebData.mapLatest {
-            when (it.chainType) {
-                ChainType.eth -> GasFeeModel(services.gasServices.ethGasFee())
-                ChainType.polygon -> GasFeeModel(services.gasServices.maticGasFee())
-                ChainType.bsc -> GasFeeModel(5.0)
-                ChainType.arbitrum -> GasFeeModel(3.0)
-                ChainType.xdai -> GasFeeModel(3.0)
-                else -> GasFeeModel(5.0)
-            }
+    fun refreshSuggestGasFee() {
+        _loadingState.value = true
+        viewModelScope.launch {
+            getSuggestGasFee(chainType.value)
+                .onSuccess { _suggestGasFee.value = it }
+                .onFinished { _loadingState.value = false }
         }
     }
 
@@ -142,90 +98,69 @@ class GasFeeViewModel(
         _gasLimit.value = value
     }
 
-    private val _maxPriorityFee = MutableStateFlow(-1.0)
-    val maxPriorityFee = combine(_maxPriorityFee, gasFeeModel, _gasPriceEditMode) { max, model, mode ->
-        if (max != -1.0) {
-            max
-        } else {
-            when (mode) {
-                GasPriceEditMode.LOW -> model.low.maxPriorityFeePerGas
-                GasPriceEditMode.MEDIUM -> model.medium.maxPriorityFeePerGas
-                GasPriceEditMode.HIGH -> model.high.maxPriorityFeePerGas
-                GasPriceEditMode.CUSTOM -> max
+    private val _maxPriorityFeePerGas = MutableStateFlow(-1.0)
+    val maxPriorityFeePerGas =
+        combine(_maxPriorityFeePerGas, _suggestGasFee, _gasPriceEditMode) { max, suggest, mode ->
+            if (max != -1.0) {
+                max
+            } else {
+                when (mode) {
+                    GasPriceEditMode.LOW -> suggest.low.maxPriorityFeePerGas
+                    GasPriceEditMode.MEDIUM -> suggest.medium.maxPriorityFeePerGas
+                    GasPriceEditMode.HIGH -> suggest.high.maxPriorityFeePerGas
+                    GasPriceEditMode.CUSTOM -> max
+                }
             }
-        }
-    }.asStateIn(viewModelScope, -1.0)
+        }.asStateIn(viewModelScope, -1.0)
 
     fun setMaxPriorityFee(value: Double) {
-        _maxPriorityFee.value = value
+        _maxPriorityFeePerGas.value = value
     }
 
-    private val _maxFee = MutableStateFlow(-1.0)
-    val maxFee = combine(_maxFee, gasFeeModel, _gasPriceEditMode) { max, model, mode ->
-        if (max != -1.0) {
-            max
-        } else {
-            when (mode) {
-                GasPriceEditMode.LOW -> model.low.maxFeePerGas
-                GasPriceEditMode.MEDIUM -> model.medium.maxFeePerGas
-                GasPriceEditMode.HIGH -> model.high.maxFeePerGas
-                GasPriceEditMode.CUSTOM -> max
+    private val _maxFeePerGas = MutableStateFlow(-1.0)
+    val maxFeePerGas =
+        combine(_maxFeePerGas, _suggestGasFee, _gasPriceEditMode) { max, suggest, mode ->
+            if (max != -1.0) {
+                max
+            } else {
+                when (mode) {
+                    GasPriceEditMode.LOW -> suggest.low.maxFeePerGas
+                    GasPriceEditMode.MEDIUM -> suggest.medium.maxFeePerGas
+                    GasPriceEditMode.HIGH -> suggest.high.maxFeePerGas
+                    GasPriceEditMode.CUSTOM -> max
+                }
             }
-        }
-    }.asStateIn(viewModelScope, -1.0)
+        }.asStateIn(viewModelScope, -1.0)
 
     fun setMaxFee(value: Double) {
-        _maxFee.value = value
+        _maxFeePerGas.value = value
     }
 
-    val gasPrice by lazy {
-        rawGasPrice.map {
-            (it / BigDecimal.TEN).gwei.ether
-        }
-    }
-
-    val rawGasPrice by lazy {
-        combine(gasPriceEditMode, defaultGasFee) { mode, default ->
-            when (mode) {
-                GasPriceEditMode.LOW -> default.safeLow
-                GasPriceEditMode.MEDIUM -> default.average
-                GasPriceEditMode.HIGH -> default.fast
-                GasPriceEditMode.CUSTOM -> null
-            }?.toBigDecimal() ?: BigDecimal.ZERO
-        }
-    }
-
+    // gasTotal = (maxFeePerGas + maxPriorityFeePerGas) * GasLimit
     val gasTotal by lazy {
-        combine(gasPrice, gasLimit, gasFeeModel, maxPriorityFee) { price, limit, gasFeeModel, maxPriorityFee ->
-            if (gasFeeModel.baseFee != 0.0) {
-                (gasFeeModel.baseFee.toBigDecimal() + maxPriorityFee.toBigDecimal()).gwei.ether
-            } else {
-                price
-            } * limit.toBigDecimal()
-        }
+        combine(gasLimit, maxPriorityFeePerGas, maxFeePerGas) { limit, maxFee, maxPriorityFee ->
+            ((maxFee.toBigDecimal() + maxPriorityFee.toBigDecimal()).gwei.ether) * limit.toBigDecimal()
+        }.asStateIn(viewModelScope, BigDecimal.ZERO)
     }
 
-    val ethPrice by lazy {
-        walletRepository.currentWallet
-            .mapNotNull { it }
-            .map { it.tokens.firstOrNull { it.tokenData.address == "eth" } }
-            .mapNotNull { it?.tokenData?.price }
+    val gasUsdTotal by lazy {
+        combine(gasTotal, nativeToken) { total, token ->
+            token?.let { total * it.price }
+        }.filterNotNull().asStateIn(viewModelScope, BigDecimal.ZERO)
     }
 
-    @OptIn(ExperimentalTime::class)
-    val arrives = combine(rawGasPrice, defaultGasFee.mapNotNull { it }) { gas, response ->
-        with(response) {
-            if (safeLowWait != null && fastestWait != null && fastWait != null && avgWait != null && fast != null && fastest != null && safeLow != null && average != null) {
-                when {
-                    gas > fastest.toBigDecimal() -> fastestWait.humanizeMinutes()
-                    gas > fast.toBigDecimal() -> fastWait.humanizeMinutes()
-                    gas >= average.toBigDecimal() -> avgWait.humanizeMinutes()
-                    gas >= safeLow.toBigDecimal() -> safeLowWait.humanizeMinutes()
-                    else -> ""
-                }
-            } else {
-                ""
-            }
-        }
+    val gasFeeUnit by lazy {
+        nativeToken.mapNotNull {
+            it?.symbol
+        }.asStateIn(viewModelScope, "")
     }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val arrives = combine(maxFeePerGas, maxPriorityFeePerGas) { maxFee, maxPriorityFee ->
+        GasFeeData(maxFeePerGas = maxFee, maxPriorityFeePerGas = maxPriorityFee)
+    }.map { gasFee ->
+        getArrivesWithGasFee(gasFee = gasFee, suggestGasFee = _suggestGasFee.value).getOrNull()
+    }.mapNotNull {
+        it?.humanizeMinutes()
+    }.asStateIn(viewModelScope, "")
 }

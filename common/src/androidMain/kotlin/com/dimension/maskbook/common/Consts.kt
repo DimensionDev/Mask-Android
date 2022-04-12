@@ -20,4 +20,6 @@
  */
 package com.dimension.maskbook.common
 
-const val navHostAnimationDurationMillis = 320
+const val IoScopeName = "IoScope"
+
+const val LocalBackupAccount = ""

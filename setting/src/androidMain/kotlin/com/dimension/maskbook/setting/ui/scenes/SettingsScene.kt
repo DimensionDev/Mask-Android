@@ -21,6 +21,7 @@
 package com.dimension.maskbook.setting.ui.scenes
 
 import android.content.Context
+import android.net.Uri
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
@@ -34,7 +35,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Card
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
@@ -52,15 +52,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.dimension.maskbook.common.ext.encodeUrl
+import androidx.navigation.NavController
 import com.dimension.maskbook.common.ext.observeAsState
-import com.dimension.maskbook.common.ui.LocalRootNavController
+import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.ui.widget.IosSwitch
-import com.dimension.maskbook.common.ui.widget.MaskButton
-import com.dimension.maskbook.common.ui.widget.MaskIconCardButton
+import com.dimension.maskbook.common.ui.widget.MaskCard
 import com.dimension.maskbook.common.ui.widget.MaskListItem
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskTopAppBar
+import com.dimension.maskbook.common.ui.widget.button.MaskButton
+import com.dimension.maskbook.common.ui.widget.button.MaskIconCardButton
 import com.dimension.maskbook.common.viewmodel.BiometricEnableViewModel
 import com.dimension.maskbook.localization.R
 import com.dimension.maskbook.persona.export.PersonaServices
@@ -68,12 +69,14 @@ import com.dimension.maskbook.setting.export.model.Appearance
 import com.dimension.maskbook.setting.export.model.DataProvider
 import com.dimension.maskbook.setting.export.model.Language
 import com.dimension.maskbook.setting.repository.ISettingsRepository
+import com.dimension.maskbook.setting.route.SettingRoute
 import org.koin.androidx.compose.get
 import org.koin.androidx.compose.getViewModel
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun SettingsScene(
+    navController: NavController,
     onBack: () -> Unit,
 ) {
     val repository = get<ISettingsRepository>()
@@ -111,37 +114,47 @@ fun SettingsScene(
             )
             SettingsCard {
                 SettingsItem(
-                    targetRoute = "LanguageSettings",
                     title = stringResource(R.string.scene_setting_general_language),
                     icon = R.drawable.ic_settings_language,
                     trailingText = languageMap[language],
+                    onClick = {
+                        navController.navigate(SettingRoute.LanguageSettings)
+                    }
                 )
                 SettingsDivider()
                 SettingsItem(
-                    targetRoute = "AppearanceSettings",
                     title = stringResource(R.string.scene_setting_general_appearance),
                     icon = R.drawable.ic_settings_appearance,
                     trailingText = appearanceMap[appearance]?.let { it1 -> stringResource(it1) },
+                    onClick = {
+                        navController.navigate(SettingRoute.AppearanceSettings)
+                    }
                 )
                 SettingsDivider()
                 SettingsItem(
-                    targetRoute = "DataSourceSettings",
-                    title = "DataSource",
+                    title = stringResource(R.string.scene_setting_general_data_source),
                     icon = R.drawable.ic_settings_datasource,
                     trailingText = dataProviderMap[dataProvider],
+                    onClick = {
+                        navController.navigate(SettingRoute.DataSourceSettings)
+                    }
                 )
                 SettingsDivider()
                 if (paymentPassword.isEmpty()) {
                     SettingsItem(
-                        targetRoute = "PaymentPasswordSettings",
                         title = stringResource(R.string.scene_setting_general_setup_payment_password),
                         icon = R.drawable.ic_settings_change_payment_password,
+                        onClick = {
+                            navController.navigate(SettingRoute.PaymentPasswordSettings)
+                        }
                     )
                 } else {
                     SettingsItem(
-                        targetRoute = "PaymentPasswordSettings",
                         title = stringResource(R.string.scene_setting_general_change_payment_password),
                         icon = R.drawable.ic_settings_change_payment_password,
+                        onClick = {
+                            navController.navigate(SettingRoute.PaymentPasswordSettings)
+                        }
                     )
                 }
                 if (biometricEnableViewModel.isSupported(context)) {
@@ -159,7 +172,7 @@ fun SettingsScene(
                                 )
                             })
                         },
-                        onClicked = {
+                        onClick = {
                             enableBiometric(
                                 !biometricEnabled,
                                 context,
@@ -178,61 +191,90 @@ fun SettingsScene(
                 SettingsItem(
                     title = stringResource(R.string.scene_setting_backup_recovery_restore_data),
                     icon = R.drawable.ic_settings_restore_data,
-                    targetRoute = stringResource(R.string.scene_personas_action_recovery)
+                    onClick = {
+                        navController.navigate(Uri.parse(Deeplinks.Persona.Recovery))
+                    }
                 )
                 SettingsDivider()
                 SettingsItem(
                     title = stringResource(R.string.scene_setting_backup_recovery_back_up_data),
                     icon = R.drawable.ic_settings_backup_data,
-                    targetRoute = if (backupPassword.isEmpty() || paymentPassword.isEmpty()) "SetupPasswordDialog" else "BackupData"
+                    onClick = {
+                        val route = if (backupPassword.isEmpty() || paymentPassword.isEmpty()) {
+                            SettingRoute.SetupPasswordDialog
+                        } else {
+                            SettingRoute.BackupData.BackupSelection
+                        }
+                        navController.navigate(route)
+                    }
                 )
                 SettingsDivider()
                 if (backupPassword.isEmpty()) {
                     SettingsItem(
                         title = stringResource(R.string.scene_setting_backup_recovery_back_up_password),
                         icon = R.drawable.ic_settings_backup_password,
-                        targetRoute = "ChangeBackUpPassword",
-                        secondaryText = stringResource(R.string.scene_setting_backup_recovery_back_up_password_empty)
+                        secondaryText = stringResource(R.string.scene_setting_backup_recovery_back_up_password_empty),
+                        onClick = {
+                            navController.navigate(SettingRoute.ChangeBackUpPassword)
+                        }
                     )
                 } else {
                     SettingsItem(
                         title = stringResource(R.string.scene_setting_backup_recovery_change_backup_password),
                         icon = R.drawable.ic_settings_backup_password,
-                        targetRoute = "ChangeBackUpPassword"
+                        onClick = {
+                            navController.navigate(SettingRoute.ChangeBackUpPassword)
+                        }
                     )
                 }
                 SettingsDivider()
                 val email = persona?.email
-                if (email == null) {
+                if (email.isNullOrEmpty()) {
                     SettingsItem(
                         title = stringResource(R.string.scene_backup_backup_verify_field_email),
                         icon = R.drawable.ic_settings_email,
                         secondaryText = stringResource(R.string.scene_setting_profile_email_empty),
-                        targetRoute = "Settings_ChangeEmail_Setup"
+                        onClick = {
+                            navController.navigate(
+                                SettingRoute.Settings_ChangeEmail.Settings_ChangeEmail_Setup
+                            )
+                        }
                     )
                 } else {
                     SettingsItem(
                         title = stringResource(R.string.scene_backup_backup_verify_field_email),
                         icon = R.drawable.ic_settings_email,
                         secondaryText = email,
-                        targetRoute = "Settings_ChangeEmail_Change_Code/${email.encodeUrl()}"
+                        onClick = {
+                            navController.navigate(
+                                SettingRoute.Settings_ChangeEmail.Settings_ChangeEmail_Change_Code(email)
+                            )
+                        }
                     )
                 }
                 SettingsDivider()
                 val phone = persona?.phone
-                if (phone == null) {
+                if (phone.isNullOrEmpty()) {
                     SettingsItem(
                         title = stringResource(R.string.scene_setting_profile_phone_number),
                         icon = R.drawable.ic_settings_phone_number,
                         secondaryText = stringResource(R.string.scene_setting_profile_phone_number_empty),
-                        targetRoute = "Settings_ChangePhone_Setup"
+                        onClick = {
+                            navController.navigate(
+                                SettingRoute.Settings_ChangePhone.Settings_ChangePhone_Setup
+                            )
+                        }
                     )
                 } else {
                     SettingsItem(
                         title = stringResource(R.string.scene_setting_profile_phone_number),
                         icon = R.drawable.ic_settings_phone_number,
                         secondaryText = phone,
-                        targetRoute = "Settings_ChangePhone_Change_Code/${phone.encodeUrl()}"
+                        onClick = {
+                            navController.navigate(
+                                SettingRoute.Settings_ChangePhone.Settings_ChangePhone_Change_Code(phone)
+                            )
+                        }
                     )
                 }
             }
@@ -260,21 +302,15 @@ private fun enableBiometric(
 
 @Composable
 fun SettingsItem(
-    targetRoute: String? = null,
     title: String,
     @DrawableRes icon: Int,
+    onClick: () -> Unit,
     secondaryText: String? = null,
     trailing: @Composable (() -> Unit)? = null,
     trailingText: String? = null,
-    onClicked: (() -> Unit)? = null,
 ) {
-    val rootNavController = LocalRootNavController.current
     MaskButton(
-        onClick = {
-            if (targetRoute != null) {
-                rootNavController.navigate(targetRoute)
-            } else onClicked?.invoke()
-        }
+        onClick = onClick,
     ) {
         MaskListItem(
             text = {
@@ -324,7 +360,7 @@ fun SettingsItem(
 
 @Composable
 private fun SettingsCard(content: @Composable ColumnScope.() -> Unit) {
-    Card(
+    MaskCard(
         modifier = Modifier
             .padding(horizontal = SettingsSceneDefault.contentHorizontalPadding),
         shape = MaterialTheme.shapes.medium,

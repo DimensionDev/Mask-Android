@@ -20,6 +20,7 @@
  */
 package com.dimension.maskbook.common.routeProcessor
 
+import com.dimension.maskbook.common.routeProcessor.annotations.Route
 import com.google.devtools.ksp.KspExperimental
 import com.google.devtools.ksp.getAnnotationsByType
 import com.google.devtools.ksp.processing.CodeGenerator
@@ -32,6 +33,7 @@ import com.google.devtools.ksp.symbol.KSDeclaration
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
 import com.google.devtools.ksp.symbol.KSNode
 import com.google.devtools.ksp.symbol.KSPropertyDeclaration
+import com.google.devtools.ksp.symbol.Modifier
 import com.google.devtools.ksp.validate
 import com.google.devtools.ksp.visitor.KSEmptyVisitor
 import com.squareup.kotlinpoet.FileSpec
@@ -64,17 +66,14 @@ internal class RouteProcessor(
         @OptIn(KspExperimental::class)
         override fun defaultHandler(node: KSNode, data: List<KSClassDeclaration>) {
             if (node !is KSClassDeclaration) {
-                return
+                throw IllegalArgumentException("Expected KSClassDeclaration, got ${node::class.qualifiedName}")
             }
 
-            val annotation = node.getAnnotationsByType(Route::class).firstOrNull() ?: return
-
+            val annotation = node.getAnnotationsByType(Route::class).first()
             val schema = annotation.schema
             val packageName = annotation.packageName.takeIf { it.isNotEmpty() }
                 ?: node.packageName.asString()
-            val className = annotation.className.takeIf { it.isNotEmpty() }
-                ?: node.qualifiedName?.getShortName() ?: "<ERROR>"
-
+            val className = node.qualifiedName?.getShortName() ?: "<ERROR>"
             val route = generateRoute(declaration = node)
                 .takeIf {
                     it is NestedRouteDefinition
@@ -84,7 +83,7 @@ internal class RouteProcessor(
                         child = it as NestedRouteDefinition,
                         className = className,
                     )
-                } ?: return
+                } ?: throw IllegalArgumentException("Expected NestedRouteDefinition, got ${node::class.qualifiedName}")
 
             val dependencies = Dependencies(
                 true,
@@ -125,19 +124,33 @@ internal class RouteProcessor(
             val name = declaration.simpleName.getShortName()
             return when (declaration) {
                 is KSClassDeclaration -> {
-                    NestedRouteDefinition(
-                        name = name,
-                        parent = parent,
-                    ).also { nestedRouteDefinition ->
-                        nestedRouteDefinition.childRoute.addAll(
-                            declaration.declarations
-                                .filter { it.simpleName.getShortName() != "<init>" }
-                                .map { generateRoute(it, nestedRouteDefinition) }
-                        )
+                    if (declaration.declarations.any { it is KSFunctionDeclaration && it.simpleName.getShortName() == "invoke" }) {
+                        ParameterRouteDefinition(
+                            name,
+                            parent,
+                        ).also { definition ->
+                            definition.childRoute.addAll(
+                                declaration.declarations
+                                    .filter { it.simpleName.getShortName() != "<init>" }
+                                    .map { generateRoute(it, definition) }
+                            )
+                        }
+                    } else {
+                        NestedRouteDefinition(
+                            name = name,
+                            parent = parent,
+                        ).also { nestedRouteDefinition ->
+                            nestedRouteDefinition.childRoute.addAll(
+                                declaration.declarations
+                                    .filter { it.simpleName.getShortName() != "<init>" }
+                                    .map { generateRoute(it, nestedRouteDefinition) }
+                            )
+                        }
                     }
                 }
                 is KSPropertyDeclaration -> {
-                    ConstRouteDefinition(name, parent)
+                    val isConst = declaration.modifiers.contains(Modifier.CONST)
+                    ConstRouteDefinition(name, parent, isConst)
                 }
                 is KSFunctionDeclaration -> {
                     FunctionRouteDefinition(

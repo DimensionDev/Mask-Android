@@ -30,8 +30,9 @@ interface OpenSeaServices {
     suspend fun assets(
         @Query("owner") owner: String,
         @Query("order_direction") order_direction: String = "desc",
-        @Query("offset") offset: Int = 0,
+        @Query("cursor") cursor: String? = null,
         @Query("limit") limit: Int = 50,
+        @Query("collection_slug") collection_slug: String? = null,
         @Header("X-API-KEY") apiKey: String = ""
     ): OpenSeaAssetModel
 }

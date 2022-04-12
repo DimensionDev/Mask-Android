@@ -54,7 +54,10 @@ fun generateLocalization(appJson: File, target: File) {
             }
         }
         val xml =
-            """<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">""" + System.lineSeparator() +
+            """<resources xmlns:tools="http://schemas.android.com/tools"
+            |           xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2"
+            |           tools:ignore="MissingTranslation,ExtraTranslation">
+            """.trimMargin() + System.lineSeparator() +
                 result.map {
                     "    <string name=\"${it.key}\">${
                     it.value.escapeXml().replace(System.lineSeparator(), "\\n")

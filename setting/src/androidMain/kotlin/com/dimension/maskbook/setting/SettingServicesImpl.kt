@@ -23,9 +23,9 @@ package com.dimension.maskbook.setting
 import com.dimension.maskbook.setting.export.BackupServices
 import com.dimension.maskbook.setting.export.SettingServices
 import com.dimension.maskbook.setting.export.model.Appearance
+import com.dimension.maskbook.setting.export.model.BackupFileMeta
 import com.dimension.maskbook.setting.export.model.BackupMeta
-import com.dimension.maskbook.setting.export.model.NetworkType
-import com.dimension.maskbook.setting.export.model.TradeProvider
+import com.dimension.maskbook.setting.export.model.BackupMetaFile
 import com.dimension.maskbook.setting.repository.BackupRepository
 import com.dimension.maskbook.setting.repository.ISettingsRepository
 import kotlinx.coroutines.flow.Flow
@@ -46,18 +46,11 @@ class SettingServicesImpl(
     override val backupPassword: Flow<String>
         get() = settingsRepository.backupPassword
 
-    override val tradeProvider: Flow<Map<NetworkType, TradeProvider>>
-        get() = settingsRepository.tradeProvider
-
     override val shouldShowLegalScene: Flow<Boolean>
         get() = settingsRepository.shouldShowLegalScene
 
     override fun setBiometricEnabled(value: Boolean) {
         settingsRepository.setBiometricEnabled(value)
-    }
-
-    override fun setTradeProvider(networkType: NetworkType, tradeProvider: TradeProvider) {
-        settingsRepository.setTradeProvider(networkType, tradeProvider)
     }
 
     override fun setPaymentPassword(value: String) {
@@ -68,20 +61,20 @@ class SettingServicesImpl(
         settingsRepository.setShouldShowLegalScene(value)
     }
 
-    override suspend fun restoreBackupFromJson(value: String) {
-        settingsRepository.restoreBackupFromJson(value)
+    override suspend fun provideBackupMeta(file: BackupMetaFile): BackupMeta {
+        return settingsRepository.provideBackupMeta(file)
     }
 
-    override suspend fun provideBackupMetaFromJson(value: String): BackupMeta? {
-        return settingsRepository.provideBackupMetaFromJson(value)
+    override suspend fun restoreBackup(value: BackupMetaFile) {
+        settingsRepository.restoreBackup(value)
     }
 
-    override suspend fun downloadBackupWithPhone(phone: String, code: String): String {
-        return backupRepository.downloadBackupWithPhone(phone, code).toString()
+    override suspend fun downloadBackupWithPhone(phone: String, code: String): BackupFileMeta {
+        return backupRepository.downloadBackupWithPhone(phone, code)
     }
 
-    override suspend fun downloadBackupWithEmail(email: String, code: String): String {
-        return backupRepository.downloadBackupWithEmail(email, code).toString()
+    override suspend fun downloadBackupWithEmail(email: String, code: String): BackupFileMeta {
+        return backupRepository.downloadBackupWithEmail(email, code)
     }
 
     override suspend fun validatePhoneCode(phone: String, code: String) {
@@ -98,5 +91,13 @@ class SettingServicesImpl(
 
     override suspend fun sendEmailCode(email: String) {
         backupRepository.sendEmailCode(email)
+    }
+
+    override suspend fun decryptBackup(password: String, account: String, data: ByteArray): BackupMetaFile {
+        return backupRepository.decryptBackup(password, account, data)
+    }
+
+    override suspend fun encryptBackup(password: String, account: String, content: BackupMetaFile): ByteArray {
+        return backupRepository.encryptBackup(password, account, content)
     }
 }

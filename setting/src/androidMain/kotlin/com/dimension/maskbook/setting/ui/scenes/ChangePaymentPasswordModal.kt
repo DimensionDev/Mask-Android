@@ -22,15 +22,10 @@ package com.dimension.maskbook.setting.ui.scenes
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.with
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
@@ -42,11 +37,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.common.ext.observeAsState
-import com.dimension.maskbook.common.navHostAnimationDurationMillis
 import com.dimension.maskbook.common.ui.widget.MaskModal
 import com.dimension.maskbook.common.ui.widget.MaskPasswordInputField
-import com.dimension.maskbook.common.ui.widget.PrimaryButton
-import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
+import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.localization.R
 import com.dimension.maskbook.setting.viewmodel.PaymentPasswordSettingsViewModel
 import org.koin.androidx.compose.getViewModel
@@ -72,16 +65,6 @@ fun ChangePaymentPasswordModal(
     ) {
         AnimatedContent(
             targetState = isNext,
-            transitionSpec = {
-                slideInHorizontally(
-                    initialOffsetX = { it },
-                    animationSpec = tween(navHostAnimationDurationMillis)
-                ) with slideOutHorizontally(
-                    targetOffsetX = { -it },
-                    animationSpec = tween(navHostAnimationDurationMillis)
-                )
-            },
-            modifier = Modifier.padding(ScaffoldPadding),
         ) { next ->
             if (!next) {
                 CheckPaymentPassword(

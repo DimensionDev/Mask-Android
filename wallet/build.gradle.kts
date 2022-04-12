@@ -1,59 +1,43 @@
 plugins {
     kotlin("multiplatform")
     id("com.android.library")
+    id("org.jetbrains.compose").version(Versions.compose_jb)
     kotlin("plugin.serialization").version(Versions.Kotlin.lang)
     id("com.google.devtools.ksp").version(Versions.ksp)
-    id("org.jetbrains.compose").version(Versions.compose_jb)
 }
 
 kotlin {
     android()
     sourceSets {
+        val commonMain by getting {
+            dependencies {
+                implementation(projects.common.routeProcessor.annotations)
+                kspAndroid(projects.common.routeProcessor)
+            }
+        }
+        val commonTest by getting {
+            dependencies {
+            }
+        }
         val androidMain by getting {
             dependencies {
-                implementation("androidx.compose.runtime:runtime-livedata:1.0.5")
-                // implementation("com.google.android.material:material:1.6.0-alpha02")
-
-                implementation("androidx.navigation:navigation-ui-ktx:${Versions.navigation}")
-                implementation("androidx.navigation:navigation-compose:${Versions.navigation}")
-
-                // implementation("com.squareup.retrofit2:retrofit:2.9.0")
-                // implementation("com.squareup.retrofit2:converter-scalars:2.9.0")
-                // implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0")
-                // implementation("com.squareup.okhttp3:logging-interceptor:4.9.2")
-                // implementation("com.squareup.okhttp3:okhttp:4.9.2")
-                implementation("joda-time:joda-time:2.10.13")
-                implementation("io.github.dimensiondev:maskwalletcore:0.4.0")
-
-                implementation(projects.debankapi)
                 implementation(projects.common)
-                implementation(projects.common.retrofit)
-                implementation(projects.common.okhttp)
+                implementation(projects.debankapi)
 
-                api("androidx.room:room-runtime:${Versions.room}")
-                api("androidx.room:room-ktx:${Versions.room}")
-                project.dependencies.add("kspAndroid", "androidx.room:room-compiler:${Versions.room}")
-                implementation("androidx.room:room-paging:${Versions.room}")
+                kspAndroid("androidx.room:room-compiler:${Versions.Androidx.room}")
 
-                implementation("androidx.paging:paging-runtime-ktx:3.1.0")
-                implementation("androidx.paging:paging-compose:1.0.0-alpha14")
+                implementation("androidx.room:room-paging:${Versions.Androidx.room}")
+                implementation("androidx.paging:paging-runtime-ktx:${Versions.Androidx.paging}")
+                implementation("androidx.paging:paging-compose:${Versions.Androidx.pagingCompose}")
 
-                implementation("com.journeyapps:zxing-android-embedded:4.3.0")
-
-                implementation("androidx.core:core-ktx:1.7.0")
-                implementation("androidx.appcompat:appcompat:1.4.1")
-                implementation("com.google.android.material:material:1.5.0")
-
-                implementation("com.github.WalletConnect:kotlin-walletconnect-lib:0.9.7")
-                implementation("com.squareup.moshi:moshi:1.8.0")
-                implementation("com.github.komputing.khex:extensions:1.1.2")
+                implementation("io.github.dimensiondev:maskwalletcore:${Versions.maskWalletCore}")
+                implementation("com.github.WalletConnect:kotlin-walletconnect-lib:${Versions.walletConnectV1}")
+                implementation("com.squareup.moshi:moshi:${Versions.moshi}")
+                implementation("com.github.komputing.khex:extensions:${Versions.khexExtension}")
             }
         }
         val androidTest by getting {
             dependencies {
-                implementation("junit:junit:4.13.2")
-                implementation("androidx.test.ext:junit:1.1.3")
-                implementation("androidx.test.espresso:espresso-core:3.4.0")
             }
         }
     }
@@ -61,4 +45,60 @@ kotlin {
 
 android {
     setupLibrary()
+}
+
+fun findAndroidManifest(file: File): File? {
+    if (file.name == "AndroidManifest.xml") {
+        return file
+    }
+    if (file.isDirectory) {
+        val list = file.listFiles()
+        if (list.isNullOrEmpty()) return null
+        for (child in list) {
+            val result = findAndroidManifest(child)
+            if (result != null) {
+                return result
+            }
+        }
+    }
+    return null
+}
+val addQueriesForWalletConnect by tasks.registering {
+    doLast {
+        val generatedDir = File(project.buildDir, "intermediates/merged_manifest/")
+        val json = File(project.projectDir, "src/androidMain/assets/wallet_connect.json").readText(Charsets.UTF_8)
+        val jsonObj = org.json.JSONObject(json)
+        val packages = mutableListOf<String>()
+        jsonObj.keys().let {
+            while (it.hasNext()) {
+                val obj = jsonObj.get(it.next())
+                if (obj is org.json.JSONObject) {
+                    obj.getJSONObject("app").getString("android")?.let { url ->
+                        url.split("?").last().split("&").forEach { query ->
+                            if (query.startsWith("id=")) {
+                                packages.add(query.substring(3))
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (generatedDir.exists()) {
+            generatedDir.listFiles()?.forEach {
+                findAndroidManifest(it)?.let { file ->
+                    val manifest = groovy.xml.XmlParser().parse(file)
+                    val queries = (manifest["queries"] as groovy.util.NodeList)[0] as groovy.util.Node
+                    packages.forEach {
+                        queries.appendNode("package", mapOf("android:name" to it, "xmlns:android" to "http://schemas.android.com/apk/res/android"))
+                    }
+                    file.writeText(groovy.xml.XmlUtil.serialize(manifest))
+                }
+            }
+        }
+    }
+}
+
+afterEvaluate {
+    tasks.getByName("processDebugManifest").finalizedBy(addQueriesForWalletConnect)
+    tasks.getByName("processReleaseManifest").finalizedBy(addQueriesForWalletConnect)
 }

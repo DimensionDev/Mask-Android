@@ -27,7 +27,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.UUID
 
 data class SearchAddressData(
@@ -58,7 +58,7 @@ data class SearchAddressData(
 
 interface IWalletContactRepository {
     val contacts: Flow<List<SearchAddressData>>
-    fun addOrUpdate(address: String, name: String)
+    suspend fun addOrUpdate(address: String, name: String)
 }
 
 class WalletContactRepository(
@@ -68,8 +68,8 @@ class WalletContactRepository(
     override val contacts: Flow<List<SearchAddressData>>
         get() = database.walletContactDao().getAll().map { it.map { SearchAddressData.fromDb(it) } }
 
-    override fun addOrUpdate(address: String, name: String) {
-        scope.launch {
+    override suspend fun addOrUpdate(address: String, name: String) {
+        withContext(scope.coroutineContext) {
             val item = database.walletContactDao().getByAddress(address = address)?.copy(name = name)
                 ?: DbWalletContact(UUID.randomUUID().toString(), name, address)
             database.walletContactDao().add(listOf(item))

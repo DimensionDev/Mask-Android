@@ -26,7 +26,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Card
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -43,7 +42,7 @@ import com.dimension.maskbook.setting.export.model.BackupMeta
 fun BackMetaDisplay(
     meta: BackupMeta,
 ) {
-    Card(
+    MaskCard(
         modifier = Modifier.fillMaxWidth(),
         elevation = 0.dp,
     ) {

@@ -39,18 +39,43 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.viewinterop.AndroidView
-import com.dimension.maskbook.common.ui.widget.MaskBackButton
+import com.dimension.maskbook.common.ext.observeAsState
+import com.dimension.maskbook.common.route.navigationComposeAnimComposable
+import com.dimension.maskbook.common.route.navigationComposeAnimComposablePackage
+import com.dimension.maskbook.common.routeProcessor.annotations.Back
+import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
+import com.dimension.maskbook.common.ui.widget.MaskScene
 import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
+import com.dimension.maskbook.common.ui.widget.button.MaskBackButton
+import com.dimension.maskbook.labs.BuildConfig
 import com.dimension.maskbook.labs.R
 import com.dimension.maskbook.labs.export.model.TransakConfig
+import com.dimension.maskbook.labs.route.LabsRoute
+import com.dimension.maskbook.wallet.export.WalletServices
+import org.koin.androidx.compose.get
 
+@NavGraphDestination(
+    route = LabsRoute.LabsTransak,
+    packageName = navigationComposeAnimComposablePackage,
+    functionName = navigationComposeAnimComposable,
+)
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
 fun LabsTransakScene(
-    onBack: () -> Unit,
-    transakConfig: TransakConfig
+    @Back onBack: () -> Unit,
 ) {
+    val repo = get<WalletServices>()
+    val currentWallet by repo.currentWallet.observeAsState(null)
+    val transakConfig = remember(currentWallet) {
+        TransakConfig(
+            isStaging = BuildConfig.DEBUG,
+            walletAddress = currentWallet?.address ?: "",
+            defaultCryptoCurrency = currentWallet?.tokens?.firstOrNull()?.tokenData?.symbol
+                ?: "ETH",
+        )
+    }
+
     val context = LocalContext.current
     var loading by remember { mutableStateOf(true) }
     val webView = remember {
@@ -72,31 +97,33 @@ fun LabsTransakScene(
     LaunchedEffect(transakConfig.url) {
         webView.loadUrl(transakConfig.url)
     }
-    MaskScaffold(
-        topBar = {
-            MaskSingleLineTopAppBar(
-                title = {
-                    Text(stringResource(id = R.string.scene_app_plugins_transaction))
-                },
-                navigationIcon = {
-                    MaskBackButton {
-                        onBack.invoke()
+    MaskScene {
+        MaskScaffold(
+            topBar = {
+                MaskSingleLineTopAppBar(
+                    title = {
+                        Text(stringResource(id = R.string.scene_app_plugins_transaction))
+                    },
+                    navigationIcon = {
+                        MaskBackButton {
+                            onBack.invoke()
+                        }
                     }
-                }
-            )
-        }
-    ) {
-        Box {
-            AndroidView(
-                modifier = Modifier.fillMaxSize(),
-                factory = {
-                    webView
-                }
-            )
-            if (loading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center)
                 )
+            }
+        ) {
+            Box {
+                AndroidView(
+                    modifier = Modifier.fillMaxSize(),
+                    factory = {
+                        webView
+                    }
+                )
+                if (loading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center)
+                    )
+                }
             }
         }
     }

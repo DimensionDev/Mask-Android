@@ -218,6 +218,12 @@ data class TokenDict(
 
     val symbol: String? = null,
 
+    @SerialName("contract_id")
+    val contractId: String? = null,
+
+    @SerialName("inner_id")
+    val innerId: String? = null,
+
     @SerialName("time_at")
     val timeAt: Double? = null
 )

@@ -20,7 +20,7 @@
  */
 package com.dimension.maskbook.wallet.export.model
 
-import java.math.BigDecimal
+import com.dimension.maskbook.common.bigDecimal.BigDecimal
 
 class TokenData(
     val address: String,
@@ -33,9 +33,7 @@ class TokenData(
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as TokenData
+        if (other !is TokenData) return false
 
         if (address != other.address) return false
         if (chainType != other.chainType) return false

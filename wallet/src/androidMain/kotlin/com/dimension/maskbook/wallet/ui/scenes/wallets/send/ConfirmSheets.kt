@@ -21,13 +21,13 @@
 package com.dimension.maskbook.wallet.ui.scenes.wallets.send
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -42,20 +42,23 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import com.dimension.maskbook.common.ui.widget.MaskModal
-import com.dimension.maskbook.common.ui.widget.PrimaryButton
-import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
-import com.dimension.maskbook.common.ui.widget.SecondaryButton
+import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
+import com.dimension.maskbook.common.ui.widget.button.SecondaryButton
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.export.model.TokenData
+import com.dimension.maskbook.wallet.export.model.TradableData
+import com.dimension.maskbook.wallet.export.model.WalletCollectibleData
+import com.dimension.maskbook.wallet.export.model.WalletTokenData
 import com.dimension.maskbook.wallet.repository.SearchAddressData
 
 @Composable
 fun ApproveConfirmSheet(
     addressData: SearchAddressData,
-    tokenData: TokenData,
+    tokenData: TradableData,
     sendPrice: String,
     gasFee: String,
     total: String,
+    sending: Boolean,
     onConfirm: () -> Unit,
     onCancel: () -> Unit,
     onEditGasFee: () -> Unit,
@@ -63,10 +66,12 @@ fun ApproveConfirmSheet(
     ConfirmSheet(
         title = stringResource(R.string.scene_wallet_balance_transaction_approve),
         addressData = addressData,
-        tokenData = tokenData,
+        tradableData = tokenData,
         sendPrice = sendPrice,
         gasFee = gasFee,
         total = total,
+        sending = sending,
+        confirmEnabled = true,
         onConfirm = onConfirm,
         onCancel = onCancel,
         onEditGasFee = onEditGasFee
@@ -75,11 +80,13 @@ fun ApproveConfirmSheet(
 
 @Composable
 fun SendConfirmSheet(
-    addressData: SearchAddressData,
-    tokenData: TokenData,
+    addressData: SearchAddressData?,
+    tokenData: TradableData?,
     sendPrice: String,
     gasFee: String,
     total: String,
+    sending: Boolean,
+    confirmEnabled: Boolean = true,
     onConfirm: () -> Unit,
     onCancel: () -> Unit,
     onEditGasFee: () -> Unit,
@@ -87,10 +94,12 @@ fun SendConfirmSheet(
     ConfirmSheet(
         title = stringResource(R.string.scene_wallet_balance_btn_Send),
         addressData = addressData,
-        tokenData = tokenData,
+        tradableData = tokenData,
         sendPrice = sendPrice,
         gasFee = gasFee,
         total = total,
+        sending = sending,
+        confirmEnabled = confirmEnabled,
         onConfirm = onConfirm,
         onCancel = onCancel,
         onEditGasFee = onEditGasFee
@@ -100,28 +109,27 @@ fun SendConfirmSheet(
 @Composable
 fun SignatureRequestSignSheet(
     addressData: SearchAddressData,
-    tokenData: TokenData,
+    tradableData: TradableData,
     sendPrice: String,
+    sending: Boolean,
     message: String,
     onSign: () -> Unit,
     onCancel: () -> Unit,
 ) {
-    MaskModal {
+    MaskModal(
+        title = {
+            Text(
+                text = "Signature request",
+            )
+        }
+    ) {
         Column(
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
-                .padding(ScaffoldPadding),
         ) {
-            Spacer(modifier = Modifier.height(20.dp))
-            Text(
-                text = "Signature request",
-                style = MaterialTheme.typography.h6,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-            Spacer(modifier = Modifier.height(20.dp))
             AddressAndTokenContent(
                 addressData = addressData,
-                tokenData = tokenData,
+                tradableData = tradableData,
                 sendPrice = sendPrice
             )
             Spacer(modifier = Modifier.height(20.dp))
@@ -130,7 +138,7 @@ fun SignatureRequestSignSheet(
                 Text(text = message, modifier = Modifier.weight(1f))
             }
             Spacer(modifier = Modifier.height(20.dp))
-            ButtonContent(onCancel = onCancel, onConfirm = onSign, confirmText = "Sign")
+            ButtonContent(onCancel = onCancel, onConfirm = onSign, confirmText = "Sign", sending = sending)
         }
     }
 }
@@ -138,31 +146,31 @@ fun SignatureRequestSignSheet(
 @Composable
 private fun ConfirmSheet(
     title: String,
-    addressData: SearchAddressData,
-    tokenData: TokenData,
+    addressData: SearchAddressData?,
+    tradableData: TradableData?,
     sendPrice: String,
     gasFee: String,
     total: String,
+    sending: Boolean,
+    confirmEnabled: Boolean,
     onConfirm: () -> Unit,
     onCancel: () -> Unit,
     onEditGasFee: () -> Unit,
 ) {
-    MaskModal {
+    MaskModal(
+        title = {
+            Text(
+                text = title,
+            )
+        }
+    ) {
         Column(
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
-                .padding(ScaffoldPadding),
         ) {
-            Spacer(modifier = Modifier.height(20.dp))
-            Text(
-                text = title,
-                style = MaterialTheme.typography.h6,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-            Spacer(modifier = Modifier.height(20.dp))
             AddressAndTokenContent(
                 addressData = addressData,
-                tokenData = tokenData,
+                tradableData = tradableData,
                 sendPrice = sendPrice
             )
             Spacer(modifier = Modifier.height(20.dp))
@@ -172,28 +180,42 @@ private fun ConfirmSheet(
                 total = total
             )
             Spacer(modifier = Modifier.height(20.dp))
-            ButtonContent(onCancel = onCancel, onConfirm = onConfirm)
+            ButtonContent(
+                onCancel = onCancel,
+                onConfirm = onConfirm,
+                confirmEnabled = confirmEnabled,
+                sending = sending,
+            )
         }
     }
 }
 
 @Composable
 private fun ColumnScope.AddressAndTokenContent(
-    addressData: SearchAddressData,
-    tokenData: TokenData,
+    addressData: SearchAddressData?,
+    tradableData: TradableData?,
     sendPrice: String
 ) {
     Text(
-        text = addressData.name ?: addressData.ens ?: "",
+        text = addressData?.name ?: addressData?.ens ?: "",
         style = MaterialTheme.typography.subtitle1,
         modifier = Modifier.align(Alignment.CenterHorizontally)
     )
     Spacer(modifier = Modifier.height(8.dp))
     Text(
-        text = addressData.address,
+        text = addressData?.address.orEmpty(),
         modifier = Modifier.align(Alignment.CenterHorizontally)
     )
     Spacer(modifier = Modifier.height(20.dp))
+    when (tradableData) {
+        is WalletTokenData -> TokenContent(tokenData = tradableData.tokenData, sendPrice = sendPrice)
+        is WalletCollectibleData -> CollectibleContent(collectibleData = tradableData)
+        else -> Unit
+    }
+}
+
+@Composable
+private fun TokenContent(tokenData: TokenData, sendPrice: String) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
@@ -206,6 +228,30 @@ private fun ColumnScope.AddressAndTokenContent(
         Spacer(modifier = Modifier.width(8.dp))
         Text(text = tokenData.symbol, modifier = Modifier.weight(1f))
         Text(text = sendPrice)
+    }
+}
+
+@Composable
+private fun CollectibleContent(
+    collectibleData: WalletCollectibleData
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Image(
+            painter = rememberImagePainter(collectibleData.icon),
+            contentDescription = null,
+            modifier = Modifier.size(38.dp)
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(text = collectibleData.name)
+            Text(text = collectibleData.collection.name)
+        }
     }
 }
 
@@ -237,8 +283,10 @@ private fun ColumnScope.GasFeeAndTotalContent(
 
 @Composable
 private fun ColumnScope.ButtonContent(
+    sending: Boolean,
     onCancel: () -> Unit,
     onConfirm: () -> Unit,
+    confirmEnabled: Boolean = true,
     confirmText: String = stringResource(R.string.common_controls_confirm)
 ) {
     Row(
@@ -255,8 +303,9 @@ private fun ColumnScope.ButtonContent(
         PrimaryButton(
             modifier = Modifier.weight(1f),
             onClick = onConfirm,
+            enabled = !sending && confirmEnabled,
         ) {
-            Text(text = confirmText)
+            Text(text = if (sending) stringResource(R.string.common_controls_sending) else confirmText)
         }
     }
 }
