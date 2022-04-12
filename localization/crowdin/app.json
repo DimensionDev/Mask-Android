@@ -408,6 +408,7 @@
         	    "Label_Password":"Password",
                 "btn_withoutPassword":"Hold to Send",
                 "amount_error":"Insufficient amount.",
+                "not_enough_gas": "Insufficient gas balance",
                 "password_error":"Incorrect payment password."
         	},
         	"addContact":{

@@ -104,6 +104,17 @@ class TransferDetailViewModel(
         }.asStateIn(viewModelScope, BigDecimal.ZERO)
     }
 
+    val isEnoughForGas by lazy {
+        combine(
+            nativeToken,
+            _gasTotal
+        ) { native, gasTotal ->
+            native?.let {
+                gasTotal <= it.count
+            } ?: false
+        }.asStateIn(viewModelScope, false)
+    }
+
     private val _toAddress = MutableStateFlow("")
 
     fun setAddress(address: String) {
@@ -165,11 +176,12 @@ class TransferDetailViewModel(
             _amount.map { it.toBigDecimal() },
             selectedTradable.mapNotNull { it },
             maxAmount,
-        ) { valid, amount, selectedData, maxAmount ->
+            isEnoughForGas,
+        ) { valid, amount, selectedData, maxAmount, enoughGas ->
             valid && when (selectedData) {
                 is WalletCollectibleData -> true
                 is WalletTokenData -> amount <= maxAmount
-            }
+            } && enoughGas
         }.asStateIn(viewModelScope, false)
     }
 
