@@ -80,6 +80,25 @@ class RouteBuilder(
         )
     }
 
+    fun navigation(
+        route: String,
+        initialRoute: String,
+        builder: RouteBuilder.() -> Unit
+    ) {
+        val graph = RouteBuilder(initialRoute).apply(builder).build()
+        val targetRoute = requireNotNull(graph.routes.find { it.route == initialRoute }) {
+            "not find initialRoute:$initialRoute in navigation"
+        }
+        require(targetRoute is ComposeRoute) {
+            "navigation initialRoute:${initialRoute} is not ComposeRoute"
+        }
+        this.route += NavigationRoute(
+            route = route,
+            graph = graph,
+            initialRoute = targetRoute,
+        )
+    }
+
     fun addRoute(route: Route) {
         this.route += route
     }

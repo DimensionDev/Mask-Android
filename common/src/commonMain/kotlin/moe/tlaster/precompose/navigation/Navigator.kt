@@ -60,8 +60,8 @@ class NavController {
     val sheetContent: (@Composable ColumnScope.() -> Unit)?
         get() = stackManager?.sheetContent
 
-    fun getBackStackEntry(route: String): BackStackEntry? {
-        return stackManager?.getBackStackEntry(route)
+    fun getRouteStack(route: String): RouteStack? {
+        return stackManager?.getRouteStack(route)
     }
 
     /**

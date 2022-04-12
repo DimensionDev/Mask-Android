@@ -49,22 +49,28 @@ internal class RouteStackManager(
 ) : LifecycleObserver, BackHandler {
     // FIXME: 2021/4/1 Temp workaround for deeplink
     private var pendingNavigation: String? = null
+
     private val _suspendResult = linkedMapOf<BackStackEntry, Continuation<Any?>>()
+
+    private var stackEntryId = Long.MIN_VALUE
+    private var routeStackId = Long.MIN_VALUE
+
     var backDispatcher: BackDispatcher? = null
         set(value) {
             field?.unregister(this)
             field = value
             value?.register(this)
         }
-    private var stackEntryId = Long.MIN_VALUE
-    private var routeStackId = Long.MIN_VALUE
+
     var lifeCycleOwner: LifecycleOwner? = null
         set(value) {
             field?.lifecycle?.removeObserver(this)
             field = value
             value?.lifecycle?.addObserver(this)
         }
+
     private var viewModel: NavControllerViewModel? = null
+
     private val _backStacks = mutableStateListOf<RouteStack>()
 
     internal val backStacks: List<RouteStack>
@@ -97,35 +103,11 @@ internal class RouteStackManager(
                 goBack()
             }
         )
-
     }
 
-    private val routeParser: RouteParser by lazy {
-        RouteParser().apply {
-            routeGraph.routes.asSequence()
-                .map { route ->
-                    RouteParser.expandOptionalVariables(route.route).let {
-                        if (route is SceneRoute) {
-                            it + route.deepLinks.flatMap {
-                                RouteParser.expandOptionalVariables(it)
-                            }
-                        } else {
-                            it
-                        }
-                    } to route
-                }
-                .flatMap { it.first.map { route -> route to it.second } }
-                .forEach { insert(it.first, it.second) }
-        }
-    }
-
-    private fun findRoute(route: String): RouteMatchResult? {
-        val routePath = route.substringBefore('?')
-        return routeParser.find(path = routePath)
-    }
-
-    internal fun getBackStackEntry(route: String): BackStackEntry? {
-        return _backStacks.find { it.hasRoute(route) }?.currentEntry
+    internal fun getRouteStack(route: String): RouteStack? {
+        val matchResult = routeGraph.findRoute(route) ?: return null
+        return _backStacks.find { it.hasRoute(matchResult.route.route) }
     }
 
     internal fun setViewModelStore(viewModelStore: ViewModelStore) {
@@ -141,15 +123,19 @@ internal class RouteStackManager(
         }
         isPop.value = false
 
-        val matchResult = findRoute(route)
-        checkNotNull(matchResult) { "RouteStackManager: navigate target $route not found" }
-        require(matchResult.route is ComposeRoute) { "RouteStackManager: navigate target $route is not ComposeRoute" }
+        val matchResult = routeGraph.findRoute(route)
+        checkNotNull(matchResult) {
+            "RouteStackManager: navigate target $route not found"
+        }
+        require(matchResult.route is ComposeRoute) {
+            "RouteStackManager: navigate target $route is not ComposeRoute"
+        }
 
         val query = route.substringAfter('?', "")
-        fun newEntry(): BackStackEntry {
+        fun newEntry(route: ComposeRoute): BackStackEntry {
             return BackStackEntry(
                 id = stackEntryId++,
-                route = matchResult.route,
+                route = route,
                 pathMap = matchResult.pathMap,
                 queryString = query.takeIf { it.isNotEmpty() }?.let {
                     QueryString(it)
@@ -158,11 +144,17 @@ internal class RouteStackManager(
             )
         }
 
-        fun newTask(entry: BackStackEntry, navTransition: NavTransition? = null): RouteStack {
+        fun newStack(
+            entry: BackStackEntry,
+            navTransition: NavTransition? = null,
+            stackRoute: String? = null,
+        ): RouteStack {
             return RouteStack(
                 id = routeStackId++,
                 topEntry = entry,
                 navTransition = navTransition,
+                stackRoute = stackRoute,
+                viewModel = vm,
             )
         }
 
@@ -177,16 +169,46 @@ internal class RouteStackManager(
         }
 
         if (!launchSingleTopSuccess) {
-            val entry = newEntry()
-            when (matchResult.route) {
+            when (val matchRoute = matchResult.route) {
                 is SceneRoute -> {
-                    _backStacks.add(
-                        newTask(entry, matchResult.route.navTransition)
-                    )
+                    val entry = newEntry(matchRoute)
+                    val stack = newStack(entry, matchRoute.navTransition)
+                    _backStacks.add(stack)
                 }
                 is DialogRoute,
                 is BottomSheetRoute -> {
+                    val entry = newEntry(matchRoute)
                     currentStack?.entries?.add(entry)
+                }
+                is NavigationRoute -> {
+                    val currentStack = currentStack
+
+                    val stack = if (currentStack?.stackRoute == matchRoute.route) {
+                        currentStack
+                    } else {
+                        val initialEntry = newEntry(matchRoute.initialRoute)
+                        val stack = newStack(
+                            initialEntry,
+                            navTransition = matchRoute.initialRoute.navTransition,
+                            stackRoute = matchRoute.route,
+                        )
+                        _backStacks.add(stack)
+                        stack
+                    }
+
+                    if (route != matchRoute.route) {
+                        val childMatchResult = matchRoute.graph.findRoute(route)
+                        requireNotNull(childMatchResult) {
+                            "RouteStackManager: child navigate target $route not found"
+                        }
+                        require(childMatchResult.route is ComposeRoute) {
+                            "RouteStackManager: child navigate target $route is not ComposeRoute"
+                        }
+
+                        if (childMatchResult.route != matchRoute.initialRoute) {
+                            stack.entries.add(newEntry(childMatchResult.route))
+                        }
+                    }
                 }
             }
         }
@@ -215,7 +237,7 @@ internal class RouteStackManager(
         isPop.value = true
 
         if (!route.isNullOrEmpty()) {
-            val matchResult = findRoute(route)
+            val matchResult = routeGraph.findRoute(route)
             if (matchResult != null) {
                 val index = _backStacks.indexOfLast { it.hasRoute(matchResult.route.route) }
                 if (index != -1) {

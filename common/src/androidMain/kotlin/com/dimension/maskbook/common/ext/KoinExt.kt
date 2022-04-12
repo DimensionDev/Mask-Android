@@ -48,8 +48,8 @@ inline fun <reified T : ViewModel> NavController.getNestedNavigationViewModel(
     noinline parameters: ParametersDefinition? = null,
 ): T {
     return remember(route, qualifier, scope, parameters) {
-        val backStackEntry = getBackStackEntry(route)
-            ?: throw RuntimeException("not find backStackEntry with route: $route")
-        backStackEntry.getViewModel(qualifier, scope, parameters)
+        val routeStack = getRouteStack(route)
+            ?: throw RuntimeException("not find routeStack with route: $route")
+        routeStack.getViewModel(qualifier, scope, parameters)
     }
 }

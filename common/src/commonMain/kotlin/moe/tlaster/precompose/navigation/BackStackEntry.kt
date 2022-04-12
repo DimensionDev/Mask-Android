@@ -61,7 +61,7 @@ class BackStackEntry internal constructor(
             destroyAfterTransition = true
         } else {
             lifecycleRegistry.currentState = Lifecycle.State.Destroyed
-            viewModelStore.clear()
+            viewModel.clear(id)
         }
     }
 

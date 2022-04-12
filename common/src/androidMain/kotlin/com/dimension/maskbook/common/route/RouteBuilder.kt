@@ -90,7 +90,11 @@ fun RouteBuilder.dialog(
 fun RouteBuilder.navigation(
     route: String,
     startDestination: String,
-    content: RouteBuilder.() -> Unit
+    builder: RouteBuilder.() -> Unit
 ) {
-    // TODO
+    navigation(
+        route = route,
+        initialRoute = startDestination,
+        builder = builder,
+    )
 }

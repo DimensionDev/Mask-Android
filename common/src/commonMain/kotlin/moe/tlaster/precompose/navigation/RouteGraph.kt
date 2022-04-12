@@ -23,4 +23,35 @@ package moe.tlaster.precompose.navigation
 internal data class RouteGraph(
     val initialRoute: String,
     val routes: List<Route>,
-)
+) {
+    private val routeParser: RouteParser by lazy {
+        fun matchRoute(route: Route): List<String> {
+            val matches = RouteParser.expandOptionalVariables(route.route)
+            if (route !is ComposeRoute) return matches
+
+            return if (route is NavigationRoute) {
+                matches + route.graph.routes.flatMapTo(mutableListOf()) { childRoute ->
+                    matchRoute(childRoute)
+                }
+            } else if (route.deepLinks.isNotEmpty()) {
+                matches + route.deepLinks.flatMap {
+                    RouteParser.expandOptionalVariables(it)
+                }
+            } else {
+                matches
+            }
+        }
+
+        RouteParser().apply {
+            routes.asSequence()
+                .map { route -> matchRoute(route) to route }
+                .flatMap { it.first.map { route -> route to it.second } }
+                .forEach { insert(it.first, it.second) }
+        }
+    }
+
+    fun findRoute(route: String): RouteMatchResult? {
+        val routePath = route.substringBefore('?')
+        return routeParser.find(path = routePath)
+    }
+}

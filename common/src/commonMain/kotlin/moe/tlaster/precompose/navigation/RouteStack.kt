@@ -23,6 +23,11 @@ package moe.tlaster.precompose.navigation
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import moe.tlaster.precompose.lifecycle.Lifecycle
+import moe.tlaster.precompose.lifecycle.LifecycleOwner
+import moe.tlaster.precompose.lifecycle.LifecycleRegistry
+import moe.tlaster.precompose.viewmodel.ViewModelStore
+import moe.tlaster.precompose.viewmodel.ViewModelStoreOwner
 
 @Stable
 class RouteStack internal constructor(
@@ -30,8 +35,21 @@ class RouteStack internal constructor(
     val topEntry: BackStackEntry,
     val entries: SnapshotStateList<BackStackEntry> = mutableStateListOf(),
     val navTransition: NavTransition? = null,
-) {
+    internal val stackRoute: String? = null,
+    internal val viewModel: NavControllerViewModel,
+) : ViewModelStoreOwner, LifecycleOwner {
+
     private var destroyAfterTransition = false
+
+    override val viewModelStore: ViewModelStore
+        get() = viewModel.get(id = id)
+
+    private val lifecycleRegistry: LifecycleRegistry by lazy {
+        LifecycleRegistry()
+    }
+
+    override val lifecycle: Lifecycle
+        get() = lifecycleRegistry
 
     val currentEntry: BackStackEntry
         get() = entries.lastOrNull() ?: topEntry
@@ -52,10 +70,12 @@ class RouteStack internal constructor(
     }
 
     fun onActive() {
+        lifecycleRegistry.currentState = Lifecycle.State.Active
         currentEntry.active()
     }
 
     fun onInActive() {
+        lifecycleRegistry.currentState = Lifecycle.State.InActive
         currentEntry.inActive()
         if (destroyAfterTransition) {
             onDestroyed()
@@ -67,12 +87,14 @@ class RouteStack internal constructor(
     }
 
     fun onDestroyed() {
-        topEntry.destroy()
+        lifecycleRegistry.currentState = Lifecycle.State.Destroyed
         entries.forEach { it.destroy() }
         entries.clear()
+        viewModel.clear(id)
     }
 
     fun hasRoute(route: String): Boolean {
         return topEntry.route.route == route || entries.any { it.route.route == route }
+            || stackRoute == route
     }
 }
