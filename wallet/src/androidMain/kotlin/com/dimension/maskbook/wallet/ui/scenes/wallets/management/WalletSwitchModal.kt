@@ -54,6 +54,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -72,6 +73,7 @@ import com.dimension.maskbook.common.ui.widget.NameImage
 import com.dimension.maskbook.common.ui.widget.button.MaskButton
 import com.dimension.maskbook.common.ui.widget.button.MaskIconButton
 import com.dimension.maskbook.common.ui.widget.button.MaskTextButton
+import com.dimension.maskbook.common.ui.widget.color
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.export.model.WalletData
@@ -104,7 +106,11 @@ fun WalletSwitchSceneModal(
         MaskScaffold(
             modifier = Modifier.fillMaxHeight(0.8f),
             topBar = {
-                Column {
+                Column(
+                    modifier = Modifier
+                        .shadow(4.dp)
+                        .background(color = MaterialTheme.colors.background),
+                ) {
                     MaskSingleLineTopAppBar(
                         title = {
                             Text(text = stringResource(R.string.scene_wallet_list_title))
@@ -135,19 +141,26 @@ fun WalletSwitchSceneModal(
             bottomBar = {
                 WalletSwitchBottomBar(
                     onClick = onAddWalletClicked,
+                    enabled = !editMode,
                 )
             }
         ) { innerPadding ->
             LazyColumn(
                 modifier = Modifier.padding(innerPadding),
-                contentPadding = PaddingValues(horizontal = HorizontalScenePadding, vertical = 16.dp),
+                contentPadding = PaddingValues(
+                    horizontal = HorizontalScenePadding,
+                    vertical = 16.dp
+                ),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 items(wallets) { wallet ->
                     val isSelected = selectedWallet == wallet
                     WalletSwitchListItem(
-                        enabled = !isSelected,
-                        onClick = { onWalletSelected(wallet) },
+                        onClick = {
+                            if (!isSelected) {
+                                onWalletSelected(wallet)
+                            }
+                        },
                         text = {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
@@ -180,6 +193,7 @@ fun WalletSwitchSceneModal(
                                 name = wallet.name,
                                 modifier = Modifier.size(32.dp),
                                 alpha = 1f,
+                                color = wallet.name.color
                             )
                         },
                         trailing = {
@@ -277,7 +291,9 @@ private fun SupportChainTypeList(
                     }
                     if (isSelected) {
                         Spacer(Modifier.height(8.dp))
-                        Spacer(Modifier.size(6.dp).background(item.primaryColor, shape = CircleShape))
+                        Spacer(
+                            Modifier.size(6.dp).background(item.primaryColor, shape = CircleShape)
+                        )
                         Spacer(Modifier.height(12.dp))
                     } else {
                         Spacer(Modifier.height(26.dp))
@@ -290,9 +306,9 @@ private fun SupportChainTypeList(
 
 @Composable
 private fun WalletSwitchListItem(
-    enabled: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     icon: @Composable (() -> Unit)? = null,
     secondaryText: @Composable (() -> Unit)? = null,
     overlineText: @Composable (() -> Unit)? = null,
@@ -305,7 +321,8 @@ private fun WalletSwitchListItem(
         modifier = modifier,
         colors = ButtonDefaults.buttonColors(
             backgroundColor = MaterialTheme.colors.surface,
-            disabledBackgroundColor = MaterialTheme.colors.surface,
+            disabledBackgroundColor = MaterialTheme.colors.surface.copy(alpha = 0.5f),
+            disabledContentColor = MaterialTheme.colors.onSurface.copy(alpha = 0.5f),
         ),
     ) {
         MaskListItem(
@@ -320,11 +337,13 @@ private fun WalletSwitchListItem(
 
 @Composable
 private fun WalletSwitchBottomBar(
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    enabled: Boolean,
 ) {
     Column(Modifier.padding(horizontal = HorizontalScenePadding, vertical = 20.dp)) {
         MaskButton(
             onClick = onClick,
+            enabled = enabled,
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = Color.Transparent,
                 disabledBackgroundColor = Color.Transparent,

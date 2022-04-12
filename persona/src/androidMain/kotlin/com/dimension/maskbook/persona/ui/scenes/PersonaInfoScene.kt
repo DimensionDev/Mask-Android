@@ -21,6 +21,7 @@
 package com.dimension.maskbook.persona.ui.scenes
 
 import android.content.Intent
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -56,6 +57,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -117,7 +119,12 @@ fun PersonaInfoScene(
     Box(
         modifier = Modifier.fillMaxSize(),
     ) {
-        var searchOnly by remember { mutableStateOf(false) }
+        var isSearchMode by remember { mutableStateOf(false) }
+        val focusManager = LocalFocusManager.current
+        BackHandler(isSearchMode) {
+            isSearchMode = false
+            focusManager.clearFocus()
+        }
         var selectedScene by remember { mutableStateOf(PersonaInfoData.Social) }
         var isEditing by rememberSaveable { mutableStateOf(false) }
         val finalSocialList = remember(socialList) {
@@ -148,7 +155,7 @@ fun PersonaInfoScene(
         }
 
         Column(Modifier.fillMaxSize()) {
-            MaskAnimatedVisibility(!searchOnly) {
+            MaskAnimatedVisibility(!isSearchMode) {
                 PersonaHeader(
                     currentPersona,
                     personaList,
@@ -163,7 +170,7 @@ fun PersonaInfoScene(
                     onItemClick = { onAddSocialClick(it) }
                 )
             } else {
-                MaskAnimatedVisibility(!searchOnly) {
+                MaskAnimatedVisibility(!isSearchMode) {
                     TabRow(
                         modifier = Modifier
                             .padding(horizontal = HorizontalScenePadding)
@@ -223,8 +230,8 @@ fun PersonaInfoScene(
                             input = searchInput,
                             onSearchInputChanged = { viewModel.onInputChanged(it) },
                             onInvite = { onInvite() },
-                            searchOnly = searchOnly,
-                            onSearchFocusChanged = { searchOnly = it }
+                            isSearchMode = isSearchMode,
+                            onSearchFocusChanged = { isSearchMode = it }
                         )
                     }
                     PersonaInfoData.Post -> {
