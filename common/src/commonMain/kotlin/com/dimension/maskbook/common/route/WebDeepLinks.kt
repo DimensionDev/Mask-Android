@@ -34,6 +34,10 @@ expect object Persona {
     object Identity {
         operator fun invoke(identity: String, nickname: String?): String
     }
+
+    object Mnemonic {
+        operator fun invoke(identity: String, nickname: String?): String
+    }
 }
 
 @Suppress("CONST_VAL_WITHOUT_INITIALIZER")

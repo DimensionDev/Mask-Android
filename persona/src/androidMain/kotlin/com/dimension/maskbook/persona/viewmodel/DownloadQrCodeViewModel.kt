@@ -97,7 +97,7 @@ class DownloadQrCodeViewModel(
 
     private fun PersonaQrCode.qrCodeStr(): String {
         var str = if (identityWords.isNotEmpty()) {
-            "mask://persona/identity/${identityWords.encodeBase64(Base64.NO_WRAP)}"
+            "mask://persona/mnemonic/${identityWords.encodeBase64(Base64.NO_WRAP)}"
         } else {
             "mask://persona/privatekey/$privateKeyBase64"
         }

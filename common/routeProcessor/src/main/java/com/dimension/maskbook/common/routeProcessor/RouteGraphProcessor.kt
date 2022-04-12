@@ -166,7 +166,7 @@ internal class RouteGraphProcessor(
                                                 withIndent {
                                                     annotation.deeplink.forEach {
                                                         addStatement(
-                                                            "navDeepLink { uriPattern = %S }",
+                                                            "navDeepLink { uriPattern = %S },",
                                                             it
                                                         )
                                                     }
