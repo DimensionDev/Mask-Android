@@ -842,7 +842,11 @@ internal class WalletRepository(
     override suspend fun createWalletBackup(): List<BackupWalletData> {
         return database.walletDao().getAll().map {
             val privateKey = WalletKey.load(it.storedKey.data).firstOrNull()
-            val mnemonic = privateKey?.exportMnemonic("")
+            val mnemonic = try {
+                privateKey?.exportMnemonic("")
+            } catch (ignored: Exception) {
+                null
+            }
             // TODO: support other coin types
             val privateKeyHex = privateKey?.exportPrivateKey(CoinType.Ethereum, "")
             BackupWalletData(
