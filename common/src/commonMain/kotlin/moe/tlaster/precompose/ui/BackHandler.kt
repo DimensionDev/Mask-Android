@@ -18,16 +18,14 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package moe.tlaster.precompose.navigation
+package moe.tlaster.precompose.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
-import moe.tlaster.precompose.ui.BackHandler
-import moe.tlaster.precompose.ui.LocalBackDispatcherOwner
-import moe.tlaster.precompose.ui.LocalLifecycleOwner
 
 @Composable
 fun BackHandler(enabled: Boolean = true, onBack: () -> Unit) {
@@ -35,13 +33,15 @@ fun BackHandler(enabled: Boolean = true, onBack: () -> Unit) {
     val currentOnBack by rememberUpdatedState(onBack)
     // Remember in Composition a back callback that calls the `onBack` lambda
     val backCallback = remember {
-        object : BackHandler {
-            override fun handleBackPress(): Boolean {
-                if (!enabled) return false
+        object : OnBackPressedCallback(enabled) {
+            override fun handleOnBackPressed() {
                 currentOnBack.invoke()
-                return true
             }
         }
+    }
+
+    SideEffect {
+        backCallback.isEnabled = enabled
     }
 
     val backDispatcher = checkNotNull(LocalBackDispatcherOwner.current) {

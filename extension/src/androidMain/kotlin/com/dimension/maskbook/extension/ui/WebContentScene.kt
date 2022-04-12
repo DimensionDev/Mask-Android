@@ -63,7 +63,7 @@ import com.dimension.maskbook.extension.export.model.Site
 import com.dimension.maskbook.extension.ext.site
 import com.dimension.maskbook.localization.R
 import moe.tlaster.koin.compose.get
-import moe.tlaster.precompose.navigation.BackHandler
+import moe.tlaster.precompose.ui.BackHandler
 import kotlin.math.roundToInt
 
 @Composable

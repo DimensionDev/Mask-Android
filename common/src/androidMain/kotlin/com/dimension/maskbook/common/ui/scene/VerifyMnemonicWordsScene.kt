@@ -71,7 +71,7 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.calculateCurrentOffsetForPage
 import com.google.accompanist.pager.rememberPagerState
-import moe.tlaster.precompose.navigation.BackHandler
+import moe.tlaster.precompose.ui.BackHandler
 import kotlin.math.absoluteValue
 
 @OptIn(ExperimentalPagerApi::class, ExperimentalMaterialApi::class)

@@ -49,6 +49,19 @@ class BackDispatcher {
     }
 }
 
+abstract class OnBackPressedCallback(enabled: Boolean) : BackHandler {
+
+    var isEnabled: Boolean = enabled
+        internal set
+
+    abstract fun handleOnBackPressed()
+
+    override fun handleBackPress(): Boolean {
+        if (isEnabled) handleOnBackPressed()
+        return isEnabled
+    }
+}
+
 interface BackHandler {
     fun handleBackPress(): Boolean
 }
