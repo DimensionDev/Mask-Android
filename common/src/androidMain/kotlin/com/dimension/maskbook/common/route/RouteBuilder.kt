@@ -90,7 +90,7 @@ fun RouteBuilder.dialog(
 fun RouteBuilder.navigation(
     route: String,
     startDestination: String,
-    content: @Composable RouteBuilder.(BackStackEntry) -> Unit
+    content: RouteBuilder.() -> Unit
 ) {
     // TODO
 }

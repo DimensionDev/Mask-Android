@@ -21,10 +21,6 @@
 package moe.tlaster.precompose.navigation
 
 import androidx.compose.runtime.Composable
-import moe.tlaster.precompose.navigation.route.BottomSheetRoute
-import moe.tlaster.precompose.navigation.route.DialogRoute
-import moe.tlaster.precompose.navigation.route.Route
-import moe.tlaster.precompose.navigation.route.SceneRoute
 
 class RouteBuilder(
     private val initialRoute: String,

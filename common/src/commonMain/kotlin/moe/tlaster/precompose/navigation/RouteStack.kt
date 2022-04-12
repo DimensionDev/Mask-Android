@@ -23,8 +23,6 @@ package moe.tlaster.precompose.navigation
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import moe.tlaster.precompose.navigation.route.BottomSheetRoute
-import moe.tlaster.precompose.navigation.route.DialogRoute
 
 @Stable
 class RouteStack internal constructor(

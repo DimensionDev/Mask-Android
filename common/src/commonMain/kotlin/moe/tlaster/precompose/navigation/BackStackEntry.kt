@@ -23,7 +23,6 @@ package moe.tlaster.precompose.navigation
 import moe.tlaster.precompose.lifecycle.Lifecycle
 import moe.tlaster.precompose.lifecycle.LifecycleOwner
 import moe.tlaster.precompose.lifecycle.LifecycleRegistry
-import moe.tlaster.precompose.navigation.route.ComposeRoute
 import moe.tlaster.precompose.viewmodel.ViewModelStore
 import moe.tlaster.precompose.viewmodel.ViewModelStoreOwner
 
