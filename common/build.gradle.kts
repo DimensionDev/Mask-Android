@@ -59,18 +59,6 @@ kotlin {
             dependencies {
                 api(projects.localization)
 
-                // Koin
-                // api("io.insert-koin:koin-android:${Versions.koin}")
-                // api("io.insert-koin:koin-androidx-compose:${Versions.koin}")
-
-                // Lifecycle
-                // api("androidx.lifecycle:lifecycle-runtime-ktx:${Versions.lifecycle}")
-                // api("androidx.lifecycle:lifecycle-livedata-ktx:${Versions.lifecycle}")
-                // api("androidx.lifecycle:lifecycle-viewmodel-ktx:${Versions.lifecycle}")
-                // api("androidx.lifecycle:lifecycle-viewmodel-savedstate:${Versions.lifecycle}")
-                // api("androidx.lifecycle:lifecycle-viewmodel-compose:${Versions.lifecycle}")
-                // api("androidx.lifecycle:lifecycle-common-java8:${Versions.lifecycle}")
-
                 // Coil
                 api("io.coil-kt:coil-compose:${Versions.coil}")
                 api("io.coil-kt:coil-svg:${Versions.coil}")
@@ -79,13 +67,10 @@ kotlin {
                 api("com.google.accompanist:accompanist-pager:${Versions.accompanist}")
                 api("com.google.accompanist:accompanist-pager-indicators:${Versions.accompanist}")
                 api("com.google.accompanist:accompanist-swiperefresh:${Versions.accompanist}")
-                // api("com.google.accompanist:accompanist-navigation-animation:${Versions.accompanist}")
-                // api("com.google.accompanist:accompanist-navigation-material:${Versions.accompanist}")
                 api("com.google.accompanist:accompanist-permissions:${Versions.accompanist}")
                 api("com.google.accompanist:accompanist-insets:${Versions.accompanist}")
 
                 // coroutines
-                // api("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.Kotlin.coroutines}")
                 api("org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.Kotlin.coroutines}")
 
                 // Androidx
@@ -95,8 +80,6 @@ kotlin {
                 api("androidx.activity:activity-compose:${Versions.Androidx.activity}")
                 api("androidx.fragment:fragment-ktx:${Versions.Androidx.fragment}")
                 api("androidx.datastore:datastore-preferences:${Versions.datastore}")
-                // api("androidx.navigation:navigation-ui-ktx:${Versions.navigation}")
-                // api("androidx.navigation:navigation-compose:${Versions.navigation}")
                 implementation("androidx.biometric:biometric-ktx:${Versions.Androidx.biometric}")
 
                 // sqlite
