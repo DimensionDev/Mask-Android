@@ -30,6 +30,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,9 +38,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import androidx.navigation.navOptions
-import com.dimension.maskbook.common.ext.observeAsState
+import com.dimension.maskbook.common.ext.navOptions
+import com.dimension.maskbook.common.ext.navigateUri
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.route.navigationComposeAnimComposable
@@ -59,7 +59,8 @@ import com.dimension.maskbook.wallet.repository.WalletCreateOrImportResult
 import com.dimension.maskbook.wallet.route.WalletRoute
 import com.dimension.maskbook.wallet.ui.scenes.wallets.common.Dialog
 import com.dimension.maskbook.wallet.viewmodel.wallets.import.ImportWalletPrivateKeyViewModel
-import org.koin.androidx.compose.getViewModel
+import moe.tlaster.koin.compose.getViewModel
+import moe.tlaster.precompose.navigation.NavController
 import org.koin.core.parameter.parametersOf
 
 @NavGraphDestination(
@@ -89,8 +90,8 @@ fun ImportWalletPrivateKeyScene(
             val viewModel = getViewModel<ImportWalletPrivateKeyViewModel> {
                 parametersOf(wallet)
             }
-            val privateKey by viewModel.privateKey.observeAsState(initial = "")
-            val canConfirm by viewModel.canConfirm.observeAsState(initial = false)
+            val privateKey by viewModel.privateKey.collectAsState(initial = "")
+            val canConfirm by viewModel.canConfirm.collectAsState(initial = false)
             var showDialog by remember {
                 mutableStateOf(false)
             }
@@ -119,7 +120,7 @@ fun ImportWalletPrivateKeyScene(
                         onClick = {
                             viewModel.confirm {
                                 if (it.type == WalletCreateOrImportResult.Type.SUCCESS) {
-                                    navController.navigate(
+                                    navController.navigateUri(
                                         Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Wallet)),
                                         navOptions = navOptions {
                                             launchSingleTop = true

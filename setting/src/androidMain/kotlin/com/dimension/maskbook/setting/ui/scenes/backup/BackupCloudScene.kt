@@ -33,13 +33,13 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Checkbox
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.ui.widget.BackMetaDisplay
 import com.dimension.maskbook.common.ui.widget.MaskPasswordInputField
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
@@ -52,7 +52,7 @@ import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.common.ui.widget.button.clickable
 import com.dimension.maskbook.localization.R
 import com.dimension.maskbook.setting.viewmodel.BackupCloudViewModel
-import org.koin.androidx.compose.getViewModel
+import moe.tlaster.koin.compose.getViewModel
 
 @Composable
 fun BackupCloudScene(
@@ -60,12 +60,12 @@ fun BackupCloudScene(
     onConfirm: (withWallet: Boolean) -> Unit,
 ) {
     val viewModel = getViewModel<BackupCloudViewModel>()
-    val meta by viewModel.meta.observeAsState(initial = null)
-    val withWallet by viewModel.withLocalWallet.observeAsState(initial = false)
-    val backupPassword by viewModel.backupPassword.observeAsState(initial = "")
-    val backupPasswordValid by viewModel.backupPasswordValid.observeAsState(initial = false)
-    val paymentPassword by viewModel.paymentPassword.observeAsState(initial = "")
-    val paymentPasswordValid by viewModel.paymentPasswordValid.observeAsState(initial = false)
+    val meta by viewModel.meta.collectAsState(initial = null)
+    val withWallet by viewModel.withLocalWallet.collectAsState(initial = false)
+    val backupPassword by viewModel.backupPassword.collectAsState(initial = "")
+    val backupPasswordValid by viewModel.backupPasswordValid.collectAsState(initial = false)
+    val paymentPassword by viewModel.paymentPassword.collectAsState(initial = "")
+    val paymentPasswordValid by viewModel.paymentPasswordValid.collectAsState(initial = false)
     MaskScene {
         MaskScaffold(
             topBar = {

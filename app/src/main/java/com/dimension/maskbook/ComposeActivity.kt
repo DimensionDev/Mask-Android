@@ -23,12 +23,10 @@ package com.dimension.maskbook
 import android.content.Intent
 import android.os.Bundle
 import android.view.WindowManager
-import androidx.activity.compose.setContent
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import androidx.fragment.app.FragmentActivity
 import coil.compose.LocalImageLoader
 import com.dimension.maskbook.common.gecko.PromptFeatureDelegate
 import com.dimension.maskbook.common.gecko.WebContentController
@@ -36,10 +34,12 @@ import com.dimension.maskbook.common.manager.ImageLoaderManager
 import com.dimension.maskbook.common.ui.widget.LocalWindowInsetsController
 import com.dimension.maskbook.entry.ui.App
 import com.google.accompanist.insets.ProvideWindowInsets
+import moe.tlaster.precompose.lifecycle.PreComposeActivity
+import moe.tlaster.precompose.lifecycle.setContent
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 
-class ComposeActivity : FragmentActivity() {
+class ComposeActivity : PreComposeActivity() {
 
     private lateinit var promptFeature: PromptFeatureDelegate
     private val imageLoaderManager: ImageLoaderManager by inject()

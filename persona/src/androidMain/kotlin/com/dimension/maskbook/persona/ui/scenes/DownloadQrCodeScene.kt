@@ -25,11 +25,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
-import androidx.navigation.NavController
-import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.ext.onFinished
 import com.dimension.maskbook.common.route.navigationComposeAnimComposable
 import com.dimension.maskbook.common.route.navigationComposeAnimComposablePackage
@@ -42,7 +41,8 @@ import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.route.PersonaRoute
 import com.dimension.maskbook.persona.viewmodel.DownloadQrCodeViewModel
 import kotlinx.coroutines.launch
-import org.koin.androidx.compose.getViewModel
+import moe.tlaster.koin.compose.getViewModel
+import moe.tlaster.precompose.navigation.NavController
 import org.koin.core.parameter.parametersOf
 
 @NavGraphDestination(
@@ -59,8 +59,8 @@ fun DownloadQrCodeScene(
     val viewModel = getViewModel<DownloadQrCodeViewModel> {
         parametersOf(DownloadQrCodeViewModel.IdType.valueOf(idType), idBase64)
     }
-    val personaQrCode by viewModel.personaQrCode.observeAsState()
-    val filePickerLaunched by viewModel.filePickerLaunched.observeAsState()
+    val personaQrCode by viewModel.personaQrCode.collectAsState()
+    val filePickerLaunched by viewModel.filePickerLaunched.collectAsState()
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val inAppNotification = LocalInAppNotification.current

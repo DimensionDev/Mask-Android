@@ -30,13 +30,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.navigation.NavController
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.common.ext.getNestedNavigationViewModel
 import com.dimension.maskbook.common.ext.humanizeDollar
 import com.dimension.maskbook.common.ext.humanizeToken
-import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.route.navigationComposeAnimComposable
 import com.dimension.maskbook.common.route.navigationComposeAnimComposablePackage
 import com.dimension.maskbook.common.route.navigationComposeBottomSheet
@@ -60,7 +58,8 @@ import com.dimension.maskbook.wallet.viewmodel.wallets.send.SearchAddressViewMod
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.SearchTradableViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendConfirmViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.TransferDetailViewModel
-import org.koin.androidx.compose.getViewModel
+import moe.tlaster.koin.compose.getViewModel
+import moe.tlaster.precompose.navigation.NavController
 import org.koin.core.parameter.parametersOf
 
 private const val GeneratedRouteName = "transferRoute"
@@ -80,12 +79,12 @@ fun SearchAddressRoute(
 
     val searchAddressViewModel = navController
         .getNestedNavigationViewModel<SearchAddressViewModel>(WalletRoute.Transfer.Route)
-    val input by searchAddressViewModel.input.observeAsState()
-    val contacts by searchAddressViewModel.contacts.observeAsState()
-    val recent by searchAddressViewModel.recent.observeAsState()
-    val ensData by searchAddressViewModel.ensData.observeAsState()
-    val selectEnsData by searchAddressViewModel.selectEnsData.observeAsState()
-    val canConfirm by searchAddressViewModel.canConfirm.observeAsState()
+    val input by searchAddressViewModel.input.collectAsState()
+    val contacts by searchAddressViewModel.contacts.collectAsState()
+    val recent by searchAddressViewModel.recent.collectAsState()
+    val ensData by searchAddressViewModel.ensData.collectAsState()
+    val selectEnsData by searchAddressViewModel.selectEnsData.collectAsState()
+    val canConfirm by searchAddressViewModel.canConfirm.collectAsState()
 
     val clipboardManager = LocalClipboardManager.current
     val inAppNotification = LocalInAppNotification.current
@@ -176,9 +175,9 @@ fun SendRoute(
             parametersOf(tradableId)
         }
 
-    val arrives by gasFeeViewModel.arrives.observeAsState(initial = "")
-    val gasUsdTotal by gasFeeViewModel.gasUsdTotal.observeAsState(initial = BigDecimal.ZERO)
-    val gasTotal by gasFeeViewModel.gasTotal.observeAsState(initial = BigDecimal.ZERO)
+    val arrives by gasFeeViewModel.arrives.collectAsState(initial = "")
+    val gasUsdTotal by gasFeeViewModel.gasUsdTotal.collectAsState(initial = BigDecimal.ZERO)
+    val gasTotal by gasFeeViewModel.gasTotal.collectAsState(initial = BigDecimal.ZERO)
 
     val selectTradable by transferDetailViewModel.selectedTradable.collectAsState(null)
 
@@ -186,14 +185,14 @@ fun SendRoute(
         transferDetailViewModel.setAddress(address)
     }
     val biometricViewModel = getViewModel<BiometricViewModel>()
-    val biometricEnabled by biometricViewModel.biometricEnabled.observeAsState()
-    val addressData by transferDetailViewModel.addressData.observeAsState()
-    val amount by transferDetailViewModel.amount.observeAsState()
-    val password by transferDetailViewModel.password.observeAsState()
-    val canConfirm by transferDetailViewModel.canConfirm.observeAsState()
-    val balance by transferDetailViewModel.balance.observeAsState()
-    val maxAmount by transferDetailViewModel.maxAmount.observeAsState()
-    val isEnoughForGas by transferDetailViewModel.isEnoughForGas.observeAsState()
+    val biometricEnabled by biometricViewModel.biometricEnabled.collectAsState()
+    val addressData by transferDetailViewModel.addressData.collectAsState()
+    val amount by transferDetailViewModel.amount.collectAsState()
+    val password by transferDetailViewModel.password.collectAsState()
+    val canConfirm by transferDetailViewModel.canConfirm.collectAsState()
+    val balance by transferDetailViewModel.balance.collectAsState()
+    val maxAmount by transferDetailViewModel.maxAmount.collectAsState()
+    val isEnoughForGas by transferDetailViewModel.isEnoughForGas.collectAsState()
     transferDetailViewModel.setGasTotal(gasTotal = gasTotal)
 
     TransferDetailScene(
@@ -272,8 +271,8 @@ fun SearchTokenRoute(
         }
 
     val viewModel = getViewModel<SearchTradableViewModel>()
-    val walletTokens by viewModel.walletTokens.observeAsState(emptyList())
-    val query by viewModel.query.observeAsState()
+    val walletTokens by viewModel.walletTokens.collectAsState(emptyList())
+    val query by viewModel.query.collectAsState()
     SearchTokenScene(
         onBack = {
             onBack.invoke()
@@ -310,7 +309,7 @@ fun SearchCollectiblesRoute(
     val viewModel = getViewModel<SearchTradableViewModel>()
     val walletCollectibleCollections =
         viewModel.walletCollectibleCollections.collectAsLazyPagingItems()
-    val query by viewModel.query.observeAsState()
+    val query by viewModel.query.collectAsState()
     SearchCollectibleScene(
         onBack = {
             onBack.invoke()
@@ -342,15 +341,15 @@ fun EditGasFeeRoute(
             parametersOf(21000.0)
         }
 
-    val gasLimit by gasFeeViewModel.gasLimit.observeAsState(initial = -1.0)
-    val maxPriorityFee by gasFeeViewModel.maxPriorityFeePerGas.observeAsState(initial = -1.0)
-    val maxFee by gasFeeViewModel.maxFeePerGas.observeAsState(initial = -1.0)
-    val arrives by gasFeeViewModel.arrives.observeAsState(initial = "")
-    val gasTotal by gasFeeViewModel.gasTotal.observeAsState(initial = BigDecimal.ZERO)
-    val gasUsdTotal by gasFeeViewModel.gasUsdTotal.observeAsState(initial = BigDecimal.ZERO)
+    val gasLimit by gasFeeViewModel.gasLimit.collectAsState(initial = -1.0)
+    val maxPriorityFee by gasFeeViewModel.maxPriorityFeePerGas.collectAsState(initial = -1.0)
+    val maxFee by gasFeeViewModel.maxFeePerGas.collectAsState(initial = -1.0)
+    val arrives by gasFeeViewModel.arrives.collectAsState(initial = "")
+    val gasTotal by gasFeeViewModel.gasTotal.collectAsState(initial = BigDecimal.ZERO)
+    val gasUsdTotal by gasFeeViewModel.gasUsdTotal.collectAsState(initial = BigDecimal.ZERO)
     val mode by gasFeeViewModel.gasPriceEditMode.collectAsState()
-    val loading by gasFeeViewModel.loadingState.observeAsState()
-    val gasFeeUnit by gasFeeViewModel.gasFeeUnit.observeAsState()
+    val loading by gasFeeViewModel.loadingState.collectAsState()
+    val gasFeeUnit by gasFeeViewModel.gasFeeUnit.collectAsState()
     EditGasPriceSheet(
         price = gasUsdTotal.humanizeDollar(),
         costFee = gasTotal.humanizeToken(),
@@ -401,7 +400,7 @@ fun AddContactSheetRoute(
     @Back onBack: () -> Unit,
 ) {
     val viewModel = getViewModel<AddContactViewModel>()
-    val name by viewModel.name.observeAsState(initial = "")
+    val name by viewModel.name.collectAsState(initial = "")
     AddContactSheet(
         avatarLabel = name,
         address = address,
@@ -439,10 +438,10 @@ fun SendConfirmRoute(
             parametersOf(tradableId)
         }
 
-    val gasLimit by gasFeeViewModel.gasLimit.observeAsState(initial = -1.0)
-    val maxPriorityFee by gasFeeViewModel.maxPriorityFeePerGas.observeAsState(initial = -1.0)
-    val maxFee by gasFeeViewModel.maxFeePerGas.observeAsState(initial = -1.0)
-    val gasUsdTotal by gasFeeViewModel.gasUsdTotal.observeAsState(initial = BigDecimal.ZERO)
+    val gasLimit by gasFeeViewModel.gasLimit.collectAsState(initial = -1.0)
+    val maxPriorityFee by gasFeeViewModel.maxPriorityFeePerGas.collectAsState(initial = -1.0)
+    val maxFee by gasFeeViewModel.maxFeePerGas.collectAsState(initial = -1.0)
+    val gasUsdTotal by gasFeeViewModel.gasUsdTotal.collectAsState(initial = BigDecimal.ZERO)
 
     val selectTradable by transferDetailViewModel.selectedTradable.collectAsState(null)
     val amount = remember(amountString) { BigDecimal(amountString) }
@@ -450,9 +449,9 @@ fun SendConfirmRoute(
     val viewModel = getViewModel<SendConfirmViewModel> {
         parametersOf(address)
     }
-    val deeplink by viewModel.deepLink.observeAsState(initial = "")
-    val addressData by viewModel.addressData.observeAsState(initial = null)
-    val loading by viewModel.loadingState.observeAsState()
+    val deeplink by viewModel.deepLink.collectAsState(initial = "")
+    val addressData by viewModel.addressData.collectAsState(initial = null)
+    val loading by viewModel.loadingState.collectAsState()
     val totalPrice = selectTradable?.let {
         when (it) {
             is WalletTokenData -> (amount * it.tokenData.price + gasUsdTotal).humanizeDollar()

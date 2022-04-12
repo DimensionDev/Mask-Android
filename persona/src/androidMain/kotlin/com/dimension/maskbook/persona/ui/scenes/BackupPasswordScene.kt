@@ -21,10 +21,9 @@
 package com.dimension.maskbook.persona.ui.scenes
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.navigation.NavController
-import androidx.navigation.navOptions
-import com.dimension.maskbook.common.ext.observeAsState
+import com.dimension.maskbook.common.ext.navOptions
 import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.route.navigationComposeBottomSheet
 import com.dimension.maskbook.common.route.navigationComposeBottomSheetPackage
@@ -33,7 +32,8 @@ import com.dimension.maskbook.common.routeProcessor.annotations.Path
 import com.dimension.maskbook.persona.route.PersonaRoute
 import com.dimension.maskbook.persona.ui.scenes.register.BackUpPasswordModal
 import com.dimension.maskbook.persona.viewmodel.BackUpPasswordViewModel
-import org.koin.androidx.compose.getViewModel
+import moe.tlaster.koin.compose.getViewModel
+import moe.tlaster.precompose.navigation.NavController
 
 @NavGraphDestination(
     route = PersonaRoute.BackUpPassword.path,
@@ -49,8 +49,8 @@ fun BackUpPassword(
     @Path("target") target: String,
 ) {
     val viewModel = getViewModel<BackUpPasswordViewModel>()
-    val password by viewModel.password.observeAsState(initial = "")
-    val passwordValid by viewModel.passwordValid.observeAsState(initial = false)
+    val password by viewModel.password.collectAsState(initial = "")
+    val passwordValid by viewModel.passwordValid.collectAsState(initial = false)
     BackUpPasswordModal(
         password = password,
         onPasswordChanged = { viewModel.setPassword(it) },

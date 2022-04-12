@@ -22,8 +22,6 @@ package com.dimension.maskbook.persona.viewmodel.recovery
 
 import android.content.ContentResolver
 import android.net.Uri
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.Validator
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.setting.export.BackupServices
@@ -33,6 +31,8 @@ import com.dimension.maskbook.setting.export.model.BackupMetaFile
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import moe.tlaster.precompose.viewmodel.ViewModel
+import moe.tlaster.precompose.viewmodel.viewModelScope
 
 class RecoveryLocalViewModel(
     private val backupServices: BackupServices,

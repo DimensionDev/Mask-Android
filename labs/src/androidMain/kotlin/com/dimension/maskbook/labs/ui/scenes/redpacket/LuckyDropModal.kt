@@ -20,6 +20,7 @@
  */
 package com.dimension.maskbook.labs.ui.scenes.redpacket
 
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -51,7 +52,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.common.ext.eventFlow
@@ -75,7 +75,8 @@ import com.dimension.maskbook.labs.route.LabsRoute
 import com.dimension.maskbook.labs.ui.widget.ClaimLoadingIndicator
 import com.dimension.maskbook.labs.ui.widget.RedPacketClaimButton
 import com.dimension.maskbook.labs.viewmodel.LuckDropViewModel
-import org.koin.androidx.compose.getViewModel
+import moe.tlaster.koin.compose.getViewModel
+import moe.tlaster.precompose.navigation.NavController
 import org.koin.core.parameter.parametersOf
 import kotlin.math.pow
 
@@ -138,7 +139,7 @@ fun LuckDropModal(
             WalletTokenCard(
                 wallet = stateData.wallet,
                 onClick = {
-                    navController.navigateUri(Deeplinks.Wallet.SwitchWallet)
+                    navController.navigateUri(Uri.parse(Deeplinks.Wallet.SwitchWallet))
                 }
             )
             Spacer(Modifier.height(24.dp))
@@ -146,7 +147,7 @@ fun LuckDropModal(
                 enabled = stateData.buttonEnabled && !loading,
                 onClick = {
                     viewModel.getSendTransactionData(stateData)?.let { data ->
-                        navController.navigateUri(Deeplinks.Wallet.SendTokenConfirm(data))
+                        navController.navigateUri(Uri.parse(Deeplinks.Wallet.SendTokenConfirm(data)))
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),

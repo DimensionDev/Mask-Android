@@ -20,11 +20,11 @@
  */
 package com.dimension.maskbook.setting.viewmodel
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.setting.export.model.Appearance
 import com.dimension.maskbook.setting.repository.ISettingsRepository
+import moe.tlaster.precompose.viewmodel.ViewModel
+import moe.tlaster.precompose.viewmodel.viewModelScope
 
 class AppearanceSettingsViewModel(
     private val repository: ISettingsRepository,

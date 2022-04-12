@@ -36,9 +36,9 @@ class MoreColors(
     caption: Color,
     onCaption: Color,
 ) {
-    var caption by mutableStateOf(caption, structuralEqualityPolicy())
+    var caption: Color by mutableStateOf(caption, structuralEqualityPolicy())
         internal set
-    var onCaption by mutableStateOf(onCaption, structuralEqualityPolicy())
+    var onCaption: Color by mutableStateOf(onCaption, structuralEqualityPolicy())
         internal set
 }
 

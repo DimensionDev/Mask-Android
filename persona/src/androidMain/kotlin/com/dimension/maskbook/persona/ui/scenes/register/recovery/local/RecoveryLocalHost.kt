@@ -55,11 +55,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.dimension.maskbook.common.ext.getNestedNavigationViewModel
 import com.dimension.maskbook.common.ext.humanizeFileSize
 import com.dimension.maskbook.common.ext.humanizeTimestamp
-import com.dimension.maskbook.common.ext.observeAsState
+import com.dimension.maskbook.common.ext.navigate
 import com.dimension.maskbook.common.route.navigationComposeAnimComposable
 import com.dimension.maskbook.common.route.navigationComposeAnimComposablePackage
 import com.dimension.maskbook.common.route.navigationComposeBottomSheet
@@ -87,6 +86,7 @@ import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.route.PersonaRoute
 import com.dimension.maskbook.persona.viewmodel.recovery.RecoveryLocalViewModel
 import kotlinx.coroutines.flow.distinctUntilChanged
+import moe.tlaster.precompose.navigation.NavController
 import org.koin.core.parameter.parametersOf
 import java.io.File
 
@@ -384,7 +384,7 @@ fun ImportWalletScene(
             parametersOf(uri, account)
         }
     val paymentPassword by viewModel.paymentPassword.collectAsState(initial = null)
-    val file by viewModel.file.observeAsState(initial = null)
+    val file by viewModel.file.collectAsState(initial = null)
     MaskModal(
         title = { Text(text = "Wallets for recovery") },
     ) {
@@ -456,7 +456,7 @@ fun ImportSuccessScene(
         .getNestedNavigationViewModel(PersonaRoute.Register.Recovery.LocalBackup.Route) {
             parametersOf(uri, account)
         }
-    val meta by viewModel.meta.observeAsState(initial = null)
+    val meta by viewModel.meta.collectAsState(initial = null)
     MaskScene {
         MaskScaffold(
             topBar = {

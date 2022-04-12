@@ -31,18 +31,18 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.ui.widget.MaskModal
 import com.dimension.maskbook.common.ui.widget.MaskPasswordInputField
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.localization.R
 import com.dimension.maskbook.setting.viewmodel.PaymentPasswordSettingsViewModel
-import org.koin.androidx.compose.getViewModel
+import moe.tlaster.koin.compose.getViewModel
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -51,12 +51,12 @@ fun ChangePaymentPasswordModal(
 ) {
     val viewModel: PaymentPasswordSettingsViewModel = getViewModel()
 
-    val isNext by viewModel.isNext.observeAsState(false)
-    val password by viewModel.password.observeAsState(initial = "")
-    val newPassword by viewModel.newPassword.observeAsState(initial = "")
-    val newPasswordConfirm by viewModel.newPasswordConfirm.observeAsState(initial = "")
-    val confirmPassword by viewModel.confirmPassword.observeAsState(false)
-    val confirmNewPassword by viewModel.confirmNewPassword.observeAsState(false)
+    val isNext by viewModel.isNext.collectAsState(false)
+    val password by viewModel.password.collectAsState(initial = "")
+    val newPassword by viewModel.newPassword.collectAsState(initial = "")
+    val newPasswordConfirm by viewModel.newPasswordConfirm.collectAsState(initial = "")
+    val confirmPassword by viewModel.confirmPassword.collectAsState(false)
+    val confirmNewPassword by viewModel.confirmNewPassword.collectAsState(false)
 
     MaskModal(
         title = {

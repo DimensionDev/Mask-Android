@@ -45,7 +45,7 @@ import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.common.ui.widget.button.SecondaryButton
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.viewmodel.wallets.TouchIdEnableViewModel
-import org.koin.androidx.compose.get
+import moe.tlaster.koin.compose.get
 
 @Composable
 fun TouchIdEnableScene(

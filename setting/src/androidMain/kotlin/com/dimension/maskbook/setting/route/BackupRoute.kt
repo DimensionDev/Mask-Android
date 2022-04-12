@@ -38,6 +38,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,8 +50,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import com.dimension.maskbook.common.ext.observeAsState
+import com.dimension.maskbook.common.ext.navigate
+import com.dimension.maskbook.common.ext.navigateWithPopSelf
 import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.route.navigationComposeAnimComposable
 import com.dimension.maskbook.common.route.navigationComposeAnimComposablePackage
@@ -81,8 +82,9 @@ import com.dimension.maskbook.setting.viewmodel.BackupMergeConfirmViewModel
 import com.dimension.maskbook.setting.viewmodel.EmailBackupViewModel
 import com.dimension.maskbook.setting.viewmodel.PhoneBackupViewModel
 import kotlinx.coroutines.launch
-import org.koin.androidx.compose.get
-import org.koin.androidx.compose.getViewModel
+import moe.tlaster.koin.compose.get
+import moe.tlaster.koin.compose.getViewModel
+import moe.tlaster.precompose.navigation.NavController
 import org.koin.core.parameter.parametersOf
 
 @NavGraphDestination(
@@ -172,13 +174,7 @@ fun BackupDataBackupCould(
             navController.popBackStack()
         },
         onConfirm = {
-            navController.navigate(SettingRoute.BackupData.BackupData_BackupCloud_Execute(it, type, value, code)) {
-                navController.currentBackStackEntry?.let { backStackEntry ->
-                    popUpTo(backStackEntry.destination.id) {
-                        inclusive = true
-                    }
-                }
-            }
+            navController.navigateWithPopSelf(SettingRoute.BackupData.BackupData_BackupCloud_Execute(it, type, value, code))
         }
     )
 }
@@ -206,21 +202,9 @@ fun BackupDataBackupCouldExecute(
             withWallet = withWallet,
         )
         if (result) {
-            navController.navigate(SettingRoute.BackupData.BackupData_Cloud_Success) {
-                navController.currentBackStackEntry?.let { backStackEntry ->
-                    popUpTo(backStackEntry.destination.id) {
-                        inclusive = true
-                    }
-                }
-            }
+            navController.navigateWithPopSelf(SettingRoute.BackupData.BackupData_Cloud_Success)
         } else {
-            navController.navigate(SettingRoute.BackupData.BackupData_Cloud_Failed) {
-                navController.currentBackStackEntry?.let { backStackEntry ->
-                    popUpTo(backStackEntry.destination.id) {
-                        inclusive = true
-                    }
-                }
-            }
+            navController.navigateWithPopSelf(SettingRoute.BackupData.BackupData_Cloud_Failed)
         }
     }
 
@@ -356,9 +340,9 @@ fun BackupDataBackupMergeConfirm(
         parametersOf(onDone)
     }
 
-    val passwordValid by viewModel.passwordValid.observeAsState(initial = false)
-    val loading by viewModel.loading.observeAsState(initial = false)
-    val password by viewModel.backupPassword.observeAsState(initial = "")
+    val passwordValid by viewModel.passwordValid.collectAsState(initial = false)
+    val loading by viewModel.loading.collectAsState(initial = false)
+    val password by viewModel.backupPassword.collectAsState(initial = "")
 
     MaskModal(
         title = {
@@ -497,15 +481,15 @@ fun BackupSelectionEmail(
     val scope = rememberCoroutineScope()
 
     val repository = get<PersonaServices>()
-    val persona by repository.currentPersona.observeAsState(initial = null)
+    val persona by repository.currentPersona.collectAsState(initial = null)
     val phone = persona?.phone
 
     val viewModel = getViewModel<EmailBackupViewModel>()
-    val code by viewModel.code.observeAsState()
-    val valid by viewModel.codeValid.observeAsState()
-    val loading by viewModel.loading.observeAsState()
-    val canSend by viewModel.canSend.observeAsState()
-    val countDown by viewModel.countdown.observeAsState()
+    val code by viewModel.code.collectAsState()
+    val valid by viewModel.codeValid.collectAsState()
+    val loading by viewModel.loading.collectAsState()
+    val canSend by viewModel.canSend.collectAsState()
+    val countDown by viewModel.countdown.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.startCountDown()
@@ -595,15 +579,15 @@ fun BackupSelectionPhone(
     val scope = rememberCoroutineScope()
 
     val repository = get<PersonaServices>()
-    val persona by repository.currentPersona.observeAsState(initial = null)
+    val persona by repository.currentPersona.collectAsState(initial = null)
     val email = persona?.email
 
     val viewModel = getViewModel<PhoneBackupViewModel>()
-    val code by viewModel.code.observeAsState()
-    val canSend by viewModel.canSend.observeAsState()
-    val valid by viewModel.codeValid.observeAsState()
-    val countDown by viewModel.countdown.observeAsState()
-    val loading by viewModel.loading.observeAsState()
+    val code by viewModel.code.collectAsState()
+    val canSend by viewModel.canSend.collectAsState()
+    val valid by viewModel.codeValid.collectAsState()
+    val countDown by viewModel.countdown.collectAsState()
+    val loading by viewModel.loading.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.sendCodeNow(phone)
@@ -692,7 +676,7 @@ fun BackupSelection(
     navController: NavController,
 ) {
     val repository = get<PersonaServices>()
-    val persona by repository.currentPersona.observeAsState(initial = null)
+    val persona by repository.currentPersona.collectAsState(initial = null)
     BackupSelectionModal(
         onLocal = {
             navController.navigate(SettingRoute.BackupData.BackupLocal.Backup)
@@ -721,7 +705,7 @@ fun BackupDataPassword(
     navController: NavController,
 ) {
     val repository = get<ISettingsRepository>()
-    val currentPassword by repository.backupPassword.observeAsState(initial = "")
+    val currentPassword by repository.backupPassword.collectAsState(initial = "")
     var password by remember { mutableStateOf("") }
     BackupPasswordInputModal(
         password = password,

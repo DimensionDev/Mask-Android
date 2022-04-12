@@ -23,15 +23,15 @@ package com.dimension.maskbook.setting.ui.scenes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.res.stringResource
-import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.ui.widget.MaskModal
 import com.dimension.maskbook.common.ui.widget.MaskSelection
 import com.dimension.maskbook.localization.R
 import com.dimension.maskbook.setting.export.model.Appearance
 import com.dimension.maskbook.setting.viewmodel.AppearanceSettingsViewModel
-import org.koin.androidx.compose.getViewModel
+import moe.tlaster.koin.compose.getViewModel
 
 val appearanceMap = mapOf(
     Appearance.default to R.string.scene_setting_detail_automatic,
@@ -44,7 +44,7 @@ fun AppearanceSettings(
     onBack: () -> Unit,
 ) {
     val viewModel: AppearanceSettingsViewModel = getViewModel()
-    val appearance by viewModel.appearance.observeAsState(initial = Appearance.default)
+    val appearance by viewModel.appearance.collectAsState(initial = Appearance.default)
     MaskModal {
         Column {
             appearanceMap.forEach {

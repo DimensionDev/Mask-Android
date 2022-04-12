@@ -46,9 +46,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.dimension.maskbook.common.ext.getNestedNavigationViewModel
-import com.dimension.maskbook.common.ext.observeAsState
+import com.dimension.maskbook.common.ext.navigate
 import com.dimension.maskbook.common.route.navigationComposeAnimComposable
 import com.dimension.maskbook.common.route.navigationComposeAnimComposablePackage
 import com.dimension.maskbook.common.routeProcessor.annotations.Back
@@ -68,6 +67,7 @@ import com.dimension.maskbook.setting.route.SettingRoute
 import com.dimension.maskbook.setting.viewmodel.BackupLocalViewModel
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
+import moe.tlaster.precompose.navigation.NavController
 
 private const val GeneratedRouteName = "backupLocalRoute"
 
@@ -145,12 +145,12 @@ fun BackupLocalScene(
     navController: NavController,
 ) {
     val viewModel: BackupLocalViewModel = navController.getNestedNavigationViewModel(SettingRoute.BackupData.BackupLocal.Route)
-    val meta by viewModel.meta.observeAsState(initial = null)
-    val password by viewModel.password.observeAsState(initial = "")
-    val backupPasswordValid by viewModel.backupPasswordValid.observeAsState(initial = false)
-    val withWallet by viewModel.withWallet.observeAsState(initial = false)
-    val paymentPassword by viewModel.paymentPassword.observeAsState(initial = "")
-    val paymentPasswordValid by viewModel.paymentPasswordValid.observeAsState(initial = false)
+    val meta by viewModel.meta.collectAsState(initial = null)
+    val password by viewModel.password.collectAsState(initial = "")
+    val backupPasswordValid by viewModel.backupPasswordValid.collectAsState(initial = false)
+    val withWallet by viewModel.withWallet.collectAsState(initial = false)
+    val paymentPassword by viewModel.paymentPassword.collectAsState(initial = "")
+    val paymentPasswordValid by viewModel.paymentPasswordValid.collectAsState(initial = false)
     MaskScene {
         MaskScaffold(
             topBar = {

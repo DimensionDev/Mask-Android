@@ -21,9 +21,9 @@
 package com.dimension.maskbook.persona.viewmodel.avatar
 
 import android.net.Uri
-import androidx.lifecycle.ViewModel
 import com.dimension.maskbook.persona.repository.IPersonaRepository
 import kotlinx.coroutines.flow.map
+import moe.tlaster.precompose.viewmodel.ViewModel
 
 class SetAvatarViewModel(
     private val repository: IPersonaRepository,

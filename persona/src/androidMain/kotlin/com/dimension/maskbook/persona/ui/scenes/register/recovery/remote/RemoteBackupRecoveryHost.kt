@@ -32,6 +32,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,8 +41,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import com.dimension.maskbook.common.ext.observeAsState
+import com.dimension.maskbook.common.ext.navigate
 import com.dimension.maskbook.common.route.navigationComposeBottomSheet
 import com.dimension.maskbook.common.route.navigationComposeBottomSheetPackage
 import com.dimension.maskbook.common.route.navigationComposeDialog
@@ -59,7 +59,8 @@ import com.dimension.maskbook.persona.route.PersonaRoute
 import com.dimension.maskbook.persona.viewmodel.register.EmailRemoteBackupRecoveryViewModel
 import com.dimension.maskbook.persona.viewmodel.register.PhoneRemoteBackupRecoveryViewModel
 import com.dimension.maskbook.persona.viewmodel.register.RemoteBackupRecoveryViewModelBase
-import org.koin.androidx.compose.getViewModel
+import moe.tlaster.koin.compose.getViewModel
+import moe.tlaster.precompose.navigation.NavController
 import org.koin.core.parameter.parametersOf
 
 @NavGraphDestination(
@@ -130,11 +131,11 @@ fun RegisterRecoveryRemoteBackupRecoveryRemoteBackupRecoveryEmailCode(
     LaunchedEffect(Unit) {
         viewModel.startCountDown()
     }
-    val canSend by viewModel.canSend.observeAsState(initial = false)
-    val countDown by viewModel.countdown.observeAsState(initial = 60)
-    val loading by viewModel.loading.observeAsState(initial = false)
-    val code by viewModel.code.observeAsState(initial = "")
-    val codeValid by viewModel.codeValid.observeAsState(initial = true)
+    val canSend by viewModel.canSend.collectAsState(initial = false)
+    val countDown by viewModel.countdown.collectAsState(initial = 60)
+    val loading by viewModel.loading.collectAsState(initial = false)
+    val code by viewModel.code.collectAsState(initial = "")
+    val codeValid by viewModel.codeValid.collectAsState(initial = true)
     EmailCodeInputModal(
         email = email,
         code = code,
@@ -168,9 +169,9 @@ fun RegisterRecoveryRemoteBackupRecoveryRemoteBackupRecoveryEmail(
     val viewModel = getViewModel<EmailRemoteBackupRecoveryViewModel> {
         parametersOf(requestNavigate)
     }
-    val email by viewModel.value.observeAsState(initial = "")
-    val emailValid by viewModel.valueValid.observeAsState(initial = true)
-    val loading by viewModel.loading.observeAsState(initial = false)
+    val email by viewModel.value.collectAsState(initial = "")
+    val emailValid by viewModel.valueValid.collectAsState(initial = true)
+    val loading by viewModel.loading.collectAsState(initial = false)
     MaskModal(
         title = {
             Text(text = stringResource(R.string.scene_restore_titles_recovery_with_email))
@@ -254,11 +255,11 @@ fun RegisterRecoveryRemoteBackupRecoveryRemoteBackupRecoveryPhoneCode(
     LaunchedEffect(Unit) {
         viewModel.startCountDown()
     }
-    val canSend by viewModel.canSend.observeAsState(initial = false)
-    val countDown by viewModel.countdown.observeAsState(initial = 60)
-    val loading by viewModel.loading.observeAsState(initial = false)
-    val code by viewModel.code.observeAsState(initial = "")
-    val codeValid by viewModel.codeValid.observeAsState(initial = true)
+    val canSend by viewModel.canSend.collectAsState(initial = false)
+    val countDown by viewModel.countdown.collectAsState(initial = 60)
+    val loading by viewModel.loading.collectAsState(initial = false)
+    val code by viewModel.code.collectAsState(initial = "")
+    val codeValid by viewModel.codeValid.collectAsState(initial = true)
     MaskModal(
         title = {
             Text(text = stringResource(R.string.scene_restore_titles_recovery_with_mobile))
@@ -335,10 +336,10 @@ fun RegisterRecoveryRemoteBackupRecoveryRemoteBackupRecoveryPhone(
     val viewModel = getViewModel<PhoneRemoteBackupRecoveryViewModel> {
         parametersOf(requestNavigate)
     }
-    val regionCode by viewModel.regionCode.observeAsState(initial = "+86")
-    val phone by viewModel.value.observeAsState(initial = "")
-    val phoneValid by viewModel.valueValid.observeAsState(initial = true)
-    val loading by viewModel.loading.observeAsState(initial = false)
+    val regionCode by viewModel.regionCode.collectAsState(initial = "+86")
+    val phone by viewModel.value.collectAsState(initial = "")
+    val phoneValid by viewModel.valueValid.collectAsState(initial = true)
+    val loading by viewModel.loading.collectAsState(initial = false)
     MaskModal(
         title = {
             Text(text = stringResource(R.string.scene_restore_titles_recovery_with_mobile))

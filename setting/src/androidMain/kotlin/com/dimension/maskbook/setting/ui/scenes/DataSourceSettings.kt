@@ -23,13 +23,13 @@ package com.dimension.maskbook.setting.ui.scenes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.ui.widget.MaskModal
 import com.dimension.maskbook.common.ui.widget.MaskSelection
 import com.dimension.maskbook.setting.export.model.DataProvider
 import com.dimension.maskbook.setting.viewmodel.DataSourceSettingsViewModel
-import org.koin.androidx.compose.getViewModel
+import moe.tlaster.koin.compose.getViewModel
 
 val dataProviderMap = mapOf(
     DataProvider.COIN_GECKO to "CoinGecko",
@@ -42,7 +42,7 @@ fun DataSourceSettings(
     onBack: () -> Unit,
 ) {
     val viewModel: DataSourceSettingsViewModel = getViewModel()
-    val dataProvider by viewModel.dataProvider.observeAsState(initial = DataProvider.COIN_GECKO)
+    val dataProvider by viewModel.dataProvider.collectAsState(initial = DataProvider.COIN_GECKO)
     MaskModal {
         Column {
             dataProviderMap.forEach {

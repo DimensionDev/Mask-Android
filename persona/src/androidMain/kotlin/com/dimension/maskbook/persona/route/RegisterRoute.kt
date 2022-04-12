@@ -27,14 +27,15 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavController
-import androidx.navigation.navOptions
-import com.dimension.maskbook.common.ext.observeAsState
+import com.dimension.maskbook.common.ext.navOptions
+import com.dimension.maskbook.common.ext.navigate
+import com.dimension.maskbook.common.ext.navigateUri
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.route.navigationComposeAnimComposable
@@ -60,7 +61,8 @@ import com.dimension.maskbook.persona.ui.scenes.register.recovery.RecoveryHomeSc
 import com.dimension.maskbook.persona.viewmodel.recovery.IdentityViewModel
 import com.dimension.maskbook.persona.viewmodel.recovery.PrivateKeyViewModel
 import kotlinx.coroutines.launch
-import org.koin.androidx.compose.getViewModel
+import moe.tlaster.koin.compose.getViewModel
+import moe.tlaster.precompose.navigation.NavController
 import org.koin.core.parameter.parametersOf
 
 @NavGraphDestination(
@@ -205,8 +207,8 @@ fun RegisterRecoveryIdentity(
     val viewModel: IdentityViewModel = getViewModel {
         parametersOf(name)
     }
-    val identity by viewModel.identity.observeAsState()
-    val canConfirm by viewModel.canConfirm.observeAsState()
+    val identity by viewModel.identity.collectAsState()
+    val canConfirm by viewModel.canConfirm.collectAsState()
     val from = stringResource(R.string.scene_identity_mnemonic_import_title)
     val scope = rememberCoroutineScope()
     IdentityScene(
@@ -256,8 +258,8 @@ fun RegisterRecoveryPrivateKey(
     @Back onBack: () -> Unit,
 ) {
     val viewModel: PrivateKeyViewModel = getViewModel()
-    val privateKey by viewModel.privateKey.observeAsState()
-    val canConfirm by viewModel.canConfirm.observeAsState()
+    val privateKey by viewModel.privateKey.collectAsState()
+    val canConfirm by viewModel.canConfirm.collectAsState()
     val scope = rememberCoroutineScope()
     val from = stringResource(R.string.scene_identity_privatekey_import_title)
     PrivateKeyScene(
@@ -310,7 +312,7 @@ fun RegisterRecoveryAlreadyExists(
     PersonaAlreadyExitsDialog(
         onBack = onBack,
         onConfirm = {
-            navController.navigate(
+            navController.navigateUri(
                 Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona)),
                 navOptions {
                     popUpTo(PersonaRoute.Register.Init) {
@@ -343,7 +345,7 @@ fun RegisterRecoveryComplected(
         },
         buttons = {
             PrimaryButton(onClick = {
-                navController.navigate(
+                navController.navigateUri(
                     Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona)),
                     navOptions {
                         popUpTo(PersonaRoute.Register.Init) {

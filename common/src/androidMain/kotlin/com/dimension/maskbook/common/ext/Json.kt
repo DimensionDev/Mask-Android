@@ -35,7 +35,7 @@ import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.long
 
-val JSON by lazy {
+val JSON: Json by lazy {
     Json {
         ignoreUnknownKeys = true
         isLenient = true

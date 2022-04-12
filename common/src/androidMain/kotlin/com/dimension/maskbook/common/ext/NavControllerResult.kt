@@ -20,11 +20,6 @@
  */
 package com.dimension.maskbook.common.ext
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelStoreOwner
-import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavController
 import com.dimension.maskbook.common.model.ResultEvent
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -34,6 +29,11 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.launch
+import moe.tlaster.precompose.navigation.NavController
+import moe.tlaster.precompose.viewmodel.ViewModel
+import moe.tlaster.precompose.viewmodel.ViewModelStoreOwner
+import moe.tlaster.precompose.viewmodel.getViewModel
+import moe.tlaster.precompose.viewmodel.viewModelScope
 
 /**
  * use for navigate result, use like:
@@ -78,15 +78,4 @@ private class EventResultViewModel : ViewModel() {
 }
 
 private val ViewModelStoreOwner.eventResultViewModel: EventResultViewModel
-    get() {
-        return ViewModelProvider(
-            this, EventResultViewModelFactory
-        )[EventResultViewModel::class.java]
-    }
-
-private object EventResultViewModelFactory : ViewModelProvider.Factory {
-    override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        @Suppress("UNCHECKED_CAST")
-        return EventResultViewModel() as T
-    }
-}
+    get() = viewModelStore.getViewModel { EventResultViewModel() }

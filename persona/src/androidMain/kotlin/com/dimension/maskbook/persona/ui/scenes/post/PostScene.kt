@@ -36,22 +36,22 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Pages
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.viewmodel.post.PostViewModel
-import org.koin.androidx.compose.getViewModel
+import moe.tlaster.koin.compose.getViewModel
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun PostScene() {
     val viewModel = getViewModel<PostViewModel>()
-    val items by viewModel.items.observeAsState(initial = emptyList())
+    val items by viewModel.items.collectAsState(initial = emptyList())
     if (!items.any()) {
         EmptyPostScene()
     } else {

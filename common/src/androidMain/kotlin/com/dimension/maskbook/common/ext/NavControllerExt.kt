@@ -21,38 +21,76 @@
 package com.dimension.maskbook.common.ext
 
 import android.net.Uri
-import androidx.navigation.NavController
-import androidx.navigation.NavOptionsBuilder
-import androidx.navigation.navOptions
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
+import moe.tlaster.precompose.navigation.NavController
+import moe.tlaster.precompose.navigation.NavOptions
+import moe.tlaster.precompose.navigation.PopUpTo
 
-fun NavController.navigate(uri: Uri, builder: NavOptionsBuilder.() -> Unit) {
-    navigate(uri, navOptions(builder))
+class NavOptionsBuilder internal constructor() {
+
+    var launchSingleTop = false
+
+    private var popUpTo: PopUpTo? = null
+
+    fun popUpTo(route: String, popUpBuilder: PopUpToBuilder.() -> Unit) {
+        popUpTo = PopUpToBuilder().apply(popUpBuilder).build(route)
+    }
+
+    fun build(): NavOptions {
+        return NavOptions(
+            launchSingleTop = launchSingleTop,
+            popUpTo = popUpTo,
+        )
+    }
 }
 
-fun NavController.navigateUri(uri: String, builder: NavOptionsBuilder.() -> Unit = {}) {
-    navigate(Uri.parse(uri), navOptions(builder))
+class PopUpToBuilder internal constructor() {
+
+    var inclusive = false
+
+    fun build(route: String): PopUpTo {
+        return PopUpTo(
+            route = route,
+            inclusive = inclusive
+        )
+    }
+}
+
+fun navOptions(builder: NavOptionsBuilder.() -> Unit): NavOptions {
+    return NavOptionsBuilder().apply(builder).build()
+}
+
+fun NavController.navigate(route: String, builder: NavOptionsBuilder.() -> Unit) {
+    navigate(route, navOptions(builder))
+}
+
+fun NavController.navigateUri(uri: Uri, builder: NavOptionsBuilder.() -> Unit = {}) {
+    navigate(uri.toString(), navOptions(builder))
+}
+
+fun NavController.navigateUri(uri: Uri, navOptions: NavOptions) {
+    navigate(uri.toString(), navOptions)
 }
 
 fun NavController.navigateWithPopSelf(route: String) {
     navigate(route) {
-        currentDestination?.id?.let { popId ->
-            popUpTo(popId) { inclusive = true }
+        currentBackStackEntry?.route?.let { popRoute ->
+            popUpTo(popRoute.route) { inclusive = true }
         }
     }
 }
 
-fun NavController.navigateUriWithPopSelf(uri: String) {
-    navigate(Uri.parse(uri)) {
-        currentDestination?.id?.let { popId ->
-            popUpTo(popId) { inclusive = true }
+fun NavController.navigateUriWithPopSelf(uri: Uri) {
+    navigateUri(uri) {
+        currentBackStackEntry?.route?.let { popRoute ->
+            popUpTo(popRoute.route) { inclusive = true }
         }
     }
 }
 
 fun NavController.navigateToExtension(site: String? = null) {
-    navigateUri(Deeplinks.WebContent(site)) {
+    navigate(Deeplinks.WebContent(site)) {
         launchSingleTop = true
         popUpTo(CommonRoute.Main.Home.path) {
             inclusive = true

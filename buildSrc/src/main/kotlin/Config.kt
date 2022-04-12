@@ -35,16 +35,6 @@ fun com.android.build.api.dsl.LibraryExtension.setupLibrary() {
     sourceSets["debug"].java.srcDir("build/generated/ksp/android/androidDebug/kotlin")
 }
 
-
-fun com.android.build.gradle.LibraryExtension.withCompose() {
-    buildFeatures {
-        compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = Versions.compose
-    }
-}
-
 fun Project.kspAndroid(dependencyNotation: Any) {
     project.dependencies.add("kspAndroid", dependencyNotation)
 }

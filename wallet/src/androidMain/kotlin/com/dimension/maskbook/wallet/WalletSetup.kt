@@ -21,11 +21,9 @@
 package com.dimension.maskbook.wallet
 
 import android.content.Context
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
 import androidx.room.Room
 import com.dimension.maskbook.common.ModuleSetup
+import com.dimension.maskbook.common.route.navigation
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.wallet.data.JSMethod
 import com.dimension.maskbook.wallet.db.AppDatabase
@@ -108,12 +106,13 @@ import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectServerManager
 import com.dimension.maskbook.wallet.walletconnect.v1.client.WalletConnectClientManagerV1
 import com.dimension.maskbook.wallet.walletconnect.v1.server.WalletConnectServerManagerV1
-import com.google.accompanist.navigation.animation.navigation
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asExecutor
 import kotlinx.coroutines.launch
-import org.koin.androidx.viewmodel.dsl.viewModel
+import moe.tlaster.koin.viewModel
+import moe.tlaster.precompose.navigation.NavController
+import moe.tlaster.precompose.navigation.RouteBuilder
 import org.koin.core.module.Module
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -122,8 +121,7 @@ import com.dimension.maskbook.wallet.export.WalletServices as ExportWalletServic
 
 object WalletSetup : ModuleSetup {
 
-    @OptIn(ExperimentalAnimationApi::class)
-    override fun NavGraphBuilder.route(navController: NavController) {
+    override fun RouteBuilder.route(navController: NavController) {
         generatedRoute(navController)
         navigation(
             startDestination = WalletRoute.Transfer.SearchAddress.path,

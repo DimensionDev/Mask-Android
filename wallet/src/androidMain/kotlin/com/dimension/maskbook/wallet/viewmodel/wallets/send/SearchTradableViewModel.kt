@@ -20,14 +20,14 @@
  */
 package com.dimension.maskbook.wallet.viewmodel.wallets.send
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.wallet.usecase.GetWalletCollectibleCollectionsUseCase
 import com.dimension.maskbook.wallet.usecase.GetWalletTokensUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import moe.tlaster.precompose.viewmodel.ViewModel
+import moe.tlaster.precompose.viewmodel.viewModelScope
 
 class SearchTradableViewModel(
     getWalletTokens: GetWalletTokensUseCase,

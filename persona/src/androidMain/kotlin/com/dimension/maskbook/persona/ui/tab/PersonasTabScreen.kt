@@ -23,8 +23,8 @@ package com.dimension.maskbook.persona.ui.tab
 import android.net.Uri
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavController
-import androidx.navigation.navOptions
+import com.dimension.maskbook.common.ext.navOptions
+import com.dimension.maskbook.common.ext.navigateUri
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.ui.tab.TabScreen
@@ -35,7 +35,8 @@ import com.dimension.maskbook.persona.repository.IPersonaRepository
 import com.dimension.maskbook.persona.route.PersonaRoute
 import com.dimension.maskbook.persona.ui.scenes.PersonaScene
 import com.dimension.maskbook.persona.ui.scenes.social.connectSocial
-import org.koin.androidx.compose.get
+import moe.tlaster.koin.compose.get
+import moe.tlaster.precompose.navigation.NavController
 
 class PersonasTabScreen : TabScreen {
     override val route = CommonRoute.Main.Tabs.Persona
@@ -49,10 +50,10 @@ class PersonasTabScreen : TabScreen {
         PersonaScene(
             onBack = onBack,
             onPersonaCreateClick = {
-                navController.navigate(Uri.parse(Deeplinks.Persona.Register.WelcomeCreatePersona))
+                navController.navigateUri(Uri.parse(Deeplinks.Persona.Register.WelcomeCreatePersona))
             },
             onPersonaRecoveryClick = {
-                navController.navigate(Uri.parse(Deeplinks.Persona.Recovery))
+                navController.navigateUri(Uri.parse(Deeplinks.Persona.Recovery))
             },
             onPersonaNameClick = {
                 navController.navigate(PersonaRoute.PersonaMenu)
@@ -83,7 +84,7 @@ class PersonasTabScreen : TabScreen {
             onSocialItemClick = { _, social ->
                 social.network.toPlatform()?.let {
                     repository.setPlatform(it)
-                    navController.navigate(
+                    navController.navigateUri(
                         Uri.parse(Deeplinks.WebContent(null)),
                         navOptions {
                             launchSingleTop = true

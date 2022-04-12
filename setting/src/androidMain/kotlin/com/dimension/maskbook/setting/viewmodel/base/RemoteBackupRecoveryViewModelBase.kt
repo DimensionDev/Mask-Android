@@ -20,14 +20,14 @@
  */
 package com.dimension.maskbook.setting.viewmodel.base
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.setting.defaultCountDownTime
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import moe.tlaster.precompose.viewmodel.ViewModel
+import moe.tlaster.precompose.viewmodel.viewModelScope
 import kotlin.time.Duration.Companion.seconds
 
 abstract class RemoteBackupRecoveryViewModelBase : ViewModel() {

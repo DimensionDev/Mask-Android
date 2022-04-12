@@ -29,10 +29,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavController
-import androidx.navigation.navOptions
 import com.dimension.maskbook.common.ext.decodeBase64
 import com.dimension.maskbook.common.ext.ifNullOrEmpty
+import com.dimension.maskbook.common.ext.navOptions
+import com.dimension.maskbook.common.ext.navigateUri
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.route.Persona
@@ -54,7 +54,8 @@ import com.dimension.maskbook.persona.ui.scenes.register.recovery.PersonaAlready
 import com.dimension.maskbook.persona.viewmodel.recovery.IdentityViewModel
 import com.dimension.maskbook.persona.viewmodel.recovery.PrivateKeyViewModel
 import kotlinx.coroutines.launch
-import org.koin.androidx.compose.getViewModel
+import moe.tlaster.koin.compose.getViewModel
+import moe.tlaster.precompose.navigation.NavController
 import org.koin.core.parameter.parametersOf
 
 @NavGraphDestination(
@@ -71,7 +72,7 @@ fun SynchronizationScan(
         onBack = onBack,
         onResult = {
             try {
-                navController.navigate(
+                navController.navigateUri(
                     Uri.parse(it),
                     navOptions {
                         popUpTo(PersonaRoute.Synchronization.Scan) {
@@ -113,7 +114,7 @@ fun SynchronizationSuccess(
         },
         buttons = {
             PrimaryButton(onClick = {
-                navController.navigate(
+                navController.navigateUri(
                     Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona)),
                     navOptions {
                         launchSingleTop = true
@@ -170,7 +171,7 @@ fun SynchronizationPersonaAlreadyExists(
     PersonaAlreadyExitsDialog(
         onBack = onBack,
         onConfirm = {
-            navController.navigate(
+            navController.navigateUri(
                 Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona)),
                 navOptions {
                     launchSingleTop = true
@@ -236,7 +237,7 @@ private fun NavController.handleResult(result: Result<Unit>) {
             PersonaRoute.Synchronization.Success,
             navOptions {
                 currentBackStackEntry?.let { backStackEntry ->
-                    popUpTo(backStackEntry.destination.id) {
+                    popUpTo(backStackEntry.route.route) {
                         inclusive = true
                     }
                 }
@@ -250,7 +251,7 @@ private fun NavController.handleResult(result: Result<Unit>) {
                 PersonaRoute.Synchronization.Failed,
             navOptions {
                 currentBackStackEntry?.let { backStackEntry ->
-                    popUpTo(backStackEntry.destination.id) {
+                    popUpTo(backStackEntry.route.route) {
                         inclusive = true
                     }
                 }

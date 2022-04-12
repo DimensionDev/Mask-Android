@@ -46,8 +46,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.dimension.maskbook.common.ext.encodeBase64
+import com.dimension.maskbook.common.ext.navigateUri
 import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.route.navigationComposeAnimComposable
 import com.dimension.maskbook.common.route.navigationComposeAnimComposablePackage
@@ -63,7 +63,8 @@ import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.route.PersonaRoute
 import com.dimension.maskbook.persona.viewmodel.DownloadQrCodeViewModel
 import com.dimension.maskbook.persona.viewmodel.PersonaMenuViewModel
-import org.koin.androidx.compose.getViewModel
+import moe.tlaster.koin.compose.getViewModel
+import moe.tlaster.precompose.navigation.NavController
 
 @NavGraphDestination(
     route = PersonaRoute.PersonaMenu,
@@ -151,9 +152,9 @@ fun PersonaMenuScene(
                         onClick = {
                             // first check if it has backup password
                             if (backupPassword.isEmpty()) {
-                                navController.navigate(Uri.parse(Deeplinks.Setting.SetupPasswordDialog))
+                                navController.navigateUri(Uri.parse(Deeplinks.Setting.SetupPasswordDialog))
                             } else {
-                                navController.navigate(Uri.parse(Deeplinks.Persona.BackUpPassword(PersonaRoute.ExportPrivateKey)))
+                                navController.navigateUri(Uri.parse(Deeplinks.Persona.BackUpPassword(PersonaRoute.ExportPrivateKey)))
                             }
                         }
                     ) {
@@ -176,10 +177,10 @@ fun PersonaMenuScene(
                         onClick = {
                             // first check if it has backup password
                             if (backupPassword.isEmpty()) {
-                                navController.navigate(Uri.parse(Deeplinks.Setting.SetupPasswordDialog))
+                                navController.navigateUri(Uri.parse(Deeplinks.Setting.SetupPasswordDialog))
                             } else {
                                 currentPersona?.let {
-                                    navController.navigate(
+                                    navController.navigateUri(
                                         Uri.parse(
                                             Deeplinks.Persona.BackUpPassword(
                                                 PersonaRoute.DownloadQrCode(
@@ -210,7 +211,7 @@ fun PersonaMenuScene(
                         modifier = Modifier.fillMaxWidth(),
                         elevation = 0.dp,
                         onClick = {
-                            navController.navigate(
+                            navController.navigateUri(
                                 Uri.parse(if (backupPassword.isEmpty() || paymentPassword.isEmpty()) Deeplinks.Setting.SetupPasswordDialog else Deeplinks.Setting.BackupData.BackupSelection)
                             )
                         }

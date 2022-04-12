@@ -30,6 +30,7 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,7 +40,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.viewinterop.AndroidView
-import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.route.navigationComposeAnimComposable
 import com.dimension.maskbook.common.route.navigationComposeAnimComposablePackage
@@ -54,7 +54,7 @@ import com.dimension.maskbook.labs.R
 import com.dimension.maskbook.labs.export.model.TransakConfig
 import com.dimension.maskbook.labs.route.LabsRoute
 import com.dimension.maskbook.wallet.export.WalletServices
-import org.koin.androidx.compose.get
+import moe.tlaster.koin.compose.get
 
 @NavGraphDestination(
     route = LabsRoute.LabsTransak,
@@ -68,7 +68,7 @@ fun LabsTransakScene(
     @Back onBack: () -> Unit,
 ) {
     val repo = get<WalletServices>()
-    val currentWallet by repo.currentWallet.observeAsState(null)
+    val currentWallet by repo.currentWallet.collectAsState(null)
     val transakConfig = remember(currentWallet) {
         TransakConfig(
             isStaging = BuildConfig.DEBUG,

@@ -22,8 +22,8 @@ package com.dimension.maskbook.common.ui.notification
 
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.res.stringResource
-import com.dimension.maskbook.common.ext.observeAsState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 
@@ -103,6 +103,6 @@ class InAppNotification {
     }
 
     @Composable
-    fun observeAsState(initial: Event<NotificationEvent?>? = null) =
-        source.observeAsState(initial = initial)
+    fun collectAsState(initial: Event<NotificationEvent?>? = null) =
+        source.collectAsState(initial = initial)
 }

@@ -20,7 +20,6 @@
  */
 package com.dimension.maskbook.extension.ui
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -63,7 +62,8 @@ import com.dimension.maskbook.common.ui.widget.button.clickable
 import com.dimension.maskbook.extension.export.model.Site
 import com.dimension.maskbook.extension.ext.site
 import com.dimension.maskbook.localization.R
-import org.koin.androidx.compose.get
+import moe.tlaster.koin.compose.get
+import moe.tlaster.precompose.ui.BackHandler
 import kotlin.math.roundToInt
 
 @Composable

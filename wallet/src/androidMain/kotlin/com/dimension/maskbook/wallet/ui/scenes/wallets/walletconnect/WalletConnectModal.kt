@@ -55,6 +55,7 @@ import androidx.compose.material.TabRowDefaults
 import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -72,13 +73,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import androidx.navigation.NavType
-import androidx.navigation.compose.dialog
-import androidx.navigation.navArgument
-import androidx.navigation.navOptions
 import coil.compose.rememberImagePainter
-import com.dimension.maskbook.common.ext.observeAsState
+import com.dimension.maskbook.common.ext.navOptions
+import com.dimension.maskbook.common.route.composable
 import com.dimension.maskbook.common.ui.barcode.rememberBarcodeBitmap
 import com.dimension.maskbook.common.ui.notification.StringResNotificationEvent.Companion.show
 import com.dimension.maskbook.common.ui.widget.HorizontalScenePadding
@@ -96,12 +93,12 @@ import com.dimension.maskbook.wallet.route.WalletRoute
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.supportedChainType
 import com.dimension.maskbook.wallet.viewmodel.wallets.walletconnect.WalletConnectResult
 import com.dimension.maskbook.wallet.viewmodel.wallets.walletconnect.WalletConnectViewModel
-import com.google.accompanist.navigation.animation.AnimatedNavHost
-import com.google.accompanist.navigation.animation.composable
-import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.koin.androidx.compose.getViewModel
+import moe.tlaster.koin.compose.getViewModel
+import moe.tlaster.precompose.navigation.NavController
+import moe.tlaster.precompose.navigation.NavHost
+import moe.tlaster.precompose.navigation.rememberNavController
 import org.koin.core.parameter.parametersOf
 
 enum class WalletConnectType {
@@ -112,7 +109,7 @@ enum class WalletConnectType {
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun WalletConnectModal(rootNavController: NavController) {
-    val navController = rememberAnimatedNavController()
+    val navController = rememberNavController()
     val scope = rememberCoroutineScope()
     val onResult: (WalletConnectResult) -> Unit = { result ->
         scope.launch(Dispatchers.Main) {
@@ -135,9 +132,9 @@ fun WalletConnectModal(rootNavController: NavController) {
     val viewModel = getViewModel<WalletConnectViewModel> {
         parametersOf(onResult)
     }
-    val wcUrl by viewModel.wcUrl.observeAsState(initial = "")
+    val wcUrl by viewModel.wcUrl.collectAsState(initial = "")
     val context = LocalContext.current
-    val currentSupportedWallets by viewModel.currentSupportedWallets.observeAsState(initial = emptyList())
+    val currentSupportedWallets by viewModel.currentSupportedWallets.collectAsState(initial = emptyList())
     MaskModal {
         val clipboardManager = LocalClipboardManager.current
         val inAppNotification = LocalInAppNotification.current
@@ -151,9 +148,9 @@ fun WalletConnectModal(rootNavController: NavController) {
                 textAlign = TextAlign.Center,
             )
 
-            AnimatedNavHost(
+            NavHost(
                 navController = navController,
-                startDestination = "WalletConnectTypeSelect"
+                initialRoute = "WalletConnectTypeSelect"
             ) {
                 composable("WalletConnectTypeSelect") {
                     TypeSelectScene(
@@ -201,9 +198,8 @@ fun WalletConnectModal(rootNavController: NavController) {
 
                 dialog(
                     "WalletConnectUnsupportedNetwork/{network}",
-                    listOf(navArgument("network") { type = NavType.StringType })
                 ) {
-                    val network = it.arguments?.getString("network") ?: "unKnown"
+                    val network: String = it.path("network")
                     WalletConnectUnsupportedNetwork(
                         onBack = {
                             viewModel.retry()

@@ -34,8 +34,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import androidx.navigation.compose.currentBackStackEntryAsState
+import moe.tlaster.precompose.navigation.NavController
+import moe.tlaster.precompose.navigation.currentBackStackEntryAsState
 
 @Composable
 fun ComposeDebugTool(
@@ -57,7 +57,7 @@ fun ComposeDebugTool(
         if (debugOpen) {
             Text(
                 modifier = Modifier.background(MaterialTheme.colors.surface),
-                text = state?.destination?.route ?: "UnKnow route",
+                text = state?.route?.route ?: "UnKnow route",
                 color = MaterialTheme.colors.primary
             )
         }

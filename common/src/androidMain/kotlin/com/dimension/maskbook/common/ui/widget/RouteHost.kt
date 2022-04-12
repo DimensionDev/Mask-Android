@@ -24,32 +24,39 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.CornerSize
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ModalBottomSheetLayout
+import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
 import com.dimension.maskbook.common.ui.theme.modalScrimColor
-import com.google.accompanist.navigation.animation.AnimatedNavHost
-import com.google.accompanist.navigation.animation.rememberAnimatedNavController
-import com.google.accompanist.navigation.material.BottomSheetNavigator
-import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
-import com.google.accompanist.navigation.material.ModalBottomSheetLayout
+import moe.tlaster.precompose.navigation.NavController
+import moe.tlaster.precompose.navigation.NavHost
+import moe.tlaster.precompose.navigation.NavTransition
+import moe.tlaster.precompose.navigation.RouteBuilder
+import moe.tlaster.precompose.navigation.rememberNavController
 
 private const val navHostAnimationDurationMillis = 320
 
 @ExperimentalAnimationApi
-@ExperimentalMaterialNavigationApi
+@ExperimentalMaterialApi
 @Composable
 fun RouteHost(
-    bottomSheetNavigator: BottomSheetNavigator = rememberMaskBottomSheetNavigator(),
-    navController: NavHostController = rememberAnimatedNavController(bottomSheetNavigator),
+    navController: NavController = rememberNavController(),
+    bottomSheetState: ModalBottomSheetState = rememberMaskBottomSheetNavigator(),
     startDestination: String,
-    builder: NavGraphBuilder.() -> Unit
+    builder: RouteBuilder.() -> Unit
 ) {
     ModalBottomSheetLayout(
-        bottomSheetNavigator,
+        sheetContent = navController.sheetContent ?: {
+            Box(Modifier.height(1.dp))
+        },
+        sheetState = bottomSheetState,
         sheetBackgroundColor = MaterialTheme.colors.background,
         sheetShape = MaterialTheme.shapes.large.copy(
             bottomStart = CornerSize(0.dp),
@@ -57,41 +64,44 @@ fun RouteHost(
         ),
         scrimColor = MaterialTheme.colors.modalScrimColor,
     ) {
-        AnimatedNavHost(
+        NavHost(
             navController = navController,
-            startDestination = startDestination,
-            enterTransition = {
-                slideInHorizontally(
-                    initialOffsetX = { it },
-                    animationSpec = tween(
-                        navHostAnimationDurationMillis
+            bottomSheetState = bottomSheetState,
+            initialRoute = startDestination,
+            navTransition = NavTransition(
+                enterTransition = {
+                    slideInHorizontally(
+                        initialOffsetX = { it },
+                        animationSpec = tween(
+                            navHostAnimationDurationMillis
+                        )
                     )
-                )
-            },
-            exitTransition = {
-                slideOutHorizontally(
-                    targetOffsetX = { -it },
-                    animationSpec = tween(
-                        navHostAnimationDurationMillis
+                },
+                exitTransition = {
+                    slideOutHorizontally(
+                        targetOffsetX = { -it },
+                        animationSpec = tween(
+                            navHostAnimationDurationMillis
+                        )
                     )
-                )
-            },
-            popEnterTransition = {
-                slideInHorizontally(
-                    initialOffsetX = { -it },
-                    animationSpec = tween(
-                        navHostAnimationDurationMillis
+                },
+                popEnterTransition = {
+                    slideInHorizontally(
+                        initialOffsetX = { -it },
+                        animationSpec = tween(
+                            navHostAnimationDurationMillis
+                        )
                     )
-                )
-            },
-            popExitTransition = {
-                slideOutHorizontally(
-                    targetOffsetX = { it },
-                    animationSpec = tween(
-                        navHostAnimationDurationMillis
+                },
+                popExitTransition = {
+                    slideOutHorizontally(
+                        targetOffsetX = { it },
+                        animationSpec = tween(
+                            navHostAnimationDurationMillis
+                        )
                     )
-                )
-            },
+                },
+            ),
             builder = builder,
         )
     }

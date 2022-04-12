@@ -41,7 +41,7 @@ fun MaskInAppNotification(
 ) {
     val inAppNotification = LocalInAppNotification.current
     Log.d("MaskInAppNotification", "inAppNotification: $inAppNotification")
-    val notification by inAppNotification.observeAsState(null)
+    val notification by inAppNotification.collectAsState(null)
     val event = notification?.getContentIfNotHandled()
     val message = event?.getMessage()
     val actionMessage = event?.let {
