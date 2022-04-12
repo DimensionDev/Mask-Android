@@ -27,10 +27,12 @@ import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.sp
 
@@ -38,13 +40,14 @@ import androidx.compose.ui.unit.sp
 fun NameImage(
     name: String,
     modifier: Modifier = Modifier,
+    color: Color = MaterialTheme.colors.primary,
     style: TextStyle? = null,
     alpha: Float = LocalContentAlpha.current,
 ) {
     BoxWithConstraints(
         modifier = modifier
             .alpha(alpha)
-            .background(MaterialTheme.colors.primary, shape = CircleShape),
+            .background(color, shape = CircleShape),
         contentAlignment = Alignment.Center,
     ) {
         val combinedTextStyle = style ?: LocalTextStyle.current.copy(
@@ -53,7 +56,17 @@ fun NameImage(
         Text(
             text = name.firstOrNull()?.toString() ?: "N",
             style = combinedTextStyle,
-            color = MaterialTheme.colors.onPrimary,
+            color = contentColorFor(color),
         )
     }
 }
+
+val String.color: Color
+    get() {
+        // Generate color from a string
+        val hash = this.hashCode()
+        val r = (hash shr 16 and 0xFF).toFloat()
+        val g = (hash shr 8 and 0xFF).toFloat()
+        val b = (hash and 0xFF).toFloat()
+        return Color(r / 255f, g / 255f, b / 255f)
+    }
