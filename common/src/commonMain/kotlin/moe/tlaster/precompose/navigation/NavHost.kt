@@ -26,6 +26,11 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.with
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ModalBottomSheetState
+import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material.SwipeableDefaults
+import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
@@ -49,7 +54,8 @@ import moe.tlaster.precompose.ui.LocalViewModelStoreOwner
  * @param initialRoute the route for the start destination
  * @param builder the builder used to construct the graph
  */
-@OptIn(ExperimentalAnimationApi::class)
+
+@OptIn(ExperimentalAnimationApi::class, ExperimentalMaterialApi::class)
 @Composable
 fun NavHost(
     navController: NavController,
@@ -57,10 +63,30 @@ fun NavHost(
     navTransition: NavTransition = remember { NavTransition() },
     builder: RouteBuilder.() -> Unit,
 ) {
+    NavHost(
+        navController = navController,
+        initialRoute = initialRoute,
+        navTransition = navTransition,
+        bottomSheetState = rememberModalBottomSheetState(
+            ModalBottomSheetValue.Hidden,
+            SwipeableDefaults.AnimationSpec
+        ),
+        builder = builder,
+    )
+}
+@OptIn(ExperimentalAnimationApi::class, ExperimentalMaterialApi::class)
+@Composable
+fun NavHost(
+    navController: NavController,
+    initialRoute: String,
+    bottomSheetState: ModalBottomSheetState,
+    navTransition: NavTransition = remember { NavTransition() },
+    builder: RouteBuilder.() -> Unit,
+) {
     val stateHolder = rememberSaveableStateHolder()
     val manager = remember {
         val graph = RouteBuilder(initialRoute = initialRoute).apply(builder).build()
-        RouteStackManager(stateHolder, graph).apply {
+        RouteStackManager(graph, stateHolder, bottomSheetState).apply {
             navController.stackManager = this
         }
     }
@@ -152,9 +178,10 @@ fun NavHost(
 
             initEntry(stack.topEntry)
 
-            if (stack.currentEntry != stack.topEntry) {
+            val currentEntry = stack.currentDialogEntry
+            if (currentEntry != null) {
                 AnimatedContent(
-                    stack.currentEntry,
+                    currentEntry,
                     transitionSpec = {
                         finalEntryEnter(this) with finalEntryExit(this)
                     },

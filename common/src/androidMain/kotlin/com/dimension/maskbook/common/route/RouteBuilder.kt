@@ -43,7 +43,6 @@ fun RouteBuilder.composable(
 @OptIn(ExperimentalAnimationApi::class)
 fun RouteBuilder.modalComposable(
     route: String,
-    // arguments: List<NamedNavArgument> = emptyList(),
     deepLinks: List<String> = emptyList(),
     content: @Composable (BackStackEntry) -> Unit
 ) {
@@ -69,12 +68,11 @@ fun RouteBuilder.bottomSheet(
     deepLinks: List<String> = emptyList(),
     content: @Composable (BackStackEntry) -> Unit
 ) {
-    // bottomSheet(
-    //     route = route,
-    //     // arguments = arguments,
-    //     deepLinks = deepLinks,
-    //     content = content
-    // )
+    bottomSheet(
+        route = route,
+        deepLinks = deepLinks,
+        content = content
+    )
 }
 
 fun RouteBuilder.dialog(

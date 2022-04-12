@@ -21,6 +21,7 @@
 package moe.tlaster.precompose.navigation
 
 import androidx.compose.runtime.Composable
+import moe.tlaster.precompose.navigation.route.BottomSheetRoute
 import moe.tlaster.precompose.navigation.route.DialogRoute
 import moe.tlaster.precompose.navigation.route.Route
 import moe.tlaster.precompose.navigation.route.SceneRoute
@@ -65,7 +66,21 @@ class RouteBuilder(
             route = route,
             deepLinks = deepLinks,
             navTransition = navTransition,
-            content = content
+            content = content,
+        )
+    }
+
+    fun bottomSheet(
+        route: String,
+        deepLinks: List<String> = emptyList(),
+        navTransition: NavTransition? = null,
+        content: @Composable (BackStackEntry) -> Unit,
+    ) {
+        this.route += BottomSheetRoute(
+            route = route,
+            deepLinks = deepLinks,
+            navTransition = navTransition,
+            content = content,
         )
     }
 

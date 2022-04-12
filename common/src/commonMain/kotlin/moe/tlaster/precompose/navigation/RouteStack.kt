@@ -23,6 +23,8 @@ package moe.tlaster.precompose.navigation
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import moe.tlaster.precompose.navigation.route.BottomSheetRoute
+import moe.tlaster.precompose.navigation.route.DialogRoute
 
 @Stable
 class RouteStack internal constructor(
@@ -38,6 +40,12 @@ class RouteStack internal constructor(
 
     val canGoBack: Boolean
         get() = entries.isNotEmpty()
+
+    internal val currentDialogEntry: BackStackEntry?
+        get() = entries.lastOrNull { it.route is DialogRoute }
+
+    internal val currentBottomSheetEntry: BackStackEntry?
+        get() = entries.lastOrNull { it.route is BottomSheetRoute }
 
     fun goBack(): BackStackEntry {
         return entries.removeLast().also {

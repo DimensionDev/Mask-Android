@@ -22,6 +22,7 @@ package com.dimension.maskbook.entry.ui
 
 import android.net.Uri
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import com.dimension.maskbook.common.CommonSetup
@@ -48,13 +49,11 @@ import kotlinx.coroutines.flow.firstOrNull
 import moe.tlaster.precompose.navigation.rememberNavController
 import org.koin.mp.KoinPlatformTools
 
-@OptIn(ExperimentalAnimationApi::class)
+@OptIn(ExperimentalAnimationApi::class, ExperimentalMaterialApi::class)
 @Composable
 fun Router(
     startDestination: String,
 ) {
-    // val bottomSheetNavigator = rememberMaskBottomSheetNavigator()
-    // val navController = rememberAnimatedNavController(bottomSheetNavigator)
     val navController = rememberNavController()
     LaunchedEffect(Unit) {
         val initialRoute = getInitialRoute()
@@ -75,7 +74,6 @@ fun Router(
         }
     }
     RouteHost(
-        // bottomSheetNavigator = bottomSheetNavigator,
         navController = navController,
         startDestination = startDestination,
     ) {

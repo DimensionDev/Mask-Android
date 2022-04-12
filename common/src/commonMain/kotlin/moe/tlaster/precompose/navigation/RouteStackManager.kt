@@ -20,13 +20,20 @@
  */
 package moe.tlaster.precompose.navigation
 
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ModalBottomSheetState
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.SaveableStateHolder
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import moe.tlaster.precompose.lifecycle.Lifecycle
 import moe.tlaster.precompose.lifecycle.LifecycleObserver
 import moe.tlaster.precompose.lifecycle.LifecycleOwner
+import moe.tlaster.precompose.navigation.bottomsheet.SheetContentHost
+import moe.tlaster.precompose.navigation.route.BottomSheetRoute
 import moe.tlaster.precompose.navigation.route.ComposeRoute
 import moe.tlaster.precompose.navigation.route.DialogRoute
 import moe.tlaster.precompose.navigation.route.SceneRoute
@@ -37,10 +44,12 @@ import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
+@OptIn(ExperimentalMaterialApi::class)
 @Stable
 internal class RouteStackManager(
-    private val stateHolder: SaveableStateHolder,
     private val routeGraph: RouteGraph,
+    private val stateHolder: SaveableStateHolder,
+    private val sheetState: ModalBottomSheetState,
 ) : LifecycleObserver, BackHandler {
     // FIXME: 2021/4/1 Temp workaround for deeplink
     private var pendingNavigation: String? = null
@@ -75,6 +84,25 @@ internal class RouteStackManager(
         get() = currentStack?.canGoBack == true || _backStacks.size > 1
 
     val isPop = mutableStateOf(false)
+
+    internal val sheetContent: @Composable ColumnScope.() -> Unit = @Composable {
+        // val columnScope = this
+        val saveableStateHolder = rememberSaveableStateHolder()
+
+        val currentEntry = currentStack?.currentBottomSheetEntry
+        SheetContentHost(
+            backStackEntry = currentEntry,
+            sheetState = sheetState,
+            stateHolder = saveableStateHolder,
+            onSheetShown = {
+
+            },
+            onSheetDismissed = {
+                goBack()
+            }
+        )
+
+    }
 
     private val routeParser: RouteParser by lazy {
         RouteParser().apply {
@@ -160,7 +188,8 @@ internal class RouteStackManager(
                         newTask(entry, matchResult.route.navTransition)
                     )
                 }
-                is DialogRoute -> {
+                is DialogRoute,
+                is BottomSheetRoute -> {
                     currentStack?.entries?.add(entry)
                 }
             }

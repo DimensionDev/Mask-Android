@@ -20,6 +20,8 @@
  */
 package moe.tlaster.precompose.navigation
 
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
@@ -37,6 +39,7 @@ fun rememberNavController(): NavController {
     return remember { NavController() }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 class NavController {
     // FIXME: 2021/4/1 Temp workaround for deeplink
     private var pendingNavigation: String? = null
@@ -49,10 +52,13 @@ class NavController {
         }
 
     val backQueue: List<BackStackEntry>
-        get() = stackManager?.backStacks?.mapNotNull { it.currentEntry } ?: emptyList()
+        get() = stackManager?.backStacks?.map { it.currentEntry } ?: emptyList()
 
     val currentBackStackEntry: BackStackEntry?
         get() = stackManager?.currentEntry
+
+    val sheetContent: (@Composable ColumnScope.() -> Unit)?
+        get() = stackManager?.sheetContent
 
     fun getBackStackEntry(route: String): BackStackEntry? {
         return stackManager?.getBackStackEntry(route)
