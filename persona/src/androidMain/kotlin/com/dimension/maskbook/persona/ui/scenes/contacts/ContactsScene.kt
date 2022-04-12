@@ -69,7 +69,7 @@ fun ContactsScene(
     items: List<ContactData>,
     input: String,
     onSearchInputChanged: (String) -> Unit,
-    searchOnly: Boolean,
+    isSearchMode: Boolean,
     onSearchFocusChanged: (Boolean) -> Unit,
     onInvite: (ContactData?) -> Unit,
 ) {
@@ -116,12 +116,15 @@ fun ContactsScene(
                     value = input,
                     onValueChanged = { onSearchInputChanged(it) },
                     placeholder = {
-                        Text(text = stringResource(R.string.scene_persona_contacts_search_account))
-                    }
+                        Text(
+                            text = stringResource(R.string.scene_persona_contacts_search_account),
+                            maxLines = 1
+                        )
+                    },
                 )
 
                 val focusManager = LocalFocusManager.current
-                MaskAnimatedVisibility(searchOnly) {
+                MaskAnimatedVisibility(isSearchMode) {
                     TextButton(
                         onClick = {
                             focusManager.clearFocus()

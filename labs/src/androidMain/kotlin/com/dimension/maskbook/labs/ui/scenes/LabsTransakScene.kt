@@ -40,6 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.viewinterop.AndroidView
+import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.route.navigationComposeAnimComposable
 import com.dimension.maskbook.common.route.navigationComposeAnimComposablePackage
 import com.dimension.maskbook.common.routeProcessor.annotations.Back
@@ -59,6 +60,7 @@ import moe.tlaster.koin.compose.get
     route = LabsRoute.LabsTransak,
     packageName = navigationComposeAnimComposablePackage,
     functionName = navigationComposeAnimComposable,
+    deeplink = [Deeplinks.Labs.Transak]
 )
 @SuppressLint("SetJavaScriptEnabled")
 @Composable

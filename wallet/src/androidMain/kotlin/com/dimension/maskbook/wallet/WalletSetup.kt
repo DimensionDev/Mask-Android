@@ -296,13 +296,13 @@ private fun Module.provideViewModel() {
     }
     viewModel { WalletTransactionHistoryViewModel(get(), get()) }
     viewModel { (id: String, name: String) -> WalletRenameViewModel(id, name, get()) }
-    viewModel { WalletBalancesViewModel(get(), get(), get()) }
+    viewModel { WalletBalancesViewModel(get(), get(), get(), get()) }
     viewModel { WalletManagementModalViewModel(get()) }
     viewModel { WalletBackupViewModel(get(), get()) }
     viewModel { (id: String) -> WalletDeleteViewModel(id, get(), get()) }
     viewModel { WalletSwitchViewModel(get()) }
     viewModel { SearchAddressViewModel(get(), get(), get(), get()) }
-    viewModel { (id: String) -> TokenDetailViewModel(id, get(), get(), get()) }
+    viewModel { (id: String) -> TokenDetailViewModel(id, get(), get(), get(), get()) }
     viewModel { (initialGasLimit: Double) ->
         GasFeeViewModel(
             initialGasLimit = initialGasLimit,
@@ -339,7 +339,7 @@ private fun Module.provideViewModel() {
         )
     }
     viewModel { UnlockWalletViewModel(get(), get()) }
-    viewModel { (id: String) -> CollectibleDetailViewModel(id, get(), get(), get()) }
+    viewModel { (id: String) -> CollectibleDetailViewModel(id, get(), get(), get(), get()) }
     viewModel { CollectiblesViewModel(get(), get()) }
     viewModel { (data: SendTransactionData, request: SendTokenRequest?) ->
         Web3TransactionConfirmViewModel(

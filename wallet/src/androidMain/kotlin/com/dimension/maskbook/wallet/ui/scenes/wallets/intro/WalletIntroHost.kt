@@ -27,6 +27,7 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.dimension.maskbook.wallet.route.WalletRoute
+import com.dimension.maskbook.wallet.route.transfer
 import com.dimension.maskbook.wallet.ui.scenes.wallets.create.CreateType
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletBalancesScene
 import com.dimension.maskbook.wallet.viewmodel.wallets.WalletBalancesViewModel
@@ -47,7 +48,7 @@ fun WalletIntroHost(navController: NavController) {
     val showTokens by viewModel.showTokens.collectAsState()
     val showTokensLess by viewModel.showTokensLess.collectAsState()
     val showTokensLessAmount by viewModel.showTokensLessAmount.collectAsState()
-
+    val nativeToken by viewModel.walletNativeToken.collectAsState()
     val currentWallet = wallet
     val currentDWebData = dWebData
 
@@ -89,7 +90,9 @@ fun WalletIntroHost(navController: NavController) {
                 navController.navigate(WalletRoute.WalletQrcode(currentDWebData.chainType.name))
             },
             onSendClicked = {
-                navController.navigate(WalletRoute.Transfer.SearchAddress(null))
+                nativeToken?.let {
+                    navController.transfer(walletNativeToken = it, tradableId = null)
+                }
             },
             sceneType = sceneType,
             onSceneTypeChanged = {

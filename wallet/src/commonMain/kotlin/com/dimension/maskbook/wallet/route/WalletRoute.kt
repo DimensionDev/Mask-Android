@@ -154,4 +154,8 @@ expect object WalletRoute {
     object UnlockWalletDialog {
         operator fun invoke(target: String): String
     }
+
+    object EmptyTokenDialog {
+        operator fun invoke(tokenSymbol: String): String
+    }
 }

@@ -96,6 +96,7 @@ fun TransferDetailScene(
     paymentPassword: String,
     onPaymentPasswordChanged: (String) -> Unit,
     canConfirm: Boolean,
+    isEnoughForGas: Boolean,
 ) {
     MaskScene {
         MaskScaffold(
@@ -154,7 +155,15 @@ fun TransferDetailScene(
                             amount = amount,
                             onValueChanged = onAmountChanged,
                             onMax = { onAmountChanged.invoke(maxAmount) },
-                            error = amount.toBigDecimalOrNull() ?: BigDecimal.ZERO > maxAmount.toBigDecimalOrNull() ?: BigDecimal.ZERO
+                            error = when {
+                                !isEnoughForGas -> {
+                                    stringResource(R.string.scene_sendTransaction_not_enough_gas)
+                                }
+                                amount.toBigDecimalOrNull() ?: BigDecimal.ZERO > maxAmount.toBigDecimalOrNull() ?: BigDecimal.ZERO -> {
+                                    stringResource(R.string.scene_sendTransaction_send_amount_error)
+                                }
+                                else -> ""
+                            }
                         )
                     }
 
@@ -292,7 +301,7 @@ private fun AmountContent(
     amount: String,
     onValueChanged: (String) -> Unit,
     onMax: () -> Unit,
-    error: Boolean,
+    error: String,
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(text = stringResource(R.string.scene_sendTransaction_send_label_Amount))
@@ -319,10 +328,10 @@ private fun AmountContent(
                 }
             },
         )
-        if (error) {
+        if (error.isNotEmpty()) {
             Spacer(modifier = Modifier.padding(end = 8.dp))
             Text(
-                text = stringResource(R.string.scene_sendTransaction_send_amount_error),
+                text = error,
                 color = MaterialTheme.colors.error
             )
         }
