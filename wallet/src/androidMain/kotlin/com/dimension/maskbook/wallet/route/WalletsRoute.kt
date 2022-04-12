@@ -82,6 +82,7 @@ import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletSwitchEd
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletSwitchSceneModal
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletTransactionHistoryScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.token.TokenDetailScene
+import com.dimension.maskbook.wallet.ui.scenes.wallets.walletconnect.DAppConnectedModal
 import com.dimension.maskbook.wallet.ui.scenes.wallets.walletconnect.WalletConnectModal
 import com.dimension.maskbook.wallet.viewmodel.wallets.TokenDetailViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.UnlockWalletViewModel
@@ -94,6 +95,7 @@ import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletRenameVi
 import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletSwitchEditViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletSwitchViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletTransactionHistoryViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.walletconnect.DAppConnectedViewModel
 import org.koin.androidx.compose.get
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
@@ -827,6 +829,23 @@ fun UnlockWalletDialog(
                     }
                 )
             }
+        }
+    )
+}
+
+@NavGraphDestination(
+    route = WalletRoute.WalletConnect.DApps,
+    packageName = navigationComposeBottomSheetPackage,
+    functionName = navigationComposeBottomSheet,
+)
+@Composable
+fun WalletConnectedDAppsModal() {
+    val viewModel = getViewModel<DAppConnectedViewModel>()
+    val apps by viewModel.apps.observeAsState()
+    DAppConnectedModal(
+        apps = apps,
+        onDisconnect = {
+            viewModel.disconnect(it)
         }
     )
 }

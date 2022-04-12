@@ -49,6 +49,7 @@ fun WalletIntroHost(navController: NavController) {
     val showTokens by viewModel.showTokens.observeAsState()
     val showTokensLess by viewModel.showTokensLess.observeAsState()
     val showTokensLessAmount by viewModel.showTokensLessAmount.observeAsState()
+    val connectedDApps by viewModel.connectedDApp.observeAsState()
 
     val currentWallet = wallet
     val currentDWebData = dWebData
@@ -116,6 +117,12 @@ fun WalletIntroHost(navController: NavController) {
             refreshState = swipeRefreshState,
             onWalletRefresh = {
                 viewModel.refreshWallet()
+            },
+            onScan = {
+                // TODO Scan
+            },
+            connectedDAppCount = connectedDApps.size,
+            onDisplayWalletConnect = {
             }
         )
     }

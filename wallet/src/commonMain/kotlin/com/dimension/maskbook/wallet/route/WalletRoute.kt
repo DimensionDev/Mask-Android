@@ -154,4 +154,10 @@ expect object WalletRoute {
     object UnlockWalletDialog {
         operator fun invoke(target: String): String
     }
+
+    object WalletConnect {
+        const val DApps: String
+        // request
+        //
+    }
 }

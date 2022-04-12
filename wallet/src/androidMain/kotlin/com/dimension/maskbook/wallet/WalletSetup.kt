@@ -102,6 +102,7 @@ import com.dimension.maskbook.wallet.viewmodel.wallets.send.SearchTradableViewMo
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendConfirmViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.TransferDetailViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.Web3TransactionConfirmViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.walletconnect.DAppConnectedViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.walletconnect.WalletConnectResult
 import com.dimension.maskbook.wallet.viewmodel.wallets.walletconnect.WalletConnectViewModel
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager
@@ -298,7 +299,7 @@ private fun Module.provideViewModel() {
     }
     viewModel { WalletTransactionHistoryViewModel(get(), get()) }
     viewModel { (id: String, name: String) -> WalletRenameViewModel(id, name, get()) }
-    viewModel { WalletBalancesViewModel(get(), get(), get()) }
+    viewModel { WalletBalancesViewModel(get(), get(), get(), get()) }
     viewModel { WalletManagementModalViewModel(get()) }
     viewModel { WalletBackupViewModel(get(), get()) }
     viewModel { (id: String) -> WalletDeleteViewModel(id, get(), get()) }
@@ -357,6 +358,7 @@ private fun Module.provideViewModel() {
     }
     viewModel { SearchTradableViewModel(get(), get()) }
     viewModel { (id: String) -> WalletSwitchEditViewModel(id, get()) }
+    viewModel { DAppConnectedViewModel(get()) }
 }
 
 private fun Module.provideServices() {

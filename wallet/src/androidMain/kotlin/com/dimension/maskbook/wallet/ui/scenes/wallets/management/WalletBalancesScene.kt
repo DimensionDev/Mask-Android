@@ -90,6 +90,7 @@ import com.dimension.maskbook.wallet.export.model.WalletData
 import com.dimension.maskbook.wallet.export.model.WalletTokenData
 import com.dimension.maskbook.wallet.ui.widget.CollectibleCollectionCard
 import com.dimension.maskbook.wallet.ui.widget.WalletCard
+import com.dimension.maskbook.wallet.ui.widget.WalletConnectFloatingButton
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.rememberPagerState
 import com.google.accompanist.swiperefresh.SwipeRefresh
@@ -126,7 +127,10 @@ fun WalletBalancesScene(
     onWalletAddressClicked: () -> Unit,
     collectible: LazyPagingItems<WalletCollectibleCollectionData>,
     refreshState: SwipeRefreshState,
-    onWalletRefresh: () -> Unit
+    onWalletRefresh: () -> Unit,
+    onScan: () -> Unit,
+    connectedDAppCount: Int,
+    onDisplayWalletConnect: () -> Unit,
 ) {
     val pagerState = rememberPagerState(initialPage = maxOf(wallets.indexOf(currentWallet), 0))
 
@@ -148,14 +152,13 @@ fun WalletBalancesScene(
             topBar = {
                 MaskSingleLineTopAppBar(
                     navigationIcon = {
-                        // TODO haven't implement yet
-                        // MaskIconCardButton(onClick = { /*TODO*/ }) {
-                        //     Icon(
-                        //         painter = painterResource(id = R.drawable.scan),
-                        //         contentDescription = null,
-                        //         modifier = Modifier.size(22.dp),
-                        //     )
-                        // }
+                        MaskIconCardButton(onClick = onScan) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.scan),
+                                contentDescription = null,
+                                modifier = Modifier.size(22.dp),
+                            )
+                        }
                     },
                     actions = {
                         MaskIconCardButton(onClick = onWalletSwitchClicked) {
@@ -167,6 +170,14 @@ fun WalletBalancesScene(
                         }
                     }
                 )
+            },
+            floatingActionButton = {
+                if (connectedDAppCount > 0) {
+                    WalletConnectFloatingButton(
+                        count = connectedDAppCount.toString(),
+                        onClick = onDisplayWalletConnect
+                    )
+                }
             }
         ) {
             SwipeRefresh(refreshState, onRefresh = onWalletRefresh) {
