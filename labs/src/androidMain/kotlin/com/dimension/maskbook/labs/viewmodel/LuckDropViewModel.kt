@@ -33,9 +33,11 @@ import com.dimension.maskbook.common.ext.useSuspend
 import com.dimension.maskbook.common.ext.web3j
 import com.dimension.maskbook.common.util.EthUtils
 import com.dimension.maskbook.common.util.SignUtils
+import com.dimension.maskbook.extension.export.ExtensionServices
 import com.dimension.maskbook.labs.mapper.toRedPacketState
 import com.dimension.maskbook.labs.mapper.toUiLuckyDropData
 import com.dimension.maskbook.labs.model.RedPacketAvailabilityState
+import com.dimension.maskbook.labs.model.SendMethodRequest
 import com.dimension.maskbook.labs.model.options.RedPacketOptions
 import com.dimension.maskbook.labs.model.ui.UiLuckyDropData
 import com.dimension.maskbook.labs.util.RedPacketUtils
@@ -53,11 +55,20 @@ import org.web3j.abi.FunctionEncoder
 import kotlin.time.Duration.Companion.seconds
 
 class LuckDropViewModel(
-    data: String,
+    dataRaw: String,
+    requestRaw: String?,
     walletServices: WalletServices,
+    private val extensionServices: ExtensionServices,
 ) : ViewModel() {
 
-    private val redPacket = flow<RedPacketOptions> { emit(data.decodeJson()) }
+    private val redPacket = flow<RedPacketOptions> {
+        emit(dataRaw.decodeJson())
+    }
+
+    private val request: SendMethodRequest? by lazy {
+        requestRaw?.decodeJson<SendMethodRequest>()
+    }
+
     private val currentWallet = walletServices.currentWallet.filterNotNull()
     private val currentChain = walletServices.currentChain.filterNotNull()
 
@@ -140,6 +151,8 @@ class LuckDropViewModel(
             }
         }
 
+        responseJS(redPacketState != null)
+
         _loading.value = false
         return redPacketState
     }
@@ -157,5 +170,16 @@ class LuckDropViewModel(
             delay(1.5.seconds)
         }
         return null
+    }
+
+    private fun responseJS(result: Boolean) {
+        request?.let {
+            val response = mapOf(
+                "id" to it.id.toString(),
+                "jsonrpc" to it.jsonrpc,
+                "result" to if (result) "true" else "false",
+            )
+            extensionServices.sendCurrentContentJSEventResponse(response)
+        }
     }
 }

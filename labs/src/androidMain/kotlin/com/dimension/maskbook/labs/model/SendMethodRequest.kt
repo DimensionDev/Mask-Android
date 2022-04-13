@@ -18,22 +18,14 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.labs.route
+package com.dimension.maskbook.labs.model
 
-import com.dimension.maskbook.common.routeProcessor.annotations.Route
+import com.dimension.maskbook.extension.export.model.ExtensionId
+import kotlinx.serialization.Serializable
 
-@Suppress("CONST_VAL_WITHOUT_INITIALIZER")
-@Route
-expect object LabsRoute {
-    const val PluginSettings: String
-    const val LabsTransak: String
-    const val MarketTrendSettings: String
-    object RedPacket {
-        object LuckyDrop {
-            operator fun invoke(dataRaw: String, requestRaw: String?): String
-        }
-        object LuckyDropResult {
-            operator fun invoke(success: Boolean, amount: String?, postLink: String?): String
-        }
-    }
-}
+@Serializable
+data class SendMethodRequest(
+    val id: ExtensionId,
+    val jsonrpc: String,
+    val method: String,
+)

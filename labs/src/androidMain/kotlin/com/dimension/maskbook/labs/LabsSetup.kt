@@ -62,7 +62,7 @@ object LabsSetup : ModuleSetup {
 
         viewModel { LabsViewModel(get(), get()) }
         viewModel { PluginSettingsViewModel(get(), get(), get()) }
-        viewModel { (data: String) -> LuckDropViewModel(data, get()) }
+        viewModel { (dataRaw: String, requestRaw: String?) -> LuckDropViewModel(dataRaw, requestRaw, get(), get()) }
     }
 
     override fun onExtensionReady() {

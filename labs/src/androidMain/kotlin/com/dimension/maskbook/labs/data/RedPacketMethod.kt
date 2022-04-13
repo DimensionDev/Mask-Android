@@ -25,12 +25,11 @@ import com.dimension.maskbook.common.ext.encodeJson
 import com.dimension.maskbook.common.ext.responseSuccess
 import com.dimension.maskbook.common.route.Navigator
 import com.dimension.maskbook.extension.export.ExtensionServices
-import com.dimension.maskbook.labs.mapper.toRedPacketState
+import com.dimension.maskbook.labs.model.SendMethodRequest
 import com.dimension.maskbook.labs.model.options.RedPacketOptions
 import com.dimension.maskbook.labs.route.LabsRoute
 import com.dimension.maskbook.wallet.export.WalletServices
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -45,25 +44,28 @@ class RedPacketMethod(
             .onEach { message ->
                 when (message.method) {
                     notifyRedPacket -> {
-                        val options = message.params?.decodeJson<RedPacketOptions>() ?: return@onEach
-
-                        val currentWallet = walletServices.currentWallet.firstOrNull()
-                            ?: return@onEach
-                        val currentChain = walletServices.currentChain.firstOrNull()
-                            ?: return@onEach
-
-                        val data = options.toRedPacketState(currentWallet, currentChain)
-                        if (data.canClaim) {
-                            Navigator.navigate(LabsRoute.RedPacket.LuckyDrop(options.encodeJson()))
-                        }
-
+                        // val options = message.params?.decodeJson<RedPacketOptions>() ?: return@onEach
+                        //
+                        // val currentWallet = walletServices.currentWallet.firstOrNull()
+                        //     ?: return@onEach
+                        // val currentChain = walletServices.currentChain.firstOrNull()
+                        //     ?: return@onEach
+                        //
+                        // val data = options.toRedPacketState(currentWallet, currentChain)
+                        // if (data.canClaim) {
+                        //     Navigator.navigate(LabsRoute.RedPacket.LuckyDrop(options.encodeJson(), requestRaw))
+                        // }
                         message.responseSuccess(true)
                     }
                     claimOrRefundRedPacket -> {
                         val options = message.params?.decodeJson<RedPacketOptions>() ?: return@onEach
-                        Navigator.navigate(LabsRoute.RedPacket.LuckyDrop(options.encodeJson()))
-
-                        message.responseSuccess(true)
+                        val requestRaw = SendMethodRequest(
+                            id = message.id,
+                            jsonrpc = message.jsonrpc,
+                            method = message.method,
+                        ).encodeJson()
+                        Navigator.navigate(LabsRoute.RedPacket.LuckyDrop(options.encodeJson(), requestRaw))
+                        // response in LuckDropViewModel
                     }
                 }
             }
