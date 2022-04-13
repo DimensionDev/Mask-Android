@@ -407,6 +407,7 @@
                 "Label_Password": "crwdns15526:0crwdne15526:0",
                 "btn_withoutPassword": "crwdns15528:0crwdne15528:0",
                 "amount_error": "crwdns15530:0crwdne15530:0",
+                "not_enough_gas": "crwdns16196:0crwdne16196:0",
                 "password_error": "crwdns15532:0crwdne15532:0"
             },
             "addContact": {
