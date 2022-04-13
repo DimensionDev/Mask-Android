@@ -20,16 +20,19 @@
  */
 package com.dimension.maskbook.setting.export.model
 
-import kotlinx.serialization.ExperimentalSerializationApi
+import com.ensarsarajcic.kotlinx.serialization.msgpack.MsgPackDynamicSerializer
+import com.ensarsarajcic.kotlinx.serialization.msgpack.internal.MsgPackTypeDecoder
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Serializer
+import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.descriptors.SerialDescriptor
+import kotlinx.serialization.descriptors.buildClassSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
-import kotlinx.serialization.json.JsonElement
 
 @Serializable
 data class BackupMetaFile(
@@ -41,7 +44,7 @@ data class BackupMetaFile(
     val profiles: List<Profile>,
     val personas: List<Persona>,
     val relations: List<Relation>,
-    val plugin: Map<String, JsonElement>? = null, // TODO: unknown value type
+    // val plugin: Map<String, JsonElement>? = null, // TODO: unknown value type
 ) {
     @Serializable
     data class Post(
@@ -53,18 +56,19 @@ data class BackupMetaFile(
         val encryptBy: String? = null, // PersonaIdentifier.toText()
         val url: String? = null,
         val summary: String? = null,
-        val interestedMeta: String? // encoded by MessagePack
+        val interestedMeta: String?, // encoded by MessagePack
     ) {
         @Serializable
         sealed class Recipients {
             data class StringValue(val value: String) : Recipients()
             data class UnionArrayValue(val value: List<RecipientElement>) : Recipients()
+
             @Serializable
             sealed class RecipientElement {
                 class RecipientClassValue(val value: RecipientClass) : RecipientElement() {
                     @Serializable
                     data class RecipientClass(
-                        val reason: List<Reason>
+                        val reason: List<Reason>,
                     ) {
                         @Serializable
                         data class Reason(
@@ -75,14 +79,17 @@ data class BackupMetaFile(
                             enum class ReasonType {
                                 @SerialName("auto-share")
                                 AutoShare,
+
                                 @SerialName("direct")
                                 Direct,
+
                                 @SerialName("group")
                                 Group,
                             }
                         }
                     }
                 }
+
                 class StringValue(val value: String) : RecipientElement()
             }
         }
@@ -105,7 +112,7 @@ data class BackupMetaFile(
         val maskbookVersion: String,
         val createdAt: Long,
         val version: Long,
-        val type: String
+        val type: String,
     ) {
         companion object
     }
@@ -116,21 +123,95 @@ data class BackupMetaFile(
         val createdAt: Long,
         val publicKey: JsonWebKey? = null,
         val identifier: String,
-        val linkedProfiles: List<List<LinkedProfileElement>>,
+        @Serializable(with = LinkedProfilesSerializer::class)
+        val linkedProfiles: Map<String, LinkedProfileElement.LinkedProfileClassValue.LinkedProfileClass>,
         val nickname: String? = null,
         val mnemonic: Mnemonic? = null,
         val privateKey: JsonWebKey? = null,
-        val localKey: JsonWebKey? = null
+        val localKey: JsonWebKey? = null,
     ) {
+        object LinkedProfilesItemSerializer : KSerializer<LinkedProfileElement> {
+            private val msgPackDynamicSerializer = MsgPackDynamicSerializer()
+            override val descriptor: SerialDescriptor =
+                PrimitiveSerialDescriptor("LinkedProfilesItemSerializer", PrimitiveKind.STRING)
+
+            override fun deserialize(decoder: Decoder): LinkedProfileElement {
+                return try {
+                    if (decoder is MsgPackTypeDecoder) {
+                        when (val result = msgPackDynamicSerializer.deserialize(decoder)) {
+                            is String -> LinkedProfileElement.StringValue(result)
+                            is Map<*, *> -> {
+                                LinkedProfileElement.LinkedProfileClassValue(
+                                    LinkedProfileElement.LinkedProfileClassValue.LinkedProfileClass(result["connectionConfirmState"].toString())
+                                )
+                            }
+                            else -> throw IllegalArgumentException("Unknown type: $result")
+                        }
+                    } else {
+                        LinkedProfileElement.StringValue(decoder.decodeSerializableValue(String.serializer()))
+                    }
+                } catch (e: Exception) {
+                    decoder.decodeSerializableValue(LinkedProfileElement.LinkedProfileClassValue.serializer())
+                }
+            }
+
+            override fun serialize(encoder: Encoder, value: LinkedProfileElement) {
+                when (value) {
+                    is LinkedProfileElement.LinkedProfileClassValue -> {
+                        encoder.encodeSerializableValue(
+                            LinkedProfileElement.LinkedProfileClassValue.LinkedProfileClass.serializer(),
+                            value.value
+                        )
+                    }
+                    is LinkedProfileElement.StringValue -> {
+                        encoder.encodeString(value.value)
+                    }
+                }
+            }
+        }
+
+        object LinkedProfilesSerializer :
+            KSerializer<Map<String, LinkedProfileElement.LinkedProfileClassValue.LinkedProfileClass>> {
+            override val descriptor: SerialDescriptor
+                get() = buildClassSerialDescriptor(
+                    "LinkedProfiles",
+                    PrimitiveSerialDescriptor("LinkedProfiles.String", PrimitiveKind.STRING),
+                    buildClassSerialDescriptor(
+                        "LinkedProfile",
+                        PrimitiveSerialDescriptor("connectionConfirmState", PrimitiveKind.STRING),
+                    )
+                )
+
+            override fun deserialize(decoder: Decoder): Map<String, LinkedProfileElement.LinkedProfileClassValue.LinkedProfileClass> {
+                val items =
+                    decoder.decodeSerializableValue(ListSerializer(ListSerializer(LinkedProfilesItemSerializer)))
+                return items.associate { (it[0] as LinkedProfileElement.StringValue).value to (it[1] as LinkedProfileElement.LinkedProfileClassValue).value }
+            }
+
+            override fun serialize(
+                encoder: Encoder,
+                value: Map<String, LinkedProfileElement.LinkedProfileClassValue.LinkedProfileClass>,
+            ) {
+                val items = value.map {
+                    listOf(
+                        LinkedProfileElement.StringValue(it.key),
+                        LinkedProfileElement.LinkedProfileClassValue(it.value)
+                    )
+                }
+                encoder.encodeSerializableValue(ListSerializer(ListSerializer(LinkedProfilesItemSerializer)), items)
+            }
+        }
+
         @Serializable
         sealed class LinkedProfileElement {
             @Serializable
             data class LinkedProfileClassValue(val value: LinkedProfileClass) : LinkedProfileElement() {
                 @Serializable
                 data class LinkedProfileClass(
-                    val connectionConfirmState: String
+                    val connectionConfirmState: String,
                 )
             }
+
             @Serializable
             data class StringValue(val value: String) : LinkedProfileElement()
         }
@@ -139,12 +220,12 @@ data class BackupMetaFile(
     @Serializable
     data class Mnemonic(
         val parameter: Parameter,
-        val words: String
+        val words: String,
     ) {
         @Serializable
         data class Parameter(
             val withPassword: Boolean,
-            val path: String
+            val path: String,
         )
     }
 
@@ -160,9 +241,10 @@ data class BackupMetaFile(
 
     @Serializable
     data class Relation(
+        @Serializable(with = RelationFavor.RelationFavorSerializer::class)
         val favor: RelationFavor,
         val persona: String,
-        val profile: String
+        val profile: String,
     ) {
         @Serializable
         enum class RelationFavor(val value: Int) {
@@ -170,17 +252,18 @@ data class BackupMetaFile(
             UNCOLLECTED(1),
             DEPRECATED(0);
 
-            @OptIn(ExperimentalSerializationApi::class)
-            @Serializer(forClass = RelationFavor::class)
             object RelationFavorSerializer : KSerializer<RelationFavor> {
+                private val msgPackDynamicSerializer = MsgPackDynamicSerializer()
                 override val descriptor = PrimitiveSerialDescriptor("RelationFavor", PrimitiveKind.INT)
 
                 override fun deserialize(decoder: Decoder): RelationFavor {
-                    return RelationFavor.values().first { it.value == decoder.decodeInt() }
+                    msgPackDynamicSerializer.deserialize(decoder).let { result ->
+                        return RelationFavor.values().first { it.value.toByte() == result }
+                    }
                 }
 
                 override fun serialize(encoder: Encoder, value: RelationFavor) {
-                    encoder.encodeInt(value.value)
+                    encoder.encodeByte(value.value.toByte())
                 }
             }
         }
@@ -207,7 +290,7 @@ data class JsonWebKey(
     val dq: String? = null,
     val qi: String? = null,
     val oth: List<RsaOtherPrimesInfo>? = null,
-    val k: String? = null
+    val k: String? = null,
 ) {
     @Serializable
     data class RsaOtherPrimesInfo(val r: String, val d: String, val t: String)
