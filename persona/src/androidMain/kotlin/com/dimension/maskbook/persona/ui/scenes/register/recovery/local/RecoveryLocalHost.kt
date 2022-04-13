@@ -20,6 +20,9 @@
  */
 package com.dimension.maskbook.persona.ui.scenes.register.recovery.local
 
+import android.net.Uri
+import android.provider.OpenableColumns
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -52,9 +55,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.database.getLongOrNull
+import androidx.core.database.getStringOrNull
+import androidx.core.net.toFile
 import androidx.navigation.NavController
 import com.dimension.maskbook.common.ext.getNestedNavigationViewModel
 import com.dimension.maskbook.common.ext.humanizeFileSize
@@ -88,7 +95,6 @@ import com.dimension.maskbook.persona.route.PersonaRoute
 import com.dimension.maskbook.persona.viewmodel.recovery.RecoveryLocalViewModel
 import kotlinx.coroutines.flow.distinctUntilChanged
 import org.koin.core.parameter.parametersOf
-import java.io.File
 
 private const val GeneratedRouteName = "recoveryLocalRoute"
 
@@ -193,6 +199,12 @@ fun ImportPasswordScene(
     @Query("account") account: String?,
     navController: NavController,
 ) {
+    BackHandler(true) {
+        navController.popBackStack(
+            PersonaRoute.Register.Recovery.LocalBackup.Loading.path,
+            inclusive = true,
+        )
+    }
     val viewModel: RecoveryLocalViewModel = navController
         .getNestedNavigationViewModel(PersonaRoute.Register.Recovery.LocalBackup.Route) {
             parametersOf(uri, account)
@@ -259,17 +271,28 @@ fun ImportPasswordScene(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        val file = remember(uri) { File(uri) }
-                        val fileName = remember(file) { file.name }
+                        val context = LocalContext.current
+                        val (fileName, fileSize) = remember(uri) {
+                            if (uri.startsWith("file://")) {
+                                val file = Uri.parse(uri).toFile()
+                                file.name.orEmpty() to file.length()
+                            } else {
+                                val projection = arrayOf(OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE)
+                                context.contentResolver.query(Uri.parse(uri), projection, null, null, null)?.use { cursor ->
+                                    if (cursor.moveToFirst()) {
+                                        (cursor.getStringOrNull(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)) to cursor.getLongOrNull(cursor.getColumnIndex(OpenableColumns.SIZE)))
+                                    } else {
+                                        null to null
+                                    }
+                                } ?: "" to 0L
+                            }
+                        }
                         Column {
-                            Text(abstract ?: fileName, style = MaterialTheme.typography.button)
+                            Text(abstract ?: fileName ?: "", style = MaterialTheme.typography.button)
                             Text(uploadedAt?.humanizeTimestamp() ?: "")
                         }
-                        val size = remember(file) {
-                            file.length().humanizeFileSize()
-                        }
                         Text(
-                            text = size,
+                            text = fileSize?.humanizeFileSize() ?: "",
                             style = MaterialTheme.typography.button,
                         )
                     }
