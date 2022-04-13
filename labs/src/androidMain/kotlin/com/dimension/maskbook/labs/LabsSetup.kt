@@ -56,7 +56,7 @@ object LabsSetup : ModuleSetup {
             PreferenceRepository(get<Context>().labsDataStore, get(named(IoScopeName)))
         }
         single { JSMethod(get()) }
-        single { RedPacketMethod(get(named(IoScopeName)), get(), get()) }
+        single { RedPacketMethod(get(named(IoScopeName)), get()) }
 
         single { LabsTabScreen() } bind TabScreen::class
 

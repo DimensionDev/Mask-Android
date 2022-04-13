@@ -36,7 +36,6 @@ import kotlinx.coroutines.flow.onEach
 class RedPacketMethod(
     private val scope: CoroutineScope,
     private val services: ExtensionServices,
-    private val walletServices: WalletServices,
 ) {
 
     fun startSubscribe() {
@@ -44,17 +43,6 @@ class RedPacketMethod(
             .onEach { message ->
                 when (message.method) {
                     notifyRedPacket -> {
-                        // val options = message.params?.decodeJson<RedPacketOptions>() ?: return@onEach
-                        //
-                        // val currentWallet = walletServices.currentWallet.firstOrNull()
-                        //     ?: return@onEach
-                        // val currentChain = walletServices.currentChain.firstOrNull()
-                        //     ?: return@onEach
-                        //
-                        // val data = options.toRedPacketState(currentWallet, currentChain)
-                        // if (data.canClaim) {
-                        //     Navigator.navigate(LabsRoute.RedPacket.LuckyDrop(options.encodeJson(), requestRaw))
-                        // }
                         message.responseSuccess(true)
                     }
                     claimOrRefundRedPacket -> {
