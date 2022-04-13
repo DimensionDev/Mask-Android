@@ -407,6 +407,7 @@
                 "Label_Password": "",
                 "btn_withoutPassword": "",
                 "amount_error": "",
+                "not_enough_gas": "",
                 "password_error": ""
             },
             "addContact": {
