@@ -184,7 +184,7 @@ class BackupRepository(
             BackupFileMeta(
                 url = downloadFile(response.download_url).toUri().toString(),
                 size = response.size,
-                uploaded_at = response.uploaded_at,
+                uploaded_at = (response.uploaded_at ?: 0) * 1000,
                 abstract = response.abstract,
             )
         }
@@ -202,7 +202,7 @@ class BackupRepository(
             BackupFileMeta(
                 url = downloadFile(response.download_url).toUri().toString(),
                 size = response.size,
-                uploaded_at = response.uploaded_at,
+                uploaded_at = (response.uploaded_at ?: 0) * 1000,
                 abstract = response.abstract,
             )
         }
