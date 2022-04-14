@@ -63,6 +63,7 @@ import com.dimension.maskbook.common.route.navigationComposeBottomSheet
 import com.dimension.maskbook.common.route.navigationComposeBottomSheetPackage
 import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
 import com.dimension.maskbook.common.routeProcessor.annotations.Path
+import com.dimension.maskbook.common.routeProcessor.annotations.Query
 import com.dimension.maskbook.common.ui.theme.moreTypography
 import com.dimension.maskbook.common.ui.widget.MaskListItem
 import com.dimension.maskbook.common.ui.widget.MaskModal
@@ -87,10 +88,11 @@ import kotlin.math.pow
 @Composable
 fun LuckDropModal(
     navController: NavController,
-    @Path("data") data: String,
+    @Path("dataRaw") dataRaw: String,
+    @Query("requestRaw") requestRaw: String?,
 ) {
     val viewModel = getViewModel<LuckDropViewModel> {
-        parametersOf(data)
+        parametersOf(dataRaw, requestRaw)
     }
     val stateData by viewModel.stateData.collectAsState()
     val loading by viewModel.loading.collectAsState()
