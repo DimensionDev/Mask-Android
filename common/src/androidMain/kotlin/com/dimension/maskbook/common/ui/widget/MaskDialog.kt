@@ -96,9 +96,7 @@ fun MaskDialog(
     ) {
         MaskTheme {
             Box(
-                modifier = Modifier.padding(ModalPadding)
-                    .fillMaxSize(),
-                contentAlignment = Alignment.Center,
+                modifier = Modifier.padding(ModalPadding),
             ) {
                 MaskDialogContent(
                     modifier,

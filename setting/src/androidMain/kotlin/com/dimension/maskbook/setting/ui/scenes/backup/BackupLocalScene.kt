@@ -48,6 +48,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.dimension.maskbook.common.ext.getNestedNavigationViewModel
+import com.dimension.maskbook.common.ext.navigateWithPopSelf
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.route.navigationComposeAnimComposable
 import com.dimension.maskbook.common.route.navigationComposeAnimComposablePackage
@@ -66,8 +67,10 @@ import com.dimension.maskbook.common.ui.widget.button.clickable
 import com.dimension.maskbook.localization.R
 import com.dimension.maskbook.setting.route.SettingRoute
 import com.dimension.maskbook.setting.viewmodel.BackupLocalViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
+import kotlin.time.Duration.Companion.milliseconds
 
 private const val GeneratedRouteName = "backupLocalRoute"
 
@@ -89,20 +92,13 @@ fun BackupLocalSavingScene(
             .distinctUntilChanged()
             .filter { it != BackupLocalViewModel.State.Normal }
             .collect {
+                delay(100.milliseconds)
                 when (it) {
                     BackupLocalViewModel.State.Failed -> {
-                        navController.navigate(SettingRoute.BackupData.BackupLocal.Failed) {
-                            popUpTo(SettingRoute.BackupData.BackupLocal.Saving) {
-                                inclusive = true
-                            }
-                        }
+                        navController.navigateWithPopSelf(SettingRoute.BackupData.BackupLocal.Failed)
                     }
                     BackupLocalViewModel.State.Success -> {
-                        navController.navigate(SettingRoute.BackupData.BackupLocal.Success) {
-                            popUpTo(SettingRoute.BackupData.BackupLocal.Saving) {
-                                inclusive = true
-                            }
-                        }
+                        navController.navigateWithPopSelf(SettingRoute.BackupData.BackupLocal.Success)
                     }
                     else -> Unit
                 }
@@ -221,11 +217,7 @@ fun BackupLocalScene(
                     onResult = {
                         if (it != null) {
                             viewModel.save(it, withWallet)
-                            navController.navigate(SettingRoute.BackupData.BackupLocal.Saving) {
-                                popUpTo(SettingRoute.BackupData.BackupLocal.Backup) {
-                                    inclusive = true
-                                }
-                            }
+                            navController.navigateWithPopSelf(SettingRoute.BackupData.BackupLocal.Saving)
                         }
                     },
                 )
