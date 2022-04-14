@@ -862,17 +862,20 @@ internal class WalletRepository(
     }
 
     override suspend fun restoreWalletBackup(wallet: List<BackupWalletData>) {
-        wallet.forEach {
-            val privateKey = it.privateKey
-            val mnemonic = it.mnemonic
-            val derivationPath = it.derivationPath
-            // TODO: support other coin types
-            if (!privateKey.isNullOrEmpty()) {
-                importWallet(it.name, privateKey, CoinPlatformType.Ethereum)
-            } else if (!mnemonic.isNullOrEmpty() && !derivationPath.isNullOrEmpty()) {
-                importWallet(it.name, mnemonic, derivationPath, CoinPlatformType.Ethereum)
-            } else {
-                // not a valid backup
+        val currentWallets = database.walletDao().getAll()
+        wallet.forEach { data ->
+            if (currentWallets.none { it.wallet.address == data.address }) {
+                val privateKey = data.privateKey
+                val mnemonic = data.mnemonic
+                val derivationPath = data.derivationPath
+                // TODO: support other coin types
+                if (!privateKey.isNullOrEmpty()) {
+                    importWallet(data.name, privateKey, CoinPlatformType.Ethereum)
+                } else if (!mnemonic.isNullOrEmpty() && !derivationPath.isNullOrEmpty()) {
+                    importWallet(data.name, mnemonic, derivationPath, CoinPlatformType.Ethereum)
+                } else {
+                    // not a valid backup
+                }
             }
         }
     }
