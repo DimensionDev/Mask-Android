@@ -31,7 +31,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -45,9 +44,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.dimension.maskbook.common.ext.observeAsState
@@ -63,8 +62,8 @@ import com.dimension.maskbook.common.routeProcessor.annotations.Path
 import com.dimension.maskbook.common.routeProcessor.annotations.Query
 import com.dimension.maskbook.common.ui.widget.EmailCodeInputModal
 import com.dimension.maskbook.common.ui.widget.MaskDialog
-import com.dimension.maskbook.common.ui.widget.MaskInputField
 import com.dimension.maskbook.common.ui.widget.MaskModal
+import com.dimension.maskbook.common.ui.widget.MaskPasswordInputField
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskScene
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
@@ -333,7 +332,7 @@ fun BackupDataBackupMergeConfirm(
     @Path("type") type: String,
     @Path("value") value: String,
     @Path("code") code: String,
-    @Query("download_url") downloadUrl: String?,
+    @Query("url") url: String?,
     @Query("size") size: Long?,
     @Query("uploaded_at") uploadedAt: Long?,
     @Query("abstract") abstract: String?,
@@ -353,7 +352,7 @@ fun BackupDataBackupMergeConfirm(
     }
 
     val viewModel = getViewModel<BackupMergeConfirmViewModel> {
-        parametersOf(onDone)
+        parametersOf(onDone, url.orEmpty(), value)
     }
 
     val passwordValid by viewModel.passwordValid.observeAsState(initial = false)
@@ -387,18 +386,25 @@ fun BackupDataBackupMergeConfirm(
             }
             Spacer(modifier = Modifier.height(16.dp))
             Text(text = stringResource(R.string.scene_set_backup_password_backup_password))
-            MaskInputField(
+            MaskPasswordInputField(
+                modifier = Modifier.fillMaxWidth(),
                 value = password,
                 onValueChange = { viewModel.setBackupPassword(it) },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
             )
+            Spacer(modifier = Modifier.height(8.dp))
+            if (!passwordValid) {
+                Text(
+                    text = stringResource(R.string.scene_change_password_incorrect_password),
+                    color = Color.Red
+                )
+            }
             Spacer(modifier = Modifier.height(20.dp))
             PrimaryButton(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {
-                    viewModel.confirm(downloadUrl.orEmpty(), account = value)
+                    viewModel.confirm()
                 },
-                enabled = passwordValid && !loading
+                enabled = !loading
             ) {
                 Text(text = stringResource(R.string.common_controls_merge_to_local_data))
             }
@@ -417,7 +423,7 @@ fun BackupDataBackupMerge(
     @Path("type") type: String,
     @Path("value") value: String,
     @Path("code") code: String,
-    @Query("download_url") downloadUrl: String?,
+    @Query("url") url: String?,
     @Query("size") size: Long?,
     @Query("uploaded_at") uploadedAt: Long?,
     @Query("abstract") abstract: String?,
@@ -461,7 +467,7 @@ fun BackupDataBackupMerge(
                             type,
                             value,
                             code,
-                            download_url = downloadUrl.orEmpty(),
+                            url = url.orEmpty(),
                             size = size,
                             uploaded_at = uploadedAt,
                             abstract = abstract
@@ -530,13 +536,13 @@ fun BackupSelectionEmail(
             scope.launch {
                 viewModel.verifyCodeNow(code, email, skipValidate = true)
                     .onSuccess { target ->
-                        target.download_url?.let {
+                        target.url.takeIf { it.isNotEmpty() }?.let {
                             navController.navigate(
                                 SettingRoute.BackupData.BackupData_BackupMerge(
                                     "email",
                                     email,
                                     code,
-                                    download_url = target.download_url,
+                                    url = target.url,
                                     size = target.size,
                                     uploaded_at = target.uploaded_at,
                                     abstract = target.abstract
@@ -626,13 +632,13 @@ fun BackupSelectionPhone(
             scope.launch {
                 viewModel.verifyCodeNow(code = code, phone = phone, skipValidate = true)
                     .onSuccess { target ->
-                        target.download_url?.let {
+                        target.url.takeIf { it.isNotEmpty() }?.let {
                             navController.navigate(
                                 SettingRoute.BackupData.BackupData_BackupMerge(
                                     "phone",
                                     phone,
                                     code,
-                                    download_url = target.download_url,
+                                    url = target.url,
                                     size = target.size,
                                     uploaded_at = target.uploaded_at,
                                     abstract = target.abstract

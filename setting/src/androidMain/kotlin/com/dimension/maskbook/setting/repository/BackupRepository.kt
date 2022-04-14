@@ -109,28 +109,6 @@ class BackupRepository(
         }
     }
 
-    suspend fun getBackupInformationByEmail(email: String, code: String) =
-        withContext(scope.coroutineContext) {
-            backupServices.download(
-                ValidateCodeBody(
-                    code = code,
-                    account = email,
-                    account_type = AccountType.email,
-                )
-            )
-        }
-
-    suspend fun getBackupInformationByPhone(phone: String, code: String) =
-        withContext(scope.coroutineContext) {
-            backupServices.download(
-                ValidateCodeBody(
-                    code = code,
-                    account = phone,
-                    account_type = AccountType.phone,
-                )
-            )
-        }
-
     suspend fun encryptBackup(
         password: String,
         account: String,
@@ -207,7 +185,7 @@ class BackupRepository(
             )
         }
 
-    suspend fun downloadFile(url: String) = withContext(scope.coroutineContext) {
+    private suspend fun downloadFile(url: String) = withContext(scope.coroutineContext) {
         val stream = OkHttpClient.Builder()
             .build()
             .newCall(

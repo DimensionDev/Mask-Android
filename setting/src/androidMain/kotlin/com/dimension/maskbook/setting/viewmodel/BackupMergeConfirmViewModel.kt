@@ -20,6 +20,8 @@
  */
 package com.dimension.maskbook.setting.viewmodel
 
+import android.content.ContentResolver
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.Validator
@@ -28,12 +30,14 @@ import com.dimension.maskbook.setting.repository.BackupRepository
 import com.dimension.maskbook.setting.repository.ISettingsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import java.io.File
 
 class BackupMergeConfirmViewModel(
     private val backupRepository: BackupRepository,
     private val settingsRepository: ISettingsRepository,
+    private val contentResolver: ContentResolver,
     private val onDone: () -> Unit,
+    private val url: String,
+    private val account: String,
 ) : ViewModel() {
     private val _loading = MutableStateFlow(false)
     val loading = _loading.asStateIn(viewModelScope, false)
@@ -41,25 +45,25 @@ class BackupMergeConfirmViewModel(
     val backupPassword = _backupPassword.asStateIn(viewModelScope, "")
     private val _passwordValid = MutableStateFlow(true)
     val passwordValid = _passwordValid.asStateIn(viewModelScope, true)
-    private var file: File? = null
 
     fun setBackupPassword(value: String) {
         _backupPassword.value = value
         _passwordValid.value = Validator.isValidPasswordFormat(value)
     }
 
-    fun confirm(downloadUrl: String, account: String) = viewModelScope.launch {
+    fun confirm() = viewModelScope.launch {
         _loading.value = true
         try {
-            val content = file ?: run {
-                val result = backupRepository.downloadFile(downloadUrl)
-                file = result
-                result
+            contentResolver.openInputStream(Uri.parse(url))?.use {
+                backupRepository.decryptBackup(backupPassword.value, account, it.readBytes())
+            }?.let {
+                settingsRepository.restoreBackup(it)
+                onDone.invoke()
+            } ?: run {
+                _passwordValid.value = false
             }
-            val backup = backupRepository.decryptBackup(backupPassword.value, account, content.readBytes())
-            settingsRepository.restoreBackup(backup)
-            onDone.invoke()
         } catch (e: Throwable) {
+            e.printStackTrace()
             _passwordValid.value = false
         }
         _loading.value = false

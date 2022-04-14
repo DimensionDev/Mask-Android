@@ -52,7 +52,9 @@ class DbProfileDataSource(database: PersonaDatabase) {
     }
 
     suspend fun addAll(profile: List<IndexedDBProfile>) {
-        profileDao.insert(profile.map { it.toDbProfileRecord() })
+        val currentProfiles = profileDao.getList()
+        val profilesToAdd = profile.filter { it.identifier !in currentProfiles.map { it.profile.identifier } }
+        profileDao.insert(profilesToAdd.map { it.toDbProfileRecord() })
     }
 }
 

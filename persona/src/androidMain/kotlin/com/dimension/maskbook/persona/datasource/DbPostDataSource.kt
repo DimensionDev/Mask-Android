@@ -35,8 +35,12 @@ class DbPostDataSource(database: PersonaDatabase) {
     }
 
     suspend fun addAll(post: List<IndexedDBPost>) {
+        val currentPosts = postDao.getAll()
+        val newPosts = post.filter {
+            it.identifier !in currentPosts.map { it.identifier }
+        }
         postDao.insert(
-            post.map {
+            newPosts.map {
                 it.toDbPostRecord()
             }
         )
