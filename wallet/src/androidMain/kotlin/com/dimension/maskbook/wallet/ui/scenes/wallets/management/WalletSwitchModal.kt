@@ -108,7 +108,6 @@ fun WalletSwitchSceneModal(
             topBar = {
                 Column(
                     modifier = Modifier
-                        .shadow(4.dp)
                         .background(color = MaterialTheme.colors.background),
                 ) {
                     MaskSingleLineTopAppBar(
@@ -130,7 +129,7 @@ fun WalletSwitchSceneModal(
                                     color = MaterialTheme.colors.primary,
                                 )
                             }
-                        }
+                        },
                     )
                     SupportChainTypeList(
                         selectedChainType = selectedChainType,
