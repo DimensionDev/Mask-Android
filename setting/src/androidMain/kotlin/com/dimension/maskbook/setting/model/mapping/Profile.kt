@@ -157,15 +157,10 @@ fun IndexedDBPersona.toBackupPersona() = BackupMetaFile.Persona(
     privateKey = privateKey?.decodeJson(),
     localKey = localKey?.decodeJson(),
     linkedProfiles = linkedProfiles.map {
-        listOf(
-            BackupMetaFile.Persona.LinkedProfileElement.StringValue(it.key),
-            BackupMetaFile.Persona.LinkedProfileElement.LinkedProfileClassValue(
-                value = BackupMetaFile.Persona.LinkedProfileElement.LinkedProfileClassValue.LinkedProfileClass(
-                    connectionConfirmState = it.value.connectionConfirmState.name
-                )
-            )
+        it.key to BackupMetaFile.Persona.LinkedProfileElement.LinkedProfileClassValue.LinkedProfileClass(
+            connectionConfirmState = it.value.connectionConfirmState.name
         )
-    }
+    }.toMap()
 )
 
 fun BackupMetaFile.Persona.toIndexedDBPersona() = IndexedDBPersona(
@@ -185,12 +180,11 @@ fun BackupMetaFile.Persona.toIndexedDBPersona() = IndexedDBPersona(
     },
     privateKey = privateKey?.encodeJsonElement(),
     localKey = localKey?.encodeJsonElement(),
-    linkedProfiles = linkedProfiles.filter { it.size % 2 == 0 }.associate {
-        (it.first() as BackupMetaFile.Persona.LinkedProfileElement.StringValue).value to
-            IndexedDBPersona.LinkedProfileDetails(
-                connectionConfirmState = LinkedProfileDetailsState.valueOf(
-                    (it[1] as BackupMetaFile.Persona.LinkedProfileElement.LinkedProfileClassValue).value.connectionConfirmState
-                )
+    linkedProfiles = linkedProfiles.map {
+        it.key to IndexedDBPersona.LinkedProfileDetails(
+            connectionConfirmState = LinkedProfileDetailsState.valueOf(
+                it.value.connectionConfirmState
             )
-    }
+        )
+    }.toMap()
 )

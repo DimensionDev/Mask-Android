@@ -20,7 +20,6 @@
  */
 package com.dimension.maskbook.setting.repository
 
-import com.dimension.maskbook.labs.export.model.AppKey
 import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.setting.data.JSDataSource
 import com.dimension.maskbook.setting.data.SettingDataSource
@@ -112,7 +111,8 @@ internal class SettingsRepository(
             associatedAccount = file.personas.sumOf { it.linkedProfiles.size },
             encryptedPost = file.posts.size,
             contacts = file.profiles.size,
-            file = file.plugin?.count { it.key == AppKey.FileService.id } ?: 0,
+            // file = file.plugin?.count { it.key == AppKey.FileService.id } ?: 0,
+            file = 0,
             wallet = file.wallets.size,
             account = ""
         )

@@ -26,6 +26,7 @@ import androidx.core.net.toUri
 import com.dimension.maskbook.common.okhttp.await
 import com.dimension.maskbook.setting.export.model.BackupFileMeta
 import com.dimension.maskbook.setting.export.model.BackupMetaFile
+import com.dimension.maskbook.setting.ext.msgPack
 import com.dimension.maskbook.setting.model.RemoteBackupData
 import com.dimension.maskbook.setting.services.BackupServices
 import com.dimension.maskbook.setting.services.model.AccountType
@@ -34,7 +35,6 @@ import com.dimension.maskbook.setting.services.model.Scenario
 import com.dimension.maskbook.setting.services.model.SendCodeBody
 import com.dimension.maskbook.setting.services.model.UploadBody
 import com.dimension.maskbook.setting.services.model.ValidateCodeBody
-import com.ensarsarajcic.kotlinx.serialization.msgpack.MsgPack
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
@@ -139,13 +139,13 @@ class BackupRepository(
         val computedPassword = account.lowercase() + password
         val iv = SecureRandom().generateSeed(16)
         val gen = PKCS5S2ParametersGenerator(SHA256Digest())
-        gen.init(MsgPack.encodeToByteArray(String.serializer(), computedPassword), iv, 10000)
+        gen.init(msgPack.encodeToByteArray(String.serializer(), computedPassword), iv, 10000)
         val derivedKey = gen.generateDerivedParameters(256) as KeyParameter
         val key = SecretKeySpec(derivedKey.key, "AES")
         val cipher = Cipher.getInstance("AES/GCM/NoPadding")
         cipher.init(Cipher.ENCRYPT_MODE, key)
         val encrypted =
-            cipher.doFinal(MsgPack.encodeToByteArray(BackupMetaFile.serializer(), content))
+            cipher.doFinal(msgPack.encodeToByteArray(BackupMetaFile.serializer(), content))
         RemoteBackupData(
             pbkdf2IV = iv,
             paramIV = cipher.iv,
@@ -159,7 +159,7 @@ class BackupRepository(
             val remoteBackupData = RemoteBackupData.fromByteArray(data)
             val gen = PKCS5S2ParametersGenerator(SHA256Digest())
             gen.init(
-                MsgPack.encodeToByteArray(String.serializer(), computedPassword),
+                msgPack.encodeToByteArray(String.serializer(), computedPassword),
                 remoteBackupData.pbkdf2IV,
                 10000
             )
@@ -168,7 +168,7 @@ class BackupRepository(
             val cipher = Cipher.getInstance("AES/GCM/NoPadding")
             cipher.init(Cipher.DECRYPT_MODE, key, IvParameterSpec(remoteBackupData.paramIV))
             cipher.doFinal(remoteBackupData.encrypted)
-                .let { MsgPack.decodeFromByteArray(BackupMetaFile.serializer(), it) }
+                .let { msgPack.decodeFromByteArray(BackupMetaFile.serializer(), it) }
         }
 
     suspend fun downloadBackupWithEmail(email: String, code: String) =
