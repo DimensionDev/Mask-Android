@@ -28,7 +28,6 @@ import com.dimension.maskbook.extension.export.ExtensionServices
 import com.dimension.maskbook.labs.model.SendMethodRequest
 import com.dimension.maskbook.labs.model.options.RedPacketOptions
 import com.dimension.maskbook.labs.route.LabsRoute
-import com.dimension.maskbook.wallet.export.WalletServices
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
