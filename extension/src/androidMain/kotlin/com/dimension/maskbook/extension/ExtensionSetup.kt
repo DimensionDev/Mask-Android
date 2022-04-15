@@ -20,9 +20,6 @@
  */
 package com.dimension.maskbook.extension
 
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.runtime.getValue
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -35,6 +32,7 @@ import com.dimension.maskbook.common.ModuleSetup
 import com.dimension.maskbook.common.ext.navigateToHome
 import com.dimension.maskbook.common.gecko.WebContentController
 import com.dimension.maskbook.common.route.Deeplinks
+import com.dimension.maskbook.common.route.modalComposable
 import com.dimension.maskbook.extension.export.ExtensionServices
 import com.dimension.maskbook.extension.export.model.Site
 import com.dimension.maskbook.extension.repository.ExtensionRepository
@@ -42,15 +40,13 @@ import com.dimension.maskbook.extension.route.ExtensionRoute
 import com.dimension.maskbook.extension.ui.WebContentScene
 import com.dimension.maskbook.extension.utils.BackgroundMessageChannel
 import com.dimension.maskbook.extension.utils.ContentMessageChannel
-import com.google.accompanist.navigation.animation.composable
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import org.koin.mp.KoinPlatformTools
 
 object ExtensionSetup : ModuleSetup {
-    @OptIn(ExperimentalAnimationApi::class)
     override fun NavGraphBuilder.route(navController: NavController) {
-        composable(
+        modalComposable(
             route = ExtensionRoute.WebContent.path,
             deepLinks = listOf(
                 navDeepLink { uriPattern = Deeplinks.WebContent.path }
@@ -58,14 +54,6 @@ object ExtensionSetup : ModuleSetup {
             arguments = listOf(
                 navArgument("site") { type = NavType.StringType; nullable = true }
             ),
-            enterTransition = {
-                slideInVertically { it }
-            },
-            exitTransition = null,
-            popEnterTransition = null,
-            popExitTransition = {
-                slideOutVertically { it }
-            },
         ) {
             val backStackEntry by navController.currentBackStackEntryAsState()
 

@@ -24,6 +24,8 @@ import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.runtime.Composable
 import androidx.navigation.NamedNavArgument
@@ -42,6 +44,9 @@ const val navigationComposeAnimComposable = "composable"
 
 const val navigationComposeModalComposablePackage = "com.dimension.maskbook.common.route"
 const val navigationComposeModalComposable = "modalComposable"
+
+const val navigationComposeHomeComposablePackage = "com.dimension.maskbook.common.route"
+const val navigationComposeHomeComposable = "homeComposable"
 
 const val navigationComposeBottomSheetPackage = "com.dimension.maskbook.common.route"
 const val navigationComposeBottomSheet = "bottomSheet"
@@ -73,17 +78,43 @@ fun NavGraphBuilder.modalComposable(
         arguments = arguments,
         deepLinks = deepLinks,
         content = content,
+        enterTransition = {
+            slideInVertically { it }
+        },
+        exitTransition = {
+            slideOutVertically { it }
+        },
+        popEnterTransition = {
+            slideInVertically { it }
+        },
+        popExitTransition = {
+            slideOutVertically { it }
+        }
+    )
+}
+
+@OptIn(ExperimentalAnimationApi::class)
+fun NavGraphBuilder.homeComposable(
+    route: String,
+    arguments: List<NamedNavArgument> = emptyList(),
+    deepLinks: List<NavDeepLink> = emptyList(),
+    content: @Composable AnimatedVisibilityScope.(NavBackStackEntry) -> Unit
+) {
+    composable(
+        route = route,
+        arguments = arguments,
+        deepLinks = deepLinks,
+        content = content,
         exitTransition = {
             scaleOut(
                 targetScale = 0.9f,
             )
         },
-        popExitTransition = null,
         popEnterTransition = {
             scaleIn(
                 initialScale = 0.9f,
             )
-        }
+        },
     )
 }
 
