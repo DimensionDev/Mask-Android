@@ -49,6 +49,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.dimension.maskbook.common.ext.humanizeFileSize
+import com.dimension.maskbook.common.ext.humanizeTimestamp
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.route.navigationComposeAnimComposable
@@ -379,10 +381,10 @@ fun BackupDataBackupMergeConfirm(
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(text = abstract.orEmpty())
-                    Text(text = uploadedAt.toString())
+                    Text(text = uploadedAt?.humanizeTimestamp().toString())
                 }
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(text = size.toString())
+                Text(text = size?.humanizeFileSize().toString())
             }
             Spacer(modifier = Modifier.height(16.dp))
             Text(text = stringResource(R.string.scene_set_backup_password_backup_password))
@@ -451,10 +453,10 @@ fun BackupDataBackupMerge(
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(text = abstract.orEmpty())
-                    Text(text = uploadedAt.toString())
+                    Text(text = uploadedAt?.humanizeTimestamp().toString())
                 }
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(text = size.toString())
+                Text(text = size?.humanizeFileSize().toString())
             }
             Spacer(modifier = Modifier.height(8.dp))
             Text(text = stringResource(R.string.scene_backup_remote_backup_actions_view_tips))
