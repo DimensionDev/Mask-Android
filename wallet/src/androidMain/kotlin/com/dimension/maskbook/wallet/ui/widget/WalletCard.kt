@@ -256,7 +256,6 @@ private fun WalletDisplayAmount(
             MaskTransparentButton(
                 enabled = !isSelected,
                 onClick = { onDisplayChainTypeClick(item.chainType) },
-                modifier = Modifier.weight(1f),
             ) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,

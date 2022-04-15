@@ -20,40 +20,37 @@
  */
 package com.dimension.maskbook.common.ui.widget.button
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
-import androidx.compose.material.ButtonDefaults
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.semantics.Role
 
 @Composable
 fun MaskTransparentButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     contentPadding: PaddingValues = MaskButtonDefaults.defaultPaddingValues,
     content: @Composable RowScope.() -> Unit
 ) {
-    MaskButton(
-        onClick = onClick,
-        modifier = modifier,
-        enabled = enabled,
-        interactionSource = interactionSource,
-        elevation = null,
-        shape = RectangleShape,
-        border = null,
-        colors = ButtonDefaults.buttonColors(
-            backgroundColor = Color.Transparent,
-            disabledBackgroundColor = Color.Transparent,
-            contentColor = Color.Unspecified,
-            disabledContentColor = Color.Unspecified,
-        ),
-        contentPadding = contentPadding,
-        content = content,
-    )
+    val clickFlow = rememberClickFlow()
+    Row(
+        modifier
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() },
+                enabled = enabled,
+                onClick = { clickFlow.tryEmit(onClick) },
+                role = Role.Button
+            )
+            .padding(contentPadding)
+    ) {
+        content()
+    }
 }
