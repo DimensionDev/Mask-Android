@@ -32,5 +32,5 @@ interface TabScreen {
     val icon: Int
 
     @Composable
-    fun Content(navController: NavController, onBack: () -> Unit)
+    fun Content(navController: NavController)
 }

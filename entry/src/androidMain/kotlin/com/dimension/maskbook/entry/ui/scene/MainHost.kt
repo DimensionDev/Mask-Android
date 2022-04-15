@@ -53,11 +53,10 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.dimension.maskbook.common.ext.getAll
-import com.dimension.maskbook.common.ext.navigateToExtension
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
-import com.dimension.maskbook.common.route.navigationComposeModalComposable
-import com.dimension.maskbook.common.route.navigationComposeModalComposablePackage
+import com.dimension.maskbook.common.route.navigationComposeHomeComposable
+import com.dimension.maskbook.common.route.navigationComposeHomeComposablePackage
 import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
 import com.dimension.maskbook.common.routeProcessor.annotations.Path
 import com.dimension.maskbook.common.ui.tab.TabScreen
@@ -88,8 +87,8 @@ private val Colors.tabBackground: Color
 @NavGraphDestination(
     route = CommonRoute.Main.Home.path,
     deeplink = [Deeplinks.Main.Home.path],
-    packageName = navigationComposeModalComposablePackage,
-    functionName = navigationComposeModalComposable
+    packageName = navigationComposeHomeComposablePackage,
+    functionName = navigationComposeHomeComposable
 )
 @OptIn(ExperimentalPagerApi::class)
 @Composable
@@ -166,9 +165,6 @@ fun MainHost(
             ) {
                 tabs.elementAt(it).Content(
                     navController = navController,
-                    onBack = {
-                        navController.navigateToExtension(null)
-                    }
                 )
             }
         }
