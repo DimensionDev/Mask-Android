@@ -31,8 +31,8 @@ fun NavController.navigate(uri: Uri, builder: NavOptionsBuilder.() -> Unit) {
     navigate(uri, navOptions(builder))
 }
 
-fun NavController.navigateUri(uri: String, builder: NavOptionsBuilder.() -> Unit = {}) {
-    navigate(Uri.parse(uri), navOptions(builder))
+fun NavController.navigateUri(uri: Uri, builder: NavOptionsBuilder.() -> Unit = {}) {
+    navigate(uri, navOptions(builder))
 }
 
 fun NavController.navigateWithPopSelf(route: String) {
