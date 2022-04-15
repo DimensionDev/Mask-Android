@@ -72,7 +72,7 @@ import com.dimension.maskbook.common.ui.widget.MaskScene
 import com.dimension.maskbook.common.ui.widget.MaskTopAppBar
 import com.dimension.maskbook.common.ui.widget.MiddleEllipsisText
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
-import com.dimension.maskbook.common.ui.widget.SinglelineText
+import com.dimension.maskbook.common.ui.widget.SingleLineText
 import com.dimension.maskbook.common.ui.widget.button.MaskBackButton
 import com.dimension.maskbook.common.ui.widget.button.MaskIconButton
 import com.dimension.maskbook.common.ui.widget.button.MaskTextButton
@@ -268,7 +268,7 @@ private fun DerivationPathPager(
                     modifier = Modifier.weight(1f),
                     textAlign = TextAlign.Start,
                 )
-                SinglelineText(
+                SingleLineText(
                     text = balances[item.address] ?: "--",
                     modifier = Modifier.weight(1f),
                     textAlign = TextAlign.End,

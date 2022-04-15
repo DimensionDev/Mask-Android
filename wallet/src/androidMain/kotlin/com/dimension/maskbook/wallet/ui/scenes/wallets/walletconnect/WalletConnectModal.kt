@@ -85,7 +85,7 @@ import com.dimension.maskbook.common.ui.widget.HorizontalScenePadding
 import com.dimension.maskbook.common.ui.widget.LocalInAppNotification
 import com.dimension.maskbook.common.ui.widget.MaskDialog
 import com.dimension.maskbook.common.ui.widget.MaskModal
-import com.dimension.maskbook.common.ui.widget.SinglelineText
+import com.dimension.maskbook.common.ui.widget.SingleLineText
 import com.dimension.maskbook.common.ui.widget.button.MaskTransparentButton
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.common.ui.widget.itemsGridIndexed
@@ -484,7 +484,7 @@ fun WalletConnectManually(
                                 alpha = if (isInstalled) ContentAlpha.high else ContentAlpha.disabled
                             )
                             Spacer(modifier = Modifier.height(10.dp))
-                            SinglelineText(
+                            SingleLineText(
                                 text = wallet.displayName,
                                 style = MaterialTheme.typography.body2,
                                 textAlign = TextAlign.Center,

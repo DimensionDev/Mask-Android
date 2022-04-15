@@ -56,7 +56,7 @@ import com.dimension.maskbook.common.ui.widget.MaskAnimatedVisibility
 import com.dimension.maskbook.common.ui.widget.MaskListItem
 import com.dimension.maskbook.common.ui.widget.MaskSearchInput
 import com.dimension.maskbook.common.ui.widget.NameImage
-import com.dimension.maskbook.common.ui.widget.SinglelineText
+import com.dimension.maskbook.common.ui.widget.SingleLineText
 import com.dimension.maskbook.common.ui.widget.button.MaskButton
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.persona.R
@@ -209,7 +209,7 @@ fun LazyListScope.ContactsScene(
                 },
                 text = {
                     Row {
-                        SinglelineText(
+                        SingleLineText(
                             text = item.name,
                             modifier = Modifier.weight(1f, fill = false),
                         )

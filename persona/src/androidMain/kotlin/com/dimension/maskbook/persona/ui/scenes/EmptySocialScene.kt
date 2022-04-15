@@ -37,6 +37,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.common.ui.widget.HorizontalScenePadding
+import com.dimension.maskbook.common.ui.widget.SingleLineText
 import com.dimension.maskbook.common.ui.widget.button.MaskGridButton
 import com.dimension.maskbook.common.ui.widget.itemsGridIndexed
 import com.dimension.maskbook.persona.R
@@ -115,8 +116,7 @@ private fun ConnectItem(
         enabled = item.enable,
         onClick = onItemClick,
         modifier = Modifier
-            .fillMaxWidth()
-            .height(PersonaEmptySceneDefaults.itemHeight),
+            .fillMaxWidth(),
         icon = {
             Image(
                 painter = painterResource(item.network.icon),
@@ -126,7 +126,7 @@ private fun ConnectItem(
             )
         },
         text = {
-            Text(
+            SingleLineText(
                 text = item.network.title,
                 style = MaterialTheme.typography.subtitle2,
                 color = LocalContentColor.current.copy(LocalContentAlpha.current),
@@ -139,6 +139,5 @@ private object PersonaEmptySceneDefaults {
     val contentHorizontalPadding = 22.5f.dp
     val contentVerticalPadding = 16.dp
     val itemPadding = 8.dp
-    val itemHeight = 100.dp
-    val itemIconSize = 48.dp
+    val itemIconSize = 64.dp
 }

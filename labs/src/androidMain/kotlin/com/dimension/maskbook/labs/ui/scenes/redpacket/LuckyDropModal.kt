@@ -20,6 +20,7 @@
  */
 package com.dimension.maskbook.labs.ui.scenes.redpacket
 
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -140,7 +141,7 @@ fun LuckDropModal(
             WalletTokenCard(
                 wallet = stateData.wallet,
                 onClick = {
-                    navController.navigateUri(Deeplinks.Wallet.SwitchWallet)
+                    navController.navigateUri(Uri.parse(Deeplinks.Wallet.SwitchWallet))
                 }
             )
             Spacer(Modifier.height(24.dp))
@@ -148,7 +149,7 @@ fun LuckDropModal(
                 enabled = stateData.buttonEnabled && !loading,
                 onClick = {
                     viewModel.getSendTransactionData(stateData)?.let { data ->
-                        navController.navigateUri(Deeplinks.Wallet.SendTokenConfirm(data))
+                        navController.navigateUri(Uri.parse(Deeplinks.Wallet.SendTokenConfirm(data)))
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
