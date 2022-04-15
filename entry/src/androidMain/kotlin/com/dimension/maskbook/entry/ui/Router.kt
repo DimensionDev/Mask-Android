@@ -37,7 +37,6 @@ import com.dimension.maskbook.entry.EntrySetup
 import com.dimension.maskbook.entry.repository.EntryRepository
 import com.dimension.maskbook.entry.route.EntryRoute
 import com.dimension.maskbook.extension.ExtensionSetup
-import com.dimension.maskbook.extension.route.ExtensionRoute
 import com.dimension.maskbook.labs.LabsSetup
 import com.dimension.maskbook.persona.PersonaSetup
 import com.dimension.maskbook.persona.export.PersonaServices
