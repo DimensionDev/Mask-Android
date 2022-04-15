@@ -23,25 +23,28 @@ package com.dimension.maskbook.persona.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
-import com.dimension.maskbook.persona.datasource.DbPersonaDataSource
-import com.dimension.maskbook.persona.export.model.PersonaData
+import com.dimension.maskbook.common.ext.onFinished
 import com.dimension.maskbook.persona.repository.IPersonaRepository
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
-class SwitchPersonaViewModel(
-    private val personaRepository: IPersonaRepository,
-    personaDataSource: DbPersonaDataSource,
+class PersonaLogoutViewModel(
+    private val repository: IPersonaRepository
 ) : ViewModel() {
+    private val _loadingState = MutableStateFlow(false)
+    val loadingState = _loadingState.asStateIn(viewModelScope)
+    private val _done = MutableStateFlow(false)
+    val done = _done.asStateIn(viewModelScope)
 
-    val items = personaDataSource.getPersonaListFlow()
-        .asStateIn(viewModelScope, emptyList())
-
-    val current = personaRepository.currentPersona
-        .asStateIn(viewModelScope, null)
-
-    fun switch(personaData: PersonaData) {
-        viewModelScope.launch {
-            personaRepository.setCurrentPersona(personaData.identifier)
+    fun logout() = viewModelScope.launch {
+        _loadingState.value = true
+        runCatching {
+            repository.logout()
+        }.onFailure {
+            it.printStackTrace()
+        }.onFinished {
+            _done.value = true
+            _loadingState.value = false
         }
     }
 }

@@ -33,6 +33,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 private val CurrentPersonaKey = stringPreferencesKey("current_persona")
 private val ShouldShowContactsTipDialog = booleanPreferencesKey("ShouldShowContactsTipDialog")
@@ -52,8 +53,8 @@ class PreferenceRepository(
             it[CurrentPersonaKey] ?: ""
         }
 
-    override fun setCurrentPersonaIdentifier(identifier: String) {
-        ioScope.launch {
+    override suspend fun setCurrentPersonaIdentifier(identifier: String) {
+        withContext(ioScope.coroutineContext) {
             dataStore.edit {
                 it[CurrentPersonaKey] = identifier
             }

@@ -39,8 +39,8 @@ interface IPersonaRepository {
         platformType: PlatformType,
         onDone: (ConnectAccountData) -> Unit,
     )
-    fun logout()
-    fun setCurrentPersona(id: String)
+    suspend fun logout()
+    suspend fun setCurrentPersona(id: String)
     fun updatePersona(id: String, nickname: String)
     fun updateCurrentPersona(nickname: String)
     fun connectProfile(personaId: String, profileId: String)

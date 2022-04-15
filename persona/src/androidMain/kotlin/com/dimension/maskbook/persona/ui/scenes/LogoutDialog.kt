@@ -26,11 +26,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.navigationComposeDialog
 import com.dimension.maskbook.common.route.navigationComposeDialogPackage
@@ -40,8 +42,8 @@ import com.dimension.maskbook.common.ui.widget.MaskDialog
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.common.ui.widget.button.SecondaryButton
 import com.dimension.maskbook.persona.R
-import com.dimension.maskbook.persona.repository.IPersonaRepository
 import com.dimension.maskbook.persona.route.PersonaRoute
+import com.dimension.maskbook.persona.viewmodel.PersonaLogoutViewModel
 import org.koin.androidx.compose.get
 
 @NavGraphDestination(
@@ -54,7 +56,12 @@ fun LogoutDialog(
     navController: NavController,
     @Back onBack: () -> Unit,
 ) {
-    val repository = get<IPersonaRepository>()
+    val viewModel = get<PersonaLogoutViewModel>()
+    val done by viewModel.done.observeAsState()
+    val loading by viewModel.loadingState.observeAsState()
+    if (done) {
+        navController.popBackStack(CommonRoute.Main.Home.path, inclusive = false)
+    }
     MaskDialog(
         onDismissRequest = { /*TODO*/ },
         icon = {
@@ -74,6 +81,7 @@ fun LogoutDialog(
                 SecondaryButton(
                     modifier = Modifier.weight(1f),
                     onClick = onBack,
+                    enabled = !loading && !done
                 ) {
                     Text(text = stringResource(R.string.common_controls_cancel))
                 }
@@ -81,9 +89,9 @@ fun LogoutDialog(
                 PrimaryButton(
                     modifier = Modifier.weight(1f),
                     onClick = {
-                        repository.logout()
-                        navController.popBackStack(CommonRoute.Main.Home.path, inclusive = false)
+                        viewModel.logout()
                     },
+                    enabled = !loading && !done
                 ) {
                     Text(text = stringResource(R.string.common_controls_confirm))
                 }
