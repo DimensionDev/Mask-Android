@@ -24,7 +24,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -62,8 +61,8 @@ import com.dimension.maskbook.common.ui.widget.MaskTopAppBar
 import com.dimension.maskbook.common.ui.widget.MetaItem
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.common.ui.widget.button.MaskBackButton
+import com.dimension.maskbook.common.ui.widget.button.MaskTransparentButton
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
-import com.dimension.maskbook.common.ui.widget.button.clickable
 import com.dimension.maskbook.localization.R
 import com.dimension.maskbook.setting.route.SettingRoute
 import com.dimension.maskbook.setting.viewmodel.BackupLocalViewModel
@@ -171,11 +170,10 @@ fun BackupLocalScene(
                 meta?.let { meta ->
                     BackMetaDisplay(meta)
                     Spacer(modifier = Modifier.height(16.dp))
-                    Row(
-                        modifier = Modifier.clickable {
+                    MaskTransparentButton(
+                        onClick = {
                             viewModel.setWithWallet(!withWallet)
                         },
-                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Checkbox(checked = withWallet, onCheckedChange = {
                             viewModel.setWithWallet(it)

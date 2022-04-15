@@ -62,8 +62,8 @@ import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.common.ui.widget.button.MaskBackButton
 import com.dimension.maskbook.common.ui.widget.button.MaskButton
 import com.dimension.maskbook.common.ui.widget.button.MaskIconButton
+import com.dimension.maskbook.common.ui.widget.button.MaskTransparentButton
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
-import com.dimension.maskbook.common.ui.widget.button.clickable
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.repository.SearchAddressData
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.EnsData
@@ -323,26 +323,27 @@ private fun SearchAddressItem(
     item: SearchAddressData,
     onClick: (SearchAddressData) -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick.invoke(item) }
-            .padding(vertical = 8.dp)
-    ) {
-        if (!item.name.isNullOrEmpty() || !item.ens.isNullOrEmpty()) {
+    MaskTransparentButton(onClick = { onClick(item) }) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+        ) {
+            if (!item.name.isNullOrEmpty() || !item.ens.isNullOrEmpty()) {
+                Text(
+                    text = item.name ?: item.ens ?: "",
+                    style = MaterialTheme.typography.h5,
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+            }
             Text(
-                text = item.name ?: item.ens ?: "",
-                style = MaterialTheme.typography.h5,
+                text = if (!item.name.isNullOrEmpty()) {
+                    item.ens ?: item.address
+                } else item.address,
+                style = MaterialTheme.typography.body2,
             )
-            Spacer(modifier = Modifier.height(2.dp))
+            Spacer(Modifier.height(16.dp))
         }
-        Text(
-            text = if (!item.name.isNullOrEmpty()) {
-                item.ens ?: item.address
-            } else item.address,
-            style = MaterialTheme.typography.body2,
-        )
-        Spacer(Modifier.height(16.dp))
     }
 }
 

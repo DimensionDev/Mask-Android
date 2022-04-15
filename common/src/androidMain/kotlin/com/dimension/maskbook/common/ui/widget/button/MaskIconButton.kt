@@ -21,6 +21,8 @@
 package com.dimension.maskbook.common.ui.widget.button
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.ContentAlpha
@@ -28,6 +30,7 @@ import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,13 +46,17 @@ fun MaskIconButton(
     size: Dp = MaskIconButtonDefaults.defaultSize,
     content: @Composable () -> Unit
 ) {
+    val clickFlow = rememberClickFlow()
     Box(
         modifier = modifier
             .clickable(
-                onClick = onClick,
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() },
                 enabled = enabled,
-                role = Role.Button,
-            ).size(size),
+                onClick = { clickFlow.tryEmit(onClick) },
+                role = Role.Button
+            )
+            .size(size),
         contentAlignment = Alignment.Center
     ) {
         content.invoke()
@@ -64,14 +71,17 @@ fun MaskIconCardButton(
     size: Dp = MaskIconButtonDefaults.defaultSize,
     content: @Composable () -> Unit
 ) {
+    val clickFlow = rememberClickFlow()
     Box(
         modifier = modifier
             .background(MaterialTheme.colors.surface, shape = MaterialTheme.shapes.medium)
             .clip(shape = MaterialTheme.shapes.medium)
             .clickable(
-                onClick = onClick,
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() },
                 enabled = enabled,
-                role = Role.Button,
+                onClick = { clickFlow.tryEmit(onClick) },
+                role = Role.Button
             )
             .size(size),
         contentAlignment = Alignment.Center

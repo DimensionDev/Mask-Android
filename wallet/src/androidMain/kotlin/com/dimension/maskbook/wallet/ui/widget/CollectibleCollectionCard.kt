@@ -54,7 +54,7 @@ import coil.compose.rememberImagePainter
 import com.dimension.maskbook.common.ext.onDrawableRes
 import com.dimension.maskbook.common.ui.widget.MaskListItem
 import com.dimension.maskbook.common.ui.widget.button.MaskButton
-import com.dimension.maskbook.common.ui.widget.button.clickable
+import com.dimension.maskbook.common.ui.widget.button.MaskTransparentButton
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.export.model.WalletCollectibleCollectionData
 import com.dimension.maskbook.wallet.export.model.WalletCollectibleData
@@ -127,20 +127,19 @@ fun CollectibleCollectionCard(
                 ) {
                     items(items) {
                         it?.let { data ->
-                            Image(
-                                painter = rememberImagePainter(data.previewUrl) {
-                                    placeholder(R.drawable.mask)
-                                    fallback(R.drawable.mask)
-                                    error(R.drawable.mask)
-                                },
-                                modifier = Modifier
-                                    .size(145.dp)
-                                    .clip(RoundedCornerShape(12.dp))
-                                    .clickable {
-                                        onItemClicked.invoke(data)
+                            MaskTransparentButton(onClick = { onItemClicked(data) }) {
+                                Image(
+                                    painter = rememberImagePainter(data.previewUrl) {
+                                        placeholder(R.drawable.mask)
+                                        fallback(R.drawable.mask)
+                                        error(R.drawable.mask)
                                     },
-                                contentDescription = null
-                            )
+                                    modifier = Modifier
+                                        .size(145.dp)
+                                        .clip(RoundedCornerShape(12.dp)),
+                                    contentDescription = null
+                                )
+                            }
                         }
                     }
                 }

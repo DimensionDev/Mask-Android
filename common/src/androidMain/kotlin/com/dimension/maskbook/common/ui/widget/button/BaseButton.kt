@@ -64,6 +64,7 @@ fun BaseButton(
     CompositionLocalProvider(
         LocalElevationOverlay provides null
     ) {
+        val clickFlow = rememberClickFlow()
         val contentColor by colors.contentColor(enabled)
         Surface(
             modifier = modifier,
@@ -72,7 +73,7 @@ fun BaseButton(
             contentColor = contentColor.copy(alpha = 1f),
             border = border,
             elevation = elevation?.elevation(enabled, interactionSource)?.value ?: 0.dp,
-            onClick = onClick,
+            onClick = { clickFlow.tryEmit(onClick) },
             enabled = enabled,
             role = Role.Button,
             interactionSource = interactionSource,
