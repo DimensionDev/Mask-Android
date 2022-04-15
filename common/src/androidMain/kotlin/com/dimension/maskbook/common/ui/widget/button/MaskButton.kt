@@ -66,6 +66,6 @@ fun MaskButton(
     )
 }
 
-private object MaskButtonDefaults {
+internal object MaskButtonDefaults {
     val defaultPaddingValues = PaddingValues(0.dp)
 }
