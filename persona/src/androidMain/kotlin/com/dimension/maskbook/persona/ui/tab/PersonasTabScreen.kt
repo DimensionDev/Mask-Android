@@ -24,7 +24,7 @@ import android.net.Uri
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
-import androidx.navigation.navOptions
+import com.dimension.maskbook.common.ext.navigateToExtension
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.ui.tab.TabScreen
@@ -83,15 +83,7 @@ class PersonasTabScreen : TabScreen {
             onSocialItemClick = { _, social ->
                 social.network.toPlatform()?.let {
                     repository.setPlatform(it)
-                    navController.navigate(
-                        Uri.parse(Deeplinks.WebContent(null)),
-                        navOptions {
-                            launchSingleTop = true
-                            popUpTo(CommonRoute.Main.Home.path) {
-                                inclusive = true
-                            }
-                        }
-                    )
+                    navController.navigateToExtension()
                 }
             },
             onAddPersonaAvatar = {

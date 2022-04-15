@@ -26,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import com.dimension.maskbook.common.CommonSetup
 import com.dimension.maskbook.common.route
+import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.DeeplinkNavigateArgs
 import com.dimension.maskbook.common.route.Navigator
 import com.dimension.maskbook.common.route.RouteNavigateArgs
@@ -99,7 +100,7 @@ private suspend fun getInitialRoute(): String {
     }
     val hasPersona = KoinPlatformTools.defaultContext().get().get<PersonaServices>().hasPersona()
     return if (hasPersona) {
-        ExtensionRoute.WebContent(null)
+        CommonRoute.Main.Home(CommonRoute.Main.Tabs.Persona)
     } else {
         PersonaRoute.Register.Init
     }

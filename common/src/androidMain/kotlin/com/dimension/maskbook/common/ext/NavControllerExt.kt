@@ -52,10 +52,16 @@ fun NavController.navigateUriWithPopSelf(uri: String) {
 }
 
 fun NavController.navigateToExtension(site: String? = null) {
-    navigateUri(Deeplinks.WebContent(site)) {
+    navigateUri(Uri.parse(Deeplinks.WebContent(site))) {
+        launchSingleTop = true
+    }
+}
+
+fun NavController.navigateToHome(initialRoute: String = CommonRoute.Main.Tabs.Persona) {
+    navigateUri(Uri.parse(Deeplinks.Main.Home(initialRoute))) {
         launchSingleTop = true
         popUpTo(CommonRoute.Main.Home.path) {
-            inclusive = true
+            inclusive = false
         }
     }
 }

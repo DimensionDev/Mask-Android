@@ -20,10 +20,9 @@
  */
 package com.dimension.maskbook.extension
 
-import android.net.Uri
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.runtime.getValue
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -33,9 +32,8 @@ import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import com.dimension.maskbook.common.IoScopeName
 import com.dimension.maskbook.common.ModuleSetup
-import com.dimension.maskbook.common.ext.navigate
+import com.dimension.maskbook.common.ext.navigateToHome
 import com.dimension.maskbook.common.gecko.WebContentController
-import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.extension.export.ExtensionServices
 import com.dimension.maskbook.extension.export.model.Site
@@ -60,29 +58,21 @@ object ExtensionSetup : ModuleSetup {
             arguments = listOf(
                 navArgument("site") { type = NavType.StringType; nullable = true }
             ),
-            exitTransition = {
-                scaleOut(
-                    targetScale = 0.9f,
-                )
+            enterTransition = {
+                slideInVertically { it }
             },
-            popExitTransition = null,
-            popEnterTransition = {
-                scaleIn(
-                    initialScale = 0.9f,
-                )
-            }
+            exitTransition = null,
+            popEnterTransition = null,
+            popExitTransition = {
+                slideOutVertically { it }
+            },
         ) {
             val backStackEntry by navController.currentBackStackEntryAsState()
 
             val site = it.arguments?.getString("site")?.let { Site.valueOf(it) }
             WebContentScene(
                 onPersonaClicked = {
-                    navController.navigate(Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona))) {
-                        launchSingleTop = true
-                        popUpTo(ExtensionRoute.WebContent.path) {
-                            inclusive = false
-                        }
-                    }
+                    navController.navigateToHome()
                 },
                 enabledBack = backStackEntry == it,
                 site = site,

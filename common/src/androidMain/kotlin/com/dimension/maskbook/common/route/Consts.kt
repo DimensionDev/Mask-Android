@@ -22,8 +22,8 @@ package com.dimension.maskbook.common.route
 
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.runtime.Composable
 import androidx.navigation.NamedNavArgument
@@ -73,14 +73,17 @@ fun NavGraphBuilder.modalComposable(
         arguments = arguments,
         deepLinks = deepLinks,
         content = content,
-        enterTransition = {
-            slideInVertically { it }
+        exitTransition = {
+            scaleOut(
+                targetScale = 0.9f,
+            )
         },
-        exitTransition = null,
-        popEnterTransition = null,
-        popExitTransition = {
-            slideOutVertically { it }
-        },
+        popExitTransition = null,
+        popEnterTransition = {
+            scaleIn(
+                initialScale = 0.9f,
+            )
+        }
     )
 }
 
