@@ -59,7 +59,7 @@ import com.dimension.maskbook.common.ext.onDrawableRes
 import com.dimension.maskbook.common.ui.widget.MiddleEllipsisText
 import com.dimension.maskbook.common.ui.widget.button.MaskIconButton
 import com.dimension.maskbook.common.ui.widget.button.MaskTextButton
-import com.dimension.maskbook.common.ui.widget.button.clickable
+import com.dimension.maskbook.common.ui.widget.button.MaskTransparentButton
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.export.model.DbWalletBalanceType
@@ -253,28 +253,29 @@ private fun WalletDisplayAmount(
             } else {
                 chainType === item.chainType
             }
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .alpha(if (isSelected) 1f else 0.6f)
-                    .clickable(
-                        enabled = !isSelected,
-                        onClick = { onDisplayChainTypeClick(item.chainType) },
-                    ),
+            MaskTransparentButton(
+                enabled = !isSelected,
+                onClick = { onDisplayChainTypeClick(item.chainType) },
+                modifier = Modifier.weight(1f),
             ) {
-                Spacer(Modifier.height(13.dp))
-                Icon(
-                    painter = painterResource(item.icon),
-                    contentDescription = null,
-                    modifier = Modifier.size(28.dp),
-                    tint = Color.White,
-                )
-                if (isSelected) {
-                    Spacer(Modifier.height(4.dp))
-                    Spacer(Modifier.size(4.dp).background(Color.White, shape = CircleShape))
-                    Spacer(Modifier.height(11.dp))
-                } else {
-                    Spacer(Modifier.height(19.dp))
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.alpha(if (isSelected) 1f else 0.6f),
+                ) {
+                    Spacer(Modifier.height(13.dp))
+                    Icon(
+                        painter = painterResource(item.icon),
+                        contentDescription = null,
+                        modifier = Modifier.size(28.dp),
+                        tint = Color.White,
+                    )
+                    if (isSelected) {
+                        Spacer(Modifier.height(4.dp))
+                        Spacer(Modifier.size(4.dp).background(Color.White, shape = CircleShape))
+                        Spacer(Modifier.height(11.dp))
+                    } else {
+                        Spacer(Modifier.height(19.dp))
+                    }
                 }
             }
         }

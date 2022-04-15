@@ -21,7 +21,6 @@
 package com.dimension.maskbook.setting.ui.scenes.backup
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -34,7 +33,6 @@ import androidx.compose.material.Checkbox
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -48,8 +46,8 @@ import com.dimension.maskbook.common.ui.widget.MaskTopAppBar
 import com.dimension.maskbook.common.ui.widget.MetaItem
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.common.ui.widget.button.MaskBackButton
+import com.dimension.maskbook.common.ui.widget.button.MaskTransparentButton
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
-import com.dimension.maskbook.common.ui.widget.button.clickable
 import com.dimension.maskbook.localization.R
 import com.dimension.maskbook.setting.viewmodel.BackupCloudViewModel
 import org.koin.androidx.compose.getViewModel
@@ -90,11 +88,10 @@ fun BackupCloudScene(
                 meta?.let { meta ->
                     BackMetaDisplay(meta)
                     Spacer(modifier = Modifier.height(16.dp))
-                    Row(
-                        modifier = Modifier.clickable {
+                    MaskTransparentButton(
+                        onClick = {
                             viewModel.setWithLocalWallet(!withWallet)
                         },
-                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         Checkbox(checked = withWallet, onCheckedChange = {
                             viewModel.setWithLocalWallet(it)

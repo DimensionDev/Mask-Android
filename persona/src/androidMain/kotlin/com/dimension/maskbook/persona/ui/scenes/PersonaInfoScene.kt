@@ -70,7 +70,7 @@ import com.dimension.maskbook.common.ui.widget.MaskCard
 import com.dimension.maskbook.common.ui.widget.MaskListItem
 import com.dimension.maskbook.common.ui.widget.TipMessageDialog
 import com.dimension.maskbook.common.ui.widget.button.MaskIconButton
-import com.dimension.maskbook.common.ui.widget.button.clickable
+import com.dimension.maskbook.common.ui.widget.button.MaskTransparentButton
 import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.export.model.Network
 import com.dimension.maskbook.persona.export.model.PersonaData
@@ -327,28 +327,24 @@ private fun PersonaHeader(
                     )
                 },
                 icon = {
-                    if (item == null || item.avatar.isNullOrEmpty()) {
-                        Image(
-                            painterResource(R.drawable.ic_persona_default_avatar),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .size(56.dp)
-                                .clip(CircleShape)
-                                .clickable {
-                                    onAvatarClick.invoke()
-                                },
-                        )
-                    } else {
-                        Image(
-                            rememberImagePainter(item.avatar),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .size(56.dp)
-                                .clip(CircleShape)
-                                .clickable {
-                                    onAvatarClick.invoke()
-                                },
-                        )
+                    MaskTransparentButton(onClick = onAvatarClick) {
+                        if (item == null || item.avatar.isNullOrEmpty()) {
+                            Image(
+                                painterResource(R.drawable.ic_persona_default_avatar),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(56.dp)
+                                    .clip(CircleShape),
+                            )
+                        } else {
+                            Image(
+                                rememberImagePainter(item.avatar),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(56.dp)
+                                    .clip(CircleShape),
+                            )
+                        }
                     }
                 },
                 trailing = {
