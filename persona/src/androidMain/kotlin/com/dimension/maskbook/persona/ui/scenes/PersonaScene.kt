@@ -89,11 +89,13 @@ fun PersonaScene(
                     }
                 },
                 actions = {
-                    MaskIconCardButton(onClick = onBack) {
-                        Icon(
-                            imageVector = Icons.Filled.Close,
-                            contentDescription = null,
-                        )
+                    if (!socialList.isNullOrEmpty()) {
+                        MaskIconCardButton(onClick = onBack) {
+                            Icon(
+                                imageVector = Icons.Filled.Close,
+                                contentDescription = null,
+                            )
+                        }
                     }
                 },
                 title = {
