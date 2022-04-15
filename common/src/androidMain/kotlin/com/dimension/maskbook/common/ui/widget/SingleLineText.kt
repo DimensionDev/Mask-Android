@@ -51,7 +51,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun SinglelineText(
+fun SingleLineText(
     text: String,
     modifier: Modifier = Modifier,
     color: Color = Color.Unspecified,
