@@ -35,7 +35,7 @@ class LabsTabScreen : TabScreen {
     override val icon: Int = R.drawable.ic_labs
 
     @Composable
-    override fun Content(navController: NavController, onBack: () -> Unit) {
+    override fun Content(navController: NavController) {
         LabsScene(
             onSettingClick = {
                 navController.navigate(LabsRoute.PluginSettings)

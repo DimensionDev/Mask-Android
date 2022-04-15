@@ -166,9 +166,6 @@ fun MainHost(
             ) {
                 tabs.elementAt(it).Content(
                     navController = navController,
-                    onBack = {
-                        navController.navigateToExtension(null)
-                    }
                 )
             }
         }

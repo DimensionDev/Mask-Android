@@ -44,10 +44,12 @@ class PersonasTabScreen : TabScreen {
 
     @OptIn(ExperimentalAnimationApi::class)
     @Composable
-    override fun Content(navController: NavController, onBack: () -> Unit) {
+    override fun Content(navController: NavController) {
         val repository = get<IPersonaRepository>()
         PersonaScene(
-            onBack = onBack,
+            onBack = {
+                navController.navigateToExtension(null)
+            },
             onPersonaCreateClick = {
                 navController.navigate(Uri.parse(Deeplinks.Persona.Register.WelcomeCreatePersona))
             },
