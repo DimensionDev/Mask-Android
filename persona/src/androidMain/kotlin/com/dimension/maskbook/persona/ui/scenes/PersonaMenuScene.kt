@@ -80,7 +80,6 @@ fun PersonaMenuScene(
 
     val currentPersona by viewModel.currentPersona.collectAsState()
     val backupPassword by viewModel.backupPassword.collectAsState()
-    val paymentPassword by viewModel.paymentPassword.collectAsState()
 
     MaskScene {
         MaskScaffold(
