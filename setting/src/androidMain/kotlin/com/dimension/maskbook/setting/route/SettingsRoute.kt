@@ -31,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
+import com.dimension.maskbook.common.ext.navigateWithPopSelf
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
@@ -83,7 +84,7 @@ fun SetupPasswordDialog(
             PrimaryButton(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {
-                    navController.popBackStack()
+                    navController.navigateWithPopSelf(SettingRoute.ChangeBackUpPassword)
                 }
             ) {
                 Text(text = stringResource(R.string.common_controls_ok))
