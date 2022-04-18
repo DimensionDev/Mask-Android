@@ -64,6 +64,10 @@ internal class SettingsRepository(
         get() = settingDataSource.backupPassword
     override val shouldShowLegalScene: Flow<Boolean>
         get() = settingDataSource.shouldShowLegalScene
+    override val email: Flow<String>
+        get() = settingDataSource.email
+    override val phone: Flow<String>
+        get() = settingDataSource.phone
 
     override fun setBiometricEnabled(value: Boolean) {
         settingDataSource.setBiometricEnabled(value)
@@ -209,11 +213,11 @@ internal class SettingsRepository(
         }
     }
 
-    override fun saveEmailForCurrentPersona(value: String) {
-        personaServices.saveEmailForCurrentPersona(value)
+    override fun saveEmail(value: String) {
+        settingDataSource.setRegisterEmail(value)
     }
 
-    override fun savePhoneForCurrentPersona(value: String) {
-        personaServices.savePhoneForCurrentPersona(value)
+    override fun savePhone(value: String) {
+        settingDataSource.setRegisterPhone(value)
     }
 }
