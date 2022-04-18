@@ -26,6 +26,7 @@ import com.dimension.maskbook.common.routeProcessor.annotations.Route
 @Route
 expect object PersonaRoute {
     const val Logout: String
+    const val LogoutBeforeCheck: String
     const val PersonaMenu: String
     const val SwitchPersona: String
     const val SetAvatar: String

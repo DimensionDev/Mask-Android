@@ -232,7 +232,11 @@ fun PersonaMenuScene(
                         modifier = Modifier.fillMaxWidth(),
                         elevation = 0.dp,
                         onClick = {
-                            navController.navigate(PersonaRoute.Logout)
+                            if (backupPassword.isEmpty()) {
+                                navController.navigate(PersonaRoute.Logout)
+                            } else {
+                                navController.navigate(PersonaRoute.LogoutBeforeCheck)
+                            }
                         }
                     ) {
                         Row(

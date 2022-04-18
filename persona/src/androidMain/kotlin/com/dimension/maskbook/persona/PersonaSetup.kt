@@ -204,7 +204,7 @@ object PersonaSetup : ModuleSetup {
                 get()
             )
         }
-        viewModel { PersonaLogoutViewModel(get()) }
+        viewModel { PersonaLogoutViewModel(get(), get()) }
     }
 
     override fun onExtensionReady() {
