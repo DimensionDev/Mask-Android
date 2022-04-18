@@ -54,6 +54,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.dimension.maskbook.common.ext.navigateUri
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.ui.widget.IosSwitch
@@ -201,12 +202,11 @@ fun SettingsScene(
                     title = stringResource(R.string.scene_setting_backup_recovery_back_up_data),
                     icon = R.drawable.ic_settings_backup_data,
                     onClick = {
-                        val route = if (backupPassword.isEmpty() || paymentPassword.isEmpty()) {
-                            SettingRoute.SetupPasswordDialog
+                        if (backupPassword.isEmpty()) {
+                            navController.navigateUri(Uri.parse(Deeplinks.Setting.SetupPasswordDialog))
                         } else {
-                            SettingRoute.BackupData.BackupSelection
+                            navController.navigate(SettingRoute.BackupData.BackupSelection)
                         }
-                        navController.navigate(route)
                     }
                 )
                 SettingsDivider()
