@@ -20,6 +20,12 @@
  */
 package com.dimension.maskbook.persona.ui.scenes.social
 
+import androidx.compose.animation.core.CubicBezierEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -46,6 +52,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -61,6 +68,9 @@ import com.dimension.maskbook.persona.export.model.Network
 import com.dimension.maskbook.persona.export.model.SocialData
 import com.dimension.maskbook.persona.model.icon
 
+private const val shakeDegrees = 5f
+private val shakeDegreesEasing = CubicBezierEasing(1f, 0.5f, 1f, 0.5f)
+
 @Composable
 fun SocialScene(
     isEditing: Boolean,
@@ -69,6 +79,20 @@ fun SocialScene(
     onAddSocialClick: () -> Unit,
     onItemClick: (SocialData, isEditing: Boolean) -> Unit,
 ) {
+    val infiniteTransition = rememberInfiniteTransition()
+    val shakingAngle: Float = if (isEditing) {
+        infiniteTransition.animateFloat(
+            initialValue = -shakeDegrees,
+            targetValue = shakeDegrees,
+            animationSpec = infiniteRepeatable(
+                animation = tween(durationMillis = 100, easing = shakeDegreesEasing),
+                repeatMode = RepeatMode.Reverse,
+            )
+        ).value
+    } else {
+        0f
+    }
+
     LazyColumn(
         contentPadding = PaddingValues(horizontal = HorizontalScenePadding),
     ) {
@@ -116,6 +140,7 @@ fun SocialScene(
                     onItemClick = {
                         onItemClick(item, isEditing)
                     },
+                    shakingAngleBubble = shakingAngle,
                     isEditing = isEditing,
                 )
             }
@@ -158,11 +183,15 @@ private fun AddIcon(
 private fun SocialItem(
     item: SocialData,
     onItemClick: () -> Unit,
+    shakingAngleBubble: Float = 0f,
     isEditing: Boolean,
 ) {
     MaskGridButton(
         onClick = onItemClick,
         modifier = Modifier
+            .graphicsLayer {
+                rotationZ = shakingAngleBubble
+            }
             .size(
                 width = SocialScreenDefaults.itemWidth,
                 height = SocialScreenDefaults.itemHeight,
