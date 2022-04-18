@@ -44,6 +44,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -70,6 +71,7 @@ import com.dimension.maskbook.setting.export.model.DataProvider
 import com.dimension.maskbook.setting.export.model.Language
 import com.dimension.maskbook.setting.repository.ISettingsRepository
 import com.dimension.maskbook.setting.route.SettingRoute
+import com.dimension.maskbook.wallet.export.WalletServices
 import org.koin.androidx.compose.get
 import org.koin.androidx.compose.getViewModel
 
@@ -80,6 +82,8 @@ fun SettingsScene(
     onBack: () -> Unit,
 ) {
     val repository = get<ISettingsRepository>()
+    val walletService = get<WalletServices>()
+    val currentWallet by walletService.currentWallet.collectAsState(initial = null)
     val language by repository.language.observeAsState(initial = Language.auto)
     val appearance by repository.appearance.observeAsState(initial = Appearance.default)
     val dataProvider by repository.dataProvider.observeAsState(initial = DataProvider.UNISWAP_INFO)
@@ -139,23 +143,25 @@ fun SettingsScene(
                         navController.navigate(SettingRoute.DataSourceSettings)
                     }
                 )
-                SettingsDivider()
-                if (paymentPassword.isEmpty()) {
-                    SettingsItem(
-                        title = stringResource(R.string.scene_setting_general_setup_payment_password),
-                        icon = R.drawable.ic_settings_change_payment_password,
-                        onClick = {
-                            navController.navigate(SettingRoute.PaymentPasswordSettings)
-                        }
-                    )
-                } else {
-                    SettingsItem(
-                        title = stringResource(R.string.scene_setting_general_change_payment_password),
-                        icon = R.drawable.ic_settings_change_payment_password,
-                        onClick = {
-                            navController.navigate(SettingRoute.PaymentPasswordSettings)
-                        }
-                    )
+                if (currentWallet != null) {
+                    SettingsDivider()
+                    if (paymentPassword.isEmpty()) {
+                        SettingsItem(
+                            title = stringResource(R.string.scene_setting_general_setup_payment_password),
+                            icon = R.drawable.ic_settings_change_payment_password,
+                            onClick = {
+                                navController.navigate(SettingRoute.PaymentPasswordSettings)
+                            }
+                        )
+                    } else {
+                        SettingsItem(
+                            title = stringResource(R.string.scene_setting_general_change_payment_password),
+                            icon = R.drawable.ic_settings_change_payment_password,
+                            onClick = {
+                                navController.navigate(SettingRoute.PaymentPasswordSettings)
+                            }
+                        )
+                    }
                 }
                 if (biometricEnableViewModel.isSupported(context)) {
                     SettingsDivider()
@@ -200,7 +206,7 @@ fun SettingsScene(
                     title = stringResource(R.string.scene_setting_backup_recovery_back_up_data),
                     icon = R.drawable.ic_settings_backup_data,
                     onClick = {
-                        val route = if (backupPassword.isEmpty() || paymentPassword.isEmpty()) {
+                        val route = if (backupPassword.isEmpty() || (currentWallet != null && paymentPassword.isEmpty())) {
                             SettingRoute.SetupPasswordDialog
                         } else {
                             SettingRoute.BackupData.BackupSelection

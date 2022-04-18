@@ -87,20 +87,22 @@ fun BackupCloudScene(
             ) {
                 meta?.let { meta ->
                     BackMetaDisplay(meta)
-                    Spacer(modifier = Modifier.height(16.dp))
-                    MaskTransparentButton(
-                        onClick = {
-                            viewModel.setWithLocalWallet(!withWallet)
-                        },
-                    ) {
-                        Checkbox(checked = withWallet, onCheckedChange = {
-                            viewModel.setWithLocalWallet(it)
-                        })
-                        Spacer(modifier = Modifier.width(10.dp))
-                        MetaItem(
-                            title = stringResource(R.string.scene_setting_local_backup_local_wallet),
-                            value = meta.wallet.toString()
-                        )
+                    if (meta.wallet > 0) {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        MaskTransparentButton(
+                            onClick = {
+                                viewModel.setWithLocalWallet(!withWallet)
+                            },
+                        ) {
+                            Checkbox(checked = withWallet, onCheckedChange = {
+                                viewModel.setWithLocalWallet(it)
+                            })
+                            Spacer(modifier = Modifier.width(10.dp))
+                            MetaItem(
+                                title = stringResource(R.string.scene_setting_local_backup_local_wallet),
+                                value = meta.wallet.toString()
+                            )
+                        }
                     }
                 }
 
