@@ -34,16 +34,45 @@ import kotlinx.serialization.descriptors.buildClassSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
+data class MsgBoolean(val value: Boolean)
+
+class MsgBooleanSerializer : KSerializer<MsgBoolean?> {
+    private val msgPackDynamicSerializer = MsgPackDynamicSerializer()
+    override fun deserialize(decoder: Decoder): MsgBoolean? {
+        return if (decoder is MsgPackTypeDecoder) {
+            when (val result = msgPackDynamicSerializer.deserialize(decoder).also { println("Mimao===> dynamic:$it") }) {
+                is Boolean -> MsgBoolean(value = result)
+                is Number -> MsgBoolean(value = result == 1)
+                else -> throw IllegalArgumentException("Unknown type: $result")
+            }
+        } else {
+            when (decoder.decodeString().also { println("Mimao===> string:$it") }) {
+                "true" -> MsgBoolean(value = true)
+                "false" -> MsgBoolean(value = false)
+                "1" -> MsgBoolean(value = true)
+                "0" -> MsgBoolean(value = false)
+                else -> throw IllegalArgumentException("Unknown type")
+            }
+        }
+    }
+
+    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("MsgBoolean", PrimitiveKind.STRING)
+
+    override fun serialize(encoder: Encoder, value: MsgBoolean?) {
+        encoder.encodeBoolean(value?.value ?: false)
+    }
+}
+
 @Serializable
 data class BackupMetaFile(
-    val wallets: List<Wallet>,
+    val wallets: List<Wallet> = emptyList(),
     @SerialName("_meta_")
     val meta: Meta,
-    val grantedHostPermissions: List<String>,
-    val posts: List<Post>,
-    val profiles: List<Profile>,
-    val personas: List<Persona>,
-    val relations: List<Relation>,
+    val grantedHostPermissions: List<String> = emptyList(),
+    val posts: List<Post> = emptyList(),
+    val profiles: List<Profile> = emptyList(),
+    val personas: List<Persona> = emptyList(),
+    val relations: List<Relation> = emptyList(),
     // val plugin: Map<String, JsonElement>? = null, // TODO: unknown value type
 ) {
     @Serializable
@@ -224,8 +253,8 @@ data class BackupMetaFile(
     ) {
         @Serializable
         data class Parameter(
-            val withPassword: Boolean,
-            val path: String,
+            val withPassword: Boolean = false,
+            val path: String = "",
         )
     }
 
@@ -277,7 +306,8 @@ data class JsonWebKey(
     val use: String? = null,
     val key_ops: List<String>? = null,
     val alg: String? = null,
-    val ext: Boolean? = null,
+    @Serializable(with = MsgBooleanSerializer::class)
+    val ext: MsgBoolean? = null,
     val crv: String? = null,
     val x: String? = null,
     val y: String? = null,
