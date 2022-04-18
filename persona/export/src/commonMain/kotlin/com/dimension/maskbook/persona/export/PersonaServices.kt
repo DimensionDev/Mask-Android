@@ -34,8 +34,6 @@ interface PersonaServices {
     suspend fun createPersonaFromMnemonic(value: List<String>, name: String)
     suspend fun createPersonaFromPrivateKey(value: String, name: String)
     fun connectProfile(personaId: String, profileId: String)
-    fun saveEmailForCurrentPersona(value: String)
-    fun savePhoneForCurrentPersona(value: String)
     suspend fun createPersonaBackup(hasPrivateKeyOnly: Boolean): List<IndexedDBPersona>
     suspend fun restorePersonaBackup(persona: List<IndexedDBPersona>)
     suspend fun createProfileBackup(): List<IndexedDBProfile>

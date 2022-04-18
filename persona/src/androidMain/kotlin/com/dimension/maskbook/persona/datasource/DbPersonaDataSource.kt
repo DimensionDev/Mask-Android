@@ -74,14 +74,6 @@ class DbPersonaDataSource(private val database: PersonaDatabase) {
         }
     }
 
-    suspend fun updateEmail(personaIdentifier: String, email: String) {
-        personaDao.updateEmail(personaIdentifier, email)
-    }
-
-    suspend fun updatePhone(personaIdentifier: String, phone: String) {
-        personaDao.updatePhone(personaIdentifier, phone)
-    }
-
     suspend fun updateNickName(personaIdentifier: String, name: String) {
         personaDao.updateNickName(personaIdentifier, name)
     }
@@ -140,8 +132,6 @@ private fun DbPersonaRecord.toPersonaData(): PersonaData {
     return PersonaData(
         identifier = identifier,
         name = nickname.orEmpty(),
-        email = email,
-        phone = phone,
         avatar = avatar,
     )
 }

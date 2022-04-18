@@ -56,14 +56,6 @@ class PersonaServicesImpl(
         personaRepository.connectProfile(personaId, profileId)
     }
 
-    override fun saveEmailForCurrentPersona(value: String) {
-        personaRepository.saveEmailForCurrentPersona(value)
-    }
-
-    override fun savePhoneForCurrentPersona(value: String) {
-        personaRepository.savePhoneForCurrentPersona(value)
-    }
-
     override suspend fun createPersonaBackup(hasPrivateKeyOnly: Boolean): List<IndexedDBPersona> {
         return personaRepository.createPersonaBackup(hasPrivateKeyOnly)
     }

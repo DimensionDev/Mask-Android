@@ -44,6 +44,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -64,7 +65,6 @@ import com.dimension.maskbook.common.ui.widget.button.MaskButton
 import com.dimension.maskbook.common.ui.widget.button.MaskIconCardButton
 import com.dimension.maskbook.common.viewmodel.BiometricEnableViewModel
 import com.dimension.maskbook.localization.R
-import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.setting.export.model.Appearance
 import com.dimension.maskbook.setting.export.model.DataProvider
 import com.dimension.maskbook.setting.export.model.Language
@@ -86,8 +86,9 @@ fun SettingsScene(
     val backupPassword by repository.backupPassword.observeAsState(initial = "")
     val paymentPassword by repository.paymentPassword.observeAsState(initial = "")
     val biometricEnabled by repository.biometricEnabled.observeAsState(initial = false)
-    val personaRepository = get<PersonaServices>()
-    val persona by personaRepository.currentPersona.observeAsState(initial = null)
+    val email by repository.email.collectAsState("")
+    val phone by repository.phone.collectAsState("")
+
     val biometricEnableViewModel = getViewModel<BiometricEnableViewModel>()
     val context = LocalContext.current
     MaskScaffold(
@@ -228,8 +229,7 @@ fun SettingsScene(
                     )
                 }
                 SettingsDivider()
-                val email = persona?.email
-                if (email.isNullOrEmpty()) {
+                if (email.isEmpty()) {
                     SettingsItem(
                         title = stringResource(R.string.scene_backup_backup_verify_field_email),
                         icon = R.drawable.ic_settings_email,
@@ -253,8 +253,7 @@ fun SettingsScene(
                     )
                 }
                 SettingsDivider()
-                val phone = persona?.phone
-                if (phone.isNullOrEmpty()) {
+                if (phone.isEmpty()) {
                     SettingsItem(
                         title = stringResource(R.string.scene_setting_profile_phone_number),
                         icon = R.drawable.ic_settings_phone_number,
