@@ -25,16 +25,35 @@ import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.common.ext.onFinished
 import com.dimension.maskbook.persona.repository.IPersonaRepository
+import com.dimension.maskbook.setting.export.SettingServices
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
 class PersonaLogoutViewModel(
-    private val repository: IPersonaRepository
+    private val repository: IPersonaRepository,
+    settingServices: SettingServices,
 ) : ViewModel() {
+
     private val _loadingState = MutableStateFlow(false)
     val loadingState = _loadingState.asStateIn(viewModelScope)
+
     private val _done = MutableStateFlow(false)
     val done = _done.asStateIn(viewModelScope)
+
+    private val _password = MutableStateFlow("")
+    val password = _password.asStateIn(viewModelScope)
+
+    val confirmPassword = combine(
+        settingServices.backupPassword,
+        password
+    ) { currentPassword, password ->
+        currentPassword == password
+    }.asStateIn(viewModelScope, false)
+
+    fun setPassword(password: String) {
+        _password.value = password
+    }
 
     fun logout() = viewModelScope.launch {
         _loadingState.value = true
