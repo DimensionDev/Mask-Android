@@ -40,8 +40,8 @@ import com.dimension.maskbook.extension.route.ExtensionRoute
 import com.dimension.maskbook.extension.ui.WebContentScene
 import com.dimension.maskbook.extension.utils.BackgroundMessageChannel
 import com.dimension.maskbook.extension.utils.ContentMessageChannel
+import org.koin.core.Koin
 import org.koin.dsl.module
-import org.koin.mp.KoinPlatformTools
 
 object ExtensionSetup : ModuleSetup {
     override fun NavGraphBuilder.route(navController: NavController) {
@@ -69,14 +69,14 @@ object ExtensionSetup : ModuleSetup {
 
     override fun dependencyInject() = module {
         single { WebContentController(get(), get(appScope)) }
-        single { ExtensionRepository(get()) }
+        single { ExtensionRepository(get(), get(appScope)) }
         single<ExtensionServices> { ExtensionServicesImpl(get(), get(), get()) }
         single { BackgroundMessageChannel(get(), get(appScope)) }
         single { ContentMessageChannel(get(), get(appScope)) }
     }
 
-    override fun onExtensionReady() {
-        KoinPlatformTools.defaultContext().get().get<BackgroundMessageChannel>().startMessageCollect()
-        KoinPlatformTools.defaultContext().get().get<ContentMessageChannel>().startMessageCollect()
+    override fun onExtensionReady(koin: Koin) {
+        koin.get<BackgroundMessageChannel>().startMessageCollect()
+        koin.get<ContentMessageChannel>().startMessageCollect()
     }
 }

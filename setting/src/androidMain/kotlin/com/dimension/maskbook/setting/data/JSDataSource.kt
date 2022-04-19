@@ -24,7 +24,6 @@ import com.dimension.maskbook.setting.export.model.Appearance
 import com.dimension.maskbook.setting.export.model.DataProvider
 import com.dimension.maskbook.setting.export.model.Language
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,8 +32,8 @@ import kotlinx.coroutines.launch
 
 internal class JSDataSource(
     private val jsMethod: JSMethod,
+    private val scope: CoroutineScope,
 ) {
-    private val scope = CoroutineScope(Dispatchers.IO)
     private val _appearance = MutableStateFlow(Appearance.default)
     private val _dataProvider = MutableStateFlow(DataProvider.COIN_GECKO)
     private val _language = MutableStateFlow(Language.auto)

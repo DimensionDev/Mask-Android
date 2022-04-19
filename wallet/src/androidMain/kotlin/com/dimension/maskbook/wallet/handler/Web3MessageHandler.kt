@@ -37,7 +37,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.NullNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import org.web3j.protocol.core.Request
@@ -45,8 +44,8 @@ import org.web3j.protocol.core.Response
 
 internal class Web3MessageHandler(
     private val walletRepository: IWalletRepository,
+    private val scope: CoroutineScope,
 ) {
-    private val scope = CoroutineScope(Dispatchers.IO)
     fun handle(request: Web3Request) {
         scope.launch {
             val payload = request.payload

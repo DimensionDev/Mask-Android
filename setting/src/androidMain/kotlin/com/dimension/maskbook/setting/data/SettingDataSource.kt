@@ -28,7 +28,6 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -43,8 +42,8 @@ val Context.settingsDataStore: DataStore<Preferences> by preferencesDataStore(na
 
 class SettingDataSource(
     private val dataStore: DataStore<Preferences>,
+    private val scope: CoroutineScope,
 ) {
-    private val scope = CoroutineScope(Dispatchers.IO)
     val biometricEnabled: Flow<Boolean>
         get() = dataStore.data.map {
             it[BiometricEnabledKey] ?: false

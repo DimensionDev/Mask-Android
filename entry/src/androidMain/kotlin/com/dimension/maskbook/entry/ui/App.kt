@@ -33,7 +33,7 @@ import com.dimension.maskbook.labs.LabsSetup
 import com.dimension.maskbook.persona.PersonaSetup
 import com.dimension.maskbook.setting.SettingSetup
 import com.dimension.maskbook.wallet.WalletSetup
-import org.koin.mp.KoinPlatformTools
+import org.koin.core.context.GlobalContext
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -52,12 +52,14 @@ fun App(
 }
 
 private suspend fun warmingUp() {
-    KoinPlatformTools.defaultContext().get().get<ExtensionServices>().ensureExtensionActive()
-    CommonSetup.onExtensionReady()
-    WalletSetup.onExtensionReady()
-    SettingSetup.onExtensionReady()
-    LabsSetup.onExtensionReady()
-    PersonaSetup.onExtensionReady()
-    EntrySetup.onExtensionReady()
-    ExtensionSetup.onExtensionReady()
+    val koin = GlobalContext.get()
+
+    koin.get<ExtensionServices>().ensureExtensionActive()
+    CommonSetup.onExtensionReady(koin)
+    WalletSetup.onExtensionReady(koin)
+    SettingSetup.onExtensionReady(koin)
+    LabsSetup.onExtensionReady(koin)
+    PersonaSetup.onExtensionReady(koin)
+    EntrySetup.onExtensionReady(koin)
+    ExtensionSetup.onExtensionReady(koin)
 }

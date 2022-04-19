@@ -115,13 +115,12 @@ internal class WalletRepository(
     private val services: WalletServices,
     private val walletConnectManager: WalletConnectClientManager,
     private val jsMethod: JSMethod,
+    private val scope: CoroutineScope,
 ) : IWalletRepository {
-    private val tokenScope = CoroutineScope(Dispatchers.IO)
-    private val scope = CoroutineScope(Dispatchers.IO)
 
     @OptIn(ExperimentalTime::class)
     override fun init() {
-        tokenScope.launch {
+        scope.launch {
             refreshChainData()
             while (true) {
                 delay(12.seconds)
@@ -826,7 +825,7 @@ internal class WalletRepository(
     }
 
     override suspend fun refreshWallet() {
-        withContext(tokenScope.coroutineContext) {
+        withContext(scope.coroutineContext) {
             refreshCurrentWalletToken()
             refreshCurrentWalletCollectibles()
             refreshNativeTokens()

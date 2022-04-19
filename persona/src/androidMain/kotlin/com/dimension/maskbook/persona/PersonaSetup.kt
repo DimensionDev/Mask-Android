@@ -81,10 +81,10 @@ import com.google.accompanist.navigation.animation.navigation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asExecutor
 import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.Koin
 import org.koin.dsl.bind
 import org.koin.dsl.binds
 import org.koin.dsl.module
-import org.koin.mp.KoinPlatformTools
 
 object PersonaSetup : ModuleSetup {
 
@@ -206,8 +206,8 @@ object PersonaSetup : ModuleSetup {
         viewModel { PersonaLogoutViewModel(get(), get()) }
     }
 
-    override fun onExtensionReady() {
-        KoinPlatformTools.defaultContext().get().get<IPersonaRepository>().init()
-        KoinPlatformTools.defaultContext().get().get<JSMethodV2>().startSubscribe()
+    override fun onExtensionReady(koin: Koin) {
+        koin.get<IPersonaRepository>().init()
+        koin.get<JSMethodV2>().startSubscribe()
     }
 }

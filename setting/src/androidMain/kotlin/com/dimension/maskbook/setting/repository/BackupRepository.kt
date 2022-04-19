@@ -36,7 +36,6 @@ import com.dimension.maskbook.setting.services.model.SendCodeBody
 import com.dimension.maskbook.setting.services.model.UploadBody
 import com.dimension.maskbook.setting.services.model.ValidateCodeBody
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.builtins.serializer
@@ -57,8 +56,8 @@ class BackupRepository(
     private val backupServices: BackupServices,
     private val cacheDir: File,
     private val contentResolver: ContentResolver,
+    private val scope: CoroutineScope,
 ) {
-    private val scope = CoroutineScope(Dispatchers.IO)
     suspend fun sendPhoneCode(phone: String) {
         withContext(scope.coroutineContext) {
             backupServices.sendCode(

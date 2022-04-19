@@ -25,7 +25,6 @@ import com.dimension.maskbook.extension.export.model.Site
 import com.dimension.maskbook.extension.ext.site
 import com.dimension.maskbook.extension.ext.url
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -36,8 +35,8 @@ import kotlinx.coroutines.launch
 @OptIn(InternalCoroutinesApi::class)
 class ExtensionRepository(
     private val controller: WebContentController,
+    private val scope: CoroutineScope,
 ) {
-    private val scope = CoroutineScope(Dispatchers.IO)
     private val _currentSite = MutableStateFlow(Site.Twitter)
     val currentSite = _currentSite.asSharedFlow()
     fun setCurrentSite(site: Site) {

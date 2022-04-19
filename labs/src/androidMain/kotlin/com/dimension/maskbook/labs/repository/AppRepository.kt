@@ -24,15 +24,14 @@ import com.dimension.maskbook.labs.data.JSMethod
 import com.dimension.maskbook.labs.export.model.AppData
 import com.dimension.maskbook.labs.export.model.AppKey
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 
 internal class AppRepository(
     private val jsMethod: JSMethod,
+    private val scope: CoroutineScope,
 ) : IAppRepository {
-    private val scope = CoroutineScope(Dispatchers.IO)
 
     private val _apps = MutableStateFlow(
         AppKey.values().map { AppData(it, true) }

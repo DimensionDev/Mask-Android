@@ -24,18 +24,20 @@ import android.content.Context
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import com.dimension.maskbook.common.ModuleSetup
+import com.dimension.maskbook.common.di.scope.appScope
+import com.dimension.maskbook.common.di.scope.ioDispatcher
 import com.dimension.maskbook.common.route.Navigator
 import com.dimension.maskbook.entry.data.JSMethod
 import com.dimension.maskbook.entry.repository.EntryRepository
 import com.dimension.maskbook.entry.repository.entryDataStore
 import com.dimension.maskbook.entry.ui.scene.generatedRoute
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
+import org.koin.core.Koin
 import org.koin.dsl.module
-import org.koin.mp.KoinPlatformTools
 
 object EntrySetup : ModuleSetup {
     override fun NavGraphBuilder.route(navController: NavController) {
@@ -43,25 +45,25 @@ object EntrySetup : ModuleSetup {
     }
 
     override fun dependencyInject() = module {
-        single { EntryRepository(get<Context>().entryDataStore) }
+        single { EntryRepository(get<Context>().entryDataStore, get(appScope)) }
         single { JSMethod(get()) }
     }
 
-    override fun onExtensionReady() {
-        KoinPlatformTools.defaultContext().get().get<JSMethod>().apply {
-            CoroutineScope(Dispatchers.IO).launch {
-                launch {
-                    merge(
-                        openCreateWalletView(),
-                        openDashboardView(),
-                        openAppsView(),
-                        openSettingsView(),
-                    ).filter { uri ->
-                        uri.isNotEmpty()
-                    }.collect { uri ->
-                        Navigator.deeplink(uri)
-                    }
-                }
+    override fun onExtensionReady(koin: Koin) {
+        val appScope = koin.get<CoroutineScope>(appScope)
+        val ioDispatcher = koin.get<CoroutineDispatcher>(ioDispatcher)
+        val jsMethod = koin.get<JSMethod>()
+
+        appScope.launch(ioDispatcher) {
+            merge(
+                jsMethod.openCreateWalletView(),
+                jsMethod.openDashboardView(),
+                jsMethod.openAppsView(),
+                jsMethod.openSettingsView(),
+            ).filter { uri ->
+                uri.isNotEmpty()
+            }.collect { uri ->
+                Navigator.deeplink(uri)
             }
         }
     }

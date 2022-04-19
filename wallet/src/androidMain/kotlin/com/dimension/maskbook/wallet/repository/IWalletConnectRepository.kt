@@ -34,7 +34,6 @@ import com.dimension.maskbook.wallet.services.WalletServices
 import com.dimension.maskbook.wallet.services.model.WCSupportedWallet
 import com.dimension.maskbook.wallet.walletconnect.WCResponder
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
@@ -97,12 +96,12 @@ interface IWalletConnectRepository {
 
 class WalletConnectRepository(
     private val walletServices: WalletServices,
-    private val database: AppDatabase
+    private val database: AppDatabase,
+    private val scope: CoroutineScope,
 ) : IWalletConnectRepository {
-    private val wcScope = CoroutineScope(Dispatchers.IO)
 
     override fun init() {
-        wcScope.launch {
+        scope.launch {
             try {
                 refreshSupportedWallets()
             } catch (e: Throwable) {

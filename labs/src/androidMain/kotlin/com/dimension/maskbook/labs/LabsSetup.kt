@@ -39,9 +39,9 @@ import com.dimension.maskbook.labs.viewmodel.LabsViewModel
 import com.dimension.maskbook.labs.viewmodel.LuckDropViewModel
 import com.dimension.maskbook.labs.viewmodel.PluginSettingsViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.Koin
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import org.koin.mp.KoinPlatformTools
 
 object LabsSetup : ModuleSetup {
 
@@ -50,7 +50,7 @@ object LabsSetup : ModuleSetup {
     }
 
     override fun dependencyInject() = module {
-        single<IAppRepository> { AppRepository(get()) }
+        single<IAppRepository> { AppRepository(get(), get(appScope)) }
         single<IPreferenceRepository> {
             PreferenceRepository(get<Context>().labsDataStore, get(appScope))
         }
@@ -64,8 +64,8 @@ object LabsSetup : ModuleSetup {
         viewModel { (dataRaw: String, requestRaw: String?) -> LuckDropViewModel(dataRaw, requestRaw, get(), get()) }
     }
 
-    override fun onExtensionReady() {
-        KoinPlatformTools.defaultContext().get().get<IAppRepository>().init()
-        KoinPlatformTools.defaultContext().get().get<RedPacketMethod>().startSubscribe()
+    override fun onExtensionReady(koin: Koin) {
+        koin.get<IAppRepository>().init()
+        koin.get<RedPacketMethod>().startSubscribe()
     }
 }
