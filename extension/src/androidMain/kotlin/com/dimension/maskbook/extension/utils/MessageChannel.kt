@@ -23,21 +23,17 @@ package com.dimension.maskbook.extension.utils
 import com.dimension.maskbook.common.gecko.WebContentController
 import com.dimension.maskbook.extension.export.model.ExtensionId
 import com.dimension.maskbook.extension.export.model.ExtensionMessage
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import org.json.JSONObject
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
 internal abstract class MessageChannel(
     private val flow: Flow<JSONObject>,
-    private val scope: CoroutineScope,
 ) {
     private val queue = ConcurrentHashMap<String, Channel<String?>>()
 
@@ -46,9 +42,8 @@ internal abstract class MessageChannel(
 
     protected abstract fun sendMessage(message: JSONObject)
 
-    fun startMessageCollect() {
-        flow.onEach { onMessage(it) }
-            .launchIn(scope)
+    suspend fun startMessageCollect() {
+        flow.collect { onMessage(it) }
     }
 
     fun sendResponseMessage(map: Map<String, Any?>) {
@@ -87,7 +82,7 @@ internal abstract class MessageChannel(
     }
 
     fun subscribeMessage(vararg method: String): Flow<ExtensionMessage> {
-        return _extensionMessage.filter { it.method in method }
+        return extensionMessage.filter { it.method in method }
     }
 
     private fun onMessage(jsonObject: JSONObject) {
@@ -130,10 +125,8 @@ internal abstract class MessageChannel(
 
 internal class BackgroundMessageChannel(
     private val controller: WebContentController,
-    scope: CoroutineScope,
 ) : MessageChannel(
     flow = controller.backgroundMessage,
-    scope = scope,
 ) {
     override fun sendMessage(message: JSONObject) {
         controller.sendBackgroundMessage(message)
@@ -142,10 +135,8 @@ internal class BackgroundMessageChannel(
 
 internal class ContentMessageChannel(
     private val controller: WebContentController,
-    scope: CoroutineScope,
 ) : MessageChannel(
     flow = controller.contentMessage,
-    scope = scope,
 ) {
     override fun sendMessage(message: JSONObject) {
         controller.sendContentMessage(message)

@@ -24,5 +24,5 @@ import kotlinx.coroutines.flow.Flow
 
 interface IPreferenceRepository {
     val shouldShowPluginSettingsTipDialog: Flow<Boolean>
-    fun setShowPluginSettingsTipDialog(bool: Boolean)
+    suspend fun setShowPluginSettingsTipDialog(bool: Boolean)
 }

@@ -66,8 +66,8 @@ import com.dimension.maskbook.wallet.services.WalletServices
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager
 import com.dimension.maskwalletcore.CoinType
 import com.dimension.maskwalletcore.WalletKey
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -91,7 +91,6 @@ import java.math.BigInteger
 import java.util.UUID
 import kotlin.math.pow
 import kotlin.time.Duration.Companion.seconds
-import kotlin.time.ExperimentalTime
 
 private val CurrentCoinPlatformTypeKey = stringPreferencesKey("coin_platform_type")
 private val CurrentWalletKey = stringPreferencesKey("current_wallet")
@@ -111,22 +110,19 @@ private fun Token.toDbToken(chainId: ChainID?) = DbToken(
 
 internal class WalletRepository(
     private val dataStore: DataStore<Preferences>,
+    private val appScope: CoroutineScope,
+    private val dispatcher: CoroutineDispatcher,
     private val database: AppDatabase,
     private val services: WalletServices,
     private val walletConnectManager: WalletConnectClientManager,
     private val jsMethod: JSMethod,
 ) : IWalletRepository {
-    private val tokenScope = CoroutineScope(Dispatchers.IO)
-    private val scope = CoroutineScope(Dispatchers.IO)
 
-    @OptIn(ExperimentalTime::class)
-    override fun init() {
-        tokenScope.launch {
-            refreshChainData()
-            while (true) {
-                delay(12.seconds)
-                refreshWallet()
-            }
+    override suspend fun init() {
+        refreshChainData()
+        while (true) {
+            delay(12.seconds)
+            refreshWallet()
         }
     }
 
@@ -143,7 +139,7 @@ internal class WalletRepository(
         }
 
     override fun setActiveCoinPlatformType(platformType: CoinPlatformType) {
-        scope.launch {
+        appScope.launch(dispatcher) {
             dataStore.edit {
                 it[CurrentCoinPlatformTypeKey] = platformType.name
             }
@@ -151,7 +147,7 @@ internal class WalletRepository(
     }
 
     override fun setChainType(networkType: ChainType, notifyJS: Boolean) {
-        scope.launch {
+        appScope.launch(dispatcher) {
             dataStore.edit {
                 it[ChainTypeKey] = networkType.name
             }
@@ -350,7 +346,7 @@ internal class WalletRepository(
     }
 
     override fun setCurrentWallet(walletId: String) {
-        scope.launch {
+        appScope.launch(dispatcher) {
             database.walletDao().getById(walletId)?.let {
                 setCurrentWallet(it.wallet)
             }
@@ -358,7 +354,7 @@ internal class WalletRepository(
     }
 
     fun setCurrentWallet(dbWallet: DbWallet?) {
-        scope.launch {
+        appScope.launch(dispatcher) {
             dataStore.edit {
                 it[CurrentWalletKey] = dbWallet?.id.orEmpty()
             }
@@ -413,7 +409,7 @@ internal class WalletRepository(
         path: List<String>,
         platformType: CoinPlatformType,
     ) {
-        scope.launch {
+        appScope.launch(dispatcher) {
             val wallet = WalletKey.fromMnemonic(mnemonic = mnemonicCode.joinToString(" "), "")
             val accounts = path.map {
                 wallet.addNewAccountAtPath(platformType.coinType, it, name, "")
@@ -495,7 +491,7 @@ internal class WalletRepository(
         privateKey: String,
         platformType: CoinPlatformType,
     ) {
-        scope.launch {
+        appScope.launch(dispatcher) {
             val wallet = WalletKey.fromPrivateKey(
                 privateKey = privateKey,
                 name = name,
@@ -576,14 +572,14 @@ internal class WalletRepository(
     }
 
     override fun deleteCurrentWallet() {
-        scope.launch {
+        appScope.launch(dispatcher) {
             val currentWallet = currentWallet.firstOrNull() ?: return@launch
             deleteWallet(currentWallet.id)
         }
     }
 
     override fun deleteWallet(id: String) {
-        scope.launch {
+        appScope.launch(dispatcher) {
             // get it before remove
             val currentWallet = currentWallet.firstOrNull()
 
@@ -601,7 +597,7 @@ internal class WalletRepository(
     }
 
     override fun renameWallet(value: String, id: String) {
-        scope.launch {
+        appScope.launch(dispatcher) {
             database.walletDao().getById(id)?.wallet?.copy(name = value)?.let {
                 database.walletDao().add(listOf(it))
             }
@@ -609,7 +605,7 @@ internal class WalletRepository(
     }
 
     override fun renameCurrentWallet(value: String) {
-        scope.launch {
+        appScope.launch(dispatcher) {
             currentWallet.firstOrNull()?.let { wallet ->
                 database.walletDao().getById(wallet.id)?.wallet
             }?.copy(name = value)?.let {
@@ -634,7 +630,7 @@ internal class WalletRepository(
         onDone: (String?) -> Unit,
         onError: (Throwable) -> Unit
     ) {
-        scope.launch {
+        appScope.launch(dispatcher) {
             currentWallet.firstOrNull()?.let { wallet ->
                 val data = when (collectible.contract.schema) {
                     CollectibleContractSchema.ERC721 -> listOf(
@@ -685,7 +681,7 @@ internal class WalletRepository(
         onDone: (String?) -> Unit,
         onError: (Throwable) -> Unit,
     ) {
-        scope.launch {
+        appScope.launch(dispatcher) {
             val wallet = currentWallet.filterNotNull().first()
             if (wallet.fromWalletConnect) {
                 walletConnectManager.sendToken(
@@ -743,7 +739,7 @@ internal class WalletRepository(
         onDone: (String?) -> Unit,
         onError: (Throwable) -> Unit,
     ) {
-        scope.launch {
+        appScope.launch(dispatcher) {
             val isNativeToken =
                 tokenData.address == database.chainDao().getByIdFlow(tokenData.chainType.chainId)
                     .firstOrNull()?.token?.address
@@ -801,7 +797,7 @@ internal class WalletRepository(
     }
 
     override suspend fun getEnsAddress(chainType: ChainType, name: String): String {
-        return withContext(Dispatchers.IO) {
+        return withContext(dispatcher) {
             val web3 = Web3j.build(chainType.httpService)
             EnsResolver(web3).resolve(name).apply {
                 web3.shutdown()
@@ -826,7 +822,7 @@ internal class WalletRepository(
     }
 
     override suspend fun refreshWallet() {
-        withContext(tokenScope.coroutineContext) {
+        withContext(dispatcher) {
             refreshCurrentWalletToken()
             refreshCurrentWalletCollectibles()
             refreshNativeTokens()

@@ -40,7 +40,7 @@ class PersonaServicesImpl(
         return personaRepository.hasPersona()
     }
 
-    override fun updateCurrentPersona(value: String) {
+    override suspend fun updateCurrentPersona(value: String) {
         personaRepository.updateCurrentPersona(value)
     }
 
@@ -52,7 +52,7 @@ class PersonaServicesImpl(
         personaRepository.createPersonaFromPrivateKey(value, name)
     }
 
-    override fun connectProfile(personaId: String, profileId: String) {
+    override suspend fun connectProfile(personaId: String, profileId: String) {
         personaRepository.connectProfile(personaId, profileId)
     }
 

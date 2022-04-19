@@ -26,6 +26,8 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.room.Room
 import com.dimension.maskbook.common.ModuleSetup
+import com.dimension.maskbook.common.di.scope.appScope
+import com.dimension.maskbook.common.di.scope.ioDispatcher
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.wallet.data.JSMethod
 import com.dimension.maskbook.wallet.db.AppDatabase
@@ -75,7 +77,6 @@ import com.dimension.maskbook.wallet.usecase.SendTransactionUseCase
 import com.dimension.maskbook.wallet.usecase.SendWalletCollectibleUseCase
 import com.dimension.maskbook.wallet.usecase.SetCurrentChainUseCase
 import com.dimension.maskbook.wallet.usecase.VerifyPaymentPasswordUseCase
-import com.dimension.maskbook.wallet.viewmodel.WelcomeViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.TokenDetailViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.TouchIdEnableViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.UnlockWalletViewModel
@@ -109,15 +110,15 @@ import com.dimension.maskbook.wallet.walletconnect.WalletConnectServerManager
 import com.dimension.maskbook.wallet.walletconnect.v1.client.WalletConnectClientManagerV1
 import com.dimension.maskbook.wallet.walletconnect.v1.server.WalletConnectServerManagerV1
 import com.google.accompanist.navigation.animation.navigation
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asExecutor
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.Koin
 import org.koin.core.module.Module
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import org.koin.mp.KoinPlatformTools
 import com.dimension.maskbook.wallet.export.WalletServices as ExportWalletServices
 
 object WalletSetup : ModuleSetup {
@@ -141,9 +142,10 @@ object WalletSetup : ModuleSetup {
 
     override fun dependencyInject() = module {
         single {
+            val executor = get<CoroutineDispatcher>(ioDispatcher).asExecutor()
             Room.databaseBuilder(get(), AppDatabase::class.java, "maskbook")
-                .setQueryExecutor(Dispatchers.IO.asExecutor())
-                .setTransactionExecutor(Dispatchers.IO.asExecutor())
+                .setQueryExecutor(executor)
+                .setTransactionExecutor(executor)
                 .addMigrations(
                     RoomMigrations.MIGRATION_6_7,
                     RoomMigrations.MIGRATION_7_8,
@@ -162,59 +164,69 @@ object WalletSetup : ModuleSetup {
         provideServices()
     }
 
-    override fun onExtensionReady() {
-        initRepository()
-        initWalletConnect()
-        initEvent()
+    override fun onExtensionReady(koin: Koin) {
+        initRepository(koin)
+        initWalletConnect(koin)
+        initEvent(koin)
     }
 }
 
-private fun initEvent() {
-    with(KoinPlatformTools.defaultContext().get()) {
-        CoroutineScope(Dispatchers.IO).launch {
-            launch {
-                get<JSMethod>().web3Event().collect {
-                    get<Web3MessageHandler>().handle(it)
+private fun initEvent(koin: Koin) {
+    val appScope = koin.get<CoroutineScope>(appScope)
+    val ioDispatcher = koin.get<CoroutineDispatcher>(ioDispatcher)
+    val jsMethod = koin.get<JSMethod>()
+    val walletRepository = koin.get<IWalletRepository>()
+
+    appScope.launch(ioDispatcher) {
+        jsMethod.web3Event().collect {
+            koin.get<Web3MessageHandler>().handle(it)
+        }
+    }
+
+    appScope.launch(ioDispatcher) {
+        jsMethod.switchBlockChain().collect { data ->
+            if (data.coinId != null) {
+                val platform = CoinPlatformType.values().firstOrNull { it.coinId == data.coinId }
+                if (platform != null) {
+                    walletRepository.setActiveCoinPlatformType(platform)
                 }
             }
-            launch {
-                get<JSMethod>().switchBlockChain().collect { data ->
-                    if (data.coinId != null) {
-                        val platform =
-                            CoinPlatformType.values().firstOrNull { it.coinId == data.coinId }
-                        if (platform != null) {
-                            get<IWalletRepository>().setActiveCoinPlatformType(platform)
-                        }
-                    }
-                    if (data.networkId != null) {
-                        val chainType =
-                            ChainType.values().firstOrNull { it.chainId == data.networkId }
-                        if (chainType != null) {
-                            get<IWalletRepository>().setChainType(chainType, false)
-                        }
-                    }
+            if (data.networkId != null) {
+                val chainType = ChainType.values().firstOrNull { it.chainId == data.networkId }
+                if (chainType != null) {
+                    walletRepository.setChainType(chainType, false)
                 }
             }
         }
     }
 }
 
-private fun initRepository() {
-    KoinPlatformTools.defaultContext().get().get<IWalletRepository>().init()
-    KoinPlatformTools.defaultContext().get().get<IWalletConnectRepository>().init()
+private fun initRepository(koin: Koin) {
+    val scope = koin.get<CoroutineScope>(appScope)
+    val dispatcher = koin.get<CoroutineDispatcher>(ioDispatcher)
+
+    scope.launch(dispatcher) {
+        koin.get<IWalletRepository>().init()
+    }
+    scope.launch(dispatcher) {
+        koin.get<IWalletConnectRepository>().init()
+    }
 }
 
-private fun initWalletConnect() {
-    val walletRepository = KoinPlatformTools.defaultContext().get().get<IWalletRepository>()
-    KoinPlatformTools.defaultContext().get().get<WalletConnectClientManager>()
+private fun initWalletConnect(koin: Koin) {
+    val appScope = koin.get<CoroutineScope>(appScope)
+    val dispatcher = koin.get<CoroutineDispatcher>(ioDispatcher)
+    val walletRepository = koin.get<IWalletRepository>()
+
+    koin.get<WalletConnectClientManager>()
         .initSessions { address ->
-            CoroutineScope(Dispatchers.IO).launch {
+            appScope.launch(dispatcher) {
                 walletRepository.findWalletByAddress(address)?.let { wallet ->
                     walletRepository.deleteWallet(wallet.id)
                 }
             }
         }
-    KoinPlatformTools.defaultContext().get().get<WalletConnectServerManager>()
+    koin.get<WalletConnectServerManager>()
         .init { _, _ -> // clientMeta, request ->
             TODO("navigate to wallet connect request handle scene")
         }
@@ -231,10 +243,12 @@ private fun Module.provideRepository() {
     single<IWalletRepository> {
         WalletRepository(
             get<Context>().walletDataStore,
+            get(appScope),
+            get(ioDispatcher),
             get(),
             get(),
             get(),
-            get()
+            get(),
         )
     }
     single { JSMethod(get()) }
@@ -242,8 +256,8 @@ private fun Module.provideRepository() {
     single<ICollectibleRepository> { CollectibleRepository(get(), get()) }
     single<ITransactionRepository> { TransactionRepository(get(), get()) }
     single<ITokenRepository> { TokenRepository(get()) }
-    single<ISendHistoryRepository> { SendHistoryRepository(get()) }
-    single<IWalletContactRepository> { WalletContactRepository(get()) }
+    single<ISendHistoryRepository> { SendHistoryRepository(get(), get(ioDispatcher)) }
+    single<IWalletContactRepository> { WalletContactRepository(get(), get(ioDispatcher)) }
     single<IWalletConnectRepository> { WalletConnectRepository(get(), get()) }
 }
 
@@ -283,7 +297,6 @@ private fun Module.provideUseCase() {
 }
 
 private fun Module.provideViewModel() {
-    viewModel { WelcomeViewModel(get()) }
     viewModel { (wallet: String) -> CreateWalletRecoveryKeyViewModel(wallet, get()) }
     viewModel { TouchIdEnableViewModel() }
     viewModel { (wallet: String) -> ImportWalletKeystoreViewModel(wallet, get()) }

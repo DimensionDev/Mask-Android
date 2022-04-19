@@ -25,6 +25,10 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navigation
 import com.dimension.maskbook.common.ModuleSetup
+import com.dimension.maskbook.common.di.scope.appScope
+import com.dimension.maskbook.common.di.scope.ioDispatcher
+import com.dimension.maskbook.common.di.scope.preferenceCoroutineContext
+import com.dimension.maskbook.common.di.scope.repositoryCoroutineContext
 import com.dimension.maskbook.common.retrofit.retrofit
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.setting.data.JSDataSource
@@ -53,10 +57,14 @@ import com.dimension.maskbook.setting.viewmodel.LanguageSettingsViewModel
 import com.dimension.maskbook.setting.viewmodel.PaymentPasswordSettingsViewModel
 import com.dimension.maskbook.setting.viewmodel.PhoneBackupViewModel
 import com.dimension.maskbook.setting.viewmodel.PhoneSetupViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.dsl.viewModel
+import org.koin.core.Koin
 import org.koin.dsl.bind
+import org.koin.dsl.binds
 import org.koin.dsl.module
-import org.koin.mp.KoinPlatformTools
 
 object SettingSetup : ModuleSetup {
     override fun NavGraphBuilder.route(navController: NavController) {
@@ -74,14 +82,45 @@ object SettingSetup : ModuleSetup {
             retrofit("https://vaalh28dbi.execute-api.ap-east-1.amazonaws.com")
         }
         single<ISettingsRepository> {
-            SettingsRepository(get(), get(), get(), get())
+            SettingsRepository(
+                get(repositoryCoroutineContext),
+                get(),
+                get(),
+                get(),
+                get()
+            )
         }
-        single { BackupRepository(get(), get<Context>().cacheDir, get<Context>().contentResolver) }
-        single<SettingServices> { SettingServicesImpl(get(), get()) } bind com.dimension.maskbook.setting.export.BackupServices::class
+        single {
+            BackupRepository(
+                get(repositoryCoroutineContext),
+                get(),
+                get<Context>().cacheDir,
+                get<Context>().contentResolver,
+            )
+        }
+        single {
+            SettingServicesImpl(
+                get(),
+                get(),
+            )
+        } binds arrayOf(
+            SettingServices::class,
+            com.dimension.maskbook.setting.export.BackupServices::class,
+        )
         single { SettingsTabScreen() } bind TabScreen::class
-        single { JSDataSource(get()) }
+        single {
+            JSDataSource(
+                get(),
+                get(preferenceCoroutineContext),
+            )
+        }
         single { JSMethod(get()) }
-        single { SettingDataSource(get<Context>().settingsDataStore) }
+        single {
+            SettingDataSource(
+                get<Context>().settingsDataStore,
+                get(preferenceCoroutineContext),
+            )
+        }
 
         viewModel { LanguageSettingsViewModel(get()) }
         viewModel { AppearanceSettingsViewModel(get()) }
@@ -93,14 +132,21 @@ object SettingSetup : ModuleSetup {
         viewModel { PhoneSetupViewModel(get(), get()) }
         viewModel { EmailBackupViewModel(get()) }
         viewModel { PhoneBackupViewModel(get()) }
-        viewModel { (onDone: () -> Unit, url: String, account: String,) ->
-            BackupMergeConfirmViewModel(get(), get(), get<Context>().contentResolver, onDone, url, account)
+        viewModel { (onDone: () -> Unit, url: String, account: String) ->
+            BackupMergeConfirmViewModel(
+                get(), get(), get<Context>().contentResolver, onDone, url, account
+            )
         }
         viewModel { BackupCloudViewModel(get()) }
         viewModel { BackupCloudExecuteViewModel(get(), get(), get()) }
     }
 
-    override fun onExtensionReady() {
-        KoinPlatformTools.defaultContext().get().get<JSDataSource>().initData()
+    override fun onExtensionReady(koin: Koin) {
+        val appScope = koin.get<CoroutineScope>(appScope)
+        val dispatcher = koin.get<CoroutineDispatcher>(ioDispatcher)
+
+        appScope.launch(dispatcher) {
+            koin.get<JSDataSource>().initData()
+        }
     }
 }

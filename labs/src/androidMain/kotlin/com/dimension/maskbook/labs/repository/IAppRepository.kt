@@ -26,6 +26,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface IAppRepository {
     val apps: Flow<List<AppData>>
-    fun setEnabled(appKey: AppKey, enabled: Boolean)
-    fun init()
+    suspend fun setEnabled(appKey: AppKey, enabled: Boolean)
+    suspend fun init()
 }

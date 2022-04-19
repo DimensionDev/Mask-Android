@@ -48,16 +48,15 @@ class SettingServicesImpl(
 
     override val shouldShowLegalScene: Flow<Boolean>
         get() = settingsRepository.shouldShowLegalScene
-
-    override fun setBiometricEnabled(value: Boolean) {
+    override suspend fun setBiometricEnabled(value: Boolean) {
         settingsRepository.setBiometricEnabled(value)
     }
 
-    override fun setPaymentPassword(value: String) {
+    override suspend fun setPaymentPassword(value: String) {
         settingsRepository.setPaymentPassword(value)
     }
 
-    override fun setShouldShowLegalScene(value: Boolean) {
+    override suspend fun setShouldShowLegalScene(value: Boolean) {
         settingsRepository.setShouldShowLegalScene(value)
     }
 

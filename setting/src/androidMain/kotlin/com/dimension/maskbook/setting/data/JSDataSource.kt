@@ -23,18 +23,17 @@ package com.dimension.maskbook.setting.data
 import com.dimension.maskbook.setting.export.model.Appearance
 import com.dimension.maskbook.setting.export.model.DataProvider
 import com.dimension.maskbook.setting.export.model.Language
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlin.coroutines.CoroutineContext
 
 internal class JSDataSource(
     private val jsMethod: JSMethod,
+    private val preferenceCoroutineContext: CoroutineContext,
 ) {
-    private val scope = CoroutineScope(Dispatchers.IO)
     private val _appearance = MutableStateFlow(Appearance.default)
     private val _dataProvider = MutableStateFlow(DataProvider.COIN_GECKO)
     private val _language = MutableStateFlow(Language.auto)
@@ -43,29 +42,29 @@ internal class JSDataSource(
     val appearance = _appearance.asSharedFlow()
     val dataProvider = _dataProvider.asSharedFlow()
 
-    fun setLanguage(language: Language) {
-        scope.launch {
+    suspend fun setLanguage(language: Language) {
+        withContext(preferenceCoroutineContext) {
             jsMethod.setLanguage(language)
             _language.value = jsMethod.getLanguage()
         }
     }
 
-    fun setAppearance(appearance: Appearance) {
-        scope.launch {
+    suspend fun setAppearance(appearance: Appearance) {
+        withContext(preferenceCoroutineContext) {
             jsMethod.setTheme(appearance)
             _appearance.value = jsMethod.getTheme()
         }
     }
 
-    fun setDataProvider(dataProvider: DataProvider) {
-        scope.launch {
+    suspend fun setDataProvider(dataProvider: DataProvider) {
+        withContext(preferenceCoroutineContext) {
             jsMethod.setTrendingDataSource(dataProvider)
             _dataProvider.value = jsMethod.getTrendingDataSource()
         }
     }
 
-    fun initData() {
-        scope.launch {
+    suspend fun initData() {
+        withContext(preferenceCoroutineContext) {
             awaitAll(
                 async { _language.value = jsMethod.getLanguage() },
                 async { _appearance.value = jsMethod.getTheme() },

@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -37,6 +38,7 @@ import com.dimension.maskbook.common.ui.widget.button.MaskListItemButton
 import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.repository.IPersonaRepository
 import com.dimension.maskbook.persona.route.PersonaRoute
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.get
 
 @NavGraphDestination(
@@ -50,6 +52,7 @@ fun PersonaAvatarModal(
     @Back onBack: () -> Unit,
 ) {
     val repository = get<IPersonaRepository>()
+    val scope = rememberCoroutineScope()
     MaskModal {
         Column(
             verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -65,7 +68,9 @@ fun PersonaAvatarModal(
             )
             MaskListItemButton(
                 onClick = {
-                    repository.setAvatarForCurrentPersona(null)
+                    scope.launch {
+                        repository.setAvatarForCurrentPersona(null)
+                    }
                     onBack.invoke()
                 },
                 text = {

@@ -175,7 +175,6 @@ fun SettingsScene(
                                     !biometricEnabled,
                                     context,
                                     biometricEnableViewModel,
-                                    repository
                                 )
                             })
                         },
@@ -184,7 +183,6 @@ fun SettingsScene(
                                 !biometricEnabled,
                                 context,
                                 biometricEnableViewModel,
-                                repository
                             )
                         },
                     )
@@ -291,7 +289,6 @@ private fun enableBiometric(
     enable: Boolean,
     context: Context,
     viewModel: BiometricEnableViewModel,
-    repository: ISettingsRepository
 ) {
     if (enable) {
         viewModel.enable(
@@ -300,7 +297,7 @@ private fun enableBiometric(
             negativeButton = R.string.common_controls_cancel,
         )
     } else {
-        repository.setBiometricEnabled(enable)
+        viewModel.setBiometricEnabled(false)
     }
 }
 

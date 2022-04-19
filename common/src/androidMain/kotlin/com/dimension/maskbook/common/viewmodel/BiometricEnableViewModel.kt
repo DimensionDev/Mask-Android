@@ -22,8 +22,10 @@ package com.dimension.maskbook.common.viewmodel
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.util.BiometricAuthenticator
 import com.dimension.maskbook.setting.export.SettingServices
+import kotlinx.coroutines.launch
 
 class BiometricEnableViewModel(
     private val biometricAuthenticator: BiometricAuthenticator,
@@ -40,12 +42,18 @@ class BiometricEnableViewModel(
             context = context,
             onSuccess = {
                 onEnable.invoke()
-                repository.setBiometricEnabled(true)
+                setBiometricEnabled(true)
             },
             title = title,
             subTitle = subTitle,
             negativeButtonText = negativeButton,
         )
+    }
+
+    fun setBiometricEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            repository.setBiometricEnabled(enabled)
+        }
     }
 
     fun isSupported(context: Context) = biometricAuthenticator.canAuthenticate(context = context)

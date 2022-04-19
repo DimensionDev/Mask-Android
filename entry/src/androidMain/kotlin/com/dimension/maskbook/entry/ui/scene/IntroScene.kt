@@ -67,8 +67,8 @@ import com.dimension.maskbook.common.route.navigationComposeAnimComposable
 import com.dimension.maskbook.common.route.navigationComposeAnimComposablePackage
 import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
 import com.dimension.maskbook.entry.R
-import com.dimension.maskbook.entry.repository.EntryRepository
 import com.dimension.maskbook.entry.route.EntryRoute
+import com.dimension.maskbook.entry.viewModel.IntroViewModel
 import com.dimension.maskbook.persona.route.PersonaRoute
 import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.insets.statusBarsPadding
@@ -76,7 +76,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
-import org.koin.androidx.compose.get
+import org.koin.androidx.compose.getViewModel
 
 private data class IntroData(
     @DrawableRes val img: Int,
@@ -93,7 +93,7 @@ private data class IntroData(
 fun IntroScene(
     navController: NavController,
 ) {
-    val repository = get<EntryRepository>()
+    val viewModel = getViewModel<IntroViewModel>()
     val introList = remember {
         listOf(
             IntroData(
@@ -136,7 +136,7 @@ fun IntroScene(
                     item = introList[page],
                     isEnd = isEnd,
                     onStartClick = {
-                        repository.setShouldShowEntry(false)
+                        viewModel.setShouldShowEntry(false)
                         navController.navigate(PersonaRoute.Register.Init) {
                             popUpTo(EntryRoute.Intro) {
                                 inclusive = true
@@ -147,7 +147,7 @@ fun IntroScene(
                 if (!isEnd) {
                     TextButton(
                         onClick = {
-                            repository.setShouldShowEntry(false)
+                            viewModel.setShouldShowEntry(false)
                             navController.navigate(PersonaRoute.Register.Init) {
                                 popUpTo(EntryRoute.Intro) {
                                     inclusive = true

@@ -59,14 +59,9 @@ import com.dimension.maskbook.persona.model.options.UpdateProfileOptions
 import com.dimension.maskbook.persona.model.options.UpdateRelationOptions
 import com.dimension.maskbook.persona.repository.IPersonaRepository
 import com.dimension.maskbook.persona.repository.IPreferenceRepository
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 
 class JSMethodV2(
-    private val scope: CoroutineScope,
     private val services: ExtensionServices,
     private val database: PersonaDatabase,
     private val personaRepository: IPersonaRepository,
@@ -76,29 +71,28 @@ class JSMethodV2(
     private val relationDataSource: JsRelationDataSource,
     private val postDataSource: JsPostDataSource,
 ) {
-    fun startSubscribe() {
-        scope.launch {
-            if (preferenceRepository.isMigratorIndexedDb.first()) {
-                return@launch
-            }
 
-            val records: IndexedDBAllRecord? = services.execute("get_all_indexedDB_records")
-            if (records != null) {
-                IndexedDBDataMigrator.migrate(database, records)
-                preferenceRepository.setIsMigratorIndexedDb(true)
-            }
+    suspend fun tryMigrateIndexedDb() {
+        if (preferenceRepository.isMigratorIndexedDb.first()) {
+            return
         }
 
-        services.subscribeBackgroundJSEvent(*methods)
-            .onEach {
-                subscribeWithPersona(it) ||
-                    subscribeWithProfile(it) ||
-                    subscribeWithRelation(it) ||
-                    subscribeWithAvatar(it) ||
-                    subscribeWithPost(it) ||
-                    subscribeWithHelper(it)
-            }
-            .launchIn(scope)
+        val records: IndexedDBAllRecord? = services.execute("get_all_indexedDB_records")
+        if (records != null) {
+            IndexedDBDataMigrator.migrate(database, records)
+            preferenceRepository.setIsMigratorIndexedDb(true)
+        }
+    }
+
+    suspend fun startCollect() {
+        services.subscribeBackgroundJSEvent(*methods).collect {
+            subscribeWithPersona(it) ||
+                subscribeWithProfile(it) ||
+                subscribeWithRelation(it) ||
+                subscribeWithAvatar(it) ||
+                subscribeWithPost(it) ||
+                subscribeWithHelper(it)
+        }
     }
 
     // Persona
@@ -122,7 +116,8 @@ class JSMethodV2(
                 return message.responseSuccess(personaDataSource.queryPersona(options))
             }
             queryPersonaByProfile -> {
-                val options = message.decodeOptions<ParamOptions<QueryPersonaByProfileOptions>>()?.options ?: return true
+                val options =
+                    message.decodeOptions<ParamOptions<QueryPersonaByProfileOptions>>()?.options ?: return true
                 return message.responseSuccess(personaDataSource.queryPersonaByProfile(options))
             }
             queryPersonas -> {

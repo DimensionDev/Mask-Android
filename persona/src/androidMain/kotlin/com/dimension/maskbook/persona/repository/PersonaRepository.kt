@@ -38,8 +38,8 @@ import com.dimension.maskbook.persona.export.model.PersonaData
 import com.dimension.maskbook.persona.export.model.PlatformType
 import com.dimension.maskbook.persona.export.model.SocialData
 import com.dimension.maskbook.persona.model.ContactData
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
@@ -52,9 +52,12 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.coroutines.CoroutineContext
 
 internal class PersonaRepository(
-    private val scope: CoroutineScope,
+    private val appScope: CoroutineScope,
+    private val repositoryCoroutineContext: CoroutineContext,
+    private val mainDispatcher: CoroutineDispatcher,
     private val jsMethod: JSMethod,
     private val extensionServices: ExtensionServices,
     private val preferenceRepository: IPreferenceRepository,
@@ -100,40 +103,40 @@ internal class PersonaRepository(
         onDone: (ConnectAccountData) -> Unit,
     ) {
         connectingJob?.cancel()
-        extensionServices.setSite(platformType.toSite())
+        appScope.launch {
+            extensionServices.setSite(platformType.toSite())
+        }
 
         connectingJob = preferenceRepository.lastDetectProfileIdentifier
             .filterNot { it.isEmpty() }
             .filterNot { personaDataSource.hasConnected(it) }
             .flatMapLatest { profileDataSource.getSocialFlow(it) }
             .filterNotNull()
-            .flowOn(Dispatchers.IO)
+            .flowOn(repositoryCoroutineContext)
             .onEach {
                 onDone.invoke(ConnectAccountData(personaId, it))
                 connectingJob?.cancel()
             }
-            .flowOn(Dispatchers.Main)
-            .launchIn(scope)
+            .flowOn(mainDispatcher)
+            .launchIn(appScope)
     }
 
-    override fun init() {
-        scope.launch {
-            if (personaDataSource.isEmpty()) {
-                return@launch
-            }
-
-            val identifier = preferenceRepository.currentPersonaIdentifier.firstOrNull()
-            if (!identifier.isNullOrEmpty() && personaDataSource.contains(identifier)) {
-                return@launch
-            }
-
-            val newCurrentPersona = personaDataSource.getPersonaFirst()
-            setCurrentPersona(newCurrentPersona?.identifier.orEmpty())
+    override suspend fun init() {
+        if (personaDataSource.isEmpty()) {
+            return
         }
+
+        val identifier = preferenceRepository.currentPersonaIdentifier.firstOrNull()
+        if (!identifier.isNullOrEmpty() && personaDataSource.contains(identifier)) {
+            return
+        }
+
+        val newCurrentPersona = personaDataSource.getPersonaFirst()
+        setCurrentPersona(newCurrentPersona?.identifier.orEmpty())
     }
 
     override suspend fun setCurrentPersona(id: String) {
-        withContext(scope.coroutineContext) {
+        withContext(repositoryCoroutineContext) {
             if (id.isEmpty() || personaDataSource.getPersona(id) != null) {
                 preferenceRepository.setCurrentPersonaIdentifier(id)
                 jsMethod.setCurrentPersonaIdentifier(id)
@@ -142,7 +145,7 @@ internal class PersonaRepository(
     }
 
     override suspend fun logout() {
-        withContext(scope.coroutineContext) {
+        withContext(repositoryCoroutineContext) {
             val deletePersona = currentPersona.firstOrNull() ?: return@withContext
             // set current persona first ,avoid currentPersona emmit null if there has other personas
             val newCurrentPersona = personaDataSource.getPersonaList().firstOrNull {
@@ -155,35 +158,35 @@ internal class PersonaRepository(
         }
     }
 
-    override fun updatePersona(id: String, nickname: String) {
-        scope.launch {
+    override suspend fun updatePersona(id: String, nickname: String) {
+        withContext(repositoryCoroutineContext) {
             personaDataSource.updateNickName(id, nickname)
             jsMethod.updatePersonaInfo(id, nickname)
         }
     }
 
-    override fun updateCurrentPersona(nickname: String) {
-        scope.launch {
-            val id = currentPersona.firstOrNull()?.identifier ?: return@launch
+    override suspend fun updateCurrentPersona(nickname: String) {
+        withContext(repositoryCoroutineContext) {
+            val id = currentPersona.firstOrNull()?.identifier ?: return@withContext
             personaDataSource.updateNickName(id, nickname)
             jsMethod.updatePersonaInfo(id, nickname)
         }
     }
 
-    override fun connectProfile(personaId: String, profileId: String) {
-        scope.launch {
+    override suspend fun connectProfile(personaId: String, profileId: String) {
+        withContext(repositoryCoroutineContext) {
             jsMethod.connectProfile(personaId, profileId)
         }
     }
 
-    override fun disconnectProfile(personaId: String, profileId: String) {
-        scope.launch {
+    override suspend fun disconnectProfile(personaId: String, profileId: String) {
+        withContext(repositoryCoroutineContext) {
             jsMethod.disconnectProfile(profileId)
         }
     }
 
     override suspend fun createPersonaFromMnemonic(value: List<String>, name: String) {
-        withContext(scope.coroutineContext) {
+        withContext(repositoryCoroutineContext) {
             val mnemonic = value.joinToString(" ")
             if (personaDataSource.containsMnemonic(mnemonic)) {
                 throw PersonaAlreadyExitsError()
@@ -193,7 +196,7 @@ internal class PersonaRepository(
     }
 
     override suspend fun createPersonaFromPrivateKey(value: String, name: String) {
-        withContext(scope.coroutineContext) {
+        withContext(repositoryCoroutineContext) {
             if (personaDataSource.containsPrivateKey(value)) throw PersonaAlreadyExitsError()
             jsMethod.restoreFromPrivateKey(privateKey = value, nickname = name)
         }
@@ -203,12 +206,14 @@ internal class PersonaRepository(
         return jsMethod.backupPrivateKey(id) ?: ""
     }
 
-    override fun setPlatform(platformType: PlatformType) {
-        extensionServices.setSite(platformType.toSite())
+    override suspend fun setPlatform(platformType: PlatformType) {
+        withContext(repositoryCoroutineContext) {
+            extensionServices.setSite(platformType.toSite())
+        }
     }
 
-    override fun setAvatarForCurrentPersona(avatar: Uri?) {
-        scope.launch {
+    override suspend fun setAvatarForCurrentPersona(avatar: Uri?) {
+        withContext(repositoryCoroutineContext) {
             currentPersona.firstOrNull()?.let { personaData ->
                 personaDataSource.updateAvatar(personaData.identifier, avatar?.toString())
             }

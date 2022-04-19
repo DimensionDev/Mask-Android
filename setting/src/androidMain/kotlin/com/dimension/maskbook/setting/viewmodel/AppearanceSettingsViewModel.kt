@@ -25,6 +25,7 @@ import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.setting.export.model.Appearance
 import com.dimension.maskbook.setting.repository.ISettingsRepository
+import kotlinx.coroutines.launch
 
 class AppearanceSettingsViewModel(
     private val repository: ISettingsRepository,
@@ -34,6 +35,8 @@ class AppearanceSettingsViewModel(
     }
 
     fun setAppearance(appearance: Appearance) {
-        repository.setAppearance(appearance = appearance)
+        viewModelScope.launch {
+            repository.setAppearance(appearance = appearance)
+        }
     }
 }

@@ -159,7 +159,7 @@ data class DWebData(
 )
 
 interface IWalletRepository {
-    fun init()
+    suspend fun init()
     val dWebData: Flow<DWebData>
     fun setActiveCoinPlatformType(platformType: CoinPlatformType)
     fun setChainType(networkType: ChainType, notifyJS: Boolean = true)

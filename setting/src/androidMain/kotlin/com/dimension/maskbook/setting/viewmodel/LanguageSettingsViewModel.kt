@@ -25,6 +25,7 @@ import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.setting.export.model.Language
 import com.dimension.maskbook.setting.repository.ISettingsRepository
+import kotlinx.coroutines.launch
 
 class LanguageSettingsViewModel(
     private val repository: ISettingsRepository
@@ -34,6 +35,8 @@ class LanguageSettingsViewModel(
     }
 
     fun setLanguage(language: Language) {
-        repository.setLanguage(language = language)
+        viewModelScope.launch {
+            repository.setLanguage(language = language)
+        }
     }
 }

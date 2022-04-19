@@ -22,8 +22,10 @@ package com.dimension.maskbook.persona.viewmodel.avatar
 
 import android.net.Uri
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.persona.repository.IPersonaRepository
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 
 class SetAvatarViewModel(
     private val repository: IPersonaRepository,
@@ -33,6 +35,8 @@ class SetAvatarViewModel(
     }
 
     fun setAvatar(avatar: Uri) {
-        repository.setAvatarForCurrentPersona(avatar)
+        viewModelScope.launch {
+            repository.setAvatarForCurrentPersona(avatar)
+        }
     }
 }

@@ -26,26 +26,25 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.preferencesDataStore
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlin.coroutines.CoroutineContext
 
 private val ShouldShowEntryKey = booleanPreferencesKey("ShouldShowEntry")
 val Context.entryDataStore: DataStore<Preferences> by preferencesDataStore(name = "entry")
 
-class EntryRepository(
+class PreferenceRepository(
+    private val preferenceCoroutineScope: CoroutineContext,
     private val dataStore: DataStore<Preferences>,
 ) {
-    private val scope = CoroutineScope(Dispatchers.IO)
     val shouldShowEntry: Flow<Boolean>
         get() = dataStore.data.map {
             it[ShouldShowEntryKey] ?: true
         }
 
-    fun setShouldShowEntry(shouldShowEntry: Boolean) {
-        scope.launch {
+    suspend fun setShouldShowEntry(shouldShowEntry: Boolean) {
+        withContext(preferenceCoroutineScope) {
             dataStore.edit {
                 it[ShouldShowEntryKey] = shouldShowEntry
             }

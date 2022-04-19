@@ -18,38 +18,20 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.persona.viewmodel
+package com.dimension.maskbook.entry.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dimension.maskbook.common.ext.asStateIn
-import com.dimension.maskbook.persona.datasource.DbPersonaDataSource
-import com.dimension.maskbook.persona.repository.IPersonaRepository
-import kotlinx.coroutines.flow.MutableStateFlow
+import com.dimension.maskbook.entry.repository.PreferenceRepository
 import kotlinx.coroutines.launch
 
-class RenamePersonaViewModel(
-    private val personaRepository: IPersonaRepository,
-    private val personaDataSource: DbPersonaDataSource,
-    private val personaId: String,
+class IntroViewModel(
+    private val repository: PreferenceRepository,
 ) : ViewModel() {
 
-    private val _name = MutableStateFlow("")
-    val name = _name.asStateIn(viewModelScope)
-
-    init {
+    fun setShouldShowEntry(value: Boolean) {
         viewModelScope.launch {
-            _name.value = personaDataSource.getPersona(personaId)?.name.orEmpty()
-        }
-    }
-
-    fun setName(value: String) {
-        _name.value = value
-    }
-
-    fun confirm() {
-        viewModelScope.launch {
-            personaRepository.updatePersona(personaId, _name.value)
+            repository.setShouldShowEntry(value)
         }
     }
 }

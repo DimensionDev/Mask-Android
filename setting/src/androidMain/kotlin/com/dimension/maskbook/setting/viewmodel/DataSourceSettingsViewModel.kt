@@ -25,6 +25,7 @@ import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.setting.export.model.DataProvider
 import com.dimension.maskbook.setting.repository.ISettingsRepository
+import kotlinx.coroutines.launch
 
 class DataSourceSettingsViewModel(
     private val repository: ISettingsRepository,
@@ -34,6 +35,8 @@ class DataSourceSettingsViewModel(
     }
 
     fun setDataProvider(dataProvider: DataProvider) {
-        repository.setDataProvider(dataProvider = dataProvider)
+        viewModelScope.launch {
+            repository.setDataProvider(dataProvider = dataProvider)
+        }
     }
 }

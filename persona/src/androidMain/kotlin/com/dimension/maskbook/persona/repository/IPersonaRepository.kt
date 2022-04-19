@@ -41,16 +41,16 @@ interface IPersonaRepository {
     )
     suspend fun logout()
     suspend fun setCurrentPersona(id: String)
-    fun updatePersona(id: String, nickname: String)
-    fun updateCurrentPersona(nickname: String)
-    fun connectProfile(personaId: String, profileId: String)
-    fun disconnectProfile(personaId: String, profileId: String)
+    suspend fun updatePersona(id: String, nickname: String)
+    suspend fun updateCurrentPersona(nickname: String)
+    suspend fun connectProfile(personaId: String, profileId: String)
+    suspend fun disconnectProfile(personaId: String, profileId: String)
     suspend fun createPersonaFromMnemonic(value: List<String>, name: String)
     suspend fun createPersonaFromPrivateKey(value: String, name: String)
     suspend fun backupPrivateKey(id: String): String
-    fun init()
-    fun setPlatform(platformType: PlatformType)
-    fun setAvatarForCurrentPersona(avatar: Uri?)
+    suspend fun init()
+    suspend fun setPlatform(platformType: PlatformType)
+    suspend fun setAvatarForCurrentPersona(avatar: Uri?)
     suspend fun createPersonaBackup(hasPrivateKeyOnly: Boolean): List<IndexedDBPersona>
     suspend fun restorePersonaBackup(list: List<IndexedDBPersona>)
     suspend fun createProfileBackup(): List<IndexedDBProfile>

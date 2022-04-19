@@ -49,6 +49,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -84,6 +85,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.calculateCurrentOffsetForPage
 import com.google.accompanist.pager.rememberPagerState
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.get
 import org.koin.androidx.compose.getViewModel
 import kotlin.math.absoluteValue
@@ -136,6 +138,7 @@ fun PersonaInfoScene(
         }
 
         val context = LocalContext.current
+        val scope = rememberCoroutineScope()
 
         val viewModel: ContactsViewModel = getViewModel()
         val contactItems by viewModel.items.collectAsState()
@@ -256,7 +259,9 @@ fun PersonaInfoScene(
                     .padding(horizontal = 22.5f.dp, vertical = 24.dp)
                     .align(Alignment.BottomCenter),
                 onClose = {
-                    preferenceRepository.setShowContactsTipDialog(false)
+                    scope.launch {
+                        preferenceRepository.setShowContactsTipDialog(false)
+                    }
                 },
                 text = {
                     Text(

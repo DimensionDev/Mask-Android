@@ -25,9 +25,13 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.room.Room
-import com.dimension.maskbook.common.IoScopeName
 import com.dimension.maskbook.common.LocalBackupAccount
 import com.dimension.maskbook.common.ModuleSetup
+import com.dimension.maskbook.common.di.scope.appScope
+import com.dimension.maskbook.common.di.scope.ioDispatcher
+import com.dimension.maskbook.common.di.scope.mainDispatcher
+import com.dimension.maskbook.common.di.scope.preferenceCoroutineContext
+import com.dimension.maskbook.common.di.scope.repositoryCoroutineContext
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.persona.data.JSMethod
 import com.dimension.maskbook.persona.data.JSMethodV2
@@ -78,14 +82,15 @@ import com.dimension.maskbook.persona.viewmodel.register.RemoteBackupRecoveryVie
 import com.dimension.maskbook.persona.viewmodel.social.DisconnectSocialViewModel
 import com.dimension.maskbook.persona.viewmodel.social.UserNameModalViewModel
 import com.google.accompanist.navigation.animation.navigation
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asExecutor
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.dsl.viewModel
-import org.koin.core.qualifier.named
+import org.koin.core.Koin
 import org.koin.dsl.bind
 import org.koin.dsl.binds
 import org.koin.dsl.module
-import org.koin.mp.KoinPlatformTools
 
 object PersonaSetup : ModuleSetup {
 
@@ -108,9 +113,10 @@ object PersonaSetup : ModuleSetup {
 
     override fun dependencyInject() = module {
         single {
+            val executor = get<CoroutineDispatcher>(ioDispatcher).asExecutor()
             Room.databaseBuilder(get(), PersonaDatabase::class.java, "maskbook_persona")
-                .setQueryExecutor(Dispatchers.IO.asExecutor())
-                .setTransactionExecutor(Dispatchers.IO.asExecutor())
+                .setQueryExecutor(executor)
+                .setTransactionExecutor(executor)
                 .fallbackToDestructiveMigration()
                 .addTypeConverter(EncryptStringConverter(get()))
                 .addTypeConverter(EncryptJsonObjectConverter(get()))
@@ -118,7 +124,9 @@ object PersonaSetup : ModuleSetup {
         }
         single {
             PersonaRepository(
-                get(named(IoScopeName)),
+                get(appScope),
+                get(repositoryCoroutineContext),
+                get(mainDispatcher),
                 get(), get(), get(),
                 get(), get(), get(),
                 get(),
@@ -131,14 +139,13 @@ object PersonaSetup : ModuleSetup {
         single<IPreferenceRepository> {
             PreferenceRepository(
                 get<Context>().personaDataStore,
-                get(named(IoScopeName))
+                get(preferenceCoroutineContext),
             )
         }
 
         single { JSMethod(get()) }
         single {
             JSMethodV2(
-                get(named(IoScopeName)),
                 get(),
                 get(),
                 get(), get(),
@@ -207,8 +214,18 @@ object PersonaSetup : ModuleSetup {
         viewModel { PersonaLogoutViewModel(get(), get()) }
     }
 
-    override fun onExtensionReady() {
-        KoinPlatformTools.defaultContext().get().get<IPersonaRepository>().init()
-        KoinPlatformTools.defaultContext().get().get<JSMethodV2>().startSubscribe()
+    override fun onExtensionReady(koin: Koin) {
+        val appScope = koin.get<CoroutineScope>(appScope)
+        val dispatcher = koin.get<CoroutineDispatcher>(ioDispatcher)
+
+        appScope.launch(dispatcher) {
+            koin.get<IPersonaRepository>().init()
+        }
+        appScope.launch(dispatcher) {
+            koin.get<JSMethodV2>().startCollect()
+        }
+        appScope.launch(dispatcher) {
+            koin.get<JSMethodV2>().tryMigrateIndexedDb()
+        }
     }
 }

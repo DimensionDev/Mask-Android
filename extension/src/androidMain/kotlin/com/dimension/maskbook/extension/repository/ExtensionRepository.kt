@@ -24,35 +24,21 @@ import com.dimension.maskbook.common.gecko.WebContentController
 import com.dimension.maskbook.extension.export.model.Site
 import com.dimension.maskbook.extension.ext.site
 import com.dimension.maskbook.extension.ext.url
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlin.coroutines.CoroutineContext
 
-@OptIn(InternalCoroutinesApi::class)
 class ExtensionRepository(
+    private val repositoryCoroutineContext: CoroutineContext,
     private val controller: WebContentController,
 ) {
-    private val scope = CoroutineScope(Dispatchers.IO)
     private val _currentSite = MutableStateFlow(Site.Twitter)
-    val currentSite = _currentSite.asSharedFlow()
-    fun setCurrentSite(site: Site) {
-        _currentSite.value = site
-        scope.launch {
-            // workaround for this case:set current site to Twitter first, then set current site to facebook,
-            // then go back to twitter tab, currentSite's value is still facebook, if we set current
-            // site to facebook again, _currentSite won't update due to MutableStateFlow won't emit
-            // same value twice
-            if (controller.url.firstOrNull()?.site != _currentSite.value) {
-                controller.loadUrl(_currentSite.value.url)
-            }
-        }
-    }
-    val isExtensionConnected = controller.isExtensionConnected
+    val currentSite = _currentSite.asStateFlow()
+
+    val isExtensionConnected get() = controller.isExtensionConnected
+
     init {
         controller.installExtensions(
             id = "info@dimension.com",
@@ -61,16 +47,23 @@ class ExtensionRepository(
         controller.onNavigate = {
             onNavigate(it)
         }
-        scope.launch {
-            launch {
-                _currentSite.collect {
-                    controller.loadUrl(it.url)
-                }
-            }
-            launch {
-                isExtensionConnected.first { it }
-                controller.loadUrl(_currentSite.value.url)
-            }
+        controller.loadUrl(currentSite.value.url)
+    }
+
+    suspend fun setCurrentSite(site: Site) = withContext(repositoryCoroutineContext) {
+        _currentSite.value = site
+        // workaround for this case:set current site to Twitter first, then set current site to facebook,
+        // then go back to twitter tab, currentSite's value is still facebook, if we set current
+        // site to facebook again, _currentSite won't update due to MutableStateFlow won't emit
+        // same value twice
+        if (controller.url.firstOrNull()?.site != _currentSite.value) {
+            controller.loadUrl(_currentSite.value.url)
+        }
+    }
+
+    suspend fun startCollect() {
+        _currentSite.collect {
+            controller.loadUrl(it.url)
         }
     }
 

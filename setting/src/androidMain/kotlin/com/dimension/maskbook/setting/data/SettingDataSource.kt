@@ -27,11 +27,10 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlin.coroutines.CoroutineContext
 
 private val PaymentPasswordKey = stringPreferencesKey("payment_password")
 private val BackupPasswordKey = stringPreferencesKey("backup_password")
@@ -43,8 +42,8 @@ val Context.settingsDataStore: DataStore<Preferences> by preferencesDataStore(na
 
 class SettingDataSource(
     private val dataStore: DataStore<Preferences>,
+    private val preferenceCoroutineContext: CoroutineContext,
 ) {
-    private val scope = CoroutineScope(Dispatchers.IO)
     val biometricEnabled: Flow<Boolean>
         get() = dataStore.data.map {
             it[BiometricEnabledKey] ?: false
@@ -69,48 +68,48 @@ class SettingDataSource(
         it[RegisterPhone] ?: ""
     }
 
-    fun setPaymentPassword(value: String) {
-        scope.launch {
+    suspend fun setPaymentPassword(value: String) {
+        withContext(preferenceCoroutineContext) {
             dataStore.edit {
                 it[PaymentPasswordKey] = value
             }
         }
     }
 
-    fun setBackupPassword(value: String) {
-        scope.launch {
+    suspend fun setBackupPassword(value: String) {
+        withContext(preferenceCoroutineContext) {
             dataStore.edit {
                 it[BackupPasswordKey] = value
             }
         }
     }
 
-    fun setShouldShowLegalScene(value: Boolean) {
-        scope.launch {
+    suspend fun setShouldShowLegalScene(value: Boolean) {
+        withContext(preferenceCoroutineContext) {
             dataStore.edit {
                 it[ShouldShowLegalSceneKey] = value
             }
         }
     }
 
-    fun setBiometricEnabled(value: Boolean) {
-        scope.launch {
+    suspend fun setBiometricEnabled(value: Boolean) {
+        withContext(preferenceCoroutineContext) {
             dataStore.edit {
                 it[BiometricEnabledKey] = value
             }
         }
     }
 
-    fun setRegisterEmail(value: String) {
-        scope.launch {
+    suspend fun setRegisterEmail(value: String) {
+        withContext(preferenceCoroutineContext) {
             dataStore.edit {
                 it[RegisterEmail] = value
             }
         }
     }
 
-    fun setRegisterPhone(value: String) {
-        scope.launch {
+    suspend fun setRegisterPhone(value: String) {
+        withContext(preferenceCoroutineContext) {
             dataStore.edit {
                 it[RegisterPhone] = value
             }

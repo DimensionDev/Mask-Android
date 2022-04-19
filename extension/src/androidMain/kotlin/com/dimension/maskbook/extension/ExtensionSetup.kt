@@ -27,8 +27,10 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
-import com.dimension.maskbook.common.IoScopeName
 import com.dimension.maskbook.common.ModuleSetup
+import com.dimension.maskbook.common.di.scope.appScope
+import com.dimension.maskbook.common.di.scope.ioDispatcher
+import com.dimension.maskbook.common.di.scope.repositoryCoroutineContext
 import com.dimension.maskbook.common.ext.navigateToHome
 import com.dimension.maskbook.common.gecko.WebContentController
 import com.dimension.maskbook.common.route.Deeplinks
@@ -40,9 +42,11 @@ import com.dimension.maskbook.extension.route.ExtensionRoute
 import com.dimension.maskbook.extension.ui.WebContentScene
 import com.dimension.maskbook.extension.utils.BackgroundMessageChannel
 import com.dimension.maskbook.extension.utils.ContentMessageChannel
-import org.koin.core.qualifier.named
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import org.koin.core.Koin
 import org.koin.dsl.module
-import org.koin.mp.KoinPlatformTools
 
 object ExtensionSetup : ModuleSetup {
     override fun NavGraphBuilder.route(navController: NavController) {
@@ -69,15 +73,38 @@ object ExtensionSetup : ModuleSetup {
     }
 
     override fun dependencyInject() = module {
-        single { WebContentController(get(), get(named(IoScopeName))) }
-        single { ExtensionRepository(get()) }
-        single<ExtensionServices> { ExtensionServicesImpl(get(), get(), get()) }
-        single { BackgroundMessageChannel(get(), get(named(IoScopeName))) }
-        single { ContentMessageChannel(get(), get(named(IoScopeName))) }
+        single {
+            WebContentController(get(), get(appScope), get(ioDispatcher))
+        }
+        single {
+            ExtensionRepository(
+                get(repositoryCoroutineContext),
+                get(),
+            )
+        }
+        single {
+            BackgroundMessageChannel(get())
+        }
+        single {
+            ContentMessageChannel(get())
+        }
+        single<ExtensionServices> {
+            ExtensionServicesImpl(get(), get(), get())
+        }
     }
 
-    override fun onExtensionReady() {
-        KoinPlatformTools.defaultContext().get().get<BackgroundMessageChannel>().startMessageCollect()
-        KoinPlatformTools.defaultContext().get().get<ContentMessageChannel>().startMessageCollect()
+    override fun onExtensionReady(koin: Koin) {
+        val appScope = koin.get<CoroutineScope>(appScope)
+        val dispatcher = koin.get<CoroutineDispatcher>(ioDispatcher)
+
+        appScope.launch(dispatcher) {
+            koin.get<BackgroundMessageChannel>().startMessageCollect()
+        }
+        appScope.launch(dispatcher) {
+            koin.get<ContentMessageChannel>().startMessageCollect()
+        }
+        appScope.launch(dispatcher) {
+            koin.get<ExtensionRepository>().startCollect()
+        }
     }
 }

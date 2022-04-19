@@ -23,8 +23,11 @@ package com.dimension.maskbook.labs
 import android.content.Context
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import com.dimension.maskbook.common.IoScopeName
 import com.dimension.maskbook.common.ModuleSetup
+import com.dimension.maskbook.common.di.scope.appScope
+import com.dimension.maskbook.common.di.scope.ioDispatcher
+import com.dimension.maskbook.common.di.scope.preferenceCoroutineContext
+import com.dimension.maskbook.common.di.scope.repositoryCoroutineContext
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.labs.data.JSMethod
 import com.dimension.maskbook.labs.data.RedPacketMethod
@@ -38,11 +41,13 @@ import com.dimension.maskbook.labs.ui.tab.LabsTabScreen
 import com.dimension.maskbook.labs.viewmodel.LabsViewModel
 import com.dimension.maskbook.labs.viewmodel.LuckDropViewModel
 import com.dimension.maskbook.labs.viewmodel.PluginSettingsViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.dsl.viewModel
-import org.koin.core.qualifier.named
+import org.koin.core.Koin
 import org.koin.dsl.bind
 import org.koin.dsl.module
-import org.koin.mp.KoinPlatformTools
 
 object LabsSetup : ModuleSetup {
 
@@ -51,12 +56,24 @@ object LabsSetup : ModuleSetup {
     }
 
     override fun dependencyInject() = module {
-        single<IAppRepository> { AppRepository(get()) }
         single<IPreferenceRepository> {
-            PreferenceRepository(get<Context>().labsDataStore, get(named(IoScopeName)))
+            PreferenceRepository(
+                get<Context>().labsDataStore,
+                get(preferenceCoroutineContext),
+            )
         }
-        single { JSMethod(get()) }
-        single { RedPacketMethod(get(named(IoScopeName)), get()) }
+        single<IAppRepository> {
+            AppRepository(
+                get(repositoryCoroutineContext),
+                get(),
+            )
+        }
+        single {
+            JSMethod(get())
+        }
+        single {
+            RedPacketMethod(get())
+        }
 
         single { LabsTabScreen() } bind TabScreen::class
 
@@ -65,8 +82,15 @@ object LabsSetup : ModuleSetup {
         viewModel { (dataRaw: String, requestRaw: String?) -> LuckDropViewModel(dataRaw, requestRaw, get(), get()) }
     }
 
-    override fun onExtensionReady() {
-        KoinPlatformTools.defaultContext().get().get<IAppRepository>().init()
-        KoinPlatformTools.defaultContext().get().get<RedPacketMethod>().startSubscribe()
+    override fun onExtensionReady(koin: Koin) {
+        val appScope = koin.get<CoroutineScope>(appScope)
+        val dispatcher = koin.get<CoroutineDispatcher>(ioDispatcher)
+
+        appScope.launch(dispatcher) {
+            koin.get<IAppRepository>().init()
+        }
+        appScope.launch(dispatcher) {
+            koin.get<RedPacketMethod>().startCollect()
+        }
     }
 }

@@ -27,6 +27,7 @@ import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.setting.repository.ISettingsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.launch
 
 class BackupPasswordSettingsViewModel(
     private val repository: ISettingsRepository,
@@ -93,6 +94,8 @@ class BackupPasswordSettingsViewModel(
     }
 
     fun confirm() {
-        repository.setBackupPassword(newPassword.value)
+        viewModelScope.launch {
+            repository.setBackupPassword(newPassword.value)
+        }
     }
 }
