@@ -71,7 +71,6 @@ import com.dimension.maskbook.common.ui.widget.MaskScene
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.common.ui.widget.button.SecondaryButton
 import com.dimension.maskbook.localization.R
-import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.setting.repository.ISettingsRepository
 import com.dimension.maskbook.setting.ui.scenes.PhoneCodeInputModal
 import com.dimension.maskbook.setting.ui.scenes.backup.BackupCloudScene
@@ -504,9 +503,8 @@ fun BackupSelectionEmail(
 ) {
     val scope = rememberCoroutineScope()
 
-    val repository = get<PersonaServices>()
-    val persona by repository.currentPersona.observeAsState(initial = null)
-    val phone = persona?.phone
+    val repository = get<ISettingsRepository>()
+    val phone by repository.phone.observeAsState(initial = "")
 
     val viewModel = getViewModel<EmailBackupViewModel>()
     val code by viewModel.code.observeAsState()
@@ -571,7 +569,7 @@ fun BackupSelectionEmail(
             Text(text = email, color = MaterialTheme.colors.primary)
         },
         footer = {
-            if (phone != null) {
+            if (phone.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(20.dp))
                 TextButton(
                     modifier = Modifier.fillMaxWidth(),
@@ -602,9 +600,8 @@ fun BackupSelectionPhone(
 ) {
     val scope = rememberCoroutineScope()
 
-    val repository = get<PersonaServices>()
-    val persona by repository.currentPersona.observeAsState(initial = null)
-    val email = persona?.email
+    val repository = get<ISettingsRepository>()
+    val email by repository.email.observeAsState(initial = "")
 
     val viewModel = getViewModel<PhoneBackupViewModel>()
     val code by viewModel.code.observeAsState()
@@ -668,7 +665,7 @@ fun BackupSelectionPhone(
             Text(text = phone, color = MaterialTheme.colors.primary)
         },
         footer = {
-            if (email != null) {
+            if (email.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(20.dp))
                 TextButton(
                     modifier = Modifier.fillMaxWidth(),
@@ -699,21 +696,20 @@ fun BackupSelectionPhone(
 fun BackupSelection(
     navController: NavController,
 ) {
-    val repository = get<PersonaServices>()
-    val persona by repository.currentPersona.observeAsState(initial = null)
+    val repository = get<ISettingsRepository>()
+    val email by repository.email.observeAsState(initial = "")
+    val phone by repository.phone.observeAsState(initial = "")
     BackupSelectionModal(
         onLocal = {
             navController.navigate(SettingRoute.BackupData.BackupLocal.Backup)
         },
         onRemote = {
-            val email = persona?.email
-            val phone = persona?.phone
-            if (email.isNullOrEmpty() && phone.isNullOrEmpty()) {
-                navController.navigate(SettingRoute.BackupData.BackupSelection_NoEmailAndPhone)
-            } else if (!email.isNullOrEmpty()) {
+            if (email.isNotEmpty()) {
                 navController.navigate(SettingRoute.BackupData.BackupSelection_Email(email))
-            } else if (!phone.isNullOrEmpty()) {
+            } else if (phone.isNotEmpty()) {
                 navController.navigate(SettingRoute.BackupData.BackupSelection_Phone(phone))
+            } else {
+                navController.navigate(SettingRoute.BackupData.BackupSelection_NoEmailAndPhone)
             }
         }
     )

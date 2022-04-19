@@ -84,7 +84,7 @@ class PaymentPasswordSettingsViewModel(
         ) { newPassword, newPasswordConfirm ->
             newPassword.isNotEmpty() &&
                 newPassword == newPasswordConfirm &&
-                Validator.isValidPasswordFormat(newPassword)
+                Validator.isValidPaymentPasswordFormat(newPassword)
         }
     }
 

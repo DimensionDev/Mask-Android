@@ -50,7 +50,7 @@ import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.common.ui.widget.button.MaskBackButton
 import com.dimension.maskbook.common.ui.widget.button.MaskButton
-import com.dimension.maskbook.common.ui.widget.button.clickable
+import com.dimension.maskbook.common.ui.widget.button.MaskTransparentButton
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.export.model.TokenData
 import com.dimension.maskbook.wallet.export.model.WalletTokenData
@@ -101,13 +101,12 @@ fun SearchTokenScene(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
                     items(tokens) {
-                        SearchResultItem(
-                            modifier = Modifier.clickable {
-                                onSelect.invoke(it)
-                            },
-                            count = it.count,
-                            tokenData = it.tokenData,
-                        )
+                        MaskTransparentButton(onClick = { onSelect(it) }) {
+                            SearchResultItem(
+                                count = it.count,
+                                tokenData = it.tokenData,
+                            )
+                        }
                     }
                 }
             }

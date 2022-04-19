@@ -37,8 +37,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -51,9 +49,9 @@ import com.dimension.maskbook.common.ui.widget.MaskScene
 import com.dimension.maskbook.common.ui.widget.MaskTopAppBar
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.common.ui.widget.button.MaskBackButton
+import com.dimension.maskbook.common.ui.widget.button.MaskIconButton
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.common.ui.widget.button.SecondaryButton
-import com.dimension.maskbook.common.ui.widget.button.clickable
 import com.dimension.maskbook.common.ui.widget.itemsGridIndexed
 import com.dimension.maskbook.persona.R
 
@@ -104,14 +102,13 @@ private fun BackupContent(
                                 modifier = Modifier.weight(1f),
                                 text = stringResource(R.string.scene_identity_create_description),
                             )
-                            Icon(
-                                Icons.Default.Refresh,
-                                modifier = Modifier.clickable {
-                                    onRefreshWords.invoke()
-                                },
-                                contentDescription = null,
-                                tint = MaterialTheme.colors.primary
-                            )
+                            MaskIconButton(onClick = onRefreshWords) {
+                                Icon(
+                                    Icons.Default.Refresh,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colors.primary,
+                                )
+                            }
                         }
                     }
                 )

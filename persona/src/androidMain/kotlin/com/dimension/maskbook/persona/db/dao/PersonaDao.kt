@@ -73,12 +73,6 @@ interface PersonaDao {
     @Query("UPDATE DbPersonaRecord SET nickname=:nickname WHERE identifier=:identifier")
     suspend fun updateNickName(identifier: String, nickname: String)
 
-    @Query("UPDATE DbPersonaRecord SET email=:email WHERE identifier=:identifier")
-    suspend fun updateEmail(identifier: String, email: String)
-
-    @Query("UPDATE DbPersonaRecord SET phone=:phone WHERE identifier=:identifier")
-    suspend fun updatePhone(identifier: String, phone: String)
-
     @Query("UPDATE DbPersonaRecord SET avatar=:avatar WHERE identifier=:identifier")
     suspend fun updateAvatar(identifier: String, avatar: String?)
 

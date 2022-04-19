@@ -132,36 +132,24 @@ internal class PersonaRepository(
         }
     }
 
-    override fun saveEmailForCurrentPersona(value: String) {
-        scope.launch {
-            currentPersona.firstOrNull()?.let { personaData ->
-                personaDataSource.updateEmail(personaData.identifier, value)
+    override suspend fun setCurrentPersona(id: String) {
+        withContext(scope.coroutineContext) {
+            if (id.isEmpty() || personaDataSource.getPersona(id) != null) {
+                preferenceRepository.setCurrentPersonaIdentifier(id)
+                jsMethod.setCurrentPersonaIdentifier(id)
             }
         }
     }
 
-    override fun savePhoneForCurrentPersona(value: String) {
-        scope.launch {
-            currentPersona.firstOrNull()?.let { personaData ->
-                personaDataSource.updatePhone(personaData.identifier, value)
+    override suspend fun logout() {
+        withContext(scope.coroutineContext) {
+            val deletePersona = currentPersona.firstOrNull() ?: return@withContext
+            // set current persona first ,avoid currentPersona emmit null if there has other personas
+            val newCurrentPersona = personaDataSource.getPersonaList().firstOrNull {
+                it != deletePersona
             }
-        }
-    }
-
-    override fun setCurrentPersona(id: String) {
-        scope.launch {
-            preferenceRepository.setCurrentPersonaIdentifier(id)
-            jsMethod.setCurrentPersonaIdentifier(id)
-        }
-    }
-
-    override fun logout() {
-        scope.launch {
-            val deletePersona = currentPersona.firstOrNull() ?: return@launch
-
-            personaDataSource.deletePersona(deletePersona.identifier)
-            val newCurrentPersona = personaDataSource.getPersonaFirst()
             setCurrentPersona(newCurrentPersona?.identifier.orEmpty())
+            personaDataSource.deletePersona(deletePersona.identifier)
 
             jsMethod.removePersona(deletePersona.identifier)
         }

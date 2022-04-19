@@ -22,9 +22,8 @@ package com.dimension.maskbook.wallet.ui.scenes.wallets.send
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -33,6 +32,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
@@ -46,15 +46,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.common.ui.widget.MaskDecimalInputField
 import com.dimension.maskbook.common.ui.widget.MaskModal
+import com.dimension.maskbook.common.ui.widget.button.MaskButton
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
-import com.dimension.maskbook.common.ui.widget.button.clickable
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.repository.GasPriceEditMode
 
@@ -261,26 +260,32 @@ private fun SelectableButton(
     selected: Boolean,
     onSelect: () -> Unit,
 ) {
-    Box(
-        modifier = modifier
-            .background(
-                color = if (selected) MaterialTheme.colors.primary else MaterialTheme.colors.onSurface.copy(
-                    alpha = 0.1f
-                ),
-                shape = MaterialTheme.shapes.small
-            )
-            .clip(MaterialTheme.shapes.small)
-            .padding(vertical = 21.dp, horizontal = 16.dp)
-            .clickable(enabled = !selected, onClick = onSelect)
+    val backgroundColor = if (selected) {
+        MaterialTheme.colors.primary
+    } else {
+        MaterialTheme.colors.onSurface.copy(alpha = 0.1f)
+    }
+    val contentColor = if (selected) {
+        MaterialTheme.colors.onPrimary
+    } else {
+        MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
+    }
+    MaskButton(
+        enabled = !selected,
+        onClick = onSelect,
+        modifier = modifier,
+        contentPadding = PaddingValues(vertical = 21.dp, horizontal = 16.dp),
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = backgroundColor,
+            disabledBackgroundColor = backgroundColor,
+            contentColor = contentColor,
+            disabledContentColor = contentColor,
+        ),
+        shape = MaterialTheme.shapes.small,
     ) {
         Text(
             text = text,
             style = MaterialTheme.typography.button,
-            color = if (selected) MaterialTheme.colors.onPrimary
-            else MaterialTheme.colors.onSurface.copy(
-                alpha = ContentAlpha.medium
-            ),
-            modifier = Modifier.align(Alignment.Center)
         )
     }
 }

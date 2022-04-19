@@ -24,7 +24,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -36,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.dimension.maskbook.common.ui.widget.button.MaskButton
 
 @Composable
 fun ComposeDebugTool(
@@ -46,7 +46,7 @@ fun ComposeDebugTool(
         mutableStateOf(false)
     }
     Column(modifier = Modifier.fillMaxSize()) {
-        Button(
+        MaskButton(
             modifier = Modifier.padding(top = 56.dp),
             onClick = {
                 debugOpen = !debugOpen

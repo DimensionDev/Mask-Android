@@ -47,7 +47,7 @@ class EmailSetupViewModel(
             _loading.value = true
 
             backupRepository.validateEmailCode(email = value, code = code)
-            settingsRepository.saveEmailForCurrentPersona(value)
+            settingsRepository.saveEmail(value)
 
             Result.success(Unit)
         } catch (e: Throwable) {
@@ -85,7 +85,7 @@ class PhoneSetupViewModel(
             _loading.value = true
 
             backupRepository.validatePhoneCode(phone = phone, code = code)
-            settingsRepository.savePhoneForCurrentPersona(phone)
+            settingsRepository.savePhone(phone)
 
             Result.success(Unit)
         } catch (e: Throwable) {

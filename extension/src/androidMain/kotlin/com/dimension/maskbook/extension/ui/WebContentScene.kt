@@ -59,7 +59,6 @@ import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskScene
 import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
 import com.dimension.maskbook.common.ui.widget.button.MaskIconButton
-import com.dimension.maskbook.common.ui.widget.button.clickable
 import com.dimension.maskbook.extension.export.model.Site
 import com.dimension.maskbook.extension.ext.site
 import com.dimension.maskbook.localization.R
@@ -171,11 +170,14 @@ private fun PlatformTips(
                 modifier = Modifier.weight(1f),
             )
             Spacer(modifier = Modifier.width(20.dp))
-            Icon(
-                painter = painterResource(R.drawable.ic_close_square),
-                modifier = Modifier.size(24.dp).clickable { onClose.invoke() },
-                contentDescription = null,
-            )
+            MaskIconButton(onClick = onClose) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_close_square),
+                    modifier = Modifier.size(24.dp),
+                    contentDescription = null,
+                    tint = Color(0xFFFF5F5F),
+                )
+            }
         }
     }
 }

@@ -26,6 +26,7 @@ import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.persona.datasource.DbPersonaDataSource
 import com.dimension.maskbook.persona.export.model.PersonaData
 import com.dimension.maskbook.persona.repository.IPersonaRepository
+import kotlinx.coroutines.launch
 
 class SwitchPersonaViewModel(
     private val personaRepository: IPersonaRepository,
@@ -39,6 +40,8 @@ class SwitchPersonaViewModel(
         .asStateIn(viewModelScope, null)
 
     fun switch(personaData: PersonaData) {
-        personaRepository.setCurrentPersona(personaData.identifier)
+        viewModelScope.launch {
+            personaRepository.setCurrentPersona(personaData.identifier)
+        }
     }
 }

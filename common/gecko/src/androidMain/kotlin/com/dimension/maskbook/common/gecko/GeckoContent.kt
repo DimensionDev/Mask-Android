@@ -20,10 +20,13 @@
  */
 package com.dimension.maskbook.common.gecko
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.View
 import android.widget.FrameLayout
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -31,6 +34,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollDispatcher
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.view.NestedScrollingParent3
@@ -41,10 +45,10 @@ import mozilla.components.browser.state.action.EngineAction
 import mozilla.components.browser.state.helper.Target
 import mozilla.components.browser.state.store.BrowserStore
 import mozilla.components.concept.engine.Engine
-import mozilla.components.concept.engine.EngineView
 import kotlin.math.roundToInt
 
-internal class GeckoParent(
+@SuppressLint("ViewConstructor")
+private class GeckoParent(
     context: Context,
     private val nestedScrollDispatcher: NestedScrollDispatcher,
 ) : FrameLayout(context), NestedScrollingParent3 {
@@ -154,37 +158,51 @@ internal fun GeckoContent(
         }
     )
 
-    AndroidView(
-        modifier = modifier.nestedScroll(EmptyNestedScrollConnection, nestedScrollDispatcher),
-        factory = { context ->
-            val parent = GeckoParent(
-                context = context,
-                nestedScrollDispatcher = nestedScrollDispatcher
-            )
-            val view = engine.createView(context).apply {
-                controller.view = this
-            }.asView()
-            parent.addView(view)
-            parent
-        },
-        update = { view ->
-            val engineView = view.getChildAt(0) as EngineView
+    val context = LocalContext.current
+    val engineView = remember(context, engine) {
+        engine.createView(context).apply {
+            controller.view = this
+        }
+    }
 
-            val tab = selectedTab.value
-            if (tab == null) {
-                engineView.release()
+    val parentView = remember(context, nestedScrollDispatcher) {
+        GeckoParent(
+            context = context,
+            nestedScrollDispatcher = nestedScrollDispatcher
+        )
+    }
+
+    DisposableEffect(engineView) {
+        engineView as View
+
+        parentView.addView(engineView)
+        onDispose {
+            parentView.removeView(engineView)
+            engineView.release()
+        }
+    }
+
+    val tab = selectedTab.value
+    LaunchedEffect(tab) {
+        if (tab == null) {
+            engineView.release()
+        } else {
+            val session = tab.engineState.engineSession
+            if (session == null) {
+                // This tab does not have an EngineSession that we can render yet. Let's dispatch an
+                // action to request creating one. Once one was created and linked to this session, this
+                // method will get invoked again.
+                store.dispatch(EngineAction.CreateEngineSessionAction(tab.id))
             } else {
-                val session = tab.engineState.engineSession
-                if (session == null) {
-                    // This tab does not have an EngineSession that we can render yet. Let's dispatch an
-                    // action to request creating one. Once one was created and linked to this session, this
-                    // method will get invoked again.
-                    store.dispatch(EngineAction.CreateEngineSessionAction(tab.id))
-                } else {
-                    engineView.render(session)
-                }
+                engineView.render(session)
             }
         }
+    }
+
+    AndroidView(
+        modifier = modifier.nestedScroll(EmptyNestedScrollConnection, nestedScrollDispatcher),
+        factory = { parentView },
+        update = {}
     )
 }
 

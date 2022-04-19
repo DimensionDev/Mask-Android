@@ -61,7 +61,8 @@ fun BackupMetaFile.Post.toIndexDbPost() = IndexedDBPost(
     recipients = recipients.let {
         when (it) {
             is BackupMetaFile.Post.Recipients.UnionArrayValue -> it.value.associate { map ->
-                map.keys.first() to map.values.first().encodeJsonElement< BackupMetaFile.Post.Recipients.RecipientClass, JsonObject>()
+                map.keys.first() to map.values.first()
+                    .encodeJsonElement<BackupMetaFile.Post.Recipients.RecipientClass, JsonObject>()
             }.toMutableMap()
             is BackupMetaFile.Post.Recipients.StringValue -> null
         }
@@ -179,15 +180,17 @@ fun BackupMetaFile.Persona.toIndexedDBPersona() = IndexedDBPersona(
     privateKey = privateKey?.encodeJsonElement(),
     localKey = localKey?.encodeJsonElement(),
     linkedProfiles = linkedProfiles.map {
-        it.value.connectionConfirmState.let { state ->
-            it.key to IndexedDBPersona.LinkedProfileDetails(
-                connectionConfirmState = when {
-                    "pending".equals(state, ignoreCase = true) -> LinkedProfileDetailsState.Pending
-                    "confirmed".equals(state, ignoreCase = true) -> LinkedProfileDetailsState.Confirmed
-                    "denied".equals(state, ignoreCase = true) -> LinkedProfileDetailsState.Denied
-                    else -> LinkedProfileDetailsState.Pending
-                }
+        it.key to IndexedDBPersona.LinkedProfileDetails(
+            connectionConfirmState = getLinkedProfileState(
+                it.value.connectionConfirmState
             )
-        }
+        )
     }.toMap()
 )
+
+private fun getLinkedProfileState(value: String) = when {
+    "pending".equals(value, ignoreCase = true) -> LinkedProfileDetailsState.Pending
+    "confirmed".equals(value, ignoreCase = true) -> LinkedProfileDetailsState.Confirmed
+    "denied".equals(value, ignoreCase = true) -> LinkedProfileDetailsState.Denied
+    else -> LinkedProfileDetailsState.Pending
+}

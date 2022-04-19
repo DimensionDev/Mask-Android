@@ -59,6 +59,7 @@ import com.dimension.maskbook.persona.ui.tab.PersonasTabScreen
 import com.dimension.maskbook.persona.viewmodel.BackUpPasswordViewModel
 import com.dimension.maskbook.persona.viewmodel.DownloadQrCodeViewModel
 import com.dimension.maskbook.persona.viewmodel.ExportPrivateKeyViewModel
+import com.dimension.maskbook.persona.viewmodel.PersonaLogoutViewModel
 import com.dimension.maskbook.persona.viewmodel.PersonaMenuViewModel
 import com.dimension.maskbook.persona.viewmodel.PersonaViewModel
 import com.dimension.maskbook.persona.viewmodel.RenamePersonaViewModel
@@ -203,6 +204,7 @@ object PersonaSetup : ModuleSetup {
                 get()
             )
         }
+        viewModel { PersonaLogoutViewModel(get(), get()) }
     }
 
     override fun onExtensionReady() {

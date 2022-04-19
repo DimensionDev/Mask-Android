@@ -65,9 +65,9 @@ import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.common.ui.widget.button.MaskBackButton
 import com.dimension.maskbook.common.ui.widget.button.MaskIconButton
+import com.dimension.maskbook.common.ui.widget.button.MaskTransparentButton
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.common.ui.widget.button.SecondaryButton
-import com.dimension.maskbook.common.ui.widget.button.clickable
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.export.model.TradableData
 import com.dimension.maskbook.wallet.export.model.WalletCollectibleData
@@ -233,12 +233,7 @@ private fun TokenContent(
     balance: String = "",
     onClick: () -> Unit
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick.invoke() },
-        verticalAlignment = Alignment.CenterVertically
-    ) {
+    MaskTransparentButton(onClick = onClick) {
         Image(
             painter = rememberImagePainter(logoUri),
             contentDescription = null,
@@ -263,12 +258,7 @@ private fun CollectibleContent(
     collectionName: String,
     onClick: () -> Unit
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onClick.invoke() },
-        verticalAlignment = Alignment.CenterVertically
-    ) {
+    MaskTransparentButton(onClick = onClick) {
         Image(
             painter = rememberImagePainter(logoUri),
             contentDescription = null,

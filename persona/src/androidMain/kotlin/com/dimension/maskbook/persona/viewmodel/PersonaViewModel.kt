@@ -27,6 +27,7 @@ import com.dimension.maskbook.persona.export.model.PersonaData
 import com.dimension.maskbook.persona.repository.IPersonaRepository
 import com.dimension.maskbook.persona.repository.ISocialsRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -36,6 +37,7 @@ class PersonaViewModel(
     private val socialRepository: ISocialsRepository,
 ) : ViewModel() {
     data class PersonaState(val persona: PersonaData?)
+    @OptIn(ExperimentalCoroutinesApi::class)
     val currentPersona by lazy {
         personaRepository.currentPersona
             .map { PersonaState(it) }
@@ -60,6 +62,8 @@ class PersonaViewModel(
     }
 
     fun setCurrentPersona(it: PersonaData) {
-        personaRepository.setCurrentPersona(it.identifier)
+        viewModelScope.launch {
+            personaRepository.setCurrentPersona(it.identifier)
+        }
     }
 }
