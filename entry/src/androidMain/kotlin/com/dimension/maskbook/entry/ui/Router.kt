@@ -34,7 +34,7 @@ import com.dimension.maskbook.common.ui.widget.RouteHost
 import com.dimension.maskbook.common.ui.widget.rememberMaskBottomSheetNavigator
 import com.dimension.maskbook.entry.BuildConfig
 import com.dimension.maskbook.entry.EntrySetup
-import com.dimension.maskbook.entry.repository.EntryRepository
+import com.dimension.maskbook.entry.repository.PreferenceRepository
 import com.dimension.maskbook.entry.route.EntryRoute
 import com.dimension.maskbook.extension.ExtensionSetup
 import com.dimension.maskbook.labs.LabsSetup
@@ -92,7 +92,7 @@ fun Router(
 }
 
 private suspend fun getInitialRoute(): String {
-    val repository = KoinPlatformTools.defaultContext().get().get<EntryRepository>()
+    val repository = KoinPlatformTools.defaultContext().get().get<PreferenceRepository>()
     val shouldShowEntry = repository.shouldShowEntry.firstOrNull() ?: true
     if (shouldShowEntry) {
         return EntryRoute.Intro

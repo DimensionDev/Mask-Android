@@ -35,8 +35,6 @@ import com.dimension.maskbook.setting.services.model.Scenario
 import com.dimension.maskbook.setting.services.model.SendCodeBody
 import com.dimension.maskbook.setting.services.model.UploadBody
 import com.dimension.maskbook.setting.services.model.ValidateCodeBody
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.builtins.serializer
 import okhttp3.OkHttpClient
@@ -51,68 +49,61 @@ import java.util.UUID
 import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
+import kotlin.coroutines.CoroutineContext
 
 class BackupRepository(
+    private val repositoryCoroutineContext: CoroutineContext,
     private val backupServices: BackupServices,
     private val cacheDir: File,
     private val contentResolver: ContentResolver,
-    private val dispatcher: CoroutineDispatcher,
 ) {
-    suspend fun sendPhoneCode(phone: String) {
-        withContext(dispatcher) {
-            backupServices.sendCode(
-                SendCodeBody(
-                    account_type = AccountType.phone,
-                    account = phone,
-                    Scenario.backup,
-                    Locale.en,
-                )
+    suspend fun sendPhoneCode(phone: String) = withContext(repositoryCoroutineContext) {
+        backupServices.sendCode(
+            SendCodeBody(
+                account_type = AccountType.phone,
+                account = phone,
+                Scenario.backup,
+                Locale.en,
             )
-        }
+        )
     }
 
-    suspend fun sendEmailCode(email: String) {
-        withContext(dispatcher) {
-            backupServices.sendCode(
-                SendCodeBody(
-                    account_type = AccountType.email,
-                    account = email,
-                    Scenario.backup,
-                    Locale.en,
-                )
+    suspend fun sendEmailCode(email: String) = withContext(repositoryCoroutineContext) {
+        backupServices.sendCode(
+            SendCodeBody(
+                account_type = AccountType.email,
+                account = email,
+                Scenario.backup,
+                Locale.en,
             )
-        }
+        )
     }
 
-    suspend fun validatePhoneCode(phone: String, code: String) {
-        withContext(dispatcher) {
-            backupServices.validateCode(
-                ValidateCodeBody(
-                    code = code,
-                    account = phone,
-                    account_type = AccountType.phone,
-                )
+    suspend fun validatePhoneCode(phone: String, code: String) = withContext(repositoryCoroutineContext) {
+        backupServices.validateCode(
+            ValidateCodeBody(
+                code = code,
+                account = phone,
+                account_type = AccountType.phone,
             )
-        }
+        )
     }
 
-    suspend fun validateEmailCode(email: String, code: String) {
-        withContext(dispatcher) {
-            backupServices.validateCode(
-                ValidateCodeBody(
-                    code = code,
-                    account = email,
-                    account_type = AccountType.email,
-                )
+    suspend fun validateEmailCode(email: String, code: String) = withContext(repositoryCoroutineContext) {
+        backupServices.validateCode(
+            ValidateCodeBody(
+                code = code,
+                account = email,
+                account_type = AccountType.email,
             )
-        }
+        )
     }
 
     suspend fun encryptBackup(
         password: String,
         account: String,
-        content: BackupMetaFile
-    ): ByteArray = coroutineScope {
+        content: BackupMetaFile,
+    ): ByteArray = withContext(repositoryCoroutineContext) {
         val computedPassword = account.lowercase() + password
         val iv = SecureRandom().generateSeed(16)
         val gen = PKCS5S2ParametersGenerator(SHA256Digest())
@@ -130,61 +121,62 @@ class BackupRepository(
         ).toByteArray()
     }
 
-    suspend fun decryptBackup(password: String, account: String, data: ByteArray): BackupMetaFile =
-        coroutineScope {
-            val computedPassword = account.lowercase() + password
-            val remoteBackupData = RemoteBackupData.fromByteArray(data)
-            val gen = PKCS5S2ParametersGenerator(SHA256Digest())
-            gen.init(
-                msgPack.encodeToByteArray(String.serializer(), computedPassword),
-                remoteBackupData.pbkdf2IV,
-                10000
-            )
-            val derivedKey = gen.generateDerivedParameters(256) as KeyParameter
-            val key = SecretKeySpec(derivedKey.key, "AES")
-            val cipher = Cipher.getInstance("AES/GCM/NoPadding")
-            cipher.init(Cipher.DECRYPT_MODE, key, IvParameterSpec(remoteBackupData.paramIV))
-            cipher.doFinal(remoteBackupData.encrypted)
-                .let { msgPack.decodeFromByteArray(BackupMetaFile.serializer(), it) }
-        }
+    suspend fun decryptBackup(
+        password: String,
+        account: String,
+        data: ByteArray,
+    ): BackupMetaFile = withContext(repositoryCoroutineContext) {
+        val computedPassword = account.lowercase() + password
+        val remoteBackupData = RemoteBackupData.fromByteArray(data)
+        val gen = PKCS5S2ParametersGenerator(SHA256Digest())
+        gen.init(
+            msgPack.encodeToByteArray(String.serializer(), computedPassword),
+            remoteBackupData.pbkdf2IV,
+            10000
+        )
+        val derivedKey = gen.generateDerivedParameters(256) as KeyParameter
+        val key = SecretKeySpec(derivedKey.key, "AES")
+        val cipher = Cipher.getInstance("AES/GCM/NoPadding")
+        cipher.init(Cipher.DECRYPT_MODE, key, IvParameterSpec(remoteBackupData.paramIV))
+        cipher.doFinal(remoteBackupData.encrypted)
+            .let { msgPack.decodeFromByteArray(BackupMetaFile.serializer(), it) }
+    }
 
-    suspend fun downloadBackupWithEmail(email: String, code: String) =
-        withContext(dispatcher) {
-            val response = backupServices.download(
-                ValidateCodeBody(
-                    code = code,
-                    account = email,
-                    account_type = AccountType.email,
-                )
+    suspend fun downloadBackupWithEmail(email: String, code: String) = withContext(repositoryCoroutineContext) {
+        val response = backupServices.download(
+            ValidateCodeBody(
+                code = code,
+                account = email,
+                account_type = AccountType.email,
             )
-            requireNotNull(response.download_url)
-            BackupFileMeta(
-                url = downloadFile(response.download_url).toUri().toString(),
-                size = response.size,
-                uploaded_at = (response.uploaded_at ?: 0) * 1000,
-                abstract = response.abstract,
-            )
-        }
+        )
+        requireNotNull(response.download_url)
+        BackupFileMeta(
+            url = downloadFile(response.download_url).toUri().toString(),
+            size = response.size,
+            uploaded_at = (response.uploaded_at ?: 0) * 1000,
+            abstract = response.abstract,
+        )
+    }
 
-    suspend fun downloadBackupWithPhone(phone: String, code: String) =
-        withContext(dispatcher) {
-            val response = backupServices.download(
-                ValidateCodeBody(
-                    code = code,
-                    account = phone,
-                    account_type = AccountType.phone,
-                )
+    suspend fun downloadBackupWithPhone(phone: String, code: String) = withContext(repositoryCoroutineContext) {
+        val response = backupServices.download(
+            ValidateCodeBody(
+                code = code,
+                account = phone,
+                account_type = AccountType.phone,
             )
-            requireNotNull(response.download_url)
-            BackupFileMeta(
-                url = downloadFile(response.download_url).toUri().toString(),
-                size = response.size,
-                uploaded_at = (response.uploaded_at ?: 0) * 1000,
-                abstract = response.abstract,
-            )
-        }
+        )
+        requireNotNull(response.download_url)
+        BackupFileMeta(
+            url = downloadFile(response.download_url).toUri().toString(),
+            size = response.size,
+            uploaded_at = (response.uploaded_at ?: 0) * 1000,
+            abstract = response.abstract,
+        )
+    }
 
-    private suspend fun downloadFile(url: String) = withContext(dispatcher) {
+    private suspend fun downloadFile(url: String) = withContext(repositoryCoroutineContext) {
         val stream = OkHttpClient.Builder()
             .build()
             .newCall(
@@ -212,7 +204,7 @@ class BackupRepository(
         account: String,
         abstract: String,
         content: BackupMetaFile,
-    ) = withContext(dispatcher) {
+    ) = withContext(repositoryCoroutineContext) {
         val response = backupServices.upload(
             UploadBody(
                 code = code,
@@ -233,7 +225,7 @@ class BackupRepository(
     }
 
     suspend fun saveLocality(it: Uri, meta: BackupMetaFile, password: String, account: String) =
-        coroutineScope {
+        withContext(repositoryCoroutineContext) {
             contentResolver.openOutputStream(it)?.use {
                 it.write(encryptBackup(password, account, meta))
             }

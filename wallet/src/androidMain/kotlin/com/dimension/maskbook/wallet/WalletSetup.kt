@@ -77,7 +77,6 @@ import com.dimension.maskbook.wallet.usecase.SendTransactionUseCase
 import com.dimension.maskbook.wallet.usecase.SendWalletCollectibleUseCase
 import com.dimension.maskbook.wallet.usecase.SetCurrentChainUseCase
 import com.dimension.maskbook.wallet.usecase.VerifyPaymentPasswordUseCase
-import com.dimension.maskbook.wallet.viewmodel.WelcomeViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.TokenDetailViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.TouchIdEnableViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.UnlockWalletViewModel
@@ -298,7 +297,6 @@ private fun Module.provideUseCase() {
 }
 
 private fun Module.provideViewModel() {
-    viewModel { WelcomeViewModel(get()) }
     viewModel { (wallet: String) -> CreateWalletRecoveryKeyViewModel(wallet, get()) }
     viewModel { TouchIdEnableViewModel() }
     viewModel { (wallet: String) -> ImportWalletKeystoreViewModel(wallet, get()) }

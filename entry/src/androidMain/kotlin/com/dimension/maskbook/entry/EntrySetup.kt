@@ -29,7 +29,7 @@ import com.dimension.maskbook.common.di.scope.ioDispatcher
 import com.dimension.maskbook.common.di.scope.preferenceCoroutineContext
 import com.dimension.maskbook.common.route.Navigator
 import com.dimension.maskbook.entry.data.JSMethod
-import com.dimension.maskbook.entry.repository.EntryRepository
+import com.dimension.maskbook.entry.repository.PreferenceRepository
 import com.dimension.maskbook.entry.repository.entryDataStore
 import com.dimension.maskbook.entry.ui.scene.generatedRoute
 import com.dimension.maskbook.entry.viewModel.IntroViewModel
@@ -49,7 +49,7 @@ object EntrySetup : ModuleSetup {
 
     override fun dependencyInject() = module {
         single {
-            EntryRepository(
+            PreferenceRepository(
                 get(preferenceCoroutineContext),
                 get<Context>().entryDataStore
             )
@@ -63,9 +63,9 @@ object EntrySetup : ModuleSetup {
     override fun onExtensionReady(koin: Koin) {
         val appScope = koin.get<CoroutineScope>(appScope)
         val ioDispatcher = koin.get<CoroutineDispatcher>(ioDispatcher)
-        val jsMethod = koin.get<JSMethod>()
 
         appScope.launch(ioDispatcher) {
+            val jsMethod = koin.get<JSMethod>()
             merge(
                 jsMethod.openCreateWalletView(),
                 jsMethod.openDashboardView(),

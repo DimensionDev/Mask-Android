@@ -32,6 +32,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
@@ -66,7 +67,7 @@ private class MessageHolder : MessageHandler {
     private val _message = MutableSharedFlow<JSONObject>(extraBufferCapacity = Int.MAX_VALUE)
     val message = _message.asSharedFlow()
     private val _port = MutableStateFlow<Port?>(null)
-    val connected = _port.map { it != null }
+    val connected = _port.asStateFlow().map { it != null }
     override fun onPortConnected(port: Port) {
         _port.tryEmit(port)
     }
@@ -111,7 +112,8 @@ class WebContentController(
         Log.i(TAG, "onBackgroundMessage: $it")
         it
     }
-    val isExtensionConnected = _backgroundMessageHolder.connected
+    val isExtensionConnected get() = _backgroundMessageHolder.connected
+
     private val runtime by lazy {
         GeckoRuntime.create(context)
     }

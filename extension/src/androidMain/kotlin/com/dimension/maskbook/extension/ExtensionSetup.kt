@@ -30,6 +30,7 @@ import androidx.navigation.navDeepLink
 import com.dimension.maskbook.common.ModuleSetup
 import com.dimension.maskbook.common.di.scope.appScope
 import com.dimension.maskbook.common.di.scope.ioDispatcher
+import com.dimension.maskbook.common.di.scope.repositoryCoroutineContext
 import com.dimension.maskbook.common.ext.navigateToHome
 import com.dimension.maskbook.common.gecko.WebContentController
 import com.dimension.maskbook.common.route.Deeplinks
@@ -76,16 +77,19 @@ object ExtensionSetup : ModuleSetup {
             WebContentController(get(), get(appScope), get(ioDispatcher))
         }
         single {
-            ExtensionRepository(get())
-        }
-        single<ExtensionServices> {
-            ExtensionServicesImpl(get(), get(), get())
+            ExtensionRepository(
+                get(repositoryCoroutineContext),
+                get(),
+            )
         }
         single {
             BackgroundMessageChannel(get())
         }
         single {
             ContentMessageChannel(get())
+        }
+        single<ExtensionServices> {
+            ExtensionServicesImpl(get(), get(), get())
         }
     }
 

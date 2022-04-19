@@ -48,6 +48,8 @@ class RenamePersonaViewModel(
     }
 
     fun confirm() {
-        personaRepository.updatePersona(personaId, _name.value)
+        viewModelScope.launch {
+            personaRepository.updatePersona(personaId, _name.value)
+        }
     }
 }

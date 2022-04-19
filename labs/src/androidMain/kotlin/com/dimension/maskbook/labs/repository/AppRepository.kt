@@ -25,8 +25,11 @@ import com.dimension.maskbook.labs.export.model.AppData
 import com.dimension.maskbook.labs.export.model.AppKey
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.withContext
+import kotlin.coroutines.CoroutineContext
 
 internal class AppRepository(
+    private val repositoryCoroutineContext: CoroutineContext,
     private val jsMethod: JSMethod,
 ) : IAppRepository {
 
@@ -44,7 +47,7 @@ internal class AppRepository(
         }
     }
 
-    override suspend fun setEnabled(appKey: AppKey, enabled: Boolean) {
+    override suspend fun setEnabled(appKey: AppKey, enabled: Boolean) = withContext(repositoryCoroutineContext) {
         jsMethod.setPluginStatus(appKey.id, enabled)
         refreshApps()
     }

@@ -26,9 +26,9 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navigation
 import com.dimension.maskbook.common.ModuleSetup
 import com.dimension.maskbook.common.di.scope.appScope
-import com.dimension.maskbook.common.di.scope.defaultDispatcher
 import com.dimension.maskbook.common.di.scope.ioDispatcher
 import com.dimension.maskbook.common.di.scope.preferenceCoroutineContext
+import com.dimension.maskbook.common.di.scope.repositoryCoroutineContext
 import com.dimension.maskbook.common.retrofit.retrofit
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.setting.data.JSDataSource
@@ -83,7 +83,7 @@ object SettingSetup : ModuleSetup {
         }
         single<ISettingsRepository> {
             SettingsRepository(
-                get(ioDispatcher),
+                get(repositoryCoroutineContext),
                 get(),
                 get(),
                 get(),
@@ -92,10 +92,10 @@ object SettingSetup : ModuleSetup {
         }
         single {
             BackupRepository(
+                get(repositoryCoroutineContext),
                 get(),
                 get<Context>().cacheDir,
                 get<Context>().contentResolver,
-                get(defaultDispatcher),
             )
         }
         single {

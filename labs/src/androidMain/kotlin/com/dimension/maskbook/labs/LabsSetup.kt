@@ -27,6 +27,7 @@ import com.dimension.maskbook.common.ModuleSetup
 import com.dimension.maskbook.common.di.scope.appScope
 import com.dimension.maskbook.common.di.scope.ioDispatcher
 import com.dimension.maskbook.common.di.scope.preferenceCoroutineContext
+import com.dimension.maskbook.common.di.scope.repositoryCoroutineContext
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.labs.data.JSMethod
 import com.dimension.maskbook.labs.data.RedPacketMethod
@@ -55,13 +56,16 @@ object LabsSetup : ModuleSetup {
     }
 
     override fun dependencyInject() = module {
-        single<IAppRepository> {
-            AppRepository(get())
-        }
         single<IPreferenceRepository> {
             PreferenceRepository(
                 get<Context>().labsDataStore,
                 get(preferenceCoroutineContext),
+            )
+        }
+        single<IAppRepository> {
+            AppRepository(
+                get(repositoryCoroutineContext),
+                get(),
             )
         }
         single {

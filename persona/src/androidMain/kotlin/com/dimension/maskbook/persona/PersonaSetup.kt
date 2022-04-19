@@ -31,6 +31,7 @@ import com.dimension.maskbook.common.di.scope.appScope
 import com.dimension.maskbook.common.di.scope.ioDispatcher
 import com.dimension.maskbook.common.di.scope.mainDispatcher
 import com.dimension.maskbook.common.di.scope.preferenceCoroutineContext
+import com.dimension.maskbook.common.di.scope.repositoryCoroutineContext
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.persona.data.JSMethod
 import com.dimension.maskbook.persona.data.JSMethodV2
@@ -124,8 +125,8 @@ object PersonaSetup : ModuleSetup {
         single {
             PersonaRepository(
                 get(appScope),
+                get(repositoryCoroutineContext),
                 get(mainDispatcher),
-                get(ioDispatcher),
                 get(), get(), get(),
                 get(), get(), get(),
                 get(),

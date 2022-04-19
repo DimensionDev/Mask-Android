@@ -34,7 +34,7 @@ import kotlin.coroutines.CoroutineContext
 private val ShouldShowEntryKey = booleanPreferencesKey("ShouldShowEntry")
 val Context.entryDataStore: DataStore<Preferences> by preferencesDataStore(name = "entry")
 
-class EntryRepository(
+class PreferenceRepository(
     private val preferenceCoroutineScope: CoroutineContext,
     private val dataStore: DataStore<Preferences>,
 ) {

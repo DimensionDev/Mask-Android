@@ -26,6 +26,7 @@ import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.persona.model.SocialProfile
 import com.dimension.maskbook.persona.repository.IPersonaRepository
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
 
 class UserNameModalViewModel(
     private val personaRepository: IPersonaRepository,
@@ -40,9 +41,11 @@ class UserNameModalViewModel(
     }
 
     fun done(personaId: String, profileName: String) {
-        personaRepository.connectProfile(
-            personaId,
-            socialProfile.copy(userId = profileName).toString(),
-        )
+        viewModelScope.launch {
+            personaRepository.connectProfile(
+                personaId,
+                socialProfile.copy(userId = profileName).toString(),
+            )
+        }
     }
 }

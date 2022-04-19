@@ -28,5 +28,6 @@ val mainDispatcher = named("MainDispatcher")
 val mainImmediateDispatcher = named("MainImmediateDispatcher")
 
 val preferenceCoroutineContext = named("PreferenceCoroutineContext")
+val repositoryCoroutineContext = named("RepositoryCoroutineContext")
 
 val appScope = named("AppScope")

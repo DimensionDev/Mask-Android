@@ -22,11 +22,11 @@ package com.dimension.maskbook.entry.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dimension.maskbook.entry.repository.EntryRepository
+import com.dimension.maskbook.entry.repository.PreferenceRepository
 import kotlinx.coroutines.launch
 
 class IntroViewModel(
-    private val repository: EntryRepository,
+    private val repository: PreferenceRepository,
 ) : ViewModel() {
 
     fun setShouldShowEntry(value: Boolean) {

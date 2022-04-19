@@ -23,6 +23,7 @@ package com.dimension.maskbook.persona.ui.tab
 import android.net.Uri
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.NavController
 import com.dimension.maskbook.common.ext.navigateToExtension
 import com.dimension.maskbook.common.route.CommonRoute
@@ -35,6 +36,7 @@ import com.dimension.maskbook.persona.repository.IPersonaRepository
 import com.dimension.maskbook.persona.route.PersonaRoute
 import com.dimension.maskbook.persona.ui.scenes.PersonaScene
 import com.dimension.maskbook.persona.ui.scenes.social.connectSocial
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.get
 
 class PersonasTabScreen : TabScreen {
@@ -46,6 +48,7 @@ class PersonasTabScreen : TabScreen {
     @Composable
     override fun Content(navController: NavController) {
         val repository = get<IPersonaRepository>()
+        val scope = rememberCoroutineScope()
         PersonaScene(
             onBack = {
                 navController.navigateToExtension(null)
@@ -84,8 +87,10 @@ class PersonasTabScreen : TabScreen {
             },
             onSocialItemClick = { _, social ->
                 social.network.toPlatform()?.let {
-                    repository.setPlatform(it)
-                    navController.navigateToExtension()
+                    scope.launch {
+                        repository.setPlatform(it)
+                        navController.navigateToExtension()
+                    }
                 }
             },
             onAddPersonaAvatar = {

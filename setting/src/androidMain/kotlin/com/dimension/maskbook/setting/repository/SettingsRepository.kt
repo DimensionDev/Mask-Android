@@ -40,12 +40,12 @@ import com.dimension.maskbook.setting.model.mapping.toIndexedDBProfile
 import com.dimension.maskbook.setting.model.mapping.toIndexedDBRelation
 import com.dimension.maskbook.setting.model.mapping.toWalletData
 import com.dimension.maskbook.wallet.export.WalletServices
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
+import kotlin.coroutines.CoroutineContext
 
 internal class SettingsRepository(
-    private val ioDispatcher: CoroutineDispatcher,
+    private val repositoryCoroutineContext: CoroutineContext,
     private val personaServices: PersonaServices,
     private val settingDataSource: SettingDataSource,
     private val jsDataSource: JSDataSource,
@@ -70,36 +70,36 @@ internal class SettingsRepository(
     override val phone: Flow<String>
         get() = settingDataSource.phone
 
-    override suspend fun setBiometricEnabled(value: Boolean) {
+    override suspend fun setBiometricEnabled(value: Boolean) = withContext(repositoryCoroutineContext) {
         settingDataSource.setBiometricEnabled(value)
     }
 
-    override suspend fun setLanguage(language: Language) {
+    override suspend fun setLanguage(language: Language) = withContext(repositoryCoroutineContext) {
         jsDataSource.setLanguage(language)
     }
 
-    override suspend fun setAppearance(appearance: Appearance) {
+    override suspend fun setAppearance(appearance: Appearance) = withContext(repositoryCoroutineContext) {
         jsDataSource.setAppearance(appearance)
     }
 
-    override suspend fun setDataProvider(dataProvider: DataProvider) {
+    override suspend fun setDataProvider(dataProvider: DataProvider) = withContext(repositoryCoroutineContext) {
         jsDataSource.setDataProvider(dataProvider)
     }
 
-    override suspend fun setPaymentPassword(value: String) {
+    override suspend fun setPaymentPassword(value: String) = withContext(repositoryCoroutineContext) {
         settingDataSource.setPaymentPassword(value)
     }
 
-    override suspend fun setBackupPassword(value: String) {
+    override suspend fun setBackupPassword(value: String) = withContext(repositoryCoroutineContext) {
         settingDataSource.setBackupPassword(value)
     }
 
-    override suspend fun setShouldShowLegalScene(value: Boolean) {
+    override suspend fun setShouldShowLegalScene(value: Boolean) = withContext(repositoryCoroutineContext) {
         settingDataSource.setShouldShowLegalScene(value)
     }
 
-    override suspend fun generateBackupMeta(): BackupMeta {
-        return createBackup(
+    override suspend fun generateBackupMeta(): BackupMeta = withContext(repositoryCoroutineContext) {
+        createBackup(
             noPosts = false,
             noWallets = false,
             noPersonas = false,
@@ -110,8 +110,10 @@ internal class SettingsRepository(
         }
     }
 
-    override suspend fun provideBackupMeta(file: BackupMetaFile): BackupMeta {
-        return BackupMeta(
+    override suspend fun provideBackupMeta(
+        file: BackupMetaFile,
+    ): BackupMeta = withContext(repositoryCoroutineContext) {
+        BackupMeta(
             personas = file.personas.size,
             associatedAccount = file.personas.sumOf { it.linkedProfiles.size },
             encryptedPost = file.posts.size,
@@ -123,7 +125,7 @@ internal class SettingsRepository(
         )
     }
 
-    override suspend fun restoreBackup(value: BackupMetaFile) = withContext(ioDispatcher) {
+    override suspend fun restoreBackup(value: BackupMetaFile) = withContext(repositoryCoroutineContext) {
         val persona = value.personas.map { it.toIndexedDBPersona() }
         personaServices.restorePersonaBackup(persona)
         val profile = value.profiles.map { it.toIndexedDBProfile() }
@@ -143,7 +145,7 @@ internal class SettingsRepository(
         noProfiles: Boolean,
         noRelations: Boolean,
         hasPrivateKeyOnly: Boolean
-    ): BackupMetaFile = withContext(ioDispatcher) {
+    ): BackupMetaFile = withContext(repositoryCoroutineContext) {
         val personas = if (noPersonas) {
             emptyList()
         } else {
@@ -180,41 +182,43 @@ internal class SettingsRepository(
         )
     }
 
-    private suspend fun backupRelations(): List<BackupMetaFile.Relation> {
-        return personaServices.createRelationsBackup().map {
+    private suspend fun backupRelations(): List<BackupMetaFile.Relation> = withContext(repositoryCoroutineContext) {
+        personaServices.createRelationsBackup().map {
             it.toBackupRelation()
         }
     }
 
-    private suspend fun backupPosts(): List<BackupMetaFile.Post> {
-        return personaServices.createPostsBackup().map {
+    private suspend fun backupPosts(): List<BackupMetaFile.Post> = withContext(repositoryCoroutineContext) {
+        personaServices.createPostsBackup().map {
             it.toBackupPost()
         }
     }
 
-    private suspend fun backupWallets(): List<BackupMetaFile.Wallet> {
-        return walletServices.createWalletBackup().map {
+    private suspend fun backupWallets(): List<BackupMetaFile.Wallet> = withContext(repositoryCoroutineContext) {
+        walletServices.createWalletBackup().map {
             it.toBackupWallet()
         }
     }
 
-    private suspend fun backProfiles(): List<BackupMetaFile.Profile> {
-        return personaServices.createProfileBackup().map {
+    private suspend fun backProfiles(): List<BackupMetaFile.Profile> = withContext(repositoryCoroutineContext) {
+        personaServices.createProfileBackup().map {
             it.toBackupProfile()
         }
     }
 
-    private suspend fun backupPersona(hasPrivateKeyOnly: Boolean): List<BackupMetaFile.Persona> {
-        return personaServices.createPersonaBackup(hasPrivateKeyOnly).map {
+    private suspend fun backupPersona(
+        hasPrivateKeyOnly: Boolean
+    ): List<BackupMetaFile.Persona> = withContext(repositoryCoroutineContext) {
+        personaServices.createPersonaBackup(hasPrivateKeyOnly).map {
             it.toBackupPersona()
         }
     }
 
-    override suspend fun saveEmail(value: String) {
+    override suspend fun saveEmail(value: String) = withContext(repositoryCoroutineContext) {
         settingDataSource.setRegisterEmail(value)
     }
 
-    override suspend fun savePhone(value: String) {
+    override suspend fun savePhone(value: String) = withContext(repositoryCoroutineContext) {
         settingDataSource.setRegisterPhone(value)
     }
 }
