@@ -179,10 +179,15 @@ fun BackupMetaFile.Persona.toIndexedDBPersona() = IndexedDBPersona(
     privateKey = privateKey?.encodeJsonElement(),
     localKey = localKey?.encodeJsonElement(),
     linkedProfiles = linkedProfiles.map {
-        it.key to IndexedDBPersona.LinkedProfileDetails(
-            connectionConfirmState = LinkedProfileDetailsState.valueOf(
-                it.value.connectionConfirmState
+        it.value.connectionConfirmState.let { state ->
+            it.key to IndexedDBPersona.LinkedProfileDetails(
+                connectionConfirmState = when {
+                    "pending".equals(state, ignoreCase = true) -> LinkedProfileDetailsState.Pending
+                    "confirmed".equals(state, ignoreCase = true) -> LinkedProfileDetailsState.Confirmed
+                    "denied".equals(state, ignoreCase = true) -> LinkedProfileDetailsState.Denied
+                    else -> LinkedProfileDetailsState.Pending
+                }
             )
-        )
+        }
     }.toMap()
 )
