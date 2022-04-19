@@ -123,7 +123,7 @@ fun LogoutBeforeCheckModal(
 
     MaskModal(
         title = {
-            Text(stringResource(R.string.scene_change_password_password))
+            Text(stringResource(R.string.scene_backup_password_verify_title))
         }
     ) {
         Column {
