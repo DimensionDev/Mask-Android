@@ -36,7 +36,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.navOptions
 import com.dimension.maskbook.common.bigDecimal.BigDecimal
@@ -221,12 +220,28 @@ fun TokenDetail(
 fun SwitchWalletAdd(
     navController: NavController,
 ) {
+    val repo = get<SettingServices>()
+    val shouldShowLegalScene by repo.shouldShowLegalScene.collectAsState(initial = true)
+    val enableBiometric by repo.biometricEnabled.observeAsState(initial = false)
+    val biometricEnableViewModel: BiometricEnableViewModel = getViewModel()
+    val context = LocalContext.current
+
+    fun createOrImportWallet(type: CreateType) {
+        if (shouldShowLegalScene) {
+            navController.navigate(WalletRoute.WalletIntroHostLegal(type.name))
+        } else if (!enableBiometric && biometricEnableViewModel.isSupported(context)) {
+            navController.navigate(WalletRoute.WalletIntroHostFaceId(type.name))
+        } else {
+            navController.navigate(WalletRoute.CreateOrImportWallet(type.name))
+        }
+    }
+
     WalletSwitchAddModal(
         onCreate = {
-            navController.navigate(WalletRoute.WalletIntroHostLegal(CreateType.CREATE.name))
+            createOrImportWallet(CreateType.CREATE)
         },
         onImport = {
-            navController.navigate(WalletRoute.WalletIntroHostLegal(CreateType.IMPORT.name))
+            createOrImportWallet(CreateType.IMPORT)
         },
     )
 }
@@ -559,42 +574,27 @@ fun WalletManagementRename(
 @Composable
 fun WalletIntroHostLegal(
     navController: NavController,
-    navBackStackEntry: NavBackStackEntry,
     @Back onBack: () -> Unit,
     @Path("type") typeString: String,
 ) {
     val type = remember(typeString) { CreateType.valueOf(typeString) }
     val repo = get<SettingServices>()
-    val password by repo.paymentPassword.observeAsState(initial = null)
+    val paymentPassword by repo.paymentPassword.observeAsState(initial = "")
+
     val enableBiometric by repo.biometricEnabled.observeAsState(initial = false)
-    val shouldShowLegalScene by repo.shouldShowLegalScene.observeAsState(initial = true)
     val biometricEnableViewModel: BiometricEnableViewModel = getViewModel()
     val context = LocalContext.current
-    val next: () -> Unit = {
-        val route = if (password.isNullOrEmpty()) {
-            WalletRoute.WalletIntroHostPassword(type.name)
-        } else if (!enableBiometric && biometricEnableViewModel.isSupported(context)) {
-            WalletRoute.WalletIntroHostFaceId(type.name)
-        } else {
-            WalletRoute.CreateOrImportWallet(type.name)
-        }
-        navController.navigate(
-            route,
-            navOptions {
-                popUpTo(id = navBackStackEntry.destination.id) {
-                    inclusive = true
-                }
-                launchSingleTop = true
-            }
-        )
-    }
-    if (!shouldShowLegalScene) {
-        next()
-    }
+
     LegalScene(
         onBack = onBack,
         onAccept = {
-            repo.setShouldShowLegalScene(false)
+            if (paymentPassword.isEmpty()) {
+                navController.navigate(WalletRoute.WalletIntroHostPassword(type.name))
+            } else if (!enableBiometric && biometricEnableViewModel.isSupported(context)) {
+                navController.navigate(WalletRoute.WalletIntroHostFaceId(type.name))
+            } else {
+                navController.navigate(WalletRoute.CreateOrImportWallet(type.name))
+            }
         },
         onBrowseAgreement = {
             context.startActivity(

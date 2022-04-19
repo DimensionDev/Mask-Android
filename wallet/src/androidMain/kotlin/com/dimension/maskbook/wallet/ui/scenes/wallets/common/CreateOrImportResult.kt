@@ -29,14 +29,25 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.dimension.maskbook.common.ui.widget.MaskDialog
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
+import com.dimension.maskbook.setting.export.SettingServices
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.repository.WalletCreateOrImportResult
+import org.koin.androidx.compose.get
 
 @Composable
 fun WalletCreateOrImportResult.Dialog(onDismissRequest: () -> Unit) {
+    val settingServices = get<SettingServices>()
+
+    fun onDone() {
+        onDismissRequest.invoke()
+        if (type == WalletCreateOrImportResult.Type.SUCCESS) {
+            settingServices.setShouldShowLegalScene(false)
+        }
+    }
+
     MaskDialog(
         onDismissRequest = {
-            onDismissRequest.invoke()
+            onDone()
         },
         title = { Title() },
         icon = { Icon() },
@@ -44,7 +55,7 @@ fun WalletCreateOrImportResult.Dialog(onDismissRequest: () -> Unit) {
             PrimaryButton(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {
-                    onDismissRequest.invoke()
+                    onDone()
                 }
             ) {
                 when (type) {

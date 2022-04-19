@@ -50,11 +50,13 @@ import com.dimension.maskbook.common.routeProcessor.annotations.Path
 import com.dimension.maskbook.common.ui.scene.VerifyMnemonicWordsScene
 import com.dimension.maskbook.common.ui.widget.MaskDialog
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
+import com.dimension.maskbook.setting.export.SettingServices
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.repository.WalletCreateOrImportResult
 import com.dimension.maskbook.wallet.route.WalletRoute
 import com.dimension.maskbook.wallet.ui.scenes.wallets.common.Dialog
 import com.dimension.maskbook.wallet.viewmodel.wallets.create.CreateWalletRecoveryKeyViewModel
+import org.koin.androidx.compose.get
 import org.koin.core.parameter.parametersOf
 
 private const val GeneratedRouteName = "createWalletRoute"
@@ -157,22 +159,22 @@ fun VerifyRoute(
 fun ConfirmRoute(
     navController: NavController,
 ) {
-    val onDone = remember {
-        {
-            navController.navigate(
-                Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Wallet)),
-                navOptions = navOptions {
-                    launchSingleTop = true
-                    popUpTo(CommonRoute.Main.Home.path) {
-                        inclusive = false
-                    }
+    val settingServices = get<SettingServices>()
+    fun onDone() {
+        navController.navigate(
+            Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Wallet)),
+            navOptions = navOptions {
+                launchSingleTop = true
+                popUpTo(CommonRoute.Main.Home.path) {
+                    inclusive = false
                 }
-            )
-        }
+            }
+        )
+        settingServices.setShouldShowLegalScene(false)
     }
     MaskDialog(
         onDismissRequest = {
-            onDone.invoke()
+            onDone()
         },
         icon = {
             Image(
@@ -190,7 +192,7 @@ fun ConfirmRoute(
             PrimaryButton(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {
-                    onDone.invoke()
+                    onDone()
                 },
             ) {
                 Text(text = stringResource(R.string.common_controls_done))

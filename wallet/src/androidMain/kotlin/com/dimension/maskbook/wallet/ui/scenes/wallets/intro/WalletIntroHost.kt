@@ -21,12 +21,16 @@
 package com.dimension.maskbook.wallet.ui.scenes.wallets.intro
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.navigation.NavController
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.dimension.maskbook.common.ext.observeAsState
+import com.dimension.maskbook.common.viewmodel.BiometricEnableViewModel
+import com.dimension.maskbook.setting.export.SettingServices
 import com.dimension.maskbook.wallet.route.WalletRoute
 import com.dimension.maskbook.wallet.route.transfer
 import com.dimension.maskbook.wallet.ui.scenes.wallets.create.CreateType
@@ -34,6 +38,7 @@ import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletBalances
 import com.dimension.maskbook.wallet.viewmodel.wallets.WalletBalancesViewModel
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import org.koin.androidx.compose.get
 import org.koin.androidx.compose.getViewModel
 
 @ExperimentalMaterialNavigationApi
@@ -51,16 +56,33 @@ fun WalletIntroHost(navController: NavController) {
     val showTokensLess by viewModel.showTokensLess.observeAsState()
     val showTokensLessAmount by viewModel.showTokensLessAmount.observeAsState()
     val nativeToken by viewModel.walletNativeToken.observeAsState()
+
     val currentWallet = wallet
     val currentDWebData = dWebData
 
+    val repo = get<SettingServices>()
+    val shouldShowLegalScene by repo.shouldShowLegalScene.collectAsState(initial = true)
+    val enableBiometric by repo.biometricEnabled.observeAsState(initial = false)
+    val biometricEnableViewModel: BiometricEnableViewModel = getViewModel()
+    val context = LocalContext.current
+
     if (currentWallet == null) {
+        fun createOrImportWallet(type: CreateType) {
+            if (shouldShowLegalScene) {
+                navController.navigate(WalletRoute.WalletIntroHostLegal(type.name))
+            } else if (!enableBiometric && biometricEnableViewModel.isSupported(context)) {
+                navController.navigate(WalletRoute.WalletIntroHostFaceId(type.name))
+            } else {
+                navController.navigate(WalletRoute.CreateOrImportWallet(type.name))
+            }
+        }
+
         WalletIntroScene(
             onCreate = {
-                navController.navigate(WalletRoute.WalletIntroHostLegal(CreateType.CREATE.name))
+                createOrImportWallet(CreateType.CREATE)
             },
             onImport = {
-                navController.navigate(WalletRoute.WalletIntroHostLegal(CreateType.IMPORT.name))
+                createOrImportWallet(CreateType.IMPORT)
             },
             onConnect = {
                 navController.navigate(WalletRoute.SwitchWalletAddWalletConnect)
