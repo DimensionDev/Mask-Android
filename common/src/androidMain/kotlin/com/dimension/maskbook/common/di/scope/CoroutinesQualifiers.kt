@@ -18,6 +18,13 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.common
+package com.dimension.maskbook.common.di.scope
 
-const val LocalBackupAccount = ""
+import org.koin.core.qualifier.named
+
+val defaultDispatcher = named("DefaultDispatcher")
+val ioDispatcher = named("IoDispatcher")
+val mainDispatcher = named("MainDispatcher")
+val mainImmediateDispatcher = named("MainImmediateDispatcher")
+
+val appScope = named("AppScope")

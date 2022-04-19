@@ -27,8 +27,8 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
-import com.dimension.maskbook.common.IoScopeName
 import com.dimension.maskbook.common.ModuleSetup
+import com.dimension.maskbook.common.di.scope.appScope
 import com.dimension.maskbook.common.ext.navigateToHome
 import com.dimension.maskbook.common.gecko.WebContentController
 import com.dimension.maskbook.common.route.Deeplinks
@@ -40,7 +40,6 @@ import com.dimension.maskbook.extension.route.ExtensionRoute
 import com.dimension.maskbook.extension.ui.WebContentScene
 import com.dimension.maskbook.extension.utils.BackgroundMessageChannel
 import com.dimension.maskbook.extension.utils.ContentMessageChannel
-import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import org.koin.mp.KoinPlatformTools
 
@@ -69,11 +68,11 @@ object ExtensionSetup : ModuleSetup {
     }
 
     override fun dependencyInject() = module {
-        single { WebContentController(get(), get(named(IoScopeName))) }
+        single { WebContentController(get(), get(appScope)) }
         single { ExtensionRepository(get()) }
         single<ExtensionServices> { ExtensionServicesImpl(get(), get(), get()) }
-        single { BackgroundMessageChannel(get(), get(named(IoScopeName))) }
-        single { ContentMessageChannel(get(), get(named(IoScopeName))) }
+        single { BackgroundMessageChannel(get(), get(appScope)) }
+        single { ContentMessageChannel(get(), get(appScope)) }
     }
 
     override fun onExtensionReady() {

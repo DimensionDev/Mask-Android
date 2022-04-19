@@ -23,8 +23,8 @@ package com.dimension.maskbook.labs
 import android.content.Context
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import com.dimension.maskbook.common.IoScopeName
 import com.dimension.maskbook.common.ModuleSetup
+import com.dimension.maskbook.common.di.scope.appScope
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.labs.data.JSMethod
 import com.dimension.maskbook.labs.data.RedPacketMethod
@@ -39,7 +39,6 @@ import com.dimension.maskbook.labs.viewmodel.LabsViewModel
 import com.dimension.maskbook.labs.viewmodel.LuckDropViewModel
 import com.dimension.maskbook.labs.viewmodel.PluginSettingsViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
-import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.koin.mp.KoinPlatformTools
@@ -53,10 +52,10 @@ object LabsSetup : ModuleSetup {
     override fun dependencyInject() = module {
         single<IAppRepository> { AppRepository(get()) }
         single<IPreferenceRepository> {
-            PreferenceRepository(get<Context>().labsDataStore, get(named(IoScopeName)))
+            PreferenceRepository(get<Context>().labsDataStore, get(appScope))
         }
         single { JSMethod(get()) }
-        single { RedPacketMethod(get(named(IoScopeName)), get()) }
+        single { RedPacketMethod(get(appScope), get()) }
 
         single { LabsTabScreen() } bind TabScreen::class
 
