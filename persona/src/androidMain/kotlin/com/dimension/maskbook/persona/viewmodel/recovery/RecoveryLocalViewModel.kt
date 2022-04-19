@@ -99,6 +99,7 @@ class RecoveryLocalViewModel(
         try {
             _file.value?.let { backupServices.restoreBackup(it) }
         } catch (e: Throwable) {
+            e.printStackTrace()
         }
     }
 }
