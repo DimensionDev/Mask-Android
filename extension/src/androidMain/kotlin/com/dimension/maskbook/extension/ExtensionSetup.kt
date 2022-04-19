@@ -41,6 +41,9 @@ import com.dimension.maskbook.extension.route.ExtensionRoute
 import com.dimension.maskbook.extension.ui.WebContentScene
 import com.dimension.maskbook.extension.utils.BackgroundMessageChannel
 import com.dimension.maskbook.extension.utils.ContentMessageChannel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import org.koin.core.Koin
 import org.koin.dsl.module
 
@@ -73,21 +76,31 @@ object ExtensionSetup : ModuleSetup {
             WebContentController(get(), get(appScope), get(ioDispatcher))
         }
         single {
-            ExtensionRepository(get(appScope), get())
+            ExtensionRepository(get())
         }
         single<ExtensionServices> {
             ExtensionServicesImpl(get(), get(), get())
         }
         single {
-            BackgroundMessageChannel(get(), get(appScope), get(ioDispatcher))
+            BackgroundMessageChannel(get())
         }
         single {
-            ContentMessageChannel(get(), get(appScope), get(ioDispatcher))
+            ContentMessageChannel(get())
         }
     }
 
     override fun onExtensionReady(koin: Koin) {
-        koin.get<BackgroundMessageChannel>().startMessageCollect()
-        koin.get<ContentMessageChannel>().startMessageCollect()
+        val appScope = koin.get<CoroutineScope>(appScope)
+        val dispatcher = koin.get<CoroutineDispatcher>(ioDispatcher)
+
+        appScope.launch(dispatcher) {
+            koin.get<BackgroundMessageChannel>().startMessageCollect()
+        }
+        appScope.launch(dispatcher) {
+            koin.get<ContentMessageChannel>().startMessageCollect()
+        }
+        appScope.launch(dispatcher) {
+            koin.get<ExtensionRepository>().startCollect()
+        }
     }
 }

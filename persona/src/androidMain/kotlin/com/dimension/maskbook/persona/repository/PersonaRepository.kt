@@ -102,7 +102,9 @@ internal class PersonaRepository(
         onDone: (ConnectAccountData) -> Unit,
     ) {
         connectingJob?.cancel()
-        extensionServices.setSite(platformType.toSite())
+        appScope.launch {
+            extensionServices.setSite(platformType.toSite())
+        }
 
         connectingJob = preferenceRepository.lastDetectProfileIdentifier
             .filterNot { it.isEmpty() }
@@ -118,20 +120,18 @@ internal class PersonaRepository(
             .launchIn(appScope)
     }
 
-    override fun init() {
-        appScope.launch(ioDispatcher) {
-            if (personaDataSource.isEmpty()) {
-                return@launch
-            }
-
-            val identifier = preferenceRepository.currentPersonaIdentifier.firstOrNull()
-            if (!identifier.isNullOrEmpty() && personaDataSource.contains(identifier)) {
-                return@launch
-            }
-
-            val newCurrentPersona = personaDataSource.getPersonaFirst()
-            setCurrentPersona(newCurrentPersona?.identifier.orEmpty())
+    override suspend fun init() {
+        if (personaDataSource.isEmpty()) {
+            return
         }
+
+        val identifier = preferenceRepository.currentPersonaIdentifier.firstOrNull()
+        if (!identifier.isNullOrEmpty() && personaDataSource.contains(identifier)) {
+            return
+        }
+
+        val newCurrentPersona = personaDataSource.getPersonaFirst()
+        setCurrentPersona(newCurrentPersona?.identifier.orEmpty())
     }
 
     override suspend fun setCurrentPersona(id: String) {
@@ -206,7 +206,9 @@ internal class PersonaRepository(
     }
 
     override fun setPlatform(platformType: PlatformType) {
-        extensionServices.setSite(platformType.toSite())
+        appScope.launch {
+            extensionServices.setSite(platformType.toSite())
+        }
     }
 
     override fun setAvatarForCurrentPersona(avatar: Uri?) {

@@ -37,14 +37,14 @@ interface ISettingsRepository {
     val shouldShowLegalScene: Flow<Boolean>
     val email: Flow<String>
     val phone: Flow<String>
-    fun setBiometricEnabled(value: Boolean)
-    fun setLanguage(language: Language)
-    fun setAppearance(appearance: Appearance)
-    fun setDataProvider(dataProvider: DataProvider)
-    fun setPaymentPassword(value: String)
-    fun setBackupPassword(value: String)
+    suspend fun setBiometricEnabled(value: Boolean)
+    suspend fun setLanguage(language: Language)
+    suspend fun setAppearance(appearance: Appearance)
+    suspend fun setDataProvider(dataProvider: DataProvider)
+    suspend fun setPaymentPassword(value: String)
+    suspend fun setBackupPassword(value: String)
     suspend fun generateBackupMeta(): BackupMeta
-    fun provideBackupMeta(file: BackupMetaFile): BackupMeta
+    suspend fun provideBackupMeta(file: BackupMetaFile): BackupMeta
     suspend fun restoreBackup(value: BackupMetaFile)
     suspend fun createBackup(
         noPosts: Boolean = false,
@@ -55,7 +55,7 @@ interface ISettingsRepository {
         hasPrivateKeyOnly: Boolean = false,
     ): BackupMetaFile
 
-    fun setShouldShowLegalScene(value: Boolean)
-    fun saveEmail(value: String)
-    fun savePhone(value: String)
+    suspend fun setShouldShowLegalScene(value: Boolean)
+    suspend fun saveEmail(value: String)
+    suspend fun savePhone(value: String)
 }

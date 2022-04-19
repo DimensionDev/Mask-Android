@@ -48,7 +48,7 @@ interface IPersonaRepository {
     suspend fun createPersonaFromMnemonic(value: List<String>, name: String)
     suspend fun createPersonaFromPrivateKey(value: String, name: String)
     suspend fun backupPrivateKey(id: String): String
-    fun init()
+    suspend fun init()
     fun setPlatform(platformType: PlatformType)
     fun setAvatarForCurrentPersona(avatar: Uri?)
     suspend fun createPersonaBackup(hasPrivateKeyOnly: Boolean): List<IndexedDBPersona>

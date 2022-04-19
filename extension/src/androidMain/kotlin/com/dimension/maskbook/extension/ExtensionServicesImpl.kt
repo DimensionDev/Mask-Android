@@ -37,7 +37,7 @@ internal class ExtensionServicesImpl(
     override val site: Flow<Site>
         get() = repository.currentSite
 
-    override fun setSite(site: Site) {
+    override suspend fun setSite(site: Site) {
         repository.setCurrentSite(site)
     }
 

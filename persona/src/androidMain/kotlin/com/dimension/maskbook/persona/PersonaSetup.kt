@@ -82,7 +82,9 @@ import com.dimension.maskbook.persona.viewmodel.social.DisconnectSocialViewModel
 import com.dimension.maskbook.persona.viewmodel.social.UserNameModalViewModel
 import com.google.accompanist.navigation.animation.navigation
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asExecutor
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.Koin
 import org.koin.dsl.bind
@@ -136,7 +138,6 @@ object PersonaSetup : ModuleSetup {
         single<IPreferenceRepository> {
             PreferenceRepository(
                 get<Context>().personaDataStore,
-                get(appScope),
                 get(defaultDispatcher),
             )
         }
@@ -144,8 +145,6 @@ object PersonaSetup : ModuleSetup {
         single { JSMethod(get()) }
         single {
             JSMethodV2(
-                get(appScope),
-                get(defaultDispatcher),
                 get(),
                 get(),
                 get(), get(),
@@ -215,7 +214,17 @@ object PersonaSetup : ModuleSetup {
     }
 
     override fun onExtensionReady(koin: Koin) {
-        koin.get<IPersonaRepository>().init()
-        koin.get<JSMethodV2>().startSubscribe()
+        val appScope = koin.get<CoroutineScope>(appScope)
+        val dispatcher = koin.get<CoroutineDispatcher>(ioDispatcher)
+
+        appScope.launch(dispatcher) {
+            koin.get<IPersonaRepository>().init()
+        }
+        appScope.launch(dispatcher) {
+            koin.get<JSMethodV2>().startCollect()
+        }
+        appScope.launch(dispatcher) {
+            koin.get<JSMethodV2>().tryMigrateIndexedDb()
+        }
     }
 }

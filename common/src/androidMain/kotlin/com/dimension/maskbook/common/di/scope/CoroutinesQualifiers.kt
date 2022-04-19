@@ -27,4 +27,7 @@ val ioDispatcher = named("IoDispatcher")
 val mainDispatcher = named("MainDispatcher")
 val mainImmediateDispatcher = named("MainImmediateDispatcher")
 
+val preferenceCoroutineContext = defaultDispatcher
+val viewModelCoroutineContext = defaultDispatcher
+
 val appScope = named("AppScope")

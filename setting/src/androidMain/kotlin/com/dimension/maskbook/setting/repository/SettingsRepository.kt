@@ -40,12 +40,9 @@ import com.dimension.maskbook.setting.model.mapping.toIndexedDBProfile
 import com.dimension.maskbook.setting.model.mapping.toIndexedDBRelation
 import com.dimension.maskbook.setting.model.mapping.toWalletData
 import com.dimension.maskbook.wallet.export.WalletServices
-import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.withContext
 
 internal class SettingsRepository(
-    private val dispatcher: CoroutineDispatcher,
     private val personaServices: PersonaServices,
     private val settingDataSource: SettingDataSource,
     private val jsDataSource: JSDataSource,
@@ -70,31 +67,31 @@ internal class SettingsRepository(
     override val phone: Flow<String>
         get() = settingDataSource.phone
 
-    override fun setBiometricEnabled(value: Boolean) {
+    override suspend fun setBiometricEnabled(value: Boolean) {
         settingDataSource.setBiometricEnabled(value)
     }
 
-    override fun setLanguage(language: Language) {
+    override suspend fun setLanguage(language: Language) {
         jsDataSource.setLanguage(language)
     }
 
-    override fun setAppearance(appearance: Appearance) {
+    override suspend fun setAppearance(appearance: Appearance) {
         jsDataSource.setAppearance(appearance)
     }
 
-    override fun setDataProvider(dataProvider: DataProvider) {
+    override suspend fun setDataProvider(dataProvider: DataProvider) {
         jsDataSource.setDataProvider(dataProvider)
     }
 
-    override fun setPaymentPassword(value: String) {
+    override suspend fun setPaymentPassword(value: String) {
         settingDataSource.setPaymentPassword(value)
     }
 
-    override fun setBackupPassword(value: String) {
+    override suspend fun setBackupPassword(value: String) {
         settingDataSource.setBackupPassword(value)
     }
 
-    override fun setShouldShowLegalScene(value: Boolean) {
+    override suspend fun setShouldShowLegalScene(value: Boolean) {
         settingDataSource.setShouldShowLegalScene(value)
     }
 
@@ -110,7 +107,7 @@ internal class SettingsRepository(
         }
     }
 
-    override fun provideBackupMeta(file: BackupMetaFile): BackupMeta {
+    override suspend fun provideBackupMeta(file: BackupMetaFile): BackupMeta {
         return BackupMeta(
             personas = file.personas.size,
             associatedAccount = file.personas.sumOf { it.linkedProfiles.size },
@@ -124,18 +121,16 @@ internal class SettingsRepository(
     }
 
     override suspend fun restoreBackup(value: BackupMetaFile) {
-        withContext(dispatcher) {
-            val persona = value.personas.map { it.toIndexedDBPersona() }
-            personaServices.restorePersonaBackup(persona)
-            val profile = value.profiles.map { it.toIndexedDBProfile() }
-            personaServices.restoreProfileBackup(profile)
-            val relation = value.relations.map { it.toIndexedDBRelation() }
-            personaServices.restoreRelationBackup(relation)
-            val post = value.posts.map { it.toIndexDbPost() }
-            personaServices.restorePostBackup(post)
-            val wallet = value.wallets.map { it.toWalletData() }
-            walletServices.restoreWalletBackup(wallet)
-        }
+        val persona = value.personas.map { it.toIndexedDBPersona() }
+        personaServices.restorePersonaBackup(persona)
+        val profile = value.profiles.map { it.toIndexedDBProfile() }
+        personaServices.restoreProfileBackup(profile)
+        val relation = value.relations.map { it.toIndexedDBRelation() }
+        personaServices.restoreRelationBackup(relation)
+        val post = value.posts.map { it.toIndexDbPost() }
+        personaServices.restorePostBackup(post)
+        val wallet = value.wallets.map { it.toWalletData() }
+        walletServices.restoreWalletBackup(wallet)
     }
 
     override suspend fun createBackup(
@@ -146,42 +141,41 @@ internal class SettingsRepository(
         noRelations: Boolean,
         hasPrivateKeyOnly: Boolean
     ): BackupMetaFile {
-        return withContext(dispatcher) {
-            val personas = if (noPersonas) {
-                emptyList()
-            } else {
-                backupPersona(hasPrivateKeyOnly)
-            }
-            val profile = if (noProfiles) {
-                emptyList()
-            } else {
-                backProfiles()
-            }
-            val wallets = if (noWallets) {
-                emptyList()
-            } else {
-                backupWallets()
-            }
-            val posts = if (noPosts) {
-                emptyList()
-            } else {
-                backupPosts()
-            }
-            val relations = if (noRelations) {
-                emptyList()
-            } else {
-                backupRelations()
-            }
-            BackupMetaFile(
-                personas = personas,
-                wallets = wallets,
-                posts = posts,
-                profiles = profile,
-                meta = BackupMetaFile.Meta.Default,
-                grantedHostPermissions = emptyList(),
-                relations = relations,
-            )
+
+        val personas = if (noPersonas) {
+            emptyList()
+        } else {
+            backupPersona(hasPrivateKeyOnly)
         }
+        val profile = if (noProfiles) {
+            emptyList()
+        } else {
+            backProfiles()
+        }
+        val wallets = if (noWallets) {
+            emptyList()
+        } else {
+            backupWallets()
+        }
+        val posts = if (noPosts) {
+            emptyList()
+        } else {
+            backupPosts()
+        }
+        val relations = if (noRelations) {
+            emptyList()
+        } else {
+            backupRelations()
+        }
+        return BackupMetaFile(
+            personas = personas,
+            wallets = wallets,
+            posts = posts,
+            profiles = profile,
+            meta = BackupMetaFile.Meta.Default,
+            grantedHostPermissions = emptyList(),
+            relations = relations,
+        )
     }
 
     private suspend fun backupRelations(): List<BackupMetaFile.Relation> {
@@ -214,11 +208,11 @@ internal class SettingsRepository(
         }
     }
 
-    override fun saveEmail(value: String) {
+    override suspend fun saveEmail(value: String) {
         settingDataSource.setRegisterEmail(value)
     }
 
-    override fun savePhone(value: String) {
+    override suspend fun savePhone(value: String) {
         settingDataSource.setRegisterPhone(value)
     }
 }

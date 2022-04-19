@@ -25,10 +25,13 @@ import com.dimension.maskbook.common.di.scope.defaultDispatcher
 import com.dimension.maskbook.common.di.scope.ioDispatcher
 import com.dimension.maskbook.common.di.scope.mainDispatcher
 import com.dimension.maskbook.common.di.scope.mainImmediateDispatcher
+import com.dimension.maskbook.common.di.scope.preferenceCoroutineContext
+import com.dimension.maskbook.common.di.scope.viewModelCoroutineContext
 import com.dimension.maskbook.common.util.coroutineExceptionHandler
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.SupervisorJob
 import org.koin.core.module.Module
 
@@ -37,6 +40,13 @@ internal fun Module.coroutinesModule() {
     single(ioDispatcher) { Dispatchers.IO }
     single<CoroutineDispatcher>(mainDispatcher) { Dispatchers.Main }
     single<CoroutineDispatcher>(mainImmediateDispatcher) { Dispatchers.Main.immediate }
+
+    single(preferenceCoroutineContext) {
+        NonCancellable + Dispatchers.Default
+    }
+    single(viewModelCoroutineContext) {
+        coroutineExceptionHandler + Dispatchers.Default
+    }
 
     single(appScope) {
         CoroutineScope(

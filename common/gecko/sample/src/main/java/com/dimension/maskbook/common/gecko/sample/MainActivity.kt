@@ -43,16 +43,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.lifecycleScope
 import com.dimension.maskbook.common.gecko.WebContent
 import com.dimension.maskbook.common.gecko.WebContentController
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 
 class MainActivity : FragmentActivity() {
     lateinit var controller: WebContentController
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        controller = WebContentController(this, CoroutineScope(Dispatchers.IO)).apply {
+        controller = WebContentController(this, lifecycleScope, Dispatchers.IO).apply {
             installExtensions(
                 "borderify@mozilla.org",
                 "resource://android/assets/extensions/borderify/"

@@ -25,8 +25,9 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import com.dimension.maskbook.common.ModuleSetup
 import com.dimension.maskbook.common.di.scope.appScope
-import com.dimension.maskbook.common.di.scope.defaultDispatcher
 import com.dimension.maskbook.common.di.scope.ioDispatcher
+import com.dimension.maskbook.common.di.scope.preferenceCoroutineContext
+import com.dimension.maskbook.common.di.scope.viewModelCoroutineContext
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.labs.data.JSMethod
 import com.dimension.maskbook.labs.data.RedPacketMethod
@@ -40,6 +41,9 @@ import com.dimension.maskbook.labs.ui.tab.LabsTabScreen
 import com.dimension.maskbook.labs.viewmodel.LabsViewModel
 import com.dimension.maskbook.labs.viewmodel.LuckDropViewModel
 import com.dimension.maskbook.labs.viewmodel.PluginSettingsViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.Koin
 import org.koin.dsl.bind
@@ -53,38 +57,37 @@ object LabsSetup : ModuleSetup {
 
     override fun dependencyInject() = module {
         single<IAppRepository> {
-            AppRepository(
-                get(appScope),
-                get(ioDispatcher),
-                get()
-            )
+            AppRepository(get())
         }
         single<IPreferenceRepository> {
             PreferenceRepository(
                 get<Context>().labsDataStore,
-                get(appScope),
-                get(defaultDispatcher),
+                get(preferenceCoroutineContext),
             )
         }
         single {
             JSMethod(get())
         }
         single {
-            RedPacketMethod(
-                get(appScope),
-                get(defaultDispatcher), get()
-            )
+            RedPacketMethod(get())
         }
 
         single { LabsTabScreen() } bind TabScreen::class
 
-        viewModel { LabsViewModel(get(), get()) }
-        viewModel { PluginSettingsViewModel(get(), get(), get()) }
+        viewModel { LabsViewModel(get(viewModelCoroutineContext), get(), get()) }
+        viewModel { PluginSettingsViewModel(get(viewModelCoroutineContext), get(), get(), get()) }
         viewModel { (dataRaw: String, requestRaw: String?) -> LuckDropViewModel(dataRaw, requestRaw, get(), get()) }
     }
 
     override fun onExtensionReady(koin: Koin) {
-        koin.get<IAppRepository>().init()
-        koin.get<RedPacketMethod>().startCollect()
+        val appScope = koin.get<CoroutineScope>(appScope)
+        val dispatcher = koin.get<CoroutineDispatcher>(ioDispatcher)
+
+        appScope.launch(dispatcher) {
+            koin.get<IAppRepository>().init()
+        }
+        appScope.launch(dispatcher) {
+            koin.get<RedPacketMethod>().startCollect()
+        }
     }
 }

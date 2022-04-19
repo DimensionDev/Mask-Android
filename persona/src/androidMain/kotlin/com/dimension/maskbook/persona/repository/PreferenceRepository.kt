@@ -27,13 +27,12 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlin.coroutines.CoroutineContext
 
 private val CurrentPersonaKey = stringPreferencesKey("current_persona")
 private val ShouldShowContactsTipDialog = booleanPreferencesKey("ShouldShowContactsTipDialog")
@@ -42,8 +41,7 @@ val Context.personaDataStore: DataStore<Preferences> by preferencesDataStore(nam
 
 class PreferenceRepository(
     private val dataStore: DataStore<Preferences>,
-    private val appScope: CoroutineScope,
-    private val dispatcher: CoroutineDispatcher,
+    private val preferenceCoroutineContext: CoroutineContext,
 ) : IPreferenceRepository {
 
     override val data: Flow<Preferences>
@@ -65,8 +63,8 @@ class PreferenceRepository(
             it[ShouldShowContactsTipDialog] ?: true
         }
 
-    override fun setShowContactsTipDialog(bool: Boolean) {
-        appScope.launch(dispatcher) {
+    override suspend fun setShowContactsTipDialog(bool: Boolean) {
+        withContext(preferenceCoroutineContext) {
             dataStore.edit {
                 it[ShouldShowContactsTipDialog] = bool
             }
@@ -78,8 +76,8 @@ class PreferenceRepository(
             it[IsMigratorIndexedDb] ?: false
         }
 
-    override fun setIsMigratorIndexedDb(bool: Boolean) {
-        appScope.launch(dispatcher) {
+    override suspend fun setIsMigratorIndexedDb(bool: Boolean) {
+        withContext(preferenceCoroutineContext) {
             dataStore.edit {
                 it[IsMigratorIndexedDb] = bool
             }

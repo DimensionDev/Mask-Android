@@ -26,7 +26,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface ExtensionServices {
     val site: Flow<Site>
-    fun setSite(site: Site)
+    suspend fun setSite(site: Site)
     val isExtensionActive: Flow<Boolean>
     suspend fun ensureExtensionActive()
     suspend fun runBackgroundJSMethod(method: String, isWait: Boolean, vararg args: Pair<String, Any>): String?

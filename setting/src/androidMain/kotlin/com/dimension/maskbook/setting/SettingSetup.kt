@@ -28,6 +28,8 @@ import com.dimension.maskbook.common.ModuleSetup
 import com.dimension.maskbook.common.di.scope.appScope
 import com.dimension.maskbook.common.di.scope.defaultDispatcher
 import com.dimension.maskbook.common.di.scope.ioDispatcher
+import com.dimension.maskbook.common.di.scope.preferenceCoroutineContext
+import com.dimension.maskbook.common.di.scope.viewModelCoroutineContext
 import com.dimension.maskbook.common.retrofit.retrofit
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.setting.data.JSDataSource
@@ -56,6 +58,9 @@ import com.dimension.maskbook.setting.viewmodel.LanguageSettingsViewModel
 import com.dimension.maskbook.setting.viewmodel.PaymentPasswordSettingsViewModel
 import com.dimension.maskbook.setting.viewmodel.PhoneBackupViewModel
 import com.dimension.maskbook.setting.viewmodel.PhoneSetupViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.Koin
 import org.koin.dsl.bind
@@ -79,7 +84,6 @@ object SettingSetup : ModuleSetup {
         }
         single<ISettingsRepository> {
             SettingsRepository(
-                get(defaultDispatcher),
                 get(),
                 get(),
                 get(),
@@ -107,24 +111,22 @@ object SettingSetup : ModuleSetup {
         single {
             JSDataSource(
                 get(),
-                get(appScope),
-                get(ioDispatcher),
+                get(preferenceCoroutineContext),
             )
         }
         single { JSMethod(get()) }
         single {
             SettingDataSource(
                 get<Context>().settingsDataStore,
-                get(appScope),
-                get(defaultDispatcher),
+                get(preferenceCoroutineContext),
             )
         }
 
-        viewModel { LanguageSettingsViewModel(get()) }
-        viewModel { AppearanceSettingsViewModel(get()) }
-        viewModel { DataSourceSettingsViewModel(get()) }
-        viewModel { PaymentPasswordSettingsViewModel(get()) }
-        viewModel { BackupPasswordSettingsViewModel(get()) }
+        viewModel { LanguageSettingsViewModel(get(viewModelCoroutineContext), get()) }
+        viewModel { AppearanceSettingsViewModel(get(viewModelCoroutineContext), get()) }
+        viewModel { DataSourceSettingsViewModel(get(viewModelCoroutineContext), get()) }
+        viewModel { PaymentPasswordSettingsViewModel(get(viewModelCoroutineContext), get()) }
+        viewModel { BackupPasswordSettingsViewModel(get(viewModelCoroutineContext), get()) }
         viewModel { BackupLocalViewModel(get(), get()) }
         viewModel { EmailSetupViewModel(get(), get()) }
         viewModel { PhoneSetupViewModel(get(), get()) }
@@ -138,6 +140,11 @@ object SettingSetup : ModuleSetup {
     }
 
     override fun onExtensionReady(koin: Koin) {
-        koin.get<JSDataSource>().initData()
+        val appScope = koin.get<CoroutineScope>(appScope)
+        val dispatcher = koin.get<CoroutineDispatcher>(ioDispatcher)
+
+        appScope.launch(dispatcher) {
+            koin.get<JSDataSource>().initData()
+        }
     }
 }

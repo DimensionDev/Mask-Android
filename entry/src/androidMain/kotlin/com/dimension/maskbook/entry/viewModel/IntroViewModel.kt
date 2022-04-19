@@ -18,14 +18,22 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.labs.repository
+package com.dimension.maskbook.entry.viewModel
 
-import com.dimension.maskbook.labs.export.model.AppData
-import com.dimension.maskbook.labs.export.model.AppKey
-import kotlinx.coroutines.flow.Flow
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.dimension.maskbook.entry.repository.EntryRepository
+import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
 
-interface IAppRepository {
-    val apps: Flow<List<AppData>>
-    suspend fun setEnabled(appKey: AppKey, enabled: Boolean)
-    suspend fun init()
+class IntroViewModel(
+    private val viewModelCoroutineContext: CoroutineContext,
+    private val repository: EntryRepository,
+) : ViewModel() {
+
+    fun setShouldShowEntry(value: Boolean) {
+        viewModelScope.launch(viewModelCoroutineContext) {
+            repository.setShouldShowEntry(value)
+        }
+    }
 }

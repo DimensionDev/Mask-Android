@@ -28,39 +28,28 @@ import com.dimension.maskbook.extension.export.ExtensionServices
 import com.dimension.maskbook.labs.model.SendMethodRequest
 import com.dimension.maskbook.labs.model.options.RedPacketOptions
 import com.dimension.maskbook.labs.route.LabsRoute
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 
 class RedPacketMethod(
-    private val appScope: CoroutineScope,
-    private val dispatcher: CoroutineDispatcher,
     private val services: ExtensionServices,
 ) {
-
-    fun startCollect() {
-        services.subscribeCurrentContentJSEvent(notifyRedPacket, claimOrRefundRedPacket)
-            .onEach { message ->
-                when (message.method) {
-                    notifyRedPacket -> {
-                        message.responseSuccess(true)
-                    }
-                    claimOrRefundRedPacket -> {
-                        val options = message.params?.decodeJson<RedPacketOptions>() ?: return@onEach
-                        val requestRaw = SendMethodRequest(
-                            id = message.id,
-                            jsonrpc = message.jsonrpc,
-                            method = message.method,
-                        ).encodeJson()
-                        Navigator.navigate(LabsRoute.RedPacket.LuckyDrop(options.encodeJson(), requestRaw))
-                        // response in LuckDropViewModel
-                    }
+    suspend fun startCollect() {
+        services.subscribeCurrentContentJSEvent(notifyRedPacket, claimOrRefundRedPacket).collect { message ->
+            when (message.method) {
+                notifyRedPacket -> {
+                    message.responseSuccess(true)
+                }
+                claimOrRefundRedPacket -> {
+                    val options = message.params?.decodeJson<RedPacketOptions>() ?: return@collect
+                    val requestRaw = SendMethodRequest(
+                        id = message.id,
+                        jsonrpc = message.jsonrpc,
+                        method = message.method,
+                    ).encodeJson()
+                    Navigator.navigate(LabsRoute.RedPacket.LuckyDrop(options.encodeJson(), requestRaw))
+                    // response in LuckDropViewModel
                 }
             }
-            .flowOn(dispatcher)
-            .launchIn(appScope)
+        }
     }
 
     companion object {

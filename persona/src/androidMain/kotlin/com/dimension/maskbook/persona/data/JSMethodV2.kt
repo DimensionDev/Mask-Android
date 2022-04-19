@@ -59,17 +59,9 @@ import com.dimension.maskbook.persona.model.options.UpdateProfileOptions
 import com.dimension.maskbook.persona.model.options.UpdateRelationOptions
 import com.dimension.maskbook.persona.repository.IPersonaRepository
 import com.dimension.maskbook.persona.repository.IPreferenceRepository
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 
 class JSMethodV2(
-    private val appScope: CoroutineScope,
-    private val dispatcher: CoroutineDispatcher,
     private val services: ExtensionServices,
     private val database: PersonaDatabase,
     private val personaRepository: IPersonaRepository,
@@ -79,30 +71,28 @@ class JSMethodV2(
     private val relationDataSource: JsRelationDataSource,
     private val postDataSource: JsPostDataSource,
 ) {
-    fun startSubscribe() {
-        appScope.launch(dispatcher) {
-            if (preferenceRepository.isMigratorIndexedDb.first()) {
-                return@launch
-            }
 
-            val records: IndexedDBAllRecord? = services.execute("get_all_indexedDB_records")
-            if (records != null) {
-                IndexedDBDataMigrator.migrate(database, records)
-                preferenceRepository.setIsMigratorIndexedDb(true)
-            }
+    suspend fun tryMigrateIndexedDb() {
+        if (preferenceRepository.isMigratorIndexedDb.first()) {
+            return
         }
 
-        services.subscribeBackgroundJSEvent(*methods)
-            .onEach {
-                subscribeWithPersona(it) ||
-                    subscribeWithProfile(it) ||
-                    subscribeWithRelation(it) ||
-                    subscribeWithAvatar(it) ||
-                    subscribeWithPost(it) ||
-                    subscribeWithHelper(it)
-            }
-            .flowOn(dispatcher)
-            .launchIn(appScope)
+        val records: IndexedDBAllRecord? = services.execute("get_all_indexedDB_records")
+        if (records != null) {
+            IndexedDBDataMigrator.migrate(database, records)
+            preferenceRepository.setIsMigratorIndexedDb(true)
+        }
+    }
+
+    suspend fun startCollect() {
+        services.subscribeBackgroundJSEvent(*methods).collect {
+            subscribeWithPersona(it) ||
+                subscribeWithProfile(it) ||
+                subscribeWithRelation(it) ||
+                subscribeWithAvatar(it) ||
+                subscribeWithPost(it) ||
+                subscribeWithHelper(it)
+        }
     }
 
     // Persona

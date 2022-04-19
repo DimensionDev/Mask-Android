@@ -32,6 +32,8 @@ import com.dimension.maskbook.wallet.export.WalletServices
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
 
 data class AppDisplayData(
     val key: AppKey,
@@ -77,12 +79,15 @@ private val displayDataList = listOf(
 )
 
 class LabsViewModel(
+    private val viewModelCoroutineContext: CoroutineContext,
     private val repository: IAppRepository,
     private val walletRepository: WalletServices,
 ) : ViewModel() {
 
     init {
-        repository.init()
+        viewModelScope.launch(viewModelCoroutineContext) {
+            repository.init()
+        }
     }
 
     val apps by lazy {
@@ -100,9 +105,5 @@ class LabsViewModel(
 
     val wallet by lazy {
         walletRepository.currentWallet.asStateIn(viewModelScope, null)
-    }
-
-    fun setEnabled(key: AppKey, enabled: Boolean) {
-        repository.setEnabled(key, enabled)
     }
 }

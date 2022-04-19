@@ -29,7 +29,7 @@ interface SettingServices {
     val paymentPassword: Flow<String>
     val backupPassword: Flow<String>
     val shouldShowLegalScene: Flow<Boolean>
-    fun setBiometricEnabled(value: Boolean)
-    fun setPaymentPassword(value: String)
-    fun setShouldShowLegalScene(value: Boolean)
+    suspend fun setBiometricEnabled(value: Boolean)
+    suspend fun setPaymentPassword(value: String)
+    suspend fun setShouldShowLegalScene(value: Boolean)
 }

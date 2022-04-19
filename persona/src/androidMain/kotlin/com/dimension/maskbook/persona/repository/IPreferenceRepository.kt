@@ -28,10 +28,10 @@ interface IPreferenceRepository {
     val currentPersonaIdentifier: Flow<String>
     suspend fun setCurrentPersonaIdentifier(identifier: String)
     val shouldShowContactsTipDialog: Flow<Boolean>
-    fun setShowContactsTipDialog(bool: Boolean)
+    suspend fun setShowContactsTipDialog(bool: Boolean)
 
     val isMigratorIndexedDb: Flow<Boolean>
-    fun setIsMigratorIndexedDb(bool: Boolean)
+    suspend fun setIsMigratorIndexedDb(bool: Boolean)
 
     val lastDetectProfileIdentifier: Flow<String>
     fun setLastDetectProfileIdentifier(identifier: String)
