@@ -40,9 +40,12 @@ import com.dimension.maskbook.setting.model.mapping.toIndexedDBProfile
 import com.dimension.maskbook.setting.model.mapping.toIndexedDBRelation
 import com.dimension.maskbook.setting.model.mapping.toWalletData
 import com.dimension.maskbook.wallet.export.WalletServices
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.withContext
 
 internal class SettingsRepository(
+    private val ioDispatcher: CoroutineDispatcher,
     private val personaServices: PersonaServices,
     private val settingDataSource: SettingDataSource,
     private val jsDataSource: JSDataSource,
@@ -120,7 +123,7 @@ internal class SettingsRepository(
         )
     }
 
-    override suspend fun restoreBackup(value: BackupMetaFile) {
+    override suspend fun restoreBackup(value: BackupMetaFile) = withContext(ioDispatcher) {
         val persona = value.personas.map { it.toIndexedDBPersona() }
         personaServices.restorePersonaBackup(persona)
         val profile = value.profiles.map { it.toIndexedDBProfile() }
@@ -140,8 +143,7 @@ internal class SettingsRepository(
         noProfiles: Boolean,
         noRelations: Boolean,
         hasPrivateKeyOnly: Boolean
-    ): BackupMetaFile {
-
+    ): BackupMetaFile = withContext(ioDispatcher) {
         val personas = if (noPersonas) {
             emptyList()
         } else {
@@ -167,7 +169,7 @@ internal class SettingsRepository(
         } else {
             backupRelations()
         }
-        return BackupMetaFile(
+        BackupMetaFile(
             personas = personas,
             wallets = wallets,
             posts = posts,

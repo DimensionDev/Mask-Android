@@ -22,10 +22,14 @@ package com.dimension.maskbook.common.viewmodel
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.util.BiometricAuthenticator
 import com.dimension.maskbook.setting.export.SettingServices
+import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
 
 class BiometricEnableViewModel(
+    private val viewModelCoroutineContext: CoroutineContext,
     private val biometricAuthenticator: BiometricAuthenticator,
     private val repository: SettingServices,
 ) : ViewModel() {
@@ -40,12 +44,18 @@ class BiometricEnableViewModel(
             context = context,
             onSuccess = {
                 onEnable.invoke()
-                repository.setBiometricEnabled(true)
+                setBiometricEnabled(true)
             },
             title = title,
             subTitle = subTitle,
             negativeButtonText = negativeButton,
         )
+    }
+
+    fun setBiometricEnabled(enabled: Boolean) {
+        viewModelScope.launch(viewModelCoroutineContext) {
+            repository.setBiometricEnabled(enabled)
+        }
     }
 
     fun isSupported(context: Context) = biometricAuthenticator.canAuthenticate(context = context)

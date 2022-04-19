@@ -30,8 +30,10 @@ import com.dimension.maskbook.setting.repository.BackupRepository
 import com.dimension.maskbook.setting.repository.ISettingsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
 
 class BackupMergeConfirmViewModel(
+    private val viewModelCoroutineContext: CoroutineContext,
     private val backupRepository: BackupRepository,
     private val settingsRepository: ISettingsRepository,
     private val contentResolver: ContentResolver,
@@ -51,7 +53,7 @@ class BackupMergeConfirmViewModel(
         _passwordValid.value = Validator.isValidBackupPasswordFormat(value)
     }
 
-    fun confirm() = viewModelScope.launch {
+    fun confirm() = viewModelScope.launch(viewModelCoroutineContext) {
         _loading.value = true
         try {
             contentResolver.openInputStream(Uri.parse(url))?.use {

@@ -23,6 +23,7 @@ package com.dimension.maskbook.common
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import com.dimension.maskbook.common.di.module.coroutinesModule
+import com.dimension.maskbook.common.di.scope.viewModelCoroutineContext
 import com.dimension.maskbook.common.manager.ImageLoaderManager
 import com.dimension.maskbook.common.manager.KeyStoreManager
 import com.dimension.maskbook.common.util.BiometricAuthenticator
@@ -43,8 +44,8 @@ object CommonSetup : ModuleSetup {
         single { KeyStoreManager(get()) }
         single { ImageLoaderManager(get()) }
 
-        viewModel { BiometricEnableViewModel(get(), get()) }
+        viewModel { BiometricEnableViewModel(get(viewModelCoroutineContext), get(), get()) }
         viewModel { BiometricViewModel(get(), get()) }
-        viewModel { SetUpPaymentPasswordViewModel(get()) }
+        viewModel { SetUpPaymentPasswordViewModel(get(viewModelCoroutineContext), get()) }
     }
 }

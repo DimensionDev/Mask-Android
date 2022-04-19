@@ -27,8 +27,11 @@ import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.setting.export.SettingServices
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
 
 class SetUpPaymentPasswordViewModel(
+    private val viewModelCoroutineContext: CoroutineContext,
     private val repository: SettingServices,
 ) : ViewModel() {
     private val _newPassword = MutableStateFlow("")
@@ -55,6 +58,8 @@ class SetUpPaymentPasswordViewModel(
     }
 
     fun confirm() {
-        repository.setPaymentPassword(newPassword.value)
+        viewModelScope.launch(viewModelCoroutineContext) {
+            repository.setPaymentPassword(newPassword.value)
+        }
     }
 }

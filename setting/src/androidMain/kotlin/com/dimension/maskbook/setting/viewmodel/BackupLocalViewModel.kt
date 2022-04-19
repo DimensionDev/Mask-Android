@@ -32,8 +32,10 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
 
 class BackupLocalViewModel(
+    private val viewModelCoroutineContext: CoroutineContext,
     private val repository: ISettingsRepository,
     private val backupRepository: BackupRepository,
 ) : ViewModel() {
@@ -72,7 +74,7 @@ class BackupLocalViewModel(
         _paymentPassword.value = value
     }
 
-    fun save(it: Uri, withWallet: Boolean) = viewModelScope.launch {
+    fun save(it: Uri, withWallet: Boolean) = viewModelScope.launch(viewModelCoroutineContext) {
         _state.value = State.Loading
         try {
             val password = repository.backupPassword.firstOrNull() ?: run {

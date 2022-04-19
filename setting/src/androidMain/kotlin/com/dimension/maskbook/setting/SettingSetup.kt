@@ -84,6 +84,7 @@ object SettingSetup : ModuleSetup {
         }
         single<ISettingsRepository> {
             SettingsRepository(
+                get(ioDispatcher),
                 get(),
                 get(),
                 get(),
@@ -127,13 +128,16 @@ object SettingSetup : ModuleSetup {
         viewModel { DataSourceSettingsViewModel(get(viewModelCoroutineContext), get()) }
         viewModel { PaymentPasswordSettingsViewModel(get(viewModelCoroutineContext), get()) }
         viewModel { BackupPasswordSettingsViewModel(get(viewModelCoroutineContext), get()) }
-        viewModel { BackupLocalViewModel(get(), get()) }
+        viewModel { BackupLocalViewModel(get(viewModelCoroutineContext), get(), get()) }
         viewModel { EmailSetupViewModel(get(), get()) }
         viewModel { PhoneSetupViewModel(get(), get()) }
         viewModel { EmailBackupViewModel(get()) }
         viewModel { PhoneBackupViewModel(get()) }
         viewModel { (onDone: () -> Unit, url: String, account: String) ->
-            BackupMergeConfirmViewModel(get(), get(), get<Context>().contentResolver, onDone, url, account)
+            BackupMergeConfirmViewModel(
+                get(viewModelCoroutineContext),
+                get(), get(), get<Context>().contentResolver, onDone, url, account
+            )
         }
         viewModel { BackupCloudViewModel(get()) }
         viewModel { BackupCloudExecuteViewModel(get(), get(), get()) }

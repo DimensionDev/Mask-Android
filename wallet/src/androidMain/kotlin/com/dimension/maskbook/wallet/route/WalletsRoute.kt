@@ -30,6 +30,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
@@ -97,6 +98,7 @@ import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletRenameVi
 import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletSwitchEditViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletSwitchViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletTransactionHistoryViewModel
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.get
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
@@ -568,8 +570,11 @@ fun WalletIntroHostLegal(
     val password by repo.paymentPassword.observeAsState(initial = null)
     val enableBiometric by repo.biometricEnabled.observeAsState(initial = false)
     val shouldShowLegalScene by repo.shouldShowLegalScene.observeAsState(initial = true)
+
     val biometricEnableViewModel: BiometricEnableViewModel = getViewModel()
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+
     val next: () -> Unit = {
         val route = if (password.isNullOrEmpty()) {
             WalletRoute.WalletIntroHostPassword(type.name)
@@ -594,7 +599,9 @@ fun WalletIntroHostLegal(
     LegalScene(
         onBack = onBack,
         onAccept = {
-            repo.setShouldShowLegalScene(false)
+            scope.launch {
+                repo.setShouldShowLegalScene(false)
+            }
         },
         onBrowseAgreement = {
             context.startActivity(
