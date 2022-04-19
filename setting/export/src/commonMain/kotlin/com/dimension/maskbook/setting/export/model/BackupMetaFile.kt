@@ -117,7 +117,7 @@ data class BackupMetaFile(
         val encryptBy: String? = null, // PersonaIdentifier.toText()
         val url: String? = null,
         val summary: String? = null,
-        val interestedMeta: String?, // encoded by MessagePack
+        val interestedMeta: String? = null, // encoded by MessagePack
     ) {
         object RecipientsSerializer : KSerializer<Recipients> {
             override fun deserialize(decoder: Decoder): Recipients {
