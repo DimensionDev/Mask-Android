@@ -34,14 +34,14 @@ import kotlinx.coroutines.launch
 
 @OptIn(InternalCoroutinesApi::class)
 class ExtensionRepository(
+    private val appScope: CoroutineScope,
     private val controller: WebContentController,
-    private val scope: CoroutineScope,
 ) {
     private val _currentSite = MutableStateFlow(Site.Twitter)
     val currentSite = _currentSite.asSharedFlow()
     fun setCurrentSite(site: Site) {
         _currentSite.value = site
-        scope.launch {
+        appScope.launch {
             // workaround for this case:set current site to Twitter first, then set current site to facebook,
             // then go back to twitter tab, currentSite's value is still facebook, if we set current
             // site to facebook again, _currentSite won't update due to MutableStateFlow won't emit
@@ -60,16 +60,14 @@ class ExtensionRepository(
         controller.onNavigate = {
             onNavigate(it)
         }
-        scope.launch {
-            launch {
-                _currentSite.collect {
-                    controller.loadUrl(it.url)
-                }
+        appScope.launch {
+            _currentSite.collect {
+                controller.loadUrl(it.url)
             }
-            launch {
-                isExtensionConnected.first { it }
-                controller.loadUrl(_currentSite.value.url)
-            }
+        }
+        appScope.launch {
+            isExtensionConnected.first { it }
+            controller.loadUrl(_currentSite.value.url)
         }
     }
 

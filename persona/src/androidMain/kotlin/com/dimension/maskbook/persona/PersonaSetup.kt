@@ -28,6 +28,9 @@ import androidx.room.Room
 import com.dimension.maskbook.common.LocalBackupAccount
 import com.dimension.maskbook.common.ModuleSetup
 import com.dimension.maskbook.common.di.scope.appScope
+import com.dimension.maskbook.common.di.scope.defaultDispatcher
+import com.dimension.maskbook.common.di.scope.ioDispatcher
+import com.dimension.maskbook.common.di.scope.mainDispatcher
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.persona.data.JSMethod
 import com.dimension.maskbook.persona.data.JSMethodV2
@@ -78,7 +81,7 @@ import com.dimension.maskbook.persona.viewmodel.register.RemoteBackupRecoveryVie
 import com.dimension.maskbook.persona.viewmodel.social.DisconnectSocialViewModel
 import com.dimension.maskbook.persona.viewmodel.social.UserNameModalViewModel
 import com.google.accompanist.navigation.animation.navigation
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.asExecutor
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.Koin
@@ -107,9 +110,10 @@ object PersonaSetup : ModuleSetup {
 
     override fun dependencyInject() = module {
         single {
+            val executor = get<CoroutineDispatcher>(ioDispatcher).asExecutor()
             Room.databaseBuilder(get(), PersonaDatabase::class.java, "maskbook_persona")
-                .setQueryExecutor(Dispatchers.IO.asExecutor())
-                .setTransactionExecutor(Dispatchers.IO.asExecutor())
+                .setQueryExecutor(executor)
+                .setTransactionExecutor(executor)
                 .fallbackToDestructiveMigration()
                 .addTypeConverter(EncryptStringConverter(get()))
                 .addTypeConverter(EncryptJsonObjectConverter(get()))
@@ -118,6 +122,8 @@ object PersonaSetup : ModuleSetup {
         single {
             PersonaRepository(
                 get(appScope),
+                get(mainDispatcher),
+                get(ioDispatcher),
                 get(), get(), get(),
                 get(), get(), get(),
                 get(),
@@ -130,7 +136,8 @@ object PersonaSetup : ModuleSetup {
         single<IPreferenceRepository> {
             PreferenceRepository(
                 get<Context>().personaDataStore,
-                get(appScope)
+                get(appScope),
+                get(defaultDispatcher),
             )
         }
 
@@ -138,6 +145,7 @@ object PersonaSetup : ModuleSetup {
         single {
             JSMethodV2(
                 get(appScope),
+                get(defaultDispatcher),
                 get(),
                 get(),
                 get(), get(),

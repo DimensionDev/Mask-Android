@@ -33,12 +33,10 @@ import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.services.WalletServices
 import com.dimension.maskbook.wallet.services.model.WCSupportedWallet
 import com.dimension.maskbook.wallet.walletconnect.WCResponder
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 import java.util.UUID
 
 data class WCWallet(
@@ -89,7 +87,7 @@ data class WCWallet(
 
 interface IWalletConnectRepository {
     val supportedWallets: Flow<List<WCWallet>>
-    fun init()
+    suspend fun init()
     // returns id of first wallet
     suspend fun saveAccounts(responder: WCResponder, platformType: CoinPlatformType): String?
 }
@@ -97,19 +95,16 @@ interface IWalletConnectRepository {
 class WalletConnectRepository(
     private val walletServices: WalletServices,
     private val database: AppDatabase,
-    private val scope: CoroutineScope,
 ) : IWalletConnectRepository {
 
-    override fun init() {
-        scope.launch {
-            try {
-                refreshSupportedWallets()
-            } catch (e: Throwable) {
-                if (BuildConfig.DEBUG) e.printStackTrace()
-                // retry
-                delay(30000)
-                refreshSupportedWallets()
-            }
+    override suspend fun init() {
+        try {
+            refreshSupportedWallets()
+        } catch (e: Throwable) {
+            if (BuildConfig.DEBUG) e.printStackTrace()
+            // retry
+            delay(30000)
+            refreshSupportedWallets()
         }
     }
 

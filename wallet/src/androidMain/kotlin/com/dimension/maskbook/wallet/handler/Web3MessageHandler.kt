@@ -36,147 +36,145 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.NullNode
 import com.fasterxml.jackson.databind.node.ObjectNode
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.coroutines.launch
 import org.web3j.protocol.core.Request
 import org.web3j.protocol.core.Response
 
 internal class Web3MessageHandler(
     private val walletRepository: IWalletRepository,
-    private val scope: CoroutineScope,
 ) {
-    fun handle(request: Web3Request) {
-        scope.launch {
-            val payload = request.payload
-            if (payload?.id != null) {
-                when (payload.method) {
-                    "getRPCurl" -> {
-                        walletRepository.dWebData.firstOrNull()?.chainType?.endpoint?.let {
-                            request.message.response(
-                                Web3SendResponse.success(request, mapOf("rpcURL" to it))
-                            )
-                        }
-                    }
-                    "eth_coinbase" -> {
-                        val address = walletRepository.currentWallet.firstOrNull()?.address ?: ""
+    suspend fun handle(request: Web3Request) {
+        val payload = request.payload
+        if (payload?.id != null) {
+            when (payload.method) {
+                "getRPCurl" -> {
+                    walletRepository.dWebData.firstOrNull()?.chainType?.endpoint?.let {
                         request.message.response(
-                            Web3SendResponse.success(
-                                request,
-                                mapOf("coinbase" to address)
-                            )
+                            Web3SendResponse.success(request, mapOf("rpcURL" to it))
                         )
                     }
-                    "eth_getAccounts", "eth_accounts" -> {
-                        val address = walletRepository.currentWallet.firstOrNull()?.address
-                        request.message.response(
-                            Web3SendResponse.success(
-                                request,
-                                listOfNotNull(address)
-                            )
+                }
+                "eth_coinbase" -> {
+                    val address = walletRepository.currentWallet.firstOrNull()?.address ?: ""
+                    request.message.response(
+                        Web3SendResponse.success(
+                            request,
+                            mapOf("coinbase" to address)
                         )
-                    }
-                    "eth_sendTransaction" -> {
-                        val dataRaw = payload.params.firstOrNull()
-                            ?.decodeJson<SendTransactionData>()
-                            ?.encodeJson() ?: return@launch
-                        val requestRaw = SendTokenRequest(
-                            messageId = request.id,
-                            payloadId = request.payload.id,
-                            jsonrpc = request.payload.jsonrpc,
-                        ).encodeJson()
-                        Navigator.navigate(WalletRoute.SendTokenConfirm(dataRaw, requestRaw))
-                    }
-                    "personal_sign" -> {
-                        val message = payload.params.getOrNull(0)?.normalized as? String
-                            ?: return@launch
-                        val fromAddress = payload.params.getOrNull(1)?.normalized as? String
-                            ?: return@launch
-                        val hex = walletRepository.signMessage(message, fromAddress)
-                            ?: return@launch
-                        request.message.response(
-                            Web3SendResponse.success(
-                                request,
-                                listOfNotNull(hex)
-                            )
+                    )
+                }
+                "eth_getAccounts", "eth_accounts" -> {
+                    val address = walletRepository.currentWallet.firstOrNull()?.address
+                    request.message.response(
+                        Web3SendResponse.success(
+                            request,
+                            listOfNotNull(address)
                         )
-                    }
-                    else -> {
-                        val method = payload.method
-                        val chainType =
-                            walletRepository.dWebData.firstOrNull()?.chainType ?: return@launch
-                        val service = chainType.httpService
-                        try {
-                            val response = service.send(
-                                Request(
-                                    method,
-                                    payload.params.map { it.normalized },
-                                    service,
-                                    JsonResponse::class.java
-                                ),
+                    )
+                }
+                "eth_sendTransaction" -> {
+                    val dataRaw = payload.params.firstOrNull()
+                        ?.decodeJson<SendTransactionData>()
+                        ?.encodeJson() ?: return
+                    val requestRaw = SendTokenRequest(
+                        messageId = request.id,
+                        payloadId = request.payload.id,
+                        jsonrpc = request.payload.jsonrpc,
+                    ).encodeJson()
+                    Navigator.navigate(WalletRoute.SendTokenConfirm(dataRaw, requestRaw))
+                }
+                "personal_sign" -> {
+                    val message = payload.params.getOrNull(0)?.normalized as? String
+                        ?: return
+                    val fromAddress = payload.params.getOrNull(1)?.normalized as? String
+                        ?: return
+                    val hex = walletRepository.signMessage(message, fromAddress)
+                        ?: return
+                    request.message.response(
+                        Web3SendResponse.success(
+                            request,
+                            listOfNotNull(hex)
+                        )
+                    )
+                }
+                else -> {
+                    val method = payload.method
+                    val chainType =
+                        walletRepository.dWebData.firstOrNull()?.chainType ?: return
+                    val service = chainType.httpService
+                    try {
+                        val response = service.send(
+                            Request(
+                                method,
+                                payload.params.map { it.normalized },
+                                service,
                                 JsonResponse::class.java
-                            )
-                            val result = response?.result
-                            if (result == null) {
-                                request.message.response(
-                                    Web3SendResponse.error(
-                                        request,
-                                        "No response"
-                                    )
-                                )
-                            } else {
-                                request.message.response(
-                                    Web3SendResponse.success(
-                                        request,
-                                        when (result) {
-                                            is NullNode -> null
-                                            is ObjectNode -> ObjectMapper().convertValue(
-                                                result,
-                                                object : TypeReference<Map<String, Any>>() {},
-                                            )
-                                            is ArrayNode -> ObjectMapper().convertValue(
-                                                result,
-                                                object : TypeReference<List<Any>>() {},
-                                            )
-                                            else -> result.asText()
-                                        }
-                                    )
-                                )
-                            }
-                        } catch (e: Throwable) {
-                            e.printStackTrace()
+                            ),
+                            JsonResponse::class.java
+                        )
+                        val result = response?.result
+                        if (result == null) {
                             request.message.response(
                                 Web3SendResponse.error(
                                     request,
-                                    e.message ?: "error"
+                                    "No response"
+                                )
+                            )
+                        } else {
+                            request.message.response(
+                                Web3SendResponse.success(
+                                    request,
+                                    when (result) {
+                                        is NullNode -> null
+                                        is ObjectNode -> ObjectMapper().convertValue(
+                                            result,
+                                            object : TypeReference<Map<String, Any>>() {},
+                                        )
+                                        is ArrayNode -> ObjectMapper().convertValue(
+                                            result,
+                                            object : TypeReference<List<Any>>() {},
+                                        )
+                                        else -> result.asText()
+                                    }
                                 )
                             )
                         }
+                    } catch (e: Throwable) {
+                        e.printStackTrace()
+                        request.message.response(
+                            Web3SendResponse.error(
+                                request,
+                                e.message ?: "error"
+                            )
+                        )
                     }
                 }
             }
         }
     }
-}
 
-private inline fun <reified T : Any> Web3SendResponse.Companion.success(request: Web3Request, result: T?): Map<String, Any?> {
-    requireNotNull(request.payload)
-    return success(
-        messageId = request.id,
-        jsonrpc = request.payload.jsonrpc,
-        payloadId = request.payload.id,
-        result = result
-    )
-}
+    private inline fun <reified T : Any> Web3SendResponse.Companion.success(
+        request: Web3Request,
+        result: T?
+    ): Map<String, Any?> {
+        requireNotNull(request.payload)
+        return success(
+            messageId = request.id,
+            jsonrpc = request.payload.jsonrpc,
+            payloadId = request.payload.id,
+            result = result
+        )
+    }
 
-private fun Web3SendResponse.Companion.error(request: Web3Request, error: String): Map<String, Any?> {
-    requireNotNull(request.payload)
-    return error(
-        messageId = request.id,
-        jsonrpc = request.payload.jsonrpc,
-        payloadId = request.payload.id,
-        error = error
-    )
-}
+    private fun Web3SendResponse.Companion.error(request: Web3Request, error: String): Map<String, Any?> {
+        requireNotNull(request.payload)
+        return error(
+            messageId = request.id,
+            jsonrpc = request.payload.jsonrpc,
+            payloadId = request.payload.id,
+            error = error
+        )
+    }
 
-class JsonResponse : Response<JsonNode>()
+    class JsonResponse : Response<JsonNode>()
+}

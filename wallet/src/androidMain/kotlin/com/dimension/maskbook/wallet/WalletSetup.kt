@@ -113,7 +113,6 @@ import com.dimension.maskbook.wallet.walletconnect.v1.server.WalletConnectServer
 import com.google.accompanist.navigation.animation.navigation
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asExecutor
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -144,9 +143,10 @@ object WalletSetup : ModuleSetup {
 
     override fun dependencyInject() = module {
         single {
+            val executor = get<CoroutineDispatcher>(ioDispatcher).asExecutor()
             Room.databaseBuilder(get(), AppDatabase::class.java, "maskbook")
-                .setQueryExecutor(Dispatchers.IO.asExecutor())
-                .setTransactionExecutor(Dispatchers.IO.asExecutor())
+                .setQueryExecutor(executor)
+                .setTransactionExecutor(executor)
                 .addMigrations(
                     RoomMigrations.MIGRATION_6_7,
                     RoomMigrations.MIGRATION_7_8,
@@ -203,18 +203,25 @@ private fun initEvent(koin: Koin) {
 }
 
 private fun initRepository(koin: Koin) {
-    koin.get<IWalletRepository>().init()
-    koin.get<IWalletConnectRepository>().init()
+    val scope = koin.get<CoroutineScope>(appScope)
+    val dispatcher = koin.get<CoroutineDispatcher>(ioDispatcher)
+
+    scope.launch(dispatcher) {
+        koin.get<IWalletRepository>().init()
+    }
+    scope.launch(dispatcher) {
+        koin.get<IWalletConnectRepository>().init()
+    }
 }
 
 private fun initWalletConnect(koin: Koin) {
     val appScope = koin.get<CoroutineScope>(appScope)
-    val ioDispatcher = koin.get<CoroutineDispatcher>(ioDispatcher)
+    val dispatcher = koin.get<CoroutineDispatcher>(ioDispatcher)
     val walletRepository = koin.get<IWalletRepository>()
 
     koin.get<WalletConnectClientManager>()
         .initSessions { address ->
-            appScope.launch(ioDispatcher) {
+            appScope.launch(dispatcher) {
                 walletRepository.findWalletByAddress(address)?.let { wallet ->
                     walletRepository.deleteWallet(wallet.id)
                 }
@@ -237,21 +244,22 @@ private fun Module.provideRepository() {
     single<IWalletRepository> {
         WalletRepository(
             get<Context>().walletDataStore,
+            get(appScope),
+            get(ioDispatcher),
             get(),
             get(),
             get(),
             get(),
-            get(appScope)
         )
     }
     single { JSMethod(get()) }
-    single { Web3MessageHandler(get(), get(appScope)) }
+    single { Web3MessageHandler(get()) }
     single<ICollectibleRepository> { CollectibleRepository(get(), get()) }
     single<ITransactionRepository> { TransactionRepository(get(), get()) }
     single<ITokenRepository> { TokenRepository(get()) }
-    single<ISendHistoryRepository> { SendHistoryRepository(get(), get(appScope)) }
-    single<IWalletContactRepository> { WalletContactRepository(get(), get(appScope)) }
-    single<IWalletConnectRepository> { WalletConnectRepository(get(), get(), get(appScope)) }
+    single<ISendHistoryRepository> { SendHistoryRepository(get(), get(ioDispatcher)) }
+    single<IWalletContactRepository> { WalletContactRepository(get(), get(ioDispatcher)) }
+    single<IWalletConnectRepository> { WalletConnectRepository(get(), get()) }
 }
 
 private fun Module.provideUseCase() {

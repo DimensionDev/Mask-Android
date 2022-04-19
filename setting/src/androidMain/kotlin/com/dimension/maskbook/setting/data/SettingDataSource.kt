@@ -27,6 +27,7 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -42,7 +43,8 @@ val Context.settingsDataStore: DataStore<Preferences> by preferencesDataStore(na
 
 class SettingDataSource(
     private val dataStore: DataStore<Preferences>,
-    private val scope: CoroutineScope,
+    private val appScope: CoroutineScope,
+    private val dispatcher: CoroutineDispatcher,
 ) {
     val biometricEnabled: Flow<Boolean>
         get() = dataStore.data.map {
@@ -69,7 +71,7 @@ class SettingDataSource(
     }
 
     fun setPaymentPassword(value: String) {
-        scope.launch {
+        appScope.launch(dispatcher) {
             dataStore.edit {
                 it[PaymentPasswordKey] = value
             }
@@ -77,7 +79,7 @@ class SettingDataSource(
     }
 
     fun setBackupPassword(value: String) {
-        scope.launch {
+        appScope.launch(dispatcher) {
             dataStore.edit {
                 it[BackupPasswordKey] = value
             }
@@ -85,7 +87,7 @@ class SettingDataSource(
     }
 
     fun setShouldShowLegalScene(value: Boolean) {
-        scope.launch {
+        appScope.launch(dispatcher) {
             dataStore.edit {
                 it[ShouldShowLegalSceneKey] = value
             }
@@ -93,7 +95,7 @@ class SettingDataSource(
     }
 
     fun setBiometricEnabled(value: Boolean) {
-        scope.launch {
+        appScope.launch(dispatcher) {
             dataStore.edit {
                 it[BiometricEnabledKey] = value
             }
@@ -101,7 +103,7 @@ class SettingDataSource(
     }
 
     fun setRegisterEmail(value: String) {
-        scope.launch {
+        appScope.launch(dispatcher) {
             dataStore.edit {
                 it[RegisterEmail] = value
             }
@@ -109,7 +111,7 @@ class SettingDataSource(
     }
 
     fun setRegisterPhone(value: String) {
-        scope.launch {
+        appScope.launch(dispatcher) {
             dataStore.edit {
                 it[RegisterPhone] = value
             }

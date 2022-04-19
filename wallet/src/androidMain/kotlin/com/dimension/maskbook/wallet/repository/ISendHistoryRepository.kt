@@ -22,7 +22,7 @@ package com.dimension.maskbook.wallet.repository
 
 import com.dimension.maskbook.wallet.db.AppDatabase
 import com.dimension.maskbook.wallet.db.model.DbSendHistory
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
@@ -40,7 +40,7 @@ interface ISendHistoryRepository {
 
 class SendHistoryRepository(
     private val database: AppDatabase,
-    private val scope: CoroutineScope,
+    private val dispatcher: CoroutineDispatcher,
 ) : ISendHistoryRepository {
     override val recent: Flow<List<SearchAddressData>>
         get() = database.sendHistoryDao().getAll().map { list ->
@@ -49,7 +49,7 @@ class SendHistoryRepository(
         }
 
     override suspend fun addOrUpdate(address: String, name: String) {
-        withContext(scope.coroutineContext) {
+        withContext(dispatcher) {
             with(database.sendHistoryDao()) {
                 val currentTime = System.currentTimeMillis()
                 if (contains(address) > 0) {

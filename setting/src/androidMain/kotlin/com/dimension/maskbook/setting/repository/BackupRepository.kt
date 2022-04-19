@@ -35,7 +35,7 @@ import com.dimension.maskbook.setting.services.model.Scenario
 import com.dimension.maskbook.setting.services.model.SendCodeBody
 import com.dimension.maskbook.setting.services.model.UploadBody
 import com.dimension.maskbook.setting.services.model.ValidateCodeBody
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.builtins.serializer
@@ -56,10 +56,10 @@ class BackupRepository(
     private val backupServices: BackupServices,
     private val cacheDir: File,
     private val contentResolver: ContentResolver,
-    private val scope: CoroutineScope,
+    private val dispatcher: CoroutineDispatcher,
 ) {
     suspend fun sendPhoneCode(phone: String) {
-        withContext(scope.coroutineContext) {
+        withContext(dispatcher) {
             backupServices.sendCode(
                 SendCodeBody(
                     account_type = AccountType.phone,
@@ -72,7 +72,7 @@ class BackupRepository(
     }
 
     suspend fun sendEmailCode(email: String) {
-        withContext(scope.coroutineContext) {
+        withContext(dispatcher) {
             backupServices.sendCode(
                 SendCodeBody(
                     account_type = AccountType.email,
@@ -85,7 +85,7 @@ class BackupRepository(
     }
 
     suspend fun validatePhoneCode(phone: String, code: String) {
-        withContext(scope.coroutineContext) {
+        withContext(dispatcher) {
             backupServices.validateCode(
                 ValidateCodeBody(
                     code = code,
@@ -97,7 +97,7 @@ class BackupRepository(
     }
 
     suspend fun validateEmailCode(email: String, code: String) {
-        withContext(scope.coroutineContext) {
+        withContext(dispatcher) {
             backupServices.validateCode(
                 ValidateCodeBody(
                     code = code,
@@ -149,7 +149,7 @@ class BackupRepository(
         }
 
     suspend fun downloadBackupWithEmail(email: String, code: String) =
-        withContext(scope.coroutineContext) {
+        withContext(dispatcher) {
             val response = backupServices.download(
                 ValidateCodeBody(
                     code = code,
@@ -167,7 +167,7 @@ class BackupRepository(
         }
 
     suspend fun downloadBackupWithPhone(phone: String, code: String) =
-        withContext(scope.coroutineContext) {
+        withContext(dispatcher) {
             val response = backupServices.download(
                 ValidateCodeBody(
                     code = code,
@@ -184,7 +184,7 @@ class BackupRepository(
             )
         }
 
-    private suspend fun downloadFile(url: String) = withContext(scope.coroutineContext) {
+    private suspend fun downloadFile(url: String) = withContext(dispatcher) {
         val stream = OkHttpClient.Builder()
             .build()
             .newCall(
@@ -212,7 +212,7 @@ class BackupRepository(
         account: String,
         abstract: String,
         content: BackupMetaFile,
-    ) = withContext(scope.coroutineContext) {
+    ) = withContext(dispatcher) {
         val response = backupServices.upload(
             UploadBody(
                 code = code,

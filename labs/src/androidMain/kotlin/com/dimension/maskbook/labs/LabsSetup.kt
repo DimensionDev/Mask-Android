@@ -25,6 +25,8 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import com.dimension.maskbook.common.ModuleSetup
 import com.dimension.maskbook.common.di.scope.appScope
+import com.dimension.maskbook.common.di.scope.defaultDispatcher
+import com.dimension.maskbook.common.di.scope.ioDispatcher
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.labs.data.JSMethod
 import com.dimension.maskbook.labs.data.RedPacketMethod
@@ -50,12 +52,29 @@ object LabsSetup : ModuleSetup {
     }
 
     override fun dependencyInject() = module {
-        single<IAppRepository> { AppRepository(get(), get(appScope)) }
-        single<IPreferenceRepository> {
-            PreferenceRepository(get<Context>().labsDataStore, get(appScope))
+        single<IAppRepository> {
+            AppRepository(
+                get(appScope),
+                get(ioDispatcher),
+                get()
+            )
         }
-        single { JSMethod(get()) }
-        single { RedPacketMethod(get(appScope), get()) }
+        single<IPreferenceRepository> {
+            PreferenceRepository(
+                get<Context>().labsDataStore,
+                get(appScope),
+                get(defaultDispatcher),
+            )
+        }
+        single {
+            JSMethod(get())
+        }
+        single {
+            RedPacketMethod(
+                get(appScope),
+                get(defaultDispatcher), get()
+            )
+        }
 
         single { LabsTabScreen() } bind TabScreen::class
 
@@ -66,6 +85,6 @@ object LabsSetup : ModuleSetup {
 
     override fun onExtensionReady(koin: Koin) {
         koin.get<IAppRepository>().init()
-        koin.get<RedPacketMethod>().startSubscribe()
+        koin.get<RedPacketMethod>().startCollect()
     }
 }

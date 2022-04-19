@@ -25,6 +25,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import com.dimension.maskbook.common.ModuleSetup
 import com.dimension.maskbook.common.di.scope.appScope
+import com.dimension.maskbook.common.di.scope.defaultDispatcher
 import com.dimension.maskbook.common.di.scope.ioDispatcher
 import com.dimension.maskbook.common.route.Navigator
 import com.dimension.maskbook.entry.data.JSMethod
@@ -45,8 +46,16 @@ object EntrySetup : ModuleSetup {
     }
 
     override fun dependencyInject() = module {
-        single { EntryRepository(get<Context>().entryDataStore, get(appScope)) }
-        single { JSMethod(get()) }
+        single {
+            EntryRepository(
+                get(appScope),
+                get(defaultDispatcher),
+                get<Context>().entryDataStore
+            )
+        }
+        single {
+            JSMethod(get())
+        }
     }
 
     override fun onExtensionReady(koin: Koin) {

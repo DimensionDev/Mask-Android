@@ -59,14 +59,17 @@ import com.dimension.maskbook.persona.model.options.UpdateProfileOptions
 import com.dimension.maskbook.persona.model.options.UpdateRelationOptions
 import com.dimension.maskbook.persona.repository.IPersonaRepository
 import com.dimension.maskbook.persona.repository.IPreferenceRepository
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class JSMethodV2(
-    private val scope: CoroutineScope,
+    private val appScope: CoroutineScope,
+    private val dispatcher: CoroutineDispatcher,
     private val services: ExtensionServices,
     private val database: PersonaDatabase,
     private val personaRepository: IPersonaRepository,
@@ -77,7 +80,7 @@ class JSMethodV2(
     private val postDataSource: JsPostDataSource,
 ) {
     fun startSubscribe() {
-        scope.launch {
+        appScope.launch(dispatcher) {
             if (preferenceRepository.isMigratorIndexedDb.first()) {
                 return@launch
             }
@@ -98,7 +101,8 @@ class JSMethodV2(
                     subscribeWithPost(it) ||
                     subscribeWithHelper(it)
             }
-            .launchIn(scope)
+            .flowOn(dispatcher)
+            .launchIn(appScope)
     }
 
     // Persona
@@ -121,7 +125,8 @@ class JSMethodV2(
                 return message.responseSuccess(personaDataSource.queryPersona(options))
             }
             queryPersonaByProfile -> {
-                val options = message.decodeOptions<ParamOptions<QueryPersonaByProfileOptions>>()?.options ?: return true
+                val options =
+                    message.decodeOptions<ParamOptions<QueryPersonaByProfileOptions>>()?.options ?: return true
                 return message.responseSuccess(personaDataSource.queryPersonaByProfile(options))
             }
             queryPersonas -> {

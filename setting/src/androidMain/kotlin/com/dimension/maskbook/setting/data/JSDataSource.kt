@@ -23,6 +23,7 @@ package com.dimension.maskbook.setting.data
 import com.dimension.maskbook.setting.export.model.Appearance
 import com.dimension.maskbook.setting.export.model.DataProvider
 import com.dimension.maskbook.setting.export.model.Language
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -32,7 +33,8 @@ import kotlinx.coroutines.launch
 
 internal class JSDataSource(
     private val jsMethod: JSMethod,
-    private val scope: CoroutineScope,
+    private val appScope: CoroutineScope,
+    private val dispatcher: CoroutineDispatcher,
 ) {
     private val _appearance = MutableStateFlow(Appearance.default)
     private val _dataProvider = MutableStateFlow(DataProvider.COIN_GECKO)
@@ -43,28 +45,28 @@ internal class JSDataSource(
     val dataProvider = _dataProvider.asSharedFlow()
 
     fun setLanguage(language: Language) {
-        scope.launch {
+        appScope.launch(dispatcher) {
             jsMethod.setLanguage(language)
             _language.value = jsMethod.getLanguage()
         }
     }
 
     fun setAppearance(appearance: Appearance) {
-        scope.launch {
+        appScope.launch(dispatcher) {
             jsMethod.setTheme(appearance)
             _appearance.value = jsMethod.getTheme()
         }
     }
 
     fun setDataProvider(dataProvider: DataProvider) {
-        scope.launch {
+        appScope.launch(dispatcher) {
             jsMethod.setTrendingDataSource(dataProvider)
             _dataProvider.value = jsMethod.getTrendingDataSource()
         }
     }
 
     fun initData() {
-        scope.launch {
+        appScope.launch(dispatcher) {
             awaitAll(
                 async { _language.value = jsMethod.getLanguage() },
                 async { _appearance.value = jsMethod.getTheme() },

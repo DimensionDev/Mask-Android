@@ -29,6 +29,7 @@ import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import com.dimension.maskbook.common.ModuleSetup
 import com.dimension.maskbook.common.di.scope.appScope
+import com.dimension.maskbook.common.di.scope.ioDispatcher
 import com.dimension.maskbook.common.ext.navigateToHome
 import com.dimension.maskbook.common.gecko.WebContentController
 import com.dimension.maskbook.common.route.Deeplinks
@@ -68,11 +69,21 @@ object ExtensionSetup : ModuleSetup {
     }
 
     override fun dependencyInject() = module {
-        single { WebContentController(get(), get(appScope)) }
-        single { ExtensionRepository(get(), get(appScope)) }
-        single<ExtensionServices> { ExtensionServicesImpl(get(), get(), get()) }
-        single { BackgroundMessageChannel(get(), get(appScope)) }
-        single { ContentMessageChannel(get(), get(appScope)) }
+        single {
+            WebContentController(get(), get(appScope), get(ioDispatcher))
+        }
+        single {
+            ExtensionRepository(get(appScope), get())
+        }
+        single<ExtensionServices> {
+            ExtensionServicesImpl(get(), get(), get())
+        }
+        single {
+            BackgroundMessageChannel(get(), get(appScope), get(ioDispatcher))
+        }
+        single {
+            ContentMessageChannel(get(), get(appScope), get(ioDispatcher))
+        }
     }
 
     override fun onExtensionReady(koin: Koin) {

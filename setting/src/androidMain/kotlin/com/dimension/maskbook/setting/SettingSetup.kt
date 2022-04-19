@@ -26,6 +26,8 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navigation
 import com.dimension.maskbook.common.ModuleSetup
 import com.dimension.maskbook.common.di.scope.appScope
+import com.dimension.maskbook.common.di.scope.defaultDispatcher
+import com.dimension.maskbook.common.di.scope.ioDispatcher
 import com.dimension.maskbook.common.retrofit.retrofit
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.setting.data.JSDataSource
@@ -57,6 +59,7 @@ import com.dimension.maskbook.setting.viewmodel.PhoneSetupViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.Koin
 import org.koin.dsl.bind
+import org.koin.dsl.binds
 import org.koin.dsl.module
 
 object SettingSetup : ModuleSetup {
@@ -75,26 +78,47 @@ object SettingSetup : ModuleSetup {
             retrofit("https://vaalh28dbi.execute-api.ap-east-1.amazonaws.com")
         }
         single<ISettingsRepository> {
-            SettingsRepository(get(), get(), get(), get())
+            SettingsRepository(
+                get(defaultDispatcher),
+                get(),
+                get(),
+                get(),
+                get()
+            )
         }
         single {
             BackupRepository(
                 get(),
                 get<Context>().cacheDir,
                 get<Context>().contentResolver,
-                get(appScope)
+                get(defaultDispatcher),
             )
         }
-        single<SettingServices> {
+        single {
             SettingServicesImpl(
                 get(),
-                get()
+                get(),
             )
-        } bind com.dimension.maskbook.setting.export.BackupServices::class
+        } binds arrayOf(
+            SettingServices::class,
+            com.dimension.maskbook.setting.export.BackupServices::class,
+        )
         single { SettingsTabScreen() } bind TabScreen::class
-        single { JSDataSource(get(), get(appScope)) }
+        single {
+            JSDataSource(
+                get(),
+                get(appScope),
+                get(ioDispatcher),
+            )
+        }
         single { JSMethod(get()) }
-        single { SettingDataSource(get<Context>().settingsDataStore, get(appScope)) }
+        single {
+            SettingDataSource(
+                get<Context>().settingsDataStore,
+                get(appScope),
+                get(defaultDispatcher),
+            )
+        }
 
         viewModel { LanguageSettingsViewModel(get()) }
         viewModel { AppearanceSettingsViewModel(get()) }

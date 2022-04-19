@@ -26,20 +26,21 @@ import com.dimension.maskbook.common.di.scope.ioDispatcher
 import com.dimension.maskbook.common.di.scope.mainDispatcher
 import com.dimension.maskbook.common.di.scope.mainImmediateDispatcher
 import com.dimension.maskbook.common.util.coroutineExceptionHandler
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import org.koin.core.module.Module
 
-fun Module.coroutinesModule() {
+internal fun Module.coroutinesModule() {
     single(defaultDispatcher) { Dispatchers.Default }
     single(ioDispatcher) { Dispatchers.IO }
-    single(mainDispatcher) { Dispatchers.Main }
-    single(mainImmediateDispatcher) { Dispatchers.Main.immediate }
+    single<CoroutineDispatcher>(mainDispatcher) { Dispatchers.Main }
+    single<CoroutineDispatcher>(mainImmediateDispatcher) { Dispatchers.Main.immediate }
 
     single(appScope) {
         CoroutineScope(
-            coroutineExceptionHandler + SupervisorJob() + Dispatchers.IO
+            coroutineExceptionHandler + SupervisorJob()
         )
     }
 }

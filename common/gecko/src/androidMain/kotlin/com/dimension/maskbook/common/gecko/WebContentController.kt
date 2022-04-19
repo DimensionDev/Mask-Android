@@ -25,6 +25,7 @@ import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import androidx.fragment.app.FragmentActivity
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -34,6 +35,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
@@ -91,6 +93,7 @@ private class MessageHolder : MessageHandler {
 class WebContentController(
     context: Context,
     private val scope: CoroutineScope,
+    private val dispatcher: CoroutineDispatcher,
     var onNavigate: (String) -> Boolean = { true },
 ) : Closeable {
     private val _browserState = MutableStateFlow<BrowserState?>(null)
@@ -189,12 +192,12 @@ class WebContentController(
                             }
                         }
                     }
-                }.launchIn(scope)
+                }.flowOn(dispatcher).launchIn(scope)
                 _browserState.mapNotNull { it?.closedTabs }.onEach { list ->
                     list.forEach { tab ->
                         _contentMessageHolders.value -= tab.id
                     }
-                }.launchIn(scope)
+                }.flowOn(dispatcher).launchIn(scope)
             }
         )
     }
@@ -233,7 +236,7 @@ class WebContentController(
 
     fun sendContentMessage(message: JSONObject) {
         Log.i(TAG, "sendContentMessage: $message")
-        scope.launch {
+        scope.launch(dispatcher) {
             _contentMessageHolders.firstOrNull()?.let { holders ->
                 _activeTabId.firstOrNull()?.let { tabId ->
                     holders[tabId]?.sendMessage(message)

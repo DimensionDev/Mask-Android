@@ -23,7 +23,7 @@ package com.dimension.maskbook.wallet.repository
 import com.dimension.maskbook.wallet.db.AppDatabase
 import com.dimension.maskbook.wallet.db.model.DbSendHistoryWithContact
 import com.dimension.maskbook.wallet.db.model.DbWalletContact
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
@@ -62,14 +62,14 @@ interface IWalletContactRepository {
 
 class WalletContactRepository(
     private val database: AppDatabase,
-    private val scope: CoroutineScope,
+    private val dispatcher: CoroutineDispatcher,
 ) : IWalletContactRepository {
 
     override val contacts: Flow<List<SearchAddressData>>
         get() = database.walletContactDao().getAll().map { it.map { SearchAddressData.fromDb(it) } }
 
     override suspend fun addOrUpdate(address: String, name: String) {
-        withContext(scope.coroutineContext) {
+        withContext(dispatcher) {
             val item = database.walletContactDao().getByAddress(address = address)?.copy(name = name)
                 ?: DbWalletContact(UUID.randomUUID().toString(), name, address)
             database.walletContactDao().add(listOf(item))
