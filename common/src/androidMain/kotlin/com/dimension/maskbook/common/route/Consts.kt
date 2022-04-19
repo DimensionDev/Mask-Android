@@ -20,6 +20,7 @@
  */
 package com.dimension.maskbook.common.route
 
+import android.net.Uri
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.scaleIn
@@ -100,20 +101,26 @@ fun NavGraphBuilder.homeComposable(
     deepLinks: List<NavDeepLink> = emptyList(),
     content: @Composable AnimatedVisibilityScope.(NavBackStackEntry) -> Unit
 ) {
+    var isPopExtension = false
     composable(
         route = route,
         arguments = arguments,
         deepLinks = deepLinks,
         content = content,
         exitTransition = {
-            scaleOut(
-                targetScale = 0.9f,
-            )
+            isPopExtension = targetState.destination.hasDeepLink(Uri.parse(Deeplinks.WebContent(null)))
+            if (isPopExtension) {
+                scaleOut(
+                    targetScale = 0.9f,
+                )
+            } else null
         },
         popEnterTransition = {
-            scaleIn(
-                initialScale = 0.9f,
-            )
+            if (isPopExtension) {
+                scaleIn(
+                    initialScale = 0.9f,
+                )
+            } else null
         },
     )
 }

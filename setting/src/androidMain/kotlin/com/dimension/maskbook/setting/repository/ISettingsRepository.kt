@@ -35,6 +35,8 @@ interface ISettingsRepository {
     val paymentPassword: Flow<String>
     val backupPassword: Flow<String>
     val shouldShowLegalScene: Flow<Boolean>
+    val email: Flow<String>
+    val phone: Flow<String>
     fun setBiometricEnabled(value: Boolean)
     fun setLanguage(language: Language)
     fun setAppearance(appearance: Appearance)
@@ -54,6 +56,6 @@ interface ISettingsRepository {
     ): BackupMetaFile
 
     fun setShouldShowLegalScene(value: Boolean)
-    fun saveEmailForCurrentPersona(value: String)
-    fun savePhoneForCurrentPersona(value: String)
+    fun saveEmail(value: String)
+    fun savePhone(value: String)
 }

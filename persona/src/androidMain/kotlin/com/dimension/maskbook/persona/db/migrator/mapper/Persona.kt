@@ -39,8 +39,6 @@ fun IndexedDBPersona.toDbPersonaRecord(): DbPersonaRecord {
         initialized = !uninitialized,
         updatedAt = updatedAt,
         createdAt = createdAt,
-        email = "",
-        phone = "",
     )
 }
 

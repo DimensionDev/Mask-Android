@@ -182,9 +182,16 @@ fun BackupMetaFile.Persona.toIndexedDBPersona() = IndexedDBPersona(
     localKey = localKey?.encodeJsonElement(),
     linkedProfiles = linkedProfiles.map {
         it.key to IndexedDBPersona.LinkedProfileDetails(
-            connectionConfirmState = LinkedProfileDetailsState.valueOf(
+            connectionConfirmState = getLinkedProfileState(
                 it.value.connectionConfirmState
             )
         )
     }.toMap()
 )
+
+private fun getLinkedProfileState(value: String) = when (value) {
+    "confirmed" -> LinkedProfileDetailsState.Confirmed
+    "pending" -> LinkedProfileDetailsState.Pending
+    "denied" -> LinkedProfileDetailsState.Denied
+    else -> LinkedProfileDetailsState.Pending
+}

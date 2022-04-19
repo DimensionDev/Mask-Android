@@ -37,6 +37,8 @@ private val PaymentPasswordKey = stringPreferencesKey("payment_password")
 private val BackupPasswordKey = stringPreferencesKey("backup_password")
 private val BiometricEnabledKey = booleanPreferencesKey("biometric_enabled")
 private val ShouldShowLegalSceneKey = booleanPreferencesKey("ShowLegalSceneKey")
+private val RegisterEmail = stringPreferencesKey("RegisterEmail")
+private val RegisterPhone = stringPreferencesKey("RegisterPhone")
 val Context.settingsDataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
 class SettingDataSource(
@@ -58,6 +60,14 @@ class SettingDataSource(
 
     val shouldShowLegalScene: Flow<Boolean>
         get() = dataStore.data.map { it[ShouldShowLegalSceneKey] ?: true }
+
+    val email: Flow<String> = dataStore.data.map {
+        it[RegisterEmail] ?: ""
+    }
+
+    val phone: Flow<String> = dataStore.data.map {
+        it[RegisterPhone] ?: ""
+    }
 
     fun setPaymentPassword(value: String) {
         scope.launch {
@@ -87,6 +97,22 @@ class SettingDataSource(
         scope.launch {
             dataStore.edit {
                 it[BiometricEnabledKey] = value
+            }
+        }
+    }
+
+    fun setRegisterEmail(value: String) {
+        scope.launch {
+            dataStore.edit {
+                it[RegisterEmail] = value
+            }
+        }
+    }
+
+    fun setRegisterPhone(value: String) {
+        scope.launch {
+            dataStore.edit {
+                it[RegisterPhone] = value
             }
         }
     }

@@ -88,7 +88,7 @@ class BackupPasswordSettingsViewModel(
         ) { newPassword, newPasswordConfirm ->
             newPassword.isNotEmpty() &&
                 newPassword == newPasswordConfirm &&
-                Validator.isValidPasswordFormat(newPassword)
+                Validator.isValidBackupPasswordFormat(newPassword)
         }
     }
 

@@ -49,8 +49,6 @@ interface IPersonaRepository {
     suspend fun createPersonaFromPrivateKey(value: String, name: String)
     suspend fun backupPrivateKey(id: String): String
     fun init()
-    fun saveEmailForCurrentPersona(value: String)
-    fun savePhoneForCurrentPersona(value: String)
     fun setPlatform(platformType: PlatformType)
     fun setAvatarForCurrentPersona(avatar: Uri?)
     suspend fun createPersonaBackup(hasPrivateKeyOnly: Boolean): List<IndexedDBPersona>

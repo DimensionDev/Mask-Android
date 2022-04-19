@@ -132,22 +132,6 @@ internal class PersonaRepository(
         }
     }
 
-    override fun saveEmailForCurrentPersona(value: String) {
-        scope.launch {
-            currentPersona.firstOrNull()?.let { personaData ->
-                personaDataSource.updateEmail(personaData.identifier, value)
-            }
-        }
-    }
-
-    override fun savePhoneForCurrentPersona(value: String) {
-        scope.launch {
-            currentPersona.firstOrNull()?.let { personaData ->
-                personaDataSource.updatePhone(personaData.identifier, value)
-            }
-        }
-    }
-
     override suspend fun setCurrentPersona(id: String) {
         withContext(scope.coroutineContext) {
             if (id.isEmpty() || personaDataSource.getPersona(id) != null) {

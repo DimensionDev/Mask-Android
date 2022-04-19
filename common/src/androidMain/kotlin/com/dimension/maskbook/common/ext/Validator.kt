@@ -20,7 +20,6 @@
  */
 package com.dimension.maskbook.common.ext
 
-import com.dimension.maskbook.common.BuildConfig
 import org.web3j.crypto.WalletUtils
 import org.web3j.ens.EnsResolver
 
@@ -33,13 +32,31 @@ object Validator {
         return "^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9_-]+)+$".toRegex().matches(value)
     }
 
-    fun isValidPasswordFormat(value: String): Boolean {
-        return if (BuildConfig.DEBUG) {
-            true
-        } else {
-            "^(?=.{8,20}$)(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[^\\dA-Za-z]).*".toRegex()
-                .matches(value)
-        }
+    // at least 1 number, 1 uppercase letter, 1 lowercase letter and 1 special character with a length of 8-20 characters
+    fun isValidBackupPasswordFormat(value: String): Boolean {
+        return Regex(
+            "^" +
+                "(?=.{8,20}$)" + // 8-20 characters
+                "(?=.*\\d)" + // at least 1 digit
+                "(?=.*[a-z])" + // at least 1 lower case letter
+                "(?=.*[A-Z])" + // at least 1 upper case letter
+                "(?=.*[`~!@#\$%^&*()_\\-+=<>?:\"{}|,./;'\\[\\]\\\\·！￥…（）—《》？：“”【】、；‘，。])" + // match 1 special character
+                "(?=\\S+$)" + // no white spaces
+                ".*"
+        ).matches(value)
+    }
+
+    // 2 categories out of numbers, letters and special characters with a length of 8-20 characters
+    fun isValidPaymentPasswordFormat(value: String): Boolean {
+        return Regex(
+            "^" +
+                "(?=.{8,20}\$)" + // 8-20 characters
+                "(?!\\d+$)" + // match 1 digit
+                "(?![a-zA-Z]+$)" + // match 1 letter
+                "(?![`~!@#\$%^&*()_\\-+=<>?:\"{}|,./;'\\[\\]\\\\·！￥…（）—《》？：“”【】、；‘，。]+$)" + // match 1 special character
+                "(?=\\S+$)" + // no white spaces
+                ".*"
+        ).matches(value)
     }
 
     fun isMnemonic(value: String): Boolean {

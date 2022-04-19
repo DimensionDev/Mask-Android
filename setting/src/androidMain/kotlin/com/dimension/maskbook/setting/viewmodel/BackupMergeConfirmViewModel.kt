@@ -48,7 +48,7 @@ class BackupMergeConfirmViewModel(
 
     fun setBackupPassword(value: String) {
         _backupPassword.value = value
-        _passwordValid.value = Validator.isValidPasswordFormat(value)
+        _passwordValid.value = Validator.isValidBackupPasswordFormat(value)
     }
 
     fun confirm() = viewModelScope.launch {

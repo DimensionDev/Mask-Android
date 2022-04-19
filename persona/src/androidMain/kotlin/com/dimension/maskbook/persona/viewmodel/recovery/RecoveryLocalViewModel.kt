@@ -58,7 +58,7 @@ class RecoveryLocalViewModel(
     val passwordError = _passwordError.asStateIn(viewModelScope, false)
     private val _file = MutableStateFlow<BackupMetaFile?>(null)
     val file = _file.asStateIn(viewModelScope, null)
-    val passwordValid = password.map { Validator.isValidPasswordFormat(it) }
+    val passwordValid = password.map { Validator.isValidBackupPasswordFormat(it) }
     val paymentPassword by lazy {
         settingServices.paymentPassword
     }
@@ -99,6 +99,7 @@ class RecoveryLocalViewModel(
         try {
             _file.value?.let { backupServices.restoreBackup(it) }
         } catch (e: Throwable) {
+            e.printStackTrace()
         }
     }
 }
