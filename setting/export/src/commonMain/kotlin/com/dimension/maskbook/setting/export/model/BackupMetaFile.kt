@@ -35,23 +35,50 @@ import kotlinx.serialization.descriptors.buildClassSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
-data class MsgBoolean(val value: Boolean)
+data class DateWrapper(val value: Long)
 
-object MsgBooleanSerializer : KSerializer<MsgBoolean?> {
+object DateWrapperSerializer : KSerializer<DateWrapper> {
     private val msgPackDynamicSerializer = MsgPackDynamicSerializer()
-    override fun deserialize(decoder: Decoder): MsgBoolean? {
+    override fun deserialize(decoder: Decoder): DateWrapper {
+        return if (decoder is MsgPackTypeDecoder) {
+            when (
+                val result = msgPackDynamicSerializer.deserialize(decoder)
+            ) {
+                is Double -> DateWrapper(result.toLong())
+                is Long -> DateWrapper(result)
+                else -> throw IllegalArgumentException("Unknown type: $result")
+            }
+        } else {
+            val result = decoder.decodeString()
+            DateWrapper(result.toLongOrNull() ?: result.toDoubleOrNull()?.toLong() ?: throw IllegalArgumentException("Unknown type: $result"))
+        }
+    }
+
+    override val descriptor: SerialDescriptor =
+        PrimitiveSerialDescriptor("MsgBoolean", PrimitiveKind.INT)
+
+    override fun serialize(encoder: Encoder, value: DateWrapper) {
+        encoder.encodeLong(value.value)
+    }
+}
+
+data class BooleanWrapper(val value: Boolean)
+
+object BooleanWrapperSerializer : KSerializer<BooleanWrapper?> {
+    private val msgPackDynamicSerializer = MsgPackDynamicSerializer()
+    override fun deserialize(decoder: Decoder): BooleanWrapper? {
         return if (decoder is MsgPackTypeDecoder) {
             when (val result = msgPackDynamicSerializer.deserialize(decoder)) {
-                is Boolean -> MsgBoolean(value = result)
-                is Number -> MsgBoolean(value = result == 1)
+                is Boolean -> BooleanWrapper(value = result)
+                is Number -> BooleanWrapper(value = result == 1)
                 else -> throw IllegalArgumentException("Unknown type: $result")
             }
         } else {
             when (decoder.decodeString()) {
-                "true" -> MsgBoolean(value = true)
-                "false" -> MsgBoolean(value = false)
-                "1" -> MsgBoolean(value = true)
-                "0" -> MsgBoolean(value = false)
+                "true" -> BooleanWrapper(value = true)
+                "false" -> BooleanWrapper(value = false)
+                "1" -> BooleanWrapper(value = true)
+                "0" -> BooleanWrapper(value = false)
                 else -> throw IllegalArgumentException("Unknown type")
             }
         }
@@ -60,7 +87,7 @@ object MsgBooleanSerializer : KSerializer<MsgBoolean?> {
     override val descriptor: SerialDescriptor =
         PrimitiveSerialDescriptor("MsgBoolean", PrimitiveKind.STRING)
 
-    override fun serialize(encoder: Encoder, value: MsgBoolean?) {
+    override fun serialize(encoder: Encoder, value: BooleanWrapper?) {
         encoder.encodeBoolean(value?.value ?: false)
     }
 }
@@ -85,7 +112,8 @@ data class BackupMetaFile(
         val postCryptoKey: JsonWebKey? = null,
         @Serializable(with = RecipientsSerializer::class)
         val recipients: Recipients,
-        val foundAt: Long, // Unix timestamp
+        @Serializable(with = DateWrapperSerializer::class)
+        val foundAt: DateWrapper, // Unix timestamp
         val encryptBy: String? = null, // PersonaIdentifier.toText()
         val url: String? = null,
         val summary: String? = null,
@@ -175,14 +203,17 @@ data class BackupMetaFile(
         val publicKey: JsonWebKey? = null,
         val privateKey: JsonWebKey? = null,
         val mnemonic: Mnemonic? = null,
-        val updatedAt: Long,
-        val createdAt: Long,
+        @Serializable(with = DateWrapperSerializer::class)
+        val updatedAt: DateWrapper,
+        @Serializable(with = DateWrapperSerializer::class)
+        val createdAt: DateWrapper,
     )
 
     @Serializable
     data class Meta(
         val maskbookVersion: String,
-        val createdAt: Long,
+        @Serializable(with = DateWrapperSerializer::class)
+        val createdAt: DateWrapper,
         val version: Long,
         val type: String,
     ) {
@@ -191,8 +222,10 @@ data class BackupMetaFile(
 
     @Serializable
     data class Persona(
-        val updatedAt: Long,
-        val createdAt: Long,
+        @Serializable(with = DateWrapperSerializer::class)
+        val updatedAt: DateWrapper,
+        @Serializable(with = DateWrapperSerializer::class)
+        val createdAt: DateWrapper,
         val publicKey: JsonWebKey? = null,
         val identifier: String,
         @Serializable(with = LinkedProfilesSerializer::class)
@@ -320,8 +353,10 @@ data class BackupMetaFile(
     @Serializable
     data class Profile(
         val identifier: String,
-        val updatedAt: Long,
-        val createdAt: Long,
+        @Serializable(with = DateWrapperSerializer::class)
+        val updatedAt: DateWrapper,
+        @Serializable(with = DateWrapperSerializer::class)
+        val createdAt: DateWrapper,
         val nickname: String? = null,
         val linkedPersona: String? = null,
         val localKey: JsonWebKey? = null,
@@ -366,8 +401,8 @@ data class JsonWebKey(
     val use: String? = null,
     val key_ops: List<String>? = null,
     val alg: String? = null,
-    @Serializable(with = MsgBooleanSerializer::class)
-    val ext: MsgBoolean? = null,
+    @Serializable(with = BooleanWrapperSerializer::class)
+    val ext: BooleanWrapper? = null,
     val crv: String? = null,
     val x: String? = null,
     val y: String? = null,
