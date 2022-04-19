@@ -26,10 +26,8 @@ import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.setting.export.model.Appearance
 import com.dimension.maskbook.setting.repository.ISettingsRepository
 import kotlinx.coroutines.launch
-import kotlin.coroutines.CoroutineContext
 
 class AppearanceSettingsViewModel(
-    private val viewModelCoroutineContext: CoroutineContext,
     private val repository: ISettingsRepository,
 ) : ViewModel() {
     val appearance by lazy {
@@ -37,7 +35,7 @@ class AppearanceSettingsViewModel(
     }
 
     fun setAppearance(appearance: Appearance) {
-        viewModelScope.launch(viewModelCoroutineContext) {
+        viewModelScope.launch {
             repository.setAppearance(appearance = appearance)
         }
     }

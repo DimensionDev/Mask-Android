@@ -30,10 +30,8 @@ import com.dimension.maskbook.labs.export.model.AppKey
 import com.dimension.maskbook.labs.repository.IAppRepository
 import com.dimension.maskbook.labs.repository.IPreferenceRepository
 import com.dimension.maskbook.wallet.export.WalletServices
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import kotlin.coroutines.CoroutineContext
 
 data class PluginDisplayData(
     val key: AppKey,
@@ -96,7 +94,6 @@ private val displayDataList = listOf(
 )
 
 class PluginSettingsViewModel(
-    private val viewModelCoroutineContext: CoroutineContext,
     private val repository: IAppRepository,
     private val walletRepository: WalletServices,
     private val preferenceRepository: IPreferenceRepository,
@@ -111,7 +108,6 @@ class PluginSettingsViewModel(
                     )
                 }
             }
-            .flowOn(viewModelCoroutineContext)
             .asStateIn(viewModelScope, emptyList())
     }
 
@@ -120,7 +116,7 @@ class PluginSettingsViewModel(
     }
 
     fun setEnabled(key: AppKey, enabled: Boolean) {
-        viewModelScope.launch(viewModelCoroutineContext) {
+        viewModelScope.launch {
             repository.setEnabled(key, enabled)
         }
     }
@@ -131,7 +127,7 @@ class PluginSettingsViewModel(
     }
 
     fun setShowPluginSettingsTipDialog(bool: Boolean) {
-        viewModelScope.launch(viewModelCoroutineContext) {
+        viewModelScope.launch {
             preferenceRepository.setShowPluginSettingsTipDialog(bool)
         }
     }

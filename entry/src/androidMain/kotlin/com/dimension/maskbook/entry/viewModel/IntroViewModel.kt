@@ -24,15 +24,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.entry.repository.EntryRepository
 import kotlinx.coroutines.launch
-import kotlin.coroutines.CoroutineContext
 
 class IntroViewModel(
-    private val viewModelCoroutineContext: CoroutineContext,
     private val repository: EntryRepository,
 ) : ViewModel() {
 
     fun setShouldShowEntry(value: Boolean) {
-        viewModelScope.launch(viewModelCoroutineContext) {
+        viewModelScope.launch {
             repository.setShouldShowEntry(value)
         }
     }

@@ -33,7 +33,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import kotlin.coroutines.CoroutineContext
 
 data class AppDisplayData(
     val key: AppKey,
@@ -79,13 +78,12 @@ private val displayDataList = listOf(
 )
 
 class LabsViewModel(
-    private val viewModelCoroutineContext: CoroutineContext,
     private val repository: IAppRepository,
     private val walletRepository: WalletServices,
 ) : ViewModel() {
 
     init {
-        viewModelScope.launch(viewModelCoroutineContext) {
+        viewModelScope.launch {
             repository.init()
         }
     }

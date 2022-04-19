@@ -26,10 +26,8 @@ import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.setting.export.model.DataProvider
 import com.dimension.maskbook.setting.repository.ISettingsRepository
 import kotlinx.coroutines.launch
-import kotlin.coroutines.CoroutineContext
 
 class DataSourceSettingsViewModel(
-    private val viewModelCoroutineContext: CoroutineContext,
     private val repository: ISettingsRepository,
 ) : ViewModel() {
     val dataProvider by lazy {
@@ -37,7 +35,7 @@ class DataSourceSettingsViewModel(
     }
 
     fun setDataProvider(dataProvider: DataProvider) {
-        viewModelScope.launch(viewModelCoroutineContext) {
+        viewModelScope.launch {
             repository.setDataProvider(dataProvider = dataProvider)
         }
     }

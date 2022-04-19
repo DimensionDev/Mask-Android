@@ -29,7 +29,6 @@ import com.dimension.maskbook.common.di.scope.appScope
 import com.dimension.maskbook.common.di.scope.defaultDispatcher
 import com.dimension.maskbook.common.di.scope.ioDispatcher
 import com.dimension.maskbook.common.di.scope.preferenceCoroutineContext
-import com.dimension.maskbook.common.di.scope.viewModelCoroutineContext
 import com.dimension.maskbook.common.retrofit.retrofit
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.setting.data.JSDataSource
@@ -123,19 +122,18 @@ object SettingSetup : ModuleSetup {
             )
         }
 
-        viewModel { LanguageSettingsViewModel(get(viewModelCoroutineContext), get()) }
-        viewModel { AppearanceSettingsViewModel(get(viewModelCoroutineContext), get()) }
-        viewModel { DataSourceSettingsViewModel(get(viewModelCoroutineContext), get()) }
-        viewModel { PaymentPasswordSettingsViewModel(get(viewModelCoroutineContext), get()) }
-        viewModel { BackupPasswordSettingsViewModel(get(viewModelCoroutineContext), get()) }
-        viewModel { BackupLocalViewModel(get(viewModelCoroutineContext), get(), get()) }
+        viewModel { LanguageSettingsViewModel(get()) }
+        viewModel { AppearanceSettingsViewModel(get()) }
+        viewModel { DataSourceSettingsViewModel(get()) }
+        viewModel { PaymentPasswordSettingsViewModel(get()) }
+        viewModel { BackupPasswordSettingsViewModel(get()) }
+        viewModel { BackupLocalViewModel(get(), get()) }
         viewModel { EmailSetupViewModel(get(), get()) }
         viewModel { PhoneSetupViewModel(get(), get()) }
         viewModel { EmailBackupViewModel(get()) }
         viewModel { PhoneBackupViewModel(get()) }
         viewModel { (onDone: () -> Unit, url: String, account: String) ->
             BackupMergeConfirmViewModel(
-                get(viewModelCoroutineContext),
                 get(), get(), get<Context>().contentResolver, onDone, url, account
             )
         }

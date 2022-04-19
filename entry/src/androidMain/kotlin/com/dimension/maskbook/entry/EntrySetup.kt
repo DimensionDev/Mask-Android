@@ -27,7 +27,6 @@ import com.dimension.maskbook.common.ModuleSetup
 import com.dimension.maskbook.common.di.scope.appScope
 import com.dimension.maskbook.common.di.scope.ioDispatcher
 import com.dimension.maskbook.common.di.scope.preferenceCoroutineContext
-import com.dimension.maskbook.common.di.scope.viewModelCoroutineContext
 import com.dimension.maskbook.common.route.Navigator
 import com.dimension.maskbook.entry.data.JSMethod
 import com.dimension.maskbook.entry.repository.EntryRepository
@@ -58,7 +57,7 @@ object EntrySetup : ModuleSetup {
         single {
             JSMethod(get())
         }
-        viewModel { IntroViewModel(get(viewModelCoroutineContext), get()) }
+        viewModel { IntroViewModel(get()) }
     }
 
     override fun onExtensionReady(koin: Koin) {

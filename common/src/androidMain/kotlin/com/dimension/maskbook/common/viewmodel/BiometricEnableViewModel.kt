@@ -26,10 +26,8 @@ import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.util.BiometricAuthenticator
 import com.dimension.maskbook.setting.export.SettingServices
 import kotlinx.coroutines.launch
-import kotlin.coroutines.CoroutineContext
 
 class BiometricEnableViewModel(
-    private val viewModelCoroutineContext: CoroutineContext,
     private val biometricAuthenticator: BiometricAuthenticator,
     private val repository: SettingServices,
 ) : ViewModel() {
@@ -53,7 +51,7 @@ class BiometricEnableViewModel(
     }
 
     fun setBiometricEnabled(enabled: Boolean) {
-        viewModelScope.launch(viewModelCoroutineContext) {
+        viewModelScope.launch {
             repository.setBiometricEnabled(enabled)
         }
     }

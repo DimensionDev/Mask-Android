@@ -27,7 +27,6 @@ import com.dimension.maskbook.common.ModuleSetup
 import com.dimension.maskbook.common.di.scope.appScope
 import com.dimension.maskbook.common.di.scope.ioDispatcher
 import com.dimension.maskbook.common.di.scope.preferenceCoroutineContext
-import com.dimension.maskbook.common.di.scope.viewModelCoroutineContext
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.labs.data.JSMethod
 import com.dimension.maskbook.labs.data.RedPacketMethod
@@ -74,8 +73,8 @@ object LabsSetup : ModuleSetup {
 
         single { LabsTabScreen() } bind TabScreen::class
 
-        viewModel { LabsViewModel(get(viewModelCoroutineContext), get(), get()) }
-        viewModel { PluginSettingsViewModel(get(viewModelCoroutineContext), get(), get(), get()) }
+        viewModel { LabsViewModel(get(), get()) }
+        viewModel { PluginSettingsViewModel(get(), get(), get()) }
         viewModel { (dataRaw: String, requestRaw: String?) -> LuckDropViewModel(dataRaw, requestRaw, get(), get()) }
     }
 

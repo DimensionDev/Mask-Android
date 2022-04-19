@@ -26,7 +26,6 @@ import com.dimension.maskbook.common.di.scope.ioDispatcher
 import com.dimension.maskbook.common.di.scope.mainDispatcher
 import com.dimension.maskbook.common.di.scope.mainImmediateDispatcher
 import com.dimension.maskbook.common.di.scope.preferenceCoroutineContext
-import com.dimension.maskbook.common.di.scope.viewModelCoroutineContext
 import com.dimension.maskbook.common.util.coroutineExceptionHandler
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
@@ -43,9 +42,6 @@ internal fun Module.coroutinesModule() {
 
     single(preferenceCoroutineContext) {
         NonCancellable + Dispatchers.Default
-    }
-    single(viewModelCoroutineContext) {
-        coroutineExceptionHandler + Dispatchers.Default
     }
 
     single(appScope) {
