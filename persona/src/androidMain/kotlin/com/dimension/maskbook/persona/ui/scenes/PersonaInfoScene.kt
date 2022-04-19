@@ -141,6 +141,12 @@ fun PersonaInfoScene(
         val contactItems by viewModel.items.collectAsState()
         val searchInput by viewModel.input.collectAsState()
 
+        LaunchedEffect(isSearchMode) {
+            if (!isSearchMode) {
+                viewModel.onInputChanged("")
+            }
+        }
+
         fun onInvite() {
             context.startActivity(
                 Intent().apply {
