@@ -45,6 +45,7 @@ class PersonaViewModel(
     }
     val personaList by lazy {
         personaRepository.personaList
+            .map { it.filter { persona -> persona.owned } }
             .asStateIn(viewModelScope, null)
     }
 

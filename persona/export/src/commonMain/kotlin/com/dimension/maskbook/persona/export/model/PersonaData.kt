@@ -24,4 +24,5 @@ data class PersonaData(
     val identifier: String,
     val name: String,
     val avatar: String?,
+    val owned: Boolean,
 )

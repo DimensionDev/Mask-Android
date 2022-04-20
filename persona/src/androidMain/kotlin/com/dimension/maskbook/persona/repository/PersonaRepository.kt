@@ -146,7 +146,7 @@ internal class PersonaRepository(
             val deletePersona = currentPersona.firstOrNull() ?: return@withContext
             // set current persona first ,avoid currentPersona emmit null if there has other personas
             val newCurrentPersona = personaDataSource.getPersonaList().firstOrNull {
-                it != deletePersona
+                it != deletePersona && it.owned
             }
             setCurrentPersona(newCurrentPersona?.identifier.orEmpty())
             personaDataSource.deletePersona(deletePersona.identifier)
