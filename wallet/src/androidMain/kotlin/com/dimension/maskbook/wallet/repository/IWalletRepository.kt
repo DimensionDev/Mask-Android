@@ -114,6 +114,7 @@ enum class TransactionType {
     Approve,
     Cancel,
     Unknown,
+    Mint,
 }
 
 enum class TransactionStatus {
