@@ -34,6 +34,7 @@ import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.descriptors.buildClassSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
+object BackupWrongPasswordException : Throwable()
 
 data class DateWrapper(val value: Long)
 
@@ -44,8 +45,7 @@ object DateWrapperSerializer : KSerializer<DateWrapper> {
             when (
                 val result = msgPackDynamicSerializer.deserialize(decoder)
             ) {
-                is Double -> DateWrapper(result.toLong())
-                is Long -> DateWrapper(result)
+                is Number -> DateWrapper(result.toLong())
                 else -> throw IllegalArgumentException("Unknown type: $result")
             }
         } else {
