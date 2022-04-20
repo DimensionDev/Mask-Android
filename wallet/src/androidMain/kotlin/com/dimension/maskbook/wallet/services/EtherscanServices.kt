@@ -23,16 +23,17 @@ package com.dimension.maskbook.wallet.services
 import com.dimension.maskbook.wallet.services.model.EtherscanAssetResult
 import com.dimension.maskbook.wallet.services.model.EtherscanResponse
 import retrofit2.http.GET
+import retrofit2.http.Query
 
 interface EtherscanServices {
     @GET("/api")
     suspend fun assetEvent(
-        contractaddress: String,
-        address: String,
-        module: String = "account",
-        action: String = "tokennfttx",
-        apikey: String = "",
-        page: Int = 1,
-        offset: Int = 100,
+        @Query("contractaddress") contractaddress: String,
+        @Query("address") address: String,
+        @Query("module") module: String = "account",
+        @Query("action") action: String = "tokennfttx",
+        @Query("apikey") apikey: String = "",
+        @Query("page") page: Int = 1,
+        @Query("offset") offset: Int = 100,
     ): EtherscanResponse<EtherscanAssetResult>
 }

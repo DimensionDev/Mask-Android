@@ -91,10 +91,13 @@ fun CollectibleDetailScene(
                         .weight(1f),
                 ) {
                     Column(
-                        modifier = Modifier.background(
-                            color = MaterialTheme.colors.surface,
-                            shape = RoundedCornerShape(12.dp)
-                        ).clip(RoundedCornerShape(12.dp)),
+                        modifier = Modifier
+                            .background(
+                                color = MaterialTheme.colors.surface,
+                                shape = RoundedCornerShape(12.dp)
+                            )
+                            .clip(RoundedCornerShape(12.dp))
+                            .fillMaxWidth(),
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         if (data != null) {
@@ -110,7 +113,8 @@ fun CollectibleDetailScene(
                         TransactionHistoryList(
                             transactions = transactions,
                             onSpeedUp = onSpeedUp,
-                            onCancel = onCancel
+                            onCancel = onCancel,
+                            showPrice = false,
                         )
                     }
                 }

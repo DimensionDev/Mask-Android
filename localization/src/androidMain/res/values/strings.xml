@@ -489,6 +489,7 @@
     <string name="scene_transaction_history_speed_up">Speed up</string>
     <string name="scene_transaction_history_type_cancel">Cancel %s</string>
     <string name="scene_transaction_history_type_receive">Received %s</string>
+    <string name="scene_transaction_history_type_mint">Mint</string>
     <string name="scene_transaction_history_type_swap">WETH Deposit</string>
     <string name="scene_transaction_history_type_approve">Approve %s</string>
     <string name="scene_transaction_history_type_send">Send %s</string>
@@ -554,9 +555,9 @@
     <string name="scene_sendTransaction_send_placeholder_address">Ens or Address(0x...)</string>
     <string name="scene_sendTransaction_send_btn_send">Send</string>
     <string name="scene_sendTransaction_send_amount_error">Insufficient amount.</string>
-    <string name="scene_sendTransaction_not_enough_gas">Insufficient gas balance</string>
     <string name="scene_sendTransaction_send_btn_withoutPassword">Hold to Send</string>
     <string name="scene_sendTransaction_send_Label_To">To</string>
+    <string name="scene_sendTransaction_send_not_enough_gas">Insufficient gas balance</string>
     <string name="scene_sendTransaction_send_label_Amount">Amount</string>
     <string name="scene_sendTransaction_send_Label_Password">Password</string>
     <string name="scene_sendTransaction_send_password_error">Incorrect payment password.</string>

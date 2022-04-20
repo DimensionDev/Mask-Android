@@ -20,6 +20,7 @@
  */
 package com.dimension.maskbook.wallet.repository
 
+import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.common.ext.ifNullOrEmpty
 import com.dimension.maskbook.debankapi.model.ChainID
 import com.dimension.maskbook.debankapi.model.TokenDict
@@ -83,15 +84,33 @@ class TransactionRepository(
         walletData: WalletData,
         collectible: WalletCollectibleData
     ): List<TransactionData> {
-        return getTransactionByWalletAndChainType(
-            walletData = walletData,
-            chainType = collectible.chainType,
-            getTokenId = { it?.innerId ?: "" }
-        ).filter {
-            it.tokenData.chainType == collectible.chainType &&
-                it.tokenData.id == collectible.tokenId &&
-                it.tokenData.contractId == collectible.contract.address
-        }
+        return walletServices.etherscanServices.assetEvent(collectible.contract.address, walletData.address).result?.map {
+            val type = if (it.from?.lowercase() == "0x0000000000000000000000000000000000000000") {
+                TransactionType.Mint
+            } else if (it.from?.lowercase() == walletData.address.lowercase()) {
+                TransactionType.Send
+            } else if (it.to?.lowercase() == walletData.address.lowercase()) {
+                TransactionType.Receive
+            } else {
+                TransactionType.Approve
+            }
+            TransactionData(
+                id = it.hash.orEmpty(),
+                type = type,
+                count = it.gas?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
+                status = TransactionStatus.Success,
+                message = type.name,
+                createdAt = (it.timeStamp?.toLongOrNull() ?: 0L) * 1000,
+                updatedAt = (it.timeStamp?.toLongOrNull() ?: 0L) * 1000,
+                tokenData = TransactionTokenData(
+                    chainType = ChainType.eth,
+                    symbol = it.tokenSymbol.orEmpty(),
+                    price = BigDecimal.ZERO,
+                    id = it.tokenID.orEmpty(),
+                    contractId = it.contractAddress.orEmpty(),
+                ),
+            )
+        } ?: emptyList()
     }
 
     private suspend fun getTransactionByWalletAndChainType(

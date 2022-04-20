@@ -49,11 +49,16 @@ class CollectibleDetailViewModel(
             walletRepository.currentWallet.filterNotNull(),
             data.filterNotNull()
         ) { wallet, collectible ->
-            transactionRepository.getTransactionByCollectible(wallet, collectible)
-                .asSequence()
-                .sortedByDescending { it.createdAt }
-                .groupBy { DateUtils.getDateText(it.createdAt) }
-                .toMap()
+            try {
+                transactionRepository.getTransactionByCollectible(wallet, collectible)
+                    .asSequence()
+                    .sortedByDescending { it.createdAt }
+                    .groupBy { DateUtils.getDateText(it.createdAt) }
+                    .toMap()
+            } catch (e: Exception) {
+                e.printStackTrace()
+                emptyMap()
+            }
         }.asStateIn(viewModelScope, emptyMap())
     }
 

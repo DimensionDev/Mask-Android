@@ -157,7 +157,7 @@ fun TransferDetailScene(
                             onMax = { onAmountChanged.invoke(maxAmount) },
                             error = when {
                                 !isEnoughForGas -> {
-                                    stringResource(R.string.scene_sendTransaction_not_enough_gas)
+                                    stringResource(R.string.scene_sendTransaction_send_not_enough_gas)
                                 }
                                 amount.toBigDecimalOrNull() ?: BigDecimal.ZERO > maxAmount.toBigDecimalOrNull() ?: BigDecimal.ZERO -> {
                                     stringResource(R.string.scene_sendTransaction_send_amount_error)
