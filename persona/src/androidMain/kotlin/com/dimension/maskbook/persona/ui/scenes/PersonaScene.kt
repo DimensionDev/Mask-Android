@@ -64,10 +64,9 @@ fun PersonaScene(
     val currentPersona by viewModel.currentPersona.observeAsState()
     val socialList by viewModel.socialList.observeAsState()
     val personaList by viewModel.personaList.observeAsState()
+    val showEmptyUi by viewModel.showEmptyUi.observeAsState()
 
-    if (currentPersona == null) return
-    val persona = currentPersona?.persona
-    if (persona == null) {
+    if (showEmptyUi) {
         EmptyPersonaScene(
             onPersonaCreateClick = onPersonaCreateClick,
             onPersonaRecoveryClick = onPersonaRecoveryClick,
@@ -76,65 +75,67 @@ fun PersonaScene(
         return
     }
 
-    MaskScaffold(
-        topBar = {
-            MaskSingleLineTopAppBar(
-                navigationIcon = {
-                    MaskIconCardButton(onClick = onSynchronize) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.scan),
-                            contentDescription = null,
-                            modifier = Modifier.size(22.dp),
-                        )
-                    }
-                },
-                actions = {
-                    if (!socialList.isNullOrEmpty()) {
-                        MaskIconCardButton(onClick = onBack) {
+    currentPersona?.let { persona ->
+        MaskScaffold(
+            topBar = {
+                MaskSingleLineTopAppBar(
+                    navigationIcon = {
+                        MaskIconCardButton(onClick = onSynchronize) {
                             Icon(
-                                imageVector = Icons.Filled.Close,
+                                painter = painterResource(id = R.drawable.scan),
                                 contentDescription = null,
+                                modifier = Modifier.size(22.dp),
                             )
                         }
+                    },
+                    actions = {
+                        if (!socialList.isNullOrEmpty()) {
+                            MaskIconCardButton(onClick = onBack) {
+                                Icon(
+                                    imageVector = Icons.Filled.Close,
+                                    contentDescription = null,
+                                )
+                            }
+                        }
+                    },
+                    title = {
+                        Text(text = stringResource(R.string.scene_persona_welcome_persona))
                     }
-                },
-                title = {
-                    Text(text = stringResource(R.string.scene_persona_welcome_persona))
-                }
-            )
-        }
-    ) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize(),
-        ) {
-            PersonaInfoScene(
-                socialList = socialList ?: emptyList(),
-                currentPersona = persona,
-                personaList = personaList ?: emptyList(),
-                onAddSocialClick = { network ->
-                    onAddSocialClick(persona, network)
-                },
-                onSocialItemClick = { data, isEditing ->
-                    if (isEditing) {
-                        onRemoveSocialClick(persona, data)
-                    } else {
-                        onSocialItemClick(persona, data)
+                )
+            }
+        ) { innerPadding ->
+            Box(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize(),
+            ) {
+                PersonaInfoScene(
+                    socialList = socialList ?: emptyList(),
+                    currentPersona = persona,
+                    personaList = personaList ?: emptyList(),
+                    onAddSocialClick = { network ->
+                        onAddSocialClick(persona, network)
+                    },
+                    onSocialItemClick = { data, isEditing ->
+                        if (isEditing) {
+                            onRemoveSocialClick(persona, data)
+                        } else {
+                            onSocialItemClick(persona, data)
+                        }
+                    },
+                    onPersonaNameClick = onPersonaNameClick,
+                    onCurrentPersonaChanged = {
+                        viewModel.setCurrentPersona(it)
+                    },
+                    onAvatarClick = {
+                        if (persona.avatar.isNullOrEmpty()) {
+                            onAddPersonaAvatar()
+                        } else {
+                            onPersonaAvatarClick()
+                        }
                     }
-                },
-                onPersonaNameClick = onPersonaNameClick,
-                onCurrentPersonaChanged = {
-                    viewModel.setCurrentPersona(it)
-                },
-                onAvatarClick = {
-                    if (persona.avatar.isNullOrEmpty()) {
-                        onAddPersonaAvatar()
-                    } else {
-                        onPersonaAvatarClick()
-                    }
-                }
-            )
+                )
+            }
         }
     }
 }
