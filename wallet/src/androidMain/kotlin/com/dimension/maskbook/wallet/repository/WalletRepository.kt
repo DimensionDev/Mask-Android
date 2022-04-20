@@ -216,7 +216,7 @@ internal class WalletRepository(
                                 UUID.randomUUID().toString(),
                                 currentWallet.id,
                                 DbWalletBalanceType.all,
-                                balance.totalUsdValue?.toBigDecimal() ?: BigDecimal.ZERO,
+                                it.sumOf { it.value },
                             )
                         )
                     } ?: emptyList()

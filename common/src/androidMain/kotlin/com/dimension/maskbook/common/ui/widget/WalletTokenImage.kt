@@ -29,6 +29,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import coil.compose.ImagePainter
 
@@ -41,7 +42,7 @@ fun WalletTokenImage(
         Image(
             painter = painter,
             contentDescription = null,
-            modifier = Modifier.size(38.dp),
+            modifier = Modifier.size(38.dp).clip(CircleShape),
         )
         Image(
             painter = chainPainter,
