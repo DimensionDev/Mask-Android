@@ -20,6 +20,7 @@
  */
 package com.dimension.maskbook.wallet.ui.scenes.wallets.collectible
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -66,7 +67,7 @@ fun CollectibleDetailScene(
     onCancel: (TransactionData) -> Unit,
     onBack: () -> Unit,
     onSend: () -> Unit,
-    onReceive: () -> Unit,
+    onOpenSeaClicked: () -> Unit,
 ) {
     MaskScene {
         MaskScaffold(
@@ -132,16 +133,16 @@ fun CollectibleDetailScene(
                     }
                     PrimaryButton(
                         modifier = Modifier.weight(1f),
-                        onClick = { onReceive.invoke() },
+                        onClick = { onOpenSeaClicked.invoke() },
                         elevation = ButtonDefaults.elevation(defaultElevation = 0.dp),
                     ) {
-                        Icon(
-                            painterResource(id = R.drawable.download),
+                        Image(
+                            painterResource(id = R.drawable.ic_opensea_1),
                             contentDescription = null
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = stringResource(R.string.scene_wallet_balance_btn_receive),
+                            text = "Opensea",
                             maxLines = 1
                         )
                     }
