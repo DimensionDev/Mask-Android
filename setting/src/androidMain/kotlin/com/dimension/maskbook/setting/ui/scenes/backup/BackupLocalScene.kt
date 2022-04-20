@@ -223,7 +223,7 @@ fun BackupLocalScene(
                 )
                 PrimaryButton(
                     onClick = {
-                        filePickerLauncher.launch("${System.currentTimeMillis()}.json")
+                        filePickerLauncher.launch("${System.currentTimeMillis()}.bin")
                     },
                     modifier = Modifier.fillMaxWidth(),
                     enabled = backupPasswordValid && (if (withWallet) paymentPasswordValid else true)
