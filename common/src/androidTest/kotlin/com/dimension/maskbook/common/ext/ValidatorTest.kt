@@ -60,4 +60,56 @@ internal class ValidatorTest {
         assertFalse(Validator.isPhone("+861690000"))
         assertFalse(Validator.isPhone("12312312312"))
     }
+
+    @Test
+    fun isValidBackupPasswordFormat() {
+        assertTrue(Validator.isValidBackupPasswordFormat("Aa123456."))
+        assertTrue(Validator.isValidBackupPasswordFormat("12AAAAaaaa."))
+        assertTrue(Validator.isValidBackupPasswordFormat("""Aa123456\"""))
+        assertTrue(Validator.isValidBackupPasswordFormat("Aa123456["))
+        assertTrue(Validator.isValidBackupPasswordFormat("Aa123456]"))
+        assertTrue(Validator.isValidBackupPasswordFormat("Aa123456$"))
+        assertTrue(Validator.isValidBackupPasswordFormat("Aa$123456"))
+
+        assertFalse(Validator.isValidBackupPasswordFormat("1111aaaa"))
+        assertFalse(Validator.isValidBackupPasswordFormat("1111AAAA"))
+        assertFalse(Validator.isValidBackupPasswordFormat("12AAAAAAA."))
+        assertFalse(Validator.isValidBackupPasswordFormat("12aaaaaaa."))
+        assertFalse(Validator.isValidBackupPasswordFormat("AAAABBBB."))
+        assertFalse(Validator.isValidBackupPasswordFormat("Aa12345 6."))
+
+        assertTrue(Validator.isValidBackupPasswordFormat("Ab123456$.1234567890"))
+        assertFalse(Validator.isValidBackupPasswordFormat("Ab123456$.12345678901"))
+    }
+
+    @Test
+    fun isValidPaymentPasswordFormat() {
+        assertTrue(Validator.isValidPaymentPasswordFormat("11111111."))
+        assertTrue(Validator.isValidPaymentPasswordFormat("1111aaaaa"))
+        assertTrue(Validator.isValidPaymentPasswordFormat("1111AAAAA"))
+        assertTrue(Validator.isValidPaymentPasswordFormat("1111AAaaa"))
+        assertTrue(Validator.isValidPaymentPasswordFormat("1111111."))
+        assertTrue(Validator.isValidPaymentPasswordFormat("AAAAAAA."))
+        assertTrue(Validator.isValidPaymentPasswordFormat("aaaaaaa."))
+
+        assertTrue(Validator.isValidPaymentPasswordFormat("Ab123456$"))
+        assertTrue(Validator.isValidPaymentPasswordFormat("Ab123456["))
+        assertTrue(Validator.isValidPaymentPasswordFormat("Ab123456]"))
+        assertTrue(Validator.isValidPaymentPasswordFormat("""Ab123456\"""))
+        assertTrue(Validator.isValidPaymentPasswordFormat("Ab123456/"))
+        assertTrue(Validator.isValidPaymentPasswordFormat("Ab123456#"))
+        assertTrue(Validator.isValidPaymentPasswordFormat("Ab123456@"))
+        assertTrue(Validator.isValidPaymentPasswordFormat("Ab123456!"))
+        assertTrue(Validator.isValidPaymentPasswordFormat("!@#$%%%^1"))
+
+        assertFalse(Validator.isValidPaymentPasswordFormat("1111111"))
+        assertFalse(Validator.isValidPaymentPasswordFormat("aaaaaaa"))
+        assertFalse(Validator.isValidPaymentPasswordFormat("AAAAAAAA"))
+        assertFalse(Validator.isValidPaymentPasswordFormat("1111aa AA"))
+        assertFalse(Validator.isValidPaymentPasswordFormat("111aaA"))
+        assertFalse(Validator.isValidPaymentPasswordFormat("!@#$%%%^"))
+
+        assertTrue(Validator.isValidPaymentPasswordFormat("Ab123456$.1234567890"))
+        assertFalse(Validator.isValidPaymentPasswordFormat("Ab123456$.12345678901"))
+    }
 }

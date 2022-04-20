@@ -20,7 +20,6 @@
  */
 package com.dimension.maskbook.setting.repository
 
-import com.dimension.maskbook.labs.export.model.AppKey
 import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.setting.data.JSDataSource
 import com.dimension.maskbook.setting.data.SettingDataSource
@@ -65,6 +64,10 @@ internal class SettingsRepository(
         get() = settingDataSource.backupPassword
     override val shouldShowLegalScene: Flow<Boolean>
         get() = settingDataSource.shouldShowLegalScene
+    override val email: Flow<String>
+        get() = settingDataSource.email
+    override val phone: Flow<String>
+        get() = settingDataSource.phone
 
     override fun setBiometricEnabled(value: Boolean) {
         settingDataSource.setBiometricEnabled(value)
@@ -112,7 +115,8 @@ internal class SettingsRepository(
             associatedAccount = file.personas.sumOf { it.linkedProfiles.size },
             encryptedPost = file.posts.size,
             contacts = file.profiles.size,
-            file = file.plugin?.count { it.key == AppKey.FileService.id } ?: 0,
+            // file = file.plugin?.count { it.key == AppKey.FileService.id } ?: 0,
+            file = 0,
             wallet = file.wallets.size,
             account = ""
         )
@@ -209,11 +213,11 @@ internal class SettingsRepository(
         }
     }
 
-    override fun saveEmailForCurrentPersona(value: String) {
-        personaServices.saveEmailForCurrentPersona(value)
+    override fun saveEmail(value: String) {
+        settingDataSource.setRegisterEmail(value)
     }
 
-    override fun savePhoneForCurrentPersona(value: String) {
-        personaServices.savePhoneForCurrentPersona(value)
+    override fun savePhone(value: String) {
+        settingDataSource.setRegisterPhone(value)
     }
 }

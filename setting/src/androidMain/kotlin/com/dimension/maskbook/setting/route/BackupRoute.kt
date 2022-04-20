@@ -31,7 +31,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -45,11 +44,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.dimension.maskbook.common.ext.humanizeFileSize
+import com.dimension.maskbook.common.ext.humanizeTimestamp
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.route.navigationComposeAnimComposable
@@ -63,14 +64,13 @@ import com.dimension.maskbook.common.routeProcessor.annotations.Path
 import com.dimension.maskbook.common.routeProcessor.annotations.Query
 import com.dimension.maskbook.common.ui.widget.EmailCodeInputModal
 import com.dimension.maskbook.common.ui.widget.MaskDialog
-import com.dimension.maskbook.common.ui.widget.MaskInputField
 import com.dimension.maskbook.common.ui.widget.MaskModal
+import com.dimension.maskbook.common.ui.widget.MaskPasswordInputField
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskScene
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.common.ui.widget.button.SecondaryButton
 import com.dimension.maskbook.localization.R
-import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.setting.repository.ISettingsRepository
 import com.dimension.maskbook.setting.ui.scenes.PhoneCodeInputModal
 import com.dimension.maskbook.setting.ui.scenes.backup.BackupCloudScene
@@ -333,7 +333,7 @@ fun BackupDataBackupMergeConfirm(
     @Path("type") type: String,
     @Path("value") value: String,
     @Path("code") code: String,
-    @Query("download_url") downloadUrl: String?,
+    @Query("url") url: String?,
     @Query("size") size: Long?,
     @Query("uploaded_at") uploadedAt: Long?,
     @Query("abstract") abstract: String?,
@@ -353,7 +353,7 @@ fun BackupDataBackupMergeConfirm(
     }
 
     val viewModel = getViewModel<BackupMergeConfirmViewModel> {
-        parametersOf(onDone)
+        parametersOf(onDone, url.orEmpty(), value)
     }
 
     val passwordValid by viewModel.passwordValid.observeAsState(initial = false)
@@ -380,25 +380,32 @@ fun BackupDataBackupMergeConfirm(
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(text = abstract.orEmpty())
-                    Text(text = uploadedAt.toString())
+                    Text(text = uploadedAt?.humanizeTimestamp().toString())
                 }
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(text = size.toString())
+                Text(text = size?.humanizeFileSize().toString())
             }
             Spacer(modifier = Modifier.height(16.dp))
             Text(text = stringResource(R.string.scene_set_backup_password_backup_password))
-            MaskInputField(
+            MaskPasswordInputField(
+                modifier = Modifier.fillMaxWidth(),
                 value = password,
                 onValueChange = { viewModel.setBackupPassword(it) },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
             )
+            Spacer(modifier = Modifier.height(8.dp))
+            if (!passwordValid) {
+                Text(
+                    text = stringResource(R.string.scene_change_password_incorrect_password),
+                    color = Color.Red
+                )
+            }
             Spacer(modifier = Modifier.height(20.dp))
             PrimaryButton(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {
-                    viewModel.confirm(downloadUrl.orEmpty(), account = value)
+                    viewModel.confirm()
                 },
-                enabled = passwordValid && !loading
+                enabled = !loading
             ) {
                 Text(text = stringResource(R.string.common_controls_merge_to_local_data))
             }
@@ -417,7 +424,7 @@ fun BackupDataBackupMerge(
     @Path("type") type: String,
     @Path("value") value: String,
     @Path("code") code: String,
-    @Query("download_url") downloadUrl: String?,
+    @Query("url") url: String?,
     @Query("size") size: Long?,
     @Query("uploaded_at") uploadedAt: Long?,
     @Query("abstract") abstract: String?,
@@ -445,10 +452,10 @@ fun BackupDataBackupMerge(
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(text = abstract.orEmpty())
-                    Text(text = uploadedAt.toString())
+                    Text(text = uploadedAt?.humanizeTimestamp().toString())
                 }
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(text = size.toString())
+                Text(text = size?.humanizeFileSize().toString())
             }
             Spacer(modifier = Modifier.height(8.dp))
             Text(text = stringResource(R.string.scene_backup_remote_backup_actions_view_tips))
@@ -461,7 +468,7 @@ fun BackupDataBackupMerge(
                             type,
                             value,
                             code,
-                            download_url = downloadUrl.orEmpty(),
+                            url = url.orEmpty(),
                             size = size,
                             uploaded_at = uploadedAt,
                             abstract = abstract
@@ -496,9 +503,8 @@ fun BackupSelectionEmail(
 ) {
     val scope = rememberCoroutineScope()
 
-    val repository = get<PersonaServices>()
-    val persona by repository.currentPersona.observeAsState(initial = null)
-    val phone = persona?.phone
+    val repository = get<ISettingsRepository>()
+    val phone by repository.phone.observeAsState(initial = "")
 
     val viewModel = getViewModel<EmailBackupViewModel>()
     val code by viewModel.code.observeAsState()
@@ -530,13 +536,13 @@ fun BackupSelectionEmail(
             scope.launch {
                 viewModel.verifyCodeNow(code, email, skipValidate = true)
                     .onSuccess { target ->
-                        target.download_url?.let {
+                        target.url.takeIf { it.isNotEmpty() }?.let {
                             navController.navigate(
                                 SettingRoute.BackupData.BackupData_BackupMerge(
                                     "email",
                                     email,
                                     code,
-                                    download_url = target.download_url,
+                                    url = target.url,
                                     size = target.size,
                                     uploaded_at = target.uploaded_at,
                                     abstract = target.abstract
@@ -563,7 +569,7 @@ fun BackupSelectionEmail(
             Text(text = email, color = MaterialTheme.colors.primary)
         },
         footer = {
-            if (phone != null) {
+            if (phone.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(20.dp))
                 TextButton(
                     modifier = Modifier.fillMaxWidth(),
@@ -594,9 +600,8 @@ fun BackupSelectionPhone(
 ) {
     val scope = rememberCoroutineScope()
 
-    val repository = get<PersonaServices>()
-    val persona by repository.currentPersona.observeAsState(initial = null)
-    val email = persona?.email
+    val repository = get<ISettingsRepository>()
+    val email by repository.email.observeAsState(initial = "")
 
     val viewModel = getViewModel<PhoneBackupViewModel>()
     val code by viewModel.code.observeAsState()
@@ -626,13 +631,13 @@ fun BackupSelectionPhone(
             scope.launch {
                 viewModel.verifyCodeNow(code = code, phone = phone, skipValidate = true)
                     .onSuccess { target ->
-                        target.download_url?.let {
+                        target.url.takeIf { it.isNotEmpty() }?.let {
                             navController.navigate(
                                 SettingRoute.BackupData.BackupData_BackupMerge(
                                     "phone",
                                     phone,
                                     code,
-                                    download_url = target.download_url,
+                                    url = target.url,
                                     size = target.size,
                                     uploaded_at = target.uploaded_at,
                                     abstract = target.abstract
@@ -660,7 +665,7 @@ fun BackupSelectionPhone(
             Text(text = phone, color = MaterialTheme.colors.primary)
         },
         footer = {
-            if (email != null) {
+            if (email.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(20.dp))
                 TextButton(
                     modifier = Modifier.fillMaxWidth(),
@@ -691,21 +696,20 @@ fun BackupSelectionPhone(
 fun BackupSelection(
     navController: NavController,
 ) {
-    val repository = get<PersonaServices>()
-    val persona by repository.currentPersona.observeAsState(initial = null)
+    val repository = get<ISettingsRepository>()
+    val email by repository.email.observeAsState(initial = "")
+    val phone by repository.phone.observeAsState(initial = "")
     BackupSelectionModal(
         onLocal = {
             navController.navigate(SettingRoute.BackupData.BackupLocal.Backup)
         },
         onRemote = {
-            val email = persona?.email
-            val phone = persona?.phone
-            if (email.isNullOrEmpty() && phone.isNullOrEmpty()) {
-                navController.navigate(SettingRoute.BackupData.BackupSelection_NoEmailAndPhone)
-            } else if (!email.isNullOrEmpty()) {
+            if (email.isNotEmpty()) {
                 navController.navigate(SettingRoute.BackupData.BackupSelection_Email(email))
-            } else if (!phone.isNullOrEmpty()) {
+            } else if (phone.isNotEmpty()) {
                 navController.navigate(SettingRoute.BackupData.BackupSelection_Phone(phone))
+            } else {
+                navController.navigate(SettingRoute.BackupData.BackupSelection_NoEmailAndPhone)
             }
         }
     )

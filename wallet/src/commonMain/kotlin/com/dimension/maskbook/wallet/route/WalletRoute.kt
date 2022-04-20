@@ -160,4 +160,7 @@ expect object WalletRoute {
         // request
         //
     }
+    object EmptyTokenDialog {
+        operator fun invoke(tokenSymbol: String): String
+    }
 }

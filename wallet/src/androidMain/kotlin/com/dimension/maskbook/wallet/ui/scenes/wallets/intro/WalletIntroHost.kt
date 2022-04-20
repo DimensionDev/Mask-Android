@@ -28,6 +28,7 @@ import androidx.navigation.NavController
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.wallet.route.WalletRoute
+import com.dimension.maskbook.wallet.route.transfer
 import com.dimension.maskbook.wallet.ui.scenes.wallets.create.CreateType
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletBalancesScene
 import com.dimension.maskbook.wallet.viewmodel.wallets.WalletBalancesViewModel
@@ -50,7 +51,7 @@ fun WalletIntroHost(navController: NavController) {
     val showTokensLess by viewModel.showTokensLess.observeAsState()
     val showTokensLessAmount by viewModel.showTokensLessAmount.observeAsState()
     val connectedDApps by viewModel.connectedDApp.observeAsState()
-
+    val nativeToken by viewModel.walletNativeToken.observeAsState()
     val currentWallet = wallet
     val currentDWebData = dWebData
 
@@ -92,7 +93,9 @@ fun WalletIntroHost(navController: NavController) {
                 navController.navigate(WalletRoute.WalletQrcode(currentDWebData.chainType.name))
             },
             onSendClicked = {
-                navController.navigate(WalletRoute.Transfer.SearchAddress(null))
+                nativeToken?.let {
+                    navController.transfer(walletNativeToken = it, tradableId = null)
+                }
             },
             sceneType = sceneType,
             onSceneTypeChanged = {

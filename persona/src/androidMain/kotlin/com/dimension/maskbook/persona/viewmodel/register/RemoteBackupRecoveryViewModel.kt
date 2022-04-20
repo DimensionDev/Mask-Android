@@ -29,6 +29,7 @@ import com.dimension.maskbook.setting.export.BackupServices
 import com.dimension.maskbook.setting.export.model.BackupFileMeta
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 
 class PhoneRemoteBackupRecoveryViewModel(
     requestNavigate: (NavigateArgs) -> Unit,
@@ -184,6 +185,10 @@ abstract class RemoteBackupRecoveryViewModelBase(
             requestNavigate.invoke(StringNavigateArgs(value, NavigateTarget.Code))
             startCountDown()
         } catch (e: Throwable) {
+            if (e is HttpException) {
+                requestNavigate.invoke(StringNavigateArgs(value, NavigateTarget.Code))
+                startCountDown()
+            }
         }
         _loading.value = false
     }

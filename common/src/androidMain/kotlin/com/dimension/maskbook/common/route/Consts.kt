@@ -20,8 +20,11 @@
  */
 package com.dimension.maskbook.common.route
 
+import android.net.Uri
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.ColumnScope
@@ -42,6 +45,9 @@ const val navigationComposeAnimComposable = "composable"
 
 const val navigationComposeModalComposablePackage = "com.dimension.maskbook.common.route"
 const val navigationComposeModalComposable = "modalComposable"
+
+const val navigationComposeHomeComposablePackage = "com.dimension.maskbook.common.route"
+const val navigationComposeHomeComposable = "homeComposable"
 
 const val navigationComposeBottomSheetPackage = "com.dimension.maskbook.common.route"
 const val navigationComposeBottomSheet = "bottomSheet"
@@ -76,10 +82,45 @@ fun NavGraphBuilder.modalComposable(
         enterTransition = {
             slideInVertically { it }
         },
-        exitTransition = null,
-        popEnterTransition = null,
+        exitTransition = {
+            slideOutVertically { it }
+        },
+        popEnterTransition = {
+            slideInVertically { it }
+        },
         popExitTransition = {
             slideOutVertically { it }
+        }
+    )
+}
+
+@OptIn(ExperimentalAnimationApi::class)
+fun NavGraphBuilder.homeComposable(
+    route: String,
+    arguments: List<NamedNavArgument> = emptyList(),
+    deepLinks: List<NavDeepLink> = emptyList(),
+    content: @Composable AnimatedVisibilityScope.(NavBackStackEntry) -> Unit
+) {
+    var isPopExtension = false
+    composable(
+        route = route,
+        arguments = arguments,
+        deepLinks = deepLinks,
+        content = content,
+        exitTransition = {
+            isPopExtension = targetState.destination.hasDeepLink(Uri.parse(Deeplinks.WebContent(null)))
+            if (isPopExtension) {
+                scaleOut(
+                    targetScale = 0.9f,
+                )
+            } else null
+        },
+        popEnterTransition = {
+            if (isPopExtension) {
+                scaleIn(
+                    initialScale = 0.9f,
+                )
+            } else null
         },
     )
 }

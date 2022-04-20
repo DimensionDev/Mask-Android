@@ -110,11 +110,12 @@ class JSMethodV2(
 
                 // set current persona when usr create
                 // ps: persona created by user will have privateKey
+                val result = personaDataSource.createPersona(options)
                 if (options.persona.privateKey != null) {
                     personaRepository.setCurrentPersona(options.persona.identifier)
                 }
 
-                return message.responseSuccess(personaDataSource.createPersona(options))
+                return message.responseSuccess(result)
             }
             queryPersona -> {
                 val options = message.decodeOptions<QueryPersonaOptions>() ?: return true

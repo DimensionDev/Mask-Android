@@ -35,7 +35,7 @@ class WalletTabScreen : TabScreen {
 
     @OptIn(ExperimentalMaterialNavigationApi::class)
     @Composable
-    override fun Content(navController: NavController, onBack: () -> Unit) {
+    override fun Content(navController: NavController) {
         WalletIntroHost(navController)
     }
 }

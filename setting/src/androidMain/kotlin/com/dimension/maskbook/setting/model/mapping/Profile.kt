@@ -40,10 +40,9 @@ fun IndexedDBPost.toBackupPost() = BackupMetaFile.Post(
     postCryptoKey = postCryptoKey?.decodeJson(),
     recipients = recipients?.let {
         BackupMetaFile.Post.Recipients.UnionArrayValue(
-            value = it.flatMap {
-                listOf(
-                    BackupMetaFile.Post.Recipients.RecipientElement.StringValue(it.key),
-                    BackupMetaFile.Post.Recipients.RecipientElement.RecipientClassValue(it.value.decodeJson())
+            value = it.map { entry ->
+                mapOf(
+                    entry.key to entry.value.decodeJson()
                 )
             }
         )
@@ -61,9 +60,9 @@ fun BackupMetaFile.Post.toIndexDbPost() = IndexedDBPost(
     postCryptoKey = postCryptoKey?.encodeJsonElement(),
     recipients = recipients.let {
         when (it) {
-            is BackupMetaFile.Post.Recipients.UnionArrayValue -> it.value.windowed(2).associate {
-                (it[0] as BackupMetaFile.Post.Recipients.RecipientElement.StringValue).value to
-                    (it[1] as BackupMetaFile.Post.Recipients.RecipientElement.RecipientClassValue).encodeJsonElement<BackupMetaFile.Post.Recipients.RecipientElement.RecipientClassValue, JsonObject>()
+            is BackupMetaFile.Post.Recipients.UnionArrayValue -> it.value.associate { map ->
+                map.keys.first() to map.values.first()
+                    .encodeJsonElement<BackupMetaFile.Post.Recipients.RecipientClass, JsonObject>()
             }.toMutableMap()
             is BackupMetaFile.Post.Recipients.StringValue -> null
         }
@@ -157,15 +156,10 @@ fun IndexedDBPersona.toBackupPersona() = BackupMetaFile.Persona(
     privateKey = privateKey?.decodeJson(),
     localKey = localKey?.decodeJson(),
     linkedProfiles = linkedProfiles.map {
-        listOf(
-            BackupMetaFile.Persona.LinkedProfileElement.StringValue(it.key),
-            BackupMetaFile.Persona.LinkedProfileElement.LinkedProfileClassValue(
-                value = BackupMetaFile.Persona.LinkedProfileElement.LinkedProfileClassValue.LinkedProfileClass(
-                    connectionConfirmState = it.value.connectionConfirmState.name
-                )
-            )
+        it.key to BackupMetaFile.Persona.LinkedProfileElement.LinkedProfileClassValue.LinkedProfileClass(
+            connectionConfirmState = it.value.connectionConfirmState.name
         )
-    }
+    }.toMap()
 )
 
 fun BackupMetaFile.Persona.toIndexedDBPersona() = IndexedDBPersona(
@@ -185,12 +179,18 @@ fun BackupMetaFile.Persona.toIndexedDBPersona() = IndexedDBPersona(
     },
     privateKey = privateKey?.encodeJsonElement(),
     localKey = localKey?.encodeJsonElement(),
-    linkedProfiles = linkedProfiles.filter { it.size % 2 == 0 }.associate {
-        (it.first() as BackupMetaFile.Persona.LinkedProfileElement.StringValue).value to
-            IndexedDBPersona.LinkedProfileDetails(
-                connectionConfirmState = LinkedProfileDetailsState.valueOf(
-                    (it[1] as BackupMetaFile.Persona.LinkedProfileElement.LinkedProfileClassValue).value.connectionConfirmState
-                )
+    linkedProfiles = linkedProfiles.map {
+        it.key to IndexedDBPersona.LinkedProfileDetails(
+            connectionConfirmState = getLinkedProfileState(
+                it.value.connectionConfirmState
             )
-    }
+        )
+    }.toMap()
 )
+
+private fun getLinkedProfileState(value: String) = when {
+    "pending".equals(value, ignoreCase = true) -> LinkedProfileDetailsState.Pending
+    "confirmed".equals(value, ignoreCase = true) -> LinkedProfileDetailsState.Confirmed
+    "denied".equals(value, ignoreCase = true) -> LinkedProfileDetailsState.Denied
+    else -> LinkedProfileDetailsState.Pending
+}

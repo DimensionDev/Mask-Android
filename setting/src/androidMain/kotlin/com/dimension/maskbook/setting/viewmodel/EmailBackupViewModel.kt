@@ -24,8 +24,8 @@ import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.Validator
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.setting.defaultRegionCode
+import com.dimension.maskbook.setting.export.model.BackupFileMeta
 import com.dimension.maskbook.setting.repository.BackupRepository
-import com.dimension.maskbook.setting.services.model.DownloadResponse
 import com.dimension.maskbook.setting.viewmodel.base.RemoteBackupRecoveryViewModelBase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -42,20 +42,20 @@ class EmailBackupViewModel(
             Validator.isEmail(email)
         }.asStateIn(viewModelScope, true)
 
-    suspend fun verifyCodeNow(code: String, email: String, skipValidate: Boolean = false): Result<DownloadResponse> {
+    suspend fun verifyCodeNow(code: String, email: String, skipValidate: Boolean = false): Result<BackupFileMeta> {
         return try {
             _loading.value = true
 
             if (!skipValidate) {
                 backupRepository.validateEmailCode(email = email, code = code)
             }
-            val target = backupRepository.getBackupInformationByEmail(email = email, code = code)
+            val target = backupRepository.downloadBackupWithEmail(email = email, code = code)
 
             Result.success(target)
         } catch (e: Throwable) {
             // code is correct but no backup data found
             if (e is HttpException && e.code() == 404) {
-                Result.success(DownloadResponse(null, null, null, null))
+                Result.success(BackupFileMeta("", null, null, null))
             } else {
                 Result.failure(e)
             }
@@ -85,20 +85,20 @@ class PhoneBackupViewModel(
         _regionCode.value = value
     }
 
-    suspend fun verifyCodeNow(code: String, phone: String, skipValidate: Boolean = false): Result<DownloadResponse> {
+    suspend fun verifyCodeNow(code: String, phone: String, skipValidate: Boolean = false): Result<BackupFileMeta> {
         return try {
             _loading.value = true
 
             if (!skipValidate) {
                 backupRepository.validatePhoneCode(phone = phone, code = code)
             }
-            val target = backupRepository.getBackupInformationByPhone(phone = phone, code = code)
+            val target = backupRepository.downloadBackupWithPhone(phone = phone, code = code)
 
             Result.success(target)
         } catch (e: Throwable) {
             // code is correct but no backup data found
             if (e is HttpException && e.code() == 404) {
-                Result.success(DownloadResponse(null, null, null, null))
+                Result.success(BackupFileMeta("", null, null, null))
             } else {
                 Result.failure(e)
             }

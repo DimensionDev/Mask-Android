@@ -10,6 +10,7 @@ kotlin {
             dependencies {
                 implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.Kotlin.coroutines}")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.Kotlin.serialization}")
+                implementation("com.ensarsarajcic.kotlinx:serialization-msgpack:${Versions.kotlinxSerializationMsgPackVersion}")
             }
         }
         val commonTest by getting {

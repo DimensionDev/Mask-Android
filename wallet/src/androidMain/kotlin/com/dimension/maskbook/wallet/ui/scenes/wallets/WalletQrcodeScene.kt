@@ -51,8 +51,8 @@ import com.dimension.maskbook.common.ui.widget.MaskScene
 import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.common.ui.widget.button.MaskBackButton
+import com.dimension.maskbook.common.ui.widget.button.MaskTransparentButton
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
-import com.dimension.maskbook.common.ui.widget.button.clickable
 import com.dimension.maskbook.wallet.R
 
 @Composable
@@ -111,20 +111,19 @@ fun WalletQrcodeScene(
                                 name,
                             ),
                         )
-                        Box(
-                            modifier = Modifier
-                                .padding(horizontal = 16.dp, vertical = 24.dp)
-                                .background(
-                                    MaterialTheme.colors.surface,
-                                    shape = MaterialTheme.shapes.medium
-                                )
-                                .clip(MaterialTheme.shapes.medium)
-                                .padding(horizontal = 16.dp, vertical = 10.dp)
-                                .clickable {
-                                    onCopy.invoke()
-                                }
-                        ) {
-                            Text(text = address, textAlign = TextAlign.Center)
+                        MaskTransparentButton(onClick = onCopy) {
+                            Box(
+                                modifier = Modifier
+                                    .padding(horizontal = 16.dp, vertical = 24.dp)
+                                    .background(
+                                        MaterialTheme.colors.surface,
+                                        shape = MaterialTheme.shapes.medium
+                                    )
+                                    .clip(MaterialTheme.shapes.medium)
+                                    .padding(horizontal = 16.dp, vertical = 10.dp),
+                            ) {
+                                Text(text = address, textAlign = TextAlign.Center)
+                            }
                         }
                     }
                 }

@@ -26,7 +26,7 @@ import kotlinx.coroutines.flow.Flow
 interface IPreferenceRepository {
     val data: Flow<Preferences>
     val currentPersonaIdentifier: Flow<String>
-    fun setCurrentPersonaIdentifier(identifier: String)
+    suspend fun setCurrentPersonaIdentifier(identifier: String)
     val shouldShowContactsTipDialog: Flow<Boolean>
     fun setShowContactsTipDialog(bool: Boolean)
 

@@ -41,7 +41,7 @@ jobs:
         run: ./.github/fetch_maskbook.sh
 
       - name: Build with Gradle
-        run: ./gradlew assemble --stacktrace
+        run: ./gradlew assemble bundle --stacktrace
 
       - name: Archive android artifacts
         uses: actions/upload-artifact@v2

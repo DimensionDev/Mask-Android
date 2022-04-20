@@ -20,7 +20,6 @@
  */
 package com.dimension.maskbook.persona.ui.scenes.social
 
-import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -43,8 +42,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
-import com.dimension.maskbook.common.route.CommonRoute
-import com.dimension.maskbook.common.route.Deeplinks
+import com.dimension.maskbook.common.ext.navigateToHome
 import com.dimension.maskbook.common.route.navigationComposeBottomSheet
 import com.dimension.maskbook.common.route.navigationComposeBottomSheetPackage
 import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
@@ -113,7 +111,7 @@ fun ConnectAccountModal(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {
                     viewModel.done(personaId, name)
-                    navController.navigate(Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona)))
+                    navController.navigateToHome()
                 },
             ) {
                 Text(text = stringResource(R.string.scene_social_connect_button_title))

@@ -20,6 +20,7 @@
  */
 package com.dimension.maskbook.labs.ui.scenes.redpacket
 
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -63,6 +64,7 @@ import com.dimension.maskbook.common.route.navigationComposeBottomSheet
 import com.dimension.maskbook.common.route.navigationComposeBottomSheetPackage
 import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
 import com.dimension.maskbook.common.routeProcessor.annotations.Path
+import com.dimension.maskbook.common.routeProcessor.annotations.Query
 import com.dimension.maskbook.common.ui.theme.moreTypography
 import com.dimension.maskbook.common.ui.widget.MaskListItem
 import com.dimension.maskbook.common.ui.widget.MaskModal
@@ -87,10 +89,11 @@ import kotlin.math.pow
 @Composable
 fun LuckDropModal(
     navController: NavController,
-    @Path("data") data: String,
+    @Path("dataRaw") dataRaw: String,
+    @Query("requestRaw") requestRaw: String?,
 ) {
     val viewModel = getViewModel<LuckDropViewModel> {
-        parametersOf(data)
+        parametersOf(dataRaw, requestRaw)
     }
     val stateData by viewModel.stateData.collectAsState()
     val loading by viewModel.loading.collectAsState()
@@ -138,7 +141,7 @@ fun LuckDropModal(
             WalletTokenCard(
                 wallet = stateData.wallet,
                 onClick = {
-                    navController.navigateUri(Deeplinks.Wallet.SwitchWallet)
+                    navController.navigateUri(Uri.parse(Deeplinks.Wallet.SwitchWallet))
                 }
             )
             Spacer(Modifier.height(24.dp))
@@ -146,7 +149,7 @@ fun LuckDropModal(
                 enabled = stateData.buttonEnabled && !loading,
                 onClick = {
                     viewModel.getSendTransactionData(stateData)?.let { data ->
-                        navController.navigateUri(Deeplinks.Wallet.SendTokenConfirm(data))
+                        navController.navigateUri(Uri.parse(Deeplinks.Wallet.SendTokenConfirm(data)))
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),

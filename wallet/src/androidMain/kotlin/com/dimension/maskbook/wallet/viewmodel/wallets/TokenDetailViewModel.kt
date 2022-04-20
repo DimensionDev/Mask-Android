@@ -27,8 +27,11 @@ import com.dimension.maskbook.common.util.DateUtils
 import com.dimension.maskbook.wallet.repository.ITokenRepository
 import com.dimension.maskbook.wallet.repository.ITransactionRepository
 import com.dimension.maskbook.wallet.repository.IWalletRepository
+import com.dimension.maskbook.wallet.usecase.GetWalletNativeTokenUseCase
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 
 class TokenDetailViewModel(
@@ -36,6 +39,7 @@ class TokenDetailViewModel(
     private val tokenRepository: ITokenRepository,
     private val transactionRepository: ITransactionRepository,
     private val walletRepository: IWalletRepository,
+    private val getWalletNativeToken: GetWalletNativeTokenUseCase
 ) : ViewModel() {
     val dWebData by lazy {
         walletRepository.dWebData
@@ -68,4 +72,9 @@ class TokenDetailViewModel(
                 .toMap()
         }.asStateIn(viewModelScope, emptyMap())
     }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val walletNativeToken = tokenData.flatMapLatest {
+        getWalletNativeToken(it?.chainType)
+    }.asStateIn(viewModelScope, null)
 }

@@ -74,14 +74,6 @@ class DbPersonaDataSource(private val database: PersonaDatabase) {
         }
     }
 
-    suspend fun updateEmail(personaIdentifier: String, email: String) {
-        personaDao.updateEmail(personaIdentifier, email)
-    }
-
-    suspend fun updatePhone(personaIdentifier: String, phone: String) {
-        personaDao.updatePhone(personaIdentifier, phone)
-    }
-
     suspend fun updateNickName(personaIdentifier: String, name: String) {
         personaDao.updateNickName(personaIdentifier, name)
     }
@@ -129,8 +121,10 @@ class DbPersonaDataSource(private val database: PersonaDatabase) {
     }
 
     suspend fun addAll(list: List<IndexedDBPersona>) {
-        personaDao.insertAll(list.map { it.toDbPersonaRecord() })
-        linkedProfileDao.insert(list.flatMap { it.toLinkedProfiles() })
+        val currentPersona = getPersonaList()
+        val data = list.filter { it.identifier !in currentPersona.map { it.identifier } }
+        personaDao.insertAll(data.map { it.toDbPersonaRecord() })
+        linkedProfileDao.insert(data.flatMap { it.toLinkedProfiles() })
     }
 }
 
@@ -138,8 +132,6 @@ private fun DbPersonaRecord.toPersonaData(): PersonaData {
     return PersonaData(
         identifier = identifier,
         name = nickname.orEmpty(),
-        email = email,
-        phone = phone,
         avatar = avatar,
     )
 }

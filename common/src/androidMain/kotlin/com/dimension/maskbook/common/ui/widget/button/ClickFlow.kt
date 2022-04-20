@@ -20,25 +20,28 @@
  */
 package com.dimension.maskbook.common.ui.widget.button
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
-import androidx.compose.ui.semantics.Role
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 
-fun Modifier.clickable(
-    enabled: Boolean = true,
-    onClickLabel: String? = null,
-    role: Role? = null,
-    onClick: () -> Unit,
-): Modifier = composed {
-    clickable(
-        indication = null,
-        interactionSource = remember { MutableInteractionSource() },
-        enabled = enabled,
-        onClick = onClick,
-        onClickLabel = onClickLabel,
-        role = role
-    )
+@Composable
+internal fun rememberClickFlow(): MutableSharedFlow<() -> Unit> {
+    val debounceClickFlow = remember {
+        MutableSharedFlow<() -> Unit>(
+            replay = 0,
+            extraBufferCapacity = 1,
+            onBufferOverflow = BufferOverflow.DROP_OLDEST
+        )
+    }
+    LaunchedEffect(Unit) {
+        debounceClickFlow
+            .collect { onClick ->
+                onClick.invoke()
+                delay(800)
+            }
+    }
+    return debounceClickFlow
 }

@@ -85,9 +85,9 @@ import com.dimension.maskbook.common.ui.widget.HorizontalScenePadding
 import com.dimension.maskbook.common.ui.widget.LocalInAppNotification
 import com.dimension.maskbook.common.ui.widget.MaskDialog
 import com.dimension.maskbook.common.ui.widget.MaskModal
-import com.dimension.maskbook.common.ui.widget.SinglelineText
+import com.dimension.maskbook.common.ui.widget.SingleLineText
+import com.dimension.maskbook.common.ui.widget.button.MaskTransparentButton
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
-import com.dimension.maskbook.common.ui.widget.button.clickable
 import com.dimension.maskbook.common.ui.widget.itemsGridIndexed
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.export.model.ChainType
@@ -374,28 +374,29 @@ fun WalletConnectQRCode(
 ) {
     val qrCodeBitmap = rememberBarcodeBitmap(info = qrCode, width = 500, height = 500)
     Text(text = stringResource(R.string.scene_wallet_connect_qr_code_tips))
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onCopy.invoke(qrCode) }
-            .aspectRatio(1f)
-            .padding(8.dp)
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.ic_qr_code_border),
-            modifier = Modifier.fillMaxSize(),
-            contentDescription = ""
-        )
-        Image(
-            painter = rememberImagePainter(data = qrCodeBitmap),
+    MaskTransparentButton(onClick = { onCopy(qrCode) }) {
+        Box(
             modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(1f)
                 .padding(8.dp)
-                .fillMaxSize(),
-            contentScale = ContentScale.FillBounds,
-            contentDescription = "qrCode"
-        )
-        if (loading) {
-            LoadingView()
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_qr_code_border),
+                modifier = Modifier.fillMaxSize(),
+                contentDescription = ""
+            )
+            Image(
+                painter = rememberImagePainter(data = qrCodeBitmap),
+                modifier = Modifier
+                    .padding(8.dp)
+                    .fillMaxSize(),
+                contentScale = ContentScale.FillBounds,
+                contentDescription = "qrCode"
+            )
+            if (loading) {
+                LoadingView()
+            }
         }
     }
     Text(text = stringResource(R.string.scene_wallet_connect_tap_to_copy)) // TODO: Copy
@@ -465,27 +466,30 @@ fun WalletConnectManually(
             } else {
                 itemsGridIndexed(wallets, rowSize = 4, spacing = 10.dp) { _, wallet ->
                     val isInstalled = isWalletInstalled.invoke(wallet)
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable(enabled = isInstalled, onClick = { onWalletConnect.invoke(wallet) })
+                    MaskTransparentButton(
+                        enabled = isInstalled,
+                        onClick = { onWalletConnect.invoke(wallet) },
                     ) {
-                        Image(
-                            painter = rememberImagePainter(data = wallet.logo),
-                            contentDescription = "logo",
-                            contentScale = ContentScale.FillBounds,
-                            modifier = Modifier
-                                .size(48.dp)
-                                .clip(shape = CircleShape),
-                            alpha = if (isInstalled) ContentAlpha.high else ContentAlpha.disabled
-                        )
-                        Spacer(modifier = Modifier.height(10.dp))
-                        SinglelineText(
-                            text = wallet.displayName,
-                            style = MaterialTheme.typography.body2,
-                            textAlign = TextAlign.Center,
-                        )
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            Image(
+                                painter = rememberImagePainter(data = wallet.logo),
+                                contentDescription = "logo",
+                                contentScale = ContentScale.FillBounds,
+                                modifier = Modifier
+                                    .size(48.dp)
+                                    .clip(shape = CircleShape),
+                                alpha = if (isInstalled) ContentAlpha.high else ContentAlpha.disabled
+                            )
+                            Spacer(modifier = Modifier.height(10.dp))
+                            SingleLineText(
+                                text = wallet.displayName,
+                                style = MaterialTheme.typography.body2,
+                                textAlign = TextAlign.Center,
+                            )
+                        }
                     }
                 }
             }

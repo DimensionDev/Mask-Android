@@ -31,16 +31,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Colors
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
-import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ProvideTextStyle
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -49,21 +49,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.dimension.maskbook.common.ext.getAll
-import com.dimension.maskbook.common.ext.navigateToExtension
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
-import com.dimension.maskbook.common.route.navigationComposeModalComposable
-import com.dimension.maskbook.common.route.navigationComposeModalComposablePackage
+import com.dimension.maskbook.common.route.navigationComposeHomeComposable
+import com.dimension.maskbook.common.route.navigationComposeHomeComposablePackage
 import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
 import com.dimension.maskbook.common.routeProcessor.annotations.Path
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskScene
-import com.dimension.maskbook.common.ui.widget.button.clickable
+import com.dimension.maskbook.common.ui.widget.button.MaskButton
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
@@ -88,8 +86,8 @@ private val Colors.tabBackground: Color
 @NavGraphDestination(
     route = CommonRoute.Main.Home.path,
     deeplink = [Deeplinks.Main.Home.path],
-    packageName = navigationComposeModalComposablePackage,
-    functionName = navigationComposeModalComposable
+    packageName = navigationComposeHomeComposablePackage,
+    functionName = navigationComposeHomeComposable
 )
 @OptIn(ExperimentalPagerApi::class)
 @Composable
@@ -166,9 +164,6 @@ fun MainHost(
             ) {
                 tabs.elementAt(it).Content(
                     navController = navController,
-                    onBack = {
-                        navController.navigateToExtension(null)
-                    }
                 )
             }
         }
@@ -191,18 +186,18 @@ private fun BottomNavigationItem(
     } else {
         unselectedContentColor
     }
-    CompositionLocalProvider(
-        LocalContentColor provides color.copy(alpha = 1f),
-        LocalContentAlpha provides color.alpha,
-        LocalTextStyle provides LocalTextStyle.current.copy(color = color),
+
+    MaskButton(
+        enabled = enabled,
+        onClick = onClick,
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = Color.Transparent,
+            disabledBackgroundColor = Color.Transparent,
+            contentColor = color,
+        )
     ) {
         Layout(
             modifier = modifier
-                .clickable(
-                    onClick = onClick,
-                    enabled = enabled,
-                    role = Role.Tab,
-                )
                 .fillMaxHeight()
                 .padding(horizontal = 9.dp, vertical = 6.dp),
             content = {
@@ -210,7 +205,7 @@ private fun BottomNavigationItem(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    text.invoke()
+                    ProvideTextStyle(LocalTextStyle.current.copy(color = color), text)
                     Spacer(modifier = Modifier.height(4.dp))
                     Box(
                         modifier = Modifier

@@ -27,7 +27,6 @@ import androidx.navigation.navigation
 import com.dimension.maskbook.common.ModuleSetup
 import com.dimension.maskbook.common.retrofit.retrofit
 import com.dimension.maskbook.common.ui.tab.TabScreen
-import com.dimension.maskbook.setting.SettingSetup.route
 import com.dimension.maskbook.setting.data.JSDataSource
 import com.dimension.maskbook.setting.data.JSMethod
 import com.dimension.maskbook.setting.data.SettingDataSource
@@ -94,8 +93,8 @@ object SettingSetup : ModuleSetup {
         viewModel { PhoneSetupViewModel(get(), get()) }
         viewModel { EmailBackupViewModel(get()) }
         viewModel { PhoneBackupViewModel(get()) }
-        viewModel { (onDone: () -> Unit) ->
-            BackupMergeConfirmViewModel(get(), get(), onDone)
+        viewModel { (onDone: () -> Unit, url: String, account: String,) ->
+            BackupMergeConfirmViewModel(get(), get(), get<Context>().contentResolver, onDone, url, account)
         }
         viewModel { BackupCloudViewModel(get()) }
         viewModel { BackupCloudExecuteViewModel(get(), get(), get()) }

@@ -56,13 +56,13 @@ object LabsSetup : ModuleSetup {
             PreferenceRepository(get<Context>().labsDataStore, get(named(IoScopeName)))
         }
         single { JSMethod(get()) }
-        single { RedPacketMethod(get(named(IoScopeName)), get(), get()) }
+        single { RedPacketMethod(get(named(IoScopeName)), get()) }
 
         single { LabsTabScreen() } bind TabScreen::class
 
         viewModel { LabsViewModel(get(), get()) }
         viewModel { PluginSettingsViewModel(get(), get(), get()) }
-        viewModel { (data: String) -> LuckDropViewModel(data, get()) }
+        viewModel { (dataRaw: String, requestRaw: String?) -> LuckDropViewModel(dataRaw, requestRaw, get(), get()) }
     }
 
     override fun onExtensionReady() {

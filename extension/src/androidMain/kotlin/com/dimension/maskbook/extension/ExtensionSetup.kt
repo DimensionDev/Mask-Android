@@ -20,10 +20,6 @@
  */
 package com.dimension.maskbook.extension
 
-import android.net.Uri
-import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.runtime.getValue
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -33,10 +29,10 @@ import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import com.dimension.maskbook.common.IoScopeName
 import com.dimension.maskbook.common.ModuleSetup
-import com.dimension.maskbook.common.ext.navigate
+import com.dimension.maskbook.common.ext.navigateToHome
 import com.dimension.maskbook.common.gecko.WebContentController
-import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
+import com.dimension.maskbook.common.route.modalComposable
 import com.dimension.maskbook.extension.export.ExtensionServices
 import com.dimension.maskbook.extension.export.model.Site
 import com.dimension.maskbook.extension.repository.ExtensionRepository
@@ -44,15 +40,13 @@ import com.dimension.maskbook.extension.route.ExtensionRoute
 import com.dimension.maskbook.extension.ui.WebContentScene
 import com.dimension.maskbook.extension.utils.BackgroundMessageChannel
 import com.dimension.maskbook.extension.utils.ContentMessageChannel
-import com.google.accompanist.navigation.animation.composable
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import org.koin.mp.KoinPlatformTools
 
 object ExtensionSetup : ModuleSetup {
-    @OptIn(ExperimentalAnimationApi::class)
     override fun NavGraphBuilder.route(navController: NavController) {
-        composable(
+        modalComposable(
             route = ExtensionRoute.WebContent.path,
             deepLinks = listOf(
                 navDeepLink { uriPattern = Deeplinks.WebContent.path }
@@ -60,29 +54,13 @@ object ExtensionSetup : ModuleSetup {
             arguments = listOf(
                 navArgument("site") { type = NavType.StringType; nullable = true }
             ),
-            exitTransition = {
-                scaleOut(
-                    targetScale = 0.9f,
-                )
-            },
-            popExitTransition = null,
-            popEnterTransition = {
-                scaleIn(
-                    initialScale = 0.9f,
-                )
-            }
         ) {
             val backStackEntry by navController.currentBackStackEntryAsState()
 
             val site = it.arguments?.getString("site")?.let { Site.valueOf(it) }
             WebContentScene(
                 onPersonaClicked = {
-                    navController.navigate(Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona))) {
-                        launchSingleTop = true
-                        popUpTo(ExtensionRoute.WebContent.path) {
-                            inclusive = false
-                        }
-                    }
+                    navController.navigateToHome()
                 },
                 enabledBack = backStackEntry == it,
                 site = site,

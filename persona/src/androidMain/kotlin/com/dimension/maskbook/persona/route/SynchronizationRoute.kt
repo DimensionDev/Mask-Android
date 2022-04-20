@@ -210,7 +210,7 @@ fun SynchronizationPersonaPrivateKey(
     route = PersonaRoute.Synchronization.Persona.Identity.path,
     packageName = navigationComposeAnimComposablePackage,
     functionName = navigationComposeAnimComposable,
-    deeplink = [Persona.Identity.path]
+    deeplink = [Persona.Mnemonic.path]
 )
 @Composable
 fun SynchronizationIdentityPrivateKey(
