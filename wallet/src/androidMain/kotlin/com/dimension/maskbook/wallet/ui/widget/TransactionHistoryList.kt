@@ -218,7 +218,7 @@ private fun TransactionItem(
                         else -> ""
                     }
 
-                    val dollar = (item.count * tokenData.price).humanizeDollar()
+                    val dollar = item.price.humanizeDollar()
                     val dollarPrefix = when {
                         dollar == "$0" -> ""
                         item.type == TransactionType.Receive -> "+"

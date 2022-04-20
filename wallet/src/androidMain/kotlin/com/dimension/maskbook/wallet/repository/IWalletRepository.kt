@@ -132,6 +132,7 @@ data class TransactionData(
     val createdAt: Long,
     val updatedAt: Long,
     val tokenData: TransactionTokenData,
+    val price: BigDecimal,
 )
 
 data class TransactionTokenData(
