@@ -88,7 +88,7 @@ fun CollectibleCollectionCard(
                                 error(R.drawable.mask)
                             },
                             contentDescription = null,
-                            modifier = Modifier.size(38.dp),
+                            modifier = Modifier.size(38.dp).clip(CircleShape),
                         )
                         Image(
                             painter = rememberImagePainter(data = data.chainType.onDrawableRes),
