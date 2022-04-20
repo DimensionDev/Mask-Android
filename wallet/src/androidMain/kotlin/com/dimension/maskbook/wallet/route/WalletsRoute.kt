@@ -41,6 +41,7 @@ import androidx.navigation.NavController
 import androidx.navigation.navOptions
 import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.common.ext.observeAsState
+import com.dimension.maskbook.common.ext.openUrl
 import com.dimension.maskbook.common.ext.shareText
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
@@ -115,6 +116,7 @@ fun CollectibleDetail(
     val viewModel = getViewModel<CollectibleDetailViewModel> {
         parametersOf(id)
     }
+    val context = LocalContext.current
     val data by viewModel.data.observeAsState(initial = null)
     val transactions by viewModel.transactions.observeAsState()
     val nativeToken by viewModel.walletNativeToken.observeAsState()
@@ -128,9 +130,9 @@ fun CollectibleDetail(
                 }
             }
         },
-        onReceive = {
+        onOpenSeaClicked = {
             data?.let {
-                navController.navigate(WalletRoute.WalletQrcode(it.chainType.name))
+                context.openUrl(it.link)
             }
         },
         transactions = transactions,

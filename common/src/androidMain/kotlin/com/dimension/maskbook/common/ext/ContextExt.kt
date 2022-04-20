@@ -22,6 +22,7 @@ package com.dimension.maskbook.common.ext
 
 import android.content.Context
 import android.content.Intent
+import androidx.core.net.toUri
 
 fun Context.shareText(text: String) {
     startActivity(
@@ -31,6 +32,14 @@ fun Context.shareText(text: String) {
             type = "text/plain"
         }.let {
             Intent.createChooser(it, text)
+        }
+    )
+}
+
+fun Context.openUrl(url: String) {
+    startActivity(
+        Intent(Intent.ACTION_VIEW).apply {
+            data = url.toUri()
         }
     )
 }
