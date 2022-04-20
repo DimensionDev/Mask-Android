@@ -133,5 +133,6 @@ private fun DbPersonaRecord.toPersonaData(): PersonaData {
         identifier = identifier,
         name = nickname.orEmpty(),
         avatar = avatar,
+        owned = privateKey != null
     )
 }

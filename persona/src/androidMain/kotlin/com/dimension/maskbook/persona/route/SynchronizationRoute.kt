@@ -95,8 +95,8 @@ fun SynchronizationScan(
 
 @NavGraphDestination(
     route = PersonaRoute.Synchronization.Success,
-    packageName = navigationComposeAnimComposablePackage,
-    functionName = navigationComposeAnimComposable,
+    packageName = navigationComposeDialogPackage,
+    functionName = navigationComposeDialog,
 )
 @Composable
 fun SynchronizationSuccess(
@@ -131,8 +131,8 @@ fun SynchronizationSuccess(
 
 @NavGraphDestination(
     route = PersonaRoute.Synchronization.Failed,
-    packageName = navigationComposeAnimComposablePackage,
-    functionName = navigationComposeAnimComposable,
+    packageName = navigationComposeDialogPackage,
+    functionName = navigationComposeDialog,
 )
 @Composable
 fun SynchronizationFailed(

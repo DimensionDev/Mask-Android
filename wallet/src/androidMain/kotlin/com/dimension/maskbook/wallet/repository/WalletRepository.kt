@@ -496,8 +496,6 @@ internal class WalletRepository(
         platformType: CoinPlatformType,
     ) {
         scope.launch {
-            Log.d("Mimao", "privateKey:$privateKey")
-            Log.d("Mimao", "name:$name, coinType:$platformType")
             val wallet = WalletKey.fromPrivateKey(
                 privateKey = privateKey,
                 name = name,
