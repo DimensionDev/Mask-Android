@@ -18,15 +18,25 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.setting.ext
+package com.dimension.maskbook.setting.util
 
-import com.dimension.maskbook.setting.export.model.BackupMetaFile
-import com.dimension.maskbook.setting.export.model.DateWrapper
+import android.content.Context
+import androidx.test.core.app.ApplicationProvider
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import org.junit.runner.RunWith
+import kotlin.test.Test
+import kotlin.test.assertNotNull
 
-val BackupMetaFile.Meta.Companion.Default: BackupMetaFile.Meta
-    get() = BackupMetaFile.Meta(
-        maskbookVersion = "2.5.0",
-        createdAt = DateWrapper(System.currentTimeMillis()),
-        version = 2,
-        type = "maskbook-backup"
-    )
+@RunWith(AndroidJUnit4::class)
+class EncryptUtilsTest {
+    @Test
+    fun test_decrypt_backup() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val list = context.assets.list("backup")
+        list?.forEach {
+            val bytes = context.assets.open("backup/$it").readBytes()
+            val backupFile = EncryptUtils.decryptBackup("", "", bytes)
+            assertNotNull(backupFile)
+        }
+    }
+}

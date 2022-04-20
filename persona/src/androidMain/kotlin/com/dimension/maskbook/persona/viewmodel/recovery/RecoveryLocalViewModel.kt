@@ -30,6 +30,7 @@ import com.dimension.maskbook.setting.export.BackupServices
 import com.dimension.maskbook.setting.export.SettingServices
 import com.dimension.maskbook.setting.export.model.BackupMeta
 import com.dimension.maskbook.setting.export.model.BackupMetaFile
+import com.dimension.maskbook.setting.export.model.BackupWrongPasswordException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -90,8 +91,12 @@ class RecoveryLocalViewModel(
             _loadState.value = LoadState.Success
         } catch (e: Throwable) {
             e.printStackTrace()
-            _passwordError.value = true
-            _loadState.value = LoadState.RequirePassword
+            if (e is BackupWrongPasswordException) {
+                _passwordError.value = true
+                _loadState.value = LoadState.RequirePassword
+            } else {
+                _loadState.value = LoadState.Failed
+            }
         }
     }
 
