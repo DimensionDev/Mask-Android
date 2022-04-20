@@ -496,6 +496,8 @@ internal class WalletRepository(
         platformType: CoinPlatformType,
     ) {
         scope.launch {
+            Log.d("Mimao", "privateKey:$privateKey")
+            Log.d("Mimao", "name:$name, coinType:$platformType")
             val wallet = WalletKey.fromPrivateKey(
                 privateKey = privateKey,
                 name = name,
@@ -869,10 +871,10 @@ internal class WalletRepository(
                 val mnemonic = data.mnemonic
                 val derivationPath = data.derivationPath
                 // TODO: support other coin types
-                if (!privateKey.isNullOrEmpty()) {
-                    importWallet(data.name, privateKey, CoinPlatformType.Ethereum)
-                } else if (!mnemonic.isNullOrEmpty() && !derivationPath.isNullOrEmpty()) {
-                    importWallet(data.name, mnemonic, derivationPath, CoinPlatformType.Ethereum)
+                if (!mnemonic.isNullOrEmpty() && !derivationPath.isNullOrEmpty()) {
+                    importWallet(name = data.name, mnemonicCode = mnemonic.split(" "), path = listOf(derivationPath), platformType = CoinPlatformType.Ethereum)
+                } else if (!privateKey.isNullOrEmpty()) {
+                    importWallet(name = data.name, privateKey = privateKey, platformType = CoinPlatformType.Ethereum)
                 } else {
                     // not a valid backup
                 }
