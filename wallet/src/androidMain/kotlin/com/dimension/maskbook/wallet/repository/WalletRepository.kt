@@ -413,7 +413,7 @@ internal class WalletRepository(
         path: List<String>,
         platformType: CoinPlatformType,
     ) {
-        scope.launch {
+        withContext(scope.coroutineContext) {
             val wallet = WalletKey.fromMnemonic(mnemonic = mnemonicCode.joinToString(" "), "")
             val accounts = path.map {
                 wallet.addNewAccountAtPath(platformType.coinType, it, name, "")
@@ -495,7 +495,7 @@ internal class WalletRepository(
         privateKey: String,
         platformType: CoinPlatformType,
     ) {
-        scope.launch {
+        withContext(scope.coroutineContext) {
             val wallet = WalletKey.fromPrivateKey(
                 privateKey = privateKey,
                 name = name,
