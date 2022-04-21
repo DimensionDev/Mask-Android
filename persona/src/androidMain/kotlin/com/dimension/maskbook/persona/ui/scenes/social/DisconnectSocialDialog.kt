@@ -41,7 +41,7 @@ import com.dimension.maskbook.common.ui.widget.MaskDialog
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.common.ui.widget.button.SecondaryButton
 import com.dimension.maskbook.persona.R
-import com.dimension.maskbook.persona.export.model.PlatformType
+import com.dimension.maskbook.persona.model.SocialProfile
 import com.dimension.maskbook.persona.route.PersonaRoute
 import com.dimension.maskbook.persona.viewmodel.social.DisconnectSocialViewModel
 import org.koin.androidx.compose.getViewModel
@@ -55,7 +55,6 @@ import org.koin.androidx.compose.getViewModel
 fun DisconnectSocialDialog(
     navController: NavController,
     @Back onBack: () -> Unit,
-    @Path("platform") platform: String,
     @Path("personaId") personaId: String,
     @Path("socialId") socialId: String,
     @Query("personaName") personaName: String?,
@@ -94,18 +93,10 @@ fun DisconnectSocialDialog(
                 PrimaryButton(
                     modifier = Modifier.weight(1f),
                     onClick = {
-                        when (PlatformType.valueOf(platform)) {
-                            PlatformType.Twitter ->
-                                viewModel.disconnectProfile(
-                                    personaId = personaId,
-                                    socialId = socialId
-                                )
-                            PlatformType.Facebook ->
-                                viewModel.disconnectProfile(
-                                    personaId = personaId,
-                                    socialId = socialId
-                                )
-                        }
+                        viewModel.disconnectProfile(
+                            personaId = personaId,
+                            socialProfile = SocialProfile.parse(socialId)!!
+                        )
                         navController.popBackStack()
                     },
                 ) {

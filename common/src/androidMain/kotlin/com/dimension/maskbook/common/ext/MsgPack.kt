@@ -18,9 +18,19 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.setting.ext
+package com.dimension.maskbook.common.ext
 
 import com.ensarsarajcic.kotlinx.serialization.msgpack.MsgPack
 import com.ensarsarajcic.kotlinx.serialization.msgpack.MsgPackConfiguration
+import kotlinx.serialization.decodeFromByteArray
+import kotlinx.serialization.decodeFromHexString
+import kotlinx.serialization.encodeToByteArray
+import kotlinx.serialization.encodeToHexString
 
 val msgPack = MsgPack(configuration = MsgPackConfiguration(ignoreUnknownKeys = true))
+
+inline fun <reified T> T.encodeMsgPackHex(): String = msgPack.encodeToHexString(this)
+inline fun <reified T> T.encodeMsgPack(): ByteArray = msgPack.encodeToByteArray(this)
+
+inline fun <reified T> ByteArray.decodeMsgPack(): T = msgPack.decodeFromByteArray(this)
+inline fun <reified T> String.decodeMsgPack(): T = msgPack.decodeFromHexString(this)

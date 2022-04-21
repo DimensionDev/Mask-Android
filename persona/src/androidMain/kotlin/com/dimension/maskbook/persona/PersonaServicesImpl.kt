@@ -52,10 +52,6 @@ class PersonaServicesImpl(
         personaRepository.createPersonaFromPrivateKey(value, name)
     }
 
-    override fun connectProfile(personaId: String, profileId: String) {
-        personaRepository.connectProfile(personaId, profileId)
-    }
-
     override suspend fun createPersonaBackup(hasPrivateKeyOnly: Boolean): List<IndexedDBPersona> {
         return personaRepository.createPersonaBackup(hasPrivateKeyOnly)
     }

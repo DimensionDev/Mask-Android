@@ -40,7 +40,7 @@ object Versions {
     const val moshi = "1.8.0"
     const val walletConnectV1 = "0.9.7"
     const val zxing = "4.3.0"
-    const val maskWalletCore = "0.4.1"
+    const val maskWalletCore = "0.5.0"
     const val jodaTime = "2.10.13"
     const val mozilla_components = "98.0.11"
     const val kotlinxSerializationMsgPackVersion = "0.5.0"
