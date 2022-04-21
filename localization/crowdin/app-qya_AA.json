@@ -585,7 +585,8 @@
                 "swap": "crwdns15788:0crwdne15788:0",
                 "cancel": "crwdns15790:0%scrwdne15790:0",
                 "approve": "crwdns15792:0%scrwdne15792:0",
-                "unknown": "crwdns15794:0%scrwdne15794:0"
+                "unknown": "crwdns15794:0%scrwdne15794:0",
+                "mint": "crwdns16296:0crwdne16296:0"
             }
         },
         "wallet_receive": {
