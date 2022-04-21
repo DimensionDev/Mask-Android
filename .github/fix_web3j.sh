@@ -1,0 +1,1 @@
+sed -i "" "s/this\.fetch = false;//" "$1/src/androidMain/assets/web_extensions/Maskbook/js/npm-ns.solana.web3.js.js"
