@@ -46,6 +46,7 @@ class RecoveryLocalViewModel(
         Loading,
         Failed,
         RequirePassword,
+        PasswordSuccess,
         Success,
     }
 
@@ -88,7 +89,7 @@ class RecoveryLocalViewModel(
             }
             _file.value = data
             _meta.value = backupServices.provideBackupMeta(data)
-            _loadState.value = LoadState.Success
+            _loadState.value = LoadState.PasswordSuccess
         } catch (e: Throwable) {
             e.printStackTrace()
             if (e is BackupWrongPasswordException) {
@@ -102,8 +103,11 @@ class RecoveryLocalViewModel(
 
     fun restore() = viewModelScope.launch {
         try {
+            _loadState.value = LoadState.Loading
             _file.value?.let { backupServices.restoreBackup(it) }
+            _loadState.value = LoadState.Success
         } catch (e: Throwable) {
+            _loadState.value = LoadState.Failed
             e.printStackTrace()
         }
     }

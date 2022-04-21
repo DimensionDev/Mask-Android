@@ -220,7 +220,7 @@ fun ImportPasswordScene(
                             inclusive = true
                         }
                     }
-                    RecoveryLocalViewModel.LoadState.Success -> navController.navigate(
+                    RecoveryLocalViewModel.LoadState.PasswordSuccess -> navController.navigate(
                         PersonaRoute.Register.Recovery.LocalBackup.Success(
                             uri,
                             account
@@ -361,7 +361,6 @@ fun ImportWalletConfirmPasswordModal(
     VerifyPaymentPasswordModal(
         onNext = {
             viewModel.restore()
-            navController.navigate(PersonaRoute.Register.Recovery.LocalBackup.Notification)
         }
     )
 }
@@ -385,7 +384,6 @@ fun ImportWalletCreatePasswordModal(
     SetUpPaymentPassword(
         onNext = {
             viewModel.restore()
-            navController.navigate(PersonaRoute.Register.Recovery.LocalBackup.Notification)
         }
     )
 }
@@ -480,6 +478,18 @@ fun ImportSuccessScene(
             parametersOf(uri, account)
         }
     val meta by viewModel.meta.observeAsState(initial = null)
+    val state by viewModel.loadState.observeAsState()
+    LaunchedEffect(Unit) {
+        snapshotFlow { state }
+            .distinctUntilChanged()
+            .collect {
+                when (it) {
+                    RecoveryLocalViewModel.LoadState.Failed -> navController.navigate(PersonaRoute.Register.Recovery.LocalBackup.Failed)
+                    RecoveryLocalViewModel.LoadState.Success -> navController.navigate(PersonaRoute.Register.Recovery.LocalBackup.Notification)
+                    else -> Unit
+                }
+            }
+    }
     MaskScene {
         MaskScaffold(
             topBar = {
@@ -517,7 +527,6 @@ fun ImportSuccessScene(
                             )
                         } else {
                             viewModel.restore()
-                            navController.navigate(PersonaRoute.Register.Recovery.LocalBackup.Notification)
                         }
                     }
                 ) {
@@ -558,7 +567,7 @@ fun ImportingScene(
                             inclusive = true
                         }
                     }
-                    RecoveryLocalViewModel.LoadState.Success -> navController.navigate(
+                    RecoveryLocalViewModel.LoadState.PasswordSuccess -> navController.navigate(
                         PersonaRoute.Register.Recovery.LocalBackup.Success(
                             uri,
                             account
