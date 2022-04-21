@@ -42,7 +42,7 @@ class UserNameModalViewModel(
     fun done(personaId: String, profileName: String) {
         personaRepository.connectProfile(
             personaId,
-            socialProfile.copy(userId = profileName).toString(),
+            socialProfile.copy(userId = profileName),
         )
     }
 }

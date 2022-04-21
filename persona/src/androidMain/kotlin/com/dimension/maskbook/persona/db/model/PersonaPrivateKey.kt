@@ -22,12 +22,11 @@ package com.dimension.maskbook.persona.db.model
 
 import android.util.Base64
 import com.dimension.maskbook.common.ext.decodeBase64Bytes
+import com.dimension.maskbook.common.ext.decodeMsgPack
 import com.dimension.maskbook.common.ext.encodeBase64String
-import com.ensarsarajcic.kotlinx.serialization.msgpack.MsgPack
+import com.dimension.maskbook.common.ext.encodeMsgPack
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.decodeFromByteArray
-import kotlinx.serialization.encodeToByteArray
 
 @Serializable
 data class PersonaPrivateKey(
@@ -47,8 +46,8 @@ data class PersonaPrivateKey(
     val y: String? = null
 ) {
     companion object {
-        fun PersonaPrivateKey.encode() = MsgPack.encodeToByteArray(this).encodeBase64String(flag = Base64.NO_WRAP)
+        fun PersonaPrivateKey.encode() = encodeMsgPack().encodeBase64String(flag = Base64.NO_WRAP)
 
-        fun decode(base64: String) = MsgPack.decodeFromByteArray<PersonaPrivateKey>(base64.decodeBase64Bytes())
+        fun decode(base64: String): PersonaPrivateKey = base64.decodeBase64Bytes().decodeMsgPack()
     }
 }

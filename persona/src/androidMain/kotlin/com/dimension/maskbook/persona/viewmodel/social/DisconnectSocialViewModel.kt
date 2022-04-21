@@ -21,12 +21,13 @@
 package com.dimension.maskbook.persona.viewmodel.social
 
 import androidx.lifecycle.ViewModel
+import com.dimension.maskbook.persona.model.SocialProfile
 import com.dimension.maskbook.persona.repository.IPersonaRepository
 
 class DisconnectSocialViewModel(
     private val repository: IPersonaRepository,
 ) : ViewModel() {
-    fun disconnectProfile(personaId: String, socialId: String) {
-        repository.disconnectProfile(personaId, socialId)
+    fun disconnectProfile(personaId: String, socialProfile: SocialProfile) {
+        repository.disconnectProfile(personaId, socialProfile)
     }
 }

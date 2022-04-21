@@ -28,6 +28,7 @@ import com.dimension.maskbook.persona.export.model.IndexedDBProfile
 import com.dimension.maskbook.persona.export.model.IndexedDBRelation
 import com.dimension.maskbook.persona.export.model.PersonaData
 import com.dimension.maskbook.persona.export.model.PlatformType
+import com.dimension.maskbook.persona.model.SocialProfile
 import kotlinx.coroutines.flow.Flow
 
 interface IPersonaRepository {
@@ -43,8 +44,8 @@ interface IPersonaRepository {
     suspend fun setCurrentPersona(id: String)
     fun updatePersona(id: String, nickname: String)
     fun updateCurrentPersona(nickname: String)
-    fun connectProfile(personaId: String, profileId: String)
-    fun disconnectProfile(personaId: String, profileId: String)
+    fun connectProfile(personaId: String, socialProfile: SocialProfile)
+    fun disconnectProfile(personaId: String, socialProfile: SocialProfile)
     suspend fun createPersonaFromMnemonic(value: List<String>, name: String)
     suspend fun createPersonaFromPrivateKey(value: String, name: String)
     suspend fun backupPrivateKey(id: String): String

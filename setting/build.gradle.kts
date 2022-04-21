@@ -13,7 +13,6 @@ kotlin {
             dependencies {
                 implementation(projects.common.routeProcessor.annotations)
                 kspAndroid(projects.common.routeProcessor)
-                implementation("com.ensarsarajcic.kotlinx:serialization-msgpack:${Versions.kotlinxSerializationMsgPackVersion}")
             }
         }
         val commonTest by getting {

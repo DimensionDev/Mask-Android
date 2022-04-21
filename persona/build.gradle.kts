@@ -14,7 +14,6 @@ kotlin {
                 implementation(projects.common)
                 implementation(projects.common.routeProcessor.annotations)
                 kspAndroid(projects.common.routeProcessor)
-                implementation("com.ensarsarajcic.kotlinx:serialization-msgpack:${Versions.kotlinxSerializationMsgPackVersion}")
             }
         }
         val commonTest by getting {
@@ -27,6 +26,8 @@ kotlin {
             dependencies {
                 kspAndroid("androidx.room:room-compiler:${Versions.Androidx.room}")
                 implementation("com.github.dhaval2404:imagepicker:2.1")
+                implementation("io.github.dimensiondev:maskwalletcore:${Versions.maskWalletCore}")
+                implementation("com.nimbusds:nimbus-jose-jwt:9.21")
             }
         }
         val androidTest by getting {

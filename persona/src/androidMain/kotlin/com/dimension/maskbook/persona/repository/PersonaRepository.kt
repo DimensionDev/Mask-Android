@@ -21,23 +21,42 @@
 package com.dimension.maskbook.persona.repository
 
 import android.net.Uri
+import android.util.Base64
+import com.dimension.maskbook.common.ext.decodeBase64Bytes
+import com.dimension.maskbook.common.ext.decodeJson
+import com.dimension.maskbook.common.ext.decodeMsgPack
+import com.dimension.maskbook.common.ext.encodeBase64String
+import com.dimension.maskbook.common.ext.encodeJson
+import com.dimension.maskbook.common.ext.encodeJsonElement
+import com.dimension.maskbook.common.ext.encodeMsgPack
 import com.dimension.maskbook.common.ext.toSite
 import com.dimension.maskbook.extension.export.ExtensionServices
-import com.dimension.maskbook.persona.data.JSMethod
 import com.dimension.maskbook.persona.datasource.DbPersonaDataSource
 import com.dimension.maskbook.persona.datasource.DbPostDataSource
 import com.dimension.maskbook.persona.datasource.DbProfileDataSource
 import com.dimension.maskbook.persona.datasource.DbRelationDataSource
+import com.dimension.maskbook.persona.datasource.JsProfileDataSource
 import com.dimension.maskbook.persona.export.error.PersonaAlreadyExitsError
 import com.dimension.maskbook.persona.export.model.ConnectAccountData
 import com.dimension.maskbook.persona.export.model.IndexedDBPersona
 import com.dimension.maskbook.persona.export.model.IndexedDBPost
 import com.dimension.maskbook.persona.export.model.IndexedDBProfile
 import com.dimension.maskbook.persona.export.model.IndexedDBRelation
+import com.dimension.maskbook.persona.export.model.LinkedProfileDetailsState
 import com.dimension.maskbook.persona.export.model.PersonaData
 import com.dimension.maskbook.persona.export.model.PlatformType
 import com.dimension.maskbook.persona.export.model.SocialData
+import com.dimension.maskbook.persona.ext.toJWK
 import com.dimension.maskbook.persona.model.ContactData
+import com.dimension.maskbook.persona.model.SocialProfile
+import com.dimension.maskbook.persona.model.options.AttachProfileOptions
+import com.dimension.maskbook.persona.model.options.DetachProfileOptions
+import com.dimension.maskbook.setting.export.model.JsonWebKey
+import com.dimension.maskwalletcore.CurveType
+import com.dimension.maskwalletcore.EncryptionOption
+import com.dimension.maskwalletcore.PersonaKey
+import com.nimbusds.jose.jwk.Curve
+import com.nimbusds.jose.jwk.ECKey
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -52,16 +71,18 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPublicKey
+import org.bouncycastle.jce.provider.BouncyCastleProvider
 
 internal class PersonaRepository(
     private val scope: CoroutineScope,
-    private val jsMethod: JSMethod,
     private val extensionServices: ExtensionServices,
     private val preferenceRepository: IPreferenceRepository,
     private val personaDataSource: DbPersonaDataSource,
     private val profileDataSource: DbProfileDataSource,
     private val relationDataSource: DbRelationDataSource,
     private val postDataSource: DbPostDataSource,
+    private val jsProfileDataSource: JsProfileDataSource,
 ) : IPersonaRepository,
     ISocialsRepository,
     IContactsRepository {
@@ -136,7 +157,6 @@ internal class PersonaRepository(
         withContext(scope.coroutineContext) {
             if (id.isEmpty() || personaDataSource.getPersona(id) != null) {
                 preferenceRepository.setCurrentPersonaIdentifier(id)
-                jsMethod.setCurrentPersonaIdentifier(id)
             }
         }
     }
@@ -150,15 +170,12 @@ internal class PersonaRepository(
             }
             setCurrentPersona(newCurrentPersona?.identifier.orEmpty())
             personaDataSource.deletePersona(deletePersona.identifier)
-
-            jsMethod.removePersona(deletePersona.identifier)
         }
     }
 
     override fun updatePersona(id: String, nickname: String) {
         scope.launch {
             personaDataSource.updateNickName(id, nickname)
-            jsMethod.updatePersonaInfo(id, nickname)
         }
     }
 
@@ -166,41 +183,121 @@ internal class PersonaRepository(
         scope.launch {
             val id = currentPersona.firstOrNull()?.identifier ?: return@launch
             personaDataSource.updateNickName(id, nickname)
-            jsMethod.updatePersonaInfo(id, nickname)
         }
     }
 
-    override fun connectProfile(personaId: String, profileId: String) {
+    override fun connectProfile(personaId: String, socialProfile: SocialProfile) {
         scope.launch {
-            jsMethod.connectProfile(personaId, profileId)
+            jsProfileDataSource.attachProfile(
+                AttachProfileOptions(
+                    personaId,
+                    profileIdentifier = socialProfile.toString(),
+                    state = AttachProfileOptions.State(LinkedProfileDetailsState.Confirmed)
+                )
+            )
         }
     }
 
-    override fun disconnectProfile(personaId: String, profileId: String) {
+    override fun disconnectProfile(personaId: String, socialProfile: SocialProfile) {
         scope.launch {
-            jsMethod.disconnectProfile(profileId)
+            jsProfileDataSource.detachProfile(
+                DetachProfileOptions(
+                    profileIdentifier = socialProfile.toString(),
+                )
+            )
         }
     }
 
     override suspend fun createPersonaFromMnemonic(value: List<String>, name: String) {
         withContext(scope.coroutineContext) {
-            val mnemonic = value.joinToString(" ")
-            if (personaDataSource.containsMnemonic(mnemonic)) {
-                throw PersonaAlreadyExitsError()
+            try {
+                val mnemonic = value.joinToString(" ")
+                if (personaDataSource.containsMnemonic(mnemonic)) {
+                    throw PersonaAlreadyExitsError()
+                }
+                val path = "m/44'/60'/0'/0/0"
+                val persona = PersonaKey.create(
+                    mnemonic,
+                    "",
+                    path,
+                    // TODO: Support other curve
+                    CurveType.SECP256K1,
+                    EncryptionOption(EncryptionOption.Version.V38)
+                )
+                val data = IndexedDBPersona(
+                    identifier = persona.identifier,
+                    linkedProfiles = emptyMap(),
+                    nickname = name,
+                    privateKey = persona.privateKey.toJWK().encodeJsonElement(),
+                    publicKey = persona.publicKey.toJWK().encodeJsonElement(),
+                    localKey = persona.localKey?.toJWK()?.encodeJsonElement(),
+                    mnemonic = IndexedDBPersona.Mnemonic(
+                        words = mnemonic,
+                        parameter = IndexedDBPersona.Mnemonic.Parameter(
+                            path = path,
+                            withPassword = false,
+                        )
+                    ),
+                    hasLogout = false,
+                    uninitialized = false,
+                    createdAt = System.currentTimeMillis(),
+                    updatedAt = System.currentTimeMillis(),
+                )
+
+                personaDataSource.addAll(listOf(data))
+                setCurrentPersona(data.identifier)
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
-            jsMethod.createPersonaByMnemonic(mnemonic, name, "")
         }
     }
 
     override suspend fun createPersonaFromPrivateKey(value: String, name: String) {
         withContext(scope.coroutineContext) {
             if (personaDataSource.containsPrivateKey(value)) throw PersonaAlreadyExitsError()
-            jsMethod.restoreFromPrivateKey(privateKey = value, nickname = name)
+            value.decodeBase64Bytes(Base64.NO_PADDING or Base64.NO_WRAP)
+                .decodeMsgPack<JsonWebKey>()
+                .let {
+                    val data = IndexedDBPersona(
+                        identifier = getIdentifierFromPrivateKey(it),
+                        linkedProfiles = emptyMap(),
+                        nickname = name,
+                        privateKey = it.encodeJsonElement(),
+                        publicKey = it.copy(d = null).encodeJsonElement(),
+                        localKey = null,
+                        mnemonic = null,
+                        hasLogout = false,
+                        uninitialized = false,
+                        createdAt = System.currentTimeMillis(),
+                        updatedAt = System.currentTimeMillis(),
+                    )
+                    personaDataSource.addAll(listOf(data))
+                    setCurrentPersona(data.identifier)
+                }
         }
     }
 
+    private fun getIdentifierFromPrivateKey(value: JsonWebKey): String {
+        // TODO: Support other curve
+        return (
+            ECKey.parse(value.copy(crv = Curve.SECP256K1.name, d = null).encodeJson()).toECPublicKey(
+                BouncyCastleProvider()
+            ) as BCECPublicKey
+            )
+            .q
+            .getEncoded(true)
+            .encodeBase64String(Base64.URL_SAFE)
+            .replace("_", "|")
+            .let {
+                "ec_key:secp256k1/$it".trim()
+            }
+    }
+
     override suspend fun backupPrivateKey(id: String): String {
-        return jsMethod.backupPrivateKey(id) ?: ""
+        return personaDataSource.getPersonaPrivateKey(id)
+            ?.decodeJson<JsonWebKey>()
+            .encodeMsgPack()
+            .encodeBase64String(Base64.NO_WRAP or Base64.NO_PADDING)
     }
 
     override fun setPlatform(platformType: PlatformType) {

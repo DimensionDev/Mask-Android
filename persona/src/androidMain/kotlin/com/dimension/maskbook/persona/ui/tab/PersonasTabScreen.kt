@@ -74,7 +74,6 @@ class PersonasTabScreen : TabScreen {
                     navController.navigate(
                         PersonaRoute.DisconnectSocial(
                             personaId = persona.identifier,
-                            platform = it.name,
                             socialId = social.id,
                             personaName = persona.name,
                             socialName = social.name,
