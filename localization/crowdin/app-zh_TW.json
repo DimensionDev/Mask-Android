@@ -585,7 +585,8 @@
                 "swap": "",
                 "cancel": "",
                 "approve": "",
-                "unknown": ""
+                "unknown": "",
+                "mint": ""
             }
         },
         "wallet_receive": {
