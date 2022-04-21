@@ -152,7 +152,7 @@ class DownloadQrCodeViewModel(
         textPaint.reset()
         textPaint.color = Color.BLACK
         textPaint.textSize = 12f
-        canvas.drawText(info.identifier, 264f, 180f + textPaint.textBaseLine(), textPaint)
+        canvas.drawText(info.identifier.substringAfter("/"), 264f, 180f + textPaint.textBaseLine(), textPaint)
         // tips
         bitmapPaint.reset()
         val tipsBitmap = Bitmap.createScaledBitmap(
