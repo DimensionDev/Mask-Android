@@ -21,6 +21,7 @@
 package com.dimension.maskbook
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.activity.compose.setContent
@@ -29,6 +30,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.lifecycleScope
 import coil.compose.LocalImageLoader
 import com.dimension.maskbook.common.gecko.PromptFeatureDelegate
 import com.dimension.maskbook.common.gecko.WebContentController
@@ -36,6 +38,8 @@ import com.dimension.maskbook.common.manager.ImageLoaderManager
 import com.dimension.maskbook.common.ui.widget.LocalWindowInsetsController
 import com.dimension.maskbook.entry.ui.App
 import com.google.accompanist.insets.ProvideWindowInsets
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 
@@ -53,7 +57,11 @@ class ComposeActivity : FragmentActivity() {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-        promptFeature = get<WebContentController>().createPromptFeature(this)
+        val controller = get<WebContentController>()
+        promptFeature = controller.createPromptFeature(this)
+        controller.interceptorUri.onEach { uri ->
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(uri)))
+        }.launchIn(lifecycleScope)
         setContent {
             CompositionLocalProvider(
                 LocalImageLoader provides imageLoaderManager.imageLoader,
