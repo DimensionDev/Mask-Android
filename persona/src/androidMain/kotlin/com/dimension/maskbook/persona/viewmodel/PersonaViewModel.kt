@@ -27,10 +27,8 @@ import com.dimension.maskbook.persona.export.model.PersonaData
 import com.dimension.maskbook.persona.repository.IPersonaRepository
 import com.dimension.maskbook.persona.repository.ISocialsRepository
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 
 class PersonaViewModel(
@@ -38,7 +36,6 @@ class PersonaViewModel(
     private val socialRepository: ISocialsRepository,
 ) : ViewModel() {
     data class PersonaState(val persona: PersonaData?)
-    @OptIn(ExperimentalCoroutinesApi::class)
     val currentPersona by lazy {
         personaRepository.currentPersona
             // .map { PersonaState(it) }
@@ -47,26 +44,19 @@ class PersonaViewModel(
     val personaList by lazy {
         personaRepository.personaList
             .map { it.filter { persona -> persona.owned } }
-            .asStateIn(viewModelScope, null)
+            .asStateIn(viewModelScope, emptyList())
     }
 
     val showEmptyUi by lazy {
-        personaList.mapNotNull {
-            it?.isEmpty()
+        personaList.map {
+            it.isEmpty()
         }.asStateIn(viewModelScope, false)
     }
 
     val socialList by lazy {
         socialRepository.socials
             .flowOn(Dispatchers.IO)
-            .asStateIn(viewModelScope, null)
-    }
-
-    init {
-        loadPersona()
-    }
-
-    private fun loadPersona() = viewModelScope.launch {
+            .asStateIn(viewModelScope, emptyList())
     }
 
     fun setCurrentPersona(it: PersonaData) {
