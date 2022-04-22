@@ -34,6 +34,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,6 +45,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.dimension.maskbook.common.ext.navigateToHome
+import com.dimension.maskbook.common.route.CommonRoute
+import com.dimension.maskbook.common.route.navigationComposeDialog
+import com.dimension.maskbook.common.route.navigationComposeDialogPackage
+import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
 import com.dimension.maskbook.common.ui.widget.HorizontalScenePadding
 import com.dimension.maskbook.common.ui.widget.MaskDialog
 import com.dimension.maskbook.common.ui.widget.MaskInputField
@@ -56,7 +62,11 @@ import com.dimension.maskbook.common.ui.widget.button.MaskButton
 import com.dimension.maskbook.common.ui.widget.button.MaskIconButton
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.wallet.R
+import com.dimension.maskbook.wallet.repository.IWalletRepository
 import com.dimension.maskbook.wallet.route.WalletRoute
+import com.dimension.maskbook.wallet.viewmodel.wallets.create.CreateWalletRecoveryKeyViewModel
+import org.koin.androidx.compose.getViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
 fun CreateOrImportWalletScene(
@@ -64,6 +74,11 @@ fun CreateOrImportWalletScene(
     onBack: () -> Unit,
     type: CreateType
 ) {
+    val repo = org.koin.androidx.compose.get<IWalletRepository>()
+    val wallets by repo.wallets.collectAsState(emptyList())
+    val viewModel = getViewModel<CreateWalletRecoveryKeyViewModel> {
+        parametersOf("")
+    }
     MaskScene {
         MaskScaffold(
             topBar = {
@@ -139,7 +154,16 @@ fun CreateOrImportWalletScene(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
                         when (type) {
-                            CreateType.CREATE -> navController.navigate(WalletRoute.CreateWallet.Pharse(input))
+                            CreateType.CREATE -> {
+                                if (wallets.isNotEmpty()) {
+                                    viewModel.setWallet(input)
+                                    viewModel.refreshWords()
+                                    viewModel.confirm()
+                                    navController.navigate(WalletRoute.CreateWallet.Success)
+                                } else {
+                                    navController.navigate(WalletRoute.CreateWallet.Pharse(input))
+                                }
+                            }
                             CreateType.IMPORT -> navController.navigate(WalletRoute.ImportWallet.Import(input))
                         }
                     },
@@ -153,10 +177,17 @@ fun CreateOrImportWalletScene(
     }
 }
 
+@NavGraphDestination(
+    route = WalletRoute.CreateWallet.Success,
+    packageName = navigationComposeDialogPackage,
+    functionName = navigationComposeDialog,
+)
 @Composable
-private fun CreateSuccessDialog(onDismissRequest: () -> Unit) {
+fun CreateSuccessDialog(
+    navController: NavController,
+) {
     MaskDialog(
-        onDismissRequest = { /*TODO*/ },
+        onDismissRequest = { },
         title = { Text(text = "Wallet successfully created!") },
         icon = {
             Image(
@@ -166,7 +197,9 @@ private fun CreateSuccessDialog(onDismissRequest: () -> Unit) {
         },
         buttons = {
             PrimaryButton(
-                onClick = onDismissRequest,
+                onClick = {
+                    navController.navigateToHome(CommonRoute.Main.Tabs.Wallet)
+                },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(text = stringResource(R.string.common_controls_done))

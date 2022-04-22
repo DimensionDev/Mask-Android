@@ -37,7 +37,10 @@ class CreateWalletRecoveryKeyViewModel(
 ) : BaseMnemonicPhraseViewModel() {
     private val _wallet = MutableStateFlow(wallet)
 
-    @OptIn(ExperimentalStdlibApi::class)
+    fun setWallet(wallet: String) {
+        _wallet.value = wallet
+    }
+
     override fun generateWords(): List<String> {
         return repository.generateNewMnemonic()
     }

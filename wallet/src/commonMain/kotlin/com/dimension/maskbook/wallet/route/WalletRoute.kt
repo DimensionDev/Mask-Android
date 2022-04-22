@@ -107,6 +107,7 @@ expect object WalletRoute {
             operator fun invoke(wallet: String): String
         }
         const val Confirm: String
+        const val Success: String
     }
 
     object ImportWallet {
