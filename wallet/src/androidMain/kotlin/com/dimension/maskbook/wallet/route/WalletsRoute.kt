@@ -36,7 +36,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.navOptions
 import com.dimension.maskbook.common.bigDecimal.BigDecimal
@@ -561,7 +560,6 @@ fun WalletManagementRename(
 @Composable
 fun WalletIntroHostLegal(
     navController: NavController,
-    navBackStackEntry: NavBackStackEntry,
     @Back onBack: () -> Unit,
     @Path("type") typeString: String,
 ) {
@@ -583,8 +581,8 @@ fun WalletIntroHostLegal(
         navController.navigate(
             route,
             navOptions {
-                popUpTo(id = navBackStackEntry.destination.id) {
-                    inclusive = true
+                navController.currentDestination?.id?.let { popId ->
+                    popUpTo(popId) { inclusive = true }
                 }
                 launchSingleTop = true
             }
