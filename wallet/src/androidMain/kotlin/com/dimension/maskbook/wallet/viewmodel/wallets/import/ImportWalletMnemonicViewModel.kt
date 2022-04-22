@@ -69,6 +69,7 @@ class ImportWalletMnemonicViewModel(
                     imported = false,
                     tokens = emptyList(),
                     balance = emptyMap(),
+                    createdAt = System.currentTimeMillis(),
                 )
             )
         )
