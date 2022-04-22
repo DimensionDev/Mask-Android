@@ -64,7 +64,8 @@ fun WalletData.Companion.fromDb(data: DbWalletTokenTokenWithWallet) = with(data)
         },
         balance = balance.associate { it.type to it.value },
         walletConnectChainType = wallet.walletConnectChainType,
-        walletConnectDeepLink = wallet.walletConnectDeepLink
+        walletConnectDeepLink = wallet.walletConnectDeepLink,
+        createdAt = wallet.createdAt,
     )
 }
 
