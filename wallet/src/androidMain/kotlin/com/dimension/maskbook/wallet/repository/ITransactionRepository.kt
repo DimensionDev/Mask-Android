@@ -65,7 +65,9 @@ class TransactionRepository(
             getTokenId = {
                 it?.id ?: if (isNativeToken) tokenData.address else ""
             }
-        )
+        ).filter {
+            it.tokenData.id == tokenData.address && it.tokenData.chainType == tokenData.chainType
+        }
     }
 
     override suspend fun getTransactionByWallet(walletData: WalletData): List<TransactionData> {
@@ -82,7 +84,10 @@ class TransactionRepository(
         walletData: WalletData,
         collectible: WalletCollectibleData
     ): List<TransactionData> {
-        return walletServices.etherscanServices.assetEvent(collectible.contract.address, walletData.address).result?.map {
+        return walletServices.etherscanServices.assetEvent(
+            collectible.contract.address,
+            walletData.address
+        ).result?.map {
             val type = if (it.from?.lowercase() == "0x0000000000000000000000000000000000000000") {
                 TransactionType.Mint
             } else if (it.from?.lowercase() == walletData.address.lowercase()) {
@@ -124,7 +129,27 @@ class TransactionRepository(
         }
         val result =
             walletServices.debankServices.history(chainId, walletData.address.lowercase())
-        return result.data?.historyList?.map {
+        val pendingTransaction = walletRepository.pendingTransaction.firstOrNull() ?: emptyList()
+        val pendingResult = pendingTransaction.map {
+            TransactionData(
+                id = it.transactionHash,
+                type = TransactionType.Send,
+                count = it.count,
+                status = TransactionStatus.Pending,
+                message = "Pending",
+                createdAt = it.createdAt,
+                updatedAt = it.createdAt,
+                tokenData = TransactionTokenData(
+                    chainType = chainType,
+                    symbol = it.token.symbol,
+                    price = it.token.price,
+                    id = it.token.address,
+                    contractId = "",
+                ),
+                price = it.count * it.token.price,
+            )
+        }
+        val remoteResult = result.data?.historyList?.map {
             val type = when {
                 it.cateID == "approve" -> TransactionType.Approve
                 it.cateID == "cancel" -> TransactionType.Cancel
@@ -180,5 +205,6 @@ class TransactionRepository(
                 }
             )
         } ?: emptyList()
+        return pendingResult + remoteResult
     }
 }

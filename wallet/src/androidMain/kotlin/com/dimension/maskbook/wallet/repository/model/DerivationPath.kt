@@ -20,6 +20,10 @@
  */
 package com.dimension.maskbook.wallet.repository.model
 
+import com.dimension.maskbook.common.bigDecimal.BigDecimal
+import com.dimension.maskbook.wallet.export.model.ChainType
+import com.dimension.maskbook.wallet.export.model.TokenData
+
 data class DerivationPath(
     val purpose: Int,
     val coin: Int,
@@ -41,3 +45,11 @@ data class DerivationPath(
             .let { DerivationPath(it[0], it[1], it[2], it[3], it[4]) }
     }
 }
+
+data class PendingTransaction(
+    val transactionHash: String,
+    val chainId: ChainType,
+    val count: BigDecimal,
+    val createdAt: Long,
+    val token: TokenData,
+)
