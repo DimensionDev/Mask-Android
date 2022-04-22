@@ -61,7 +61,7 @@ fun PersonaScene(
     onSynchronize: () -> Unit,
 ) {
     val viewModel: PersonaViewModel = getViewModel()
-    val currentPersona by viewModel.currentPersona.observeAsState(initial = null)
+    val currentPersona by viewModel.currentPersona.observeAsState()
     val socialList by viewModel.socialList.observeAsState()
     val personaList by viewModel.personaList.observeAsState()
     val showEmptyUi by viewModel.showEmptyUi.observeAsState()
@@ -110,9 +110,9 @@ fun PersonaScene(
                     .fillMaxSize(),
             ) {
                 PersonaInfoScene(
-                    socialList = socialList,
+                    socialList = socialList ?: emptyList(),
                     currentPersona = persona,
-                    personaList = personaList,
+                    personaList = personaList ?: emptyList(),
                     onAddSocialClick = { network ->
                         onAddSocialClick(persona, network)
                     },
