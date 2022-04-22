@@ -35,6 +35,7 @@ import androidx.room.withTransaction
 import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.common.ext.httpService
 import com.dimension.maskbook.common.ext.use
+import com.dimension.maskbook.common.ext.useSuspend
 import com.dimension.maskbook.common.util.EthUtils
 import com.dimension.maskbook.common.util.SignUtils
 import com.dimension.maskbook.debankapi.model.ChainID
@@ -62,6 +63,7 @@ import com.dimension.maskbook.wallet.ext.dbank
 import com.dimension.maskbook.wallet.ext.ether
 import com.dimension.maskbook.wallet.ext.gwei
 import com.dimension.maskbook.wallet.paging.mediator.CollectibleCollectionMediator
+import com.dimension.maskbook.wallet.repository.model.PendingTransaction
 import com.dimension.maskbook.wallet.services.WalletServices
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager
 import com.dimension.maskwalletcore.CoinType
@@ -71,6 +73,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
@@ -328,6 +332,11 @@ internal class WalletRepository(
         get() = dWebData.map {
             getChainTokenData(it.chainType)
         }
+
+    private val _pendingTransaction = MutableStateFlow<List<PendingTransaction>>(emptyList())
+
+    override val pendingTransaction: Flow<List<PendingTransaction>>
+        get() = _pendingTransaction.asSharedFlow()
 
     override suspend fun getChainTokenData(chainType: ChainType): ChainData? {
         return database.chainDao().getById(chainType.chainId)?.let {
@@ -684,6 +693,8 @@ internal class WalletRepository(
         data: String,
         onDone: (String?) -> Unit,
         onError: (Throwable) -> Unit,
+        tokenAmount: BigDecimal,
+        tokenData: TokenData?,
     ) {
         scope.launch {
             val wallet = currentWallet.filterNotNull().first()
@@ -717,8 +728,17 @@ internal class WalletRepository(
                     } else amount.ether.wei.toBigInteger(),
                     data = data,
                 )
-            }.onSuccess {
-                onDone(it.transactionHash)
+            }.onSuccess { response ->
+                tokenData?.let {
+                    _pendingTransaction.value += PendingTransaction(
+                        response.transactionHash,
+                        chainType,
+                        count = tokenAmount,
+                        createdAt = System.currentTimeMillis(),
+                        it
+                    )
+                }
+                onDone(response.transactionHash)
             }.onFailure {
                 Log.w("WalletRepository", "sendTokenWithCurrentWallet: ${it.message}")
                 onError(it)
@@ -785,7 +805,9 @@ internal class WalletRepository(
                 maxPriorityFee = maxPriorityFee,
                 data = data,
                 onDone = onDone,
-                onError = onError
+                onError = onError,
+                tokenAmount = amount,
+                tokenData = tokenData,
             )
         }
     }
@@ -830,6 +852,21 @@ internal class WalletRepository(
             refreshCurrentWalletToken()
             refreshCurrentWalletCollectibles()
             refreshNativeTokens()
+            refreshPendingTransaction()
+        }
+    }
+
+    private suspend fun refreshPendingTransaction() {
+        val items = pendingTransaction.firstOrNull() ?: return
+        items.forEach {
+            runCatching {
+                Web3j.build(it.chainId.httpService).useSuspend { web3j ->
+                    val result = web3j.ethGetTransactionReceipt(it.transactionHash).send()
+                    if (result.transactionReceipt.orElse(null) != null) {
+                        _pendingTransaction.value -= it
+                    }
+                }
+            }
         }
     }
 
@@ -870,7 +907,12 @@ internal class WalletRepository(
                 val derivationPath = data.derivationPath
                 // TODO: support other coin types
                 if (!mnemonic.isNullOrEmpty() && !derivationPath.isNullOrEmpty()) {
-                    importWallet(name = data.name, mnemonicCode = mnemonic.split(" "), path = listOf(derivationPath), platformType = CoinPlatformType.Ethereum)
+                    importWallet(
+                        name = data.name,
+                        mnemonicCode = mnemonic.split(" "),
+                        path = listOf(derivationPath),
+                        platformType = CoinPlatformType.Ethereum
+                    )
                 } else if (!privateKey.isNullOrEmpty()) {
                     importWallet(name = data.name, privateKey = privateKey, platformType = CoinPlatformType.Ethereum)
                 } else {

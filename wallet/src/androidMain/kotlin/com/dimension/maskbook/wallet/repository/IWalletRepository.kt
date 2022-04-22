@@ -36,6 +36,7 @@ import com.dimension.maskbook.wallet.export.model.WalletCollectibleContract
 import com.dimension.maskbook.wallet.export.model.WalletCollectibleData
 import com.dimension.maskbook.wallet.export.model.WalletData
 import com.dimension.maskbook.wallet.export.model.WalletTokenData
+import com.dimension.maskbook.wallet.repository.model.PendingTransaction
 import kotlinx.coroutines.flow.Flow
 
 data class WalletCreateOrImportResult(
@@ -169,6 +170,7 @@ interface IWalletRepository {
     val wallets: Flow<List<WalletData>>
     val currentWallet: Flow<WalletData?>
     val currentChain: Flow<ChainData?>
+    val pendingTransaction: Flow<List<PendingTransaction>>
     suspend fun getChainTokenData(chainType: ChainType): ChainData?
     fun setCurrentWallet(walletData: WalletData?)
     fun setCurrentWallet(walletId: String)
@@ -231,7 +233,9 @@ interface IWalletRepository {
         maxPriorityFee: Double,
         data: String,
         onDone: (String?) -> Unit,
-        onError: (Throwable) -> Unit
+        onError: (Throwable) -> Unit,
+        tokenAmount: BigDecimal = amount,
+        tokenData: TokenData? = null,
     )
 
     fun validatePrivateKey(privateKey: String): Boolean
