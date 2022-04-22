@@ -149,7 +149,9 @@ fun LuckDropModal(
                 enabled = stateData.buttonEnabled && !loading,
                 onClick = {
                     viewModel.getSendTransactionData(stateData)?.let { data ->
-                        navController.navigateUri(Uri.parse(Deeplinks.Wallet.SendTokenConfirm(data)))
+                        navController.navigateUri(
+                            Uri.parse(Deeplinks.Wallet.SendTokenConfirm(data, ignorePaymentPassword = true))
+                        )
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),

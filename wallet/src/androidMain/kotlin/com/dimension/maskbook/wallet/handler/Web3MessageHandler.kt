@@ -86,7 +86,7 @@ internal class Web3MessageHandler(
                             payloadId = request.payload.id,
                             jsonrpc = request.payload.jsonrpc,
                         ).encodeJson()
-                        Navigator.navigate(WalletRoute.SendTokenConfirm(dataRaw, requestRaw))
+                        Navigator.navigate(WalletRoute.SendTokenConfirm(dataRaw, false, requestRaw))
                     }
                     "personal_sign" -> {
                         val message = payload.params.getOrNull(0)?.normalized as? String
