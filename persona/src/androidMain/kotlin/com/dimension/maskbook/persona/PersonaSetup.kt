@@ -161,7 +161,7 @@ object PersonaSetup : ModuleSetup {
         viewModel { VerifyPaymentPasswordViewModel(get()) }
         viewModel { PersonaViewModel(get(), get()) }
         viewModel { DisconnectSocialViewModel(get()) }
-        viewModel { SwitchPersonaViewModel(get(), get()) }
+        viewModel { SwitchPersonaViewModel(get()) }
         viewModel { PersonaMenuViewModel(get(), get()) }
         viewModel { (personaId: String) -> RenamePersonaViewModel(get(), get(), personaId) }
         viewModel { ExportPrivateKeyViewModel(get()) }
