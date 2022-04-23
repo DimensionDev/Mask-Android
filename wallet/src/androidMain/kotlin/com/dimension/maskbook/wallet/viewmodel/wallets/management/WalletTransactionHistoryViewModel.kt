@@ -20,8 +20,6 @@
  */
 package com.dimension.maskbook.wallet.viewmodel.wallets.management
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.common.util.DateUtils
 import com.dimension.maskbook.wallet.repository.ITransactionRepository
@@ -30,6 +28,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import moe.tlaster.precompose.viewmodel.ViewModel
+import moe.tlaster.precompose.viewmodel.viewModelScope
 
 class WalletTransactionHistoryViewModel(
     private val repository: IWalletRepository,

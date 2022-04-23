@@ -20,8 +20,6 @@
  */
 package com.dimension.maskbook.persona.viewmodel
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.common.ext.onFinished
 import com.dimension.maskbook.persona.repository.IPersonaRepository
@@ -29,6 +27,8 @@ import com.dimension.maskbook.setting.export.SettingServices
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import moe.tlaster.precompose.viewmodel.ViewModel
+import moe.tlaster.precompose.viewmodel.viewModelScope
 
 class PersonaLogoutViewModel(
     private val repository: IPersonaRepository,

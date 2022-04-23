@@ -20,12 +20,12 @@
  */
 package com.dimension.maskbook.setting.viewmodel
 
-import androidx.lifecycle.ViewModel
 import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.setting.repository.BackupRepository
 import com.dimension.maskbook.setting.repository.ISettingsRepository
 import com.dimension.maskbook.setting.services.model.AccountType
 import kotlinx.coroutines.flow.firstOrNull
+import moe.tlaster.precompose.viewmodel.ViewModel
 
 class BackupCloudExecuteViewModel(
     private val settingsRepository: ISettingsRepository,

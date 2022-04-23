@@ -21,8 +21,6 @@
 package com.dimension.maskbook.labs.viewmodel
 
 import android.util.Log
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.exception.NullTransactionReceiptException
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.common.ext.decodeJson
@@ -51,6 +49,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import moe.tlaster.precompose.viewmodel.ViewModel
+import moe.tlaster.precompose.viewmodel.viewModelScope
 import org.web3j.abi.FunctionEncoder
 import kotlin.time.Duration.Companion.seconds
 

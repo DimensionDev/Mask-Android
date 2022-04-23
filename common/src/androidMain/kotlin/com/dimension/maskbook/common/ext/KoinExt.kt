@@ -22,8 +22,8 @@ package com.dimension.maskbook.common.ext
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
+import moe.tlaster.precompose.viewmodel.ViewModel
 import org.koin.androidx.viewmodel.ViewModelOwner
 import org.koin.androidx.viewmodel.scope.getViewModel
 import org.koin.core.annotation.KoinInternalApi

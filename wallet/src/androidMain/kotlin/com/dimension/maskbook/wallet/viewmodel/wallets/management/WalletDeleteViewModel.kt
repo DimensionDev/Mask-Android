@@ -20,8 +20,6 @@
  */
 package com.dimension.maskbook.wallet.viewmodel.wallets.management
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.setting.export.SettingServices
 import com.dimension.maskbook.wallet.repository.IWalletRepository
@@ -29,6 +27,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
+import moe.tlaster.precompose.viewmodel.ViewModel
+import moe.tlaster.precompose.viewmodel.viewModelScope
 
 class WalletDeleteViewModel(
     private val id: String,

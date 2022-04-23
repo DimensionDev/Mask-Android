@@ -21,8 +21,6 @@
 package com.dimension.maskbook.common.viewmodel
 
 import android.content.Context
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.R
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.common.util.BiometricAuthenticator
@@ -31,6 +29,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import moe.tlaster.precompose.viewmodel.ViewModel
+import moe.tlaster.precompose.viewmodel.viewModelScope
 
 open class BiometricViewModel(
     private val biometricAuthenticator: BiometricAuthenticator,

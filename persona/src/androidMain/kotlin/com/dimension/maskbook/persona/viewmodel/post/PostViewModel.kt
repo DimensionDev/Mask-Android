@@ -20,14 +20,14 @@
  */
 package com.dimension.maskbook.persona.viewmodel.post
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.persona.export.model.PersonaData
 import com.dimension.maskbook.persona.model.PostData
 import com.dimension.maskbook.persona.repository.IPersonaRepository
 import com.dimension.maskbook.persona.repository.IPostRepository
 import kotlinx.coroutines.flow.combine
+import moe.tlaster.precompose.viewmodel.ViewModel
+import moe.tlaster.precompose.viewmodel.viewModelScope
 
 class PostViewModel(
     repository: IPostRepository,

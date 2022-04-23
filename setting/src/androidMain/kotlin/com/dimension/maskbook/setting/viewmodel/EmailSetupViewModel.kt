@@ -20,7 +20,6 @@
  */
 package com.dimension.maskbook.setting.viewmodel
 
-import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.Validator
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.setting.defaultRegionCode
@@ -31,6 +30,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
+import moe.tlaster.precompose.viewmodel.viewModelScope
 
 class EmailSetupViewModel(
     private val settingsRepository: ISettingsRepository,

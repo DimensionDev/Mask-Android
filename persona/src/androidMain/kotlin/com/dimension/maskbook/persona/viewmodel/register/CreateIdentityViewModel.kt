@@ -20,13 +20,13 @@
  */
 package com.dimension.maskbook.persona.viewmodel.register
 
-import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.common.viewmodel.BaseMnemonicPhraseViewModel
 import com.dimension.maskbook.persona.repository.IPersonaRepository
 import com.dimension.maskbook.wallet.export.WalletServices
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import moe.tlaster.precompose.viewmodel.viewModelScope
 
 class CreateIdentityViewModel(
     private val personaName: String,

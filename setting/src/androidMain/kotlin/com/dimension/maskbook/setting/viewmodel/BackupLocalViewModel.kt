@@ -21,8 +21,6 @@
 package com.dimension.maskbook.setting.viewmodel
 
 import android.net.Uri
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.LocalBackupAccount
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.setting.repository.BackupRepository
@@ -32,6 +30,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import moe.tlaster.precompose.viewmodel.ViewModel
+import moe.tlaster.precompose.viewmodel.viewModelScope
 
 class BackupLocalViewModel(
     private val repository: ISettingsRepository,

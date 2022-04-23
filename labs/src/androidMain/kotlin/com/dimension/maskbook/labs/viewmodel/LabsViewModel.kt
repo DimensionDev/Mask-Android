@@ -22,8 +22,6 @@ package com.dimension.maskbook.labs.viewmodel
 
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.labs.R
 import com.dimension.maskbook.labs.export.model.AppKey
@@ -32,6 +30,8 @@ import com.dimension.maskbook.wallet.export.WalletServices
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import moe.tlaster.precompose.viewmodel.ViewModel
+import moe.tlaster.precompose.viewmodel.viewModelScope
 
 data class AppDisplayData(
     val key: AppKey,
