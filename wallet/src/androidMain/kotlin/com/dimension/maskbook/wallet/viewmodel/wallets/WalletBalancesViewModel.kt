@@ -99,6 +99,9 @@ class WalletBalancesViewModel(
 
     fun setCurrentDisplayChainType(displayChainType: ChainType?) {
         _displayChainType.value = displayChainType
+        if (displayChainType != null) {
+            repository.setChainType(displayChainType, true)
+        }
     }
 
     private val _refreshingWallet = MutableStateFlow(false)
