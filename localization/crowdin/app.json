@@ -586,7 +586,8 @@
                 "swap": "WETH Deposit",
                 "cancel": "Cancel %s",
                 "approve": "Approve %s",
-                "unknown": "Unknown %s"
+                "unknown": "Unknown %s",
+                "mint": "Mint"
             }
         },
         "wallet_receive": {

@@ -51,7 +51,7 @@ expect object Deeplinks {
     object Wallet {
         const val SwitchWallet: String
         object SendTokenConfirm {
-            operator fun invoke(dataRaw: String): String
+            operator fun invoke(dataRaw: String, ignorePaymentPassword: Boolean): String
         }
     }
     object WebContent {

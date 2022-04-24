@@ -18,21 +18,25 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.wallet.export.model
+package com.dimension.maskbook.setting.util
 
-import com.dimension.maskbook.common.bigDecimal.BigDecimal
+import android.content.Context
+import androidx.test.core.app.ApplicationProvider
+import androidx.test.ext.junit.runners.AndroidJUnit4
+import org.junit.runner.RunWith
+import kotlin.test.Test
+import kotlin.test.assertNotNull
 
-data class WalletData(
-    val id: String,
-    val name: String,
-    val address: String,
-    val imported: Boolean,
-    val fromWalletConnect: Boolean,
-    val walletConnectChainType: ChainType? = ChainType.eth,
-    val walletConnectDeepLink: String? = null,
-    val tokens: List<WalletTokenData>,
-    val balance: Map<DbWalletBalanceType, BigDecimal>,
-    val createdAt: Long,
-) {
-    companion object
+@RunWith(AndroidJUnit4::class)
+class EncryptUtilsTest {
+    @Test
+    fun test_decrypt_backup() {
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        val list = context.assets.list("backup")
+        list?.forEach {
+            val bytes = context.assets.open("backup/$it").readBytes()
+            val backupFile = EncryptUtils.decryptBackup("", "", bytes)
+            assertNotNull(backupFile)
+        }
+    }
 }

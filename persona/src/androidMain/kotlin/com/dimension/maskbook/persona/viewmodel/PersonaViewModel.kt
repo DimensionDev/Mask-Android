@@ -30,6 +30,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 
 class PersonaViewModel(
@@ -40,12 +41,19 @@ class PersonaViewModel(
     @OptIn(ExperimentalCoroutinesApi::class)
     val currentPersona by lazy {
         personaRepository.currentPersona
-            .map { PersonaState(it) }
+            // .map { PersonaState(it) }
             .asStateIn(viewModelScope, null)
     }
     val personaList by lazy {
         personaRepository.personaList
+            .map { it.filter { persona -> persona.owned } }
             .asStateIn(viewModelScope, null)
+    }
+
+    val showEmptyUi by lazy {
+        personaList.mapNotNull {
+            it?.isEmpty()
+        }.asStateIn(viewModelScope, false)
     }
 
     val socialList by lazy {

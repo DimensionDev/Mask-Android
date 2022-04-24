@@ -69,6 +69,7 @@ fun SendTokenConfirmModal(
     rootNavController: NavController,
     @Back onBack: () -> Unit,
     @Path("dataRaw") dataRaw: String,
+    @Path("ignorePaymentPassword") ignorePaymentPassword: Boolean,
     @Query("requestRaw") requestRaw: String?,
 ) {
     val data = remember(dataRaw) { dataRaw.decodeJson<SendTransactionData>() }
@@ -95,6 +96,18 @@ fun SendTokenConfirmModal(
             val loadingState by gasFeeViewModel.loadingState.observeAsState()
             val gasFeeUnit by gasFeeViewModel.gasFeeUnit.observeAsState()
 
+            fun onDone() {
+                viewModel.send(
+                    gasLimit = gasLimit,
+                    maxFee = maxFee,
+                    maxPriorityFee = maxPriorityFee,
+                    onResult = { transactionHash ->
+                        onBack.invoke()
+                        rootNavController.sendEvent(ResultEvent.TokenConfirm(transactionHash))
+                    }
+                )
+            }
+
             NavHost(
                 navController,
                 startDestination = "SendConfirm"
@@ -114,7 +127,11 @@ fun SendTokenConfirmModal(
                         sending = sending,
                         confirmEnabled = !loadingState,
                         onConfirm = {
-                            navController.navigate("UnlockWalletDialog")
+                            if (ignorePaymentPassword == true) {
+                                onDone()
+                            } else {
+                                navController.navigate("UnlockWalletDialog")
+                            }
                         },
                         onCancel = {
                             viewModel.cancel()
@@ -174,18 +191,6 @@ fun SendTokenConfirmModal(
                     val password by unlockViewModel.password.observeAsState(initial = "")
                     val passwordValid by unlockViewModel.passwordValid.observeAsState(initial = false)
                     val context = LocalContext.current
-                    val onSuccess: () -> Unit = {
-                        navController.popBackStack()
-                        viewModel.send(
-                            gasLimit = gasLimit,
-                            maxFee = maxFee,
-                            maxPriorityFee = maxPriorityFee,
-                            onResult = { transactionHash ->
-                                onBack.invoke()
-                                rootNavController.sendEvent(ResultEvent.TokenConfirm(transactionHash))
-                            }
-                        )
-                    }
                     UnlockWalletDialog(
                         onBack = { navController.popBackStack() },
                         biometricEnabled = biometricEnable,
@@ -197,12 +202,14 @@ fun SendTokenConfirmModal(
                                 unlockViewModel.authenticate(
                                     context = context,
                                     onSuccess = {
-                                        onSuccess.invoke()
+                                        navController.popBackStack()
+                                        onDone()
                                     }
                                 )
                             } else {
                                 if (passwordValid) {
-                                    onSuccess.invoke()
+                                    navController.popBackStack()
+                                    onDone()
                                 }
                             }
                         }

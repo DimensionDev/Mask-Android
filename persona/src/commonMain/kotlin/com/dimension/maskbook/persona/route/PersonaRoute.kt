@@ -47,7 +47,6 @@ expect object PersonaRoute {
     object DisconnectSocial {
         operator fun invoke(
             personaId: String,
-            platform: String,
             socialId: String,
             personaName: String?,
             socialName: String?

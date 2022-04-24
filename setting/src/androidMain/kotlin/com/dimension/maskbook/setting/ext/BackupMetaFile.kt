@@ -21,11 +21,12 @@
 package com.dimension.maskbook.setting.ext
 
 import com.dimension.maskbook.setting.export.model.BackupMetaFile
+import com.dimension.maskbook.setting.export.model.DateWrapper
 
 val BackupMetaFile.Meta.Companion.Default: BackupMetaFile.Meta
     get() = BackupMetaFile.Meta(
         maskbookVersion = "2.5.0",
-        createdAt = System.currentTimeMillis(),
+        createdAt = DateWrapper(System.currentTimeMillis()),
         version = 2,
         type = "maskbook-backup"
     )

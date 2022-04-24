@@ -50,7 +50,7 @@ class WalletSwitchViewModel(
     }
 
     val wallets = combine(network, _wallets) { n, w ->
-        w.filter { !it.fromWalletConnect || it.walletConnectChainType == n }
+        w.filter { !it.fromWalletConnect || it.walletConnectChainType == n }.sortedByDescending { it.createdAt }
     }
 
     fun setCurrentWallet(data: WalletData) {

@@ -346,9 +346,8 @@ fun RegisterRecoveryComplected(
                 navController.navigate(
                     Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona)),
                     navOptions {
-                        popUpTo(PersonaRoute.Register.Init) {
-                            inclusive = true
-                        }
+                        // 0 is the root navigation
+                        popUpTo(0)
                     }
                 )
             }, modifier = Modifier.fillMaxWidth()) {

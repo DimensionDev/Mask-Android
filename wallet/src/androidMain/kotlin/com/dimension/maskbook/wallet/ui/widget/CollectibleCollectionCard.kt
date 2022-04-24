@@ -47,6 +47,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.items
@@ -88,7 +89,7 @@ fun CollectibleCollectionCard(
                                 error(R.drawable.mask)
                             },
                             contentDescription = null,
-                            modifier = Modifier.size(38.dp),
+                            modifier = Modifier.size(38.dp).clip(CircleShape),
                         )
                         Image(
                             painter = rememberImagePainter(data = data.chainType.onDrawableRes),
@@ -137,7 +138,8 @@ fun CollectibleCollectionCard(
                                     modifier = Modifier
                                         .size(145.dp)
                                         .clip(RoundedCornerShape(12.dp)),
-                                    contentDescription = null
+                                    contentDescription = null,
+                                    contentScale = ContentScale.Crop
                                 )
                             }
                         }

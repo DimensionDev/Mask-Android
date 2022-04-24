@@ -29,6 +29,7 @@ import com.dimension.maskbook.persona.export.model.IndexedDBProfile
 import com.dimension.maskbook.persona.export.model.IndexedDBRelation
 import com.dimension.maskbook.persona.export.model.LinkedProfileDetailsState
 import com.dimension.maskbook.setting.export.model.BackupMetaFile
+import com.dimension.maskbook.setting.export.model.DateWrapper
 import com.dimension.maskbook.setting.ext.fromJWK
 import com.dimension.maskbook.setting.ext.toJWK
 import com.dimension.maskbook.wallet.export.model.BackupWalletData
@@ -47,7 +48,7 @@ fun IndexedDBPost.toBackupPost() = BackupMetaFile.Post(
             }
         )
     } ?: BackupMetaFile.Post.Recipients.StringValue("everyone"),
-    foundAt = foundAt,
+    foundAt = DateWrapper(foundAt),
     encryptBy = encryptBy,
     url = url,
     summary = summary,
@@ -67,7 +68,7 @@ fun BackupMetaFile.Post.toIndexDbPost() = IndexedDBPost(
             is BackupMetaFile.Post.Recipients.StringValue -> null
         }
     },
-    foundAt = foundAt,
+    foundAt = foundAt.value,
     encryptBy = encryptBy,
     url = url,
     summary = summary,
@@ -78,8 +79,8 @@ fun BackupWalletData.toBackupWallet() = BackupMetaFile.Wallet(
     address = address,
     name = name,
     passphrase = passphrase,
-    createdAt = createdAt,
-    updatedAt = updatedAt,
+    createdAt = DateWrapper(createdAt),
+    updatedAt = DateWrapper(updatedAt),
     publicKey = publicKey?.toJWK(),
     privateKey = privateKey?.toJWK(),
     mnemonic = mnemonic?.let { mnemonic ->
@@ -99,8 +100,8 @@ fun BackupMetaFile.Wallet.toWalletData() = BackupWalletData(
     address = address,
     name = name,
     passphrase = passphrase,
-    createdAt = createdAt,
-    updatedAt = updatedAt,
+    createdAt = createdAt.value,
+    updatedAt = updatedAt.value,
     publicKey = publicKey?.fromJWK(),
     privateKey = privateKey?.fromJWK(),
     mnemonic = mnemonic?.words,
@@ -122,8 +123,8 @@ fun BackupMetaFile.Relation.toIndexedDBRelation() = IndexedDBRelation(
 
 fun IndexedDBProfile.toBackupProfile() = BackupMetaFile.Profile(
     identifier = identifier,
-    updatedAt = updatedAt,
-    createdAt = createdAt,
+    updatedAt = DateWrapper(updatedAt),
+    createdAt = DateWrapper(createdAt),
     nickname = nickname,
     linkedPersona = linkedPersona,
     localKey = localKey?.decodeJson(),
@@ -131,16 +132,16 @@ fun IndexedDBProfile.toBackupProfile() = BackupMetaFile.Profile(
 
 fun BackupMetaFile.Profile.toIndexedDBProfile() = IndexedDBProfile(
     identifier = identifier,
-    updatedAt = updatedAt,
-    createdAt = createdAt,
+    updatedAt = updatedAt.value,
+    createdAt = createdAt.value,
     nickname = nickname,
     linkedPersona = linkedPersona,
     localKey = localKey?.encodeJsonElement(),
 )
 
 fun IndexedDBPersona.toBackupPersona() = BackupMetaFile.Persona(
-    updatedAt = updatedAt,
-    createdAt = createdAt,
+    updatedAt = DateWrapper(updatedAt),
+    createdAt = DateWrapper(createdAt),
     publicKey = publicKey?.decodeJson(),
     identifier = identifier,
     nickname = nickname,
@@ -163,8 +164,8 @@ fun IndexedDBPersona.toBackupPersona() = BackupMetaFile.Persona(
 )
 
 fun BackupMetaFile.Persona.toIndexedDBPersona() = IndexedDBPersona(
-    updatedAt = updatedAt,
-    createdAt = createdAt,
+    updatedAt = updatedAt.value,
+    createdAt = createdAt.value,
     publicKey = publicKey?.encodeJsonElement(),
     identifier = identifier,
     nickname = nickname,

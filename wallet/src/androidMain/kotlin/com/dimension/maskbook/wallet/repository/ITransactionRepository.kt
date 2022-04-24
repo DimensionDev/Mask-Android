@@ -20,6 +20,7 @@
  */
 package com.dimension.maskbook.wallet.repository
 
+import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.common.ext.ifNullOrEmpty
 import com.dimension.maskbook.debankapi.model.ChainID
 import com.dimension.maskbook.debankapi.model.TokenDict
@@ -83,15 +84,37 @@ class TransactionRepository(
         walletData: WalletData,
         collectible: WalletCollectibleData
     ): List<TransactionData> {
-        return getTransactionByWalletAndChainType(
-            walletData = walletData,
-            chainType = collectible.chainType,
-            getTokenId = { it?.innerId ?: "" }
-        ).filter {
-            it.tokenData.chainType == collectible.chainType &&
-                it.tokenData.id == collectible.tokenId &&
-                it.tokenData.contractId == collectible.contract.address
-        }
+        return walletServices.etherscanServices.assetEvent(
+            collectible.contract.address,
+            walletData.address
+        ).result?.map {
+            val type = if (it.from?.lowercase() == "0x0000000000000000000000000000000000000000") {
+                TransactionType.Mint
+            } else if (it.from?.lowercase() == walletData.address.lowercase()) {
+                TransactionType.Send
+            } else if (it.to?.lowercase() == walletData.address.lowercase()) {
+                TransactionType.Receive
+            } else {
+                TransactionType.Approve
+            }
+            TransactionData(
+                id = it.hash.orEmpty(),
+                type = type,
+                count = it.gas?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
+                status = TransactionStatus.Success,
+                message = type.name,
+                createdAt = (it.timeStamp?.toLongOrNull() ?: 0L) * 1000,
+                updatedAt = (it.timeStamp?.toLongOrNull() ?: 0L) * 1000,
+                tokenData = TransactionTokenData(
+                    chainType = ChainType.eth,
+                    symbol = it.tokenSymbol.orEmpty(),
+                    price = BigDecimal.ZERO,
+                    id = it.tokenID.orEmpty(),
+                    contractId = it.contractAddress.orEmpty(),
+                ),
+                price = it.gasPrice?.toBigDecimalOrNull() ?: BigDecimal.ZERO,
+            )
+        } ?: emptyList()
     }
 
     private suspend fun getTransactionByWalletAndChainType(
@@ -106,10 +129,49 @@ class TransactionRepository(
         }
         val result =
             walletServices.debankServices.history(chainId, walletData.address.lowercase())
-        return result.data?.historyList?.mapNotNull {
-            val tokenId = it.tokenApprove?.tokenID
-                ?: it.receives?.firstOrNull()?.tokenID
-                ?: it.sends?.firstOrNull()?.tokenID
+        val pendingTransaction = walletRepository.pendingTransaction.firstOrNull() ?: emptyList()
+        val pendingResult = pendingTransaction.map {
+            TransactionData(
+                id = it.transactionHash,
+                type = TransactionType.Send,
+                count = it.count,
+                status = TransactionStatus.Pending,
+                message = "Pending",
+                createdAt = it.createdAt,
+                updatedAt = it.createdAt,
+                tokenData = TransactionTokenData(
+                    chainType = chainType,
+                    symbol = it.token.symbol,
+                    price = it.token.price,
+                    id = it.token.address,
+                    contractId = "",
+                ),
+                price = it.count * it.token.price,
+            )
+        }
+        val remoteResult = result.data?.historyList?.map {
+            val type = when {
+                it.cateID == "approve" -> TransactionType.Approve
+                it.cateID == "cancel" -> TransactionType.Cancel
+                it.cateID == "receive" -> TransactionType.Receive
+                it.cateID == "send" -> TransactionType.Send
+                it.receives?.any { it.fromAddr == "0x0000000000000000000000000000000000000000" } == true -> TransactionType.Receive
+                it.receives?.any { it.fromAddr == walletData.address } == true -> TransactionType.Send
+                it.sends?.any { it.toAddr == walletData.address } == true -> TransactionType.Receive
+                else -> TransactionType.Unknown
+            }
+            val tokenId = when (type) {
+                TransactionType.Send -> {
+                    it.sends?.firstOrNull()?.tokenID
+                }
+                TransactionType.Receive -> {
+                    it.receives?.firstOrNull()?.tokenID
+                }
+                else ->
+                    it.tokenApprove?.tokenID
+                        ?: it.receives?.firstOrNull()?.tokenID
+                        ?: it.sends?.firstOrNull()?.tokenID
+            }
             val tokenData = result.data?.tokenDict?.get(tokenId).let { token ->
                 TransactionTokenData(
                     id = getTokenId(token),
@@ -119,28 +181,30 @@ class TransactionRepository(
                     contractId = token?.contractId ?: ""
                 )
             }
+            val count = java.math.BigDecimal(
+                when (type) {
+                    TransactionType.Send -> it.sends?.firstOrNull()?.amount ?: 0.0
+                    TransactionType.Receive -> it.receives?.firstOrNull()?.amount ?: 0.0
+                    TransactionType.Approve -> it.tx?.ethGasFee ?: 0.0
+                    else -> it.tx?.value?.takeIf { it != 0.0 } ?: it.sends?.firstOrNull()?.amount?.takeIf { it != 0.0 }
+                        ?: it.receives?.firstOrNull()?.amount?.takeIf { it != 0.0 } ?: 0.0
+                }
+            )
             TransactionData(
                 id = it.id ?: "",
                 createdAt = (it.timeAt?.roundToLong() ?: 0L) * 1000,
                 updatedAt = (it.timeAt?.roundToLong() ?: 0L) * 1000,
-                type = when {
-                    it.cateID == "approve" -> TransactionType.Approve
-                    it.cateID == "cancel" -> TransactionType.Cancel
-                    it.cateID == "receive" -> TransactionType.Receive
-                    it.cateID == "send" -> TransactionType.Send
-                    it.receives?.any { it.fromAddr == "0x0000000000000000000000000000000000000000" } == true -> TransactionType.Receive
-                    it.receives?.any { it.fromAddr == walletData.address } == true -> TransactionType.Send
-                    it.sends?.any { it.toAddr == walletData.address } == true -> TransactionType.Receive
-                    else -> TransactionType.Unknown
-                },
-                count = java.math.BigDecimal(
-                    it.tx?.value ?: it.sends?.firstOrNull()?.amount
-                        ?: it.receives?.firstOrNull()?.amount ?: 0.0
-                ),
+                type = type,
+                count = count,
                 status = TransactionStatus.Success,
                 message = it.tx?.name ?: "",
                 tokenData = tokenData,
+                price = when (type) {
+                    TransactionType.Approve -> BigDecimal(it.tx?.usdGasFee ?: 0.0)
+                    else -> count * tokenData.price
+                }
             )
         } ?: emptyList()
+        return pendingResult + remoteResult
     }
 }

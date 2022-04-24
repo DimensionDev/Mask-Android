@@ -33,6 +33,7 @@ import com.dimension.maskbook.persona.export.model.PersonaData
 import com.dimension.maskbook.persona.export.model.PersonaQrCode
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.serialization.json.JsonObject
 
 class DbPersonaDataSource(private val database: PersonaDatabase) {
 
@@ -50,6 +51,10 @@ class DbPersonaDataSource(private val database: PersonaDatabase) {
 
     suspend fun getPersona(personaIdentifier: String): PersonaData? {
         return personaDao.find(personaIdentifier)?.toPersonaData()
+    }
+
+    suspend fun getPersonaPrivateKey(personaIdentifier: String): JsonObject? {
+        return personaDao.find(personaIdentifier)?.privateKey
     }
 
     suspend fun getPersonaFirst(): PersonaData? {
@@ -133,5 +138,6 @@ private fun DbPersonaRecord.toPersonaData(): PersonaData {
         identifier = identifier,
         name = nickname.orEmpty(),
         avatar = avatar,
+        owned = privateKey != null
     )
 }

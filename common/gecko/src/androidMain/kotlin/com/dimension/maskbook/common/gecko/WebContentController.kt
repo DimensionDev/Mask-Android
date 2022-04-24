@@ -112,6 +112,10 @@ class WebContentController(
     private val runtime by lazy {
         GeckoRuntime.create(context)
     }
+
+    private val _interceptorUri = MutableSharedFlow<String>(extraBufferCapacity = 1)
+    val interceptorUri = _interceptorUri.asSharedFlow()
+
     private val interceptor by lazy {
         object : RequestInterceptor {
             override fun onLoadRequest(
@@ -128,6 +132,7 @@ class WebContentController(
                     return null
                 }
                 return if (!onNavigate(uri)) {
+                    _interceptorUri.tryEmit(uri)
                     RequestInterceptor.InterceptionResponse.AppIntent(
                         Intent(Intent.ACTION_VIEW, Uri.parse(uri)),
                         uri

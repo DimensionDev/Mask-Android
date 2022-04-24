@@ -213,7 +213,7 @@ fun PersonaMenuScene(
                             if (backupPassword.isEmpty()) {
                                 navController.navigateUri(Uri.parse(Deeplinks.Setting.SetupPasswordDialog))
                             } else {
-                                navController.navigate(Deeplinks.Setting.BackupData.BackupSelection)
+                                navController.navigateUri(Uri.parse(Deeplinks.Setting.BackupData.BackupSelection))
                             }
                         }
                     ) {

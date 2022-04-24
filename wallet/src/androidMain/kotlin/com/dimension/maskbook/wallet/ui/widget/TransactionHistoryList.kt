@@ -70,6 +70,7 @@ fun TransactionHistoryList(
     transactions: Map<DateType, List<TransactionData>>,
     onSpeedUp: (TransactionData) -> Unit,
     onCancel: (TransactionData) -> Unit,
+    showPrice: Boolean = true,
 ) {
     if (transactions.isEmpty()) {
         TokenDetailEmptyLayout()
@@ -103,7 +104,8 @@ fun TransactionHistoryList(
                     },
                     onCancel = {
                         onCancel.invoke(item)
-                    }
+                    },
+                    showPrice = showPrice,
                 )
             }
         }
@@ -134,6 +136,7 @@ private fun TransactionItem(
     tokenData: TransactionTokenData,
     onSpeedUp: () -> Unit,
     onCancel: () -> Unit,
+    showPrice: Boolean = true,
 ) {
     MaskListItem(
         contentPadding = PaddingValues(vertical = 12.dp),
@@ -204,41 +207,43 @@ private fun TransactionItem(
                 }
             }
         },
-        trailing = {
-            Column(horizontalAlignment = Alignment.End) {
-                val count = item.count.humanizeToken()
-                val countPrefix = when {
-                    count == "0" -> ""
-                    item.type == TransactionType.Receive -> "+"
-                    item.type == TransactionType.Send -> "-"
-                    else -> ""
-                }
+        trailing = if (showPrice) {
+            {
+                Column(horizontalAlignment = Alignment.End) {
+                    val count = item.count.humanizeToken()
+                    val countPrefix = when {
+                        count == "0" -> ""
+                        item.type == TransactionType.Receive -> "+"
+                        item.type == TransactionType.Send -> "-"
+                        else -> ""
+                    }
 
-                val dollar = (item.count * tokenData.price).humanizeDollar()
-                val dollarPrefix = when {
-                    dollar == "$0" -> ""
-                    item.type == TransactionType.Receive -> "+"
-                    item.type == TransactionType.Send -> "-"
-                    else -> ""
-                }
-                val dollarColor = when {
-                    dollar == "$0" -> Color.Unspecified
-                    item.type == TransactionType.Receive -> Color(0xFF1FB885)
-                    item.type == TransactionType.Send -> Color.Unspecified
-                    else -> Color.Unspecified
-                }
+                    val dollar = item.price.humanizeDollar()
+                    val dollarPrefix = when {
+                        dollar == "$0" -> ""
+                        item.type == TransactionType.Receive -> "+"
+                        item.type == TransactionType.Send -> "-"
+                        else -> ""
+                    }
+                    val dollarColor = when {
+                        dollar == "$0" -> Color.Unspecified
+                        item.type == TransactionType.Receive -> Color(0xFF1FB885)
+                        item.type == TransactionType.Send -> Color.Unspecified
+                        else -> Color.Unspecified
+                    }
 
-                Text(
-                    text = "$countPrefix$count ${tokenData.symbol}",
-                    style = MaterialTheme.typography.caption,
-                )
-                Text(
-                    text = "$dollarPrefix$dollar",
-                    color = dollarColor,
-                    style = MaterialTheme.typography.h5,
-                )
+                    Text(
+                        text = "$countPrefix$count ${tokenData.symbol}",
+                        style = MaterialTheme.typography.caption,
+                    )
+                    Text(
+                        text = "$dollarPrefix$dollar",
+                        color = dollarColor,
+                        style = MaterialTheme.typography.h5,
+                    )
+                }
             }
-        },
+        } else null,
         icon = {
             Box(
                 modifier = Modifier
@@ -283,6 +288,7 @@ private fun TransactionData.title() = message.ifEmpty {
             R.string.scene_transaction_history_type_unknown,
             tokenData.symbol
         )
+        TransactionType.Mint -> stringResource(R.string.scene_transaction_history_type_mint)
     }
 }
 
