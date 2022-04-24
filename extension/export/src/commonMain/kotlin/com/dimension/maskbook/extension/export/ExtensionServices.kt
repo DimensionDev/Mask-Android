@@ -29,6 +29,7 @@ interface ExtensionServices {
     fun setSite(site: Site)
     val isExtensionActive: Flow<Boolean>
     fun loadUrl(url: String)
+    fun refresh()
     suspend fun ensureExtensionActive()
     suspend fun runBackgroundJSMethod(method: String, isWait: Boolean, vararg args: Pair<String, Any>): String?
     fun sendBackgroundJSEventResponse(map: Map<String, Any?>)

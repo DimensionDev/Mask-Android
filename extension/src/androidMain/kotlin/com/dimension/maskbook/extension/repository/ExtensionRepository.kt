@@ -81,4 +81,8 @@ class ExtensionRepository(
     fun loadUrl(url: String) {
         controller.loadUrl(url)
     }
+
+    fun refresh() {
+        controller.refresh()
+    }
 }
