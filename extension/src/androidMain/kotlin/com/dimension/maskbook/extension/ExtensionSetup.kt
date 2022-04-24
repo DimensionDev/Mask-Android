@@ -21,8 +21,6 @@
 package com.dimension.maskbook.extension
 
 import androidx.compose.runtime.getValue
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
@@ -40,12 +38,14 @@ import com.dimension.maskbook.extension.route.ExtensionRoute
 import com.dimension.maskbook.extension.ui.WebContentScene
 import com.dimension.maskbook.extension.utils.BackgroundMessageChannel
 import com.dimension.maskbook.extension.utils.ContentMessageChannel
+import moe.tlaster.precompose.navigation.NavController
+import moe.tlaster.precompose.navigation.RouteBuilder
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import org.koin.mp.KoinPlatformTools
 
 object ExtensionSetup : ModuleSetup {
-    override fun NavGraphBuilder.route(navController: NavController) {
+    override fun RouteBuilder.route(navController: NavController) {
         modalComposable(
             route = ExtensionRoute.WebContent.path,
             deepLinks = listOf(

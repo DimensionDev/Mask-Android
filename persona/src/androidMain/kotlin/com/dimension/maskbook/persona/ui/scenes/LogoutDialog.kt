@@ -35,7 +35,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.navigationComposeBottomSheet
@@ -52,6 +51,7 @@ import com.dimension.maskbook.common.ui.widget.button.SecondaryButton
 import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.route.PersonaRoute
 import com.dimension.maskbook.persona.viewmodel.PersonaLogoutViewModel
+import moe.tlaster.precompose.navigation.NavController
 import org.koin.androidx.compose.getViewModel
 
 @NavGraphDestination(

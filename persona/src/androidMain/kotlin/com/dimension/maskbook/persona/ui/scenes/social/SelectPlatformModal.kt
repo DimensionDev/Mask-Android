@@ -32,7 +32,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.dimension.maskbook.common.route.navigationComposeBottomSheet
 import com.dimension.maskbook.common.route.navigationComposeBottomSheetPackage
 import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
@@ -45,6 +44,7 @@ import com.dimension.maskbook.persona.model.platform
 import com.dimension.maskbook.persona.model.title
 import com.dimension.maskbook.persona.repository.IPersonaRepository
 import com.dimension.maskbook.persona.route.PersonaRoute
+import moe.tlaster.precompose.navigation.NavController
 import org.koin.androidx.compose.get
 
 private val items = listOf(

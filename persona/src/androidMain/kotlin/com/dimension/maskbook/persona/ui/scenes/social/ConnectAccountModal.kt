@@ -40,7 +40,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.dimension.maskbook.common.ext.navigateToHome
 import com.dimension.maskbook.common.route.navigationComposeBottomSheet
@@ -54,6 +53,7 @@ import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.model.SocialProfile
 import com.dimension.maskbook.persona.route.PersonaRoute
 import com.dimension.maskbook.persona.viewmodel.social.UserNameModalViewModel
+import moe.tlaster.precompose.navigation.NavController
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 

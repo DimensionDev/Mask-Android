@@ -34,9 +34,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavController
-import androidx.navigation.navOptions
 import com.dimension.maskbook.common.ext.getNestedNavigationViewModel
+import com.dimension.maskbook.common.ext.navigateUri
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
@@ -55,6 +54,7 @@ import com.dimension.maskbook.wallet.repository.WalletCreateOrImportResult
 import com.dimension.maskbook.wallet.route.WalletRoute
 import com.dimension.maskbook.wallet.ui.scenes.wallets.common.Dialog
 import com.dimension.maskbook.wallet.viewmodel.wallets.create.CreateWalletRecoveryKeyViewModel
+import moe.tlaster.precompose.navigation.NavController
 import org.koin.core.parameter.parametersOf
 
 private const val GeneratedRouteName = "createWalletRoute"
@@ -159,15 +159,14 @@ fun ConfirmRoute(
 ) {
     val onDone = remember {
         {
-            navController.navigate(
+            navController.navigateUri(
                 Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Wallet)),
-                navOptions = navOptions {
-                    launchSingleTop = true
-                    popUpTo(CommonRoute.Main.Home.path) {
-                        inclusive = false
-                    }
+            ) {
+                launchSingleTop = true
+                popUpTo(CommonRoute.Main.Home.path) {
+                    inclusive = false
                 }
-            )
+            }
         }
     }
     MaskDialog(

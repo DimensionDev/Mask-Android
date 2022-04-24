@@ -62,7 +62,6 @@ import androidx.compose.ui.unit.dp
 import androidx.core.database.getLongOrNull
 import androidx.core.database.getStringOrNull
 import androidx.core.net.toFile
-import androidx.navigation.NavController
 import com.dimension.maskbook.common.ext.getNestedNavigationViewModel
 import com.dimension.maskbook.common.ext.humanizeFileSize
 import com.dimension.maskbook.common.ext.humanizeTimestamp
@@ -94,6 +93,7 @@ import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.route.PersonaRoute
 import com.dimension.maskbook.persona.viewmodel.recovery.RecoveryLocalViewModel
 import kotlinx.coroutines.flow.distinctUntilChanged
+import moe.tlaster.precompose.navigation.NavController
 import org.koin.core.parameter.parametersOf
 
 private const val GeneratedRouteName = "recoveryLocalRoute"

@@ -57,8 +57,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import androidx.navigation.navOptions
+import com.dimension.maskbook.common.ext.navigateUri
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
@@ -86,6 +85,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
+import moe.tlaster.precompose.navigation.NavController
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -217,15 +217,14 @@ fun ImportWalletDerivationPathScene(
                         it.Dialog(onDismissRequest = {
                             showDialog = false
                             if (it.type == WalletCreateOrImportResult.Type.SUCCESS) {
-                                navController.navigate(
+                                navController.navigateUri(
                                     Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Wallet)),
-                                    navOptions = navOptions {
-                                        launchSingleTop = true
-                                        popUpTo(CommonRoute.Main.Home.path) {
-                                            inclusive = false
-                                        }
+                                ) {
+                                    launchSingleTop = true
+                                    popUpTo(CommonRoute.Main.Home.path) {
+                                        inclusive = false
                                     }
-                                )
+                                }
                             }
                             result = null
                         })

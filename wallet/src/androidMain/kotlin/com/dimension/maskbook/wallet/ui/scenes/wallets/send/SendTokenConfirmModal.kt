@@ -24,7 +24,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
-import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
@@ -52,6 +51,7 @@ import com.dimension.maskbook.wallet.ui.scenes.wallets.UnlockWalletDialog
 import com.dimension.maskbook.wallet.viewmodel.wallets.UnlockWalletViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.GasFeeViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.Web3TransactionConfirmViewModel
+import moe.tlaster.precompose.navigation.NavController
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 import java.math.BigDecimal

@@ -72,11 +72,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.dialog
 import androidx.navigation.navArgument
-import androidx.navigation.navOptions
 import coil.compose.rememberImagePainter
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.ui.barcode.rememberBarcodeBitmap
@@ -101,6 +99,7 @@ import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import moe.tlaster.precompose.navigation.NavController
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -118,14 +117,13 @@ fun WalletConnectModal(rootNavController: NavController) {
         scope.launch(Dispatchers.Main) {
             when (result) {
                 is WalletConnectResult.Success -> {
-                    if (result.switchNetwork) rootNavController.navigate(
-                        WalletRoute.WalletNetworkSwitchWarningDialog,
-                        navOptions {
+                    if (result.switchNetwork) {
+                        rootNavController.navigate(WalletRoute.WalletNetworkSwitchWarningDialog) {
                             popUpTo(WalletRoute.SwitchWalletAddWalletConnect) {
                                 inclusive = true
                             }
                         }
-                    ) else rootNavController.popBackStack()
+                    } else rootNavController.popBackStack()
                 }
                 is WalletConnectResult.UnSupportedNetwork -> navController.navigate("WalletConnectUnsupportedNetwork/${result.network}")
                 WalletConnectResult.Failed -> navController.navigate("WalletConnectFailed")

@@ -28,7 +28,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
-import androidx.navigation.NavController
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.ext.onFinished
 import com.dimension.maskbook.common.route.navigationComposeAnimComposable
@@ -42,6 +41,7 @@ import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.route.PersonaRoute
 import com.dimension.maskbook.persona.viewmodel.DownloadQrCodeViewModel
 import kotlinx.coroutines.launch
+import moe.tlaster.precompose.navigation.NavController
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 

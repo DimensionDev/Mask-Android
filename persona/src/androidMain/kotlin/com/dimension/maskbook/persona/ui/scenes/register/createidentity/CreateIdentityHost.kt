@@ -30,10 +30,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavController
 import com.dimension.maskbook.common.ext.encodeBase64
 import com.dimension.maskbook.common.ext.getNestedNavigationViewModel
-import com.dimension.maskbook.common.ext.navigate
+import com.dimension.maskbook.common.ext.navigateUri
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
@@ -50,6 +49,7 @@ import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.route.PersonaRoute
 import com.dimension.maskbook.persona.viewmodel.DownloadQrCodeViewModel
 import com.dimension.maskbook.persona.viewmodel.register.CreateIdentityViewModel
+import moe.tlaster.precompose.navigation.NavController
 import org.koin.core.parameter.parametersOf
 
 private const val GeneratedRouteName = "createIdentityRoute"
@@ -127,7 +127,7 @@ fun ConfirmRoute(
             PrimaryButton(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {
-                    navController.navigate(Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona))) {
+                    navController.navigateUri(Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona))) {
                         launchSingleTop = true
                         if (isWelcome) {
                             popUpTo(PersonaRoute.Register.Init) {

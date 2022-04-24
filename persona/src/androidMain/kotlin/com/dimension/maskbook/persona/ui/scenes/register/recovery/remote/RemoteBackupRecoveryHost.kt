@@ -40,7 +40,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.route.navigationComposeBottomSheet
 import com.dimension.maskbook.common.route.navigationComposeBottomSheetPackage
@@ -59,6 +58,7 @@ import com.dimension.maskbook.persona.route.PersonaRoute
 import com.dimension.maskbook.persona.viewmodel.register.EmailRemoteBackupRecoveryViewModel
 import com.dimension.maskbook.persona.viewmodel.register.PhoneRemoteBackupRecoveryViewModel
 import com.dimension.maskbook.persona.viewmodel.register.RemoteBackupRecoveryViewModelBase
+import moe.tlaster.precompose.navigation.NavController
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 

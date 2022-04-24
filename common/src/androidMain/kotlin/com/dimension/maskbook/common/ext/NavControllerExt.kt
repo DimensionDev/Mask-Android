@@ -21,11 +21,11 @@
 package com.dimension.maskbook.common.ext
 
 import android.net.Uri
-import androidx.navigation.NavController
 import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.navOptions
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
+import moe.tlaster.precompose.navigation.NavController
 
 fun NavController.navigate(uri: Uri, builder: NavOptionsBuilder.() -> Unit) {
     navigate(uri, navOptions(builder))
@@ -35,16 +35,18 @@ fun NavController.navigateUri(uri: Uri, builder: NavOptionsBuilder.() -> Unit = 
     navigate(uri, navOptions(builder))
 }
 
-fun NavController.navigateWithPopSelf(route: String) {
+fun NavController.navigateWithPopSelf(route: String, launchSingleTop: Boolean = false) {
     navigate(route) {
+        this.launchSingleTop = launchSingleTop
         currentDestination?.id?.let { popId ->
             popUpTo(popId) { inclusive = true }
         }
     }
 }
 
-fun NavController.navigateUriWithPopSelf(uri: String) {
+fun NavController.navigateUriWithPopSelf(uri: String, launchSingleTop: Boolean = false) {
     navigate(Uri.parse(uri)) {
+        this.launchSingleTop = launchSingleTop
         currentDestination?.id?.let { popId ->
             popUpTo(popId) { inclusive = true }
         }

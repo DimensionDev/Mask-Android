@@ -44,7 +44,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.dimension.maskbook.common.ext.navigateToHome
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.navigationComposeDialog
@@ -65,6 +64,7 @@ import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.repository.IWalletRepository
 import com.dimension.maskbook.wallet.route.WalletRoute
 import com.dimension.maskbook.wallet.viewmodel.wallets.create.CreateWalletRecoveryKeyViewModel
+import moe.tlaster.precompose.navigation.NavController
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 

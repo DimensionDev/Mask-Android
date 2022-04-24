@@ -20,12 +20,12 @@
  */
 package com.dimension.maskbook.persona.ui.scenes.social
 
-import androidx.navigation.NavController
 import com.dimension.maskbook.common.ext.navigateToExtension
 import com.dimension.maskbook.common.ext.toSite
 import com.dimension.maskbook.persona.export.model.PlatformType
 import com.dimension.maskbook.persona.repository.IPersonaRepository
 import com.dimension.maskbook.persona.route.PersonaRoute
+import moe.tlaster.precompose.navigation.NavController
 
 fun connectSocial(
     controller: NavController,

@@ -21,12 +21,12 @@
 package com.dimension.maskbook.setting.ui.tab
 
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavController
 import com.dimension.maskbook.common.ext.navigateToExtension
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.setting.R
 import com.dimension.maskbook.setting.ui.scenes.SettingsScene
+import moe.tlaster.precompose.navigation.NavController
 
 class SettingsTabScreen : TabScreen {
     override val route = CommonRoute.Main.Tabs.Setting

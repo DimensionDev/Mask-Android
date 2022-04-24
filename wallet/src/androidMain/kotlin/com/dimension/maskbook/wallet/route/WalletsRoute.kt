@@ -37,9 +37,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.navigation.NavController
-import androidx.navigation.navOptions
 import com.dimension.maskbook.common.bigDecimal.BigDecimal
+import com.dimension.maskbook.common.ext.navigateUri
+import com.dimension.maskbook.common.ext.navigateWithPopSelf
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.ext.openUrl
 import com.dimension.maskbook.common.ext.shareText
@@ -99,6 +99,7 @@ import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletRenameVi
 import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletSwitchEditViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletSwitchViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletTransactionHistoryViewModel
+import moe.tlaster.precompose.navigation.NavController
 import org.koin.androidx.compose.get
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
@@ -566,15 +567,14 @@ fun WalletManagementRename(
         onNameChanged = { viewModel.setName(it) },
         onDone = {
             viewModel.confirm()
-            navController.navigate(
+            navController.navigateUri(
                 Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Wallet)),
-                navOptions {
-                    launchSingleTop = true
-                    popUpTo(CommonRoute.Main.Home.path) {
-                        inclusive = false
-                    }
+            ) {
+                launchSingleTop = true
+                popUpTo(CommonRoute.Main.Home.path) {
+                    inclusive = false
                 }
-            )
+            }
         },
     )
 }
@@ -598,15 +598,7 @@ internal fun navigateWalletCreate(
     } else {
         WalletRoute.CreateOrImportWallet(type.name)
     }
-    navController.navigate(
-        route,
-        navOptions {
-            navController.currentDestination?.id?.let { popId ->
-                popUpTo(popId) { inclusive = true }
-            }
-            launchSingleTop = true
-        }
-    )
+    navController.navigateWithPopSelf(route, launchSingleTop = true)
 }
 
 @NavGraphDestination(
@@ -639,15 +631,7 @@ fun WalletIntroHostLegal(
             } else {
                 WalletRoute.CreateOrImportWallet(type.name)
             }
-            navController.navigate(
-                route,
-                navOptions {
-                    navController.currentDestination?.id?.let { popId ->
-                        popUpTo(popId) { inclusive = true }
-                    }
-                    launchSingleTop = true
-                }
-            )
+            navController.navigateWithPopSelf(route, launchSingleTop = true)
         },
         onBrowseAgreement = {
             context.startActivity(
@@ -871,25 +855,19 @@ fun UnlockWalletDialog(
                 viewModel.authenticate(
                     context = context,
                     onSuccess = {
-                        navController.navigate(
-                            target,
-                            navOptions {
-                                popUpTo(WalletRoute.UnlockWalletDialog.path) {
-                                    inclusive = true
-                                }
+                        navController.navigate(target) {
+                            popUpTo(WalletRoute.UnlockWalletDialog.path) {
+                                inclusive = true
                             }
-                        )
-                    }
-                )
-            } else if (passwordValid) {
-                navController.navigate(
-                    target,
-                    navOptions {
-                        popUpTo(WalletRoute.UnlockWalletDialog.path) {
-                            inclusive = true
                         }
                     }
                 )
+            } else if (passwordValid) {
+                navController.navigate(target) {
+                    popUpTo(WalletRoute.UnlockWalletDialog.path) {
+                        inclusive = true
+                    }
+                }
             }
         }
     )
@@ -910,7 +888,7 @@ fun EmptyTokenDialogRoute(
         tokenSymbol = tokenSymbol,
         onCancel = onBack,
         onBuy = {
-            navController.navigate(deepLink = Uri.parse(Deeplinks.Labs.Transak))
+            navController.navigateUri(Uri.parse(Deeplinks.Labs.Transak))
         }
     )
 }

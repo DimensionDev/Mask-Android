@@ -31,7 +31,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.dimension.maskbook.common.route.navigationComposeBottomSheet
 import com.dimension.maskbook.common.route.navigationComposeBottomSheetPackage
 import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
@@ -42,6 +41,7 @@ import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.route.PersonaRoute
 import com.dimension.maskbook.persona.viewmodel.RenamePersonaViewModel
+import moe.tlaster.precompose.navigation.NavController
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 

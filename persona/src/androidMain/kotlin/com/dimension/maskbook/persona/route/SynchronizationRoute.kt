@@ -29,10 +29,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavController
-import androidx.navigation.navOptions
 import com.dimension.maskbook.common.ext.decodeBase64
 import com.dimension.maskbook.common.ext.ifNullOrEmpty
+import com.dimension.maskbook.common.ext.navigateUri
+import com.dimension.maskbook.common.ext.navigateWithPopSelf
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.route.Persona
@@ -54,6 +54,7 @@ import com.dimension.maskbook.persona.ui.scenes.register.recovery.PersonaAlready
 import com.dimension.maskbook.persona.viewmodel.recovery.IdentityViewModel
 import com.dimension.maskbook.persona.viewmodel.recovery.PrivateKeyViewModel
 import kotlinx.coroutines.launch
+import moe.tlaster.precompose.navigation.NavController
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -71,23 +72,17 @@ fun SynchronizationScan(
         onBack = onBack,
         onResult = {
             try {
-                navController.navigate(
-                    Uri.parse(it),
-                    navOptions {
-                        popUpTo(PersonaRoute.Synchronization.Scan) {
-                            inclusive = true
-                        }
+                navController.navigateUri(Uri.parse(it)) {
+                    popUpTo(PersonaRoute.Synchronization.Scan) {
+                        inclusive = true
                     }
-                )
+                }
             } catch (e: Throwable) {
-                navController.navigate(
-                    PersonaRoute.Synchronization.Failed,
-                    navOptions {
-                        popUpTo(PersonaRoute.Synchronization.Scan) {
-                            inclusive = true
-                        }
+                navController.navigate(PersonaRoute.Synchronization.Failed) {
+                    popUpTo(PersonaRoute.Synchronization.Scan) {
+                        inclusive = true
                     }
-                )
+                }
             }
         }
     )
@@ -113,15 +108,14 @@ fun SynchronizationSuccess(
         },
         buttons = {
             PrimaryButton(onClick = {
-                navController.navigate(
+                navController.navigateUri(
                     Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona)),
-                    navOptions {
-                        launchSingleTop = true
-                        popUpTo(PersonaRoute.Synchronization.Success) {
-                            inclusive = true
-                        }
+                ) {
+                    launchSingleTop = true
+                    popUpTo(PersonaRoute.Synchronization.Success) {
+                        inclusive = true
                     }
-                )
+                }
             }, modifier = Modifier.fillMaxWidth()) {
                 Text(stringResource(R.string.common_controls_done))
             }
@@ -170,15 +164,14 @@ fun SynchronizationPersonaAlreadyExists(
     PersonaAlreadyExitsDialog(
         onBack = onBack,
         onConfirm = {
-            navController.navigate(
+            navController.navigateUri(
                 Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona)),
-                navOptions {
-                    launchSingleTop = true
-                    popUpTo(PersonaRoute.Synchronization.Persona.AlreadyExists) {
-                        inclusive = true
-                    }
+            ) {
+                launchSingleTop = true
+                popUpTo(PersonaRoute.Synchronization.Persona.AlreadyExists) {
+                    inclusive = true
                 }
-            )
+            }
         },
         restoreFrom = stringResource(R.string.scene_identity_empty_synchronization)
     )
@@ -232,29 +225,13 @@ fun SynchronizationIdentityPrivateKey(
 
 private fun NavController.handleResult(result: Result<Unit>) {
     result.onSuccess {
-        navigate(
-            PersonaRoute.Synchronization.Success,
-            navOptions {
-                currentBackStackEntry?.let { backStackEntry ->
-                    popUpTo(backStackEntry.destination.id) {
-                        inclusive = true
-                    }
-                }
-            }
-        )
+        navigateWithPopSelf(PersonaRoute.Synchronization.Success)
     }.onFailure {
-        navigate(
+        navigateWithPopSelf(
             if (it is PersonaAlreadyExitsError)
                 PersonaRoute.Synchronization.Persona.AlreadyExists
             else
-                PersonaRoute.Synchronization.Failed,
-            navOptions {
-                currentBackStackEntry?.let { backStackEntry ->
-                    popUpTo(backStackEntry.destination.id) {
-                        inclusive = true
-                    }
-                }
-            }
+                PersonaRoute.Synchronization.Failed
         )
     }
 }

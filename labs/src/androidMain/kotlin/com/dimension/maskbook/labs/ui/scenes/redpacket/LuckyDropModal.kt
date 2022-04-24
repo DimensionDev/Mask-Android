@@ -52,7 +52,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.common.ext.encodeUrl
@@ -78,6 +77,7 @@ import com.dimension.maskbook.labs.route.LabsRoute
 import com.dimension.maskbook.labs.ui.widget.ClaimLoadingIndicator
 import com.dimension.maskbook.labs.ui.widget.RedPacketClaimButton
 import com.dimension.maskbook.labs.viewmodel.LuckDropViewModel
+import moe.tlaster.precompose.navigation.NavController
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 import kotlin.math.pow

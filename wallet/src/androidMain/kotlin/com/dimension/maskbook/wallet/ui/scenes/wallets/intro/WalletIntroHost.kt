@@ -26,7 +26,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.navigation.NavController
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.viewmodel.BiometricEnableViewModel
@@ -39,6 +38,7 @@ import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletBalances
 import com.dimension.maskbook.wallet.viewmodel.wallets.WalletBalancesViewModel
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import moe.tlaster.precompose.navigation.NavController
 import org.koin.androidx.compose.get
 import org.koin.androidx.compose.getViewModel
 

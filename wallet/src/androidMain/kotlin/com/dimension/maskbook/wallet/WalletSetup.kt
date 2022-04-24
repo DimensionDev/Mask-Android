@@ -22,8 +22,6 @@ package com.dimension.maskbook.wallet
 
 import android.content.Context
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
 import androidx.room.Room
 import com.dimension.maskbook.common.ModuleSetup
 import com.dimension.maskbook.common.ui.tab.TabScreen
@@ -113,6 +111,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asExecutor
 import kotlinx.coroutines.launch
+import moe.tlaster.precompose.navigation.NavController
+import moe.tlaster.precompose.navigation.RouteBuilder
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.module.Module
 import org.koin.dsl.bind
@@ -123,7 +123,7 @@ import com.dimension.maskbook.wallet.export.WalletServices as ExportWalletServic
 object WalletSetup : ModuleSetup {
 
     @OptIn(ExperimentalAnimationApi::class)
-    override fun NavGraphBuilder.route(navController: NavController) {
+    override fun RouteBuilder.route(navController: NavController) {
         generatedRoute(navController)
         navigation(
             startDestination = WalletRoute.Transfer.SearchAddress.path,

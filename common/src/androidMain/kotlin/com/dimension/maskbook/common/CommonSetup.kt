@@ -20,8 +20,6 @@
  */
 package com.dimension.maskbook.common
 
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
 import com.dimension.maskbook.common.manager.ImageLoaderManager
 import com.dimension.maskbook.common.manager.KeyStoreManager
 import com.dimension.maskbook.common.util.BiometricAuthenticator
@@ -32,12 +30,14 @@ import com.dimension.maskbook.common.viewmodel.SetUpPaymentPasswordViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import moe.tlaster.precompose.navigation.NavController
+import moe.tlaster.precompose.navigation.RouteBuilder
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 
 object CommonSetup : ModuleSetup {
-    override fun NavGraphBuilder.route(navController: NavController) {
+    override fun RouteBuilder.route(navController: NavController) {
     }
 
     override fun dependencyInject() = module {

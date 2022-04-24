@@ -30,7 +30,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavController
 import com.dimension.maskbook.common.ext.navigateWithPopSelf
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.route.CommonRoute
@@ -56,6 +55,7 @@ import com.dimension.maskbook.setting.ui.scenes.PhoneInputModal
 import com.dimension.maskbook.setting.viewmodel.EmailSetupViewModel
 import com.dimension.maskbook.setting.viewmodel.PhoneSetupViewModel
 import kotlinx.coroutines.launch
+import moe.tlaster.precompose.navigation.NavController
 import org.koin.androidx.compose.getViewModel
 
 @NavGraphDestination(

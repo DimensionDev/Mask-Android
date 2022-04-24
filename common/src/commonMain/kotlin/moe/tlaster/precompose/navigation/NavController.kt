@@ -18,17 +18,15 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.common
+package moe.tlaster.precompose.navigation
 
-import moe.tlaster.precompose.navigation.NavController
-import moe.tlaster.precompose.navigation.RouteBuilder
-import org.koin.core.module.Module
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 
-interface ModuleSetup {
-    fun RouteBuilder.route(navController: NavController)
-    fun dependencyInject(): Module
-    fun onExtensionReady() {}
-}
+expect class NavController
+expect class BackStackEntry
 
-fun ModuleSetup.route(builder: RouteBuilder, navController: NavController) =
-    builder.route(navController)
+expect class RouteBuilder
+
+@Composable
+expect fun NavController.currentBackStackEntryAsState(): State<BackStackEntry?>

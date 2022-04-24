@@ -47,8 +47,8 @@ import com.squareup.kotlinpoet.ksp.toTypeName
 import com.squareup.kotlinpoet.ksp.writeTo
 import com.squareup.kotlinpoet.withIndent
 
-private val navControllerType = ClassName("androidx.navigation", "NavController")
-private val navBackStackEntryType = ClassName("androidx.navigation", "NavBackStackEntry")
+private val navControllerType = ClassName("moe.tlaster.precompose.navigation", "NavController")
+private val navBackStackEntryType = ClassName("moe.tlaster.precompose.navigation", "BackStackEntry")
 private const val navControllerName = "controller"
 
 @OptIn(KotlinPoetKspPreview::class, KspExperimental::class)
@@ -100,7 +100,7 @@ internal class RouteGraphProcessor(
                 fileBuilder.addFunction(
                     FunSpec.builder(generatedFunctionName)
                         .addModifiers(KModifier.INTERNAL)
-                        .receiver(ClassName("androidx.navigation", "NavGraphBuilder"))
+                        .receiver(ClassName("moe.tlaster.precompose.navigation", "RouteBuilder"))
                         .addParameter(
                             navControllerName,
                             navControllerType,

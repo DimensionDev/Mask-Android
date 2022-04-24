@@ -45,7 +45,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.dimension.maskbook.common.ext.getNestedNavigationViewModel
 import com.dimension.maskbook.common.ext.navigateWithPopSelf
 import com.dimension.maskbook.common.ext.observeAsState
@@ -69,6 +68,7 @@ import com.dimension.maskbook.setting.viewmodel.BackupLocalViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
+import moe.tlaster.precompose.navigation.NavController
 import kotlin.time.Duration.Companion.milliseconds
 
 private const val GeneratedRouteName = "backupLocalRoute"

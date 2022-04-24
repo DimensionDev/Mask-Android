@@ -30,7 +30,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.dimension.maskbook.common.route.navigationComposeDialog
 import com.dimension.maskbook.common.route.navigationComposeDialogPackage
 import com.dimension.maskbook.common.routeProcessor.annotations.Back
@@ -44,6 +43,7 @@ import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.model.SocialProfile
 import com.dimension.maskbook.persona.route.PersonaRoute
 import com.dimension.maskbook.persona.viewmodel.social.DisconnectSocialViewModel
+import moe.tlaster.precompose.navigation.NavController
 import org.koin.androidx.compose.getViewModel
 
 @NavGraphDestination(
