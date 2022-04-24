@@ -55,6 +55,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.dimension.maskbook.common.bigDecimal.BigDecimal
+import com.dimension.maskbook.common.ext.encodeUrl
 import com.dimension.maskbook.common.ext.eventFlow
 import com.dimension.maskbook.common.ext.navigateUri
 import com.dimension.maskbook.common.ext.navigateWithPopSelf
@@ -102,9 +103,19 @@ fun LuckDropModal(
         navController.eventFlow<ResultEvent.TokenConfirm>().collect { event ->
             val transactionHash = event.transactionHash
             if (transactionHash == null) {
-                navController.popBackStack()
+                navController.navigateWithPopSelf(
+                    LabsRoute.RedPacket.LuckyDropResult(false, null, null)
+                )
                 return@collect
             }
+
+            val text = (
+                "Hi friends, I just found a lucky drop sent by @${stateData.redPacket.shares} on ${stateData.redPacket.tokenName} network. " +
+                    "Follow @realMaskNetwork (mask.io) to claim lucky drops.\n" +
+                    "#mask_io #LuckyDrop\n" +
+                    "${stateData.redPacket.postLink}"
+                )
+            val tweetUrl = "https://mobile.twitter.com/compose/tweet?text=${text.encodeUrl()}"
 
             val redPacketState = viewModel.getRedPacketAvailabilityState(stateData, transactionHash)
             navController.navigateWithPopSelf(
@@ -116,7 +127,7 @@ fun LuckDropModal(
                             stateData.wallet.symbol
                         )
                     },
-                    postLink = stateData.redPacket.postLink,
+                    tweetUrl = tweetUrl,
                 )
             )
         }

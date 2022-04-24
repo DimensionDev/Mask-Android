@@ -2,7 +2,7 @@ mkdir build
 cd build
 git clone https://github.com/DimensionDev/Maskbook.git
 cd Maskbook
-git reset --hard 5de8fb1b27ef3f2cc988ca735a03461a153904e1
+git reset --hard 919fc6bd09fe78a8a0053d141db7e309f631e297
 pnpm install
 npx gulp build-ci
 mkdir -p ../../extension/src/androidMain/assets/web_extensions/Maskbook

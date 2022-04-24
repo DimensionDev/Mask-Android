@@ -77,4 +77,8 @@ class ExtensionRepository(
     private fun onNavigate(target: String): Boolean {
         return target.site != null
     }
+
+    fun loadUrl(url: String) {
+        controller.loadUrl(url)
+    }
 }

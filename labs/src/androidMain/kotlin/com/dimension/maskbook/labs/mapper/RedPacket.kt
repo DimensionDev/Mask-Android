@@ -131,6 +131,7 @@ fun RedPacketOptions.toUiLuckyDropData(
             canSend = state.canSend,
             canRefund = state.canRefund,
             postLink = postLink,
+            tokenName = payload.token.name,
         ),
         buttonEnabled = state.canClaim || state.canRefund,
         buttonStringRes = when {
