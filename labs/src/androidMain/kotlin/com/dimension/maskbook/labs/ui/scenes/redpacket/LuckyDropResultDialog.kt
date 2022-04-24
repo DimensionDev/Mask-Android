@@ -36,12 +36,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.dimension.maskbook.common.ext.shareText
 import com.dimension.maskbook.common.route.navigationComposeDialog
 import com.dimension.maskbook.common.route.navigationComposeDialogPackage
 import com.dimension.maskbook.common.routeProcessor.annotations.Back
@@ -50,9 +48,11 @@ import com.dimension.maskbook.common.routeProcessor.annotations.Path
 import com.dimension.maskbook.common.routeProcessor.annotations.Query
 import com.dimension.maskbook.common.ui.widget.MaskDialog
 import com.dimension.maskbook.common.ui.widget.button.MaskIconButton
+import com.dimension.maskbook.extension.export.ExtensionServices
 import com.dimension.maskbook.labs.R
 import com.dimension.maskbook.labs.route.LabsRoute
 import com.dimension.maskbook.labs.ui.widget.RedPacketShareButton
+import org.koin.androidx.compose.get
 
 @NavGraphDestination(
     route = LabsRoute.RedPacket.LuckyDropResult.path,
@@ -64,9 +64,9 @@ fun LuckyDropResultDialog(
     @Back onBack: () -> Unit,
     @Path("success") success: Boolean,
     @Query("amount") amount: String?,
-    @Query("postLink") postLink: String?,
+    @Query("tweetUrl") tweetUrl: String?,
 ) {
-    val context = LocalContext.current
+    val extensionServices = get<ExtensionServices>()
     MaskDialog(
         onDismissRequest = onBack,
         backgroundColor = Color.Transparent,
@@ -111,7 +111,9 @@ fun LuckyDropResultDialog(
                         RedPacketShareButton(
                             onClick = {
                                 onBack.invoke()
-                                context.shareText(postLink.orEmpty())
+                                tweetUrl?.let {
+                                    extensionServices.loadUrl(it)
+                                }
                             },
                             contentPadding = PaddingValues(vertical = 10.dp),
                             modifier = Modifier.fillMaxWidth(),

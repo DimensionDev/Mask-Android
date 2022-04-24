@@ -44,6 +44,10 @@ internal class ExtensionServicesImpl(
     override val isExtensionActive: Flow<Boolean>
         get() = repository.isExtensionConnected
 
+    override fun loadUrl(url: String) {
+        repository.loadUrl(url)
+    }
+
     override suspend fun ensureExtensionActive() {
         isExtensionActive.first { it }
     }
