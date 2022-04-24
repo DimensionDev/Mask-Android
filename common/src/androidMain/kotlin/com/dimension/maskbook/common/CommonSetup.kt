@@ -30,9 +30,9 @@ import com.dimension.maskbook.common.viewmodel.SetUpPaymentPasswordViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import moe.tlaster.koin.viewModel
 import moe.tlaster.precompose.navigation.NavController
 import moe.tlaster.precompose.navigation.RouteBuilder
-import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 

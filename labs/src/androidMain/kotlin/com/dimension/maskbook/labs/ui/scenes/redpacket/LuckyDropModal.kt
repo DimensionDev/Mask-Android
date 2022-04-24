@@ -77,8 +77,8 @@ import com.dimension.maskbook.labs.route.LabsRoute
 import com.dimension.maskbook.labs.ui.widget.ClaimLoadingIndicator
 import com.dimension.maskbook.labs.ui.widget.RedPacketClaimButton
 import com.dimension.maskbook.labs.viewmodel.LuckDropViewModel
+import moe.tlaster.koin.compose.getViewModel
 import moe.tlaster.precompose.navigation.NavController
-import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 import kotlin.math.pow
 

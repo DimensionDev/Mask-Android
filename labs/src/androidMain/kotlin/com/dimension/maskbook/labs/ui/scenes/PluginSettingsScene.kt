@@ -54,7 +54,7 @@ import com.dimension.maskbook.labs.R
 import com.dimension.maskbook.labs.route.LabsRoute
 import com.dimension.maskbook.labs.viewmodel.PluginDisplayData
 import com.dimension.maskbook.labs.viewmodel.PluginSettingsViewModel
-import org.koin.androidx.compose.viewModel
+import moe.tlaster.koin.compose.getViewModel
 
 @NavGraphDestination(
     route = LabsRoute.PluginSettings,
@@ -65,7 +65,7 @@ import org.koin.androidx.compose.viewModel
 fun PluginSettingsScene(
     @Back onBack: () -> Unit,
 ) {
-    val viewModel by viewModel<PluginSettingsViewModel>()
+    val viewModel = getViewModel<PluginSettingsViewModel>()
     val apps by viewModel.apps.collectAsState()
     val shouldShowPluginSettingsTipDialog by viewModel.shouldShowPluginSettingsTipDialog.collectAsState()
     MaskScene {

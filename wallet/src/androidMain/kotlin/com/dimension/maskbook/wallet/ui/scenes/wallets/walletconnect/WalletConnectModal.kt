@@ -99,8 +99,8 @@ import com.google.accompanist.navigation.animation.composable
 import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import moe.tlaster.koin.compose.getViewModel
 import moe.tlaster.precompose.navigation.NavController
-import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 
 enum class WalletConnectType {

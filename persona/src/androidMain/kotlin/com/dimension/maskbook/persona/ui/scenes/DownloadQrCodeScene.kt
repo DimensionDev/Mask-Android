@@ -41,8 +41,8 @@ import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.route.PersonaRoute
 import com.dimension.maskbook.persona.viewmodel.DownloadQrCodeViewModel
 import kotlinx.coroutines.launch
+import moe.tlaster.koin.compose.getViewModel
 import moe.tlaster.precompose.navigation.NavController
-import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 
 @NavGraphDestination(

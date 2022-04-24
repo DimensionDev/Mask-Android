@@ -31,8 +31,8 @@ import com.dimension.maskbook.common.routeProcessor.annotations.Path
 import com.dimension.maskbook.persona.route.PersonaRoute
 import com.dimension.maskbook.persona.ui.scenes.register.BackUpPasswordModal
 import com.dimension.maskbook.persona.viewmodel.BackUpPasswordViewModel
+import moe.tlaster.koin.compose.getViewModel
 import moe.tlaster.precompose.navigation.NavController
-import org.koin.androidx.compose.getViewModel
 
 @NavGraphDestination(
     route = PersonaRoute.BackUpPassword.path,

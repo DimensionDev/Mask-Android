@@ -78,9 +78,9 @@ import com.dimension.maskbook.persona.viewmodel.social.UserNameModalViewModel
 import com.google.accompanist.navigation.animation.navigation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asExecutor
+import moe.tlaster.koin.viewModel
 import moe.tlaster.precompose.navigation.NavController
 import moe.tlaster.precompose.navigation.RouteBuilder
-import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.binds

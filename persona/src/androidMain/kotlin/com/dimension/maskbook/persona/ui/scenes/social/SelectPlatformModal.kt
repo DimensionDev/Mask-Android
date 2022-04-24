@@ -44,8 +44,8 @@ import com.dimension.maskbook.persona.model.platform
 import com.dimension.maskbook.persona.model.title
 import com.dimension.maskbook.persona.repository.IPersonaRepository
 import com.dimension.maskbook.persona.route.PersonaRoute
+import moe.tlaster.koin.compose.get
 import moe.tlaster.precompose.navigation.NavController
-import org.koin.androidx.compose.get
 
 private val items = listOf(
     Network.Twitter,

@@ -58,8 +58,8 @@ import com.dimension.maskbook.persona.route.PersonaRoute
 import com.dimension.maskbook.persona.viewmodel.register.EmailRemoteBackupRecoveryViewModel
 import com.dimension.maskbook.persona.viewmodel.register.PhoneRemoteBackupRecoveryViewModel
 import com.dimension.maskbook.persona.viewmodel.register.RemoteBackupRecoveryViewModelBase
+import moe.tlaster.koin.compose.getViewModel
 import moe.tlaster.precompose.navigation.NavController
-import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 
 @NavGraphDestination(

@@ -111,9 +111,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asExecutor
 import kotlinx.coroutines.launch
+import moe.tlaster.koin.viewModel
 import moe.tlaster.precompose.navigation.NavController
 import moe.tlaster.precompose.navigation.RouteBuilder
-import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.module.Module
 import org.koin.dsl.bind
 import org.koin.dsl.module

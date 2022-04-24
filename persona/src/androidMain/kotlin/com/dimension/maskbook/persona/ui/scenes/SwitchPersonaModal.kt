@@ -50,8 +50,8 @@ import com.dimension.maskbook.common.ui.widget.MaskSelection
 import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.route.PersonaRoute
 import com.dimension.maskbook.persona.viewmodel.SwitchPersonaViewModel
+import moe.tlaster.koin.compose.getViewModel
 import moe.tlaster.precompose.navigation.NavController
-import org.koin.androidx.compose.getViewModel
 
 @NavGraphDestination(
     route = PersonaRoute.SwitchPersona,

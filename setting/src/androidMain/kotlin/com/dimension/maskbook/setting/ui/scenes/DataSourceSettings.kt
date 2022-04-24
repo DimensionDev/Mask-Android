@@ -29,7 +29,7 @@ import com.dimension.maskbook.common.ui.widget.MaskModal
 import com.dimension.maskbook.common.ui.widget.MaskSelection
 import com.dimension.maskbook.setting.export.model.DataProvider
 import com.dimension.maskbook.setting.viewmodel.DataSourceSettingsViewModel
-import org.koin.androidx.compose.getViewModel
+import moe.tlaster.koin.compose.getViewModel
 
 val dataProviderMap = mapOf(
     DataProvider.COIN_GECKO to "CoinGecko",

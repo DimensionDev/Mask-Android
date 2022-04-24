@@ -55,8 +55,8 @@ import com.dimension.maskbook.setting.ui.scenes.PhoneInputModal
 import com.dimension.maskbook.setting.viewmodel.EmailSetupViewModel
 import com.dimension.maskbook.setting.viewmodel.PhoneSetupViewModel
 import kotlinx.coroutines.launch
+import moe.tlaster.koin.compose.getViewModel
 import moe.tlaster.precompose.navigation.NavController
-import org.koin.androidx.compose.getViewModel
 
 @NavGraphDestination(
     route = SettingRoute.SetupPasswordDialog,

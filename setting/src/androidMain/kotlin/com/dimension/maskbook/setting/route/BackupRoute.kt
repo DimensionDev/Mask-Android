@@ -80,9 +80,9 @@ import com.dimension.maskbook.setting.viewmodel.BackupMergeConfirmViewModel
 import com.dimension.maskbook.setting.viewmodel.EmailBackupViewModel
 import com.dimension.maskbook.setting.viewmodel.PhoneBackupViewModel
 import kotlinx.coroutines.launch
+import moe.tlaster.koin.compose.get
+import moe.tlaster.koin.compose.getViewModel
 import moe.tlaster.precompose.navigation.NavController
-import org.koin.androidx.compose.get
-import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 
 @NavGraphDestination(

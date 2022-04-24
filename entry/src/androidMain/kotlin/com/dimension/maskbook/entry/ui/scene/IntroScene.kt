@@ -75,8 +75,8 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
+import moe.tlaster.koin.compose.get
 import moe.tlaster.precompose.navigation.NavController
-import org.koin.androidx.compose.get
 
 private data class IntroData(
     @DrawableRes val img: Int,

@@ -52,7 +52,7 @@ import com.dimension.maskbook.extension.export.ExtensionServices
 import com.dimension.maskbook.labs.R
 import com.dimension.maskbook.labs.route.LabsRoute
 import com.dimension.maskbook.labs.ui.widget.RedPacketShareButton
-import org.koin.androidx.compose.get
+import moe.tlaster.koin.compose.get
 
 @NavGraphDestination(
     route = LabsRoute.RedPacket.LuckyDropResult.path,

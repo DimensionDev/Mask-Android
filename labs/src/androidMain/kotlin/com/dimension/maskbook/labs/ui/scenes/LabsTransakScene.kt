@@ -54,7 +54,7 @@ import com.dimension.maskbook.labs.R
 import com.dimension.maskbook.labs.export.model.TransakConfig
 import com.dimension.maskbook.labs.route.LabsRoute
 import com.dimension.maskbook.wallet.export.WalletServices
-import org.koin.androidx.compose.get
+import moe.tlaster.koin.compose.get
 
 @NavGraphDestination(
     route = LabsRoute.LabsTransak,

@@ -51,9 +51,9 @@ import com.dimension.maskbook.setting.viewmodel.LanguageSettingsViewModel
 import com.dimension.maskbook.setting.viewmodel.PaymentPasswordSettingsViewModel
 import com.dimension.maskbook.setting.viewmodel.PhoneBackupViewModel
 import com.dimension.maskbook.setting.viewmodel.PhoneSetupViewModel
+import moe.tlaster.koin.viewModel
 import moe.tlaster.precompose.navigation.NavController
 import moe.tlaster.precompose.navigation.RouteBuilder
-import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.koin.mp.KoinPlatformTools

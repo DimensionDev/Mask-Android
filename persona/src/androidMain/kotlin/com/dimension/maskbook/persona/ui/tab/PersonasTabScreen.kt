@@ -35,8 +35,8 @@ import com.dimension.maskbook.persona.repository.IPersonaRepository
 import com.dimension.maskbook.persona.route.PersonaRoute
 import com.dimension.maskbook.persona.ui.scenes.PersonaScene
 import com.dimension.maskbook.persona.ui.scenes.social.connectSocial
+import moe.tlaster.koin.compose.get
 import moe.tlaster.precompose.navigation.NavController
-import org.koin.androidx.compose.get
 
 class PersonasTabScreen : TabScreen {
     override val route = CommonRoute.Main.Tabs.Persona

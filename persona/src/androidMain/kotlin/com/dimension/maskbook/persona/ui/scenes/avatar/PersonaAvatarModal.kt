@@ -36,8 +36,8 @@ import com.dimension.maskbook.common.ui.widget.button.MaskListItemButton
 import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.repository.IPersonaRepository
 import com.dimension.maskbook.persona.route.PersonaRoute
+import moe.tlaster.koin.compose.get
 import moe.tlaster.precompose.navigation.NavController
-import org.koin.androidx.compose.get
 
 @NavGraphDestination(
     route = PersonaRoute.PersonaAvatarModal,

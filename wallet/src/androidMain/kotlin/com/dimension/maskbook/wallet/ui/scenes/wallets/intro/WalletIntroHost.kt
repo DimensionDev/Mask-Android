@@ -38,9 +38,9 @@ import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletBalances
 import com.dimension.maskbook.wallet.viewmodel.wallets.WalletBalancesViewModel
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import moe.tlaster.koin.compose.get
+import moe.tlaster.koin.compose.getViewModel
 import moe.tlaster.precompose.navigation.NavController
-import org.koin.androidx.compose.get
-import org.koin.androidx.compose.getViewModel
 
 @ExperimentalMaterialNavigationApi
 @Composable

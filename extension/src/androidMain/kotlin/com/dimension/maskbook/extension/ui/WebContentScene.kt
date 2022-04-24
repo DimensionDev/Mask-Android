@@ -62,7 +62,7 @@ import com.dimension.maskbook.common.ui.widget.button.MaskIconButton
 import com.dimension.maskbook.extension.export.model.Site
 import com.dimension.maskbook.extension.ext.site
 import com.dimension.maskbook.localization.R
-import org.koin.androidx.compose.get
+import moe.tlaster.koin.compose.get
 import kotlin.math.roundToInt
 
 @Composable
