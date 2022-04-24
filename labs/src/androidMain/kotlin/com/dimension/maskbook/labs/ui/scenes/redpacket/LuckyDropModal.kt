@@ -103,7 +103,9 @@ fun LuckDropModal(
         navController.eventFlow<ResultEvent.TokenConfirm>().collect { event ->
             val transactionHash = event.transactionHash
             if (transactionHash == null) {
-                navController.popBackStack()
+                navController.navigateWithPopSelf(
+                    LabsRoute.RedPacket.LuckyDropResult(false, null, null)
+                )
                 return@collect
             }
 
