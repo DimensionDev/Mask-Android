@@ -245,7 +245,8 @@ internal class PersonaRepository(
                 )
 
                 personaDataSource.addAll(listOf(data))
-                setCurrentPersona(data.identifier)
+                // setCurrentPersona not work cause it's not in the database yet
+                preferenceRepository.setCurrentPersonaIdentifier(data.identifier)
             } catch (e: Exception) {
                 e.printStackTrace()
             }
