@@ -22,16 +22,11 @@ package moe.tlaster.koin.compose
 
 import androidx.compose.runtime.Composable
 import moe.tlaster.precompose.viewmodel.ViewModel
-import org.koin.core.annotation.KoinInternalApi
-import org.koin.core.context.GlobalContext
 import org.koin.core.parameter.ParametersDefinition
 import org.koin.core.qualifier.Qualifier
-import org.koin.core.scope.Scope
 
-@OptIn(KoinInternalApi::class)
 @Composable
 expect inline fun <reified T : ViewModel> getViewModel(
     qualifier: Qualifier? = null,
-    scope: Scope = GlobalContext.get().scopeRegistry.rootScope,
     noinline parameters: ParametersDefinition? = null,
 ): T

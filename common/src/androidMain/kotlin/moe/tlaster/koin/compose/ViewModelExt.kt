@@ -24,17 +24,14 @@ import androidx.compose.runtime.Composable
 import moe.tlaster.precompose.viewmodel.ViewModel
 import org.koin.core.parameter.ParametersDefinition
 import org.koin.core.qualifier.Qualifier
-import org.koin.core.scope.Scope
 
 @Composable
 actual inline fun <reified T : ViewModel> getViewModel(
     qualifier: Qualifier?,
-    scope: Scope,
     noinline parameters: ParametersDefinition?,
 ): T {
     return org.koin.androidx.compose.getViewModel(
         qualifier = qualifier,
-        scope = scope,
         parameters = parameters,
     )
 }
