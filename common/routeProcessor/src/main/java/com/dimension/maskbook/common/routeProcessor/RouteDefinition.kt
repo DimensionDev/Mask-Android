@@ -217,7 +217,7 @@ private fun RouteDefinition.funSpec(
                 it.addStatement(
                     "val query = \"?\" + %P",
                     query.joinToString("&") {
-                        if (it.type.isString) {
+                        if (it.type.isStringNullable) {
                             "${it.name}=\${${encodeNullable(it.name)}}"
                         } else {
                             "${it.name}=\${if (${it.name} == null) \"\" else ${it.name}}"
@@ -243,5 +243,6 @@ internal data class RouteParameter(
 )
 
 internal val TypeName.isString get() = this == String::class.asTypeName()
+internal val TypeName.isStringNullable get() = this == String::class.asTypeName().copy(nullable = true)
 internal val TypeName.isBoolean get() = this == Boolean::class.asTypeName()
 internal val TypeName.isLong get() = this == Long::class.asTypeName()
