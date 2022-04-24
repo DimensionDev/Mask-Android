@@ -62,7 +62,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.firstOrNull
@@ -70,7 +69,6 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.bouncycastle.jcajce.provider.asymmetric.ec.BCECPublicKey
@@ -92,22 +90,25 @@ internal class PersonaRepository(
     private var connectingJob: Job? = null
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override val currentPersona: Flow<PersonaData?> = preferenceRepository.currentPersonaIdentifier.flatMapLatest {
-        personaDataSource.getPersonaFlow(it)
-    }.shareIn(scope, SharingStarted.Lazily)
+    override val currentPersona: Flow<PersonaData?>
+        get() = preferenceRepository.currentPersonaIdentifier.flatMapLatest {
+            personaDataSource.getPersonaFlow(it)
+        }
 
-    override val personaList: Flow<List<PersonaData>> =
-        personaDataSource.personaListFlow.shareIn(scope, SharingStarted.Lazily)
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    override val socials: Flow<List<SocialData>> = preferenceRepository.currentPersonaIdentifier.flatMapLatest {
-        profileDataSource.getSocialListFlow(it)
-    }.shareIn(scope, SharingStarted.Lazily)
+    override val personaList: Flow<List<PersonaData>>
+        get() = personaDataSource.getPersonaListFlow()
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override val contacts: Flow<List<ContactData>> = preferenceRepository.currentPersonaIdentifier.flatMapLatest {
-        relationDataSource.getContactListFlow(it)
-    }.shareIn(scope, SharingStarted.Lazily)
+    override val socials: Flow<List<SocialData>>
+        get() = preferenceRepository.currentPersonaIdentifier.flatMapLatest {
+            profileDataSource.getSocialListFlow(it)
+        }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override val contacts: Flow<List<ContactData>>
+        get() = preferenceRepository.currentPersonaIdentifier.flatMapLatest {
+            relationDataSource.getContactListFlow(it)
+        }
 
     override suspend fun hasPersona(): Boolean {
         return !personaDataSource.isEmpty()
@@ -242,8 +243,9 @@ internal class PersonaRepository(
                     createdAt = System.currentTimeMillis(),
                     updatedAt = System.currentTimeMillis(),
                 )
+
                 personaDataSource.addAll(listOf(data))
-                preferenceRepository.setCurrentPersonaIdentifier(data.identifier)
+                setCurrentPersona(data.identifier)
             } catch (e: Exception) {
                 e.printStackTrace()
             }

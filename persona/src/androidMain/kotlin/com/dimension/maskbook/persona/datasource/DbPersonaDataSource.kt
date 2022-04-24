@@ -73,10 +73,11 @@ class DbPersonaDataSource(private val database: PersonaDatabase) {
         }
     }
 
-    val personaListFlow: Flow<List<PersonaData>>
-        get() = personaDao.getListFlow().map { list ->
+    fun getPersonaListFlow(): Flow<List<PersonaData>> {
+        return personaDao.getListFlow().map { list ->
             list.map { it.toPersonaData() }
         }
+    }
 
     suspend fun updateNickName(personaIdentifier: String, name: String) {
         personaDao.updateNickName(personaIdentifier, name)
