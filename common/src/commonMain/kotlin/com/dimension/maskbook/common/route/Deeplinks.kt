@@ -53,11 +53,20 @@ expect object Deeplinks {
         object SendTokenConfirm {
             operator fun invoke(dataRaw: String, ignorePaymentPassword: Boolean): String
         }
+        object WalletConnect {
+            object Connect {
+                operator fun invoke(uriBase64: String): String
+            }
+        }
     }
     object WebContent {
         operator fun invoke(site: String?): String
     }
     object Labs {
         const val Transak: String
+    }
+
+    object Scan {
+        operator fun invoke(failedRoute: String?): String
     }
 }

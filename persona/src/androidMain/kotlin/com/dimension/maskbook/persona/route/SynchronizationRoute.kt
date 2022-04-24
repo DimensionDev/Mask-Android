@@ -21,6 +21,7 @@
 package com.dimension.maskbook.persona.route
 
 import android.net.Uri
+import android.util.Base64
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Text
@@ -32,7 +33,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import androidx.navigation.navOptions
 import com.dimension.maskbook.common.ext.decodeBase64
+import com.dimension.maskbook.common.ext.encodeBase64
 import com.dimension.maskbook.common.ext.ifNullOrEmpty
+import com.dimension.maskbook.common.ext.navigateUriWithPopSelf
+import com.dimension.maskbook.common.ext.navigateWithPopSelf
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.route.Persona
@@ -58,35 +62,37 @@ import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 
 @NavGraphDestination(
-    route = PersonaRoute.Synchronization.Scan,
+    route = PersonaRoute.Synchronization.Scan.path,
     packageName = navigationComposeAnimComposablePackage,
     functionName = navigationComposeAnimComposable,
+    deeplink = [Deeplinks.Scan.path]
 )
 @Composable
 fun SynchronizationScan(
     navController: NavController,
+    @Query("failedRoute") failedRoute: String?,
     @Back onBack: () -> Unit,
 ) {
     ScanQrcodeScene(
         onBack = onBack,
         onResult = {
             try {
-                navController.navigate(
-                    Uri.parse(it),
-                    navOptions {
-                        popUpTo(PersonaRoute.Synchronization.Scan) {
-                            inclusive = true
-                        }
-                    }
-                )
+                if (it.startsWith("wc:")) {
+                    navController.navigateUriWithPopSelf(
+                        Deeplinks.Wallet.WalletConnect.Connect(
+                            it.encodeBase64(
+                                Base64.NO_WRAP
+                            )
+                        )
+                    )
+                } else {
+                    navController.navigateUriWithPopSelf(it)
+                }
             } catch (e: Throwable) {
-                navController.navigate(
-                    PersonaRoute.Synchronization.Failed,
-                    navOptions {
-                        popUpTo(PersonaRoute.Synchronization.Scan) {
-                            inclusive = true
-                        }
-                    }
+                // TODO Mimao, default to scan failed
+                e.printStackTrace()
+                navController.navigateWithPopSelf(
+                    failedRoute ?: PersonaRoute.Synchronization.Failed
                 )
             }
         }

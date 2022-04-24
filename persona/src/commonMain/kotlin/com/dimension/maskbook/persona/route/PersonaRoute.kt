@@ -58,7 +58,9 @@ expect object PersonaRoute {
     }
 
     object Synchronization {
-        const val Scan: String
+        object Scan {
+            operator fun invoke(failedRoute: String?): String
+        }
         const val Success: String
         const val Failed: String
         object Persona {

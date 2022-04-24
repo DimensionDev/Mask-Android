@@ -20,6 +20,7 @@
  */
 package com.dimension.maskbook.wallet.ui.scenes.wallets.intro
 
+import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -29,6 +30,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.navigation.NavController
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.dimension.maskbook.common.ext.observeAsState
+import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.viewmodel.BiometricEnableViewModel
 import com.dimension.maskbook.setting.export.SettingServices
 import com.dimension.maskbook.wallet.route.WalletRoute
@@ -152,7 +154,7 @@ fun WalletIntroHost(navController: NavController) {
                 viewModel.refreshWallet()
             },
             onScan = {
-                // TODO Scan
+                navController.navigate(Uri.parse(Deeplinks.Scan(null)))
             },
             connectedDAppCount = connectedDApps.size,
             onDisplayWalletConnect = {

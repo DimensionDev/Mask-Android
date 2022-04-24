@@ -159,6 +159,7 @@ expect object WalletRoute {
     object WalletConnect {
         const val DApps: String
         // request
+        const val Request: String
         //
     }
     object EmptyTokenDialog {
