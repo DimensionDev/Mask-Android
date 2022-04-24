@@ -109,11 +109,12 @@ fun LuckDropModal(
                 return@collect
             }
 
-
-            val text = ("Hi friends, I just found a lucky drop sent by @${stateData.redPacket.shares} on ${stateData.redPacket.tokenName} network. " +
-                "Follow @realMaskNetwork (mask.io) to claim lucky drops.\n" +
-                "#mask_io #LuckyDrop\n" +
-                "${stateData.redPacket.postLink}")
+            val text = (
+                "Hi friends, I just found a lucky drop sent by @${stateData.redPacket.shares} on ${stateData.redPacket.tokenName} network. " +
+                    "Follow @realMaskNetwork (mask.io) to claim lucky drops.\n" +
+                    "#mask_io #LuckyDrop\n" +
+                    "${stateData.redPacket.postLink}"
+                )
             val tweetUrl = "https://mobile.twitter.com/compose/tweet?text=${text.encodeUrl()}"
 
             val redPacketState = viewModel.getRedPacketAvailabilityState(stateData, transactionHash)
