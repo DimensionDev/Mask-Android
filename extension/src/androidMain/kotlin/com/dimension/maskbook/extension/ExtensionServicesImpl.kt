@@ -48,6 +48,10 @@ internal class ExtensionServicesImpl(
         repository.loadUrl(url)
     }
 
+    override fun refresh() {
+        repository.refresh()
+    }
+
     override suspend fun ensureExtensionActive() {
         isExtensionActive.first { it }
     }
