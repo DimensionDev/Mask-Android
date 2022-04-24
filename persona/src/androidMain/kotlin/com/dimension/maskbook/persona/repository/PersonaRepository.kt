@@ -125,9 +125,9 @@ internal class PersonaRepository(
 
         connectingJob = preferenceRepository.lastDetectProfileIdentifier
             .filterNot { it.isEmpty() }
-            .filterNot { personaDataSource.hasConnected(it) }
             .flatMapLatest { profileDataSource.getSocialFlow(it) }
             .filterNotNull()
+            .filterNot { personaDataSource.hasConnected(it.id) }
             .flowOn(Dispatchers.IO)
             .onEach {
                 onDone.invoke(ConnectAccountData(personaId, it))
