@@ -136,7 +136,12 @@ fun WalletBalancesScene(
 
     LaunchedEffect(wallets, currentWallet, pagerState.pageCount) {
         if (pagerState.pageCount > 0) {
-            pagerState.scrollToPage(minOf(pagerState.pageCount - 1, maxOf(wallets.indexOf(currentWallet), 0)))
+            pagerState.scrollToPage(
+                minOf(
+                    pagerState.pageCount - 1,
+                    maxOf(wallets.indexOf(currentWallet), 0)
+                )
+            )
         }
     }
     LaunchedEffect(pagerState.currentPage) {
@@ -171,163 +176,166 @@ fun WalletBalancesScene(
                     }
                 )
             },
-            floatingActionButton = {
+        ) {
+            Box(modifier = Modifier.fillMaxHeight()) {
+                SwipeRefresh(refreshState, onRefresh = onWalletRefresh) {
+                    LazyColumn(
+                        contentPadding = ScaffoldPadding,
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
+                    ) {
+                        item {
+                            WalletCard(
+                                wallets = wallets,
+                                walletChainType = walletChainType,
+                                displayChainType = displayChainType,
+                                onWalletAddressClick = onWalletAddressClicked,
+                                onDisplayChainTypeClick = onDisplayChainTypeClicked,
+                                onMoreClick = onWalletMenuClicked,
+                                pagerState = pagerState,
+                                modifier = Modifier.fillMaxWidth(),
+                            )
+                        }
+                        item {
+                            Spacer(modifier = Modifier.height(2.dp))
+                        }
+                        item {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.Center,
+                            ) {
+                                Spacer(Modifier.width(24.dp))
+                                WalletButton(
+                                    text = stringResource(R.string.scene_wallet_balance_btn_Send),
+                                    icon = R.drawable.transaction_1,
+                                    onClick = onSendClicked,
+                                )
+                                Spacer(Modifier.width(12.dp))
+                                WalletButton(
+                                    text = stringResource(R.string.scene_wallet_balance_btn_receive),
+                                    icon = R.drawable.transaction_2,
+                                    onClick = onReceiveClicked,
+                                )
+                                Spacer(Modifier.width(24.dp))
+                            }
+                        }
+                        stickyHeader {
+                            Row(
+                                modifier = Modifier
+                                    .background(MaterialTheme.colors.background)
+                                    .fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                CompositionLocalProvider(
+                                    LocalTextStyle provides LocalTextStyle.current.copy(color = Color.Unspecified)
+                                ) {
+                                    ScrollableTabRow(
+                                        modifier = Modifier.weight(1f),
+                                        selectedTabIndex = BalancesSceneType.values()
+                                            .indexOf(sceneType),
+                                        backgroundColor = Color.Transparent,
+                                        divider = { },
+                                        edgePadding = 0.dp,
+                                        indicator = { tabPositions ->
+                                            Box(
+                                                Modifier
+                                                    .tabIndicatorOffset(
+                                                        tabPositions[
+                                                            BalancesSceneType
+                                                                .values()
+                                                                .indexOf(sceneType)
+                                                        ]
+                                                    )
+                                                    .height(3.dp)
+                                            ) {
+                                                Box(
+                                                    modifier = Modifier
+                                                        .align(Alignment.BottomCenter)
+                                                        .fillMaxWidth(0.2f)
+                                                        .fillMaxHeight()
+                                                        .background(
+                                                            color = MaterialTheme.colors.primary,
+                                                            shape = CircleShape,
+                                                        )
+                                                )
+                                            }
+                                        },
+                                    ) {
+                                        BalancesSceneType.values().forEachIndexed { _, type ->
+                                            Tab(
+                                                text = { Text(type.name) },
+                                                selected = sceneType == type,
+                                                onClick = {
+                                                    onSceneTypeChanged(type)
+                                                },
+                                                selectedContentColor = MaterialTheme.colors.onBackground,
+                                                unselectedContentColor = MaterialTheme.colors.onBackground.copy(
+                                                    alpha = ContentAlpha.medium
+                                                ),
+                                            )
+                                        }
+                                    }
+                                }
+                                // TODO haven't implement yet
+                                // TextButton(onClick = { /*TODO*/ }) {
+                                //     Text(text = stringResource(R.string.scene_wallet_derivation_path_operation_add))
+                                //     Spacer(Modifier.width(4.dp))
+                                //     Icon(
+                                //         imageVector = Icons.Default.Add,
+                                //         contentDescription = null,
+                                //         tint = LocalTextStyle.current.color,
+                                //     )
+                                // }
+                            }
+                        }
+                        when (sceneType) {
+                            BalancesSceneType.Token -> {
+                                items(showTokens) { item ->
+                                    TokenDataItem(
+                                        item = item,
+                                        onItemClick = { onTokenDetailClicked(item.tokenData) }
+                                    )
+                                }
+                                if (showTokensLess.isNotEmpty()) {
+                                    item {
+                                        ShowLessButton(
+                                            expand = isShowLessTokenData,
+                                            lessAmount = showTokensLessAmount,
+                                            onClick = {
+                                                isShowLessTokenData = !isShowLessTokenData
+                                            },
+                                        )
+                                    }
+                                    if (isShowLessTokenData) {
+                                        items(showTokensLess) { item ->
+                                            TokenDataItem(
+                                                item = item,
+                                                onItemClick = { onTokenDetailClicked(item.tokenData) }
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                            BalancesSceneType.Collectible -> {
+                                items(collectible) { item ->
+                                    if (item != null) {
+                                        CollectibleCollectionCard(
+                                            data = item,
+                                            onItemClicked = {
+                                                onCollectibleDetailClicked.invoke(it)
+                                            },
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
                 if (connectedDAppCount > 0) {
                     WalletConnectFloatingButton(
                         count = connectedDAppCount.toString(),
-                        onClick = onDisplayWalletConnect
+                        onClick = onDisplayWalletConnect,
+                        modifier = Modifier.align(Alignment.BottomEnd).padding(bottom = 42.dp),
                     )
-                }
-            }
-        ) {
-            SwipeRefresh(refreshState, onRefresh = onWalletRefresh) {
-
-                LazyColumn(
-                    contentPadding = ScaffoldPadding,
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
-                    item {
-                        WalletCard(
-                            wallets = wallets,
-                            walletChainType = walletChainType,
-                            displayChainType = displayChainType,
-                            onWalletAddressClick = onWalletAddressClicked,
-                            onDisplayChainTypeClick = onDisplayChainTypeClicked,
-                            onMoreClick = onWalletMenuClicked,
-                            pagerState = pagerState,
-                            modifier = Modifier.fillMaxWidth(),
-                        )
-                    }
-                    item {
-                        Spacer(modifier = Modifier.height(2.dp))
-                    }
-                    item {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.Center,
-                        ) {
-                            Spacer(Modifier.width(24.dp))
-                            WalletButton(
-                                text = stringResource(R.string.scene_wallet_balance_btn_Send),
-                                icon = R.drawable.transaction_1,
-                                onClick = onSendClicked,
-                            )
-                            Spacer(Modifier.width(12.dp))
-                            WalletButton(
-                                text = stringResource(R.string.scene_wallet_balance_btn_receive),
-                                icon = R.drawable.transaction_2,
-                                onClick = onReceiveClicked,
-                            )
-                            Spacer(Modifier.width(24.dp))
-                        }
-                    }
-                    stickyHeader {
-                        Row(
-                            modifier = Modifier
-                                .background(MaterialTheme.colors.background)
-                                .fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            CompositionLocalProvider(
-                                LocalTextStyle provides LocalTextStyle.current.copy(color = Color.Unspecified)
-                            ) {
-                                ScrollableTabRow(
-                                    modifier = Modifier.weight(1f),
-                                    selectedTabIndex = BalancesSceneType.values().indexOf(sceneType),
-                                    backgroundColor = Color.Transparent,
-                                    divider = { },
-                                    edgePadding = 0.dp,
-                                    indicator = { tabPositions ->
-                                        Box(
-                                            Modifier
-                                                .tabIndicatorOffset(
-                                                    tabPositions[
-                                                        BalancesSceneType
-                                                            .values()
-                                                            .indexOf(sceneType)
-                                                    ]
-                                                )
-                                                .height(3.dp)
-                                        ) {
-                                            Box(
-                                                modifier = Modifier
-                                                    .align(Alignment.BottomCenter)
-                                                    .fillMaxWidth(0.2f)
-                                                    .fillMaxHeight()
-                                                    .background(
-                                                        color = MaterialTheme.colors.primary,
-                                                        shape = CircleShape,
-                                                    )
-                                            )
-                                        }
-                                    },
-                                ) {
-                                    BalancesSceneType.values().forEachIndexed { _, type ->
-                                        Tab(
-                                            text = { Text(type.name) },
-                                            selected = sceneType == type,
-                                            onClick = {
-                                                onSceneTypeChanged(type)
-                                            },
-                                            selectedContentColor = MaterialTheme.colors.onBackground,
-                                            unselectedContentColor = MaterialTheme.colors.onBackground.copy(
-                                                alpha = ContentAlpha.medium
-                                            ),
-                                        )
-                                    }
-                                }
-                            }
-                            // TODO haven't implement yet
-                            // TextButton(onClick = { /*TODO*/ }) {
-                            //     Text(text = stringResource(R.string.scene_wallet_derivation_path_operation_add))
-                            //     Spacer(Modifier.width(4.dp))
-                            //     Icon(
-                            //         imageVector = Icons.Default.Add,
-                            //         contentDescription = null,
-                            //         tint = LocalTextStyle.current.color,
-                            //     )
-                            // }
-                        }
-                    }
-                    when (sceneType) {
-                        BalancesSceneType.Token -> {
-                            items(showTokens) { item ->
-                                TokenDataItem(
-                                    item = item,
-                                    onItemClick = { onTokenDetailClicked(item.tokenData) }
-                                )
-                            }
-                            if (showTokensLess.isNotEmpty()) {
-                                item {
-                                    ShowLessButton(
-                                        expand = isShowLessTokenData,
-                                        lessAmount = showTokensLessAmount,
-                                        onClick = { isShowLessTokenData = !isShowLessTokenData },
-                                    )
-                                }
-                                if (isShowLessTokenData) {
-                                    items(showTokensLess) { item ->
-                                        TokenDataItem(
-                                            item = item,
-                                            onItemClick = { onTokenDetailClicked(item.tokenData) }
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                        BalancesSceneType.Collectible -> {
-                            items(collectible) { item ->
-                                if (item != null) {
-                                    CollectibleCollectionCard(
-                                        data = item,
-                                        onItemClicked = {
-                                            onCollectibleDetailClicked.invoke(it)
-                                        },
-                                    )
-                                }
-                            }
-                        }
-                    }
                 }
             }
         }

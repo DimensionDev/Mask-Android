@@ -23,6 +23,7 @@ package com.dimension.maskbook.wallet.walletconnect.v1.server
 import android.content.Context
 import android.util.Log
 import com.dimension.maskbook.wallet.BuildConfig
+import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.walletconnect.WCClientMeta
 import com.dimension.maskbook.wallet.walletconnect.WCRequest
 import com.dimension.maskbook.wallet.walletconnect.WCRequestParams
@@ -48,7 +49,7 @@ class WalletConnectServerManagerV1(private val context: Context) :
         get() = _connectedSessions.map {
             it.mapNotNull { session ->
                 if (session.approvedAccounts().isNullOrEmpty()) null else
-                    session.peerMeta()?.toWcClientMeta(session.id)
+                    session.peerMeta()?.toWcClientMeta(session.id, accounts = session.approvedAccounts() ?: emptyList(), session.chainId ?: 0)
             }
         }
     override val storage: WCSessionStore
@@ -166,7 +167,7 @@ class WalletConnectServerManagerV1(private val context: Context) :
 
     private fun dispatchRequest(wcRequest: WCRequest, session: WCSessionV1) {
         session.peerMeta()?.let {
-            onRequest.invoke(it.toWcClientMeta(session.id), wcRequest)
+            onRequest.invoke(it.toWcClientMeta(session.id, session.approvedAccounts() ?: emptyList(), session.chainId ?: 0), wcRequest)
         }
     }
 
@@ -192,7 +193,7 @@ class WalletConnectServerManagerV1(private val context: Context) :
         override fun onMethodCall(call: Session.MethodCall) {
             "onMethodCall: $call".log()
             if (call is Session.MethodCall.SessionRequest) {
-                val clientMeta = session.peerMeta()?.toWcClientMeta(session.id)
+                val clientMeta = session.peerMeta()?.toWcClientMeta(session.id, session.approvedAccounts() ?: emptyList(), session.chainId ?: 0)
                 onRequest(clientMeta!!)
             }
         }
@@ -237,12 +238,14 @@ class WalletConnectServerManagerV1(private val context: Context) :
     }
 }
 
-private fun Session.PeerMeta.toWcClientMeta(id: String) = WCClientMeta(
+private fun Session.PeerMeta.toWcClientMeta(id: String, accounts: List<String>, chainId: Long) = WCClientMeta(
     id = id,
     name = name ?: "",
     url = url ?: "",
     description = description ?: "",
-    icons = icons ?: emptyList()
+    icons = icons ?: emptyList(),
+    accounts = accounts,
+    chainType = ChainType.values().find { it.chainId == chainId } ?: ChainType.eth,
 )
 
 private fun String.log() {

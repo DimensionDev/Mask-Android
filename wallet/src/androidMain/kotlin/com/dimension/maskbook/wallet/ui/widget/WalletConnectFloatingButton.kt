@@ -43,6 +43,7 @@ import com.dimension.maskbook.wallet.R
 
 @Composable
 fun WalletConnectFloatingButton(
+    modifier: Modifier = Modifier,
     count: String,
     onClick: () -> Unit
 ) {
@@ -53,7 +54,7 @@ fun WalletConnectFloatingButton(
         topEndPercent = 0
     )
     Card(
-        modifier = Modifier
+        modifier = modifier
             .clip(cardShape)
             .clickable { onClick.invoke() },
         shape = cardShape,

@@ -158,6 +158,7 @@ fun WalletIntroHost(navController: NavController) {
             },
             connectedDAppCount = connectedDApps.size,
             onDisplayWalletConnect = {
+                navController.navigate(WalletRoute.WalletConnect.DApps)
             }
         )
     }

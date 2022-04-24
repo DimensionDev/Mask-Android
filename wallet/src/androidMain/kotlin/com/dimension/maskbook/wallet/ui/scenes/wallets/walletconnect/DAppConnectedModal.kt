@@ -24,27 +24,26 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
-import com.dimension.maskbook.common.ui.widget.HorizontalScenePadding
 import com.dimension.maskbook.common.ui.widget.MaskListItem
 import com.dimension.maskbook.common.ui.widget.MaskModal
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
+import com.dimension.maskbook.common.ui.widget.MiddleEllipsisText
 import com.dimension.maskbook.common.ui.widget.button.MaskTextButton
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.walletconnect.WCClientMeta
@@ -57,40 +56,41 @@ fun DAppConnectedModal(
 ) {
     MaskModal {
         MaskScaffold(
-            modifier = Modifier.fillMaxHeight(0.8f),
+            modifier = Modifier.fillMaxHeight(0.6f),
             topBar = {
-                Column(
-                    modifier = Modifier
-                        .shadow(4.dp)
-                        .background(color = MaterialTheme.colors.background),
-                ) {
-                    MaskSingleLineTopAppBar(
-                        title = {
-                            Text("Connected Apps")
-                        },
-                    )
-                }
+                MaskSingleLineTopAppBar(
+                    title = {
+                        Text("Connected Apps")
+                    },
+                )
             },
         ) { innerPadding ->
             LazyColumn(
                 modifier = Modifier.padding(innerPadding),
                 contentPadding = PaddingValues(
-                    horizontal = HorizontalScenePadding,
                     vertical = 16.dp
                 ),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 items(apps) { app ->
                     MaskListItem(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth()
+                            .background(
+                                color = MaterialTheme.colors.surface,
+                                shape = MaterialTheme.shapes.small
+                            ),
                         icon = {
-                            Image(rememberImagePainter(app.icons.first()), contentDescription = null)
+                            Image(
+                                rememberImagePainter(app.icons.first()),
+                                contentDescription = null,
+                                modifier = Modifier.size(32.dp)
+                            )
                         },
                         text = {
                             Text(app.name)
                         },
                         secondaryText = {
-                            Text(app.description)
+                            MiddleEllipsisText("${app.chainType.name} · ${app.accounts.firstOrNull()}")
                         },
                         trailing = {
                             MaskTextButton(

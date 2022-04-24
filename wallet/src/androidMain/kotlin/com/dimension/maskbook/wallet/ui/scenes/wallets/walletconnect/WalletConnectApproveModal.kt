@@ -128,7 +128,7 @@ fun WalletConnectApproveModal(
                 PrimaryButton(
                     onClick = onApprove,
                     modifier = Modifier.weight(1f),
-                    enabled = wallet != null
+                    enabled = wallet != null && !wallet.fromWalletConnect
                 ) {
                     Text(
                         text = stringResource(R.string.scene_wallet_connect_server_connect),
