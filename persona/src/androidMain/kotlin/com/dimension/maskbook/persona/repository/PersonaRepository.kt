@@ -125,9 +125,9 @@ internal class PersonaRepository(
 
         connectingJob = preferenceRepository.lastDetectProfileIdentifier
             .filterNot { it.isEmpty() }
-            .filterNot { personaDataSource.hasConnected(it) }
             .flatMapLatest { profileDataSource.getSocialFlow(it) }
             .filterNotNull()
+            .filterNot { personaDataSource.hasConnected(it.id) }
             .flowOn(Dispatchers.IO)
             .onEach {
                 onDone.invoke(ConnectAccountData(personaId, it))
@@ -245,7 +245,8 @@ internal class PersonaRepository(
                 )
 
                 personaDataSource.addAll(listOf(data))
-                setCurrentPersona(data.identifier)
+                // setCurrentPersona not work cause it's not in the database yet
+                preferenceRepository.setCurrentPersonaIdentifier(data.identifier)
             } catch (e: Exception) {
                 e.printStackTrace()
             }

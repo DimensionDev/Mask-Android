@@ -28,6 +28,7 @@ import com.dimension.maskbook.wallet.repository.IWalletRepository
 import com.dimension.maskbook.wallet.usecase.GetWalletNativeTokenUseCase
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import moe.tlaster.precompose.viewmodel.ViewModel
@@ -59,6 +60,8 @@ class CollectibleDetailViewModel(
                 e.printStackTrace()
                 emptyMap()
             }
+        }.filter {
+            it.isNotEmpty() // Just a workaround, not a real solution
         }.asStateIn(viewModelScope, emptyMap())
     }
 
