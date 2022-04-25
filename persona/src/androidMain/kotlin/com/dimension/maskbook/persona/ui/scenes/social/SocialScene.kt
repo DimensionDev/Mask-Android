@@ -223,7 +223,7 @@ private fun SocialItem(
         },
         text = {
             SingleLineText(
-                text = item.name,
+                text = if (item.name.isNotEmpty()) '@' + item.name else "",
                 style = MaterialTheme.typography.subtitle2,
                 color = LocalContentColor.current.copy(LocalContentAlpha.current),
             )

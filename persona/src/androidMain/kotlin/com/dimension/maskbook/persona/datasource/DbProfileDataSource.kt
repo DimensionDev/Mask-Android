@@ -81,7 +81,7 @@ private fun ProfileWithLinkedProfile.toSocialData(): SocialData {
     val link = links.firstOrNull { it.state.isLinked() }
     return SocialData(
         id = profile.identifier,
-        name = '@' + profile.identifier.substringAfterLast('/'),
+        name = profile.identifier.substringAfterLast('/'),
         avatar = profile.avatar.orEmpty(),
         network = profile.network ?: Network.Twitter,
         personaId = link?.personaIdentifier,
