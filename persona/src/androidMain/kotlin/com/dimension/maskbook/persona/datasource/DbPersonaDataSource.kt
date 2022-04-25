@@ -25,10 +25,12 @@ import com.dimension.maskbook.persona.db.PersonaDatabase
 import com.dimension.maskbook.persona.db.migrator.mapper.toDbPersonaRecord
 import com.dimension.maskbook.persona.db.migrator.mapper.toIndexedDBPersona
 import com.dimension.maskbook.persona.db.migrator.mapper.toLinkedProfiles
+import com.dimension.maskbook.persona.db.model.DbLinkedProfileRecord
 import com.dimension.maskbook.persona.db.model.DbPersonaRecord
 import com.dimension.maskbook.persona.db.model.PersonaPrivateKey
 import com.dimension.maskbook.persona.db.model.PersonaPrivateKey.Companion.encode
 import com.dimension.maskbook.persona.export.model.IndexedDBPersona
+import com.dimension.maskbook.persona.export.model.LinkedProfileDetailsState
 import com.dimension.maskbook.persona.export.model.PersonaData
 import com.dimension.maskbook.persona.export.model.PersonaQrCode
 import kotlinx.coroutines.flow.Flow
@@ -130,6 +132,21 @@ class DbPersonaDataSource(private val database: PersonaDatabase) {
         val data = list.filter { it.identifier !in currentPersona.map { it.identifier } }
         personaDao.insertAll(data.map { it.toDbPersonaRecord() })
         linkedProfileDao.insert(data.flatMap { it.toLinkedProfiles() })
+    }
+
+    suspend fun connectProfile(personaIdentifier: String, profileIdentifier: String) {
+        linkedProfileDao.insert(DbLinkedProfileRecord(
+            personaIdentifier = personaIdentifier,
+            profileIdentifier = profileIdentifier,
+            state = LinkedProfileDetailsState.Confirmed,
+        ))
+    }
+
+    suspend fun disconnectProfile(personaIdentifier: String, profileIdentifier: String) {
+        linkedProfileDao.delete(
+            personaIdentifier = personaIdentifier,
+            profileIdentifier = profileIdentifier,
+        )
     }
 }
 

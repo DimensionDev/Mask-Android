@@ -35,6 +35,14 @@ class DbProfileDataSource(database: PersonaDatabase) {
 
     private val profileDao = database.profileDao()
 
+    suspend fun addSocial(social: SocialData) {
+        profileDao.insert(social.toDbProfileRecord())
+    }
+
+    suspend fun hasSocial(profileIdentifier: String): Boolean {
+        return profileDao.count(profileIdentifier) > 0
+    }
+
     fun getSocialFlow(profileIdentifier: String): Flow<SocialData?> {
         return profileDao.getFlow(profileIdentifier).map { it?.toSocialData() }
     }
@@ -73,10 +81,21 @@ private fun ProfileWithLinkedProfile.toSocialData(): SocialData {
     val link = links.firstOrNull { it.state.isLinked() }
     return SocialData(
         id = profile.identifier,
-        name = profile.nickname.orEmpty(),
+        name = '@' + profile.identifier.substringAfterLast('/'),
         avatar = profile.avatar.orEmpty(),
         network = profile.network ?: Network.Twitter,
         personaId = link?.personaIdentifier,
         linkedPersona = link != null,
+    )
+}
+
+private fun SocialData.toDbProfileRecord(): DbProfileRecord {
+    return DbProfileRecord(
+        identifier = id,
+        nickname = "",
+        avatar = avatar,
+        network = network,
+        createdAt = System.currentTimeMillis(),
+        updatedAt = System.currentTimeMillis(),
     )
 }
