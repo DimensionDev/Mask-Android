@@ -135,11 +135,13 @@ class DbPersonaDataSource(private val database: PersonaDatabase) {
     }
 
     suspend fun connectProfile(personaIdentifier: String, profileIdentifier: String) {
-        linkedProfileDao.insert(DbLinkedProfileRecord(
-            personaIdentifier = personaIdentifier,
-            profileIdentifier = profileIdentifier,
-            state = LinkedProfileDetailsState.Confirmed,
-        ))
+        linkedProfileDao.insert(
+            DbLinkedProfileRecord(
+                personaIdentifier = personaIdentifier,
+                profileIdentifier = profileIdentifier,
+                state = LinkedProfileDetailsState.Confirmed,
+            )
+        )
     }
 
     suspend fun disconnectProfile(personaIdentifier: String, profileIdentifier: String) {
