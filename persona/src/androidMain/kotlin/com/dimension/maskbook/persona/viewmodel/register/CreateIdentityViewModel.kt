@@ -22,6 +22,7 @@ package com.dimension.maskbook.persona.viewmodel.register
 
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
+import com.dimension.maskbook.common.ext.of
 import com.dimension.maskbook.common.viewmodel.BaseMnemonicPhraseViewModel
 import com.dimension.maskbook.persona.repository.IPersonaRepository
 import com.dimension.maskbook.wallet.export.WalletServices
@@ -47,7 +48,7 @@ class CreateIdentityViewModel(
 
     override fun confirm() {
         viewModelScope.launch {
-            runCatching {
+            Result.of {
                 personaRepository.createPersonaFromMnemonic(
                     _words.value.map { it.word },
                     personaName

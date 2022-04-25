@@ -20,6 +20,7 @@
  */
 package com.dimension.maskbook.wallet.usecase
 
+import com.dimension.maskbook.common.ext.of
 import com.dimension.maskbook.wallet.export.model.WalletCollectibleData
 import com.dimension.maskbook.wallet.repository.ICollectibleRepository
 import com.dimension.maskbook.wallet.repository.IWalletRepository
@@ -56,7 +57,7 @@ class SendWalletCollectibleUseCase(
         gasLimit: Double,
         maxFee: Double,
         maxPriorityFee: Double
-    ) = runCatching {
+    ) = Result.of {
         suspendCoroutine<String> { continuation ->
             repository.sendCollectibleWithCurrentWallet(
                 address = address,

@@ -23,6 +23,7 @@ package com.dimension.maskbook.persona.viewmodel.recovery
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
+import com.dimension.maskbook.common.ext.of
 import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.wallet.export.WalletServices
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -45,7 +46,7 @@ class PrivateKeyViewModel(
     }
 
     suspend fun confirm(nickname: String = "persona1"): Result<Unit> {
-        return runCatching {
+        return Result.of {
             personaServices.createPersonaFromPrivateKey(_privateKey.value.trim(), name = nickname)
         }
     }

@@ -33,3 +33,7 @@ inline fun <T> Result<T>.onFinished(action: () -> Unit): Result<T> {
     action.invoke()
     return this
 }
+
+inline fun <R> Result.Companion.of(block: () -> R): Result<R> {
+    return runCatching(block)
+}

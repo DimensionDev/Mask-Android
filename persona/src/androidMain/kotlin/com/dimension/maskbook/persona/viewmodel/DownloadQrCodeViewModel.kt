@@ -36,6 +36,7 @@ import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.common.ext.decodeBase64
 import com.dimension.maskbook.common.ext.encodeBase64
+import com.dimension.maskbook.common.ext.of
 import com.dimension.maskbook.common.ui.barcode.barcodeBitmap
 import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.datasource.DbPersonaDataSource
@@ -79,7 +80,7 @@ class DownloadQrCodeViewModel(
         context: Context,
         uri: Uri,
     ) = withContext(Dispatchers.IO) {
-        runCatching {
+        Result.of {
             personaQrCode.value?.let {
                 val pdfDocument = PdfDocument()
                 // A4 paper size is 792*1123

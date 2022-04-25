@@ -20,6 +20,7 @@
  */
 package com.dimension.maskbook.wallet.usecase
 
+import com.dimension.maskbook.common.ext.of
 import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.repository.ISendHistoryRepository
 import com.dimension.maskbook.wallet.repository.IWalletContactRepository
@@ -30,14 +31,14 @@ class AddContactUseCase(
     private val repository: IWalletContactRepository
 ) {
     suspend operator fun invoke(address: String, name: String) =
-        runCatching { repository.addOrUpdate(address = address, name = name) }
+        Result.of { repository.addOrUpdate(address = address, name = name) }
 }
 
 class AddRecentAddressUseCase(
     private val repository: ISendHistoryRepository
 ) {
     suspend operator fun invoke(address: String, name: String) =
-        runCatching { repository.addOrUpdate(address = address, name = name) }
+        Result.of { repository.addOrUpdate(address = address, name = name) }
 }
 
 class GetAddressUseCase(
@@ -84,7 +85,7 @@ class GetRecentAddressUseCase(
 class GetEnsAddressUseCase(
     private val repository: IWalletRepository
 ) {
-    suspend operator fun invoke(chainType: ChainType, ensName: String) = runCatching {
+    suspend operator fun invoke(chainType: ChainType, ensName: String) = Result.of {
         repository.getEnsAddress(
             chainType = chainType,
             name = ensName

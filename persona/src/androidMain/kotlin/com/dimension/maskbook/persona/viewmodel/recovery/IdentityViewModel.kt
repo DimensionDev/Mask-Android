@@ -24,6 +24,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.Validator
 import com.dimension.maskbook.common.ext.asStateIn
+import com.dimension.maskbook.common.ext.of
 import com.dimension.maskbook.persona.export.PersonaServices
 import com.dimension.maskbook.wallet.export.WalletServices
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -47,7 +48,7 @@ class IdentityViewModel(
     }
 
     suspend fun confirm(): Result<Unit> {
-        return runCatching {
+        return Result.of {
             personaServices.createPersonaFromMnemonic(_identity.value.trim().split(" "), name)
         }
     }

@@ -20,10 +20,11 @@
  */
 package com.dimension.maskbook.wallet.usecase
 
+import com.dimension.maskbook.common.ext.of
 import com.dimension.maskbook.wallet.repository.IWalletRepository
 
 class RefreshWalletUseCase(
     private val repository: IWalletRepository
 ) {
-    suspend operator fun invoke() = runCatching { repository.refreshWallet() }
+    suspend operator fun invoke() = Result.of { repository.refreshWallet() }
 }
