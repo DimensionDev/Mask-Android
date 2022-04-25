@@ -175,7 +175,7 @@ private fun PlatformTips(
                     painter = painterResource(R.drawable.ic_close_square),
                     modifier = Modifier.size(24.dp),
                     contentDescription = null,
-                    tint = Color(0xFFFF5F5F),
+                    tint = Color(0xFF1D9BF0),
                 )
             }
         }
