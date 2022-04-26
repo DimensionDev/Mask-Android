@@ -20,8 +20,8 @@ object Versions {
     }
 
     const val ksp = "${Kotlin.lang}-1.0.5"
-    const val spotless = "6.3.0"
-    const val ktlint = "0.43.2"
+    const val spotless = "6.5.0"
+    const val ktlint = "0.45.2"
     const val compose_jb = "1.2.0-alpha01-dev675"
     const val compose = "1.1.0"
     const val accompanist = "0.23.0"
