@@ -41,9 +41,21 @@ fun CollectibleCard(
     Box(modifier = modifier) {
         if (!data.videoUrl.isNullOrEmpty()) {
             // TODO: video
+            Image(
+                painter = painterResource(R.drawable.mask),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp),
+                contentDescription = null,
+                contentScale = ContentScale.FillWidth
+            )
         } else if (!data.imageUrl.isNullOrEmpty()) {
             Image(
-                painter = rememberImagePainter(data.imageUrl),
+                painter = rememberImagePainter(data.imageUrl) {
+                    placeholder(R.drawable.mask)
+                    error(R.drawable.mask)
+                    fallback(R.drawable.mask)
+                },
                 modifier = Modifier
                     .fillMaxWidth(),
                 contentDescription = null,

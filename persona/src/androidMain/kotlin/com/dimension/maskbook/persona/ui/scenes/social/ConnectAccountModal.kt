@@ -50,10 +50,12 @@ import com.dimension.maskbook.common.routeProcessor.annotations.Path
 import com.dimension.maskbook.common.ui.widget.MaskInputField
 import com.dimension.maskbook.common.ui.widget.MaskModal
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
+import com.dimension.maskbook.extension.export.ExtensionServices
 import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.model.SocialProfile
 import com.dimension.maskbook.persona.route.PersonaRoute
 import com.dimension.maskbook.persona.viewmodel.social.UserNameModalViewModel
+import org.koin.androidx.compose.get
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 
@@ -74,6 +76,7 @@ fun ConnectAccountModal(
         parametersOf(socialProfile)
     }
     val name by viewModel.userName.collectAsState()
+    val extensionServices = get<ExtensionServices>()
     MaskModal(
         title = {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -112,6 +115,8 @@ fun ConnectAccountModal(
                 onClick = {
                     viewModel.done(personaId, name)
                     navController.navigateToHome()
+
+                    extensionServices.refresh()
                 },
             ) {
                 Text(text = stringResource(R.string.scene_social_connect_button_title))
