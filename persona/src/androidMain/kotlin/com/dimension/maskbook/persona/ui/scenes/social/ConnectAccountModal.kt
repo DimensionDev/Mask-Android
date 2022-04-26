@@ -47,6 +47,7 @@ import com.dimension.maskbook.common.route.navigationComposeBottomSheet
 import com.dimension.maskbook.common.route.navigationComposeBottomSheetPackage
 import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
 import com.dimension.maskbook.common.routeProcessor.annotations.Path
+import com.dimension.maskbook.common.routeProcessor.annotations.Query
 import com.dimension.maskbook.common.ui.widget.MaskInputField
 import com.dimension.maskbook.common.ui.widget.MaskModal
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
@@ -69,7 +70,7 @@ fun ConnectAccountModal(
     navController: NavController,
     @Path("personaId") personaId: String,
     @Path("profileId") profileId: String,
-    @Path("avatar") avatar: String,
+    @Query("avatar") avatar: String?,
 ) {
     val socialProfile = remember(profileId) { SocialProfile.parse(profileId) } ?: return
     val viewModel = getViewModel<UserNameModalViewModel> {
@@ -82,7 +83,11 @@ fun ConnectAccountModal(
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Image(
-                        painter = rememberImagePainter(avatar),
+                        painter = rememberImagePainter(avatar) {
+                            placeholder(R.drawable.mask)
+                            error(R.drawable.mask)
+                            fallback(R.drawable.mask)
+                        },
                         contentDescription = null,
                         modifier = Modifier.size(48.dp).clip(CircleShape),
                     )

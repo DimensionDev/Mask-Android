@@ -31,26 +31,24 @@ import com.dimension.maskbook.common.ext.encodeJsonElement
 import com.dimension.maskbook.common.ext.encodeMsgPack
 import com.dimension.maskbook.common.ext.toSite
 import com.dimension.maskbook.extension.export.ExtensionServices
+import com.dimension.maskbook.extension.export.model.Site
 import com.dimension.maskbook.persona.datasource.DbPersonaDataSource
 import com.dimension.maskbook.persona.datasource.DbPostDataSource
 import com.dimension.maskbook.persona.datasource.DbProfileDataSource
 import com.dimension.maskbook.persona.datasource.DbRelationDataSource
-import com.dimension.maskbook.persona.datasource.JsProfileDataSource
 import com.dimension.maskbook.persona.export.error.PersonaAlreadyExitsError
 import com.dimension.maskbook.persona.export.model.ConnectAccountData
 import com.dimension.maskbook.persona.export.model.IndexedDBPersona
 import com.dimension.maskbook.persona.export.model.IndexedDBPost
 import com.dimension.maskbook.persona.export.model.IndexedDBProfile
 import com.dimension.maskbook.persona.export.model.IndexedDBRelation
-import com.dimension.maskbook.persona.export.model.LinkedProfileDetailsState
+import com.dimension.maskbook.persona.export.model.Network
 import com.dimension.maskbook.persona.export.model.PersonaData
 import com.dimension.maskbook.persona.export.model.PlatformType
 import com.dimension.maskbook.persona.export.model.SocialData
 import com.dimension.maskbook.persona.ext.toJWK
 import com.dimension.maskbook.persona.model.ContactData
 import com.dimension.maskbook.persona.model.SocialProfile
-import com.dimension.maskbook.persona.model.options.AttachProfileOptions
-import com.dimension.maskbook.persona.model.options.DetachProfileOptions
 import com.dimension.maskbook.setting.export.model.JsonWebKey
 import com.dimension.maskwalletcore.CurveType
 import com.dimension.maskwalletcore.EncryptionOption
@@ -82,7 +80,6 @@ internal class PersonaRepository(
     private val profileDataSource: DbProfileDataSource,
     private val relationDataSource: DbRelationDataSource,
     private val postDataSource: DbPostDataSource,
-    private val jsProfileDataSource: JsProfileDataSource,
 ) : IPersonaRepository,
     ISocialsRepository,
     IContactsRepository {
@@ -151,6 +148,26 @@ internal class PersonaRepository(
             val newCurrentPersona = personaDataSource.getPersonaFirst()
             setCurrentPersona(newCurrentPersona?.identifier.orEmpty())
         }
+
+        // happy for connect profile
+        preferenceRepository.lastDetectProfileIdentifier
+            .filterNot { it.isEmpty() }
+            .filterNot { profileDataSource.hasSocial(it) }
+            .onEach { profileIdentifier ->
+                profileDataSource.addSocial(
+                    SocialData(
+                        id = profileIdentifier,
+                        name = "",
+                        avatar = "",
+                        network = when (extensionServices.site.firstOrNull()) {
+                            Site.Twitter -> Network.Twitter
+                            Site.Facebook -> Network.Facebook
+                            else -> Network.Twitter
+                        },
+                    )
+                )
+            }
+            .launchIn(scope)
     }
 
     override suspend fun setCurrentPersona(id: String) {
@@ -188,22 +205,18 @@ internal class PersonaRepository(
 
     override fun connectProfile(personaId: String, socialProfile: SocialProfile) {
         scope.launch {
-            jsProfileDataSource.attachProfile(
-                AttachProfileOptions(
-                    personaId,
-                    profileIdentifier = socialProfile.toString(),
-                    state = AttachProfileOptions.State(LinkedProfileDetailsState.Confirmed)
-                )
+            personaDataSource.connectProfile(
+                personaIdentifier = personaId,
+                profileIdentifier = socialProfile.toString(),
             )
         }
     }
 
     override fun disconnectProfile(personaId: String, socialProfile: SocialProfile) {
         scope.launch {
-            jsProfileDataSource.detachProfile(
-                DetachProfileOptions(
-                    profileIdentifier = socialProfile.toString(),
-                )
+            personaDataSource.disconnectProfile(
+                personaIdentifier = personaId,
+                profileIdentifier = socialProfile.toString(),
             )
         }
     }

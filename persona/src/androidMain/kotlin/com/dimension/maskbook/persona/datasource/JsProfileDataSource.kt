@@ -89,6 +89,13 @@ class JsProfileDataSource(
 
         val oldProfile = profileDao.find(options.profile.identifier)
         if (oldProfile != null) {
+            // nickname might be null， try update
+            val oldNickName = oldProfile.nickname
+            val newNickName = options.profile.nickname
+            if (!newNickName.isNullOrEmpty() && oldNickName != newNickName) {
+                oldProfile.nickname = newNickName
+                profileDao.updateNickName(options.profile.identifier, newNickName)
+            }
             return options.profile
         }
 

@@ -27,7 +27,7 @@ import com.dimension.maskbook.persona.export.model.Network
 @Entity
 data class DbProfileRecord(
     @PrimaryKey val identifier: String,
-    val nickname: String? = null,
+    var nickname: String? = null,
     var network: Network? = null,
     var createdAt: Long = 0,
     var updatedAt: Long = 0,
