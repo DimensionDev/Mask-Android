@@ -81,7 +81,7 @@ fun DAppConnectedModal(
                             ),
                         icon = {
                             Image(
-                                rememberImagePainter(app.icons.first()),
+                                rememberImagePainter(app.icons.firstOrNull()),
                                 contentDescription = null,
                                 modifier = Modifier.size(32.dp)
                             )

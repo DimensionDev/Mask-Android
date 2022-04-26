@@ -115,6 +115,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asExecutor
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.get
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.module.Module
 import org.koin.dsl.bind
@@ -217,8 +218,9 @@ private fun initWalletConnect() {
             }
         }
     KoinPlatformTools.defaultContext().get().get<WalletConnectServerManager>()
-        .init { _, _ -> // clientMeta, request ->
-            TODO("navigate to wallet connect request handle scene")
+        .init { _, request ->
+            KoinPlatformTools.defaultContext().get().get<Web3MessageHandler>()
+                .handle(request)
         }
 }
 

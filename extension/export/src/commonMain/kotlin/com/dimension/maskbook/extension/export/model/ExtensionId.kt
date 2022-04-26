@@ -36,26 +36,39 @@ import kotlinx.serialization.json.int
 class ExtensionId internal constructor(
     internal val intId: Int? = null,
     internal val stringId: String? = null,
+    internal val longId: Long? = null,
 ) {
     val value: Any?
         get() = intId ?: stringId
     override fun toString(): String {
-        if (intId != null) {
-            return intId.toString()
-        } else if (stringId != null) {
-            return stringId
+        return when {
+            intId != null -> {
+                intId.toString()
+            }
+            stringId != null -> {
+                stringId
+            }
+            longId != null -> {
+                longId.toString()
+            }
+            else -> "null"
         }
-        return "null"
     }
 
     companion object {
         fun fromAny(any: Any?): ExtensionId {
-            if (any is Int) {
-                return ExtensionId(intId = any)
-            } else if (any is String) {
-                return ExtensionId(stringId = any)
+            return when (any) {
+                is Int -> {
+                    ExtensionId(intId = any)
+                }
+                is String -> {
+                    ExtensionId(stringId = any)
+                }
+                is Long -> {
+                    ExtensionId(longId = any)
+                }
+                else -> ExtensionId()
             }
-            return ExtensionId()
         }
     }
 }

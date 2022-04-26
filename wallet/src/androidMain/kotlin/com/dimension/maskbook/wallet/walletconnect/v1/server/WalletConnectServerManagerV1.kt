@@ -23,10 +23,9 @@ package com.dimension.maskbook.wallet.walletconnect.v1.server
 import android.content.Context
 import android.util.Log
 import com.dimension.maskbook.wallet.BuildConfig
+import com.dimension.maskbook.wallet.data.Web3Request
 import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.walletconnect.WCClientMeta
-import com.dimension.maskbook.wallet.walletconnect.WCRequest
-import com.dimension.maskbook.wallet.walletconnect.WCRequestParams
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectServerManager
 import com.dimension.maskbook.wallet.walletconnect.v1.BaseWalletConnectManager
 import com.dimension.maskbook.wallet.walletconnect.v1.WCSessionV1
@@ -42,7 +41,7 @@ class WalletConnectServerManagerV1(private val context: Context) :
     BaseWalletConnectManager(),
     WalletConnectServerManager {
 
-    private var onRequest: (clientMeta: WCClientMeta, request: WCRequest) -> Unit = { _, _ -> }
+    private var onRequest: (clientMeta: WCClientMeta, request: Web3Request) -> Unit = { _, _ -> }
     private val _pendingSessions = MutableStateFlow(emptyList<WCSessionV1>())
     private val _connectedSessions = MutableStateFlow(emptyList<WCSessionV1>())
     override val connectedClients: Flow<List<WCClientMeta>>
@@ -60,7 +59,7 @@ class WalletConnectServerManagerV1(private val context: Context) :
             moshi
         )
 
-    override fun init(onRequest: (clientMeta: WCClientMeta, request: WCRequest) -> Unit) {
+    override fun init(onRequest: (clientMeta: WCClientMeta, request: Web3Request) -> Unit) {
         this.onRequest = onRequest
         storage.list().forEach {
             if (it.approvedAccounts.isNullOrEmpty()) {
@@ -109,12 +108,14 @@ class WalletConnectServerManagerV1(private val context: Context) :
         getSessionById(clientMeta.id)?.reject()
     }
 
-    override fun approveRequest(clientMeta: WCClientMeta, requestId: String, response: Any) {
-        getSessionById(clientMeta.id)?.approveRequest(id = requestId.toLong(), response = response)
+    override fun approveRequest(clientMeta: WCClientMeta, requestId: Long, response: Any) {
+        "onApproveRequest:$requestId, response:$response".log()
+        getSessionById(clientMeta.id)?.approveRequest(id = requestId, response = response)
     }
 
-    override fun rejectRequest(clientMeta: WCClientMeta, requestId: String, errorCode: Long, errorMessage: String) {
-        getSessionById(clientMeta.id)?.rejectRequest(id = requestId.toLong(), errorCode = errorCode, errorMsg = errorMessage)
+    override fun rejectRequest(clientMeta: WCClientMeta, requestId: Long, errorCode: Long, errorMessage: String) {
+        "onRejectRequest:$requestId, response:$errorMessage".log()
+        getSessionById(clientMeta.id)?.rejectRequest(id = requestId, errorCode = errorCode, errorMsg = errorMessage)
     }
 
     private fun WCSessionV1.addToConnected() {
@@ -133,50 +134,45 @@ class WalletConnectServerManagerV1(private val context: Context) :
 
     private fun handleRequest(call: Session.MethodCall, session: WCSessionV1) {
         when (call) {
-            is Session.MethodCall.SendTransaction -> {
-                dispatchRequest(
-                    WCRequest(
-                        id = call.id.toString(),
-                        params = WCRequestParams.WCTransaction(
-                            from = call.from,
-                            to = call.to,
-                            value = call.value,
-                            data = call.data,
-                            gasLimit = call.gasLimit,
-                            gasPrice = call.gasPrice,
-                            nonce = call.nonce,
-                        )
-                    ),
+            is Session.MethodCall.SendTransaction,
+            is Session.MethodCall.SignMessage,
+            is Session.MethodCall.Custom -> {
+                dispatchWeb3Request(
+                    call,
                     session
                 )
             }
-            is Session.MethodCall.SignMessage -> dispatchRequest(
-                WCRequest(
-                    id = call.id.toString(),
-                    params = WCRequestParams.WCSign(
-                        address = call.address,
-                        message = call.message
-                    )
-                ),
-                session
-            )
-            is Session.MethodCall.Custom -> rejectUnSupported(session, call.id)
             else -> {}
         }
     }
 
-    private fun dispatchRequest(wcRequest: WCRequest, session: WCSessionV1) {
+    private fun dispatchWeb3Request(call: Session.MethodCall, session: WCSessionV1) {
         session.peerMeta()?.let {
-            onRequest.invoke(it.toWcClientMeta(session.id, session.approvedAccounts() ?: emptyList(), session.chainId ?: 0), wcRequest)
+            val client = it.toWcClientMeta(session.id, session.approvedAccounts() ?: emptyList(), session.chainId ?: 1)
+            onRequest(
+                client,
+                call.toWeb3Request(chainId = session.chainId ?: 1, onResponse = { response ->
+                    kotlin.runCatching {
+                        response["result"]?.let { result ->
+                            if (result is Map<*, *>) {
+                                result["error"]?.let { error ->
+                                    throw Error(error.toString())
+                                }
+                                result["result"]
+                            } else {
+                                result
+                            }
+                        } ?: throw Error("no response")
+                    }.onSuccess { result ->
+                        approveRequest(client, requestId = call.id(), response = result)
+                    }.onFailure { error ->
+                        rejectRequest(client, requestId = call.id(), errorCode = 0, errorMessage = error.message ?: "")
+                    }
+                }).also {
+                    "On Web3Request:$it".log()
+                }
+            )
         }
-    }
-
-    private fun rejectUnSupported(session: WCSessionV1, id: Long) {
-        session.rejectRequest(
-            id = id,
-            errorCode = 404,
-            errorMsg = "Unsupported method call",
-        )
     }
 
     private fun getSessionById(id: String): WCSessionV1? {
