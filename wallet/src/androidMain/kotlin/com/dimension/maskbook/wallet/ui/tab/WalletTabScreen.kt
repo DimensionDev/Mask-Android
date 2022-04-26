@@ -21,12 +21,12 @@
 package com.dimension.maskbook.wallet.ui.tab
 
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavController
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.ui.tab.TabScreen
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.ui.scenes.wallets.intro.WalletIntroHost
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
+import moe.tlaster.precompose.navigation.NavController
 
 class WalletTabScreen : TabScreen {
     override val route = CommonRoute.Main.Tabs.Wallet

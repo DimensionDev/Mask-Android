@@ -29,7 +29,7 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.setting.export.SettingServices
 import com.dimension.maskbook.setting.export.model.Appearance
-import org.koin.androidx.compose.get
+import moe.tlaster.koin.compose.get
 
 internal val LocalIsDarkTheme = staticCompositionLocalOf { false }
 

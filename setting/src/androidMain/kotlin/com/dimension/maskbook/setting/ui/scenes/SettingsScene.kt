@@ -53,7 +53,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.dimension.maskbook.common.ext.navigateUri
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.route.Deeplinks
@@ -72,8 +71,9 @@ import com.dimension.maskbook.setting.export.model.Language
 import com.dimension.maskbook.setting.repository.ISettingsRepository
 import com.dimension.maskbook.setting.route.SettingRoute
 import com.dimension.maskbook.wallet.export.WalletServices
-import org.koin.androidx.compose.get
-import org.koin.androidx.compose.getViewModel
+import moe.tlaster.koin.compose.get
+import moe.tlaster.koin.compose.getViewModel
+import moe.tlaster.precompose.navigation.NavController
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -199,7 +199,7 @@ fun SettingsScene(
                     title = stringResource(R.string.scene_setting_backup_recovery_restore_data),
                     icon = R.drawable.ic_settings_restore_data,
                     onClick = {
-                        navController.navigate(Uri.parse(Deeplinks.Persona.Recovery))
+                        navController.navigateUri(Uri.parse(Deeplinks.Persona.Recovery))
                     }
                 )
                 SettingsDivider()

@@ -32,8 +32,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavController
-import androidx.navigation.navOptions
+import com.dimension.maskbook.common.ext.navigateUri
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
@@ -60,7 +59,8 @@ import com.dimension.maskbook.persona.ui.scenes.register.recovery.RecoveryHomeSc
 import com.dimension.maskbook.persona.viewmodel.recovery.IdentityViewModel
 import com.dimension.maskbook.persona.viewmodel.recovery.PrivateKeyViewModel
 import kotlinx.coroutines.launch
-import org.koin.androidx.compose.getViewModel
+import moe.tlaster.koin.compose.getViewModel
+import moe.tlaster.precompose.navigation.NavController
 import org.koin.core.parameter.parametersOf
 
 @NavGraphDestination(
@@ -310,14 +310,13 @@ fun RegisterRecoveryAlreadyExists(
     PersonaAlreadyExitsDialog(
         onBack = onBack,
         onConfirm = {
-            navController.navigate(
+            navController.navigateUri(
                 Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona)),
-                navOptions {
-                    popUpTo(PersonaRoute.Register.Init) {
-                        inclusive = true
-                    }
+            ) {
+                popUpTo(PersonaRoute.Register.Init) {
+                    inclusive = true
                 }
-            )
+            }
         },
         restoreFrom = restoreFrom
     )
@@ -343,13 +342,12 @@ fun RegisterRecoveryComplected(
         },
         buttons = {
             PrimaryButton(onClick = {
-                navController.navigate(
+                navController.navigateUri(
                     Uri.parse(Deeplinks.Main.Home(CommonRoute.Main.Tabs.Persona)),
-                    navOptions {
-                        // 0 is the root navigation
-                        popUpTo(0)
-                    }
-                )
+                ) {
+                    // 0 is the root navigation
+                    popUpTo(0)
+                }
             }, modifier = Modifier.fillMaxWidth()) {
                 Text(stringResource(R.string.common_controls_done))
             }

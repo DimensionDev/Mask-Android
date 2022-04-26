@@ -28,7 +28,6 @@ import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import com.dimension.maskbook.common.ui.theme.modalScrimColor
 import com.google.accompanist.navigation.animation.AnimatedNavHost
@@ -36,6 +35,7 @@ import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.accompanist.navigation.material.BottomSheetNavigator
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.ModalBottomSheetLayout
+import moe.tlaster.precompose.navigation.RouteBuilder
 
 private const val navHostAnimationDurationMillis = 320
 
@@ -46,7 +46,7 @@ fun RouteHost(
     bottomSheetNavigator: BottomSheetNavigator = rememberMaskBottomSheetNavigator(),
     navController: NavHostController = rememberAnimatedNavController(bottomSheetNavigator),
     startDestination: String,
-    builder: NavGraphBuilder.() -> Unit
+    builder: RouteBuilder.() -> Unit
 ) {
     ModalBottomSheetLayout(
         bottomSheetNavigator,

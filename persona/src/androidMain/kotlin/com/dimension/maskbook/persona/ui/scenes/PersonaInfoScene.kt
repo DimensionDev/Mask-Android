@@ -84,8 +84,8 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.calculateCurrentOffsetForPage
 import com.google.accompanist.pager.rememberPagerState
-import org.koin.androidx.compose.get
-import org.koin.androidx.compose.getViewModel
+import moe.tlaster.koin.compose.get
+import moe.tlaster.koin.compose.getViewModel
 import kotlin.math.absoluteValue
 
 private enum class PersonaInfoData(val title: String) {

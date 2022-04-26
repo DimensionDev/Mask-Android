@@ -50,7 +50,7 @@ import com.dimension.maskbook.common.ui.widget.button.MaskTransparentButton
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.localization.R
 import com.dimension.maskbook.setting.viewmodel.BackupCloudViewModel
-import org.koin.androidx.compose.getViewModel
+import moe.tlaster.koin.compose.getViewModel
 
 @Composable
 fun BackupCloudScene(

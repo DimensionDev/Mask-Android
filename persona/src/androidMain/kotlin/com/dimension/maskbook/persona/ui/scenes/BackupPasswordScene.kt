@@ -22,8 +22,6 @@ package com.dimension.maskbook.persona.ui.scenes
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.navigation.NavController
-import androidx.navigation.navOptions
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.route.navigationComposeBottomSheet
@@ -33,7 +31,8 @@ import com.dimension.maskbook.common.routeProcessor.annotations.Path
 import com.dimension.maskbook.persona.route.PersonaRoute
 import com.dimension.maskbook.persona.ui.scenes.register.BackUpPasswordModal
 import com.dimension.maskbook.persona.viewmodel.BackUpPasswordViewModel
-import org.koin.androidx.compose.getViewModel
+import moe.tlaster.koin.compose.getViewModel
+import moe.tlaster.precompose.navigation.NavController
 
 @NavGraphDestination(
     route = PersonaRoute.BackUpPassword.path,
@@ -56,14 +55,11 @@ fun BackUpPassword(
         onPasswordChanged = { viewModel.setPassword(it) },
         passwordValid = passwordValid,
         onConfirm = {
-            navController.navigate(
-                target,
-                navOptions {
-                    popUpTo(PersonaRoute.BackUpPassword.path) {
-                        inclusive = true
-                    }
+            navController.navigate(target) {
+                popUpTo(PersonaRoute.BackUpPassword.path) {
+                    inclusive = true
                 }
-            )
+            }
         }
     )
 }

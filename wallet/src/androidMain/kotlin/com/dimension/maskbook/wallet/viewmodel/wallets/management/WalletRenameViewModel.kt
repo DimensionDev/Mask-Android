@@ -20,11 +20,11 @@
  */
 package com.dimension.maskbook.wallet.viewmodel.wallets.management
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
 import com.dimension.maskbook.wallet.repository.IWalletRepository
 import kotlinx.coroutines.flow.MutableStateFlow
+import moe.tlaster.precompose.viewmodel.ViewModel
+import moe.tlaster.precompose.viewmodel.viewModelScope
 
 class WalletRenameViewModel(
     private val walletId: String,

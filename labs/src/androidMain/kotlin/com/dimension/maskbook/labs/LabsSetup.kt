@@ -21,8 +21,6 @@
 package com.dimension.maskbook.labs
 
 import android.content.Context
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
 import com.dimension.maskbook.common.IoScopeName
 import com.dimension.maskbook.common.ModuleSetup
 import com.dimension.maskbook.common.ui.tab.TabScreen
@@ -38,7 +36,9 @@ import com.dimension.maskbook.labs.ui.tab.LabsTabScreen
 import com.dimension.maskbook.labs.viewmodel.LabsViewModel
 import com.dimension.maskbook.labs.viewmodel.LuckDropViewModel
 import com.dimension.maskbook.labs.viewmodel.PluginSettingsViewModel
-import org.koin.androidx.viewmodel.dsl.viewModel
+import moe.tlaster.koin.viewModel
+import moe.tlaster.precompose.navigation.NavController
+import moe.tlaster.precompose.navigation.RouteBuilder
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
@@ -46,7 +46,7 @@ import org.koin.mp.KoinPlatformTools
 
 object LabsSetup : ModuleSetup {
 
-    override fun NavGraphBuilder.route(navController: NavController) {
+    override fun RouteBuilder.route(navController: NavController) {
         generatedRoute(navController)
     }
 

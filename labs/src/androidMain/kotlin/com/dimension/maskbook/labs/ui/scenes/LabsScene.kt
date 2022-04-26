@@ -50,7 +50,7 @@ import com.dimension.maskbook.labs.R
 import com.dimension.maskbook.labs.export.model.AppKey
 import com.dimension.maskbook.labs.viewmodel.AppDisplayData
 import com.dimension.maskbook.labs.viewmodel.LabsViewModel
-import org.koin.androidx.compose.getViewModel
+import moe.tlaster.koin.compose.getViewModel
 
 @Composable
 fun LabsScene(

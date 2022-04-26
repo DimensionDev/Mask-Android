@@ -31,7 +31,7 @@ import com.dimension.maskbook.common.ui.widget.MaskSelection
 import com.dimension.maskbook.localization.R
 import com.dimension.maskbook.setting.export.model.Appearance
 import com.dimension.maskbook.setting.viewmodel.AppearanceSettingsViewModel
-import org.koin.androidx.compose.getViewModel
+import moe.tlaster.koin.compose.getViewModel
 
 val appearanceMap = mapOf(
     Appearance.default to R.string.scene_setting_detail_automatic,

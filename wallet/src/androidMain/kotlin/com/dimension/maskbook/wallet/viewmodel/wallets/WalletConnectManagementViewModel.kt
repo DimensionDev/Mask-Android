@@ -20,12 +20,12 @@
  */
 package com.dimension.maskbook.wallet.viewmodel.wallets
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.wallet.export.model.WalletData
 import com.dimension.maskbook.wallet.repository.IWalletRepository
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager
 import kotlinx.coroutines.launch
+import moe.tlaster.precompose.viewmodel.ViewModel
+import moe.tlaster.precompose.viewmodel.viewModelScope
 
 class WalletConnectManagementViewModel(
     private val manager: WalletConnectClientManager,

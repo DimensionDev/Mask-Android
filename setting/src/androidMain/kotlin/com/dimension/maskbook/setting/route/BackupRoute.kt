@@ -48,7 +48,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.dimension.maskbook.common.ext.humanizeFileSize
 import com.dimension.maskbook.common.ext.humanizeTimestamp
 import com.dimension.maskbook.common.ext.observeAsState
@@ -81,8 +80,9 @@ import com.dimension.maskbook.setting.viewmodel.BackupMergeConfirmViewModel
 import com.dimension.maskbook.setting.viewmodel.EmailBackupViewModel
 import com.dimension.maskbook.setting.viewmodel.PhoneBackupViewModel
 import kotlinx.coroutines.launch
-import org.koin.androidx.compose.get
-import org.koin.androidx.compose.getViewModel
+import moe.tlaster.koin.compose.get
+import moe.tlaster.koin.compose.getViewModel
+import moe.tlaster.precompose.navigation.NavController
 import org.koin.core.parameter.parametersOf
 
 @NavGraphDestination(

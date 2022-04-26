@@ -29,7 +29,7 @@ import com.dimension.maskbook.common.ui.widget.MaskModal
 import com.dimension.maskbook.common.ui.widget.MaskSelection
 import com.dimension.maskbook.setting.export.model.Language
 import com.dimension.maskbook.setting.viewmodel.LanguageSettingsViewModel
-import org.koin.androidx.compose.getViewModel
+import moe.tlaster.koin.compose.getViewModel
 
 val languageMap = Language.values().map {
     it to it.value

@@ -22,8 +22,6 @@ package com.dimension.maskbook.persona
 
 import android.content.Context
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.navigation.NavController
-import androidx.navigation.NavGraphBuilder
 import androidx.room.Room
 import com.dimension.maskbook.common.IoScopeName
 import com.dimension.maskbook.common.LocalBackupAccount
@@ -80,7 +78,9 @@ import com.dimension.maskbook.persona.viewmodel.social.UserNameModalViewModel
 import com.google.accompanist.navigation.animation.navigation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asExecutor
-import org.koin.androidx.viewmodel.dsl.viewModel
+import moe.tlaster.koin.viewModel
+import moe.tlaster.precompose.navigation.NavController
+import moe.tlaster.precompose.navigation.RouteBuilder
 import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.binds
@@ -90,7 +90,7 @@ import org.koin.mp.KoinPlatformTools
 object PersonaSetup : ModuleSetup {
 
     @OptIn(ExperimentalAnimationApi::class)
-    override fun NavGraphBuilder.route(navController: NavController) {
+    override fun RouteBuilder.route(navController: NavController) {
         generatedRoute(navController)
         navigation(
             startDestination = PersonaRoute.Register.CreateIdentity.Backup.path,

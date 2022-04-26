@@ -20,7 +20,6 @@
  */
 package com.dimension.maskbook.wallet.viewmodel.wallets.collectible
 
-import androidx.lifecycle.ViewModel
 import androidx.paging.PagingData
 import com.dimension.maskbook.wallet.export.model.WalletCollectibleData
 import com.dimension.maskbook.wallet.repository.ICollectibleRepository
@@ -29,6 +28,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.mapNotNull
+import moe.tlaster.precompose.viewmodel.ViewModel
 
 class CollectiblesViewModel(
     private val repository: ICollectibleRepository,

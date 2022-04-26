@@ -25,6 +25,7 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import com.dimension.maskbook.common.CommonSetup
+import com.dimension.maskbook.common.ext.navigateUri
 import com.dimension.maskbook.common.route
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.DeeplinkNavigateArgs
@@ -67,7 +68,7 @@ fun Router(
         Navigator.navigateEvent.collect {
             it.getContentIfNotHandled()?.let { it1 ->
                 when (it1) {
-                    is DeeplinkNavigateArgs -> navController.navigate(Uri.parse(it1.url))
+                    is DeeplinkNavigateArgs -> navController.navigateUri(Uri.parse(it1.url))
                     is RouteNavigateArgs -> navController.navigate(it1.route)
                 }
             }

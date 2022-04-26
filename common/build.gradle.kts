@@ -14,6 +14,18 @@ kotlin {
                 implementation(projects.common.routeProcessor.annotations)
                 kspAndroid(projects.common.routeProcessor)
                 api(projects.common.bigDecimal)
+
+                // Compose
+                api("org.jetbrains.compose.ui:ui:${Versions.compose_jb}")
+                api("org.jetbrains.compose.ui:ui-util:${Versions.compose_jb}")
+                api("org.jetbrains.compose.foundation:foundation:${Versions.compose_jb}")
+                api("org.jetbrains.compose.material:material:${Versions.compose_jb}")
+                api("org.jetbrains.compose.material:material-icons-core:${Versions.compose_jb}")
+                api("org.jetbrains.compose.material:material-icons-extended:${Versions.compose_jb}")
+                api("org.jetbrains.compose.ui:ui-tooling:${Versions.compose_jb}")
+
+                // Koin
+                api("io.insert-koin:koin-core:${Versions.koin}")
             }
         }
         val commonTest by getting {
@@ -32,15 +44,6 @@ kotlin {
                 api(projects.common.retrofit)
                 api(projects.common.okhttp)
                 api(projects.common.bigDecimal)
-
-                // Compose
-                api("org.jetbrains.compose.ui:ui:${Versions.compose_jb}")
-                api("org.jetbrains.compose.ui:ui-util:${Versions.compose_jb}")
-                api("org.jetbrains.compose.foundation:foundation:${Versions.compose_jb}")
-                api("org.jetbrains.compose.material:material:${Versions.compose_jb}")
-                api("org.jetbrains.compose.material:material-icons-core:${Versions.compose_jb}")
-                api("org.jetbrains.compose.material:material-icons-extended:${Versions.compose_jb}")
-                api("org.jetbrains.compose.ui:ui-tooling:${Versions.compose_jb}")
 
                 // Koin
                 api("io.insert-koin:koin-android:${Versions.koin}")

@@ -20,7 +20,7 @@
  */
 package com.dimension.maskbook.wallet.viewmodel.wallets
 
-import androidx.lifecycle.ViewModel
+import moe.tlaster.precompose.viewmodel.ViewModel
 
 class TouchIdEnableViewModel : ViewModel() {
     fun enable(onEnable: () -> Unit) {

@@ -21,7 +21,7 @@
 package com.dimension.maskbook.common.ui.tab
 
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavController
+import moe.tlaster.precompose.navigation.NavController
 
 interface TabScreen {
 

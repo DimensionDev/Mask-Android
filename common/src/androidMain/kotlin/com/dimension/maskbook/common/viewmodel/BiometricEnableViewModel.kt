@@ -21,9 +21,9 @@
 package com.dimension.maskbook.common.viewmodel
 
 import android.content.Context
-import androidx.lifecycle.ViewModel
 import com.dimension.maskbook.common.util.BiometricAuthenticator
 import com.dimension.maskbook.setting.export.SettingServices
+import moe.tlaster.precompose.viewmodel.ViewModel
 
 class BiometricEnableViewModel(
     private val biometricAuthenticator: BiometricAuthenticator,
