@@ -12,6 +12,7 @@ allprojects {
             allWarningsAsErrors = true
             freeCompilerArgs = listOf(
                 "-opt-in=kotlin.RequiresOptIn",
+                "-Xcontext-receivers",
             )
         }
     }
