@@ -25,7 +25,7 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import com.dimension.maskbook.common.CommonSetup
-import com.dimension.maskbook.common.route
+import com.dimension.maskbook.common.registerRoute
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.DeeplinkNavigateArgs
 import com.dimension.maskbook.common.route.Navigator
@@ -78,13 +78,13 @@ fun Router(
         navController = navController,
         startDestination = startDestination,
     ) {
-        CommonSetup.route(this, navController = navController)
-        EntrySetup.route(this, navController = navController)
-        WalletSetup.route(this, navController = navController)
-        LabsSetup.route(this, navController = navController)
-        PersonaSetup.route(this, navController = navController)
-        SettingSetup.route(this, navController = navController)
-        ExtensionSetup.route(this, navController = navController)
+        CommonSetup.registerRoute(navController = navController)
+        EntrySetup.registerRoute(navController = navController)
+        WalletSetup.registerRoute(navController = navController)
+        LabsSetup.registerRoute(navController = navController)
+        PersonaSetup.registerRoute(navController = navController)
+        SettingSetup.registerRoute(navController = navController)
+        ExtensionSetup.registerRoute(navController = navController)
     }
     if (BuildConfig.DEBUG) {
         ComposeDebugTool(navController)

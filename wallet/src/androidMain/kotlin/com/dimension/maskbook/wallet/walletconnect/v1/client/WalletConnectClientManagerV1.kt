@@ -40,7 +40,9 @@ import java.util.Random
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
-class WalletConnectClientManagerV1(private val context: Context) : BaseWalletConnectManager(), WalletConnectClientManager {
+class WalletConnectClientManagerV1(private val context: Context) :
+    BaseWalletConnectManager(),
+    WalletConnectClientManager {
     private var config: Session.Config? = null
     private var session: Session? = null
     private val bridgeServer = "https://safe-walletconnect.gnosis.io"
@@ -162,16 +164,20 @@ class WalletConnectClientManagerV1(private val context: Context) : BaseWalletCon
         session.approvedAccounts()?.forEach {
             connectedSessions[it] = session.apply {
                 addCallback(
-                    ConnectedSessionCallback(this, it, onDisconnect = { address, _ ->
-                        // remove from connected sessions
-                        connectedSessions.remove(address)
-                        this@WalletConnectClientManagerV1.onDisconnect.invoke(address)
-                    }, onResponse = { id, response, error ->
-                        onResponseStore.remove(id)?.invoke(
-                            response,
-                            error
-                        )
-                    })
+                    ConnectedSessionCallback(
+                        this, it,
+                        onDisconnect = { address, _ ->
+                            // remove from connected sessions
+                            connectedSessions.remove(address)
+                            this@WalletConnectClientManagerV1.onDisconnect.invoke(address)
+                        },
+                        onResponse = { id, response, error ->
+                            onResponseStore.remove(id)?.invoke(
+                                response,
+                                error
+                            )
+                        }
+                    )
                 )
                 update(
                     approvedAccounts() ?: emptyList(),

@@ -30,5 +30,5 @@ interface ModuleSetup {
     fun onExtensionReady() {}
 }
 
-fun ModuleSetup.route(builder: NavGraphBuilder, navController: NavController) =
-    builder.route(navController)
+context(NavGraphBuilder)
+fun ModuleSetup.registerRoute(navController: NavController) = route(navController)
