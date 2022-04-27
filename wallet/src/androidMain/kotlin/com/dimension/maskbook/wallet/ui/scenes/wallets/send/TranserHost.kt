@@ -31,12 +31,12 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.navigation.NavController
-import androidx.navigation.navOptions
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.common.ext.getNestedNavigationViewModel
 import com.dimension.maskbook.common.ext.humanizeDollar
 import com.dimension.maskbook.common.ext.humanizeToken
+import com.dimension.maskbook.common.ext.navigate
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.route.navigationComposeAnimComposable
 import com.dimension.maskbook.common.route.navigationComposeAnimComposablePackage
@@ -480,10 +480,8 @@ fun SendConfirmRoute(
                             when (selectTradable) {
                                 is WalletTokenData -> {
                                     navController.navigate(WalletRoute.WalletManagementTransactionHistory) {
-                                        navOptions {
-                                            popUpTo(WalletRoute.Transfer.SearchAddress.path) {
-                                                inclusive = true
-                                            }
+                                        popUpTo(WalletRoute.Transfer.SearchAddress.path) {
+                                            inclusive = true
                                         }
                                     }
                                 }
