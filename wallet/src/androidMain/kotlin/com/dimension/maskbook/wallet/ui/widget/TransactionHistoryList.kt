@@ -36,7 +36,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -48,14 +47,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.dimension.maskbook.common.ext.humanizeDollar
 import com.dimension.maskbook.common.ext.humanizeToken
 import com.dimension.maskbook.common.model.DateType
 import com.dimension.maskbook.common.ui.widget.HorizontalScenePadding
 import com.dimension.maskbook.common.ui.widget.MaskListItem
-import com.dimension.maskbook.common.ui.widget.button.MaskButton
-import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.repository.TransactionData
 import com.dimension.maskbook.wallet.repository.TransactionStatus
@@ -134,7 +130,9 @@ private fun TokenDetailEmptyLayout() {
 private fun TransactionItem(
     item: TransactionData,
     tokenData: TransactionTokenData,
+    @Suppress("UNUSED_PARAMETER")
     onSpeedUp: () -> Unit,
+    @Suppress("UNUSED_PARAMETER")
     onCancel: () -> Unit,
     showPrice: Boolean = true,
 ) {
@@ -168,44 +166,45 @@ private fun TransactionItem(
             }
         },
         secondaryText = {
-            if (item.status == TransactionStatus.Pending) {
-                Spacer(Modifier.height(6.dp))
-                Row {
-                    PrimaryButton(
-                        onClick = onSpeedUp,
-                        modifier = Modifier.size(62.dp, 28.dp),
-                        shape = MaterialTheme.shapes.small,
-                        contentPadding = PaddingValues(0.dp),
-                    ) {
-                        Text(
-                            text = stringResource(R.string.scene_transaction_history_speed_up),
-                            color = Color.White,
-                            style = MaterialTheme.typography.caption.copy(
-                                fontSize = 10.sp,
-                                lineHeight = 15.sp,
-                            )
-                        )
-                    }
-                    Spacer(Modifier.width(8.dp))
-                    MaskButton(
-                        onClick = onCancel,
-                        modifier = Modifier.size(62.dp, 28.dp),
-                        shape = MaterialTheme.shapes.small,
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Color(0xFFD7E6FF),
-                        )
-                    ) {
-                        Text(
-                            text = stringResource(R.string.common_controls_cancel),
-                            color = MaterialTheme.colors.primary,
-                            style = MaterialTheme.typography.caption.copy(
-                                fontSize = 10.sp,
-                                lineHeight = 15.sp,
-                            )
-                        )
-                    }
-                }
-            }
+            // TODO: show speed up and cancel button
+            // if (item.status == TransactionStatus.Pending) {
+            //     Spacer(Modifier.height(6.dp))
+            //     Row {
+            //         PrimaryButton(
+            //             onClick = onSpeedUp,
+            //             modifier = Modifier.size(62.dp, 28.dp),
+            //             shape = MaterialTheme.shapes.small,
+            //             contentPadding = PaddingValues(0.dp),
+            //         ) {
+            //             Text(
+            //                 text = stringResource(R.string.scene_transaction_history_speed_up),
+            //                 color = Color.White,
+            //                 style = MaterialTheme.typography.caption.copy(
+            //                     fontSize = 10.sp,
+            //                     lineHeight = 15.sp,
+            //                 )
+            //             )
+            //         }
+            //         Spacer(Modifier.width(8.dp))
+            //         MaskButton(
+            //             onClick = onCancel,
+            //             modifier = Modifier.size(62.dp, 28.dp),
+            //             shape = MaterialTheme.shapes.small,
+            //             colors = ButtonDefaults.buttonColors(
+            //                 backgroundColor = Color(0xFFD7E6FF),
+            //             )
+            //         ) {
+            //             Text(
+            //                 text = stringResource(R.string.common_controls_cancel),
+            //                 color = MaterialTheme.colors.primary,
+            //                 style = MaterialTheme.typography.caption.copy(
+            //                     fontSize = 10.sp,
+            //                     lineHeight = 15.sp,
+            //                 )
+            //             )
+            //         }
+            //     }
+            // }
         },
         trailing = if (showPrice) {
             {

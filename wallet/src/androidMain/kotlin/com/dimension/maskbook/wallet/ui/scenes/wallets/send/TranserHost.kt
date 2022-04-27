@@ -31,6 +31,7 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.navigation.NavController
+import androidx.navigation.navOptions
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.common.ext.getNestedNavigationViewModel
@@ -475,10 +476,25 @@ fun SendConfirmRoute(
                     maxFee,
                     maxPriorityFee,
                     onDone = {
-                        navController.popBackStack(
-                            WalletRoute.Transfer.SearchAddress.path,
-                            inclusive = true
-                        )
+                        selectTradable?.let { selectTradable ->
+                            when (selectTradable) {
+                                is WalletTokenData -> {
+                                    navController.navigate(WalletRoute.WalletManagementTransactionHistory) {
+                                        navOptions {
+                                            popUpTo(WalletRoute.Transfer.SearchAddress.path) {
+                                                inclusive = true
+                                            }
+                                        }
+                                    }
+                                }
+                                else -> {
+                                    navController.popBackStack(
+                                        WalletRoute.Transfer.SearchAddress.path,
+                                        inclusive = true
+                                    )
+                                }
+                            }
+                        }
                     },
                     onFailed = {}
                 )
