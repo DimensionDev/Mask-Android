@@ -121,7 +121,6 @@ object PersonaSetup : ModuleSetup {
                 get(named(IoScopeName)),
                 get(), get(), get(),
                 get(), get(), get(),
-                get(),
             )
         } binds arrayOf(
             IPersonaRepository::class,

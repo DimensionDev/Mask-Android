@@ -42,7 +42,7 @@ expect object PersonaRoute {
         operator fun invoke(personaId: String): String
     }
     object ConnectAccount {
-        operator fun invoke(personaId: String, profileId: String, avatar: String): String
+        operator fun invoke(personaId: String, profileId: String, avatar: String?): String
     }
     object DisconnectSocial {
         operator fun invoke(

@@ -54,6 +54,9 @@ interface ProfileDao {
     @Query("UPDATE DbProfileRecord SET avatar=:avatar WHERE identifier=:identifier")
     suspend fun updateAvatar(identifier: String, avatar: String)
 
+    @Query("UPDATE DbProfileRecord SET nickname=:nickname WHERE identifier=:identifier")
+    suspend fun updateNickName(identifier: String, nickname: String)
+
     @Query("SELECT * FROM DbProfileRecord WHERE identifier=:identifier LIMIT 1")
     fun getFlow(identifier: String): Flow<DbProfileRecord?>
 
@@ -67,4 +70,7 @@ interface ProfileDao {
 
     @Query("DELETE FROM DbProfileRecord WHERE identifier=:identifier")
     suspend fun delete(identifier: String)
+
+    @Query("SELECT COUNT(1) FROM DbProfileRecord WHERE identifier=:identifier LIMIT 1")
+    suspend fun count(identifier: String): Int
 }
