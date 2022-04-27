@@ -22,6 +22,7 @@
         <activity
             android:exported="true"
             android:name=".ComposeActivity"
+            android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize"
             android:theme="@style/ComposeActivityTheme">
             <intent-filter>

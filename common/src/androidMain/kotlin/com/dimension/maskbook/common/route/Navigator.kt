@@ -30,7 +30,7 @@ class DeeplinkNavigateArgs(val url: String) : NavigateArgs
 class RouteNavigateArgs(val route: String) : NavigateArgs
 
 object Navigator {
-    private val _navigateEvent = MutableSharedFlow<Event<NavigateArgs>>(extraBufferCapacity = 10)
+    private val _navigateEvent = MutableSharedFlow<Event<NavigateArgs>>(extraBufferCapacity = 10, replay = 1)
     val navigateEvent = _navigateEvent.asSharedFlow()
 
     fun navigate(route: String) {
