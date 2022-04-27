@@ -98,7 +98,7 @@ internal class Web3MessageHandler(
                         request.message.response(
                             Web3SendResponse.success(
                                 request,
-                                hex
+                                listOfNotNull(hex)
                             )
                         )
                     }

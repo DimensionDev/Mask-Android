@@ -20,6 +20,7 @@
  */
 package com.dimension.maskbook.wallet.walletconnect.v1.server
 
+import com.dimension.maskbook.common.ext.encodeJsonElement
 import com.dimension.maskbook.common.ext.toJsonArray
 import com.dimension.maskbook.extension.export.model.ExtensionId
 import com.dimension.maskbook.extension.export.model.ExtensionMessage
@@ -27,6 +28,7 @@ import com.dimension.maskbook.wallet.data.JsonRpcPayload
 import com.dimension.maskbook.wallet.data.Web3Request
 import com.dimension.maskbook.wallet.export.model.SendTransactionData
 import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
 import org.walletconnect.Session
 
 fun Session.MethodCall.toWeb3Request(chainId: Long, onResponse: (Map<String, Any?>) -> Unit): Web3Request {
@@ -66,7 +68,7 @@ fun Session.MethodCall.params(chainId: Long): JsonArray = when (this) {
             nonce = nonce?.toLong(),
             data = data,
             chainId = chainId,
-        )
+        ).encodeJsonElement<SendTransactionData, JsonElement>()
     ).toJsonArray()
     is Session.MethodCall.SignMessage -> listOf(address, message).toJsonArray()
     is Session.MethodCall.Custom -> params?.toJsonArray() ?: emptyList<String>().toJsonArray()

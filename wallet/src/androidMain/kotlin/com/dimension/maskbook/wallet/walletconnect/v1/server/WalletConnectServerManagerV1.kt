@@ -48,7 +48,11 @@ class WalletConnectServerManagerV1(private val context: Context) :
         get() = _connectedSessions.map {
             it.mapNotNull { session ->
                 if (session.approvedAccounts().isNullOrEmpty()) null else
-                    session.peerMeta()?.toWcClientMeta(session.id, accounts = session.approvedAccounts() ?: emptyList(), session.chainId ?: 0)
+                    session.peerMeta()?.toWcClientMeta(
+                        session.id,
+                        accounts = session.approvedAccounts() ?: emptyList(),
+                        session.chainId ?: 0
+                    )
             }
         }
     override val storage: WCSessionStore
@@ -98,10 +102,13 @@ class WalletConnectServerManagerV1(private val context: Context) :
     }
 
     override fun approveConnect(clientMeta: WCClientMeta, accounts: List<String>, chainId: Long) {
-        getSessionById(clientMeta.id)?.approve(
-            accounts = accounts,
-            chainId = chainId
-        )
+        getSessionById(clientMeta.id)?.let {
+            it.approve(
+                accounts = accounts,
+                chainId = chainId
+            )
+            it.update(accounts = accounts, chainId = chainId)
+        }
     }
 
     override fun rejectConnect(clientMeta: WCClientMeta) {
@@ -113,9 +120,18 @@ class WalletConnectServerManagerV1(private val context: Context) :
         getSessionById(clientMeta.id)?.approveRequest(id = requestId, response = response)
     }
 
-    override fun rejectRequest(clientMeta: WCClientMeta, requestId: Long, errorCode: Long, errorMessage: String) {
+    override fun rejectRequest(
+        clientMeta: WCClientMeta,
+        requestId: Long,
+        errorCode: Long,
+        errorMessage: String
+    ) {
         "onRejectRequest:$requestId, response:$errorMessage".log()
-        getSessionById(clientMeta.id)?.rejectRequest(id = requestId, errorCode = errorCode, errorMsg = errorMessage)
+        getSessionById(clientMeta.id)?.rejectRequest(
+            id = requestId,
+            errorCode = errorCode,
+            errorMsg = errorMessage
+        )
     }
 
     private fun WCSessionV1.addToConnected() {
@@ -148,7 +164,11 @@ class WalletConnectServerManagerV1(private val context: Context) :
 
     private fun dispatchWeb3Request(call: Session.MethodCall, session: WCSessionV1) {
         session.peerMeta()?.let {
-            val client = it.toWcClientMeta(session.id, session.approvedAccounts() ?: emptyList(), session.chainId ?: 1)
+            val client = it.toWcClientMeta(
+                session.id,
+                session.approvedAccounts() ?: emptyList(),
+                session.chainId ?: 1
+            )
             onRequest(
                 client,
                 call.toWeb3Request(chainId = session.chainId ?: 1, onResponse = { response ->
@@ -166,7 +186,12 @@ class WalletConnectServerManagerV1(private val context: Context) :
                     }.onSuccess { result ->
                         approveRequest(client, requestId = call.id(), response = result)
                     }.onFailure { error ->
-                        rejectRequest(client, requestId = call.id(), errorCode = 0, errorMessage = error.message ?: "")
+                        rejectRequest(
+                            client,
+                            requestId = call.id(),
+                            errorCode = 0,
+                            errorMessage = error.message ?: ""
+                        )
                     }
                 }).also {
                     "On Web3Request:$it".log()
@@ -234,15 +259,16 @@ class WalletConnectServerManagerV1(private val context: Context) :
     }
 }
 
-private fun Session.PeerMeta.toWcClientMeta(id: String, accounts: List<String>, chainId: Long) = WCClientMeta(
-    id = id,
-    name = name ?: "",
-    url = url ?: "",
-    description = description ?: "",
-    icons = icons ?: emptyList(),
-    accounts = accounts,
-    chainType = ChainType.values().find { it.chainId == chainId } ?: ChainType.eth,
-)
+private fun Session.PeerMeta.toWcClientMeta(id: String, accounts: List<String>, chainId: Long) =
+    WCClientMeta(
+        id = id,
+        name = name ?: "",
+        url = url ?: "",
+        description = description ?: "",
+        icons = icons ?: emptyList(),
+        accounts = accounts,
+        chainType = ChainType.values().find { it.chainId == chainId } ?: ChainType.eth,
+    )
 
 private fun String.log() {
     if (BuildConfig.DEBUG) {

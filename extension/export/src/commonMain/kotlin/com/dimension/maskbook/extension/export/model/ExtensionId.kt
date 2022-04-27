@@ -30,7 +30,8 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.JsonDecoder
 import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.int
+import kotlinx.serialization.json.intOrNull
+import kotlinx.serialization.json.long
 
 @Serializable(with = ExtensionIdSerializer::class)
 class ExtensionId internal constructor(
@@ -79,12 +80,15 @@ object ExtensionIdSerializer : KSerializer<ExtensionId> {
             "ExtensionId",
             PrimitiveSerialDescriptor("StringId", PrimitiveKind.STRING),
             PrimitiveSerialDescriptor("IntId", PrimitiveKind.INT),
+            PrimitiveSerialDescriptor("LongId", PrimitiveKind.LONG),
         )
     override fun serialize(encoder: Encoder, value: ExtensionId) {
         if (value.stringId != null) {
             encoder.encodeString(value.stringId)
         } else if (value.intId != null) {
             encoder.encodeInt(value.intId)
+        } else if (value.longId != null) {
+            encoder.encodeLong(value.longId)
         }
     }
 
@@ -95,7 +99,9 @@ object ExtensionIdSerializer : KSerializer<ExtensionId> {
                     return if (value.isString) {
                         ExtensionId(stringId = value.content)
                     } else {
-                        ExtensionId(intId = value.int)
+                        value.intOrNull?.let {
+                            ExtensionId(intId = it)
+                        } ?: ExtensionId(longId = value.long)
                     }
                 }
                 else -> Unit
