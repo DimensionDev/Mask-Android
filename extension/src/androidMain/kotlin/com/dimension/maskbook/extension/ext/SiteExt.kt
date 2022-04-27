@@ -27,6 +27,8 @@ internal val Site.url: String
     get() = when (this) {
         Site.Twitter -> "https://m.twitter.com"
         Site.Facebook -> "https://m.facebook.com"
+        Site.TwitterSign -> "https://twitter.com/i/flow/login"
+        Site.FacebookSign -> "https://m.facebook.com"
     }
 
 internal val String.site: Site?
