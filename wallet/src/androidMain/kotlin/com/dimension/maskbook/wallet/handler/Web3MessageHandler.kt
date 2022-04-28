@@ -43,10 +43,11 @@ import kotlinx.coroutines.launch
 import org.web3j.protocol.core.Request
 import org.web3j.protocol.core.Response
 
-internal class Web3MessageHandler(
+class Web3MessageHandler(
     private val walletRepository: IWalletRepository,
 ) {
     private val scope = CoroutineScope(Dispatchers.IO)
+    private val waitForResponse = mutableMapOf<String, Web3Request>()
     fun handle(request: Web3Request) {
         scope.launch {
             val payload = request.payload
@@ -86,6 +87,7 @@ internal class Web3MessageHandler(
                             payloadId = request.payload.id,
                             jsonrpc = request.payload.jsonrpc,
                         ).encodeJson()
+                        waitForResponse[request.id.toString()] = request
                         Navigator.navigate(WalletRoute.SendTokenConfirm(dataRaw, false, requestRaw))
                     }
                     "personal_sign" -> {
@@ -156,6 +158,28 @@ internal class Web3MessageHandler(
                     }
                 }
             }
+        }
+    }
+
+    fun onResponseSuccess(id: String, result: Any?) {
+        waitForResponse.remove(id)?.let {
+            it.message.response(
+                Web3SendResponse.success(
+                    it,
+                    result
+                )
+            )
+        }
+    }
+
+    fun onResponseError(id: String, error: String) {
+        waitForResponse.remove(id)?.let {
+            it.message.response(
+                Web3SendResponse.error(
+                    it,
+                    error
+                )
+            )
         }
     }
 }
