@@ -22,5 +22,7 @@ package com.dimension.maskbook.extension.export.model
 
 enum class Site {
     Twitter,
+    TwitterSign,
     Facebook,
+    FacebookSign,
 }

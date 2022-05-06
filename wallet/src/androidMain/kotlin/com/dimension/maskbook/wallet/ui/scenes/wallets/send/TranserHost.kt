@@ -36,6 +36,7 @@ import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.common.ext.getNestedNavigationViewModel
 import com.dimension.maskbook.common.ext.humanizeDollar
 import com.dimension.maskbook.common.ext.humanizeToken
+import com.dimension.maskbook.common.ext.navigate
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.route.navigationComposeAnimComposable
 import com.dimension.maskbook.common.route.navigationComposeAnimComposablePackage
@@ -475,10 +476,23 @@ fun SendConfirmRoute(
                     maxFee,
                     maxPriorityFee,
                     onDone = {
-                        navController.popBackStack(
-                            WalletRoute.Transfer.SearchAddress.path,
-                            inclusive = true
-                        )
+                        selectTradable?.let { selectTradable ->
+                            when (selectTradable) {
+                                is WalletTokenData -> {
+                                    navController.navigate(WalletRoute.WalletManagementTransactionHistory) {
+                                        popUpTo(WalletRoute.Transfer.SearchAddress.path) {
+                                            inclusive = true
+                                        }
+                                    }
+                                }
+                                else -> {
+                                    navController.popBackStack(
+                                        WalletRoute.Transfer.SearchAddress.path,
+                                        inclusive = true
+                                    )
+                                }
+                            }
+                        }
                     },
                     onFailed = {}
                 )

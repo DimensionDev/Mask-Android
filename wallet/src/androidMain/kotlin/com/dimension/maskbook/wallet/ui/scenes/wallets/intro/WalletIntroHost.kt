@@ -104,14 +104,10 @@ fun WalletIntroHost(navController: NavController) {
         val refreshing by viewModel.refreshingWallet.observeAsState()
         swipeRefreshState.isRefreshing = refreshing
         WalletBalancesScene(
-            wallets = wallets,
             currentWallet = currentWallet,
             showTokens = showTokens,
             showTokensLess = showTokensLess,
             showTokensLessAmount = showTokensLessAmount,
-            onWalletChanged = {
-                viewModel.setCurrentWallet(it)
-            },
             onWalletMenuClicked = {
                 navController.navigate(WalletRoute.WalletBalancesMenu)
             },

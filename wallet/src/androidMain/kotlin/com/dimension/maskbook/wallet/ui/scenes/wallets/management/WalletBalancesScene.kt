@@ -55,9 +55,9 @@ import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -69,6 +69,7 @@ import androidx.compose.ui.unit.dp
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.items
 import coil.compose.rememberImagePainter
+import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.common.ext.humanizeDollar
 import com.dimension.maskbook.common.ext.humanizeToken
 import com.dimension.maskbook.common.ext.onDrawableRes
@@ -83,16 +84,16 @@ import com.dimension.maskbook.common.ui.widget.button.MaskButton
 import com.dimension.maskbook.common.ui.widget.button.MaskIconCardButton
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.export.model.ChainType
+import com.dimension.maskbook.wallet.export.model.DbWalletBalanceType
 import com.dimension.maskbook.wallet.export.model.TokenData
 import com.dimension.maskbook.wallet.export.model.WalletCollectibleCollectionData
 import com.dimension.maskbook.wallet.export.model.WalletCollectibleData
 import com.dimension.maskbook.wallet.export.model.WalletData
 import com.dimension.maskbook.wallet.export.model.WalletTokenData
 import com.dimension.maskbook.wallet.ui.widget.CollectibleCollectionCard
-import com.dimension.maskbook.wallet.ui.widget.WalletCard
+import com.dimension.maskbook.wallet.ui.widget.WalletCardItem
 import com.dimension.maskbook.wallet.ui.widget.WalletConnectFloatingButton
 import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.rememberPagerState
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.SwipeRefreshState
 
@@ -107,12 +108,10 @@ enum class BalancesSceneType {
 )
 @Composable
 fun WalletBalancesScene(
-    wallets: List<WalletData>,
     currentWallet: WalletData,
     showTokens: List<WalletTokenData>,
     showTokensLess: List<WalletTokenData>,
     showTokensLessAmount: String,
-    onWalletChanged: (WalletData) -> Unit,
     onWalletMenuClicked: () -> Unit,
     onWalletSwitchClicked: () -> Unit,
     onTokenDetailClicked: (TokenData) -> Unit,
@@ -132,23 +131,6 @@ fun WalletBalancesScene(
     connectedDAppCount: Int,
     onDisplayWalletConnect: () -> Unit,
 ) {
-    val pagerState = rememberPagerState(initialPage = maxOf(wallets.indexOf(currentWallet), 0))
-
-    LaunchedEffect(wallets, currentWallet, pagerState.pageCount) {
-        if (pagerState.pageCount > 0) {
-            pagerState.scrollToPage(
-                minOf(
-                    pagerState.pageCount - 1,
-                    maxOf(wallets.indexOf(currentWallet), 0)
-                )
-            )
-        }
-    }
-    LaunchedEffect(pagerState.currentPage) {
-        if (wallets.isNotEmpty()) {
-            onWalletChanged.invoke(wallets[pagerState.currentPage])
-        }
-    }
 
     var isShowLessTokenData by rememberSaveable { mutableStateOf(false) }
 
@@ -179,20 +161,31 @@ fun WalletBalancesScene(
         ) {
             Box(modifier = Modifier.fillMaxHeight()) {
                 SwipeRefresh(refreshState, onRefresh = onWalletRefresh) {
+
                     LazyColumn(
                         contentPadding = ScaffoldPadding,
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                     ) {
                         item {
-                            WalletCard(
-                                wallets = wallets,
+                            val amount = remember(displayChainType, currentWallet) {
+                                when (displayChainType) {
+                                    null -> currentWallet.balance[DbWalletBalanceType.all]
+                                    ChainType.eth -> currentWallet.balance[DbWalletBalanceType.eth]
+                                    ChainType.bsc -> currentWallet.balance[DbWalletBalanceType.bsc]
+                                    ChainType.polygon -> currentWallet.balance[DbWalletBalanceType.polygon]
+                                    ChainType.arbitrum -> currentWallet.balance[DbWalletBalanceType.arbitrum]
+                                    ChainType.xdai -> currentWallet.balance[DbWalletBalanceType.xdai]
+                                    else -> null
+                                } ?: BigDecimal.ZERO
+                            }
+                            WalletCardItem(
                                 walletChainType = walletChainType,
                                 displayChainType = displayChainType,
                                 onWalletAddressClick = onWalletAddressClicked,
                                 onDisplayChainTypeClick = onDisplayChainTypeClicked,
+                                wallet = currentWallet,
+                                amount = amount,
                                 onMoreClick = onWalletMenuClicked,
-                                pagerState = pagerState,
-                                modifier = Modifier.fillMaxWidth(),
                             )
                         }
                         item {
@@ -215,8 +208,10 @@ fun WalletBalancesScene(
                                     icon = R.drawable.transaction_2,
                                     onClick = onReceiveClicked,
                                 )
-                                Spacer(Modifier.width(24.dp))
                             }
+                        }
+                        item {
+                            Spacer(modifier = Modifier.height(2.dp))
                         }
                         stickyHeader {
                             Row(

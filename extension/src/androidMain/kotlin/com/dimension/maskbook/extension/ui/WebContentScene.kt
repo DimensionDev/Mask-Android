@@ -147,8 +147,8 @@ private fun PlatformTips(
 ) {
     val text = remember(site) {
         when (site) {
-            Site.Twitter -> R.string.scene_social_login_in_notify_twitter
-            Site.Facebook -> R.string.scene_social_login_in_notify_facebook
+            Site.Twitter, Site.TwitterSign -> R.string.scene_social_login_in_notify_twitter
+            Site.Facebook, Site.FacebookSign -> R.string.scene_social_login_in_notify_facebook
         }
     }
     Surface(
@@ -184,8 +184,8 @@ private fun PlatformTips(
 
 private fun getTitleFromUrl(url: String): Int {
     return when (url.site) {
-        Site.Twitter -> R.string.scene_persona_social_twitter
-        Site.Facebook -> R.string.scene_persona_social_facebook
+        Site.Twitter, Site.TwitterSign -> R.string.scene_persona_social_twitter
+        Site.Facebook, Site.FacebookSign -> R.string.scene_persona_social_facebook
         null -> R.string.common_loading
     }
 }

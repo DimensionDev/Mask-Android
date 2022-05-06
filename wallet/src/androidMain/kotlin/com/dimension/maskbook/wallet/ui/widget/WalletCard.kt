@@ -119,115 +119,118 @@ fun WalletCard(
                 } ?: BigDecimal.ZERO
             }
 
-            WallCardItem(
+            WalletCardItem(
                 wallet = wallet,
                 amount = amount,
                 walletChainType = walletChainType,
                 displayChainType = displayChainType,
                 onWalletAddressClick = onWalletAddressClick,
                 onDisplayChainTypeClick = onDisplayChainTypeClick,
+                onMoreClick = onMoreClick,
             )
-
-            MaskIconButton(
-                onClick = onMoreClick,
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(top = 20.dp, end = WalletCardDefaults.contentPadding),
-            ) {
-                Icon(
-                    imageVector = Icons.Default.MoreHoriz,
-                    contentDescription = null,
-                    tint = Color.White,
-                )
-            }
         }
     }
 }
 
 @Composable
-private fun WallCardItem(
+fun WalletCardItem(
     wallet: WalletData,
     amount: BigDecimal,
     walletChainType: ChainType,
     displayChainType: ChainType?,
     onWalletAddressClick: () -> Unit,
     onDisplayChainTypeClick: (ChainType?) -> Unit,
+    onMoreClick: () -> Unit,
 ) {
-    Column(
-        modifier = Modifier
-            .background(
-                brush = WalletCardDefaults.walletCardBackground,
-                shape = WalletCardDefaults.walletCardShape,
-            )
-            .clip(
-                shape = WalletCardDefaults.walletCardShape
-            )
-            .fillMaxWidth(),
-    ) {
+    Box {
         Column(
-            modifier = Modifier.padding(horizontal = WalletCardDefaults.contentPadding),
-        ) {
-            Spacer(Modifier.height(WalletCardDefaults.contentPadding))
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    text = wallet.name,
-                    color = Color.White,
-                    style = MaterialTheme.typography.h3,
+            modifier = Modifier
+                .background(
+                    brush = WalletCardDefaults.walletCardBackground,
+                    shape = WalletCardDefaults.walletCardShape,
                 )
-                Spacer(Modifier.width(4.dp))
+                .clip(
+                    shape = WalletCardDefaults.walletCardShape
+                )
+                .fillMaxWidth(),
+        ) {
+            Column(
+                modifier = Modifier.padding(horizontal = WalletCardDefaults.contentPadding),
+            ) {
+                Spacer(Modifier.height(WalletCardDefaults.contentPadding))
                 Row(
-                    modifier = Modifier
-                        .background(
-                            MaterialTheme.colors.surface.copy(0.11f),
-                            shape = RoundedCornerShape(4.dp),
-                        )
-                        .padding(horizontal = 8.dp, vertical = 2.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Image(
-                        painter = painterResource(walletChainType.onDrawableRes),
-                        contentDescription = null,
-                        modifier = Modifier.size(12.dp),
+                    Text(
+                        text = wallet.name,
+                        color = Color.White,
+                        style = MaterialTheme.typography.h3,
                     )
                     Spacer(Modifier.width(4.dp))
-                    Text(
-                        text = walletChainType.name,
-                        color = Color.White,
+                    Row(
+                        modifier = Modifier
+                            .background(
+                                MaterialTheme.colors.surface.copy(0.11f),
+                                shape = RoundedCornerShape(4.dp),
+                            )
+                            .padding(horizontal = 8.dp, vertical = 2.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Image(
+                            painter = painterResource(walletChainType.onDrawableRes),
+                            contentDescription = null,
+                            modifier = Modifier.size(12.dp),
+                        )
+                        Spacer(Modifier.width(4.dp))
+                        Text(
+                            text = walletChainType.name,
+                            color = Color.White,
+                            style = MaterialTheme.typography.caption,
+                        )
+                    }
+                }
+                MaskTextButton(
+                    onClick = onWalletAddressClick,
+                    contentPadding = PaddingValues(0.dp),
+                ) {
+                    MiddleEllipsisText(
+                        text = wallet.address,
+                        color = Color.White.copy(alpha = 0.6f),
                         style = MaterialTheme.typography.caption,
+                        modifier = Modifier.fillMaxWidth(0.6f),
+                    )
+                    Spacer(Modifier.width(2.dp))
+                    Icon(
+                        painter = painterResource(R.drawable.ic_copy),
+                        contentDescription = null,
+                        tint = Color.White.copy(0.6f),
                     )
                 }
-            }
-            MaskTextButton(
-                onClick = onWalletAddressClick,
-                contentPadding = PaddingValues(0.dp),
-            ) {
-                MiddleEllipsisText(
-                    text = wallet.address,
-                    color = Color.White.copy(alpha = 0.6f),
-                    style = MaterialTheme.typography.caption,
-                    modifier = Modifier.fillMaxWidth(0.6f),
-                )
-                Spacer(Modifier.width(2.dp))
-                Icon(
-                    painter = painterResource(R.drawable.ic_copy),
-                    contentDescription = null,
-                    tint = Color.White.copy(0.6f),
+                // Spacer(Modifier.height(10.dp))
+                Text(
+                    text = amount.humanizeDollar(),
+                    color = Color.White,
+                    style = MaterialTheme.typography.h1,
                 )
             }
-            // Spacer(Modifier.height(10.dp))
-            Text(
-                text = amount.humanizeDollar(),
-                color = Color.White,
-                style = MaterialTheme.typography.h1,
+            Spacer(Modifier.height(10.dp))
+            WalletDisplayAmount(
+                chainType = displayChainType,
+                onDisplayChainTypeClick = onDisplayChainTypeClick,
             )
         }
-        Spacer(Modifier.height(10.dp))
-        WalletDisplayAmount(
-            chainType = displayChainType,
-            onDisplayChainTypeClick = onDisplayChainTypeClick,
-        )
+        MaskIconButton(
+            onClick = onMoreClick,
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(top = 20.dp, end = WalletCardDefaults.contentPadding),
+        ) {
+            Icon(
+                imageVector = Icons.Default.MoreHoriz,
+                contentDescription = null,
+                tint = Color.White,
+            )
+        }
     }
 }
 

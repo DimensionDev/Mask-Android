@@ -29,6 +29,7 @@ import com.dimension.maskbook.common.ext.encodeBase64String
 import com.dimension.maskbook.common.ext.encodeJson
 import com.dimension.maskbook.common.ext.encodeJsonElement
 import com.dimension.maskbook.common.ext.encodeMsgPack
+import com.dimension.maskbook.common.ext.toLoginSite
 import com.dimension.maskbook.common.ext.toSite
 import com.dimension.maskbook.extension.export.ExtensionServices
 import com.dimension.maskbook.extension.export.model.Site
@@ -118,7 +119,7 @@ internal class PersonaRepository(
         onDone: (ConnectAccountData) -> Unit,
     ) {
         connectingJob?.cancel()
-        extensionServices.setSite(platformType.toSite())
+        extensionServices.setSite(platformType.toLoginSite())
 
         connectingJob = preferenceRepository.lastDetectProfileIdentifier
             .filterNot { it.isEmpty() }

@@ -28,7 +28,14 @@ fun PlatformType.toSite(): Site = when (this) {
     PlatformType.Facebook -> Site.Facebook
 }
 
+fun PlatformType.toLoginSite(): Site = when (this) {
+    PlatformType.Twitter -> Site.TwitterSign
+    PlatformType.Facebook -> Site.FacebookSign
+}
+
 fun Site.toPlatformType(): PlatformType = when (this) {
     Site.Twitter -> PlatformType.Twitter
     Site.Facebook -> PlatformType.Facebook
+    Site.TwitterSign -> PlatformType.Twitter
+    Site.FacebookSign -> PlatformType.Facebook
 }

@@ -70,10 +70,12 @@ fun ExportPrivateKeyScene(
     val viewModel = getViewModel<ExportPrivateKeyViewModel>()
     val text by viewModel.privateKey.observeAsState(initial = "")
 
+    val privateKeyTips = stringResource(R.string.scene_persona_export_private_key_tips)
+    val privateKeyBackupRecovery = stringResource(R.string.scene_persona_export_private_key_backup_recovery)
     val annotatedText = buildAnnotatedString {
-        append(stringResource(R.string.scene_persona_export_private_key_tips))
+        append(privateKeyTips)
         withStyle(style = SpanStyle(color = MaterialTheme.colors.primary, fontWeight = FontWeight.Bold)) {
-            append(stringResource(R.string.scene_persona_export_private_key_backup_recovery))
+            append(privateKeyBackupRecovery)
         }
     }
     MaskScene {
