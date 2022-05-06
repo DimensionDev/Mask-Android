@@ -62,15 +62,14 @@ import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
 
 @NavGraphDestination(
-    route = PersonaRoute.Synchronization.Scan.path,
+    route = PersonaRoute.Synchronization.Scan,
     packageName = navigationComposeAnimComposablePackage,
     functionName = navigationComposeAnimComposable,
-    deeplink = [Deeplinks.Scan.path]
+    deeplink = [Deeplinks.Scan]
 )
 @Composable
 fun SynchronizationScan(
     navController: NavController,
-    @Query("failedRoute") failedRoute: String?,
     @Back onBack: () -> Unit,
 ) {
     ScanQrcodeScene(
@@ -89,11 +88,7 @@ fun SynchronizationScan(
                     navController.navigateUriWithPopSelf(it)
                 }
             } catch (e: Throwable) {
-                // TODO Mimao, default to scan failed
-                e.printStackTrace()
-                navController.navigateWithPopSelf(
-                    failedRoute ?: PersonaRoute.Synchronization.Failed
-                )
+                navController.navigateWithPopSelf(PersonaRoute.Synchronization.ScanFailed)
             }
         }
     )
@@ -136,19 +131,53 @@ fun SynchronizationSuccess(
 }
 
 @NavGraphDestination(
-    route = PersonaRoute.Synchronization.Failed,
+    route = PersonaRoute.Synchronization.PersonaFailed,
     packageName = navigationComposeDialogPackage,
     functionName = navigationComposeDialog,
 )
 @Composable
-fun SynchronizationFailed(
+fun SynchronizationPersonaFailed(
     navController: NavController,
     @Back onBack: () -> Unit,
 ) {
     MaskDialog(
         onDismissRequest = onBack,
         title = {
-            Text(stringResource(R.string.scene_synchronization_failed))
+            Text("Please Scan Persona QR Code")
+        },
+        text = {
+            Text("The QR code is not Persona QR Code. Please scan Persona QR Code.")
+        },
+        icon = {
+            Image(painter = painterResource(R.drawable.ic_failed), contentDescription = "")
+        },
+        buttons = {
+            PrimaryButton(onClick = {
+                navController.popBackStack()
+            }, modifier = Modifier.fillMaxWidth()) {
+                Text(stringResource(R.string.common_controls_ok))
+            }
+        }
+    )
+}
+
+@NavGraphDestination(
+    route = PersonaRoute.Synchronization.ScanFailed,
+    packageName = navigationComposeDialogPackage,
+    functionName = navigationComposeDialog,
+)
+@Composable
+fun SynchronizationScanFailed(
+    navController: NavController,
+    @Back onBack: () -> Unit,
+) {
+    MaskDialog(
+        onDismissRequest = onBack,
+        title = {
+            Text("Scanning failed")
+        },
+        text = {
+            Text("Unable to recognize the QR code.")
         },
         icon = {
             Image(painter = painterResource(R.drawable.ic_failed), contentDescription = "")
@@ -253,7 +282,7 @@ private fun NavController.handleResult(result: Result<Unit>) {
             if (it is PersonaAlreadyExitsError)
                 PersonaRoute.Synchronization.Persona.AlreadyExists
             else
-                PersonaRoute.Synchronization.Failed,
+                PersonaRoute.Synchronization.PersonaFailed,
             navOptions {
                 currentBackStackEntry?.let { backStackEntry ->
                     popUpTo(backStackEntry.destination.id) {

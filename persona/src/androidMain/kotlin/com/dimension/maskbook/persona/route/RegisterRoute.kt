@@ -80,7 +80,7 @@ fun RegisterInit(
             navController.navigate(PersonaRoute.Register.Recovery.Home)
         },
         onSynchronization = {
-            navController.navigate(PersonaRoute.Synchronization.Scan(PersonaRoute.Synchronization.Failed))
+            navController.navigate(PersonaRoute.Synchronization.Scan)
         },
     )
 }

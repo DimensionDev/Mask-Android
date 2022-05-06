@@ -31,7 +31,6 @@ import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.JsonDecoder
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.intOrNull
-import kotlinx.serialization.json.long
 import kotlinx.serialization.json.longOrNull
 
 @Serializable(with = ExtensionIdSerializer::class)

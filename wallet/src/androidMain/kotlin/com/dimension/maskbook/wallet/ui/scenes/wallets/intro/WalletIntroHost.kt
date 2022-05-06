@@ -150,7 +150,7 @@ fun WalletIntroHost(navController: NavController) {
                 viewModel.refreshWallet()
             },
             onScan = {
-                navController.navigate(Uri.parse(Deeplinks.Scan(null)))
+                navController.navigate(Uri.parse(Deeplinks.Scan))
             },
             connectedDAppCount = connectedDApps.size,
             onDisplayWalletConnect = {

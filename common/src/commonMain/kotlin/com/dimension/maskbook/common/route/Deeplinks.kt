@@ -66,7 +66,5 @@ expect object Deeplinks {
         const val Transak: String
     }
 
-    object Scan {
-        operator fun invoke(failedRoute: String?): String
-    }
+    const val Scan: String
 }
