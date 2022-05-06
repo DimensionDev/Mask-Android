@@ -32,20 +32,17 @@ import kotlinx.serialization.json.JsonDecoder
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.intOrNull
 import kotlinx.serialization.json.long
+import kotlinx.serialization.json.longOrNull
 
 @Serializable(with = ExtensionIdSerializer::class)
 class ExtensionId internal constructor(
-    internal val intId: Int? = null,
     internal val stringId: String? = null,
     internal val longId: Long? = null,
 ) {
     val value: Any?
-        get() = intId ?: stringId
+        get() = longId ?: stringId
     override fun toString(): String {
         return when {
-            intId != null -> {
-                intId.toString()
-            }
             stringId != null -> {
                 stringId
             }
@@ -59,14 +56,11 @@ class ExtensionId internal constructor(
     companion object {
         fun fromAny(any: Any?): ExtensionId {
             return when (any) {
-                is Int -> {
-                    ExtensionId(intId = any)
+                is Number -> {
+                    ExtensionId(longId = any.toLong())
                 }
                 is String -> {
                     ExtensionId(stringId = any)
-                }
-                is Long -> {
-                    ExtensionId(longId = any)
                 }
                 else -> ExtensionId()
             }
@@ -85,8 +79,6 @@ object ExtensionIdSerializer : KSerializer<ExtensionId> {
     override fun serialize(encoder: Encoder, value: ExtensionId) {
         if (value.stringId != null) {
             encoder.encodeString(value.stringId)
-        } else if (value.intId != null) {
-            encoder.encodeInt(value.intId)
         } else if (value.longId != null) {
             encoder.encodeLong(value.longId)
         }
@@ -99,9 +91,9 @@ object ExtensionIdSerializer : KSerializer<ExtensionId> {
                     return if (value.isString) {
                         ExtensionId(stringId = value.content)
                     } else {
-                        value.intOrNull?.let {
-                            ExtensionId(intId = it)
-                        } ?: ExtensionId(longId = value.long)
+                        value.longOrNull?.let {
+                            ExtensionId(longId = it)
+                        } ?: ExtensionId(longId = value.intOrNull?.toLong() ?: 0)
                     }
                 }
                 else -> Unit
