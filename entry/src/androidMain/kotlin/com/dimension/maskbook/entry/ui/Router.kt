@@ -62,17 +62,19 @@ fun Router(
                 inclusive = true
             }
         }
-    }
-    LaunchedEffect(Unit) {
+        // ensure the initial route is set before handle deep links
         Navigator.navigateEvent.collect {
             it.getContentIfNotHandled()?.let { it1 ->
                 when (it1) {
-                    is DeeplinkNavigateArgs -> navController.navigate(Uri.parse(it1.url))
+                    is DeeplinkNavigateArgs -> {
+                        navController.navigate(Uri.parse(it1.url))
+                    }
                     is RouteNavigateArgs -> navController.navigate(it1.route)
                 }
             }
         }
     }
+
     RouteHost(
         bottomSheetNavigator = bottomSheetNavigator,
         navController = navController,

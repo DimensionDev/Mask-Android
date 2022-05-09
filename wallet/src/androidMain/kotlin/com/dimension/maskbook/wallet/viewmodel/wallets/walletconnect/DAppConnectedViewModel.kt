@@ -18,26 +18,20 @@
  *  You should have received a copy of the GNU Affero General Public License
  *  along with Mask-Android.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.dimension.maskbook.common.route
+package com.dimension.maskbook.wallet.viewmodel.wallets.walletconnect
 
-import com.dimension.maskbook.common.ui.notification.Event
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.dimension.maskbook.common.ext.asStateIn
+import com.dimension.maskbook.wallet.walletconnect.WCClientMeta
+import com.dimension.maskbook.wallet.walletconnect.WalletConnectServerManager
 
-sealed interface NavigateArgs
+class DAppConnectedViewModel(
+    private val manager: WalletConnectServerManager
+) : ViewModel() {
+    val apps by lazy { manager.connectedClients.asStateIn(viewModelScope, emptyList()) }
 
-class DeeplinkNavigateArgs(val url: String) : NavigateArgs
-class RouteNavigateArgs(val route: String) : NavigateArgs
-
-object Navigator {
-    private val _navigateEvent = MutableSharedFlow<Event<NavigateArgs>>(extraBufferCapacity = 10, replay = 1)
-    val navigateEvent = _navigateEvent.asSharedFlow()
-
-    fun navigate(route: String) {
-        _navigateEvent.tryEmit(Event(RouteNavigateArgs(route)))
-    }
-
-    fun deeplink(url: String) {
-        _navigateEvent.tryEmit(Event(DeeplinkNavigateArgs(url)))
+    fun disconnect(client: WCClientMeta) {
+        manager.rejectConnect(client)
     }
 }

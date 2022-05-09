@@ -23,6 +23,7 @@ package com.dimension.maskbook
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Base64
 import android.view.WindowManager
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.CompositionLocalProvider
@@ -32,9 +33,12 @@ import androidx.core.view.WindowInsetsControllerCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
 import coil.compose.LocalImageLoader
+import com.dimension.maskbook.common.ext.encodeBase64
 import com.dimension.maskbook.common.gecko.PromptFeatureDelegate
 import com.dimension.maskbook.common.gecko.WebContentController
 import com.dimension.maskbook.common.manager.ImageLoaderManager
+import com.dimension.maskbook.common.route.Deeplinks
+import com.dimension.maskbook.common.route.Navigator
 import com.dimension.maskbook.common.ui.widget.LocalWindowInsetsController
 import com.dimension.maskbook.entry.ui.App
 import com.google.accompanist.insets.ProvideWindowInsets
@@ -78,6 +82,9 @@ class ComposeActivity : FragmentActivity() {
                 }
             }
         }
+        intent?.data?.let {
+            onDeeplink(it)
+        }
     }
 
     override fun onBackPressed() {
@@ -91,5 +98,20 @@ class ComposeActivity : FragmentActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         promptFeature.onActivityResult(requestCode, data, resultCode)
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        intent?.data?.let {
+            onDeeplink(it)
+        }
+    }
+
+    private fun onDeeplink(deeplink: Uri) {
+        if (deeplink.scheme?.startsWith("wc") == true) {
+            Navigator.deeplink(Deeplinks.Wallet.WalletConnect.Connect(deeplink.toString().encodeBase64(Base64.NO_WRAP)))
+        } else {
+            Navigator.deeplink(deeplink.toString())
+        }
     }
 }

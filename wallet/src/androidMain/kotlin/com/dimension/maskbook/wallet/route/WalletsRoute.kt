@@ -23,6 +23,7 @@ package com.dimension.maskbook.wallet.route
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.util.Base64
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Text
@@ -40,6 +41,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.navigation.NavController
 import androidx.navigation.navOptions
 import com.dimension.maskbook.common.bigDecimal.BigDecimal
+import com.dimension.maskbook.common.ext.decodeBase64
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.ext.openUrl
 import com.dimension.maskbook.common.ext.shareText
@@ -87,6 +89,8 @@ import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletSwitchSc
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.WalletTransactionHistoryScene
 import com.dimension.maskbook.wallet.ui.scenes.wallets.send.EmptyTokenDialog
 import com.dimension.maskbook.wallet.ui.scenes.wallets.token.TokenDetailScene
+import com.dimension.maskbook.wallet.ui.scenes.wallets.walletconnect.DAppConnectedModal
+import com.dimension.maskbook.wallet.ui.scenes.wallets.walletconnect.WalletConnectApproveModal
 import com.dimension.maskbook.wallet.ui.scenes.wallets.walletconnect.WalletConnectModal
 import com.dimension.maskbook.wallet.viewmodel.wallets.TokenDetailViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.UnlockWalletViewModel
@@ -99,6 +103,8 @@ import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletRenameVi
 import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletSwitchEditViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletSwitchViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.management.WalletTransactionHistoryViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.walletconnect.DAppConnectedViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.walletconnect.WalletConnectServerViewModel
 import org.koin.androidx.compose.get
 import org.koin.androidx.compose.getViewModel
 import org.koin.core.parameter.parametersOf
@@ -891,6 +897,58 @@ fun UnlockWalletDialog(
                     }
                 )
             }
+        }
+    )
+}
+
+@NavGraphDestination(
+    route = WalletRoute.WalletConnect.Request,
+    packageName = navigationComposeBottomSheetPackage,
+    functionName = navigationComposeBottomSheet,
+    deeplink = [Deeplinks.Wallet.WalletConnect.Connect.path]
+)
+@Composable
+fun WalletConnectedLoadingModal(
+    navController: NavController,
+    @Path("uriBase64") uri: String,
+) {
+    val viewModel = getViewModel<WalletConnectServerViewModel> {
+        parametersOf(uri.decodeBase64(Base64.NO_WRAP))
+    }
+    val client by viewModel.client.observeAsState()
+    val wallet by viewModel.currentWallet.observeAsState()
+    val chain by viewModel.currentChain.observeAsState()
+    WalletConnectApproveModal(
+        client = client,
+        wallet = wallet,
+        currentChain = chain,
+        onSwitchWallet = {
+            navController.navigate(WalletRoute.SwitchWallet)
+        },
+        onApprove = {
+            viewModel.approve()
+            navController.popBackStack()
+        },
+        onReject = {
+            viewModel.reject()
+            navController.popBackStack()
+        }
+    )
+}
+
+@NavGraphDestination(
+    route = WalletRoute.WalletConnect.DApps,
+    packageName = navigationComposeBottomSheetPackage,
+    functionName = navigationComposeBottomSheet,
+)
+@Composable
+fun WalletConnectedDAppsModal() {
+    val viewModel = getViewModel<DAppConnectedViewModel>()
+    val apps by viewModel.apps.observeAsState()
+    DAppConnectedModal(
+        apps = apps,
+        onDisconnect = {
+            viewModel.disconnect(it)
         }
     )
 }

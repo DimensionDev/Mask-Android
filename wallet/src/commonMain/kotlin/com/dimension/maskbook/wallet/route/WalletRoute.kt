@@ -156,6 +156,12 @@ expect object WalletRoute {
         operator fun invoke(target: String): String
     }
 
+    object WalletConnect {
+        const val DApps: String
+        // request
+        const val Request: String
+        //
+    }
     object EmptyTokenDialog {
         operator fun invoke(tokenSymbol: String): String
     }

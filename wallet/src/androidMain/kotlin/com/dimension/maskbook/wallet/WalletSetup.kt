@@ -102,7 +102,9 @@ import com.dimension.maskbook.wallet.viewmodel.wallets.send.SearchTradableViewMo
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.SendConfirmViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.TransferDetailViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.send.Web3TransactionConfirmViewModel
+import com.dimension.maskbook.wallet.viewmodel.wallets.walletconnect.DAppConnectedViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.walletconnect.WalletConnectResult
+import com.dimension.maskbook.wallet.viewmodel.wallets.walletconnect.WalletConnectServerViewModel
 import com.dimension.maskbook.wallet.viewmodel.wallets.walletconnect.WalletConnectViewModel
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectClientManager
 import com.dimension.maskbook.wallet.walletconnect.WalletConnectServerManager
@@ -113,6 +115,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asExecutor
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.get
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.module.Module
 import org.koin.dsl.bind
@@ -215,8 +218,9 @@ private fun initWalletConnect() {
             }
         }
     KoinPlatformTools.defaultContext().get().get<WalletConnectServerManager>()
-        .init { _, _ -> // clientMeta, request ->
-            TODO("navigate to wallet connect request handle scene")
+        .init { _, request ->
+            KoinPlatformTools.defaultContext().get().get<Web3MessageHandler>()
+                .handle(request)
         }
 }
 
@@ -298,7 +302,7 @@ private fun Module.provideViewModel() {
     }
     viewModel { WalletTransactionHistoryViewModel(get(), get()) }
     viewModel { (id: String, name: String) -> WalletRenameViewModel(id, name, get()) }
-    viewModel { WalletBalancesViewModel(get(), get(), get(), get()) }
+    viewModel { WalletBalancesViewModel(get(), get(), get(), get(), get()) }
     viewModel { WalletManagementModalViewModel(get()) }
     viewModel { WalletBackupViewModel(get(), get()) }
     viewModel { (id: String) -> WalletDeleteViewModel(id, get(), get()) }
@@ -352,11 +356,14 @@ private fun Module.provideViewModel() {
             get(),
             get(),
             get(),
+            get(),
             get()
         )
     }
     viewModel { SearchTradableViewModel(get(), get()) }
     viewModel { (id: String) -> WalletSwitchEditViewModel(id, get()) }
+    viewModel { DAppConnectedViewModel(get()) }
+    viewModel { (uri: String) -> WalletConnectServerViewModel(uri, get(), get()) }
 }
 
 private fun Module.provideServices() {

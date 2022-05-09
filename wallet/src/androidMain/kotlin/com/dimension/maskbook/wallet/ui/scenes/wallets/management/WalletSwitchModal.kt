@@ -229,7 +229,7 @@ fun WalletSwitchSceneModal(
                         },
                         icon = {
                             Image(
-                                painter = painterResource(id = R.drawable.mask1),
+                                painter = painterResource(id = R.drawable.ic_walletconnect),
                                 contentDescription = null,
                                 modifier = Modifier.size(32.dp),
                             )

@@ -20,6 +20,7 @@
  */
 package com.dimension.maskbook.wallet.ui.scenes.wallets.intro
 
+import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -29,6 +30,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.navigation.NavController
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.dimension.maskbook.common.ext.observeAsState
+import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.viewmodel.BiometricEnableViewModel
 import com.dimension.maskbook.setting.export.SettingServices
 import com.dimension.maskbook.wallet.route.WalletRoute
@@ -56,6 +58,7 @@ fun WalletIntroHost(navController: NavController) {
     val showTokens by viewModel.showTokens.observeAsState()
     val showTokensLess by viewModel.showTokensLess.observeAsState()
     val showTokensLessAmount by viewModel.showTokensLessAmount.observeAsState()
+    val connectedDApps by viewModel.connectedDApp.observeAsState()
     val nativeToken by viewModel.walletNativeToken.observeAsState()
     val currentWallet = wallet
     val currentDWebData = dWebData
@@ -145,6 +148,13 @@ fun WalletIntroHost(navController: NavController) {
             refreshState = swipeRefreshState,
             onWalletRefresh = {
                 viewModel.refreshWallet()
+            },
+            onScan = {
+                navController.navigate(Uri.parse(Deeplinks.Scan))
+            },
+            connectedDAppCount = connectedDApps.size,
+            onDisplayWalletConnect = {
+                navController.navigate(WalletRoute.WalletConnect.DApps)
             }
         )
     }

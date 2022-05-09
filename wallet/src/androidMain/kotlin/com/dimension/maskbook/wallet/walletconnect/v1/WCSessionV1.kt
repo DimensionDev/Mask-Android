@@ -38,7 +38,7 @@ class WCSessionV1(
     private val sessionStore: WCSessionStore,
     transportBuilder: Session.Transport.Builder,
     clientMeta: Session.PeerMeta,
-    clientId: String? = null
+    clientId: String? = null,
 ) : Session {
     val id = config.handshakeTopic
     private val keyLock = Any()
@@ -47,7 +47,7 @@ class WCSessionV1(
     private var currentKey: String
 
     private var approvedAccounts: List<String>? = null
-    private var chainId: Long? = null
+    var chainId: Long? = null
     private var handshakeId: Long? = null
     private var peerId: String? = null
     private var peerMeta: Session.PeerMeta? = null

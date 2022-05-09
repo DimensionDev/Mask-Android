@@ -35,6 +35,7 @@ import com.dimension.maskbook.wallet.repository.IWalletRepository
 import com.dimension.maskbook.wallet.ui.scenes.wallets.management.BalancesSceneType
 import com.dimension.maskbook.wallet.usecase.GetWalletNativeTokenUseCase
 import com.dimension.maskbook.wallet.usecase.RefreshWalletUseCase
+import com.dimension.maskbook.wallet.walletconnect.WalletConnectServerManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -52,6 +53,7 @@ class WalletBalancesViewModel(
     private val repository: IWalletRepository,
     private val collectibleRepository: ICollectibleRepository,
     private val refreshWalletUseCase: RefreshWalletUseCase,
+    private val walletConnectServerManager: WalletConnectServerManager,
     private val getWalletNativeToken: GetWalletNativeTokenUseCase
 ) : ViewModel() {
 
@@ -147,6 +149,10 @@ class WalletBalancesViewModel(
         showTokensLess.map { list ->
             list.sumOf { it.tokenData.price * it.count }.humanizeDollar()
         }.asStateIn(viewModelScope, "")
+    }
+
+    val connectedDApp by lazy {
+        walletConnectServerManager.connectedClients.asStateIn(viewModelScope, emptyList())
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)

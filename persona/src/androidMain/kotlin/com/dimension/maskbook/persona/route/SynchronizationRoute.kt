@@ -21,6 +21,7 @@
 package com.dimension.maskbook.persona.route
 
 import android.net.Uri
+import android.util.Base64
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Text
@@ -32,7 +33,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import androidx.navigation.navOptions
 import com.dimension.maskbook.common.ext.decodeBase64
+import com.dimension.maskbook.common.ext.encodeBase64
 import com.dimension.maskbook.common.ext.ifNullOrEmpty
+import com.dimension.maskbook.common.ext.navigateUriWithPopSelf
+import com.dimension.maskbook.common.ext.navigateWithPopSelf
 import com.dimension.maskbook.common.route.CommonRoute
 import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.route.Persona
@@ -61,6 +65,7 @@ import org.koin.core.parameter.parametersOf
     route = PersonaRoute.Synchronization.Scan,
     packageName = navigationComposeAnimComposablePackage,
     functionName = navigationComposeAnimComposable,
+    deeplink = [Deeplinks.Scan]
 )
 @Composable
 fun SynchronizationScan(
@@ -71,23 +76,19 @@ fun SynchronizationScan(
         onBack = onBack,
         onResult = {
             try {
-                navController.navigate(
-                    Uri.parse(it),
-                    navOptions {
-                        popUpTo(PersonaRoute.Synchronization.Scan) {
-                            inclusive = true
-                        }
-                    }
-                )
+                if (it.startsWith("wc:")) {
+                    navController.navigateUriWithPopSelf(
+                        Deeplinks.Wallet.WalletConnect.Connect(
+                            it.encodeBase64(
+                                Base64.NO_WRAP
+                            )
+                        )
+                    )
+                } else {
+                    navController.navigateUriWithPopSelf(it)
+                }
             } catch (e: Throwable) {
-                navController.navigate(
-                    PersonaRoute.Synchronization.Failed,
-                    navOptions {
-                        popUpTo(PersonaRoute.Synchronization.Scan) {
-                            inclusive = true
-                        }
-                    }
-                )
+                navController.navigateWithPopSelf(PersonaRoute.Synchronization.ScanFailed)
             }
         }
     )
@@ -130,19 +131,53 @@ fun SynchronizationSuccess(
 }
 
 @NavGraphDestination(
-    route = PersonaRoute.Synchronization.Failed,
+    route = PersonaRoute.Synchronization.PersonaFailed,
     packageName = navigationComposeDialogPackage,
     functionName = navigationComposeDialog,
 )
 @Composable
-fun SynchronizationFailed(
+fun SynchronizationPersonaFailed(
     navController: NavController,
     @Back onBack: () -> Unit,
 ) {
     MaskDialog(
         onDismissRequest = onBack,
         title = {
-            Text(stringResource(R.string.scene_synchronization_failed))
+            Text("Please Scan Persona QR Code")
+        },
+        text = {
+            Text("The QR code is not Persona QR Code. Please scan Persona QR Code.")
+        },
+        icon = {
+            Image(painter = painterResource(R.drawable.ic_failed), contentDescription = "")
+        },
+        buttons = {
+            PrimaryButton(onClick = {
+                navController.popBackStack()
+            }, modifier = Modifier.fillMaxWidth()) {
+                Text(stringResource(R.string.common_controls_ok))
+            }
+        }
+    )
+}
+
+@NavGraphDestination(
+    route = PersonaRoute.Synchronization.ScanFailed,
+    packageName = navigationComposeDialogPackage,
+    functionName = navigationComposeDialog,
+)
+@Composable
+fun SynchronizationScanFailed(
+    navController: NavController,
+    @Back onBack: () -> Unit,
+) {
+    MaskDialog(
+        onDismissRequest = onBack,
+        title = {
+            Text("Scanning failed")
+        },
+        text = {
+            Text("Unable to recognize the QR code.")
         },
         icon = {
             Image(painter = painterResource(R.drawable.ic_failed), contentDescription = "")
@@ -247,7 +282,7 @@ private fun NavController.handleResult(result: Result<Unit>) {
             if (it is PersonaAlreadyExitsError)
                 PersonaRoute.Synchronization.Persona.AlreadyExists
             else
-                PersonaRoute.Synchronization.Failed,
+                PersonaRoute.Synchronization.PersonaFailed,
             navOptions {
                 currentBackStackEntry?.let { backStackEntry ->
                     popUpTo(backStackEntry.destination.id) {

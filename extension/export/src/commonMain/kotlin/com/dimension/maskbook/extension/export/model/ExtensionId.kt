@@ -30,32 +30,39 @@ import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.JsonDecoder
 import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.int
+import kotlinx.serialization.json.intOrNull
+import kotlinx.serialization.json.longOrNull
 
 @Serializable(with = ExtensionIdSerializer::class)
 class ExtensionId internal constructor(
-    internal val intId: Int? = null,
     internal val stringId: String? = null,
+    internal val longId: Long? = null,
 ) {
     val value: Any?
-        get() = intId ?: stringId
+        get() = longId ?: stringId
     override fun toString(): String {
-        if (intId != null) {
-            return intId.toString()
-        } else if (stringId != null) {
-            return stringId
+        return when {
+            stringId != null -> {
+                stringId
+            }
+            longId != null -> {
+                longId.toString()
+            }
+            else -> "null"
         }
-        return "null"
     }
 
     companion object {
         fun fromAny(any: Any?): ExtensionId {
-            if (any is Int) {
-                return ExtensionId(intId = any)
-            } else if (any is String) {
-                return ExtensionId(stringId = any)
+            return when (any) {
+                is Number -> {
+                    ExtensionId(longId = any.toLong())
+                }
+                is String -> {
+                    ExtensionId(stringId = any)
+                }
+                else -> ExtensionId()
             }
-            return ExtensionId()
         }
     }
 }
@@ -66,12 +73,13 @@ object ExtensionIdSerializer : KSerializer<ExtensionId> {
             "ExtensionId",
             PrimitiveSerialDescriptor("StringId", PrimitiveKind.STRING),
             PrimitiveSerialDescriptor("IntId", PrimitiveKind.INT),
+            PrimitiveSerialDescriptor("LongId", PrimitiveKind.LONG),
         )
     override fun serialize(encoder: Encoder, value: ExtensionId) {
         if (value.stringId != null) {
             encoder.encodeString(value.stringId)
-        } else if (value.intId != null) {
-            encoder.encodeInt(value.intId)
+        } else if (value.longId != null) {
+            encoder.encodeLong(value.longId)
         }
     }
 
@@ -82,7 +90,9 @@ object ExtensionIdSerializer : KSerializer<ExtensionId> {
                     return if (value.isString) {
                         ExtensionId(stringId = value.content)
                     } else {
-                        ExtensionId(intId = value.int)
+                        value.longOrNull?.let {
+                            ExtensionId(longId = it)
+                        } ?: ExtensionId(longId = value.intOrNull?.toLong() ?: 0)
                     }
                 }
                 else -> Unit

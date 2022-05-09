@@ -29,6 +29,7 @@ import com.dimension.maskbook.extension.export.ExtensionServices
 import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.export.model.SendTransactionData
 import com.dimension.maskbook.wallet.ext.hexWei
+import com.dimension.maskbook.wallet.handler.Web3MessageHandler
 import com.dimension.maskbook.wallet.handler.Web3SendResponse
 import com.dimension.maskbook.wallet.model.SendTokenRequest
 import com.dimension.maskbook.wallet.usecase.GetAddressUseCase
@@ -53,6 +54,7 @@ class Web3TransactionConfirmViewModel(
     private val getAddress: GetAddressUseCase,
     private val sendTransaction: SendTransactionUseCase,
     private val extensionServices: ExtensionServices,
+    private val messageHandler: Web3MessageHandler
 ) : ViewModel() {
 
     val chainType = data.chainId?.let { chainId ->
@@ -95,6 +97,10 @@ class Web3TransactionConfirmViewModel(
                                 transactionHash
                             )
                         )
+                        messageHandler.onResponseSuccess(
+                            id = request.messageId.toString(),
+                            result = transactionHash
+                        )
                     }
                     onResult.invoke(transactionHash)
                 }.onFailure {
@@ -106,6 +112,10 @@ class Web3TransactionConfirmViewModel(
                                 request.payloadId,
                                 it.message ?: "Failed to send transaction"
                             )
+                        )
+                        messageHandler.onResponseError(
+                            id = request.messageId.toString(),
+                            error = it.message ?: "Failed to send transaction"
                         )
                     }
                     onResult.invoke(null)
@@ -154,6 +164,10 @@ class Web3TransactionConfirmViewModel(
                     request.payloadId,
                     "Cancel"
                 )
+            )
+            messageHandler.onResponseError(
+                id = request.messageId.toString(),
+                error = "Cancel"
             )
         }
     }
