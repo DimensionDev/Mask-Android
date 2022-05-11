@@ -47,6 +47,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
+import com.dimension.maskbook.common.ext.backgroundColor
 import com.dimension.maskbook.common.ext.humanizeDollar
 import com.dimension.maskbook.common.ext.humanizeToken
 import com.dimension.maskbook.common.model.DateType
@@ -91,8 +92,8 @@ fun TokenDetailScene(
             ) {
                 if (walletTokenData != null && tokenData != null) {
                     Surface(
-                        contentColor = contentColorFor(backgroundColor = Color(0XFF212E59)),
-                        color = Color(0XFF212E59),
+                        contentColor = contentColorFor(backgroundColor = tokenData.chainType.backgroundColor),
+                        color = tokenData.chainType.backgroundColor,
                         shape = MaterialTheme.shapes.medium,
                         modifier = Modifier.padding(horizontal = HorizontalScenePadding)
                     ) {

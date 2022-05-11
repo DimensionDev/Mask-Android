@@ -42,7 +42,7 @@ import com.dimension.maskbook.common.ui.widget.MaskPasswordInputField
 import com.dimension.maskbook.common.ui.widget.NameImage
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.common.ui.widget.button.SecondaryButton
-import com.dimension.maskbook.common.ui.widget.color
+import com.dimension.maskbook.common.ui.widget.walletColor
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.export.model.WalletData
 
@@ -66,7 +66,7 @@ fun WalletDeleteDialog(
             NameImage(
                 name = walletData?.name.orEmpty(),
                 modifier = Modifier.size(36.dp),
-                color = walletData?.name?.color ?: MaterialTheme.colors.primary,
+                color = walletData?.name?.walletColor ?: MaterialTheme.colors.primary,
             )
         },
         title = {

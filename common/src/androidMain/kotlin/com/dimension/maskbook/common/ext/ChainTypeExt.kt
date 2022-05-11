@@ -20,6 +20,7 @@
  */
 package com.dimension.maskbook.common.ext
 
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import com.dimension.maskbook.common.R
 import com.dimension.maskbook.common.okhttp.okHttpClient
@@ -41,6 +42,77 @@ val ChainType.onDrawableRes: Int
         ChainType.arbitrum -> R.drawable.logos_and_symbols
         ChainType.xdai -> R.drawable.ic_xdai_on
         else -> -1
+    }
+
+val ChainType.backgroundColor: Color
+    get() = when (this) {
+        ChainType.eth -> Color(0XFF3557D9)
+        ChainType.bsc -> Color(0XFFF9A708)
+        ChainType.polygon -> Color(0XFF4D0FC1)
+        ChainType.arbitrum -> Color(0XFF1C2B6B)
+        ChainType.xdai -> Color(0XFF219999)
+        else -> Color(0XFF212E59)
+    }
+
+val ChainType.backgroundBrush: Brush
+    get() = when (this) {
+        ChainType.eth -> Brush.linearGradient(
+            colors = listOf(
+                Color(0xFF2346CA),
+                Color(0xFF627EEA),
+            )
+        )
+        ChainType.bsc -> Brush.linearGradient(
+            colors = listOf(
+                Color(0xFFEFAC00),
+                Color(0xFFFFCC4E),
+            )
+        )
+        ChainType.polygon -> Brush.linearGradient(
+            colors = listOf(
+                Color(0xFF6428D4),
+                Color(0xFF8547F9),
+            )
+        )
+        ChainType.xdai -> Brush.linearGradient(
+            colors = listOf(
+                Color(0xFF1A9494),
+                Color(0xFF56C6C6),
+            )
+        )
+        ChainType.arbitrum -> Brush.linearGradient(
+            colors = listOf(
+                Color(0xFF051942),
+                Color(0xFF2A9DEB),
+            )
+        )
+        else -> Brush.linearGradient(
+            colors = listOf(
+                Color(0xFF0049CE),
+                Color(0xFF1C68F3),
+            )
+        )
+    }
+
+val ChainType.shortName: String
+    get() = when (this) {
+        ChainType.xdai -> "Gnosis"
+        ChainType.eth -> "Ethereum"
+        ChainType.rinkeby -> "Rinkeby"
+        ChainType.bsc -> "Bnb"
+        ChainType.polygon -> "Polygon"
+        ChainType.arbitrum -> "Arbitrum"
+        ChainType.optimism -> "Optimism"
+        ChainType.polka -> "Polka"
+        ChainType.kovan -> "Kovan"
+        ChainType.goerli -> "Goerli"
+        ChainType.kusama -> "Kusama"
+        ChainType.westend -> "Westend"
+        ChainType.edgeware -> "Edgeware"
+        ChainType.polkadot -> "Polkadot"
+        ChainType.node -> "Node"
+        ChainType.custom -> "Custom"
+        ChainType.unknown -> "Unknown"
     }
 
 val ChainType.offDrawableRes: Int

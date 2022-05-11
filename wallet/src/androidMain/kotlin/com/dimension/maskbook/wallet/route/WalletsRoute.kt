@@ -346,6 +346,7 @@ fun WalletNetworkSwitchWarningDialog(
 @Composable
 fun SwitchWallet(
     navController: NavController,
+    @Back onBack: () -> Unit,
 ) {
     val viewModel = getViewModel<WalletSwitchViewModel>()
     val wallet by viewModel.currentWallet.observeAsState(initial = null)
@@ -356,6 +357,7 @@ fun SwitchWallet(
         wallets = wallets,
         onWalletSelected = {
             viewModel.setCurrentWallet(it)
+            onBack.invoke()
         },
         selectedChainType = chainType,
         onChainTypeSelected = {

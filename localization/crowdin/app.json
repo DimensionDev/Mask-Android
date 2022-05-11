@@ -846,7 +846,7 @@
             "dot": "DOT",
             "polygon": "Polygon",
             "arbitrum": "Arbitrum",
-            "xdai": "xDai",
+            "xdai": "Gnosis Chain",
             "optimism": "Optimism"
         },
         "name": {
@@ -855,7 +855,7 @@
             "dot": "Polkadot",
             "polygon": "Polygon/Matic Network",
             "arbitrum": "Arbitrum",
-            "xdai": "xDai",
+            "xdai": "Gnosis Chain",
             "optimism": "Optimism"
         }
     }

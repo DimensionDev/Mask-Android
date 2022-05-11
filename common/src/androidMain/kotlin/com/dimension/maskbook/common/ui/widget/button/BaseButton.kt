@@ -34,6 +34,7 @@ import androidx.compose.material.ButtonElevation
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.LocalElevationOverlay
+import androidx.compose.material.LocalMinimumTouchTargetEnforcement
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -45,6 +46,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -59,10 +61,13 @@ fun BaseButton(
     border: BorderStroke? = null,
     colors: ButtonColors = ButtonDefaults.buttonColors(),
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
-    content: @Composable RowScope.() -> Unit
+    minWidth: Dp = ButtonDefaults.MinWidth,
+    minHeight: Dp = ButtonDefaults.MinHeight,
+    content: @Composable RowScope.() -> Unit,
 ) {
     CompositionLocalProvider(
-        LocalElevationOverlay provides null
+        LocalElevationOverlay provides null,
+        LocalMinimumTouchTargetEnforcement provides false,
     ) {
         val clickFlow = rememberClickFlow()
         val contentColor by colors.contentColor(enabled)
@@ -86,8 +91,8 @@ fun BaseButton(
                 Row(
                     Modifier
                         .defaultMinSize(
-                            minWidth = ButtonDefaults.MinWidth,
-                            minHeight = ButtonDefaults.MinHeight
+                            minWidth = minWidth,
+                            minHeight = minHeight
                         )
                         .padding(contentPadding),
                     horizontalArrangement = Arrangement.Center,

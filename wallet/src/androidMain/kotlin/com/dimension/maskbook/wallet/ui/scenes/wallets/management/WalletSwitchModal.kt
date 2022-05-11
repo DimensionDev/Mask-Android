@@ -72,7 +72,7 @@ import com.dimension.maskbook.common.ui.widget.NameImage
 import com.dimension.maskbook.common.ui.widget.button.MaskButton
 import com.dimension.maskbook.common.ui.widget.button.MaskIconButton
 import com.dimension.maskbook.common.ui.widget.button.MaskTextButton
-import com.dimension.maskbook.common.ui.widget.color
+import com.dimension.maskbook.common.ui.widget.walletColor
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.export.model.WalletData
@@ -191,7 +191,7 @@ fun WalletSwitchSceneModal(
                                 name = wallet.name,
                                 modifier = Modifier.size(32.dp),
                                 alpha = 1f,
-                                color = wallet.name.color
+                                color = wallet.name.walletColor
                             )
                         },
                         trailing = {

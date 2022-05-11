@@ -32,6 +32,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.unit.Dp
 
 @Composable
 fun BaseTextButton(
@@ -44,6 +45,8 @@ fun BaseTextButton(
     border: BorderStroke? = null,
     colors: ButtonColors = ButtonDefaults.textButtonColors(),
     contentPadding: PaddingValues = ButtonDefaults.TextButtonContentPadding,
+    minWidth: Dp = ButtonDefaults.MinWidth,
+    minHeight: Dp = ButtonDefaults.MinHeight,
     content: @Composable RowScope.() -> Unit
 ) = BaseButton(
     onClick = onClick,
@@ -55,5 +58,7 @@ fun BaseTextButton(
     border = border,
     colors = colors,
     contentPadding = contentPadding,
-    content = content
+    minWidth = minWidth,
+    minHeight = minHeight,
+    content = content,
 )

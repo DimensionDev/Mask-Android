@@ -39,6 +39,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
+import com.dimension.maskbook.common.ext.shortName
 import com.dimension.maskbook.common.ui.widget.MaskListItem
 import com.dimension.maskbook.common.ui.widget.MaskModal
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
@@ -90,7 +91,7 @@ fun DAppConnectedModal(
                             Text(app.name)
                         },
                         secondaryText = {
-                            MiddleEllipsisText("${app.chainType.name} · ${app.accounts.firstOrNull()}")
+                            MiddleEllipsisText("${app.chainType.shortName} · ${app.accounts.firstOrNull()}")
                         },
                         trailing = {
                             MaskTextButton(
