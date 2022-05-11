@@ -49,7 +49,6 @@ import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskScene
 import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
 import com.dimension.maskbook.common.ui.widget.button.MaskBackButton
-import com.dimension.maskbook.labs.BuildConfig
 import com.dimension.maskbook.labs.R
 import com.dimension.maskbook.labs.export.model.TransakConfig
 import com.dimension.maskbook.labs.route.LabsRoute
@@ -71,7 +70,7 @@ fun LabsTransakScene(
     val currentWallet by repo.currentWallet.observeAsState(null)
     val transakConfig = remember(currentWallet) {
         TransakConfig(
-            isStaging = BuildConfig.DEBUG,
+            isStaging = false,
             walletAddress = currentWallet?.address ?: "",
             defaultCryptoCurrency = currentWallet?.tokens?.firstOrNull()?.tokenData?.symbol
                 ?: "ETH",
