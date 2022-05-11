@@ -338,7 +338,6 @@ fun SettingsItem(
                         if (trailingText != null) {
                             Text(
                                 text = trailingText,
-                                style = MaterialTheme.typography.body1,
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                         }
@@ -354,7 +353,6 @@ fun SettingsItem(
                 {
                     Text(
                         text = text,
-                        style = MaterialTheme.typography.body1,
                     )
                 }
             }
