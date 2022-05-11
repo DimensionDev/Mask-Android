@@ -195,6 +195,7 @@ fun WalletCardItem(
                 MaskTextButton(
                     onClick = onWalletAddressClick,
                     contentPadding = PaddingValues(0.dp),
+                    minHeight = Dp.Unspecified,
                 ) {
                     MiddleEllipsisText(
                         text = wallet.address,

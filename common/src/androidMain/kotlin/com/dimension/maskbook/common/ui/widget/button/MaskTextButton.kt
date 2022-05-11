@@ -32,6 +32,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.unit.Dp
 
 @Composable
 fun MaskTextButton(
@@ -46,6 +47,8 @@ fun MaskTextButton(
         contentColor = MaterialTheme.colors.onSurface,
     ),
     contentPadding: PaddingValues = ButtonDefaults.TextButtonContentPadding,
+    minWidth: Dp = ButtonDefaults.MinWidth,
+    minHeight: Dp = ButtonDefaults.MinHeight,
     content: @Composable RowScope.() -> Unit
 ) {
     BaseTextButton(
@@ -58,6 +61,8 @@ fun MaskTextButton(
         border = border,
         colors = colors,
         contentPadding = contentPadding,
-        content = content
+        minWidth = minWidth,
+        minHeight = minHeight,
+        content = content,
     )
 }
