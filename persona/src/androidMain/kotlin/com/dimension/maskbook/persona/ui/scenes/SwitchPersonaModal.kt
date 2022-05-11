@@ -44,6 +44,7 @@ import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.route.Deeplinks
 import com.dimension.maskbook.common.route.navigationComposeBottomSheet
 import com.dimension.maskbook.common.route.navigationComposeBottomSheetPackage
+import com.dimension.maskbook.common.routeProcessor.annotations.Back
 import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
 import com.dimension.maskbook.common.ui.widget.MaskModal
 import com.dimension.maskbook.common.ui.widget.MaskSelection
@@ -60,6 +61,7 @@ import org.koin.androidx.compose.getViewModel
 @Composable
 fun SwitchPersonaModal(
     navController: NavController,
+    @Back onBack: () -> Unit,
 ) {
     val viewModel = getViewModel<SwitchPersonaViewModel>()
     val currentPersonaData by viewModel.current.observeAsState(initial = null)
@@ -82,6 +84,7 @@ fun SwitchPersonaModal(
                         enabled = currentPersonaData == null || currentPersonaData != item,
                         onClicked = {
                             viewModel.switch(item)
+                            onBack.invoke()
                         },
                         content = {
                             Image(
