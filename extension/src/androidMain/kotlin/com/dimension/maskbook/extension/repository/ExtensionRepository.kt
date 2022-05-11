@@ -55,7 +55,7 @@ class ExtensionRepository(
     val isExtensionConnected = controller.isExtensionConnected
     init {
         controller.installExtensions(
-            id = "info@dimension.com",
+            id = "info@dimension.im",
             url = "resource://android/assets/web_extensions/Maskbook/",
         )
         controller.onNavigate = {

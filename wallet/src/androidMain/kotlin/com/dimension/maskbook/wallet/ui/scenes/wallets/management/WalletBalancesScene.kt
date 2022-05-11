@@ -75,6 +75,7 @@ import com.dimension.maskbook.common.ext.humanizeToken
 import com.dimension.maskbook.common.ext.onDrawableRes
 import com.dimension.maskbook.common.ui.theme.MaskTheme
 import com.dimension.maskbook.common.ui.theme.moreColor
+import com.dimension.maskbook.common.ui.widget.HorizontalScenePadding
 import com.dimension.maskbook.common.ui.widget.MaskListItem
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
@@ -193,10 +194,9 @@ fun WalletBalancesScene(
                         }
                         item {
                             Row(
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = Modifier.fillMaxWidth().padding(horizontal = HorizontalScenePadding),
                                 horizontalArrangement = Arrangement.Center,
                             ) {
-                                Spacer(Modifier.width(24.dp))
                                 WalletButton(
                                     text = stringResource(R.string.scene_wallet_balance_btn_Send),
                                     icon = R.drawable.transaction_1,

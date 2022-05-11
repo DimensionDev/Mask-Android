@@ -51,11 +51,14 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import com.dimension.maskbook.common.bigDecimal.BigDecimal
+import com.dimension.maskbook.common.ext.backgroundBrush
 import com.dimension.maskbook.common.ext.humanizeDollar
 import com.dimension.maskbook.common.ext.onDrawableRes
+import com.dimension.maskbook.common.ext.shortName
 import com.dimension.maskbook.common.ui.widget.MiddleEllipsisText
 import com.dimension.maskbook.common.ui.widget.button.MaskIconButton
 import com.dimension.maskbook.common.ui.widget.button.MaskTextButton
@@ -146,7 +149,7 @@ fun WalletCardItem(
         Column(
             modifier = Modifier
                 .background(
-                    brush = WalletCardDefaults.walletCardBackground,
+                    brush = displayChainType?.backgroundBrush ?: WalletCardDefaults.walletCardBackground,
                     shape = WalletCardDefaults.walletCardShape,
                 )
                 .clip(
@@ -183,7 +186,7 @@ fun WalletCardItem(
                         )
                         Spacer(Modifier.width(4.dp))
                         Text(
-                            text = walletChainType.name,
+                            text = walletChainType.shortName,
                             color = Color.White,
                             style = MaterialTheme.typography.caption,
                         )
@@ -192,6 +195,7 @@ fun WalletCardItem(
                 MaskTextButton(
                     onClick = onWalletAddressClick,
                     contentPadding = PaddingValues(0.dp),
+                    minHeight = Dp.Unspecified,
                 ) {
                     MiddleEllipsisText(
                         text = wallet.address,
@@ -295,7 +299,7 @@ private enum class DisplayAmountType(
     Binance(R.drawable.wallet_2, ChainType.bsc),
     Matic(R.drawable.wallet_3, ChainType.polygon),
     Arbitrum(R.drawable.wallet_4, ChainType.arbitrum),
-    Xdai(R.drawable.wallet_5, ChainType.xdai),
+    Xdai(R.drawable.ic_xdai_off, ChainType.xdai),
 }
 
 private object WalletCardDefaults {
