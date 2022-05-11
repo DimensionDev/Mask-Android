@@ -610,8 +610,8 @@
             "failed": "Synchronization failed"
         },
         "identity_create": {
-            "title": "Verify identity code",
-            "description": "Write down each word."
+            "title": "Create a Persona",
+            "description": "Download your identity code."
         },
         "identify_verify": {
             "title": "Verify identity code",

@@ -89,7 +89,7 @@ private fun BackupContent(
             topBar = {
                 MaskTopAppBar(
                     title = {
-                        Text(text = stringResource(R.string.scene_identify_verify_title))
+                        Text(text = stringResource(R.string.scene_identity_create_title))
                     },
                     navigationIcon = {
                         MaskBackButton {

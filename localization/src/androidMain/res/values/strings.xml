@@ -325,8 +325,8 @@
     <string name="scene_wallet_backup_title">Back up wallet</string>
     <string name="scene_wallet_backup_btn_copy">Copy</string>
     <string name="scene_wallet_backup_tab_keystore">Keystore</string>
-    <string name="scene_identity_create_description">Write down each word.</string>
-    <string name="scene_identity_create_title">Verify identity code</string>
+    <string name="scene_identity_create_description">Download your identity code.</string>
+    <string name="scene_identity_create_title">Create a Persona</string>
     <string name="scene_persona_contacts_empty_contacts_tips">You don’t have encrypted friends. \nInvite friends to download Mask Network.</string>
     <string name="scene_persona_contacts_message_tips">Contacts are accounts that are captured in real-time on timeline when you browse Twitter or Facebook.</string>
     <string name="scene_persona_contacts_search_account">Search account name/ID</string>
