@@ -914,7 +914,12 @@ internal class WalletRepository(
                         platformType = CoinPlatformType.Ethereum
                     )
                 } else if (!privateKey.isNullOrEmpty()) {
-                    importWallet(name = data.name, privateKey = privateKey, platformType = CoinPlatformType.Ethereum)
+                    try {
+                        importWallet(name = data.name, privateKey = privateKey, platformType = CoinPlatformType.Ethereum)
+                    } catch (e: Exception) {
+                        // just ignore it, lol
+                        e.printStackTrace()
+                    }
                 } else {
                     // not a valid backup
                 }
