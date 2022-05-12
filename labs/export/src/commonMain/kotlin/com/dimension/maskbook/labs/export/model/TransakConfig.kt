@@ -34,10 +34,12 @@ data class TransakConfig(
 
     fun queryString(): String {
         // TODO add apiKey in order to integrate all other parameters
-        return "?defaultCryptoCurrency=$defaultCryptoCurrency" +
+        return "?apiKey=${if (isStaging) "4fcd6904-706b-4aff-bd9d-77422813bbb7" else "253be1f0-c6d8-46e7-9d80-38f33bf973e2" }" +
+            "&environment=${if (isStaging) "STAGING" else "PRODUCTION" }" +
+            "&defaultCryptoCurrency=$defaultCryptoCurrency" +
             "&hideMenu=$hideMenu" +
-            if (walletAddress.isEmpty()) "" else "&walletAddress=$walletAddress" +
-                if (isStaging) "apiKey=4fcd6904-706b-4aff-bd9d-77422813bbb7&environment=STAGING" else ""
+            "&disablePaymentMethods=apple_pay,googlepay" +
+            if (walletAddress.isEmpty()) "" else "&walletAddress=$walletAddress"
     }
 
     companion object {
