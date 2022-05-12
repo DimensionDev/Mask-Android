@@ -183,6 +183,7 @@ private fun SearchInput(
                         painter = painterResource(id = R.drawable.ic_scan),
                         contentDescription = null,
                         modifier = Modifier.size(24.dp),
+                        tint = Color(0xFF1D2238)
                     )
                 }
             } else {
@@ -239,7 +240,7 @@ private fun EnsCard(
         modifier = Modifier.fillMaxWidth(),
         contentPadding = PaddingValues(12.dp),
     ) {
-        Column {
+        Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = ensData.name,
                 style = MaterialTheme.typography.h5,
@@ -250,12 +251,13 @@ private fun EnsCard(
                 style = MaterialTheme.typography.body2,
             )
         }
-        Spacer(Modifier.width(20.dp))
+        Spacer(Modifier.width(36.dp))
         MaskIconButton(onClick = onCopy) {
             Icon(
                 painter = painterResource(R.drawable.ic_copy_ens),
                 contentDescription = null,
-                modifier = Modifier.size(20.dp),
+                modifier = Modifier.size(24.dp),
+                tint = Color(0xFF1D2238)
             )
         }
     }
@@ -283,7 +285,7 @@ private fun EmptyInputContent(
         }
         item {
             ItemHeader(
-                icon = R.drawable.ic_time_circle,
+                icon = R.drawable.ic_recent_address,
                 title = stringResource(R.string.scene_wallet_send_address_recent),
             )
         }
