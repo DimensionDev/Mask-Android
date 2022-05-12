@@ -70,7 +70,7 @@ fun EmailInputModal(
                 maxLines = 1,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             )
-            if (!emailValid) {
+            if (!emailValid && email.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(text = stringResource(R.string.scene_restore_tip_invalid_email_address), color = Color.Red)
             }

@@ -77,7 +77,7 @@ fun PhoneInputModal(
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                 )
             }
-            if (!phoneValid) {
+            if (!phoneValid && phone.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(text = stringResource(R.string.scene_restore_tip_invalid_mobile_number), color = Color.Red)
             }

@@ -33,6 +33,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Checkbox
+import androidx.compose.material.CheckboxDefaults
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -42,6 +43,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -175,10 +177,16 @@ fun BackupLocalScene(
                             onClick = {
                                 viewModel.setWithWallet(!withWallet)
                             },
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Checkbox(checked = withWallet, onCheckedChange = {
-                                viewModel.setWithWallet(it)
-                            })
+                            Checkbox(
+                                checked = withWallet, onCheckedChange = {
+                                    viewModel.setWithWallet(it)
+                                },
+                                colors = CheckboxDefaults.colors(
+                                    checkedColor = Color(0xFF1FB885)
+                                )
+                            )
                             Spacer(modifier = Modifier.width(10.dp))
                             MetaItem(
                                 title = stringResource(R.string.scene_setting_local_backup_local_wallet),

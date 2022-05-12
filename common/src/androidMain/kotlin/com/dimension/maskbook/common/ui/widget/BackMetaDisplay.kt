@@ -34,6 +34,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.localization.R
 import com.dimension.maskbook.setting.export.model.BackupMeta
@@ -78,10 +79,10 @@ fun MetaItem(
     Row(
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(text = title)
+        Text(text = title, style = MaterialTheme.typography.h5.copy(fontWeight = FontWeight.W500))
         Spacer(modifier = Modifier.weight(1f))
         CompositionLocalProvider(
-            LocalTextStyle provides MaterialTheme.typography.button
+            LocalTextStyle provides MaterialTheme.typography.h5
         ) {
             Text(text = value)
         }
