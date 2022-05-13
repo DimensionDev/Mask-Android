@@ -64,6 +64,7 @@ import com.dimension.maskbook.persona.R
 import com.dimension.maskbook.persona.route.PersonaRoute
 import com.dimension.maskbook.persona.viewmodel.DownloadQrCodeViewModel
 import com.dimension.maskbook.persona.viewmodel.PersonaMenuViewModel
+import com.dimension.maskbook.setting.export.model.BackupActions
 import org.koin.androidx.compose.getViewModel
 
 @NavGraphDestination(
@@ -151,7 +152,7 @@ fun PersonaMenuScene(
                         onClick = {
                             // first check if it has backup password
                             if (backupPassword.isEmpty()) {
-                                navController.navigateUri(Uri.parse(Deeplinks.Setting.SetupPasswordDialog))
+                                navController.navigateUri(Uri.parse(Deeplinks.Setting.SetupPasswordDialog(BackupActions.ExportPrivateKey.name)))
                             } else {
                                 navController.navigate(Uri.parse(Deeplinks.Persona.BackUpPassword(PersonaRoute.ExportPrivateKey)))
                             }
@@ -176,7 +177,7 @@ fun PersonaMenuScene(
                         onClick = {
                             // first check if it has backup password
                             if (backupPassword.isEmpty()) {
-                                navController.navigateUri(Uri.parse(Deeplinks.Setting.SetupPasswordDialog))
+                                navController.navigateUri(Uri.parse(Deeplinks.Setting.SetupPasswordDialog(BackupActions.DownloadQrCode.name)))
                             } else {
                                 currentPersona?.let {
                                     navController.navigate(
@@ -211,7 +212,7 @@ fun PersonaMenuScene(
                         elevation = 0.dp,
                         onClick = {
                             if (backupPassword.isEmpty()) {
-                                navController.navigateUri(Uri.parse(Deeplinks.Setting.SetupPasswordDialog))
+                                navController.navigateUri(Uri.parse(Deeplinks.Setting.SetupPasswordDialog(BackupActions.BackUp.name)))
                             } else {
                                 navController.navigateUri(Uri.parse(Deeplinks.Setting.BackupData.BackupSelection))
                             }

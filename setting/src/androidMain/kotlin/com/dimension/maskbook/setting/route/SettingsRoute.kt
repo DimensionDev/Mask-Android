@@ -26,6 +26,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -46,6 +47,7 @@ import com.dimension.maskbook.common.ui.widget.EmailInputModal
 import com.dimension.maskbook.common.ui.widget.MaskDialog
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
 import com.dimension.maskbook.localization.R
+import com.dimension.maskbook.setting.export.model.BackupActions
 import com.dimension.maskbook.setting.ui.scenes.AppearanceSettings
 import com.dimension.maskbook.setting.ui.scenes.ChangeBackUpPasswordModal
 import com.dimension.maskbook.setting.ui.scenes.ChangePaymentPasswordModal
@@ -59,9 +61,9 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 
 @NavGraphDestination(
-    route = SettingRoute.SetupPasswordDialog,
+    route = SettingRoute.SetupPasswordDialog.path,
     deeplink = [
-        Deeplinks.Setting.SetupPasswordDialog
+        Deeplinks.Setting.SetupPasswordDialog.path
     ],
     packageName = navigationComposeDialogPackage,
     functionName = navigationComposeDialog,
@@ -69,7 +71,12 @@ import org.koin.androidx.compose.getViewModel
 @Composable
 fun SetupPasswordDialog(
     navController: NavController,
+    @Path("action") action: String,
 ) {
+    val actionType = remember(action) {
+        BackupActions.valueOf(action)
+    }
+
     MaskDialog(
         onDismissRequest = {
             navController.popBackStack()
@@ -78,7 +85,16 @@ fun SetupPasswordDialog(
             Text(text = stringResource(R.string.common_alert_setting_warning_backup_data_titile))
         },
         text = {
-            Text(text = stringResource(R.string.common_alert_setting_warning_backup_data_description))
+            Text(
+                text = stringResource(
+                    R.string.common_alert_setting_warning_backup_data_description,
+                    when (actionType) {
+                        BackupActions.ExportPrivateKey -> stringResource(R.string.common_alert_setting_warning_backup_action_export_private_key)
+                        BackupActions.BackUp -> stringResource(R.string.common_alert_setting_warning_backup_action_backup)
+                        BackupActions.DownloadQrCode -> stringResource(R.string.common_alert_setting_warning_backup_action_download_qr_code)
+                    }
+                )
+            )
         },
         buttons = {
             PrimaryButton(
