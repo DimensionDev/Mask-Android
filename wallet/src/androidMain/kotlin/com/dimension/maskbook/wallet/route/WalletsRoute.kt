@@ -42,6 +42,7 @@ import androidx.navigation.NavController
 import androidx.navigation.navOptions
 import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.common.ext.decodeBase64
+import com.dimension.maskbook.common.ext.navigateWithPopSelf
 import com.dimension.maskbook.common.ext.observeAsState
 import com.dimension.maskbook.common.ext.openUrl
 import com.dimension.maskbook.common.ext.shareText
@@ -599,7 +600,7 @@ internal fun navigateWalletCreate(
 ) {
     val route = if (shouldShowLegalScene) {
         WalletRoute.WalletIntroHostLegal(type.name)
-    } else if (password.isNullOrEmpty()) {
+    } else if (password.isEmpty()) {
         WalletRoute.WalletIntroHostPassword(type.name)
     } else if (!enableBiometric && biometricEnableViewModel.isSupported(context) && wallets.isEmpty()) {
         WalletRoute.WalletIntroHostFaceId(type.name)
@@ -608,12 +609,6 @@ internal fun navigateWalletCreate(
     }
     navController.navigate(
         route,
-        navOptions {
-            navController.currentDestination?.id?.let { popId ->
-                popUpTo(popId) { inclusive = true }
-            }
-            launchSingleTop = true
-        }
     )
 }
 
@@ -647,15 +642,15 @@ fun WalletIntroHostLegal(
             } else {
                 WalletRoute.CreateOrImportWallet(type.name)
             }
-            navController.navigate(
-                route,
-                navOptions {
-                    navController.currentDestination?.id?.let { popId ->
-                        popUpTo(popId) { inclusive = true }
-                    }
-                    launchSingleTop = true
-                }
-            )
+            if (password.isNullOrEmpty()) {
+                navController.navigate(
+                    route,
+                )
+            } else {
+                navController.navigateWithPopSelf(
+                    route,
+                )
+            }
         },
         onBrowseAgreement = {
             context.startActivity(
@@ -687,9 +682,9 @@ fun WalletIntroHostPassword(
     SetUpPaymentPassword(
         onNext = {
             if (!enableBiometric && biometricEnableViewModel.isSupported(context) && wallets.isEmpty()) {
-                navController.navigate(WalletRoute.WalletIntroHostFaceId(type.name))
+                navController.navigateWithPopSelf(WalletRoute.WalletIntroHostFaceId(type.name))
             } else {
-                navController.navigate(WalletRoute.CreateOrImportWallet(type.name))
+                navController.navigateWithPopSelf(WalletRoute.CreateOrImportWallet(type.name))
             }
         }
     )
