@@ -38,10 +38,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowRight
 import androidx.compose.runtime.Composable
@@ -57,6 +57,8 @@ import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.common.ext.humanizeDollar
 import com.dimension.maskbook.common.ext.humanizeToken
 import com.dimension.maskbook.common.ext.ifNullOrEmpty
+import com.dimension.maskbook.common.ui.theme.moreColor
+import com.dimension.maskbook.common.ui.widget.MaskCard
 import com.dimension.maskbook.common.ui.widget.MaskDecimalInputField
 import com.dimension.maskbook.common.ui.widget.MaskPasswordInputField
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
@@ -65,9 +67,9 @@ import com.dimension.maskbook.common.ui.widget.MaskSingleLineTopAppBar
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
 import com.dimension.maskbook.common.ui.widget.button.MaskBackButton
 import com.dimension.maskbook.common.ui.widget.button.MaskIconButton
+import com.dimension.maskbook.common.ui.widget.button.MaskTextButton
 import com.dimension.maskbook.common.ui.widget.button.MaskTransparentButton
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
-import com.dimension.maskbook.common.ui.widget.button.SecondaryButton
 import com.dimension.maskbook.wallet.R
 import com.dimension.maskbook.wallet.export.model.TradableData
 import com.dimension.maskbook.wallet.export.model.WalletCollectibleData
@@ -205,22 +207,24 @@ private fun AddressContent(
     isContact: Boolean,
     onAddContact: () -> Unit,
 ) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = name,
-            style = MaterialTheme.typography.body1.copy(fontWeight = FontWeight.Bold),
-            modifier = Modifier.weight(1f)
-        )
-        if (!isContact) {
-            MaskIconButton(onClick = onAddContact) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_add_user),
-                    contentDescription = null,
-                    modifier = Modifier.size(32.dp)
-                )
+    MaskCard(elevation = 0.dp) {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(vertical = 14.dp, horizontal = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Text(
+                text = name,
+                style = MaterialTheme.typography.body1.copy(fontWeight = FontWeight.Bold),
+                modifier = Modifier.weight(1f)
+            )
+            if (!isContact) {
+                MaskIconButton(onClick = onAddContact) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_add_user),
+                        contentDescription = null,
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
             }
         }
     }
@@ -233,21 +237,29 @@ private fun TokenContent(
     balance: String = "",
     onClick: () -> Unit
 ) {
-    MaskTransparentButton(onClick = onClick) {
-        Image(
-            painter = rememberImagePainter(logoUri),
-            contentDescription = null,
-            modifier = Modifier.size(38.dp)
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = tokenName,
-                style = MaterialTheme.typography.body1.copy(fontWeight = FontWeight.Bold)
+    MaskCard(
+        onClick = onClick,
+        elevation = 0.dp
+    ) {
+        Row(
+            modifier = Modifier.padding(vertical = 14.dp, horizontal = 12.dp).fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = rememberImagePainter(logoUri),
+                contentDescription = null,
+                modifier = Modifier.size(38.dp)
             )
-            Text(text = balance)
+            Spacer(modifier = Modifier.width(8.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = tokenName,
+                    style = MaterialTheme.typography.h5.copy(fontWeight = FontWeight.Bold),
+                )
+                Text(text = balance, style = MaterialTheme.typography.body2)
+            }
+            Icon(imageVector = Icons.Default.ArrowRight, contentDescription = null)
         }
-        Icon(imageVector = Icons.Default.ArrowRight, contentDescription = null)
     }
 }
 
@@ -294,7 +306,10 @@ private fun AmountContent(
     error: String,
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
-        Text(text = stringResource(R.string.scene_sendTransaction_send_label_Amount))
+        Text(
+            text = stringResource(R.string.scene_sendTransaction_send_label_Amount),
+            style = MaterialTheme.typography.h5.copy(color = MaterialTheme.colors.onSurface)
+        )
         Spacer(modifier = Modifier.height(8.dp))
         MaskDecimalInputField(
             modifier = Modifier.fillMaxWidth(),
@@ -302,16 +317,19 @@ private fun AmountContent(
             onValueChange = { onValueChanged(it.toString()) },
             trailingIcon = {
                 Row {
-                    TextButton(
+                    MaskTextButton(
                         onClick = onMax,
                         modifier = Modifier.background(
                             color = MaterialTheme.colors.onSurface.copy(alpha = 0.1f),
                             shape = MaterialTheme.shapes.small
-                        )
+                        ),
+                        minWidth = 42.dp,
+                        minHeight = 24.dp
                     ) {
                         Text(
                             text = stringResource(R.string.scene_sendTransaction_send_btn_max),
-                            color = MaterialTheme.colors.primary
+                            color = MaterialTheme.colors.primary,
+                            style = MaterialTheme.typography.body2
                         )
                     }
                     Spacer(modifier = Modifier.padding(end = 12.dp))
@@ -334,7 +352,10 @@ private fun PaymentPasswordContent(
     onValueChanged: (String) -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
-        Text(text = stringResource(R.string.scene_setting_general_setup_payment_password))
+        Text(
+            text = stringResource(R.string.scene_setting_general_setup_payment_password),
+            style = MaterialTheme.typography.h5.copy(color = MaterialTheme.colors.onSurface)
+        )
         Spacer(modifier = Modifier.height(8.dp))
         MaskPasswordInputField(
             value = pwd,
@@ -422,28 +443,32 @@ private fun RoundButton(
     iconStart: Boolean = true,
     iconEnd: Boolean = false
 ) {
-    SecondaryButton(
+    MaskTextButton(
         onClick = onClick,
-        shape = MaterialTheme.shapes.small.copy(CornerSize(50)),
-        modifier = Modifier.clip(MaterialTheme.shapes.small.copy(CornerSize(50)))
+        shape = MaterialTheme.shapes.small.copy(CornerSize(13.dp)),
+        modifier = Modifier.clip(MaterialTheme.shapes.small.copy(CornerSize(13.dp))),
+        minHeight = 28.dp,
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = MaterialTheme.moreColor.caption,
+        )
     ) {
         if (iconStart) {
             Icon(
                 painter = painterResource(id = icon),
                 contentDescription = null,
-                tint = MaterialTheme.colors.primary,
+                tint = MaterialTheme.typography.h6.color,
                 modifier = Modifier
                     .size(13.dp)
             )
             Spacer(modifier = Modifier.width(5.dp))
         }
-        Text(text = title, color = MaterialTheme.colors.primary)
+        Text(text = title, style = MaterialTheme.typography.h6)
         if (iconEnd) {
             Spacer(modifier = Modifier.width(10.dp))
             Icon(
                 painter = painterResource(id = icon),
                 contentDescription = null,
-                tint = MaterialTheme.colors.primary,
+                tint = MaterialTheme.typography.h6.color,
                 modifier = Modifier.size(13.dp)
             )
         }
