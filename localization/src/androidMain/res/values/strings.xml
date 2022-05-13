@@ -64,8 +64,11 @@
     <string name="common_alert_identity_phrase_title">Identity Phrase</string>
     <string name="common_alert_wallet_derive_success_description">New wallet account created successfully</string>
     <string name="common_alert_wallet_derive_success_title">Perfect!</string>
-    <string name="common_alert_setting_warning_backup_data_titile"> Set up password before backup</string>
-    <string name="common_alert_setting_warning_backup_data_description">We have detected that you haven’t set up your backup password and/or payment password. Please set up your backup password and/or payment password before you back up.</string>
+    <string name="common_alert_setting_warning_backup_data_titile"> Set up backup password</string>
+    <string name="common_alert_setting_warning_backup_data_description">Please set up your Backup Password before you %s</string>
+    <string name="common_alert_setting_warning_backup_action_backup">back up</string>
+    <string name="common_alert_setting_warning_backup_action_export_private_key">export private key</string>
+    <string name="common_alert_setting_warning_backup_action_download_qr_code">download persona QR code</string>
     <string name="common_alert_copied_to_clipboard_title">Copied to clipboard</string>
     <string name="common_alert_change_password_description">You have successfully changed your payment password.</string>
     <string name="common_alert_change_password_title">Password changed successfully!</string>
@@ -239,13 +242,7 @@
     <string name="scene_set_backup_password_tips">Backup password must be between 8 and 20 characters and contains at least a number, a uppercase letter, a lowercase letter and a special character.</string>
     <string name="scene_set_backup_password_confirm_backup_password">Confirm Backup Password</string>
     <string name="scene_app_wallet_address">Wallet address</string>
-    <string name="scene_app_riskwarning">Dear User,
-
-When using any wallet-related plugins in Mask Network, please confirm to accept the following usage risks:
-
-Mask Network provides non-commercial free services. The plug-ins are provided by community members and other excellent third-party DApp teams. Due to the freedom of the decentralized network and other uncertain risk factors, users are requested to properly protect their sensitive information such as wallet mnemonic words and private keys. Please be cautious when conducting any blockchain contract interaction. The risks caused by any third-party DApps (plug-ins) are borne by the third-party DApps themselves.
-
-Clicking the confirm button means that you agree to bear the above possible risks.</string>
+    <string name="scene_app_riskwarning">Dear User,\n\nWhen using any wallet-related plugins in Mask Network, please confirm to accept the following usage risks:\n\nMask Network provides non-commercial free services. The plug-ins are provided by community members and other excellent third-party DApp teams. Due to the freedom of the decentralized network and other uncertain risk factors, users are requested to properly protect their sensitive information such as wallet mnemonic words and private keys. Please be cautious when conducting any blockchain contract interaction. The risks caused by any third-party DApps (plug-ins) are borne by the third-party DApps themselves.\n\nClicking the confirm button means that you agree to bear the above possible risks.</string>
     <string name="scene_app_plugins_gitcoin">Gitcoin</string>
     <string name="scene_app_plugins_ito">ITO</string>
     <string name="scene_app_plugins_swap">Swap</string>
@@ -317,8 +314,7 @@ Clicking the confirm button means that you agree to bear the above possible risk
     <string name="scene_personas_create_create_persona">Create Persona</string>
     <string name="scene_personas_add_persona">Add Persona</string>
     <string name="scene_personas_personas">Personas</string>
-    <string name="scene_personas_delete">Confirm to delete persona
-</string>
+    <string name="scene_personas_delete">Confirm to delete persona\n</string>
     <string name="scene_personas_connect_social_tip">To connect to Mask, Click here to enter twitter ID.</string>
     <string name="scene_identity_recovery_private_key_button">Private Key</string>
     <string name="scene_identity_recovery_cloud_backup_recovery_button_title">Cloud backup Recovery</string>
@@ -338,15 +334,13 @@ Clicking the confirm button means that you agree to bear the above possible risk
     <string name="scene_persona_contacts_message_tips">Contacts are accounts that are captured in real-time on timeline when you browse Twitter or Facebook.</string>
     <string name="scene_persona_contacts_search_account">Search account name/ID</string>
     <string name="scene_persona_contacts_contact">Contact</string>
-    <string name="scene_persona_contacts_empty_search_tips">No contact found. This account is not
-captured on Timeline.</string>
+    <string name="scene_persona_contacts_empty_search_tips">No contact found. This account is not\ncaptured on Timeline.</string>
     <string name="scene_persona_contacts_delete">Confirm to delete </string>
     <string name="scene_wallet_rename_rename_button">Rename</string>
     <string name="scene_wallet_rename_name_title">Wallet name</string>
     <string name="scene_wallet_rename_placeholder">Name your wallet</string>
     <string name="scene_identity_mnemonic_import_description">The identity code can only recover your persona. </string>
-    <string name="scene_identity_mnemonic_import_placeholder">Please enter 12 mnemonic words
-separated by spaces</string>
+    <string name="scene_identity_mnemonic_import_placeholder">Please enter 12 mnemonic words\nseparated by spaces</string>
     <string name="scene_identity_mnemonic_import_title">Identity</string>
     <string name="scene_mnemonic_word_description">Write down each word.</string>
     <string name="scene_mnemonic_word_title">Mnemonic word</string>
@@ -379,9 +373,7 @@ separated by spaces</string>
     <string name="scene_persona_download_qr_code_success">Download success.</string>
     <string name="scene_persona_download_qr_code_failed">Download failed.</string>
     <string name="scene_persona_download_qr_code_title">Download Persona QR Code</string>
-    <string name="scene_persona_download_qr_code_tips">The QR code encrypts the identity code or private key of
-your persona. It is recommended to print it. You can use
-Mask App to scan the QR code to login.</string>
+    <string name="scene_persona_download_qr_code_tips">The QR code encrypts the identity code or private key of\nyour persona. It is recommended to print it. You can use\nMask App to scan the QR code to login.</string>
     <string name="scene_wallet_unlock_button">Unlock</string>
     <string name="scene_wallet_unlock_title">Unlock Wallet</string>
     <string name="scene_wallet_detail_wallet_title_change">Change</string>
@@ -405,8 +397,7 @@ Mask App to scan the QR code to login.</string>
     <string name="scene_wallet_connect_network_not_support">The wallet network %s is currently not supported by Mask Network. We can’t connect your wallet. Please switch your wallet network manually.</string>
     <string name="scene_wallet_connect_could_not_switch_blockchain_network_title">Switching blockchain network not supported with WalletConnect</string>
     <string name="scene_wallet_connect_replace_wallet_connect_wallet">This wallet address was connected with WalletConnect. Importing this wallet address automatically dis-connects the walletConnect account.</string>
-    <string name="scene_wallet_connect_qr_code_tips">Use a WalletConnect compatiable wallet
-to scan the QR Code</string>
+    <string name="scene_wallet_connect_qr_code_tips">Use a WalletConnect compatiable wallet\nto scan the QR Code</string>
     <string name="scene_wallet_connect_scan_q_r_code">Scan QR Code</string>
     <string name="scene_wallet_connect_connecting">Connecting...</string>
     <string name="scene_wallet_connect_could_not_switch_blockchain_network_message">Please try to use a native wallet, then switch the blockchain network again</string>
@@ -431,16 +422,12 @@ to scan the QR Code</string>
     <string name="scene_open_red_package_total">Total</string>
     <string name="scene_open_red_package_expired">Expired</string>
     <string name="scene_open_red_package_ends">Ends %s</string>
-    <string name="scene_open_red_package_share_message_unsupport_platform">Hi friends, I just claimed a lucky drop sent by @%s on %s network. 
-%s</string>
+    <string name="scene_open_red_package_share_message_unsupport_platform">Hi friends, I just claimed a lucky drop sent by @%s on %s network. \n%s</string>
     <string name="scene_open_red_package_claim">Claim</string>
     <string name="scene_open_red_package_from">From: @%s</string>
     <string name="scene_open_red_package_refunded">Refunded</string>
-    <string name="scene_open_red_package_share_message_official">Hi friends, I just claimed a lucky drop sent by %s on %s network. Follow %s (mask.io) to claim the lucky drops.
-#mask_io #LuckyDrop
-%s</string>
-    <string name="scene_open_red_package_better_luck_next_time">Better luck
-next time.</string>
+    <string name="scene_open_red_package_share_message_official">Hi friends, I just claimed a lucky drop sent by %s on %s network. Follow %s (mask.io) to claim the lucky drops.\n#mask_io #LuckyDrop\n%s</string>
+    <string name="scene_open_red_package_better_luck_next_time">Better luck\nnext time.</string>
     <string name="scene_open_red_package_refund">Refund</string>
     <string name="scene_restore_completion">Restore completed.</string>
     <string name="scene_restore_restored_post">Encrypted post</string>

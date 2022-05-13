@@ -25,7 +25,9 @@ import com.dimension.maskbook.common.routeProcessor.annotations.Route
 @Suppress("CONST_VAL_WITHOUT_INITIALIZER")
 @Route
 expect object SettingRoute {
-    const val SetupPasswordDialog: String
+    object SetupPasswordDialog {
+        operator fun invoke(action: String): String
+    }
     const val LanguageSettings: String
     const val AppearanceSettings: String
     const val DataSourceSettings: String

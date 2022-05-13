@@ -33,7 +33,9 @@ expect object Deeplinks {
         }
     }
     object Setting {
-        const val SetupPasswordDialog: String
+        object SetupPasswordDialog {
+            operator fun invoke(action: String): String
+        }
         object BackupData {
             const val BackupSelection: String
         }

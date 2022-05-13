@@ -67,6 +67,7 @@ import com.dimension.maskbook.common.ui.widget.button.MaskIconCardButton
 import com.dimension.maskbook.common.viewmodel.BiometricEnableViewModel
 import com.dimension.maskbook.localization.R
 import com.dimension.maskbook.setting.export.model.Appearance
+import com.dimension.maskbook.setting.export.model.BackupActions
 import com.dimension.maskbook.setting.export.model.DataProvider
 import com.dimension.maskbook.setting.export.model.Language
 import com.dimension.maskbook.setting.repository.ISettingsRepository
@@ -208,7 +209,7 @@ fun SettingsScene(
                     icon = R.drawable.ic_settings_backup_data,
                     onClick = {
                         if (backupPassword.isEmpty() || (currentWallet != null && paymentPassword.isEmpty())) {
-                            navController.navigateUri(Uri.parse(Deeplinks.Setting.SetupPasswordDialog))
+                            navController.navigateUri(Uri.parse(Deeplinks.Setting.SetupPasswordDialog(BackupActions.BackUp.name)))
                         } else {
                             navController.navigate(SettingRoute.BackupData.BackupSelection)
                         }

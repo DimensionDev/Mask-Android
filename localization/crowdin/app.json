@@ -98,8 +98,13 @@
                 "backup_failed": "Backup failed!"
             },
             "setting": {
-                "warning_backup_data_titile": " Set up password before backup",
-                "warning_backup_data_description": "We have detected that you haven’t set up your backup password and/or payment password. Please set up your backup password and/or payment password before you back up."
+                "warning_backup_data_titile": " Set up backup password",
+                "warning_backup_data_description": "Please set up your Backup Password before you %s",
+                "warning_backup_action": {
+                    "backup": "back up",
+                    "export_private_key": "export private key",
+                    "download_qr_code": "download persona QR code"
+                }
             },
             "disconnect_profile": {
                 "title": "Are you sure you want to disconnect the %s account of %s ? After disconnection, this account will no longer be able to decrypt and encrypt any information with Mask Network."
