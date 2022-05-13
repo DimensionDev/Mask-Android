@@ -50,6 +50,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.dimension.maskbook.common.ui.theme.moreColor
 import com.dimension.maskbook.common.ui.widget.MaskDecimalInputField
 import com.dimension.maskbook.common.ui.widget.MaskModal
 import com.dimension.maskbook.common.ui.widget.button.MaskButton
@@ -143,12 +144,13 @@ fun EditGasPriceSheet(
                     Spacer(modifier = Modifier.height(20.dp))
                 }
             }
-            TextButton(onClick = { showAdvanced = !showAdvanced }) {
+            TextButton(onClick = { showAdvanced = !showAdvanced }, modifier = Modifier.align(Alignment.CenterHorizontally)) {
                 Text(text = stringResource(R.string.scene_sendTransaction_gasPrice_advancedBtn))
                 Spacer(modifier = Modifier.width(10.dp))
                 Icon(
                     painter = painterResource(id = if (showAdvanced) R.drawable.ic_arrow_up else R.drawable.ic_arrow_down),
-                    contentDescription = null
+                    contentDescription = null,
+                    tint = MaterialTheme.moreColor.onCaption
                 )
             }
 
