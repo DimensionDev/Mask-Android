@@ -99,7 +99,12 @@
             },
             "setting": {
                 "warning_backup_data_titile": "",
-                "warning_backup_data_description": ""
+                "warning_backup_data_description": "",
+                "warning_backup_action": {
+                    "backup": "",
+                    "export_private_key": "",
+                    "download_qr_code": ""
+                }
             },
             "disconnect_profile": {
                 "title": ""
