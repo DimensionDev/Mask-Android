@@ -98,8 +98,13 @@
                 "backup_failed": "crwdns15110:0crwdne15110:0"
             },
             "setting": {
-                "warning_backup_data_titile": "crwdns15112:0crwdne15112:0",
-                "warning_backup_data_description": "crwdns15114:0crwdne15114:0"
+                "warning_backup_data_titile": "crwdns16554:0crwdne16554:0",
+                "warning_backup_data_description": "crwdns16556:0%scrwdne16556:0",
+                "warning_backup_action": {
+                    "backup": "crwdns16558:0crwdne16558:0",
+                    "export_private_key": "crwdns16560:0crwdne16560:0",
+                    "download_qr_code": "crwdns16562:0crwdne16562:0"
+                }
             },
             "disconnect_profile": {
                 "title": "crwdns15116:0%scrwdnd15116:0%scrwdne15116:0"
