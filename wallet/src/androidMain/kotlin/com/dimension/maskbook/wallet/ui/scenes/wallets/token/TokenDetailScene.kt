@@ -31,6 +31,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.ExperimentalMaterialApi
@@ -104,13 +105,14 @@ fun TokenDetailScene(
                             if (tokenData.logoURI != null) {
                                 Image(
                                     painter = rememberImagePainter(data = tokenData.logoURI),
+                                    modifier = Modifier.size(38.dp),
                                     contentDescription = null,
                                 )
                             }
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
                                 text = tokenData.name,
-                                style = MaterialTheme.typography.subtitle2,
+                                style = MaterialTheme.typography.h3,
                                 modifier = Modifier.weight(1f),
                                 color = Color.White,
                             )
@@ -120,10 +122,12 @@ fun TokenDetailScene(
                                 Text(
                                     text = "${walletTokenData.count.humanizeToken()} ${tokenData.symbol}",
                                     color = Color.White,
+                                    style = MaterialTheme.typography.h6,
                                 )
+                                Spacer(modifier = Modifier.width(4.dp))
                                 Text(
                                     text = (walletTokenData.count * tokenData.price).humanizeDollar(),
-                                    style = MaterialTheme.typography.h6,
+                                    style = MaterialTheme.typography.h4,
                                     color = Color.White,
                                 )
                             }
@@ -149,9 +153,16 @@ fun TokenDetailScene(
                             modifier = Modifier.weight(1f),
                             onClick = { onSend.invoke() },
                             elevation = ButtonDefaults.elevation(defaultElevation = 0.dp),
-                            colors = ButtonDefaults.buttonColors(backgroundColor = Color(0XFFFFB915))
+                            colors = ButtonDefaults.buttonColors(
+                                backgroundColor = Color(0XFFFFB915),
+                                contentColor = MaterialTheme.colors.onPrimary
+                            )
                         ) {
-                            Icon(painterResource(id = R.drawable.upload), contentDescription = null)
+                            Icon(
+                                painterResource(id = R.drawable.upload),
+                                contentDescription = null,
+                                tint = MaterialTheme.colors.onPrimary
+                            )
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(
                                 text = stringResource(R.string.scene_wallet_balance_btn_Send),

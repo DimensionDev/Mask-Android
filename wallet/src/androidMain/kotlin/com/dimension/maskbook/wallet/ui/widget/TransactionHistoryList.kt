@@ -46,6 +46,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.common.ext.humanizeDollar
 import com.dimension.maskbook.common.ext.humanizeToken
@@ -121,7 +122,9 @@ private fun TokenDetailEmptyLayout() {
         )
         Spacer(Modifier.height(12.dp))
         Text(
-            text = stringResource(R.string.scene_transaction_history_no_transaction)
+            text = stringResource(R.string.scene_transaction_history_no_transaction),
+            style = MaterialTheme.typography.h6.copy(fontWeight = FontWeight.W500),
+            color = Color(0xFFA6A9B6)
         )
     }
 }
