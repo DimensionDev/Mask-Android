@@ -100,7 +100,7 @@ fun PluginSettingsScene(
                 if (shouldShowPluginSettingsTipDialog) {
                     TipMessageDialog(
                         modifier = Modifier
-                            .padding(horizontal = 22.5f.dp, vertical = 44.dp)
+                            .padding(horizontal = 22.5f.dp)
                             .align(Alignment.BottomCenter),
                         onClose = {
                             viewModel.setShowPluginSettingsTipDialog(false)
