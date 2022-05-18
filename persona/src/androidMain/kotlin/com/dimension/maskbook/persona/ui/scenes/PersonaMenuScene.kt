@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -54,6 +55,7 @@ import com.dimension.maskbook.common.route.navigationComposeAnimComposable
 import com.dimension.maskbook.common.route.navigationComposeAnimComposablePackage
 import com.dimension.maskbook.common.routeProcessor.annotations.Back
 import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
+import com.dimension.maskbook.common.ui.theme.moreColor
 import com.dimension.maskbook.common.ui.widget.MaskCard
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskScene
@@ -104,78 +106,38 @@ fun PersonaMenuScene(
                         .padding(ScaffoldPadding),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    MaskCard(
-                        modifier = Modifier.fillMaxWidth(),
-                        elevation = 0.dp,
+                    MenuItem(
                         onClick = {
                             navController.navigate(PersonaRoute.SwitchPersona)
-                        }
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(16.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Image(
-                                painterResource(id = R.drawable.ic_profile),
-                                contentDescription = null
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(text = stringResource(R.string.scene_personas_action_change_add_persona))
-                        }
-                    }
+                        },
+                        icon = R.drawable.ic_profile,
+                        title = stringResource(R.string.scene_personas_action_change_add_persona)
+                    )
                     Spacer(modifier = Modifier.height(16.dp))
-                    MaskCard(
-                        modifier = Modifier.fillMaxWidth(),
-                        elevation = 0.dp,
+                    MenuItem(
                         onClick = {
                             currentPersona?.let {
                                 navController.navigate(PersonaRoute.RenamePersona(it.identifier))
                             }
-                        }
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(16.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Image(
-                                painterResource(id = R.drawable.ic_edit),
-                                contentDescription = null
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(text = stringResource(R.string.scene_personas_action_rename))
-                        }
-                    }
+                        },
+                        icon = R.drawable.ic_edit,
+                        title = stringResource(R.string.scene_personas_action_rename)
+                    )
                     Spacer(modifier = Modifier.height(16.dp))
-                    MaskCard(
-                        modifier = Modifier.fillMaxWidth(),
-                        elevation = 0.dp,
+                    MenuItem(
                         onClick = {
-                            // first check if it has backup password
                             if (backupPassword.isEmpty()) {
                                 navController.navigateUri(Uri.parse(Deeplinks.Setting.SetupPasswordDialog(BackupActions.ExportPrivateKey.name)))
                             } else {
                                 navController.navigate(Uri.parse(Deeplinks.Persona.BackUpPassword(PersonaRoute.ExportPrivateKey)))
                             }
-                        }
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(16.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Image(
-                                painterResource(id = R.drawable.ic_password),
-                                contentDescription = null
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(text = stringResource(R.string.scene_persona_export_private_key_title))
-                        }
-                    }
+                        },
+                        icon = R.drawable.ic_password,
+                        title = stringResource(R.string.scene_persona_export_private_key_title)
+                    )
                     Spacer(modifier = Modifier.height(16.dp))
-                    MaskCard(
-                        modifier = Modifier.fillMaxWidth(),
-                        elevation = 0.dp,
+                    MenuItem(
                         onClick = {
-                            // first check if it has backup password
                             if (backupPassword.isEmpty()) {
                                 navController.navigateUri(Uri.parse(Deeplinks.Setting.SetupPasswordDialog(BackupActions.DownloadQrCode.name)))
                             } else {
@@ -192,44 +154,22 @@ fun PersonaMenuScene(
                                     )
                                 }
                             }
-                        }
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(16.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Image(
-                                painterResource(id = R.drawable.ic_download),
-                                contentDescription = null
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(text = stringResource(R.string.scene_persona_download_qr_code_title))
-                        }
-                    }
+                        },
+                        icon = R.drawable.ic_download,
+                        title = stringResource(R.string.scene_persona_download_qr_code_title)
+                    )
                     Spacer(modifier = Modifier.height(16.dp))
-                    MaskCard(
-                        modifier = Modifier.fillMaxWidth(),
-                        elevation = 0.dp,
+                    MenuItem(
                         onClick = {
                             if (backupPassword.isEmpty()) {
                                 navController.navigateUri(Uri.parse(Deeplinks.Setting.SetupPasswordDialog(BackupActions.BackUp.name)))
                             } else {
                                 navController.navigateUri(Uri.parse(Deeplinks.Setting.BackupData.BackupSelection))
                             }
-                        }
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(16.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Image(
-                                painterResource(id = R.drawable.ic_paper_plus),
-                                contentDescription = null
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(text = stringResource(R.string.common_controls_back_up))
-                        }
-                    }
+                        },
+                        icon = R.drawable.ic_paper_plus,
+                        title = stringResource(R.string.common_controls_back_up)
+                    )
                     Spacer(modifier = Modifier.height(16.dp))
                     MaskCard(
                         modifier = Modifier.fillMaxWidth(),
@@ -252,11 +192,51 @@ fun PersonaMenuScene(
                                 tint = Color.Red,
                             )
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text(text = stringResource(R.string.scene_setting_profile_log_out), color = Color.Red)
+                            Text(text = stringResource(R.string.scene_setting_profile_log_out), color = Color.Red, modifier = Modifier.weight(1f))
+                            Icon(
+                                painterResource(id = R.drawable.ic_arrow_right),
+                                contentDescription = null,
+                                tint = Color.Red,
+                                modifier = Modifier.size(6.dp, 11.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
                         }
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun MenuItem(
+    onClick: () -> Unit,
+    icon: Int,
+    title: String,
+) {
+    MaskCard(
+        modifier = Modifier.fillMaxWidth(),
+        elevation = 0.dp,
+        onClick = onClick
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Image(
+                painterResource(id = icon),
+                contentDescription = null,
+                modifier = Modifier.size(32.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(text = title, style = MaterialTheme.typography.h5, modifier = Modifier.weight(1f))
+            Icon(
+                painterResource(id = R.drawable.ic_arrow_right),
+                contentDescription = null,
+                tint = MaterialTheme.moreColor.onCaption,
+                modifier = Modifier.size(6.dp, 11.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
         }
     }
 }

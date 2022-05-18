@@ -27,11 +27,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
@@ -60,10 +62,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.lerp
 import androidx.compose.ui.zIndex
 import coil.compose.rememberImagePainter
+import com.dimension.maskbook.common.ui.theme.moreTypography
 import com.dimension.maskbook.common.ui.widget.HorizontalScenePadding
 import com.dimension.maskbook.common.ui.widget.MaskAnimatedVisibility
 import com.dimension.maskbook.common.ui.widget.MaskCard
@@ -208,7 +212,14 @@ fun PersonaInfoScene(
                             items.forEach { data ->
                                 Tab(
                                     selected = data == selectedScene,
-                                    text = { Text(data.title) },
+                                    text = {
+                                        Text(
+                                            data.title,
+                                            style = MaterialTheme.typography.h5.copy(
+                                                fontWeight = if (data == selectedScene) FontWeight.Bold else FontWeight.Normal
+                                            )
+                                        )
+                                    },
                                     onClick = {
                                         selectedScene = data
                                     },
@@ -317,20 +328,35 @@ private fun PersonaHeader(
             backgroundColor = MaterialTheme.colors.primary,
             elevation = 0.dp,
             contentColor = Color.White,
+            shape = RoundedCornerShape(20.dp),
         ) {
             val item = personaList.getOrNull(page)
             MaskListItem(
                 contentPadding = PaddingValues(horizontal = 12.dp, vertical = 16.dp),
                 text = {
-                    Text(text = item?.name ?: "", style = MaterialTheme.typography.button)
-                },
-                secondaryText = {
                     Text(
-                        text = item?.identifier?.substringAfter("/") ?: "",
-                        style = MaterialTheme.typography.body2,
-                        maxLines = 2,
+                        text = item?.name ?: "",
+                        style = MaterialTheme.typography.h5,
                         color = Color.White,
                     )
+                },
+                textPadding = 4.dp,
+                secondaryText = {
+                    Row {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_mask_logo_small),
+                            modifier = Modifier.size(16.dp),
+                            tint = Color.White,
+                            contentDescription = null
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = item?.identifier?.substringAfter("/") ?: "",
+                            style = MaterialTheme.moreTypography.h10,
+                            maxLines = 2,
+                            color = Color.White,
+                        )
+                    }
                 },
                 icon = {
                     MaskTransparentButton(onClick = onAvatarClick) {
@@ -354,7 +380,7 @@ private fun PersonaHeader(
                     }
                 },
                 trailing = {
-                    MaskIconButton(onClick = onPersonaNameClick) {
+                    MaskIconButton(onClick = onPersonaNameClick, size = 32.dp) {
                         Icon(Icons.Default.MoreHoriz, contentDescription = null)
                     }
                 }

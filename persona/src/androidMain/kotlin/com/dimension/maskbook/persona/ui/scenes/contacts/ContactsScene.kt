@@ -46,6 +46,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -77,16 +78,27 @@ fun ContactsScene(
         ContactsEmptyScene(
             icon = {
                 Image(
-                    painterResource(id = R.drawable.ic_group_129),
+                    painterResource(id = R.drawable.ic_empty_contact),
                     contentDescription = null,
                 )
             },
             text = {
-                Text(text = stringResource(R.string.scene_persona_contacts_empty_contacts_tips))
+                Text(
+                    text = stringResource(R.string.scene_persona_contacts_empty_contacts_tips),
+                    style = MaterialTheme.typography.h6,
+                    color = Color(0xFFB4B8C8)
+                )
             },
             trailing = {
-                PrimaryButton(onClick = { onInvite(null) }) {
-                    Text(text = stringResource(R.string.common_controls_invite))
+                PrimaryButton(
+                    contentPadding = PaddingValues(horizontal = 24.dp, vertical = 6.dp),
+                    onClick = { onInvite(null) }
+                ) {
+                    Text(
+                        text = stringResource(R.string.common_controls_invite),
+                        style = MaterialTheme.typography.h6,
+                        color = MaterialTheme.colors.onPrimary
+                    )
                 }
             }
         )

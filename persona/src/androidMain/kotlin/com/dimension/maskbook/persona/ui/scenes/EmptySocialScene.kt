@@ -35,6 +35,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.common.ui.widget.HorizontalScenePadding
 import com.dimension.maskbook.common.ui.widget.SingleLineText
@@ -88,7 +89,10 @@ fun EmptySocialScene(
         item {
             Text(
                 text = stringResource(R.string.scene_persona_empty_message_tips),
-                style = MaterialTheme.typography.subtitle2,
+                style = MaterialTheme.typography.h5.copy(
+                    fontWeight = FontWeight.W400,
+                    color = MaterialTheme.typography.body1.color
+                ),
             )
         }
         item {

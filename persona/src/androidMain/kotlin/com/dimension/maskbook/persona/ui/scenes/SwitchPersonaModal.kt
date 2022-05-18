@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
@@ -93,7 +94,7 @@ fun SwitchPersonaModal(
                                 modifier = Modifier.size(32.dp),
                             )
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text(text = item.name)
+                            Text(text = item.name, style = MaterialTheme.typography.h5)
                         }
                     )
                 }
@@ -108,6 +109,7 @@ fun SwitchPersonaModal(
                         content = {
                             Text(
                                 text = stringResource(R.string.scene_personas_add_persona),
+                                style = MaterialTheme.typography.h5
                             )
                             Spacer(Modifier.weight(1f))
                             Icon(
