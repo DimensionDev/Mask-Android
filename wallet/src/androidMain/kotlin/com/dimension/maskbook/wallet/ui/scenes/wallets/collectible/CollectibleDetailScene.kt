@@ -126,9 +126,13 @@ fun CollectibleDetailScene(
                         modifier = Modifier.weight(1f),
                         onClick = { onSend.invoke() },
                         elevation = ButtonDefaults.elevation(defaultElevation = 0.dp),
-                        colors = ButtonDefaults.buttonColors(backgroundColor = Color(0XFFFFB915))
+                        colors = ButtonDefaults.buttonColors(backgroundColor = Color(0XFFFFB915), contentColor = MaterialTheme.colors.onPrimary)
                     ) {
-                        Icon(painterResource(id = R.drawable.upload), contentDescription = null)
+                        Icon(
+                            painterResource(id = R.drawable.upload),
+                            contentDescription = null,
+                            tint = MaterialTheme.colors.onPrimary
+                        )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
                             text = stringResource(R.string.scene_wallet_balance_btn_Send),
