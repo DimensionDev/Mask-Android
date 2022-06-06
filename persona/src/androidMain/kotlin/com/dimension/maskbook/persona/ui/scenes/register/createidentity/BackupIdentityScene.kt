@@ -30,6 +30,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
@@ -39,15 +40,19 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.dimension.maskbook.common.ui.widget.MaskCard
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskScene
 import com.dimension.maskbook.common.ui.widget.MaskTopAppBar
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
+import com.dimension.maskbook.common.ui.widget.SingleLineText
 import com.dimension.maskbook.common.ui.widget.button.MaskBackButton
 import com.dimension.maskbook.common.ui.widget.button.MaskIconButton
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
@@ -122,17 +127,32 @@ private fun BackupContent(
                 LazyColumn(
                     modifier = Modifier.weight(1f),
                 ) {
-                    itemsGridIndexed(words, rowSize = 3, spacing = 8.dp) { index, it ->
+                    itemsGridIndexed(words, rowSize = 2, spacing = 8.dp) { index, it ->
                         MaskCard(
                             modifier = Modifier.fillMaxWidth(),
                             elevation = 0.dp,
                             shape = MaterialTheme.shapes.small,
                         ) {
-                            Text(
-                                modifier = Modifier.padding(12.dp),
-                                text = "${index + 1} $it",
-                            )
+                            Row(Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    text = "${index + 1}",
+                                    textAlign = TextAlign.Center,
+                                    color = Color(0xFFB4B8C8),
+                                    style = MaterialTheme.typography.h5,
+                                    modifier = Modifier.width(20.dp),
+                                )
+                                Spacer(Modifier.width(6.dp))
+                                SingleLineText(
+                                    text = it,
+                                    lineHeight = 18.sp,
+                                    style = MaterialTheme.typography.body1,
+                                    modifier = Modifier.weight(1f),
+                                )
+                            }
                         }
+                    }
+                    item {
+                        Spacer(Modifier.height(8.dp))
                     }
                     item {
                         Row(
@@ -142,13 +162,14 @@ private fun BackupContent(
                             Image(
                                 painter = painterResource(R.drawable.ic_warn_blue),
                                 contentDescription = null,
-                                modifier = Modifier.size(24.dp).padding(end = 10.dp),
-                                contentScale = ContentScale.FillBounds
+                                modifier = Modifier.size(24.dp),
                             )
+                            Spacer(Modifier.width(8.dp))
                             Text(
                                 text = "Identity code is used to generate your persona.",
                                 color = MaterialTheme.colors.primary,
-                                style = MaterialTheme.typography.caption
+                                style = MaterialTheme.typography.caption,
+                                modifier = Modifier.weight(1f),
                             )
                         }
                     }
