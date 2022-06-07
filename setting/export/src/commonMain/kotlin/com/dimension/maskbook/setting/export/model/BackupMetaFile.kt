@@ -22,6 +22,7 @@ package com.dimension.maskbook.setting.export.model
 
 import com.ensarsarajcic.kotlinx.serialization.msgpack.MsgPackDynamicSerializer
 import com.ensarsarajcic.kotlinx.serialization.msgpack.internal.MsgPackTypeDecoder
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -262,10 +263,11 @@ data class BackupMetaFile(
                 }
             }
 
+            @OptIn(ExperimentalSerializationApi::class)
             override fun serialize(encoder: Encoder, value: LinkedProfileElement) {
                 when (value) {
                     is LinkedProfileElement.LinkedProfileClassValue -> {
-                        encoder.encodeSerializableValue(
+                        encoder.encodeNullableSerializableValue(
                             LinkedProfileElement.LinkedProfileClassValue.LinkedProfileClass.serializer(),
                             value.value
                         )
@@ -299,6 +301,13 @@ data class BackupMetaFile(
                         )
                     )
                 return items.associate { (it[0] as LinkedProfileElement.StringValue).value to (it[1] as LinkedProfileElement.LinkedProfileClassValue).value }
+                    .mapNotNull {
+                        if (it.value != null) {
+                            it.key to it.value!!
+                        } else {
+                            null
+                        }
+                    }.toMap()
             }
 
             override fun serialize(
@@ -325,7 +334,7 @@ data class BackupMetaFile(
         @Serializable
         sealed class LinkedProfileElement {
             @Serializable
-            data class LinkedProfileClassValue(val value: LinkedProfileClass) :
+            data class LinkedProfileClassValue(val value: LinkedProfileClass? = null) :
                 LinkedProfileElement() {
                 @Serializable
                 data class LinkedProfileClass(
@@ -345,7 +354,8 @@ data class BackupMetaFile(
     ) {
         @Serializable
         data class Parameter(
-            val withPassword: Boolean = false,
+            @Serializable(with = BooleanWrapperSerializer::class)
+            val withPassword: BooleanWrapper? = null,
             val path: String = "",
         )
     }
@@ -376,14 +386,12 @@ data class BackupMetaFile(
             DEPRECATED(0);
 
             object RelationFavorSerializer : KSerializer<RelationFavor> {
-                private val msgPackDynamicSerializer = MsgPackDynamicSerializer()
                 override val descriptor =
                     PrimitiveSerialDescriptor("RelationFavor", PrimitiveKind.INT)
 
                 override fun deserialize(decoder: Decoder): RelationFavor {
-                    msgPackDynamicSerializer.deserialize(decoder).let { result ->
-                        return RelationFavor.values().first { it.value.toByte() == result }
-                    }
+                    val value = decoder.decodeByte()
+                    return RelationFavor.values().firstOrNull { it.value.toByte() == value } ?: DEPRECATED
                 }
 
                 override fun serialize(encoder: Encoder, value: RelationFavor) {
