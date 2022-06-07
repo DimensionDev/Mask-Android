@@ -33,8 +33,8 @@ enum class Language(val value: String) {
     ruRU("ru-RU"),
     frFR("fr-FR");
 
-    companion object{
-        fun parse(value: String) = when(value) {
+    companion object {
+        fun parse(value: String) = when (value) {
             auto.value -> auto
             enUS.value -> enUS
             zhCN.value -> zhCN
