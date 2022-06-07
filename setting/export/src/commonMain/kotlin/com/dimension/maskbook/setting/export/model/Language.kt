@@ -31,5 +31,22 @@ enum class Language(val value: String) {
     faIR("fa-IR"),
     itIT("it-IT"),
     ruRU("ru-RU"),
-    frFR("fr-FR"),
+    frFR("fr-FR");
+
+    companion object{
+        fun parse(value: String) = when(value) {
+            auto.value -> auto
+            enUS.value -> enUS
+            zhCN.value -> zhCN
+            zhTW.value -> zhTW
+            koKR.value -> koKR
+            jaJP.value -> jaJP
+            esES.value -> esES
+            faIR.value -> faIR
+            itIT.value -> itIT
+            ruRU.value -> ruRU
+            frFR.value -> frFR
+            else -> auto
+        }
+    }
 }

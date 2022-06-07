@@ -55,7 +55,7 @@ internal class JSMethod(
 
     suspend fun getLanguage(): Language {
         return extensionService.execute<String>("settings_getLanguage")?.let {
-            Language.valueOf(it)
+            Language.parse(it)
         } ?: Language.auto
     }
 
