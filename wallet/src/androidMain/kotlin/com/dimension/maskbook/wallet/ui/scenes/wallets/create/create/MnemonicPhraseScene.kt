@@ -20,7 +20,6 @@
  */
 package com.dimension.maskbook.wallet.ui.scenes.wallets.create.create
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -52,10 +51,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dimension.maskbook.common.ui.theme.MaskTheme
+import com.dimension.maskbook.common.ui.widget.MaskCard
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskScene
 import com.dimension.maskbook.common.ui.widget.MaskTopAppBar
 import com.dimension.maskbook.common.ui.widget.ScaffoldPadding
+import com.dimension.maskbook.common.ui.widget.SingleLineText
 import com.dimension.maskbook.common.ui.widget.button.MaskBackButton
 import com.dimension.maskbook.common.ui.widget.button.MaskIconButton
 import com.dimension.maskbook.common.ui.widget.button.PrimaryButton
@@ -146,30 +147,28 @@ private fun PhraseContent(
     LazyColumn(
         modifier = modifier,
     ) {
-        itemsGridIndexed(words, rowSize = 3, spacing = 8.dp) { index, it ->
-            Row(
-                modifier = Modifier
-                    .background(MaterialTheme.colors.surface, shape = MaterialTheme.shapes.small)
-                    .height(52.dp)
-                    .padding(horizontal = 15.dp, vertical = 0.dp)
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
+        itemsGridIndexed(words, rowSize = 2, spacing = 8.dp) { index, it ->
+            MaskCard(
+                modifier = Modifier.fillMaxWidth(),
+                elevation = 0.dp,
+                shape = MaterialTheme.shapes.small,
             ) {
-                Text(
-                    text = "${index + 1}",
-                    textAlign = TextAlign.Center,
-                    color = Color(0xFFB4B8C8),
-                    style = MaterialTheme.typography.h5,
-                    modifier = Modifier.width(20.dp),
-                )
-                Spacer(Modifier.width(8.dp))
-                Text(
-                    text = it,
-                    textAlign = TextAlign.Center,
-                    fontSize = 16.sp,
-                    lineHeight = 18.sp,
-                    style = MaterialTheme.typography.body1,
-                )
+                Row(Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = "${index + 1}",
+                        textAlign = TextAlign.Center,
+                        color = Color(0xFFB4B8C8),
+                        style = MaterialTheme.typography.h5,
+                        modifier = Modifier.width(20.dp),
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    SingleLineText(
+                        text = it,
+                        lineHeight = 18.sp,
+                        style = MaterialTheme.typography.body1,
+                        modifier = Modifier.weight(1f),
+                    )
+                }
             }
         }
     }
