@@ -29,6 +29,7 @@ import com.dimension.maskbook.persona.export.model.IndexedDBProfile
 import com.dimension.maskbook.persona.export.model.IndexedDBRelation
 import com.dimension.maskbook.persona.export.model.LinkedProfileDetailsState
 import com.dimension.maskbook.setting.export.model.BackupMetaFile
+import com.dimension.maskbook.setting.export.model.BooleanWrapper
 import com.dimension.maskbook.setting.export.model.DateWrapper
 import com.dimension.maskbook.setting.ext.fromJWK
 import com.dimension.maskbook.setting.ext.toJWK
@@ -88,7 +89,7 @@ fun BackupWalletData.toBackupWallet() = BackupMetaFile.Wallet(
             BackupMetaFile.Mnemonic(
                 words = mnemonic,
                 parameter = BackupMetaFile.Mnemonic.Parameter(
-                    withPassword = false,
+                    withPassword = BooleanWrapper(false),
                     path = derivationPath,
                 )
             )
@@ -148,7 +149,7 @@ fun IndexedDBPersona.toBackupPersona() = BackupMetaFile.Persona(
     mnemonic = mnemonic?.let {
         BackupMetaFile.Mnemonic(
             parameter = BackupMetaFile.Mnemonic.Parameter(
-                withPassword = it.parameter.withPassword,
+                withPassword = BooleanWrapper(it.parameter.withPassword),
                 path = it.parameter.path,
             ),
             words = it.words
@@ -172,7 +173,7 @@ fun BackupMetaFile.Persona.toIndexedDBPersona() = IndexedDBPersona(
     mnemonic = mnemonic?.let {
         IndexedDBPersona.Mnemonic(
             parameter = IndexedDBPersona.Mnemonic.Parameter(
-                withPassword = it.parameter.withPassword,
+                withPassword = it.parameter.withPassword?.value ?: false,
                 path = it.parameter.path,
             ),
             words = it.words

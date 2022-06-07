@@ -20,11 +20,14 @@
  */
 package com.dimension.maskbook.setting.ext
 
-import com.dimension.maskbook.common.ext.decodeBase64
+import com.dimension.maskbook.common.ext.decodeBase64Bytes
 import com.dimension.maskbook.common.ext.encodeBase64String
 import com.dimension.maskbook.setting.export.model.JsonWebKey
 
-internal fun JsonWebKey.fromJWK() = d?.decodeBase64()
+internal fun JsonWebKey.fromJWK() = d?.decodeBase64Bytes()?.toHexString()
+
+@OptIn(ExperimentalUnsignedTypes::class)
+fun ByteArray.toHexString() = asUByteArray().joinToString("") { it.toString(16).padStart(2, '0') }
 
 internal fun String.toJWK(): JsonWebKey {
     val privateKeyData = this.encodeToByteArray()
