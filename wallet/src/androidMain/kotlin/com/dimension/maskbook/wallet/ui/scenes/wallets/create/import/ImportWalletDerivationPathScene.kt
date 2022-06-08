@@ -33,6 +33,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Checkbox
@@ -41,6 +42,8 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.Icon
 import androidx.compose.material.LocalTextStyle
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.ProvideTextStyle
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -67,6 +70,7 @@ import com.dimension.maskbook.common.route.navigationComposeAnimComposablePackag
 import com.dimension.maskbook.common.routeProcessor.annotations.Back
 import com.dimension.maskbook.common.routeProcessor.annotations.NavGraphDestination
 import com.dimension.maskbook.common.routeProcessor.annotations.Path
+import com.dimension.maskbook.common.ui.theme.moreColor
 import com.dimension.maskbook.common.ui.widget.MaskScaffold
 import com.dimension.maskbook.common.ui.widget.MaskScene
 import com.dimension.maskbook.common.ui.widget.MaskTopAppBar
@@ -146,25 +150,33 @@ fun ImportWalletDerivationPathScene(
                     .padding(ScaffoldPadding),
             ) {
                 Row(modifier = Modifier.fillMaxWidth()) {
-                    Text(
-                        text = stringResource(R.string.scene_wallet_derivation_path_header_address),
-                        modifier = Modifier.weight(1f),
-                    )
-                    Text(
-                        text = stringResource(R.string.scene_wallet_derivation_path_header_balance, "ETH"),
-                        modifier = Modifier.weight(1f),
-                        textAlign = TextAlign.End
-                    )
-                    Text(
-                        text = stringResource(R.string.scene_wallet_derivation_path_header_operation),
-                        modifier = Modifier.weight(0.6f),
-                        textAlign = TextAlign.End
-                    )
+                    ProvideTextStyle(
+                        MaterialTheme.typography.h6.copy(
+                            color = MaterialTheme.moreColor.onCaption
+                        )
+                    ) {
+                        Text(
+                            text = stringResource(R.string.scene_wallet_derivation_path_header_address),
+                            modifier = Modifier.weight(1f),
+                        )
+                        Text(
+                            text = stringResource(R.string.scene_wallet_derivation_path_header_balance, "ETH"),
+                            modifier = Modifier.weight(1f),
+                            textAlign = TextAlign.End
+                        )
+                        Text(
+                            text = stringResource(R.string.scene_wallet_derivation_path_header_operation),
+                            modifier = Modifier.weight(0.6f),
+                            textAlign = TextAlign.End
+                        )
+                    }
                 }
+                Spacer(modifier = Modifier.height(8.dp))
                 HorizontalPager(
                     count = Int.MAX_VALUE,
                     state = pagerState,
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.wrapContentHeight(),
+                    verticalAlignment = Alignment.Top
                 ) { page ->
                     val items by viewModel.getPagerItems(page).collectAsState()
                     val balances by viewModel.getBalanceMap(page).collectAsState()
@@ -179,8 +191,7 @@ fun ImportWalletDerivationPathScene(
                         }
                     )
                 }
-
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(8.dp))
                 Row(Modifier.align(Alignment.CenterHorizontally)) {
                     PagerSwitcherIcon(
                         painter = painterResource(id = R.drawable.ic_select_left),
@@ -200,7 +211,7 @@ fun ImportWalletDerivationPathScene(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(30.dp))
+                Spacer(modifier = Modifier.weight(1f))
                 PrimaryButton(
                     modifier = Modifier.fillMaxWidth(),
                     onClick = {
@@ -267,11 +278,13 @@ private fun DerivationPathPager(
                     text = item.address,
                     modifier = Modifier.weight(1f),
                     textAlign = TextAlign.Start,
+                    style = MaterialTheme.typography.h6
                 )
                 SingleLineText(
                     text = balances[item.address] ?: "--",
                     modifier = Modifier.weight(1f),
                     textAlign = TextAlign.End,
+                    style = MaterialTheme.typography.h6
                 )
                 if (item.isAdded) {
                     Text(
