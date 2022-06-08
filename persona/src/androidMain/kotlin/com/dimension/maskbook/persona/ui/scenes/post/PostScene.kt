@@ -81,7 +81,7 @@ fun EmptyPostScene() {
         verticalArrangement = Arrangement.Center,
     ) {
         Image(
-            painterResource(id = R.drawable.ic_group_130),
+            painterResource(id = R.drawable.ic_post),
             contentDescription = null
         )
         Spacer(modifier = Modifier.height(24.dp))
