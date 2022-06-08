@@ -119,7 +119,11 @@ class ImportWalletDerivationPathViewModel(
     private fun loadBalance(page: Int, address: String) = viewModelScope.launch {
         val stateFlow = getBalanceStateMap(page)
         stateFlow.value = stateFlow.value.apply {
-            put(address, walletRepository.getTotalBalance(address).toString())
+            try {
+                put(address, walletRepository.getTotalBalance(address).toString())
+            } catch (e: Throwable) {
+                e.printStackTrace()
+            }
         }
     }
 

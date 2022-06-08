@@ -118,7 +118,7 @@ fun CreateOrImportWalletScene(
                             )
                         },
                         text = {
-                            Text(text = stringResource(R.string.scene_create_wallet_multichain_wallet_title))
+                            Text(text = stringResource(R.string.scene_create_wallet_multichain_wallet_title), style = MaterialTheme.typography.h4)
                         },
                         trailing = {
                             MaskIconButton(
@@ -129,7 +129,7 @@ fun CreateOrImportWalletScene(
                                 Image(
                                     painter = painterResource(id = R.drawable.ic_doubt),
                                     contentDescription = null,
-                                    modifier = Modifier.size(20.dp),
+                                    modifier = Modifier.size(24.dp),
                                 )
                             }
                         }
@@ -138,7 +138,7 @@ fun CreateOrImportWalletScene(
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = stringResource(R.string.scene_create_wallet_wallet_name),
-                    style = MaterialTheme.typography.subtitle2,
+                    style = MaterialTheme.typography.h5,
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 MaskInputField(

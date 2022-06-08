@@ -143,23 +143,23 @@ fun VerifyMnemonicWordsScene(
                         Text(
                             text = selectedWords.size.toString(),
                             color = MaterialTheme.colors.primary,
+                            style = MaterialTheme.typography.h4
                         )
-                        Text(text = "/")
-                        Text(text = words.size.toString())
+                        Text(text = "/${words.size}", style = MaterialTheme.typography.h4)
                     }
                     Spacer(modifier = Modifier.height(12.dp))
-                    if (!canConfirm) {
-                        Text(
-                            text = stringResource(R.string.scene_mnemonic_verify_mnemonic_prompt),
-                            style = LocalTextStyle.current.copy(
-                                Color(0XFFFFB915)
-                            )
-                        )
-                    } else if (!correct) {
+                    if (canConfirm && !correct) {
                         Text(
                             text = stringResource(R.string.scene_identify_verify_identity_error),
                             style = LocalTextStyle.current.copy(
                                 Color(0XFFFF5F5F)
+                            )
+                        )
+                    } else {
+                        Text(
+                            text = stringResource(R.string.scene_mnemonic_verify_mnemonic_prompt),
+                            style = LocalTextStyle.current.copy(
+                                Color(0XFFFFB915)
                             )
                         )
                     }
@@ -186,6 +186,7 @@ fun VerifyMnemonicWordsScene(
                         Text(text = stringResource(R.string.common_controls_clear))
                     }
                 }
+                Spacer(Modifier.padding(bottom = 54.dp))
             }
         }
     }
@@ -208,7 +209,7 @@ private fun PhrasePager(
         state = pagerState,
         count = words.size,
         modifier = Modifier.fillMaxWidth(),
-        contentPadding = PaddingValues(90.dp),
+        contentPadding = PaddingValues(horizontal = 77.dp),
     ) { page ->
         var backgroundColor by remember { mutableStateOf(selectBackgroundColor) }
         var contentColor by remember { mutableStateOf(selectContentColor) }
@@ -217,7 +218,7 @@ private fun PhrasePager(
                 .graphicsLayer {
                     val pageOffset = calculateCurrentOffsetForPage(page).absoluteValue
                     lerp(
-                        start = 0.65f,
+                        start = 0.75f,
                         stop = 1f,
                         fraction = 1f - pageOffset.coerceIn(0f, 1f)
                     ).also { scale ->
@@ -248,7 +249,7 @@ private fun PhrasePager(
         ) {
             Column(
                 modifier = Modifier
-                    .padding(horizontal = 30.dp, vertical = 24.dp),
+                    .padding(horizontal = 30.dp, vertical = 30.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 val item = selectedWords.getOrNull(page)
@@ -289,10 +290,10 @@ private fun PhraseContent(
             MaskButton(
                 onClick = { if (!isSelected) onWordClick(word) },
                 shape = MaterialTheme.shapes.small,
-                modifier = Modifier.fillMaxWidth().height(52.dp),
+                modifier = Modifier.fillMaxWidth().height(32.dp),
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = backgroundColor
-                )
+                ),
             ) {
                 Box(Modifier.fillMaxSize(), Alignment.Center) {
                     Text(
