@@ -21,7 +21,6 @@
 package com.dimension.maskbook.setting.model.mapping
 
 import com.dimension.maskbook.common.ext.decodeJson
-import com.dimension.maskbook.common.ext.encodeJson
 import com.dimension.maskbook.common.ext.encodeJsonElement
 import com.dimension.maskbook.persona.export.model.IndexedDBPersona
 import com.dimension.maskbook.persona.export.model.IndexedDBPost
@@ -53,7 +52,7 @@ fun IndexedDBPost.toBackupPost() = BackupMetaFile.Post(
     encryptBy = encryptBy,
     url = url,
     summary = summary,
-    interestedMeta = interestedMeta.encodeJson(),
+    interestedMeta = interestedMeta,
 )
 
 fun BackupMetaFile.Post.toIndexDbPost() = IndexedDBPost(
@@ -73,7 +72,7 @@ fun BackupMetaFile.Post.toIndexDbPost() = IndexedDBPost(
     encryptBy = encryptBy,
     url = url,
     summary = summary,
-    interestedMeta = interestedMeta?.decodeJson(),
+    interestedMeta = interestedMeta,
 )
 
 fun BackupWalletData.toBackupWallet() = BackupMetaFile.Wallet(

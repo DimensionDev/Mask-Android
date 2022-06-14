@@ -40,6 +40,6 @@ data class DbPostRecord(
     val url: String?,
     val summary: String?,
     var recipientsRaw: MutableMap<String, JsonObject>?,
-    val interestedMetaRaw: MutableMap<String, JsonObject>?,
+    val interestedMetaRaw: String?,
     val foundAt: Long,
 )
