@@ -33,5 +33,5 @@ class IndexedDBPost(
     val encryptBy: String? = null,
     val url: String? = null,
     val summary: String? = null,
-    val interestedMeta: MutableMap<String, JsonObject>? = null,
+    val interestedMeta: String? = null,
 )
