@@ -13,6 +13,8 @@ kotlin {
             dependencies {
                 implementation(projects.common.routeProcessor.annotations)
                 kspAndroid(projects.common.routeProcessor)
+                implementation("com.fasterxml.jackson.core:jackson-core:2.13.3")
+                implementation("org.msgpack:jackson-dataformat-msgpack:0.9.1")
             }
         }
         val commonTest by getting {

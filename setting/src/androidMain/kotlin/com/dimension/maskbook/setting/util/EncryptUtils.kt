@@ -20,14 +20,19 @@
  */
 package com.dimension.maskbook.setting.util
 
+import com.dimension.maskbook.common.ext.JSON
 import com.dimension.maskbook.common.ext.msgPack
 import com.dimension.maskbook.setting.export.model.BackupMetaFile
 import com.dimension.maskbook.setting.export.model.BackupWrongPasswordException
 import com.dimension.maskbook.setting.model.RemoteBackupData
+import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.databind.ObjectMapper
 import kotlinx.serialization.builtins.serializer
+import kotlinx.serialization.decodeFromString
 import org.bouncycastle.crypto.digests.SHA256Digest
 import org.bouncycastle.crypto.generators.PKCS5S2ParametersGenerator
 import org.bouncycastle.crypto.params.KeyParameter
+import org.msgpack.jackson.dataformat.MessagePackMapper
 import java.security.SecureRandom
 import javax.crypto.Cipher
 import javax.crypto.spec.IvParameterSpec
@@ -68,7 +73,9 @@ object EncryptUtils {
         kotlin.runCatching {
             cipher.doFinal(remoteBackupData.encrypted)
         }.onSuccess {
-            return msgPack.decodeFromByteArray(BackupMetaFile.serializer(), it)
+            val map = MessagePackMapper().readValue(it, object : TypeReference<Map<String, Any>>() {})
+            val json = ObjectMapper().writeValueAsString(map)
+            return JSON.decodeFromString<BackupMetaFile>(json)
         }.onFailure {
             throw BackupWrongPasswordException
         }
