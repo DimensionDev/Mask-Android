@@ -22,6 +22,7 @@ package com.dimension.maskbook.setting.util
 
 import com.dimension.maskbook.common.ext.JSON
 import com.dimension.maskbook.common.ext.msgPack
+import com.dimension.maskbook.common.ext.of
 import com.dimension.maskbook.setting.export.model.BackupMetaFile
 import com.dimension.maskbook.setting.export.model.BackupWrongPasswordException
 import com.dimension.maskbook.setting.model.RemoteBackupData
@@ -70,7 +71,7 @@ object EncryptUtils {
         val key = SecretKeySpec(derivedKey.key, "AES")
         val cipher = Cipher.getInstance("AES/GCM/NoPadding")
         cipher.init(Cipher.DECRYPT_MODE, key, IvParameterSpec(remoteBackupData.paramIV))
-        kotlin.runCatching {
+        Result.of {
             cipher.doFinal(remoteBackupData.encrypted)
         }.onSuccess {
             val map = MessagePackMapper().readValue(it, object : TypeReference<Map<String, Any>>() {})

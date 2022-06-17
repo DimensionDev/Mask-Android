@@ -21,6 +21,7 @@
 package com.dimension.maskbook.common.util
 
 import com.dimension.maskbook.common.exception.NullTransactionReceiptException
+import com.dimension.maskbook.common.ext.of
 import com.dimension.maskbook.common.model.EthResponse
 import com.dimension.maskbook.common.model.EthTransactionReceiptResponse
 import com.dimension.maskbook.wallet.export.model.ChainType
@@ -57,7 +58,7 @@ object EthUtils {
             value,
             data,
         )
-        val response = kotlin.runCatching {
+        val response = Result.of {
             web3j.ethEstimateGas(transaction).sendAsync().get()
         }.getOrElse {
             return Result.failure(it)
@@ -95,7 +96,7 @@ object EthUtils {
         val transaction = Transaction.createEthCallTransaction(
             fromAddress, contractAddress, encodedFunction
         )
-        val response: EthCall = kotlin.runCatching {
+        val response: EthCall = Result.of {
             web3j.ethCall(transaction, DefaultBlockParameterName.LATEST).sendAsync().get()
         }.getOrElse {
             return Result.failure(it)
@@ -155,7 +156,7 @@ object EthUtils {
     ): Result<EthResponse> {
         val credentials = Credentials.create(privateKey)
         val transaction = RawTransactionManager(web3j, credentials, chainType.chainId)
-        val response: EthSendTransaction = kotlin.runCatching {
+        val response: EthSendTransaction = Result.of {
             if (chainType.supportEip25519) {
                 transaction.sendEIP1559Transaction(
                     chainType.chainId,
@@ -193,7 +194,7 @@ object EthUtils {
         web3j: Web3j,
         transactionHash: String,
     ): Result<EthTransactionReceiptResponse> {
-        val response = kotlin.runCatching {
+        val response = Result.of {
             web3j.ethGetTransactionReceipt(transactionHash).sendAsync().get()
         }.getOrElse {
             return Result.failure(it)

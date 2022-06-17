@@ -20,6 +20,7 @@
  */
 package com.dimension.maskbook.wallet.usecase
 
+import com.dimension.maskbook.common.ext.of
 import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.services.WalletServices
 import com.dimension.maskbook.wallet.services.model.EthGasFee
@@ -105,7 +106,7 @@ class GasFeeModel {
 class GetSuggestGasFeeUseCase(
     private val services: WalletServices,
 ) {
-    suspend operator fun invoke(chainType: ChainType?) = runCatching {
+    suspend operator fun invoke(chainType: ChainType?) = Result.of {
         when (chainType) {
             ChainType.eth -> GasFeeModel(
                 services.gasServices.ethGasFee()
@@ -127,7 +128,7 @@ class GetArrivesWithGasFeeUseCase(
     private val services: WalletServices,
 ) {
     private val unKnow = -1.0
-    suspend operator fun invoke(gasFee: GasFeeData, suggestGasFee: GasFeeModel) = runCatching {
+    suspend operator fun invoke(gasFee: GasFeeData, suggestGasFee: GasFeeModel) = Result.of {
         with(services.gasServices.ethGas()) {
             if (safeLowWait != null && fastestWait != null && fastWait != null && avgWait != null) {
                 when {

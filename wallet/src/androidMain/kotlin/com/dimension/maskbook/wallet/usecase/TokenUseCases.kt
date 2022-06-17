@@ -21,6 +21,7 @@
 package com.dimension.maskbook.wallet.usecase
 
 import com.dimension.maskbook.common.bigDecimal.BigDecimal
+import com.dimension.maskbook.common.ext.of
 import com.dimension.maskbook.wallet.export.model.ChainType
 import com.dimension.maskbook.wallet.export.model.TokenData
 import com.dimension.maskbook.wallet.export.model.WalletTokenData
@@ -45,7 +46,7 @@ class SendTokenUseCase(
         gasLimit: Double,
         maxFee: Double,
         maxPriorityFee: Double
-    ) = runCatching {
+    ) = Result.of {
         suspendCoroutine<String> { continuation ->
             repository.sendTokenWithCurrentWallet(
                 amount = amount,
@@ -76,7 +77,7 @@ class SendTransactionUseCase(
         maxPriorityFee: Double,
         data: String,
         chainType: ChainType?,
-    ) = runCatching {
+    ) = Result.of {
         val chain = chainType ?: repository.currentChain.first()?.chainType
         suspendCoroutine<String> { continuation ->
             repository.sendTransactionWithCurrentWallet(

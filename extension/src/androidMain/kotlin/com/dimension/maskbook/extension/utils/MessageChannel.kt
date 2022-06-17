@@ -20,6 +20,7 @@
  */
 package com.dimension.maskbook.extension.utils
 
+import com.dimension.maskbook.common.ext.of
 import com.dimension.maskbook.common.gecko.WebContentController
 import com.dimension.maskbook.extension.export.model.ExtensionId
 import com.dimension.maskbook.extension.export.model.ExtensionMessage
@@ -91,10 +92,10 @@ internal abstract class MessageChannel(
     }
 
     private fun onMessage(jsonObject: JSONObject) {
-        val messageId = runCatching {
+        val messageId = Result.of {
             jsonObject.get("id")
         }.getOrNull()
-        val result = runCatching {
+        val result = Result.of {
             jsonObject.get("result")
         }.getOrNull()?.toString()?.takeIf {
             it != "null"
@@ -102,15 +103,15 @@ internal abstract class MessageChannel(
         if (messageId != null && queue.containsKey(messageId)) {
             queue.remove(messageId)?.trySend(result)
         } else {
-            val method = runCatching {
+            val method = Result.of {
                 jsonObject.getString("method")
             }.getOrNull()
-            val params = runCatching {
+            val params = Result.of {
                 jsonObject.get("params")
             }.getOrNull()?.toString()?.takeIf {
                 it != "null"
             }
-            val jsonrpc = kotlin.runCatching {
+            val jsonrpc = Result.of {
                 jsonObject.getString("jsonrpc")
             }.getOrDefault("2.0")
             if (method != null) {

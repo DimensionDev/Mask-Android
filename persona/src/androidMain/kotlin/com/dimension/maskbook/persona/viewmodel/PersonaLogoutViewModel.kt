@@ -23,6 +23,7 @@ package com.dimension.maskbook.persona.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dimension.maskbook.common.ext.asStateIn
+import com.dimension.maskbook.common.ext.of
 import com.dimension.maskbook.common.ext.onFinished
 import com.dimension.maskbook.persona.repository.IPersonaRepository
 import com.dimension.maskbook.setting.export.SettingServices
@@ -57,7 +58,7 @@ class PersonaLogoutViewModel(
 
     fun logout() = viewModelScope.launch {
         _loadingState.value = true
-        runCatching {
+        Result.of {
             repository.logout()
         }.onFailure {
             it.printStackTrace()

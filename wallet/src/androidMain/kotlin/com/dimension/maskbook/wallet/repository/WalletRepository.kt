@@ -34,6 +34,7 @@ import androidx.paging.PagingState
 import androidx.room.withTransaction
 import com.dimension.maskbook.common.bigDecimal.BigDecimal
 import com.dimension.maskbook.common.ext.httpService
+import com.dimension.maskbook.common.ext.of
 import com.dimension.maskbook.common.ext.use
 import com.dimension.maskbook.common.ext.useSuspend
 import com.dimension.maskbook.common.util.EthUtils
@@ -195,7 +196,7 @@ internal class WalletRepository(
             val balance =
                 services.debankServices.totalBalance(currentWallet.address).let { balance ->
                     balance.chainList?.map { chain ->
-                        chain.id?.let { it1 -> runCatching { ChainID.valueOf(it1) }.getOrNull() }
+                        chain.id?.let { it1 -> Result.of { ChainID.valueOf(it1) }.getOrNull() }
                             ?.let {
                                 when (it) {
                                     ChainID.eth -> DbWalletBalanceType.eth
@@ -228,7 +229,7 @@ internal class WalletRepository(
 
             val tokens = token.map {
                 val chainId =
-                    kotlin.runCatching { it.chain?.let { it1 -> ChainID.valueOf(it1) } }.getOrNull()
+                    Result.of { it.chain?.let { it1 -> ChainID.valueOf(it1) } }.getOrNull()
                 it.toDbToken(chainId)
             }
             val walletTokens = token.map {
@@ -859,7 +860,7 @@ internal class WalletRepository(
     private suspend fun refreshPendingTransaction() {
         val items = pendingTransaction.firstOrNull() ?: return
         items.forEach {
-            runCatching {
+            Result.of {
                 Web3j.build(it.chainId.httpService).useSuspend { web3j ->
                     val result = web3j.ethGetTransactionReceipt(it.transactionHash).send()
                     if (result.transactionReceipt.orElse(null) != null) {
@@ -879,7 +880,7 @@ internal class WalletRepository(
     override suspend fun createWalletBackup(): List<BackupWalletData> {
         return database.walletDao().getAll().map {
             val privateKey = WalletKey.load(it.storedKey.data).firstOrNull()
-            val mnemonic = kotlin.runCatching {
+            val mnemonic = Result.of {
                 privateKey?.exportMnemonic("")
             }.getOrNull()
             // TODO: support other coin types
