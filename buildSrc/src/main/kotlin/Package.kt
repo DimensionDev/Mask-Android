@@ -8,9 +8,9 @@ object Package {
 
     object Version {
         const val main = "2"
-        const val mirror = "8"
+        const val mirror = "9"
         const val patch = "0"
-        const val revision = "beta04"
+        const val revision = "beta01"
         const val build = 70
     }
 }
