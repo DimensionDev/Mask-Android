@@ -20,11 +20,12 @@
  */
 package com.dimension.maskbook.setting.ext
 
+import android.util.Base64
 import com.dimension.maskbook.common.ext.decodeBase64Bytes
 import com.dimension.maskbook.common.ext.encodeBase64String
 import com.dimension.maskbook.setting.export.model.JsonWebKey
 
-internal fun JsonWebKey.fromJWK() = d?.decodeBase64Bytes()?.toHexString()
+internal fun JsonWebKey.fromJWK() = d?.decodeBase64Bytes(Base64.URL_SAFE)?.toHexString()
 
 @OptIn(ExperimentalUnsignedTypes::class)
 fun ByteArray.toHexString() = asUByteArray().joinToString("") { it.toString(16).padStart(2, '0') }
