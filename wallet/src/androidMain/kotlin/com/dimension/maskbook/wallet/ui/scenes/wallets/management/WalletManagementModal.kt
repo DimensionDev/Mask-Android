@@ -89,7 +89,6 @@ fun WalletManagementModal(
                 MaskListItemButton(
                     onClick = onDisconnect,
                     icon = R.drawable.ic_disconnect,
-                    tint = MaterialTheme.colors.primary,
                 ) {
                     Text(
                         text = stringResource(R.string.scene_wallet_connect_disconnect),
@@ -100,7 +99,6 @@ fun WalletManagementModal(
                 MaskListItemButton(
                     onClick = onDelete,
                     icon = R.drawable.ic_delete_wallet,
-                    tint = MaterialTheme.colors.primary,
                 ) {
                     Text(
                         text = stringResource(R.string.scene_wallet_edit_item_delete),
