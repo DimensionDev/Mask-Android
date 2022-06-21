@@ -22,7 +22,6 @@ package com.dimension.maskbook.persona.ui.scenes
 
 import android.net.Uri
 import android.util.Base64
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -223,10 +222,11 @@ private fun MenuItem(
             modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Image(
+            Icon(
                 painterResource(id = icon),
                 contentDescription = null,
-                modifier = Modifier.size(32.dp)
+                modifier = Modifier.size(32.dp),
+                tint = MaterialTheme.colors.primary,
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(text = title, style = MaterialTheme.typography.h5, modifier = Modifier.weight(1f))

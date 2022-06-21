@@ -322,10 +322,11 @@ fun SettingsItem(
                 Text(text = title)
             },
             icon = {
-                Image(
+                Icon(
                     painter = painterResource(id = icon),
                     contentDescription = null,
                     modifier = Modifier.size(32.dp),
+                    tint = MaterialTheme.colors.primary,
                 )
             },
             trailing = {
