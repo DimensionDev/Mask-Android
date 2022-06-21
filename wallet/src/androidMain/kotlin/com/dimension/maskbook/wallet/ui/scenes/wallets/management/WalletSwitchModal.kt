@@ -190,7 +190,6 @@ fun WalletSwitchSceneModal(
                             NameImage(
                                 name = wallet.name,
                                 modifier = Modifier.size(32.dp),
-                                alpha = 1f,
                                 color = wallet.name.walletColor
                             )
                         },

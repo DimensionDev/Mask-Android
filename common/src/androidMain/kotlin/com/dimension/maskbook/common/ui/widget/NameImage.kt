@@ -41,11 +41,9 @@ fun NameImage(
     modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colors.primary,
     style: TextStyle? = null,
-    alpha: Float = LocalContentAlpha.current,
 ) {
     BoxWithConstraints(
         modifier = modifier
-            .alpha(alpha)
             .background(color, shape = CircleShape),
         contentAlignment = Alignment.Center,
     ) {
