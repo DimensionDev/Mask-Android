@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -65,12 +66,14 @@ fun WalletManagementModal(
                 },
                 trailing = {
                     Text(text = walletData?.name.orEmpty())
-                }
+                },
+                tint = MaterialTheme.colors.primary,
             )
             if (walletData != null && !walletData.fromWalletConnect) {
                 MaskListItemButton(
                     onClick = onBackup,
                     icon = R.drawable.ic_back_up,
+                    tint = MaterialTheme.colors.primary,
                 ) {
                     Text(text = stringResource(R.string.scene_personas_action_backup))
                 }
@@ -78,6 +81,7 @@ fun WalletManagementModal(
             MaskListItemButton(
                 onClick = onTransactionHistory,
                 icon = R.drawable.ic_transaction_history,
+                tint = MaterialTheme.colors.primary,
             ) {
                 Text(text = stringResource(R.string.scene_wallet_detail_wallet_items_history))
             }
@@ -85,6 +89,7 @@ fun WalletManagementModal(
                 MaskListItemButton(
                     onClick = onDisconnect,
                     icon = R.drawable.ic_disconnect,
+                    tint = MaterialTheme.colors.primary,
                 ) {
                     Text(
                         text = stringResource(R.string.scene_wallet_connect_disconnect),
@@ -95,6 +100,7 @@ fun WalletManagementModal(
                 MaskListItemButton(
                     onClick = onDelete,
                     icon = R.drawable.ic_delete_wallet,
+                    tint = MaterialTheme.colors.primary,
                 ) {
                     Text(
                         text = stringResource(R.string.scene_wallet_edit_item_delete),

@@ -23,9 +23,11 @@ package com.dimension.maskbook.common.ui.widget.button
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.dimension.maskbook.common.ext.applyTextStyle
@@ -36,16 +38,26 @@ fun MaskListItemButton(
     onClick: () -> Unit,
     @DrawableRes icon: Int,
     trailing: @Composable (() -> Unit)? = null,
+    tint: Color? = null,
     text: @Composable (() -> Unit),
 ) {
     MaskButton(onClick = onClick) {
         MaskListItem(
             icon = {
-                Image(
-                    painter = painterResource(icon),
-                    contentDescription = null,
-                    modifier = Modifier.size(32.dp),
-                )
+                if (tint != null) {
+                    Icon(
+                        painter = painterResource(icon),
+                        contentDescription = null,
+                        modifier = Modifier.size(32.dp),
+                        tint = tint,
+                    )
+                } else {
+                    Image(
+                        painter = painterResource(icon),
+                        contentDescription = null,
+                        modifier = Modifier.size(32.dp),
+                    )
+                }
             },
             text = text,
             trailing = applyTextStyle(MaterialTheme.typography.h5, trailing),
