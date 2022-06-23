@@ -23,14 +23,12 @@ package com.dimension.maskbook.common.ui.widget
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.sp
@@ -41,11 +39,9 @@ fun NameImage(
     modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colors.primary,
     style: TextStyle? = null,
-    alpha: Float = LocalContentAlpha.current,
 ) {
     BoxWithConstraints(
         modifier = modifier
-            .alpha(alpha)
             .background(color, shape = CircleShape),
         contentAlignment = Alignment.Center,
     ) {
